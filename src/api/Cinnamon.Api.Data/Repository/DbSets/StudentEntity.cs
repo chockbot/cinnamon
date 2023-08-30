@@ -1,6 +1,8 @@
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivitySchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.StudentAttendance;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -409,4 +411,73 @@ public class StudentEntity : GenericEntity<Student>, IStudent
             return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when trying to get expiring students");            
         }
     }
+
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentById(int customerId)
+	{
+		try
+		{
+			string query = "SELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"NumberOfBacktracking\", " +
+				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
+				"c.\"HasExpiration\"\r\nFROM public.\"Students\" as a " +
+				"JOIN public.\"ActivitySchedules\" as c ON c.\"Id\" = a.\"ScheduleId\"\r\n" +
+				"LEFT JOIN ( SELECT sa.\"Id\", sa.\"StudentId\", sa.\"IsPresent\",sa.\"Date\"\r\n" +
+				"FROM public.\"StudentAttendances\" as sa WHERE sa.\"IsPresent\" = true\r\n" +
+				"AND sa.\"Date\" = (SELECT MAX(sa_sub.\"Date\") FROM public.\"StudentAttendances\" as sa_sub " +
+				"WHERE sa_sub.\"StudentId\" = sa.\"StudentId\"\r\nAND sa_sub.\"IsPresent\" = true)) as b ON b.\"StudentId\" = a.\"Id\"\r\n" +
+				"WHERE a.\"CustomerId\" = " + customerId+";";
+
+			IList<StudentDTO> listResult = new List<StudentDTO>();
+
+
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+						//Get Student
+						listResult = dt.AsEnumerable().Select(item => new StudentDTO
+						{
+							Id                   = Convert.ToInt32(item["Id"]),
+							ActivityId           = Convert.ToInt32(item["ActivityId"]),
+							CustomerId           = Convert.ToInt32(item["CustomerId"]),
+							ScheduleId           = Convert.ToInt32(item["ScheduleId"]),
+							Name                 = item["Name"].ToString() ?? string.Empty,
+							NumberOfSessions     = Convert.ToInt32(item["NumberOfSessions"]),
+							SessionsAttended     = Convert.ToInt32(item["SessionsAttended"]),
+							NumberOfBackTracking = Convert.ToInt32(item["NumberOfBacktracking"]),
+							ExpirationStartDate  = Convert.ToDateTime(item["ExpirationDateStart"]),
+							ExpirationEndDate    = Convert.ToDateTime(item["ExpirationDateEnd"]),
+							activitySchedule     = new ActivityScheduleDTO
+							{
+								Id            = Convert.ToInt32(item["ActivityScheduleId"]),
+								HasExpiration = Convert.ToInt32(item["HasExpiration"]),
+								IsSetSession  = Convert.ToBoolean(item["IsSetSession"])
+							},
+							studentAttendance = new StudentAttendanceDTO
+							{
+								Id = item["StudentAttendanceId"] != DBNull.Value ? Convert.ToInt32(item["StudentAttendanceId"]) : 0,
+								Date = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+								IsPresent = item["IsPresent"] != DBNull.Value ? Convert.ToBoolean(item["IsPresent"]) : false,
+								StudentId = item["StudentId"] != DBNull.Value ? Convert.ToInt32(item["StudentId"]) : 0,
+							}
+						}).ToList();
+					}
+				}
+			}
+
+			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
+		}
+	}
 }

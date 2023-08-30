@@ -4,5 +4,5 @@ public class GetAllStudentsByIdArgs
 {
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
-    public int? CustomerId { get; set; }
+    public int CustomerId { get; set; }
 }

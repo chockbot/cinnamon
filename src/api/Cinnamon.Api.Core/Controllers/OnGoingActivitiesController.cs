@@ -1,7 +1,7 @@
-﻿using Cinnamon.Api.Core.Services.OnGoingActivityService;
-using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Reviews;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Schedule;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
@@ -363,6 +363,8 @@ public class OnGoingActivitiesController : ControllerBase
             var result = await getAllStudentsByIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetAllStudentsByIdArgs
             {
                 CustomerId = args.CustomerId,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -374,19 +376,32 @@ public class OnGoingActivitiesController : ControllerBase
                 Result = result.Result.Student.Select(e => {
                     return new StudentDTO
                     {
-                        Id = e.Id,
-                        Name = e.Name,
-                        ActivityId = e.ActivityId,
-                        CustomerId = e.CustomerId,
-                        NumberOfSessions = e.NumberOfSessions,
-                        Remarks = e.Remarks,
-                        ScheduleId = e.ScheduleId,
-                        SessionsAttended = e.SessionsAttended,
-                        Status = e.Status,
-                        StudentNo = e.StudentNo,
+                        Id                  = e.Id,
+                        Name                = e.Name,
+                        ActivityId          = e.ActivityId,
+                        CustomerId          = e.CustomerId,
+                        NumberOfSessions    = e.NumberOfSessions,
+                        Remarks             = e.Remarks,
+                        ScheduleId          = e.ScheduleId,
+                        SessionsAttended    = e.SessionsAttended,
+                        Status              = e.Status,
+                        StudentNo           = e.StudentNo,
                         ExpirationStartDate = e.ExpirationStartDate,
-                        ExpirationEndDate = e.ExpirationEndDate,
-                        HasReview = e.HasReview
+                        ExpirationEndDate   = e.ExpirationEndDate,
+                        HasReview           = e.HasReview,
+                        studentAttendanceDTO = new StudentAttendanceDTO
+                        {
+                            IsPresent = e.studentAttendanceDTO.IsPresent,
+                            StudentId = e.studentAttendanceDTO.StudentId,
+                            Date      = e.studentAttendanceDTO.Date,
+                        },
+                        activityScheduleDTO = new ActivityScheduleDTO
+                        {
+                            ScheduleId    = e.activityScheduleDTO.ScheduleId,
+                            HasExpiration = e.activityScheduleDTO.HasExpiration,
+                            IsSetSession  = e.activityScheduleDTO.IsSetSession
+                        }
+
                     };
                 })
             });

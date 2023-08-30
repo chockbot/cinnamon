@@ -565,7 +565,7 @@
                                                     </TooltipContent>
                                                 </CustomTooltip>
                                             }
-                                            @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                            @if (CustomerModel.Favorites != null)
                                             {
                                                 act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
                                                 if (act.IsFavorite != false)

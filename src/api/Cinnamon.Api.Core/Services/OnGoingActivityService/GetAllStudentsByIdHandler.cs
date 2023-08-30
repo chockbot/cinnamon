@@ -31,7 +31,9 @@ public class GetAllStudentsByIdHandler : IGetAllStudentsByIdHandler
         {
             var attendanceResReLoad = await studentData.GetAllStudentsById(new Framework.ApiCommand.ApiData.Student.Request.GetAllStudentsByIdArgs
             {
-                CustomerId = args.CustomerId
+                CustomerId = args.CustomerId,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage
             });
             if (!attendanceResReLoad.Succeeded || attendanceResReLoad.Result == null || !attendanceResReLoad.Result.IsSuccess)
             {
@@ -43,19 +45,31 @@ public class GetAllStudentsByIdHandler : IGetAllStudentsByIdHandler
                 {
                     return new GetAllStudentsByIdResult.Students
                     {
-                        Id = e.Id,
-                        ActivityId = e.ActivityId,
-                        CustomerId = e.CustomerId,
-                        Name = e.Name,
-                        NumberOfSessions = e.NumberOfSessions,
-                        Remarks = e.Remarks,
-                        ScheduleId = e.ScheduleId,
-                        SessionsAttended = e.SessionsAttended,
-                        Status = e.Status,
-                        StudentNo = e.StudentNo,
+                        Id                  = e.Id,
+                        ActivityId          = e.ActivityId,
+                        CustomerId          = e.CustomerId,
+                        Name                = e.Name,
+                        NumberOfSessions    = e.NumberOfSessions,
+                        Remarks             = e.Remarks,
+                        ScheduleId          = e.ScheduleId,
+                        SessionsAttended    = e.SessionsAttended,
+                        Status              = e.Status,
+                        StudentNo           = e.StudentNo,
                         ExpirationStartDate = e.ExpirationStartDate,
-                        ExpirationEndDate = e.ExpirationEndDate,
-                        HasReview = e.HasReview
+                        ExpirationEndDate   = e.ExpirationEndDate,
+                        HasReview           = e.HasReview,
+                        studentAttendanceDTO = new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
+                        {
+                            StudentId = e.studentAttendance.Id,
+                            Date      = e.studentAttendance.Date,
+                            IsPresent = e.studentAttendance.IsPresent,
+                        },
+                        activityScheduleDTO = new Framework.ApiCommand.ApiCore.DTO.Schedule.ActivityScheduleDTO
+                        {
+                            ScheduleId    = e.activitySchedule.Id,
+                            HasExpiration = e.activitySchedule.HasExpiration,
+                            IsSetSession  = e.activitySchedule.IsSetSession
+                        }
                     };
                 })
             }, "Successfully get student attendance");
