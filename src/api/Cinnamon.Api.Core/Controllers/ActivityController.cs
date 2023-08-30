@@ -1321,9 +1321,7 @@ public class ActivityController : ControllerBase
         {
             var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
-                Image1 = args.Image1,
-                Image2 = args.Image2,
-                Image3 = args.Image3
+                Images = args.Images
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -1331,11 +1329,7 @@ public class ActivityController : ControllerBase
                 return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
             }
 
-            return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
-                Image1 = result.Result.Image1Path,
-                Image2 = result.Result.Image2Path,
-                Image3 = result.Result.Image3Path
-            }});
+            return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = true});
         }
         catch (Exception ex)
         {

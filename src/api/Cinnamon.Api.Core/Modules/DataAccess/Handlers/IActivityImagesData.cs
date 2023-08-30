@@ -12,4 +12,5 @@ public interface IActivityImagesData
     Task<AppResult<UpdateActivityImageResult>> UpdateActivityImage(UpdateActivityImageArgs args);
     Task<AppResult<CreateManyActivityImageResult>> CreateManyActivityImage(CreateManyActivityImageArgs args);
     Task<AppResult<UpdateManyActivityImageResult>> UpdateManyActivityImage(UpdateManyActivityImageArgs args);
+    Task<AppResult<RemoveActivityImagesResult>> RemoveActivityImages(RemoveActivityImageArgs args);
 }
