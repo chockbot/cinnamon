@@ -369,18 +369,18 @@ public class StudentRepository: IStudentRepository
 		}
 	}
 
-    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive, bool isExpired = false)
-    {
-        try
-        {
-            var result = isExpired ? await dataStore.Student.GetAllExpiredStudentsToDisburse() : 
-                ( 
-                    isInclusive ? await dataStore.Student.GetAllInclusiveStudentsToDisburse() : await dataStore.Student.GetAllStudentsToDisburse()
-                );
-            if(!result.Succeeded || result.Result == null)
-            {
-                return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
-            }
+	public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive, bool isExpired = false)
+	{
+		try
+		{
+			var result = isExpired ? await dataStore.Student.GetAllExpiredStudentsToDisburse() : 
+				( 
+					isInclusive ? await dataStore.Student.GetAllInclusiveStudentsToDisburse() : await dataStore.Student.GetAllStudentsToDisburse()
+				);
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
 
 			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
 		}
@@ -511,20 +511,20 @@ public class StudentRepository: IStudentRepository
 	}
 
 	public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
-    {
-        try
-        {
-            var result = await dataStore.Student.ExpiringStudents();
-            if(!result.Succeeded || result.Result == null)
-            {
-                return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
-            }
+	{
+		try
+		{
+			var result = await dataStore.Student.ExpiringStudents();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
 
-            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when getting students to disburse");
-        }
-    }
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when getting students to disburse");
+		}
+	}
 }
