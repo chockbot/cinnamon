@@ -482,7 +482,7 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
-            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+            //await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
         await Task.Run(() => module.InvokeVoidAsync("confirmation"));
     }

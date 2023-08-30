@@ -1,12 +1,23 @@
 @namespace Cinnamon.Web.Components
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 
 <div class="image-cropper-wrapper">
     <Modal @ref="modalRef" Closing="OnModalClosing">
         <ModalContent>
-            <ModalHeader>@Title</ModalHeader>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">@modalTitle</p>
+                <button type="button" style="top: 13px; right: 20px;" class="btn-close position-absolute" @onclick="CloseModal" />
+            </ModalHeader>
             <ModalBody>
-                <img id="img-cropper-src" src="" alt="image-to-crop">
-                <button @onclick="BtnClick">Submit Close</button>
+                <div class="text-center">
+                    <img class="mx-auto d-flex" style="max-width: 100%;" id="img-cropper-src" src="" alt="image-to-crop">
+                </div>
+                <div class="text-center mt-3">
+                    <Button class="bg-orange-100 color-white-100 font-16 hover-color-white" Clicked="ExecuteCropImage">
+                        Crop Image
+                    </Button>
+                </div>
             </ModalBody>
         </ModalContent>
     </Modal>
@@ -25,37 +36,47 @@
     * FileInputSelector file index
     **/
 
-    [Parameter]
-    public string? OuputInputSelector {get; set;}
-
-    [Parameter]
-    public string? Title {get; set;}
-
-    [Parameter]
-    public string? ImageSrcSelector {get; set;}
-
-    [Parameter]
-    public string? FileInputSelector {get; set;}
-
-    [Parameter]
-    public int? FileInputIndex {get; set;}
-
-    [Parameter]
-    public string? ImageSource {get; set;}
-
     private Modal? modalRef;
-
+    private string modalTitle = "Crop Image";
     private bool isCompleted = false;
+    private IJSObjectReference? cropperInstance;
+    private ImageCropperResult cropperResult = new();
 
-    public async Task CropImage()
+    public async Task<ImageCropperResult> CropImage(ImageCropperOptions opts)
     {
         isCompleted = false;
+        ResetCropperResult();
+        modalTitle = opts.Title;
+
         if(modalRef is not null)
         {
+            if(cropperInstance is not null)
+            {
+                var obj = new {
+                    imgSrouce = opts.ImageSource,
+                    previewSelector = "#img-cropper-src",
+                    imgSrcSelector = opts.ImageSrcSelector,
+                    fileSrcSelector = opts.FileSrcSelector,
+                    fileIndex = opts.FileInputIndex,
+                    ouputSelector = opts.OuputSelector
+                };
+                var result = await cropperInstance.InvokeAsync<CropperResult>("init", obj);
+                if(!result.Success) 
+                {
+                    return cropperResult;
+                }
+            }
             await modalRef.Show();
             await LoopAsync();
             await modalRef.Close(CloseReason.UserClosing);
         }
+        return cropperResult;
+    }
+
+    private void ResetCropperResult()
+    {
+        cropperResult.Cropped = false;
+        cropperResult.FileSize = 0;
     }
 
     private Task LoopAsync()
@@ -68,7 +89,18 @@
         });
     }
 
-    private Task BtnClick()
+    private async Task ExecuteCropImage()
+    {
+        if(cropperInstance is not null)
+        {
+            var result = await cropperInstance.InvokeAsync<CropperResult>("cropImage");
+            cropperResult.Cropped = result.Success;
+            cropperResult.FileSize = result.FileSize ?? 0;
+        }
+        isCompleted = true;
+    }
+
+    private Task CloseModal()
     {
         isCompleted = true;
         return Task.CompletedTask;
@@ -78,5 +110,49 @@
     {
         e.Cancel = !isCompleted;
         return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            cropperInstance = await JS.InvokeAsync<IJSObjectReference>("MyLib.Components.modal.imageCropper.createInstance");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if(cropperInstance is not null)
+            {
+                await cropperInstance.DisposeAsync();
+            }
+        }
+        catch(Exception){}
+    }
+
+    public class ImageCropperOptions 
+    {
+        public string Title {get; set;} = string.Empty;
+        public string ImageSource {get; set;} = string.Empty;
+        public string ImageSrcSelector {get; set;} = string.Empty;
+        public string FileSrcSelector {get; set;} = string.Empty;
+        public int? FileInputIndex {get; set;}
+        public string OuputSelector {get; set;} = string.Empty;
+    }
+
+    private class CropperResult 
+    {
+        public bool Success {get; set;}
+        public string? Message {get; set;}
+        public decimal? FileSize {get; set;}
+    }
+
+    public class ImageCropperResult 
+    {
+        public bool Cropped {get; set;} = false;
+        public decimal FileSize {get; set;} = 0;
     }
 }
