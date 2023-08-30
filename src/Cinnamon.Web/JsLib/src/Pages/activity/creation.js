@@ -223,6 +223,27 @@ export async function previewImage(imgSelector, inputSelector) {
   imgElem.src = urlSrc;
 }
 
+export async function uploadListImages(selectors, activityId) {
+  const formData = new FormData();
+  for (const selector of selectors) {
+    const file = dataUrlToFile($(selector).val(), "image");
+    if (file) {
+      formData.append("Images", file);
+    }
+  }
+  formData.append("ActivityId", activityId);
+
+  try {
+    const result = await axios.postForm(
+      "api/activity/UploadActivityImage",
+      formData
+    );
+    return { success: result.data.success, message: result.data.message };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
 export default {
   initCreation,
   initCreationInProgress,
@@ -231,4 +252,5 @@ export default {
   removeImageItems,
   removeImageTemplate,
   showImageTemplate,
+  uploadListImages,
 };

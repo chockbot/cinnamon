@@ -4,16 +4,16 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 
-@if(!string.IsNullOrEmpty(errorMessage))
-{
-    <div id="error-message-container" class="mb-4">
-        <ul id="error-list" class="fw-bold">
-            @((MarkupString)errorMessage)
-        </ul>
-    </div>
-}
+<div class="gallery-section col-12">
+    @if(!string.IsNullOrEmpty(errorMessage))
+    {
+        <div id="error-message-container" class="mb-4 invalid">
+            <ul id="error-list" class="fw-bold">
+                @((MarkupString)errorMessage)
+            </ul>
+        </div>
+    }
 
-<div class="gallery-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="row">
         <div class="form-group">
             <table class="field-heading-section">
@@ -119,21 +119,24 @@
 
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
-        var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
-            FileInputIndex = 0,
-            FileSrcSelector = "#cover-photo-upload",
-            Title = "Crop selected image",
-            OuputSelector = $"#{coverPhotoItem.InputDataId}"
-        });
-        if(cropperResult.Cropped)
+        if(imageCropper is not null)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{coverPhotoItem.ImageSrcId}", $"#{coverPhotoItem.InputDataId}");
-            coverPhotoItem.FileSize = cropperResult.FileSize;
-            coverPhotoItem.Display = true;
-        }
-        else 
-        {
-            coverPhotoItem.Display = false;
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                FileInputIndex = 0,
+                FileSrcSelector = "#cover-photo-upload",
+                Title = "Crop selected image",
+                OuputSelector = $"#{coverPhotoItem.InputDataId}"
+            });
+            if(cropperResult.Cropped)
+            {
+                await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{coverPhotoItem.ImageSrcId}", $"#{coverPhotoItem.InputDataId}");
+                coverPhotoItem.FileSize = cropperResult.FileSize;
+                coverPhotoItem.Display = true;
+            }
+            else 
+            {
+                coverPhotoItem.Display = false;
+            }
         }
     }
 
@@ -172,6 +175,15 @@
             }
             StateHasChanged();
         }
+    }
+
+    public async Task<bool> UploadImages(int createdActivityId)
+    {
+        var selectors = new List<string>();
+        selectors.Add($"#{coverPhotoItem.InputDataId}");
+        selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
+        var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId);
+        return result.Success ?? false;
     }
 
     public bool IsAllFieldsValidated()
@@ -215,5 +227,11 @@
         public decimal FileSize {get; set;} = 0;
         public bool Display {get; set;} = false;
         public int Order {get; set;} = 0;
+    }
+
+    private class UploadResult 
+    {
+        public string? Message {get; set;}
+        public bool? Success {get; set;}
     }
 }

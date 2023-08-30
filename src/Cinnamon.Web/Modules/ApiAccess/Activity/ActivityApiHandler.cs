@@ -262,17 +262,12 @@ public class ActivityApiHandler : IActivityApiHandler
                 .WithOAuthBearerToken(token)
                 .Request($"Activity/UploadActivityImage")
                 .PostMultipartAsync(mp => {
-                    if(args.Image1 != null)
+                    foreach(var image in args.Images)
                     {
-                        mp.AddFile("Image1", args.Image1.OpenReadStream(), args.Image1.FileName, args.Image1.ContentType);
-                    }
-                    if(args.Image2 != null)
-                    {
-                        mp.AddFile("Image2", args.Image2.OpenReadStream(), args.Image2.FileName, args.Image2.ContentType);
-                    }
-                    if(args.Image3 != null)
-                    {
-                        mp.AddFile("Image3", args.Image3.OpenReadStream(), args.Image3.FileName, args.Image3.ContentType);
+                        if(image is not null)
+                        {
+                            mp.AddFile("Images", image.OpenReadStream(), image.FileName, image.ContentType);
+                        }
                     }
                     mp.AddString("ActivityId", args.ActivityId.ToString());
                 })

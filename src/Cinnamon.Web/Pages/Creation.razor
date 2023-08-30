@@ -644,7 +644,7 @@
             }
 
             // upload image without checking if there is an error so that can't re update another activity
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreation", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
 
             navigationManager.NavigateTo("/maker/dashboard");
