@@ -11,138 +11,179 @@
 @inject IAccountApiHandler accountApiHandler
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+@inject IJSRuntime jsRuntime
 
-@foreach (var item in students)
+@if (isLoading == true)
 {
-    var schedule = Activity.ActivitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
-    <div class="experience-box">
-        <div class="top-content">
-            <div class="experience-content">
-                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                    <label class="xp-title">@Activity.Title</label>
-                </a>
+    for(int x=0; x < 5; x++)
+    {
+        <div class="experience-box skeleton">
+            <div class="top-content">
+                <div class="experience-content">
+                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                        <label class="xp-title skeleton">Activity Title</label>
+                    </a>
 
-                <div class="xp-body-item">
-                    <p class="secondary-caption">@item.Name</p>
-                </div>
+                    <div class="xp-body-item skeleton">
+                        <p class="secondary-caption">Activity Name</p>
+                    </div>
 
-                <div class="xp-body-item">
-                    <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
+                    <div class="xp-body-item skeleton">
+                        <p class="secondary-caption">0/1</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="xp-body-item skeleton">
+                        <p class="secondary-caption">
+                            Expires on - January 01, 2001
+                        </p>
                     </div>
                 </div>
-                @if (ActivityItemType == ItemType.Ongoing)
-                {
-                    if (schedule != null && schedule.IsSetSession)
-                    {
-                        if (item.ExpirationDateEnd.Year == 0001)
-                        {
-                            <div class="xp-body-item">
-                                <p class="secondary-caption">
-                                </p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="xp-body-item">
-                                <p class="secondary-caption">
-                                   
-                                    Expires on - @item.ExpirationDateEnd.AddDays(-1).ToString("MMMM dd, yyyy")
-                                </p>
-                            </div>
-                        }
-                    }
-                }
-                else
-                {
-                    
-                    var result = attendanceList.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                    && s.ActivityId == item.ActivityId).LastOrDefault();
+                <div class="experience-header skeleton">
+                    <a class="button" style="text-decoration:none;">
+                        <img class="image-header" />
+                    </a>
+                </div>
+            </div>
+            <div class="view-button skeleton">
+                <Button Color="Color.Primary" Border="Border.Is0" style="width:100%">
+                    View Attendance
+                </Button>
+            </div>
+        </div>
+    }
+}  
+else
+{
+    @foreach (var item in students)
+    {
+        <div class="experience-box">
+            <div class="top-content">
+                <div class="experience-content">
+                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                        <label class="xp-title">@Activity.Title</label>
+                    </a>
 
-                    if (result != null && schedule != null)
+                    <div class="xp-body-item">
+                        <p class="secondary-caption">@item.Name</p>
+                    </div>
+
+                    <div class="xp-body-item">
+                        <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
+                        </div>
+                    </div>
+                    @if (ActivityItemType == ItemType.Ongoing)
                     {
-                        switch (schedule.HasExpiration)
+                        if (item.activitySchedule != null && item.activitySchedule.IsSetSession)
                         {
-                            case 0:
+                            if (item.ExpirationDateEnd.Year == 0001)
+                            {
                                 <div class="xp-body-item">
                                     <p class="secondary-caption">
-                                        Completed: @result.Date.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
-                            break;
-                            case 1:
-                            case 2:
+                            }
+                            else
+                            {
                                 <div class="xp-body-item">
-                                    @if(item.SessionsAttended >= item.NumberOfSessions)
-                                    {
-                                        <p class="secondary-caption">
-                                         Completed: @result.Date.ToString("MMMM dd, yyyy")
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p class="secondary-caption">
-                                            Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                                        </p>
-                                    }
+                                    <p class="secondary-caption">
+
+                                        Expires on - @item.ExpirationDateEnd.AddDays(-1).ToString("MMMM dd, yyyy")
+                                    </p>
                                 </div>
-                            break;
-                            default:
-                                break;
+                            }
                         }
                     }
                     else
                     {
-                        <div class="xp-body-item">
-                            @if (item.SessionsAttended >= item.NumberOfSessions)
+                        if (item.activitySchedule != null)
+                        {
+                            switch (item.activitySchedule.HasExpiration)
                             {
-                                <p class="secondary-caption">
-                                    Completed: @result.Date.ToString("MMMM dd, yyyy")
-                                </p>
+                                case 0:
+                                    <div class="xp-body-item">
+                                        <p class="secondary-caption">
+                                            Completed: @item.studentAttendance.Date.ToString("MMMM dd, yyyy")
+                                        </p>
+                                    </div>
+                                    break;
+                                case 1:
+                                case 2:
+                                    <div class="xp-body-item">
+                                        @if (item.SessionsAttended >= item.NumberOfSessions)
+                                        {
+                                            <p class="secondary-caption">
+                                                Completed: @item.studentAttendance.Date.ToString("MMMM dd, yyyy")
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="secondary-caption">
+                                                Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                            </p>
+                                        }
+                                    </div>
+                                    break;
+                                default:
+                                    break;
                             }
-                            else
-                            {
-                                <p class="secondary-caption">
-                                    Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                                </p>
-                            }
-                        </div>
+                        }
+                        else
+                        {
+                            <div class="xp-body-item">
+                                @if (item.SessionsAttended >= item.NumberOfSessions)
+                                {
+                                    <p class="secondary-caption">
+                                        Completed: @item.studentAttendance.Date.ToString("MMMM dd, yyyy")
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="secondary-caption">
+                                        Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    </p>
+                                }
+                            </div>
+                        }
                     }
-                }
+                </div>
+                <div class="experience-header">
+                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                        <img class="image-header" src="@GetImage()" />
+                    </a>
+                </div>
             </div>
-            <div class="experience-header">
-                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                    <img class="image-header" src="@GetImage()" />
-                </a>
-            </div>
+            @if (ActivityItemType == ItemType.Ongoing)
+            {
+                <div class="view-button">
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
+                        View Attendance
+                    </Button>
+                </div>
+            }
+            else if (ActivityItemType == ItemType.Completed && item.HasReview == true)
+            {
+                <div class="view-button">
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
+                        View Attendance
+                    </Button>
+                </div>
+            }
+            else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
+            {
+                <div class="view-button">
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                        Write a Review
+                    </Button>
+                </div>
+            }
         </div>
-        @if (ActivityItemType == ItemType.Ongoing)
-        {
-            <div class="view-button">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
-                    View Attendance
-                </Button>
-            </div>
-        }
-        else if (ActivityItemType == ItemType.Completed && item.HasReview == true)
-        {
-            <div class="view-button">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
-                    View Attendance
-                </Button>
-            </div>
-        }
-        else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
-        {
-            <div class="view-button">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
-                    Write a Review
-                </Button>
-            </div>
-        }
-    </div>
+    }
 }
+
 
     @*Student Calendar*@
     <Modal ShowBackdrop=true ScrollToTop=false @ref="modalRef">
@@ -269,28 +310,31 @@
 
     [Parameter]
     public CustomerProfile Profile { get; set; }
-
-    public List<Students> students = new List<Students>();
-    public List<ActivitySchedule> Schedules = new List<ActivitySchedule>();
-    public Activity activity = new Activity();
+    public List<Students> students                     = new List<Students>();
+    public List<ActivitySchedule> Schedules            = new List<ActivitySchedule>();
+    public Activity activity                           = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private List<StudentAttendance> attendanceList = new List<StudentAttendance>();
-    private StudentAttendance studentAttendance = new StudentAttendance();
-    public string monthName = "";
-    public DateTime monthEnd;
-    public int monthsAway = 0;
-    public int numDummyColumn = 0;
-    public int year = 2023;
-    public int month = 0;
+    private List<StudentAttendance> attendanceList     = new List<StudentAttendance>();
+    private StudentAttendance studentAttendance        = new StudentAttendance();
+    public string monthName                            = "";
+    public int monthsAway                              = 0;
+    public int numDummyColumn                          = 0;
+    public int year                                    = 2023;
+    public int month                                   = 0;
+    public int SelectedValue                           = 0;
+    public string selectedName                         = string.Empty;
+    public bool disableButtonRight { get; set; }       = false;
+    public bool disableButtonLeft { get; set; }        = false;
+    private int pageIndex                              = 1;
+    private int itemsPerPage                           = 8;
+    private bool isLoading                             = true;
+    IJSObjectReference module;
     public DateTime passDates;
+    public DateTime monthEnd;
     public string Token;
-    public bool disableButtonRight { get; set; } = false;
-    public bool disableButtonLeft { get; set; } = false;
     public Modal modalRef;
     public Modal modref;
-    public string selectedName = string.Empty;
     public string ReviewText { get; set; } = string.Empty;
-    public int SelectedValue = 0;
     public bool IsShowErrorMessage { get; set; }
     public string ErrorMessage { get; set; }
 
@@ -308,13 +352,14 @@
     }
     private string GetImage()
     {
-        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
-        return string.Empty;
+    if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+    return string.Empty;
     }
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        await Task.Delay(500);
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
         var token = user.FindFirstValue("Token");
         Token = token;
         if (token == null)
@@ -323,66 +368,48 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+
         // Get All Ongoing Activities of the Customer
         var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
-                    {
-                        CustomerId = Profile.Id
-                    }, Token);
+        {
+            CustomerId = Profile.Id,
+        }, Token);
         if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
         {
             students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
             {
                 return new Students
-                            {
-                                ActivityId = a.ActivityId,
-                                CustomerId = a.CustomerId,
-                                Id = a.Id,
-                                Name = a.Name,
-                                NumberOfSessions = a.NumberOfSessions,
-                                Remarks = a.Remarks,
-                                ScheduleId = a.ScheduleId,
-                                SessionsAttended = a.SessionsAttended,
-                                Status = a.Status,
-                                StudentNo = a.StudentNo,
-                                ExpirationDateStart = a.ExpirationStartDate,
-                                ExpirationDateEnd = a.ExpirationEndDate,
-                                HasReview = a.HasReview,
-                            };
-            }).ToList();
-        }
-        // Get All Students Attendance
-        foreach(var item in students)
-        {
-            var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
-                {
-                    Id = item.Id,
-                    ActivityId = item.ActivityId,
-                    ScheduleId = item.ScheduleId,
-                }, token);
-
-            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            {
-                var result = attendance.Result.Result;
-                studentAttendance = new StudentAttendance
                     {
-                        Id              = result.Id,
-                        Date            = result.Date,
-                        IsPresent       = result.IsPresent,
-                        StudentId       = result.StudentId,
-                        ScheduleId      = result.ScheduleId,
-                        ActivityId      = result.ActivityId,
+                        ActivityId          = a.ActivityId,
+                        CustomerId          = a.CustomerId,
+                        Id                  = a.Id,
+                        Name                = a.Name,
+                        NumberOfSessions    = a.NumberOfSessions,
+                        Remarks             = a.Remarks,
+                        ScheduleId          = a.ScheduleId,
+                        SessionsAttended    = a.SessionsAttended,
+                        Status              = a.Status,
+                        StudentNo           = a.StudentNo,
+                        ExpirationDateStart = a.ExpirationStartDate,
+                        ExpirationDateEnd   = a.ExpirationEndDate,
+                        HasReview           = a.HasReview,
+                        studentAttendance = new StudentAttendance
+                        {
+                            IsPresent = a.studentAttendanceDTO.IsPresent,
+                            Date      = a.studentAttendanceDTO.Date,
+                            StudentId = a.studentAttendanceDTO.StudentId
+                        },
+                        activitySchedule = new ActivitySchedule
+                        {
+                            Id            = a.activityScheduleDTO.ScheduleId,
+                            HasExpiration = a.activityScheduleDTO.HasExpiration,
+                            IsSetSession  = a.activityScheduleDTO.IsSetSession
+                        }
                     };
-                attendanceList.Add(studentAttendance);
+                }).ToList();
             }
-        }
 
         students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
-        // Get Student Activity Schedules
-        foreach(var item in students)
-        {
-            var items = Activity.ActivitySchedules.Where(a => a.Id == item.ScheduleId).ToList();
-            Schedules.AddRange(items);
-        }
 
         if(ActivityItemType == ItemType.Ongoing)
         {
@@ -390,21 +417,22 @@
         }
         else
         {
-            students = students.Where(a => (a.SessionsAttended >= a.NumberOfSessions && Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 0) 
-            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions) 
-            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+            students = students.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.activitySchedule.HasExpiration == 0) 
+        || (a.activitySchedule.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+        || (a.activitySchedule.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+        || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+        || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
             && a.ExpirationDateEnd != DateTime.MinValue).ToList();
         }
         await CreateMonth();
+        isLoading = false;
+        StateHasChanged();
     }
 
     public double GetPercentage(double session, double total)
     {
         return Math.Round(session / total * 100);
     }
-
     public async Task CreateMonth()
     {
         if (monthsAway <= 2 && monthsAway >= -2)
