@@ -155,10 +155,7 @@ public class CreateActivityArgs
         public string SchedulingUrl { get; set; }
         public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
-
-    public IFormFile? Image1 { get; set; }
-    public IFormFile? Image2 { get; set; }
-    public IFormFile? Image3 { get; set; }
+    
     public class ActivityScheduleTime
     {
         public int ActivityScheduleId { get; set; }

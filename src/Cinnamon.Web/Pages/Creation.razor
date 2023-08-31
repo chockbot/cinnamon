@@ -1,4 +1,4 @@
-﻿@layout CreationLayout
+@layout CreationLayout
 @page "/Creation"
 @page "/Creation/{creationType}"
 @using Cinnamon.Web.Components
@@ -488,7 +488,8 @@
 
         bool isSuccess = Enum.TryParse(CreationType, out ExperienceCreationType) && Enum.IsDefined(typeof(Framework.Enums.Enums.ExperienceCreationType), ExperienceCreationType);
 
-        if (!isSuccess)        {
+        if (!isSuccess)
+        {
             navigationManager.NavigateTo("explore");
             return;
         }
@@ -543,7 +544,7 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
-            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+            //await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
         await Task.Run(() => module.InvokeVoidAsync("confirmation"));
     }
@@ -749,7 +750,7 @@
             }
 
             // upload image without checking if there is an error so that can't re update another activity
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreation", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
 
             navigationManager.NavigateTo("/maker/dashboard");
