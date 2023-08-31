@@ -74,11 +74,11 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                 listImagesToUpload.Add(new AzureUploadArgs.Image {File = uploadedImage, ImageName = imageName});
             }
 
-            // minimum of 5 images and maximum of 7 images including cover
-            if(listImagesToUpload.Count > 7 || listImagesToUpload.Count < 5)
+            // minimum of 3 images and maximum of 7 images including cover
+            if(listImagesToUpload.Count > 7 || listImagesToUpload.Count < 3)
             {
                 return AppResult<UploadActivityImageResult>.CreateFailed(
-                    new ApplicationException("Minimum of 5 images and maximum of 7 images."), "Minimum of 5 images and maximum of 7 images.");
+                    new ApplicationException("Minimum of 3 images and maximum of 7 images."), "Minimum of 3 images and maximum of 7 images.");
             }
 
             // delete activity images
