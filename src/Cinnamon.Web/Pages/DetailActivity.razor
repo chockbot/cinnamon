@@ -1,4 +1,4 @@
-﻿﻿@*Created By: R. Namoro
+﻿@*Created By: R. Namoro
   Last Update: 07/28/2023*@
 
 @page "/Explore/{Identifier}"
@@ -131,10 +131,11 @@
                     @*Activity Images*@
                     <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
                         <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
-                            <div class="detail-md">
-                                <div class="gallery">
-                                    @if (activity.Images.Count > 0)
-                                    {
+                            
+                            @if (activity.Images.Count < 5)
+                            {
+                                <div class="detail-md">
+                                    <div class="gallery">
                                         <figure class="gallery__item gallery__item--1">
                                             <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(0).ImageSrc" />
                                         </figure>
@@ -144,9 +145,39 @@
                                         <figure class="gallery__item gallery__item--3">
                                             <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(2).ImageSrc" />
                                         </figure>
-                                    }
+                                    </div>
                                 </div>
-                            </div>
+                            }
+                            else 
+                            {
+                                <div class="grid-gallery">
+                                    <div class="grid-gallery-item grid-gallery-item-1">
+                                        <figure>
+                                            <img src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
+                                        </figure>
+                                    </div>
+                                    <div class="grid-gallery-item grid-gallery-item-2">
+                                        <figure>
+                                            <img src="@activity.Images.ElementAt(1).ImageSrc" alt="supporting-photo">
+                                        </figure>
+                                    </div>
+                                    <div class="grid-gallery-item grid-gallery-item-3">
+                                        <figure>
+                                            <img src="@activity.Images.ElementAt(2).ImageSrc" alt="supporting-photo">
+                                        </figure>
+                                    </div>
+                                    <div class="grid-gallery-item grid-gallery-item-4">
+                                        <figure>
+                                            <img src="@activity.Images.ElementAt(3).ImageSrc" alt="supporting-photo">
+                                        </figure>
+                                    </div>
+                                    <div class="grid-gallery-item grid-gallery-item-5">
+                                        <figure>
+                                            <img src="@activity.Images.ElementAt(4).ImageSrc" alt="supporting-photo">
+                                        </figure>
+                                    </div>
+                                </div>
+                            }
                             <div class="swiper swiper-details-mobile-images detail-sm">
                                 <div class="swiper-wrapper">
                                     @if(activity.Images.Count > 0)
