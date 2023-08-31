@@ -60,7 +60,7 @@
                 <div class="text-start font-16 mb-4 d-flex align-items-center">
                     <span class="field-number d-inline-block me-2 flex-shrink-0">7</span>
                     <p class="color-grey-100 mb-0">
-                        Supporting Phptos (Mimimum of 4 Photos. Maximum of 6 Photos)
+                        Supporting Phptos (Mimimum of 2 Photos. Maximum of 6 Photos)
                     </p>
                 </div>
                 <label for="photo-upload" style="cursor: pointer;">
@@ -125,7 +125,9 @@
                 FileInputIndex = 0,
                 FileSrcSelector = "#cover-photo-upload",
                 Title = "Crop selected image",
-                OuputSelector = $"#{coverPhotoItem.InputDataId}"
+                OuputSelector = $"#{coverPhotoItem.InputDataId}",
+                HeightRatio = 5,
+                WidthRatio = 4
             });
             if(cropperResult.Cropped)
             {
@@ -160,7 +162,9 @@
                     FileInputIndex = i,
                     FileSrcSelector = "#photo-upload",
                     Title = "Crop selected image",
-                    OuputSelector = $"#{imageItem.InputDataId}"
+                    OuputSelector = $"#{imageItem.InputDataId}",
+                    HeightRatio = 5,
+                    WidthRatio = 4
                 });
                 if(cropperResult.Cropped)
                 {
@@ -194,10 +198,10 @@
 
         var message = string.Empty;
         var isAllFieldsValid = true;
-        if(supportedPhotosCount < 4 )
+        if(supportedPhotosCount < 2 )
         {
             isAllFieldsValid = false;
-            message += "<li>Minimum of 4 supported photos</li>";
+            message += "<li>Minimum of 2 supported photos</li>";
         }
         if(supportedPhotosCount > 6)
         {

@@ -49,7 +49,7 @@ class ImageCropper {
         }
         this.cropper = new Cropper(el, {
           viewMode: 1,
-          aspectRatio: 4 / 5,
+          aspectRatio: this.widthRatio / this.heightRatio,
           minContainerWidth: 350,
           minContainerHeight: 400,
           minCropBoxWidth: 271,
@@ -71,6 +71,8 @@ class ImageCropper {
       this.imgSrc = opts.imgSrouce;
       this.imgSrcSelector = opts.imgSrcSelector;
       this.outputInputSelector = opts.ouputSelector;
+      this.widthRatio = opts.widthRatio;
+      this.heightRatio = opts.heightRatio;
 
       await this._initImage();
       await this._initCropper();

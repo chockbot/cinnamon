@@ -150,7 +150,7 @@
                             }
                             else 
                             {
-                                <div class="grid-gallery">
+                                <div class="grid-gallery detail-md shadow">
                                     <div class="grid-gallery-item grid-gallery-item-1">
                                         <figure>
                                             <img src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
@@ -182,15 +182,12 @@
                                 <div class="swiper-wrapper">
                                     @if(activity.Images.Count > 0)
                                     {
-                                        <div class="swiper-slide">
-                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(0).ImageSrc" />
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(1).ImageSrc" />
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(2).ImageSrc" />
-                                        </div>
+                                        @foreach(var image in activity.Images)
+                                        {
+                                            <div class="swiper-slide">
+                                                <img class="img-fluid shadsow rounded" src="@image.ImageSrc" />
+                                            </div>
+                                        }
                                     }
                                 </div>
                                 <div class="swiper-pagination"></div>

@@ -58,7 +58,9 @@
                     imgSrcSelector = opts.ImageSrcSelector,
                     fileSrcSelector = opts.FileSrcSelector,
                     fileIndex = opts.FileInputIndex,
-                    ouputSelector = opts.OuputSelector
+                    ouputSelector = opts.OuputSelector,
+                    heightRatio = opts.HeightRatio,
+                    widthRatio = opts.WidthRatio
                 };
                 var result = await cropperInstance.InvokeAsync<CropperResult>("init", obj);
                 if(!result.Success) 
@@ -141,6 +143,8 @@
         public string FileSrcSelector {get; set;} = string.Empty;
         public int? FileInputIndex {get; set;}
         public string OuputSelector {get; set;} = string.Empty;
+        public int WidthRatio {get; set;} = 1;
+        public int HeightRatio {get; set;}
     }
 
     private class CropperResult 
