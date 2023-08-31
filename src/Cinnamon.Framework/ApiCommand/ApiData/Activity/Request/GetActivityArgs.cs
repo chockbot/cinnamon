@@ -10,4 +10,5 @@ public class GetActivityArgs
     public bool? IncludeSchedules {get; set;}
     public bool? IncludeImages {get; set;}
     public bool? IncludeCustomer {get; set;}
+    public bool? IncludeStudents { get; set; }
 }

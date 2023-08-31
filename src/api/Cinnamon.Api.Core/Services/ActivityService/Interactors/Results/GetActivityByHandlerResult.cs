@@ -43,7 +43,8 @@ public class GetActivityByHandlerResult
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public CustomerOwner? Owner {get; set;}
-        
+    public int CompletedStudents { get; set; }
+    public int OngoingStudents { get; set; }
 
     public class ActivitySchedule 
     {

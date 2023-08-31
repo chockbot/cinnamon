@@ -61,20 +61,20 @@
                         @*Ongoing Enrolees*@
                         <div class="d-flex">
                             <label class="col-lg-6 justify-content-lg-start col-md-8 justify-content-md-start mb-3 ongoing-students">
-                                @if (OngoingStudents != 0)
+                                @if (activity.OngoingStudents != 0)
                                 {
                                     <label class="active-badge">
                                         <span class="pulse"></span>
                                         <span class="active-text">Ongoing Enrollees</span>
-                                        <span class="active-tag-label">@OngoingStudents</span>
+                                        <span class="active-tag-label">@activity.OngoingStudents</span>
                                     </label>
                                 }
-                                @if (CompletedStudents != 0)
+                                @if (activity.CompletedStudents != 0)
                                 {
                                     <label class="active-badge">
                                         <span class="pulse-complete"></span>
                                         <span class="active-text">Completed Enrollees</span>
-                                        <span class="active-tag-label-complete">@CompletedStudents</span>
+                                        <span class="active-tag-label-complete">@activity.CompletedStudents</span>
                                     </label>
                                 }
                             </label>
@@ -885,7 +885,8 @@
                     IncludeActivityDescription = true,
                     IncludeActivityImages = true,
                     IncludeAtivitySchedules = true,
-                    IncludeCustomer = true
+                    IncludeCustomer = true,
+                    IncludeStudents = true
                 }) :
                 await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                     {
@@ -893,7 +894,8 @@
                         IncludeActivityDescription = true,
                         IncludeActivityImages = true,
                         IncludeAtivitySchedules = true,
-                        IncludeCustomer = true
+                        IncludeCustomer = true,
+                        IncludeStudents = true
                     });
 
             if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -967,7 +969,9 @@
                             // map only required fields
                             Id = result.Owner.Id,
                             Handler = result.Owner.Handler
-                        } : null
+                        } : null,
+                        CompletedStudents = result.CompletedStudents,
+                        OngoingStudents = result.OngoingStudents
                     };
                 MakerActivity.Add(activity);
 
@@ -1019,26 +1023,6 @@
                     Customer = customerDetail
                 };
 
-            //Get Ongoing and Completed Students
-            var students = await ongoingApiHandler.GetEnrolledStudents(ActivityListData.Result.Result.ActivityId);
-            if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
-            {
-                enrolledStudents = students.Result.Result.Select(i =>
-                {
-                    return new Students
-                        {
-                            ActivityId = i.ActivityId,
-                            Id = i.Id,
-                            Name = i.Name,
-                            NumberOfSessions = i.NumberOfSessions,
-                            SessionsAttended = i.SessionsAttended,
-                            ScheduleId = i.ScheduleId
-                        };
-                }).ToList();
-            }
-            CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
-            OngoingStudents = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
-
             //Get Badges
             var badgeList = await dashboardApiHandler.GetAllBadge();
             if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
@@ -1057,31 +1041,6 @@
                         };
                 }).ToList();
             }
-
-            //Get Maker Activity
-            var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
-                {
-                    CustomerId = activity.CreatedBy,
-                    IncludeStudents = true,
-                    IsActive = true,
-                });
-            if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
-            {
-                if (ActivityList.Result.Result.Count() > 0)
-                {
-                    activities = ActivityList.Result.Result.Select(r =>
-                    {
-                        return new Activity
-                            {
-                                Id = r.ActivityId,
-                                OngoingStudents = r.OngoingStudents,
-                                CompletedStudents = r.CompletedStudents,
-                            };
-                    }).ToList();
-                }
-            }
-            MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
-            MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
 
             //Get Reviews of the Activity
             var reviewsResult = await ongoingApiHandler.GetReviewsByActivityId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByActivityIdArgs
