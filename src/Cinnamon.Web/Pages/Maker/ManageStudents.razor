@@ -115,7 +115,7 @@
                                             }
                                             else
                                             {
-                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
+                                                if ((item.ExpirationDateEnd <= DateTime.Now.Date && schedule.HasExpiration == 1) || (item.ExpirationDateEnd <= DateTime.Now.Date && schedule.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
                                                 {
                                                     <p>@item.ExpirationDateEnd.ToString("MMMM dd, yyyy") <span class="expired-session">Expired</span></p>
                                                 }
