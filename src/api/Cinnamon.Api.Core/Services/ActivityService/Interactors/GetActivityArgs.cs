@@ -13,4 +13,5 @@ public class GetActivityArgs : IInteractor
     public bool? IsActive {get; set;}
     public int? CustomerId {get; set;}
     public bool? IncludeCustomer {get; set;}
+    public bool? IncludeStudents { get; set; }
 }

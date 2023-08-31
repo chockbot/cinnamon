@@ -27,7 +27,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -49,7 +49,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByHandlerAsync(handler, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

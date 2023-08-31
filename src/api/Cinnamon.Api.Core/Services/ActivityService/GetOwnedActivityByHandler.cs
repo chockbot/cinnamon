@@ -51,7 +51,8 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -119,7 +120,10 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                 Owner = activity.Owner != null ? new GetOwnedActivityByHandlerResult.CustomerOwner {
                     Handler = activity.Owner.Handler,
                     Id = activity.Owner.Id
-                } : null
+                } : null,
+                CompletedStudents = activity.CompletedStudents,
+                OngoingStudents = activity.OngoingStudents
+               
             };
 
             return AppResult<GetOwnedActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get owned activity");

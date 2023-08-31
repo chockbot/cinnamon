@@ -40,7 +40,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
-                    IncludeCustomer = args.IncludeCustomer
+                    IncludeCustomer = args.IncludeCustomer,
+                    IncludeStudents = args.IncludeStudents
                 }
             );
 
@@ -119,6 +120,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     Handler = activity.Owner.Handler,
                     Id = activity.Owner.Id
                 } : null,
+                OngoingStudents = activity.OngoingStudents,
+                CompletedStudents = activity.CompletedStudents
             };
 
             return AppResult<GetActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get activity");

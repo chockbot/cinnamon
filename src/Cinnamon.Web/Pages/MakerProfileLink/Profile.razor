@@ -347,20 +347,20 @@
                                 AverageRating = a.AverageRating,
                                 NumberOfReviews = a.NumberOfReviews,
                                 Images = a.Images.Select(i =>
-                    {
+                                {
                                 return new ActivityImage
                                 {
                                     Id = i.Id,
                                     ImageSrc = i.ImageSrc,
                                     Name = i.Name
                                 };
-                            }).ToList(),
+                                }).ToList(),
                                 Owner = new CustomerProfile
                                 {
                                     IsVerified = a.Owner.IsVerified
                                 },
                                 ActivitySchedules = a.ActivitySchedules.Select(e =>
-                {
+                                {
                             return new ActivitySchedule
                             {
                                 Id = e.Id,

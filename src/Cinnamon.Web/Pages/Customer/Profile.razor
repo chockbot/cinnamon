@@ -369,8 +369,6 @@
 
     public string displayBadge = "d-flex";
 
-    public List<Activity> activities = new List<Activity>();
-
     public List<BadgeList> badges = new List<BadgeList>();
 
     public List<Favorite> favorites = new List<Favorite>();
@@ -414,7 +412,6 @@
             IncludeActivityDescription = true,
             IncludeActivityImages = true,
             IncludeAtivitySchedules = true,
-            IsActive = true,
             IncludeStudents = true,
             IncludeCustomer = true
         }, token);
@@ -567,29 +564,8 @@
         ImageSource = Model.CustomerProfile.ProfilePath;
 
         //Get Ongoing and completed enrollees
-        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
-            {
-                CustomerId = Model.CustomerProfile.Id,
-                IncludeStudents = true,
-                IsActive = true,
-            });
-        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
-        {
-            if (ActivityList.Result.Result.Count() > 0)
-            {
-                activities = ActivityList.Result.Result.Select(r =>
-                {
-                    return new Activity
-                        {
-                            Id = r.ActivityId,
-                            OngoingStudents = r.OngoingStudents,
-                            CompletedStudents = r.CompletedStudents,
-                        };
-                }).ToList();
-            }
-        }
-        MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
-        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+        MakerOngoingStudent = Model.OwnedActivities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = Model.OwnedActivities.Sum(x => x.CompletedStudents);
 
         //Get Favorites Experience
         var favoriteExperiences = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs

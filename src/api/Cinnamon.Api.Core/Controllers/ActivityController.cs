@@ -674,7 +674,8 @@ public class ActivityController : ControllerBase
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
                             IsVerified = a.Owner.IsVerified,
-                        } : null
+                        } : null,
+                        
                     };
                 })
             });
@@ -930,7 +931,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1004,7 +1006,9 @@ public class ActivityController : ControllerBase
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.OngoingStudents
                 }
             });
         }
@@ -1029,7 +1033,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1094,7 +1099,10 @@ public class ActivityController : ControllerBase
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.CompletedStudents
+                    
                 }
             });
         }
@@ -1120,7 +1128,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1202,7 +1211,9 @@ public class ActivityController : ControllerBase
                             IsOfficial = activity.Owner.IsOfficial,
                             Email = activity.Owner.Email,
                             PhoneNumber = activity.Owner.PhoneNumber
-                        } : null
+                        } : null,
+                    OngoingStudents = activity.OngoingStudents,
+                    CompletedStudents = activity.CompletedStudents
                 }
             });
         }
@@ -1228,7 +1239,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1302,7 +1314,9 @@ public class ActivityController : ControllerBase
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.OngoingStudents
                 }
             });
         }
