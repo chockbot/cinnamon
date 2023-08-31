@@ -552,8 +552,13 @@ public class ActivityRepository : IActivityRepository
                 if (includeStudents && a.Students != null)
                 {
                     var students = a.Students;
-                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                    activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  && a.ExpirationDateEnd != DateTime.MinValue);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews
@@ -617,7 +622,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
     {
         try
         {
@@ -628,6 +633,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
+            if (includeStudents) includes.Add(a => a.Students);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -791,6 +797,18 @@ public class ActivityRepository : IActivityRepository
                     PhoneNumber = customer.PhoneNumber
                 };
             }
+            // student
+            if (includeStudents && activity.Students != null)
+            {
+                var students = activity.Students;
+                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              && a.ExpirationDateEnd != DateTime.MinValue);
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+            }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
@@ -802,7 +820,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
     {
         try
         {
@@ -813,6 +831,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
+            if (includeStudents) includes.Add(a => a.Students);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -972,6 +991,18 @@ public class ActivityRepository : IActivityRepository
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
+            }
+            // student
+            if (includeStudents && activity.Students != null)
+            {
+                var students = activity.Students;
+                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              && a.ExpirationDateEnd != DateTime.MinValue);
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -1387,8 +1418,13 @@ public class ActivityRepository : IActivityRepository
                 if (includeStudents && a.Students != null)
                 {
                     var students = a.Students;
-                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                    activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  && a.ExpirationDateEnd != DateTime.MinValue);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews

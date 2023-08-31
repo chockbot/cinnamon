@@ -40,13 +40,15 @@ public class GetActivityResult
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public Enums.ActivityStatus Status { get; set; }
+    public int OngoingStudents { get; set; }
+    public int CompletedStudents { get; set; }
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
 
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public CustomerOwner? Owner {get; set;}
-        
+
 
     public class ActivitySchedule 
     {
