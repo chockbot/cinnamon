@@ -188,4 +188,26 @@ public class ActivityImageController : ControllerBase
             return new JsonResult(new CreateManyActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("RemoveActivityImages")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RemoveActivityImagesResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> RemoveActivityImages([FromBody] RemoveActivityImageArgs args)
+    {
+        try
+        {
+            var result = await activityImageRepository.DeleteActivityImages(args.ActivityId);
+
+            if (!result.Succeeded)
+            {
+                return new JsonResult(new RemoveActivityImagesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RemoveActivityImagesResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RemoveActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
