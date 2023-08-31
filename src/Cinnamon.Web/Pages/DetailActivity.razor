@@ -226,20 +226,20 @@
                         @*Ongoing Enrolees*@
                         <div class="d-block enrolles-container">
                             <label class="col-12 justify-content-start mb-1 ongoing-students-small">
-                                @if (OngoingStudents != 0)
+                                @if (activity.OngoingStudents != 0)
                                 {
                                     <label class="ongoing-badge-small">
                                         <span class="pulse-small"></span>
                                         <span class="active-text-small">Ongoing Enrollees</span>
-                                        <span class="active-tag-label-small">@OngoingStudents</span>
+                                        <span class="active-tag-label-small">@activity.OngoingStudents</span>
                                     </label>
                                 }
-                                @if (CompletedStudents != 0)
+                                @if (activity.CompletedStudents != 0)
                                 {
                                     <label class="completed-badge-small">
                                         <span class="pulse-small-complete"></span>
                                         <span class="active-text-small">Completed Enrollees</span>
-                                        <span class="active-tag-label-complete-small">@CompletedStudents</span>
+                                        <span class="active-tag-label-complete-small">@activity.CompletedStudents</span>
                                     </label>
                                 }
                             </label>
