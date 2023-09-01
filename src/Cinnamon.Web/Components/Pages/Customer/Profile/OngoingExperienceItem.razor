@@ -358,7 +358,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        await Task.Delay(500);
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         Token = token;
