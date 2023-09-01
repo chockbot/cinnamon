@@ -336,4 +336,31 @@ public class StudentController : ControllerBase
             return new JsonResult(new GetAllStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetExpiringStudents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExpiringStudentsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExpiringStudents()
+    {
+        try
+        {
+            var result = await studentRepository.ExpiringStudents();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExpiringStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetExpiringStudentsResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExpiringStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
