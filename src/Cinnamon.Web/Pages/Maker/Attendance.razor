@@ -347,7 +347,7 @@
             }, Model.Token);
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Attendances.AddRange(result.Result.Result.Where(s => s.ExpirationEndDate >= DateTime.Now.Date || s.ExpirationEndDate == DateTime.MinValue).Select(s =>
+                Model.Attendances.AddRange(result.Result.Result.Where(a => a.ExpirationEndDate > DateTime.Now.Date || a.ExpirationEndDate == DateTime.MinValue).Select(s =>
                 {
                     return new AttendanceModel.StudentAttendance {
                         ActivityName = schedule.ActivityTitle,
@@ -385,7 +385,6 @@
                 await CheckUnCheckSchedule(item);
             }
             await loadingIndicator.Hide();
-            await dropdown.Hide();
         }
         else
         {
@@ -398,7 +397,6 @@
                 await CheckUnCheckSchedule(item);
             }
             await loadingIndicator.Hide();
-            await dropdown.Hide();
         }
     }
 
