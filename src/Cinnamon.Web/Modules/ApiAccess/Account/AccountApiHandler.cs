@@ -824,4 +824,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<BlockedAccountResult>.CreateFailed(ex, "An error occured when calling submit block account api");
         }
     }
+
+    public async Task<AppResult<SecretLoginResult>> SecretLogin(SecretLoginArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/1UnCvQdTzi8dUHqKWgZGE1Xf7zqDo7EW99shdKGd2xddj4mZLg9UHJhuuYM3")
+                .PostJsonAsync(args)
+                .ReceiveJson<SecretLoginResult>();
+
+            return AppResult<SecretLoginResult>.CreateSucceeded(result, "Successfully called extra login api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SecretLoginResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SecretLoginResult>.CreateFailed(ex, "An error occured when calling extra login api");
+        }
+    }
 }
