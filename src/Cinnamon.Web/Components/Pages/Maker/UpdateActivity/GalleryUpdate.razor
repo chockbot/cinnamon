@@ -153,7 +153,9 @@
                 FileInputIndex = 0,
                 FileSrcSelector = "#cover-photo-upload",
                 Title = "Crop selected image",
-                OuputSelector = $"#{coverPhotoItem.InputDataId}"
+                OuputSelector = $"#{coverPhotoItem.InputDataId}",
+                HeightRatio = 5,
+                WidthRatio = 4
             });
             if(cropperResult.Cropped)
             {
@@ -188,7 +190,9 @@
                     FileInputIndex = i,
                     FileSrcSelector = "#photo-upload",
                     Title = "Crop selected image",
-                    OuputSelector = $"#{imageItem.InputDataId}"
+                    OuputSelector = $"#{imageItem.InputDataId}",
+                    HeightRatio = 4,
+                    WidthRatio = 5
                 });
                 if(cropperResult.Cropped)
                 {
