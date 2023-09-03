@@ -31,6 +31,16 @@
 
 @if (Model.Customer != null)
 {
+    @if(activity is not null && activity.Images.Count > 0)
+    {
+        <div class="position-relative detail-sm mb-2">
+            <img class="w-100" src="@activity.Images.First().ImageSrc" alt="cover-photo">
+            <div style="bottom: 20px; right: 20px;" @onclick="NavigateToGallery"
+                class="prevent-select px-3 py-1 cursor-pointer position-absolute border-radius-10 color-black-100 font-14 bg-white-100">
+                Gallery
+            </div>
+        </div>
+    }
     <Container>
         <div id="alertContainer" class="alertContainer">
             <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
@@ -135,7 +145,7 @@
                             @if (activity.Images.Count < 5)
                             {
                                 <div class="detail-md">
-                                    <div class="gallery">
+                                    <div class="gallery position-relative">
                                         <figure class="gallery__item gallery__item--1">
                                             <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(0).ImageSrc" />
                                         </figure>
@@ -145,12 +155,16 @@
                                         <figure class="gallery__item gallery__item--3">
                                             <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(2).ImageSrc" />
                                         </figure>
+                                        <div style="bottom: 35px; left: 20px;" @onclick="NavigateToGallery"
+                                            class="prevent-select px-4 py-2 cursor-pointer position-absolute border-radius-10 color-black-100 font-16 bg-white-100">
+                                            Gallery
+                                        </div>
                                     </div>
                                 </div>
                             }
                             else 
                             {
-                                <div class="grid-gallery detail-md shadow">
+                                <div class="grid-gallery detail-md shadow position-relative">
                                     <div class="grid-gallery-item grid-gallery-item-1">
                                         <figure>
                                             <img src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
@@ -176,22 +190,12 @@
                                             <img src="@activity.Images.ElementAt(4).ImageSrc" alt="supporting-photo">
                                         </figure>
                                     </div>
+                                    <div style="bottom: 20px; left: 20px;" @onclick="NavigateToGallery"
+                                        class="prevent-select px-4 py-2 cursor-pointer position-absolute border-radius-10 color-black-100 font-16 bg-white-100">
+                                        Gallery
+                                    </div>
                                 </div>
                             }
-                            <div class="swiper swiper-details-mobile-images detail-sm">
-                                <div class="swiper-wrapper">
-                                    @if(activity.Images.Count > 0)
-                                    {
-                                        @foreach(var image in activity.Images)
-                                        {
-                                            <div class="swiper-slide">
-                                                <img class="img-fluid shadsow rounded" src="@image.ImageSrc" />
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                                <div class="swiper-pagination"></div>
-                            </div>
                         </div>
                     </div>
                     @*Details Header Mobile*@
@@ -1175,19 +1179,12 @@
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            await InitializeCarouselSwipe();
         }
         else
         {
-            await InitializeCarouselSwipe();
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.activityDetails.init");
-    }
-
-    private async Task InitializeCarouselSwipe()
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
     }
 
     private async Task CopyToClipboard()
@@ -1381,5 +1378,10 @@
 
         activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
     }
-    
+
+    private Task NavigateToGallery()
+    {
+        NavigationManager.NavigateTo($"/explore/{Identifier}/gallery");
+        return Task.CompletedTask;
+    }
 }
