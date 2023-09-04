@@ -19,14 +19,10 @@ public class ExpirationData
         }
         else
         {
-            frequency = schedule.StartDate.Value.AddMonths(GetMonths(schedule.SessionName));
+            var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
+            frequency = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
         }
         return frequency;
-    }
-
-    public static int GetMonths(string sessionName)
-    {
-        return int.Parse(sessionName.Split()[0]);
     }
 
     public static string GetOrdinal(int day)
@@ -45,12 +41,6 @@ public class ExpirationData
     }
     public static string GetExpirationText(string sessionName, DateTime frequency, string ordinal)
     {
-        if (sessionName.Contains("Weeks"))
-        {
-            int weekNumber = int.Parse(sessionName.Split()[0]);
-            int monthNumber = (weekNumber == 2) ? 3 : (weekNumber + 1);
-            return $"The expiration period is {sessionName.ToLower()} (calendar days), and is valid until the {frequency.Day}{ordinal} day of {frequency.ToString("MMMM")}. Next period purchase is available at checkout.";
-        }
-        return $"The expiration period is {sessionName.ToLower()}, and the cutoff is every {frequency.Day}{ordinal} day of the month.";
-    }
+        return $"The expiration period is {sessionName.ToLower()} (calendar days), and is valid until the {frequency.Day}{GetOrdinal(frequency.Day)} day of {frequency.ToString("MMMM")}. Next period is available for purchase at checkout.";
+    }   
 }
