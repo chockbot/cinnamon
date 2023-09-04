@@ -469,28 +469,29 @@ public class StudentRepository: IStudentRepository
 			var students = result.Result.Select(s => {
 				var studentDto = new StudentDTO
 				{
-					ActivityId = s.ActivityId,
-					CustomerId = s.CustomerId,
-					Id = s.Id,
-					Name = s.Name,
-					NumberOfSessions = s.NumberOfSessions,
+					ActivityId           = s.ActivityId,
+					CustomerId           = s.CustomerId,
+					Id                   = s.Id,
+					Name                 = s.Name,
+					NumberOfSessions     = s.NumberOfSessions,
 					NumberOfBackTracking = s.NumberOfBackTracking,
-					Remarks = s.Remarks,
-					ScheduleId = s.ScheduleId,
-					SessionsAttended = s.SessionsAttended,
-					Status = s.Status,
-					ExpirationStartDate = s.ExpirationStartDate,
-					ExpirationEndDate = s.ExpirationEndDate,
+					Remarks              = s.Remarks,
+					ScheduleId           = s.ScheduleId,
+					SessionsAttended     = s.SessionsAttended,
+					Status               = s.Status,
+					ExpirationStartDate  = s.ExpirationStartDate,
+					ExpirationEndDate    = s.ExpirationEndDate,
+					HasReview            = s.HasReview,
 					activitySchedule = new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
 					{
-						Id = s.activitySchedule.Id,
+						Id            = s.activitySchedule.Id,
 						HasExpiration = s.activitySchedule.HasExpiration,
-						IsSetSession = s.activitySchedule.IsSetSession,	
+						IsSetSession  = s.activitySchedule.IsSetSession,	
 					},
 					studentAttendance = new Framework.ApiCommand.ApiData.DTO.StudentAttendance.StudentAttendanceDTO
 					{
-						Id = s.studentAttendance.Id,
-						Date = s.studentAttendance.Date,
+						Id        = s.studentAttendance.Id,
+						Date      = s.studentAttendance.Date,
 						IsPresent = s.studentAttendance.IsPresent,	
 						StudentId = s.studentAttendance.StudentId
 					}

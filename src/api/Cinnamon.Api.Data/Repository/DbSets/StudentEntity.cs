@@ -242,7 +242,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 		try
 		{
 			string query = "SELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"NumberOfBacktracking\", " +
-				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
+				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\", a.\"HasReview\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
 				"c.\"HasExpiration\"\r\nFROM public.\"Students\" as a " +
 				"JOIN public.\"ActivitySchedules\" as c ON c.\"Id\" = a.\"ScheduleId\"\r\n" +
 				"LEFT JOIN ( SELECT sa.\"Id\", sa.\"StudentId\", sa.\"IsPresent\",sa.\"Date\"\r\n" +
@@ -280,6 +280,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							NumberOfBackTracking = Convert.ToInt32(item["NumberOfBacktracking"]),
 							ExpirationStartDate  = Convert.ToDateTime(item["ExpirationDateStart"]),
 							ExpirationEndDate    = Convert.ToDateTime(item["ExpirationDateEnd"]),
+							HasReview			 = Convert.ToBoolean(item["HasReview"]),
 							activitySchedule     = new ActivityScheduleDTO
 							{
 								Id            = Convert.ToInt32(item["ActivityScheduleId"]),
