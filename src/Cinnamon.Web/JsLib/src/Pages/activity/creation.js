@@ -223,15 +223,22 @@ export async function previewImage(imgSelector, inputSelector) {
   imgElem.src = urlSrc;
 }
 
-export async function uploadListImages(selectors, activityId) {
+export async function uploadListImages(selectors, activityId, deletedIds) {
   const formData = new FormData();
+  let orderCount = 0;
   for (const selector of selectors) {
     const file = dataUrlToFile($(selector).val(), "image");
     if (file) {
       formData.append("Images", file);
+      formData.append("Orders", orderCount);
+      orderCount++;
     }
   }
   formData.append("ActivityId", activityId);
+  // for deleted ids
+  for (const id of deletedIds) {
+    formData.append("DeletedIds", id);
+  }
 
   try {
     const result = await axios.postForm(

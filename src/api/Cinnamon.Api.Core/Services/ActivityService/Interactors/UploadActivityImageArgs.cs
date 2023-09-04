@@ -5,6 +5,8 @@ namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
 
 public class UploadActivityImageArgs : IInteractor
 {
-    public IList<IFormFile> Images {get; set;}
+    public IList<IFormFile>? Images {get; set;}
+    public IList<int>? Orders {get; set;}
+    public IList<int>? DeletedIds {get; set;}
     public int ActivityId {get; set;}
 }

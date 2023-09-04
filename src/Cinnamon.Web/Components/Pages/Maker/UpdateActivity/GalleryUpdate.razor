@@ -85,7 +85,7 @@
                         <div @key="item.ContainerId" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
                             <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
                             <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
-                            <img class="mt-2 cursor-pointer" @onclick="() => imageItems.Remove(item)" src="images/trashcan-icon.png" alt="delete">
+                            <img class="mt-2 cursor-pointer" @onclick="() => DeleteImage(item)" src="images/trashcan-icon.png" alt="delete">
                         </div>
                     }
                 </Row>
@@ -107,6 +107,7 @@
         Display = false, FileSize = 0, 
         ImageSrcId = "cover-photo-image-src", 
         InputDataId = "cover-photo-input-data", Order = 0};
+    private IList<int> deletedIds = new List<int>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -117,7 +118,7 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override void OnInitialized ()
     {
         if(Model is not null)
         {
@@ -136,7 +137,7 @@
                     string imgId = $"img-preview-src-{lastIndex}";
                     var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, 
                         ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", 
-                        Order = lastIndex, Display = true, ImageSrc = image.ImageSrc};
+                        Order = lastIndex, Display = true, ImageSrc = image.ImageSrc, ImageId = image.Id};
 
                     imageItems.Add(imageItem);
                     lastIndex++;
@@ -214,7 +215,7 @@
         var selectors = new List<string>();
         selectors.Add($"#{coverPhotoItem.InputDataId}");
         selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
-        var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId);
+        var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId, deletedIds);
         return result.Success ?? false;
     }
 
@@ -251,6 +252,13 @@
         return isAllFieldsValid;
     }
 
+    private Task DeleteImage(ImageItem imageItem)
+    {
+        imageItems.Remove(imageItem);
+        deletedIds.Add(imageItem.ImageId);
+        return Task.CompletedTask;
+    }
+
     private class ImageItem 
     {
         public string ContainerId {get; set;} = string.Empty;
@@ -260,6 +268,7 @@
         public bool Display {get; set;} = false;
         public int Order {get; set;} = 0;
         public string ImageSrc {get; set;} = string.Empty;
+        public int ImageId {get; set;}
     }
 
     private class UploadResult 

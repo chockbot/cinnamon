@@ -7,6 +7,7 @@ public class UploadActivityImageArgs
 {
     [Required]
     public int ActivityId {get; set;}
-    [Required]
-    public IList<IFormFile> Images {get; set;}
+    public IList<IFormFile>? Images {get; set;}
+    public IList<int>? Orders {get; set;}
+    public IList<int>? DeletedIds {get; set;}
 }
