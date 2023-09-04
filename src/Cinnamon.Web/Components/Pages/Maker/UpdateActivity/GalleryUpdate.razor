@@ -215,7 +215,7 @@
         var selectors = new List<string>();
         selectors.Add($"#{coverPhotoItem.InputDataId}");
         selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
-        var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId);
+        var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId, deletedIds);
         return result.Success ?? false;
     }
 

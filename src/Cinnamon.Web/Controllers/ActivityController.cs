@@ -38,7 +38,9 @@ public class ActivityController : Controller
 
             var result = await activityApiHandler.UploadActivityImages(new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
-                Images = args.Images
+                Images = args.Images,
+                DeletedIds = args.DeletedIds,
+                Orders = args.Orders
             }, token);
 
             if(!result.Succeeded || result.Result == null)
