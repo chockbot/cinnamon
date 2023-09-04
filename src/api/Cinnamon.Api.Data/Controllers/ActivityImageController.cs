@@ -210,4 +210,26 @@ public class ActivityImageController : ControllerBase
             return new JsonResult(new RemoveActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("RemoveMultipleIds")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RemoveMultipleIdsResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> RemoveMultipleIds([FromBody] RemoveMultipleIdsArgs args)
+    {
+        try
+        {
+            var result = await activityImageRepository.DeleteActivityImages(args.Ids.ToArray());
+
+            if (!result.Succeeded)
+            {
+                return new JsonResult(new RemoveMultipleIdsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RemoveMultipleIdsResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RemoveMultipleIdsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

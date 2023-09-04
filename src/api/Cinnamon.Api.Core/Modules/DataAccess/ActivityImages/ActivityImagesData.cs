@@ -161,4 +161,25 @@ public class ActivityImagesData : IActivityImagesData
             return AppResult<RemoveActivityImagesResult>.CreateFailed(ex, "An error occured when posting remove activity images");
         }
     }
+
+    public async Task<AppResult<RemoveMultipleIdsResult>> RemoveMultipleIds(RemoveMultipleIdsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("ActivityImage/RemoveMultipleIds")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<RemoveMultipleIdsResult>();
+            
+            return AppResult<RemoveMultipleIdsResult>.CreateSucceeded(result, "Successfully posting remove activity images");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<RemoveMultipleIdsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RemoveMultipleIdsResult>.CreateFailed(ex, "An error occured when posting remove activity images");
+        }
+    }
 }

@@ -266,4 +266,28 @@ public class ActivityImageRepository : IActivityImageRepository
             return AppResult<bool>.CreateFailed(ex, "An error occured when removing activity images");
         }
     }
+
+    public async Task<AppResult<bool>> DeleteActivityImages(int[] ids)
+    {
+        try
+        {
+            var activityImagesRes = await dataStore.ActivityImage.FindAsync(i => ids.Contains(i.Id));
+            if(!activityImagesRes.Succeeded || activityImagesRes.Result is null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(activityImagesRes.Message), activityImagesRes.Message);
+            }
+
+            var entities = activityImagesRes.Result;
+            var deleteImagesRes = await dataStore.ActivityImage.RemoveRange(entities);
+            if(!deleteImagesRes.Succeeded || deleteImagesRes.Result is null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(deleteImagesRes.Message), deleteImagesRes.Message);
+            }
+            return AppResult<bool>.CreateSucceeded(true, "Successfully remove activity images");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when removing activity images");
+        }
+    }
 }

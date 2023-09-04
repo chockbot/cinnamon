@@ -13,4 +13,5 @@ public interface IActivityImageRepository
     Task<AppResult<IEnumerable<ActivityImageDTO>>> Create(IEnumerable<ActivityImageDTO> images);
     Task<AppResult<IEnumerable<ActivityImageDTO>>> Update(IEnumerable<ActivityImageDTO> images);
     Task<AppResult<bool>> DeleteActivityImages(int activityId);
+    Task<AppResult<bool>> DeleteActivityImages(int[] ids);
 }

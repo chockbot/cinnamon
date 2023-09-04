@@ -921,26 +921,8 @@
                 return;
             }
 
-            // update only the image order, not re uploading the image
-            /**if (!galleryComponent.IsImagesUpdated)
-            {
-                var updateImageOrderRes = await activityApiHandler.UpdateActivityImageOrder(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs {
-                    ActivityId = Model.Activity.ActivityId,
-                        ImageOrders = galleryComponent.ImageItems.Select(i =>
-                        {
-                        return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs.ImageOrder {
-                            NewOrder = i.NewOrder,
-                            OldOrder = i.Order
-                        };
-                    }).ToList()
-                }, Model.Token);
-
-                NavigationManager.NavigateTo("/maker/dashboard");
-                return;
-            }**/
-
             // upload image without checking if there is error so that can't re update another activity
-            //bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
