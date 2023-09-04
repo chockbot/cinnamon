@@ -51,6 +51,12 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                     new ApplicationException("Can only upload 25mb for all images"), "Can only upload 25mb for all images");
             }
 
+            if(goodImages.Count != args.Orders.Count)
+            {
+                return AppResult<UploadActivityImageResult>.CreateFailed(
+                    new ApplicationException("Invalid request."), "Invalid request.");
+            }
+
             // check activity
             var activity = await getOwnedActivityHandler.ExecuteAsync(new GetOwnedActivityArgs {ActivityId = args.ActivityId, IncludeActivityImages = true});
             if(!activity.Succeeded || activity.Result == null)
@@ -58,7 +64,9 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                 return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
             }
             
-            var images = activity.Result.Images.OrderBy(i => i.Id).ToList();
+            var images = activity.Result.Images.OrderBy(i => i.Order);
+            var deletedImages = images.Where(i => args.DeletedIds.Contains(i.Id));
+            var oldImages = images.Where(i => !args.DeletedIds.Contains(i.Id));
             var listImagesToUpload = new List<AzureUploadArgs.Image>();
 
             foreach(var uploadedImage in goodImages)
@@ -74,17 +82,17 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                 listImagesToUpload.Add(new AzureUploadArgs.Image {File = uploadedImage, ImageName = imageName});
             }
 
+            var totalImagesCount = oldImages.Count() + listImagesToUpload.Count;
             // minimum of 3 images and maximum of 7 images including cover
-            if(listImagesToUpload.Count > 7 || listImagesToUpload.Count < 3)
+            if(totalImagesCount > 7 || totalImagesCount < 3)
             {
                 return AppResult<UploadActivityImageResult>.CreateFailed(
                     new ApplicationException("Minimum of 3 images and maximum of 7 images."), "Minimum of 3 images and maximum of 7 images.");
             }
 
             // delete activity images
-            var previousImages = images.Select(i => i.Name);
-            var deleteImagesRes = await activityImagesData.RemoveActivityImages(new Framework.ApiCommand.ApiData.ActivityImage.Request.RemoveActivityImageArgs {
-                ActivityId = args.ActivityId
+            var deleteImagesRes = await activityImagesData.RemoveMultipleIds(new Framework.ApiCommand.ApiData.ActivityImage.Request.RemoveMultipleIdsArgs {
+                Ids = deletedImages.Select(i => i.Id).ToList()
             });
             if(!deleteImagesRes.Succeeded || deleteImagesRes.Result is null || !deleteImagesRes.Result.IsSuccess)
             {
@@ -109,7 +117,7 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                         ActivityId = args.ActivityId,
                         ImageName = s.FileName,
                         ImageSrc = s.FileSrc,
-                        Order = index
+                        Order = args.Orders[index]
                     };
                 })
             });
@@ -129,7 +137,7 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
             // delete previous images to azure blob and don't check if successful or not
             var deleteBlob = await deleteAzureBlob.ExecuteAsync(new AzureDeleteFilesArgs {
                 Container = "upload-container",
-                FileNames = previousImages
+                FileNames = deletedImages.Select(i => i.Name)
             });
 
             return AppResult<UploadActivityImageResult>.CreateSucceeded(new UploadActivityImageResult {

@@ -1321,7 +1321,9 @@ public class ActivityController : ControllerBase
         {
             var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
-                Images = args.Images
+                Images = args.Images,
+                DeletedIds = args.DeletedIds,
+                Orders = args.Orders
             });
 
             if(!result.Succeeded || result.Result == null)

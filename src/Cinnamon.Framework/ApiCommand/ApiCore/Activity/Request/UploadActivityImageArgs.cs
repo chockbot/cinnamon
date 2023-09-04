@@ -9,4 +9,7 @@ public class UploadActivityImageArgs
     public int ActivityId {get; set;}
     [Required]
     public IList<IFormFile> Images {get; set;}
+    [Required]
+    public IList<int> Orders {get; set;}
+    public IList<int> DeletedIds {get; set;}
 }
