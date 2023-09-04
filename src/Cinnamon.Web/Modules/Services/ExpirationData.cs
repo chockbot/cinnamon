@@ -49,7 +49,7 @@ public class ExpirationData
         {
             int weekNumber = int.Parse(sessionName.Split()[0]);
             int monthNumber = (weekNumber == 2) ? 3 : (weekNumber + 1);
-            return $"The expiration period is {sessionName.ToLower()} (calendar days), and will end on the {frequency.Day}{ordinal} day of {frequency.ToString("MMMM")}.";
+            return $"The expiration period is {sessionName.ToLower()} (calendar days), and is valid until the {frequency.Day}{ordinal} day of {frequency.ToString("MMMM")}. Next period purchase is available at checkout.";
         }
         return $"The expiration period is {sessionName.ToLower()}, and the cutoff is every {frequency.Day}{ordinal} day of the month.";
     }
