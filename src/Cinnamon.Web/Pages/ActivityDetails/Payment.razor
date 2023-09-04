@@ -989,7 +989,9 @@
 
             if(Model.SelectedSchedule.HasExpiration == 1)
             {
-                expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName} (calendar days), and will end on the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}.";
+                
+                expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName.ToLower()} (calendar days), and is valid until the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}. Next period purchase is available at checkout.";
+                
             }
             else if(Model.SelectedSchedule.HasExpiration == 2)
             {
