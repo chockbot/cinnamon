@@ -14,7 +14,7 @@ public class ExpirationData
             if (frequency <= DateTime.Now.Date)
             {
                 var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
-                frequency = datePeriod.NextPeriod().PeriodStart;
+                frequency = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
             }
         }
         else
