@@ -312,7 +312,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
         }
     }
 
-    public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
+	public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
     {
         try
         {

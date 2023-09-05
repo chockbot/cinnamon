@@ -16,4 +16,5 @@ public interface IActivityData
     Task<AppResult<UpdatedActivityResult>> UpdateActivityGuid(UpdateActivity args);
     Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args);
     Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(int primaryId, int count);
+    Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args);
 }

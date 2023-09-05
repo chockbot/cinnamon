@@ -48,4 +48,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token);
     Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args);
     Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token);
+    Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args);
 }
