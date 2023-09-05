@@ -150,6 +150,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCreationTypeHandler, Services.ActivityService.GetExperienceCreationTypeHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivityScheduleTimesHandler, Services.ActivityService.GetActivityScheduleTimesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateOngoingActivityScheduleHandler, Services.ActivityService.CreateOngoingActivityScheduleHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IPopularActivitiesHandler, Services.ActivityService.PopularActivitiesHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
