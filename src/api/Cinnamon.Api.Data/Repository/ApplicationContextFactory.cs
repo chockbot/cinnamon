@@ -8,7 +8,7 @@ public class ApplicationContextFactory : IDesignTimeDbContextFactory<Application
     public ApplicationContext CreateDbContext(string[] args)
     {
         var opts = new DbContextOptionsBuilder<ApplicationContext>();
-        opts.UseNpgsql($"Host=localhost;Database=CINNAMON;Username=postgres;Password=postgres");
+        opts.UseNpgsql($"Host=cinnamondevserver.postgres.database.azure.com;Database=postgres;Username=adminuser;Password=Cinnamon_01");
         return new ApplicationContext(opts.Options);
     }
 }
