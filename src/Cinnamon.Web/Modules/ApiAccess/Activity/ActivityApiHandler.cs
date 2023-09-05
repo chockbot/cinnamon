@@ -788,4 +788,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, "An error occured when calling get recommended activities api");
         }
     }
+
+    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/RecommendedActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<PopularActivitiesResult>();
+
+            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+        }
+    }
 }
