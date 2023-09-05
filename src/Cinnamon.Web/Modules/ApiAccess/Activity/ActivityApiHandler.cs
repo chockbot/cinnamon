@@ -794,7 +794,7 @@ public class ActivityApiHandler : IActivityApiHandler
         try
         {
             var result = await flurlClient
-                .Request("Activity/RecommendedActivities")
+                .Request("Activity/PopularActivities")
                 .SetQueryParams(args)
                 .GetJsonAsync<PopularActivitiesResult>();
 
