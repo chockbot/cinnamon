@@ -2,7 +2,31 @@ button:focus {
     outline: none !important;
     box-shadow: none !important;
 }
+.skeleton {
+    position: relative;
+}
 
+    .skeleton::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background: linear-gradient(90deg, #eee, #b6b6b6, #eee);
+        background-size: 200%;
+        animation: skeleton 2s infinite reverse;
+    }
+@keyframes skeleton {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
 ::deep .textarea-container textarea:focus {
     outline: none !important;
     box-shadow: none !important;

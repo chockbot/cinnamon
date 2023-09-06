@@ -41,6 +41,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
                     IncludeCustomer = args.IncludeCustomer,
+                    IncludeStudents = args.IncludeStudents
                 }
             );
 
@@ -128,7 +129,9 @@ public class GetActivityHandler : IGetActivityHandler
                     IsOG = activity.Owner.IsOG,
                     IsOfficial = activity.Owner.IsOfficial,
                     PhoneNumber = activity.Owner.PhoneNumber,
-                } : null
+                } : null,
+                OngoingStudents = activity.OngoingStudents,
+                CompletedStudents = activity.CompletedStudents
             };
 
             return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");
