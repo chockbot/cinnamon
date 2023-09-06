@@ -87,7 +87,7 @@
                 var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
                     {
                         Id = profile.Id,
-                        DateFrom = DateTime.Today
+                        DateFrom = DateTime.Today.ToString("yyyyMMddHHmmss")
                     }, Token);
                 if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
                 {
@@ -145,7 +145,7 @@
         var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
             {
                 Id = profile.Id,
-                DateFrom = startDate
+                DateFrom = startDate.ToString("yyyyMMddHHmmss")
             }, Token);
         if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
         {

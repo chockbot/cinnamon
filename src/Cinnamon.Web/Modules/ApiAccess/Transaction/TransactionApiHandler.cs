@@ -68,6 +68,7 @@ public class TransactionApiHandler : ITransactionApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request($"Transaction/GetGrossSalesByProvider")
+                .SetQueryParams(args)
                 .GetJsonAsync<GetGrossSalesByProviderResult>();
 
             return AppResult<GetGrossSalesByProviderResult>.CreateSucceeded(result, "Successfully getting gross sales api");
