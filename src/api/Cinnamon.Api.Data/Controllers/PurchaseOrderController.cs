@@ -217,4 +217,29 @@ public class PurchaseOrderController : ControllerBase
             return new JsonResult(new GetAllInclusiveTransactionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetGrossSalesByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetGrossSalesByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrossSalesByProvider([FromQuery] GetGrossSalesByProviderArgs args)
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.GetGrossSalesByProvider(args.Id, args.DateFrom);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetGrossSalesByProviderResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

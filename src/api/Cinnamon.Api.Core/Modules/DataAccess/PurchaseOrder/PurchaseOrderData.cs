@@ -1,6 +1,5 @@
 ﻿using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Response;
 using Cinnamon.Framework.Common;
@@ -161,6 +160,26 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             catch (Exception ex)
             {
                 return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, "An error occured when getting all PurchaseOrder api");
+            }
+        }
+
+        public async Task<AppResult<GetGrossSalesByProviderResult>> GetGrossSalesByProvider(GetGrossSalesByProviderArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/GetGrossSalesByProvider")
+                                .GetJsonAsync<GetGrossSalesByProviderResult>();
+
+                return AppResult<GetGrossSalesByProviderResult>.CreateSucceeded(result, "Successfully getting get gross sales");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetGrossSalesByProviderResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetGrossSalesByProviderResult>.CreateFailed(ex, "An error occured when getting gross sales");
             }
         }
     }

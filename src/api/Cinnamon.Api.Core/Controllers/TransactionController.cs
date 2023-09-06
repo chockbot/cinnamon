@@ -1,8 +1,8 @@
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
 using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Response;
-using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +15,13 @@ public class TransactionController : ControllerBase
 {
     private readonly IPurchaseOrderHandler purchaseOrderHandler;
     private readonly IGetPurchaseOrderHandler getPurchaseOrderHandler;
+    private readonly IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler;
 
-    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler)
+    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
+        this.getGrossSalesByProviderHandler = getGrossSalesByProviderHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -117,6 +119,50 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetGrossSalesByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetGrossSalesByProviderResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetGrossSalesByProvider([FromQuery] GetGrossSalesByProviderArgs args)
+    {
+        try
+        {
+            var result = await getGrossSalesByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetGrossSalesByProviderArgs
+            {
+                Id = args.Id,   
+                DateFrom = args.DateFrom
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetGrossSalesByProviderResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GrossSales.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.GrossSalesDTO
+                    {
+                        Id           = s.Id,
+                        ActivityId   = s.ActivityId,
+                        CustomerId   = s.CustomerId,
+                        ScheduleId   = s.ScheduleId,
+                        Payload      = s.Payload,
+                        PurchaseDate = s.PurchaseDate,
+                        Status       = s.Status,
+                        Total        = s.Total,
+                        UnitCount    = s.UnitCount
+                    };
+                })
+            }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
