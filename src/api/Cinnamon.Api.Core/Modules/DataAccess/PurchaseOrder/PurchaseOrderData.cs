@@ -169,6 +169,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             {
                 var result = await _flurlClient
                                 .Request("PurchaseOrder/GetGrossSalesByProvider")
+                                .SetQueryParams(args)
                                 .GetJsonAsync<GetGrossSalesByProviderResult>();
 
                 return AppResult<GetGrossSalesByProviderResult>.CreateSucceeded(result, "Successfully getting get gross sales");
