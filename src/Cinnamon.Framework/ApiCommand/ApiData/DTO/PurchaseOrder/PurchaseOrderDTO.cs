@@ -7,6 +7,7 @@ public class PurchaseOrderDTO
     public int ScheduleId {get; set;}
     public int CustomerId {get; set;}
     public decimal Total {get; set;}
+    public DateTime PurchaseDate {get; set;}
     public decimal ConvinienceFee {get; set;}
     public string? Coupon {get; set;}
     public decimal? CouponAmount {get; set;}
@@ -28,6 +29,7 @@ public class PurchaseOrderDTO
         public int Id {get; set;}
         public string Title {get; set;}
         public string Description {get; set;}
+        public int CreatedBy { get; set; }
     }
 
     public class AssociatedSchedule 
