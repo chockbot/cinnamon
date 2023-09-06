@@ -53,7 +53,7 @@
                     <div class='@(coverPhotoItem.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@coverPhotoItem.ContainerId">
                         <input type="hidden" id="@coverPhotoItem.InputDataId" name= "@coverPhotoItem.InputDataId" class="generated-input-data" />
                         <img id="@coverPhotoItem.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src=@coverPhotoItem.ImageSrc"" alt="supporting-photo">
-                        <img class="mt-2 cursor-pointer" @onclick="() => coverPhotoItem.Display = false" src="images/trashcan-icon.png" alt="delete">
+                        <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/trashcan-icon.png" alt="delete">
                     </div>
                 </Row>
             </div>
@@ -122,12 +122,14 @@
     {
         if(Model is not null)
         {
-            var images = Model.Activity.Images.OrderBy(i => i.Order).ToList();
+            var images = Model.Activity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).ToList();
             var coverImage = images.FirstOrDefault();
             if(coverImage is not null)
             {
                 coverPhotoItem.Display = true;
                 coverPhotoItem.ImageSrc = coverImage.ImageSrc;
+                coverPhotoItem.ImageId = coverImage.Id;
+                coverPhotoItem.Order = coverImage.Order;
 
                 var supportedImages = images.Where(i => i.Id != coverImage.Id);
                 int lastIndex = 0;
@@ -137,7 +139,7 @@
                     string imgId = $"img-preview-src-{lastIndex}";
                     var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, 
                         ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", 
-                        Order = lastIndex, Display = true, ImageSrc = image.ImageSrc, ImageId = image.Id};
+                        Order = image.Order, Display = true, ImageSrc = image.ImageSrc, ImageId = image.Id};
 
                     imageItems.Add(imageItem);
                     lastIndex++;
@@ -256,6 +258,13 @@
     {
         imageItems.Remove(imageItem);
         deletedIds.Add(imageItem.ImageId);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteCoverPhoto()
+    {
+        coverPhotoItem.Display = false;
+        deletedIds.Add(coverPhotoItem.ImageId);
         return Task.CompletedTask;
     }
 

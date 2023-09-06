@@ -10,15 +10,15 @@
     <SeoMeta Title="@seoData.Title" Description="@seoData.Description" Image="@seoData.ImageSrc" Url="@seoData.Url" />
 }
 
-<Container class="mt-5 mb-5">
+<Container class="mt-5 mb-5 activity-gallery-wrapper">
     <div>
         <img @onclick="OnBackClick" class="cursor-pointer" src="images/back-icon.png" alt="back-icon">
     </div>
-    <Row VerticalGutter="10" HorizontalGutter="10" class="mt-3">
+    <Row VerticalGutter="10" HorizontalGutter="10" class="mt-3 image-grid">
         @foreach(var image in activityImages)
         {
             <Column @key="image" ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <Image class="w-100 cursor-pointer" @onclick="() => PreviewImage(image)" Fluid Source="@image.ImageSrc" Text="@image.ImageName" />
+                <Image class="w-100 cursor-pointer" @onclick="() => PreviewImage(image)" Source="@image.ImageSrc" Text="@image.ImageName" />
             </Column>
         }
     </Row>
@@ -69,7 +69,7 @@
         if(activityData.Succeeded && activityData.Result is not null && activityData.Result.IsSuccess)
         {
             var activity = activityData.Result.Result;
-            var orderedImages = activity.Images.OrderBy(i => i.Order);
+            var orderedImages = activity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id);
             foreach(var image in orderedImages)
             {
                 activityImages.Add(new ActivityImage {

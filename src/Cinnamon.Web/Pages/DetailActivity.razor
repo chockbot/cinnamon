@@ -987,7 +987,7 @@
                                 StartDate = e.StartDate,
                             };
                         }).ToList(),
-                        Images = result.Images.Select(i =>
+                        Images = result.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).Select(i =>
                         {
                             return new ActivityImage
                             {
