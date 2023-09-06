@@ -130,10 +130,11 @@ public class TransactionController : ControllerBase
     {
         try
         {
+            var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
             var result = await getGrossSalesByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetGrossSalesByProviderArgs
             {
                 Id = args.Id,   
-                DateFrom = args.DateFrom
+                DateFrom = date
             });
             if (!result.Succeeded || result.Result == null)
             {
