@@ -666,7 +666,7 @@
 
 <div id="observerTarget"></div>
 
-<ModalLogin @ref="signinModal" />
+<ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" />
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
@@ -720,10 +720,21 @@
     [SupplyParameterFromQuery]
     public bool? IsNewRegistered { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "auth")]
+    public string? QueryAuth {get; set;}
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "redirect")]
+    public string? QueryRedirect {get; set;}
+
+    private string redirectUrl {get; set;} = string.Empty;
+
     private IAnimation selectedAnimation = Animations.FadeIn;
 
     protected override async Task OnInitializedAsync()
     {
+        LoadRedirectUrls();
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities();
@@ -835,6 +846,17 @@
                             }
                         }
                     }
+                }
+            }
+        }
+        else 
+        {
+            if(!string.IsNullOrEmpty(QueryRedirect))
+            {
+                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
+                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
+                {
+                    await signinModal.Show();
                 }
             }
         }
@@ -1495,6 +1517,12 @@
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+    private IDictionary<string, string> redirectUrls = new Dictionary<string,string>();
+    private void LoadRedirectUrls()
+    {
+        redirectUrls.Add("messages","/Messages");
     }
 
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;

