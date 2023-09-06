@@ -5,6 +5,11 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
+@using Microsoft.AspNetCore.WebUtilities;
+@using System.Net.Http.Headers;
+@using Newtonsoft.Json;
+@inject Cinnamon.Web.Config.Config config;
+@inject NavigationManager NavigationManager;
 
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
@@ -14,6 +19,45 @@
 
 <div class="creation-overview col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="row">
+        @if (Model.Activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            <div class="form-group">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="title" class="form-control-label right-margin">Schedule Type</label>
+                        </td>
+                    </tr>
+                </table>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="experience-type" id="via-cinnamon" @onchange="@(()=>ScheduleTypeChanged(1))" value="1" checked="@(Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal ? true : false)">
+                            <label class="form-check-label" for="online">
+                                Cinnamon
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="experience-type" id="in-person" @onchange="@(()=>ScheduleTypeChanged(2))" value="2" checked="@(Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Calendly ? true : false)">
+                            <label class="form-check-label" for="in-person">
+                                Calendly
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="calendly-button-section">
+                           @* @if (Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Calendly)
+                            {
+                                <button id="btnScheduleViaCalendly" type="button" class="btn btn-primary border-0" @onclick=ScheduleViaCalendly>Schedule Via Calendly</button>
+                                <small class="form-text text-muted sub-details d-none d-sm-block d-md-block d-lg-block d-xl-block">@Model.Activity.SchedulingUrl</small>
+                            }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
         <div class="form-group">
             <table class="field-heading-section">
                 <tr>
@@ -24,7 +68,7 @@
                         <label for="title" class="form-control-label right-margin">Title</label>
                     </td>
                     <td>
-                        <img src="images/experience-creation/info-icon.svg" id="info-title" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-1.png" />
+                        <img src="images/experience-creation/info-icon.svg" id="info-title" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-1.svg" />
                     </td>
                 </tr>
             </table>
@@ -42,7 +86,7 @@
                         <label for="title" class="form-control-label label-top-margin right-margin">Description</label>
                     </td>
                     <td>
-                        <img src="images/experience-creation/info-icon.svg" id="info-description" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-2.png" />
+                        <img src="images/experience-creation/info-icon.svg" id="info-description" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-1.svg" />
                     </td>
                 </tr>
             </table>
@@ -85,6 +129,9 @@
 @code {
     [Parameter]
     public Models.ExperienceUpdateModel Model { get; set; }
+
+    public string Code { get; set; }
+
 
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
     private string ShowErrorMessage()
@@ -149,6 +196,68 @@
 
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
+
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var code))
+            {
+                Code = code;
+                await GetSchedulingUrl(code);
+            }
         }
+    }
+
+    private void ScheduleTypeChanged(int val)
+    {
+        Model.Activity.ScheduleType = (Framework.Enums.Enums.ScheduleType)val;
+    }
+
+    private void ScheduleViaCalendly()
+    {
+        var url = $"{config.Authentication.Calendly.MainUrl}/oauth/authorize?client_id={config.Authentication.Calendly.UpdateClientId}&response_type=code&redirect_uri={config.Authentication.Calendly.UpdateRedirectUri}";
+
+        NavigationManager.NavigateTo(url);
+    }
+
+    private async Task GetSchedulingUrl(string code)
+    {
+        var postData = new List<KeyValuePair<string, string>>
+        {
+        };
+
+        var tokenModel = new TokenModel();
+        var userModel = new UserModel();
+
+        HttpContent content = new FormUrlEncodedContent(postData);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+        using (var client = new HttpClient())
+        {
+            using (HttpResponseMessage response = await client.PostAsync($"{config.Authentication.Calendly.AuthUrl}oauth/token?grant_type=authorization_code&client_id={config.Authentication.Calendly.ClientId}&client_secret={config.Authentication.Calendly.ClientSecret}&code={code}&redirect_uri={config.Authentication.Calendly.RedirectUri}", content))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    tokenModel = JsonConvert.DeserializeObject<TokenModel>(response.Content.ReadAsStringAsync().Result);
+                }
+            }
+        }
+
+        using (var client = new HttpClient())
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{config.Authentication.Calendly.ApiUrl}users/me");
+            request.Headers.Add("Authorization", $"Bearer {tokenModel.AccessToken}");
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    userModel = JsonConvert.DeserializeObject<UserModel>(response.Content.ReadAsStringAsync().Result);
+
+                    Model.Activity.SchedulingUrl = userModel.Resource.SchedulingUrl;
+                    Model.Activity.ScheduleType = Framework.Enums.Enums.ScheduleType.Calendly;
+                }
+            }
+        }
+
+        StateHasChanged();
     }
 }

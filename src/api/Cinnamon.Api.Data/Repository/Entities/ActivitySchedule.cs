@@ -11,7 +11,7 @@ public class ActivitySchedule : BaseEntity
     public decimal Price {get; set;}
     public string UnitPrice {get; set;} = "PHP";
     public int PerUnit1 { get; set; } = 1;
-    public string PriceUnit1 { get; set; } = "Head";
+    public string PriceUnit1 { get; set; } = "Enrollee";
     public int PerUnit2 { get; set; } = 1;
     public string PriceUnit2 { get; set; } = "Session";
     public int Order {get; set;}
@@ -22,4 +22,8 @@ public class ActivitySchedule : BaseEntity
     public string SessionName { get; set; }
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
+    public int ScheduleType { get; set; }
+    public int PriceType { get; set; }
+    public string SchedulingUrl { get; set; }
+    public virtual IList<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
 }

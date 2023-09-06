@@ -40,62 +40,66 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
     {
         try
         {
-            // limit to 10mb for all image files
-            const int maxFilSize = 10000000;
-            var img1Size = args.Image1 != null ? args.Image1.Length : 0;
-            var img2Size = args.Image2 != null ? args.Image2.Length : 0;
-            var img3Size = args.Image3 != null ? args.Image3.Length : 0;
+            // limit to 25mb for all image files
+            const int maxFilSize = 25000000;
+            var goodImages = args.Images is not null ? args.Images.Where(i => i is not null).ToList() : new List<IFormFile>();
+            var totalImagesSize = goodImages.Sum(i => i.Length);
 
-            var totalImageSize = img1Size + img2Size + img3Size;
-
-            if(totalImageSize > maxFilSize)
+            if(totalImagesSize > maxFilSize)
             {
                 return AppResult<UploadActivityImageResult>.CreateFailed(
-                    new ApplicationException("Can only upload 10mb for all images"), "Can only upload 10mb for all images");
+                    new ApplicationException("Can only upload 25mb for all images"), "Can only upload 25mb for all images");
+            }
+
+            if(goodImages.Count() > 0 && args.Orders is not null && goodImages.Count != args.Orders.Count)
+            {
+                return AppResult<UploadActivityImageResult>.CreateFailed(
+                    new ApplicationException("Invalid request."), "Invalid request.");
             }
 
             // check activity
             var activity = await getOwnedActivityHandler.ExecuteAsync(new GetOwnedActivityArgs {ActivityId = args.ActivityId, IncludeActivityImages = true});
             if(!activity.Succeeded || activity.Result == null)
             {
-                return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException(activity.Message), activity.Message);
+                return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
             }
             
-            var images = activity.Result.Images.OrderBy(i => i.Id).ToList();
-
-            // validate file type and create unique image names
-            var image1Valid = args.Image1 != null ? IsValidType(args.Image1.ContentType) : AppResult<string>.CreateSucceeded("png","");
-            var image2Valid = args.Image2 != null ? IsValidType(args.Image2.ContentType) : AppResult<string>.CreateSucceeded("png","");
-            var image3Valid = args.Image3 != null ? IsValidType(args.Image3.ContentType) : AppResult<string>.CreateSucceeded("png","");
-
-            if(!image1Valid.Succeeded || !image2Valid.Succeeded || !image3Valid.Succeeded)
-            {
-                return AppResult<UploadActivityImageResult>.CreateFailed(
-                    new ApplicationException("Invalid image file formats. Can only accept png and jpg"), "Invalid image file formats. Can only accept png and jpg");
-            }
-
+            var images = activity.Result.Images.OrderBy(i => i.Order);
+            var deletedImages = args.DeletedIds is not null ? images.Where(i => args.DeletedIds.Contains(i.Id)) : null;
+            var oldImages = args.DeletedIds is not null ? images.Where(i => !args.DeletedIds.Contains(i.Id)) : images;
             var listImagesToUpload = new List<AzureUploadArgs.Image>();
-            if(args.Image1 != null)
+
+            foreach(var uploadedImage in goodImages)
             {
-                var image1 = $"{Guid.NewGuid().ToString()}-activity-image.{image1Valid.Result}";
-                listImagesToUpload.Add(new AzureUploadArgs.Image {File = args.Image1, ImageName = image1});
-            }
-            if(args.Image2 != null)
-            {
-                var image2 = $"{Guid.NewGuid().ToString()}-activity-image.{image2Valid.Result}";
-                listImagesToUpload.Add(new AzureUploadArgs.Image {File = args.Image2, ImageName = image2});
-            }
-            if(args.Image3 != null)
-            {
-                var image3 = $"{Guid.NewGuid().ToString()}-activity-image.{image3Valid.Result}";
-                listImagesToUpload.Add(new AzureUploadArgs.Image {File = args.Image3, ImageName = image3});
+                var validateImage = IsValidType(uploadedImage.ContentType);
+                if(!validateImage.Succeeded || validateImage.Result is null)
+                {
+                    return AppResult<UploadActivityImageResult>.CreateFailed(
+                        new ApplicationException("Invalid image file formats. Can only accept png and jpg"), "Invalid image file formats. Can only accept png and jpg");
+                }
+
+                var imageName = $"{Guid.NewGuid().ToString()}-activity-image.{validateImage.Result}";
+                listImagesToUpload.Add(new AzureUploadArgs.Image {File = uploadedImage, ImageName = imageName});
             }
 
-            // required 3 images to upload when activity images are empty yet
-            if(images.Count == 0 && listImagesToUpload.Count < 3)
+            var totalImagesCount = oldImages.Count() + listImagesToUpload.Count;
+            // minimum of 3 images and maximum of 7 images including cover
+            if(totalImagesCount > 7 || totalImagesCount < 3)
             {
                 return AppResult<UploadActivityImageResult>.CreateFailed(
-                    new ApplicationException("Required 3 images to upload"), "Required 3 images to upload");
+                    new ApplicationException("Minimum of 3 images and maximum of 7 images."), "Minimum of 3 images and maximum of 7 images.");
+            }
+
+            // delete activity images
+            if(deletedImages is not null)
+            {
+                var deleteImagesRes = await activityImagesData.RemoveMultipleIds(new Framework.ApiCommand.ApiData.ActivityImage.Request.RemoveMultipleIdsArgs {
+                    Ids = deletedImages.Select(i => i.Id).ToList()
+                });
+                if(!deleteImagesRes.Succeeded || deleteImagesRes.Result is null || !deleteImagesRes.Result.IsSuccess)
+                {
+                    return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException("An error occured when updating images."), "An error occured when updating images.");
+                }
             }
 
             // upload to azure blob
@@ -110,102 +114,38 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                     new ApplicationException("An error occured when uploading images."), "An error occured when uploading images.");
             }
 
-            // create if dont have images else update it
-            if(images.Count == 0)
+            var saveImageSrc = await activityImagesData.CreateManyActivityImage(new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs {
+                Images = createBlob.Result.FilePaths.Select((s,index) => {
+                    return new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs.CreateImage {
+                        ActivityId = args.ActivityId,
+                        ImageName = s.FileName,
+                        ImageSrc = s.FileSrc,
+                        Order = args.Orders is not null ? args.Orders[index] : 0
+                    };
+                })
+            });
+
+            if(!saveImageSrc.Succeeded || saveImageSrc.Result == null)
             {
-                var saveImageSrc = await activityImagesData.CreateManyActivityImage(new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs {
-                    Images = createBlob.Result.FilePaths.Select((s,index) => {
-                        return new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs.CreateImage {
-                            ActivityId = args.ActivityId,
-                            ImageName = s.FileName,
-                            ImageSrc = s.FileSrc,
-                            Order = index + 1
-                        };
-                    })
-                });
-
-                if(!saveImageSrc.Succeeded || saveImageSrc.Result == null)
-                {
-                    return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException(saveImageSrc.Message), saveImageSrc.Message);
-                }
-
-                if(saveImageSrc.Succeeded && !saveImageSrc.Result.IsSuccess)
-                {
-                    return AppResult<UploadActivityImageResult>.CreateFailed(
-                        new ApplicationException(saveImageSrc.Result.ErrorInfo?.Message), "An error occured in UploadActivityImageHandler");
-                }
-                var savedImage = saveImageSrc.Result.Result;
-
-                return AppResult<UploadActivityImageResult>.CreateSucceeded(new UploadActivityImageResult {
-                    Image1Path = savedImage.Count() >=1 ? savedImage.ElementAt(0).ImageLocation : string.Empty,
-                    Image2Path = savedImage.Count() >=2 ? savedImage.ElementAt(1).ImageLocation : string.Empty,
-                    Image3Path = savedImage.Count() >=3 ? savedImage.ElementAt(2).ImageLocation : string.Empty
-                }, "Successfully uploaded activity images");
+                return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException(saveImageSrc.Message), saveImageSrc.Message);
             }
-            else 
+
+            if(saveImageSrc.Succeeded && !saveImageSrc.Result.IsSuccess)
             {
-                // update the image name and sources
-                var previousImgs = new List<string>();
-                var paths = createBlob.Result.FilePaths.ToList();
-
-                int runningIndex = 0;
-                if(args.Image1 != null && images.Count >= 1 && paths.Count >= runningIndex +1)
-                {
-                    previousImgs.Add(images[0].Name);
-                    images[0].ImageSrc = paths[runningIndex].FileSrc;
-                    images[0].Name = paths[runningIndex].FileName;
-                    runningIndex++;
-                }
-                if(args.Image2 != null && images.Count >= 2 && paths.Count >= runningIndex + 1)
-                {
-                    previousImgs.Add(images[1].Name);
-                    images[1].ImageSrc = paths[runningIndex].FileSrc;
-                    images[1].Name = paths[runningIndex].FileName;
-                    runningIndex++;
-                }
-                if(args.Image3 != null && images.Count >= 3 && paths.Count >= runningIndex + 1)
-                {
-                    previousImgs.Add(images[2].Name);
-                    images[2].ImageSrc = paths[runningIndex].FileSrc;
-                    images[2].Name = paths[runningIndex].FileName;
-                }
-
-                var saveUpdated = await activityImagesData.UpdateManyActivityImage(new Framework.ApiCommand.ApiData.ActivityImage.Request.UpdateManyActivityImageArgs {
-                    Images = images.Select((i,index) => {
-                        return new Framework.ApiCommand.ApiData.ActivityImage.Request.UpdateManyActivityImageArgs.UpdateImage { 
-                            ActivityId = args.ActivityId,
-                            Id = i.Id,
-                            ImageName = i.Name,
-                            ImageSrc = i.ImageSrc,
-                            Order = index + 1
-                        };
-                    })
-                });
-
-                if(!saveUpdated.Succeeded || saveUpdated.Result == null)
-                {
-                    return AppResult<UploadActivityImageResult>.CreateFailed(new ApplicationException(saveUpdated.Message), saveUpdated.Message);
-                }
-
-                if(saveUpdated.Succeeded && !saveUpdated.Result.IsSuccess)
-                {
-                    return AppResult<UploadActivityImageResult>.CreateFailed(
-                        new ApplicationException(saveUpdated.Result.ErrorInfo?.Message), "An error occured in UploadActivityImageHandler");
-                }
-
-                // delete previous images to azure blob and don't check if successful or not
-                var deleteBlob = await deleteAzureBlob.ExecuteAsync(new AzureDeleteFilesArgs {
-                    Container = "upload-container",
-                    FileNames = previousImgs
-                });
-                var updatedImages = saveUpdated.Result.Result.ToList();
-
-                return AppResult<UploadActivityImageResult>.CreateSucceeded(new UploadActivityImageResult {
-                    Image1Path = updatedImages.Count >= 1 ? updatedImages[0].ImageLocation : string.Empty,
-                    Image2Path = updatedImages.Count >= 2 ? updatedImages[1].ImageLocation : string.Empty,
-                    Image3Path = updatedImages.Count >=3 ? updatedImages[2].ImageLocation : string.Empty
-                }, "Successfully update activity images");
+                return AppResult<UploadActivityImageResult>.CreateFailed(
+                    new ApplicationException(saveImageSrc.Result.ErrorInfo?.Message), "An error occured in UploadActivityImageHandler");
             }
+            var savedImage = saveImageSrc.Result.Result;
+
+            // delete previous images to azure blob and don't check if successful or not
+            var deleteBlob = await deleteAzureBlob.ExecuteAsync(new AzureDeleteFilesArgs {
+                Container = "upload-container",
+                FileNames = deletedImages is not null ? deletedImages.Select(i => i.Name) : new List<string>()
+            });
+
+            return AppResult<UploadActivityImageResult>.CreateSucceeded(new UploadActivityImageResult {
+                UploadedPaths = createBlob.Result.FilePaths.Select(i => i.FileSrc).ToList()
+            }, "Successfully uploaded activity images");
         }
         catch (Exception ex)
         {

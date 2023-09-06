@@ -48,7 +48,8 @@ public class ActivityDTO
     public int CompletedStudents { get; set; }
     public bool IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus Status { get; set; }
-    
+    public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
+
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
     public CustomerDTO Owner {get; set;}

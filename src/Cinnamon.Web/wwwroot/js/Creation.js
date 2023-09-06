@@ -50,7 +50,7 @@ export function confirmation() {
 
                             $("#regForm *").attr('readonly', 'readonly');
 
-                            setTimeout(redirectToExplore, 2000);
+                            setTimeout(redirectToDashboard, 2000);
                         }
 
                     } else {
@@ -63,11 +63,11 @@ export function confirmation() {
 
             popEventListenerAdded = true;
         }
-       
+
 
         $("#regForm").on("mousedown", stopNavigate);
 
-        
+
     });
 
     function stopNavigate() {
@@ -89,6 +89,11 @@ export function scrollToRequiredField(container) {
         var field = document.getElementById(fieldId);
         var top = field.offsetTop - 120;
         window.scrollTo(0, top);
+    }, 200);
+}
+export function scrollToPricingandSchedule() {
+    $('html, body').animate({
+        scrollTop: $(".pricing-schedule").offset().top
     }, 200);
 }
 
@@ -165,6 +170,13 @@ function createUpdateActivity() {
 
 
         $('#activitySchedules .accordion-item .accordion-collapse .accordion-body').each(function () {
+            let hasExpiration = 0;
+
+            if ($(this).find('[id^=at-start-]').prop('checked'))
+                hasExpiration = 1;
+            else if ($(this).find('[id^=first-attendance-]').prop('checked'))
+                hasExpiration = 2;
+
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Id", $(this).find('#schedule-id').val());
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Name", replaceEmptyvalue($(this).find('#schedule-name').val(), NOTHING_PROVIDED));
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].DateTime", replaceEmptyvalue($(this).find('#schedule-time').val(), NOTHING_PROVIDED));
@@ -176,28 +188,39 @@ function createUpdateActivity() {
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit2", replaceEmptyvalue("Session", NOTHING_PROVIDED));
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Order", 0);
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].HasExpiration", hasExpiration);
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsSetSession", $(this).find('.set-session').prop('checked'));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(), ''));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(), ''));
 
             scheduleCounter++;
         });
 
         $('.pricing-schedule').each(function () {
+            let hasExpiration = 0;
 
-            var isValid = ($(this).find('#schedule-name').val() && $(this).find('#schedule-time').val() && $(this).find('#price-input').val() > 0) ? true : false;
+            if ($(this).find('[id^=at-start-]').prop('checked'))
+                hasExpiration = 1;
+            else if ($(this).find('[id^=first-attendance-]').prop('checked'))
+                hasExpiration = 2;
 
-            if (isValid) {
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Name", replaceEmptyvalue($(this).find('#schedule-name').val(), NOTHING_PROVIDED));
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].DateTime", replaceEmptyvalue($(this).find('#schedule-time').val(), NOTHING_PROVIDED));
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Price", $(this).find('#price-input').val());
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].UnitPrice", replaceEmptyvalue("PHP", NOTHING_PROVIDED));
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PerUnit1", 1);
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit1", replaceEmptyvalue("Head", NOTHING_PROVIDED));
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PerUnit2", $(this).find('#unit2-input').val());
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit2", replaceEmptyvalue("Session", NOTHING_PROVIDED));
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Order", 0);
-                formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Id", $(this).find('#schedule-id').val());
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Name", replaceEmptyvalue($(this).find('#schedule-name').val(), NOTHING_PROVIDED));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].DateTime", replaceEmptyvalue($(this).find('#schedule-time').val(), NOTHING_PROVIDED));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Price", $(this).find('#price-input').val());
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].UnitPrice", replaceEmptyvalue("PHP", NOTHING_PROVIDED));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PerUnit1", 1);
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit1", replaceEmptyvalue("Head", NOTHING_PROVIDED));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PerUnit2", $(this).find('#unit2-input').val());
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit2", replaceEmptyvalue("Session", NOTHING_PROVIDED));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].Order", 0);
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].HasExpiration", hasExpiration);
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsSetSession", $(this).find('.set-session').prop('checked'));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(), ''));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(), ''));
 
-                scheduleCounter++;
-            }
+            scheduleCounter++;
         });
 
         console.log('update activity');
@@ -307,6 +330,13 @@ function populateFormData() {
     formData.append("Status", 2);
 
     $('#activitySchedules .accordion-item .accordion-collapse .accordion-body').each(function () {
+        let hasExpiration = 0;
+
+        if ($(this).find('[id^=at-start-]').prop('checked'))
+            hasExpiration = 1;
+        else if ($(this).find('[id^=first-attendance-]').prop('checked'))
+            hasExpiration = 2;
+
         formData.append("ActivitySchedules[" + scheduleCounter + "].Name", replaceEmptyvalue($(this).find('#schedule-name').val(), NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].DateTime", replaceEmptyvalue($(this).find('#schedule-time').val(), NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].Price", $(this).find('#price-input').val());
@@ -317,11 +347,22 @@ function populateFormData() {
         formData.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit2", replaceEmptyvalue("Session", NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].Order", 0);
         formData.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].HasExpiration", hasExpiration);
+        formData.append("ActivitySchedules[" + scheduleCounter + "].IsSetSession", $(this).find('.set-session').prop('checked'));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(), ''));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(), '1/1/0001'));
 
         scheduleCounter++;
     });
 
     $('.pricing-schedule').each(function () {
+        let hasExpiration = 0;
+
+        if ($(this).find('[id^=at-start-]').prop('checked'))
+            hasExpiration = 1;
+        else if ($(this).find('[id^=first-attendance-]').prop('checked'))
+            hasExpiration = 2;
+
         formData.append("ActivitySchedules[" + scheduleCounter + "].Name", replaceEmptyvalue($(this).find('#schedule-name').val(), NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].DateTime", replaceEmptyvalue($(this).find('#schedule-time').val(), NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].Price", $(this).find('#price-input').val());
@@ -332,6 +373,10 @@ function populateFormData() {
         formData.append("ActivitySchedules[" + scheduleCounter + "].PriceUnit2", replaceEmptyvalue("Session", NOTHING_PROVIDED));
         formData.append("ActivitySchedules[" + scheduleCounter + "].Order", 0);
         formData.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].HasExpiration", hasExpiration);
+        formData.append("ActivitySchedules[" + scheduleCounter + "].IsSetSession", $(this).find('.set-session').prop('checked'));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(), 'N/A'));
+        formData.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(), '1/1/0001'));
 
         scheduleCounter++;
     });

@@ -27,7 +27,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -49,7 +49,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByHandlerAsync(handler, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -161,7 +161,7 @@ public class ActivityController : ControllerBase
                 args.Description, args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1,
                 args.Address2, args.District, args.City, args.Subdivision, args.Region, args.Barangay, args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem, args.AdditionalRequirements,
                 args.ActivityLevel, args.SkillLevel, args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2,
-                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler,args.PinnedLocation, args.Status);
+                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler,args.PinnedLocation, args.Status, args.ExperienceCreationType);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -348,6 +348,39 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("PopularActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.PopularActivities(args.CountPerPage, args.PageIndex);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(
+                new PopularActivitiesResult 
+                {
+                    Result = result.Result, IsSuccess = true, 
+                    Pagination = new Pagination
+                    {
+                        PageIndex = args.PageIndex,
+                        PerPage = args.CountPerPage,
+                        TotalRecords = result.Result.Count(),
+                        TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                    (int)Math.Ceiling((double)result.Result.Count() / args.CountPerPage.Value) : null
+                    } 
+                });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -15,33 +15,7 @@
 <PageTitle>Welcome to Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</PageTitle>
 <SeoMeta />
 
-<!--Image Section 1-->
-<div class="image-1">
-    <img src="images/landing-page-images/camera.png">
-</div>
-<div class="image-2">
-    <img src="images/landing-page-images/laptop.png">
-</div>
-<div class="image-3">
-    <img src="images/landing-page-images/ball.png">
-</div>
-<div class="image-4">
-    <img src="images/landing-page-images/ticket.png">
-</div>
-<div class="circle-1">
-    <img src="images/landing-page-images/circle.png">
-</div>
-<div class="circle-2">
-    <img src="images/landing-page-images/circle-2.png">
-</div>
-
-<div class="circle-1-md">
-    <img src="images/landing-page-images/circle-md.png">
-</div>
-
-<div class="circle-2-md">
-    <img src="images/landing-page-images/circle-2-md.png">
-</div>
+<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
 
 <div class="image-1-mobile">
     <img src="images/landing-page-images/camera-mobile.png">
@@ -55,25 +29,136 @@
 <div class="image-4-mobile">
     <img src="images/landing-page-images/ticket-mobile.png">
 </div>
-<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+<div class="circle-1-md">
+    <img src="images/landing-page-images/circle-md.png">
+</div>
+<div class="circle-2-md">
+    <img src="images/landing-page-images/circle-2-md.png">
+</div>
 <!--Section 1-->
-<div class="section-1 row text-center">
-    <div class="your-family-text justify-content-center">
-        <p class="family">Your family</p>
-        <p class="family">experience partner</p>
-        <p class="activities">Activities, learnings and events for you and your loved ones.</p>
+<div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+    <img class="blob_1" alt="blob_1" src="images/landing-page-images/circle.png">
+    <img class="float_1" alt="float_1" src="images/landing-page-images/ball.png">
+    <main>
+        <p class="hero_title">Your family experience partner</p>
+        <p class="hero_subtitle">Activities, learnings and events for you and your loved ones.</p>
+    </main>
+    <img class="float_2" alt="float_2" src="images/landing-page-images/camera.png">
+    <img class="blob_2" alt="blob_2" src="images/landing-page-images/circle-2.png">
+</div>
+
+<div class="wrapper search_section">
+    <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
+    <div class="search_bar">
+        <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
+        <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind="searchValue" placeholder="Search for an activity.." @oninput="OnChageInput">
+        <button class="explore_button" @onclick="() =>SearchToExplorePage()">
+            @buttonLabel
+        </button>
     </div>
-    <div class="input-group search-section">
-        <input type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
-        <div class="input-group-append border-0">
-            <button id="button-addon3" type="button" class="btn btn-link" style="background-color:#ffa942;" @onclick="() =>SearchToExplorePage()">Explore</button>
-        </div>
+    <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
+</div>
+
+<section class="carousel_pics col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/landing_page_pic1.png">
+        <p class="carousel_pics_text">
+            <span>Coding</span>
+        </p>
     </div>
-    <div class="images-horizontal-lg" style="background:url(images/landing-page-images/img-horizontal-lg.png)">
+
+
+    <div class="landing_page_pic" style="margin-top:140px;">
+        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/landing_page_pic2.png">
+        <p class="carousel_pics_text">
+            <span>Cycling</span>
+        </p>
     </div>
-    <div class="images-horizontal-md" style="background:url(images/landing-page-images/img-horizontal-md.png)">
+
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/landing_page_pic3.png">
+        <p class="carousel_pics_text">
+            <span>Events</span>
+        </p>
     </div>
-    <div class="images-horizontal-sm" style="background:url(images/landing-page-images/img-horizontal-sm.png)">
+
+
+    <div class="landing_page_pic" style="margin-top:140px;">
+        <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/landing_page_pic4.png">
+        <p class="carousel_pics_text">
+            <span>Fun Times</span>
+        </p>
+    </div>
+
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic5" alt="landing_page_pic5" src="images/landing-page-images/landing_page_pic5.png">
+        <p class="carousel_pics_text">
+            <span>Playing</span>
+        </p>
+    </div>
+
+    <div class="landing_page_pic" style="margin-top:140px;">
+        <img class="landing_page_pic6" alt="landing_page_pic6" src="images/landing-page-images/landing_page_pic6.png">
+        <p class="carousel_pics_text">
+            <span>Sports</span>
+        </p>
+    </div>
+</section>
+
+<div class="carousel_pics_mobile col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+    <div class="landing_page_pic">
+        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/img-coding-mobile.png">
+        <p class="carousel_pics_text">
+            <span>Coding</span>
+        </p>
+    </div>
+
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/img-cycling-mobile.png">
+        <p class="carousel_pics_text">
+            <span>Cycling</span>
+        </p>
+    </div>
+
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/img-events-mobile.png">
+        <p class="carousel_pics_text">
+            <span>Events</span>
+        </p>
+    </div>
+</div>
+
+<div class="carousel_pics_tablet col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+    <div class="landing_page_pic">
+        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/img-coding-tablet.png">
+        <p class="carousel_pics_text">
+            <span>Coding</span>
+        </p>
+    </div>
+
+    <div class="landing_page_pic" style="margin-top:90px;">
+        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/img-cycling-tablet.png">
+        <p class="carousel_pics_text">
+            <span>Cycling</span>
+        </p>
+    </div>
+
+    <div class="landing_page_pic">
+        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/img-events-tablet.png">
+        <p class="carousel_pics_text">
+            <span>Events</span>
+        </p>
+    </div>
+    <div class="landing_page_pic" style=" margin-top:90px;">
+        <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/img-fun-tablet.png">
+        <p class="carousel_pics_text">
+            <span>Fun Times</span>
+        </p>
     </div>
 </div>
 
@@ -87,14 +172,35 @@
 </div>
 
 <!--Section 2-->
-<div class="section-2 row">
-    <div class="section2-container-desktop">
+<section class="section-2" style="position:relative;">
+
+    <div class="custom-shape-divider-top-1691648202">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+        </svg>
     </div>
-    <div class="section2-container-tablet">
+    <div class="wrapper about_us">
+        <div>
+            <img class="about_us_float3" alt="float_3" src="images/landing-page-images/laptop.png">
+            <img class="about_us_float4" alt="float_4" src="images/landing-page-images/ticket.png">
+        </div>
+
+        <div>
+            <p class="about_us_title"><span class="iba_color">Cinnamon</span> is an activity learning & events marketplace.</p>
+            <p class="about_us_subtitle">Our main focus is to help everyone spend their time on meaningful fun experiences by connecting you to people who are passionate about sharing their skills and knowledge.</p>
+        </div>
+
+        <img class="about_us_pic" alt="about_us_pic" src="images/landing-page-images/img-section2-desktop.png">
+        <img class="about_us_pic_tablet" alt="about_us_pic" src="images/landing-page-images/img-section2-tablet.png">
+        <img class="about_us_pic_mobile" alt="about_us_pic" src="images/landing-page-images/img-section2-mobile.png">
     </div>
-    <div class="section2-container-mobile">
+
+    <div class="custom-shape-divider-bottom-1691652212">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+        </svg>
     </div>
-</div>
+</section>
 
 <!--Section 3-->
 @if (activities.Count != 0)
@@ -318,7 +424,7 @@
             <p class="live-passion-text">
                 Live your passion, share your knowledge, and leave a mark on people's lives! An Activity Provider is someone who provides experiences on the Cinnamon platform.
             </p>
-            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => signinModal.Show())">
+            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
                 <span>Sign up now</span>
             </button>
         </div>
@@ -331,7 +437,7 @@
             <p class="live-passion-text">
                 Live your passion, share your knowledge, and leave a mark on people's lives! An Activity Provider is someone who provides experiences on the Cinnamon platform.
             </p>
-            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => signinModal.Show())">
+            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
                 <span>Sign up now</span>
             </button>
         </div>
@@ -344,7 +450,7 @@
             <p class="live-passion-text">
                 Live your passion, share your knowledge, and leave a mark on people's lives! An Activity Provider is someone who provides experiences on the Cinnamon platform.
             </p>
-            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => signinModal.Show())">
+            <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
                 <span>Sign up now</span>
             </button>
         </div>
@@ -399,6 +505,8 @@
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
     public string searchValue = string.Empty;
+
+    public string buttonLabel = "Browse all";
 
     protected override async Task OnInitializedAsync()
     {
@@ -630,5 +738,19 @@
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("/Onboarding");
+    }
+    private Task OnChageInput(ChangeEventArgs e)
+    {
+        string text = e.Value.ToString();
+        if (string.IsNullOrEmpty(text))
+        {
+            buttonLabel = "Browse all";
+        }
+        else
+        {
+            buttonLabel = "Explore";
+        }
+
+        return Task.CompletedTask;
     }
 }

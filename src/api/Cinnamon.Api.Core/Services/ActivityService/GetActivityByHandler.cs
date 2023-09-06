@@ -40,7 +40,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
-                    IncludeCustomer = args.IncludeCustomer
+                    IncludeCustomer = args.IncludeCustomer,
+                    IncludeStudents = args.IncludeStudents
                 }
             );
 
@@ -88,6 +89,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                 CreatedBy = activity.CreatedBy,
                 MarDetails = activity.MapDetails,
                 PinnedLocation = activity.PinnedLocation,
+                ExperienceCreationType = activity.ExperienceCreationType,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,
@@ -105,6 +107,9 @@ public class GetActivityByHandler : IGetActivityByHandler
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl
                     };
                 }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
@@ -119,6 +124,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     Handler = activity.Owner.Handler,
                     Id = activity.Owner.Id
                 } : null,
+                OngoingStudents = activity.OngoingStudents,
+                CompletedStudents = activity.CompletedStudents
             };
 
             return AppResult<GetActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get activity");

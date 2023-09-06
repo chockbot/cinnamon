@@ -26,7 +26,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType)
     {
         try
         {
@@ -74,7 +74,8 @@ public class ActivityRepository : IActivityRepository
                 Handler = handler,
                 IsNew = true,
                 Guid = Guid.NewGuid().ToString(),
-                Status = (int)status
+                Status = (int)status,
+                ExperienceCreationTypeId = (int)experienceCreationType
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -442,16 +443,16 @@ public class ActivityRepository : IActivityRepository
                 // address fields
                 if (includeAddres && a.Address != null)
                 {
-                    activityDTO.Address1 = a.Address.Address1;
-                    activityDTO.Address2 = a.Address.Address2;
-                    activityDTO.City = a.Address.City;
-                    activityDTO.District = a.Address.District;
-                    activityDTO.Subdivision = a.Address.Subdivision;
-                    activityDTO.Region = a.Address.Region;
-                    activityDTO.Barangay = a.Address.Barangay;
-                    activityDTO.PostalCode = a.Address.PostalCode;
-                    activityDTO.CityName = a.Address.CityName;
-                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.Address1     = a.Address.Address1;
+                    activityDTO.Address2     = a.Address.Address2;
+                    activityDTO.City         = a.Address.City;
+                    activityDTO.District     = a.Address.District;
+                    activityDTO.Subdivision  = a.Address.Subdivision;
+                    activityDTO.Region       = a.Address.Region;
+                    activityDTO.Barangay     = a.Address.Barangay;
+                    activityDTO.PostalCode   = a.Address.PostalCode;
+                    activityDTO.CityName     = a.Address.CityName;
+                    activityDTO.RegionName   = a.Address.RegionName;
                     activityDTO.BarangayName = a.Address.BarangayName;
                 }
 
@@ -551,8 +552,13 @@ public class ActivityRepository : IActivityRepository
                 if (includeStudents && a.Students != null)
                 {
                     var students = a.Students;
-                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                    activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  && a.ExpirationDateEnd != DateTime.MinValue);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews
@@ -616,7 +622,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
     {
         try
         {
@@ -627,6 +633,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
+            if (includeStudents) includes.Add(a => a.Students);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -655,6 +662,7 @@ public class ActivityRepository : IActivityRepository
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
             };
 
             // address fields
@@ -693,23 +701,51 @@ public class ActivityRepository : IActivityRepository
             {
                 activityDTO.Schedules = activity.Schedules.Select(s => {
                     return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
-                        DateTime = s.DateTime,
-                        Id = s.Id,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2,
-                        Order = s.Order,
+                        DateTime         = s.DateTime,
+                        Id               = s.Id,
+                        Name             = s.Name,
+                        PerUnit1         = s.PerUnit1,
+                        Price            = s.Price,
+                        PriceUnit1       = s.PriceUnit1,
+                        PriceUnit2       = s.PriceUnit2,
+                        UnitPrice        = s.UnitPrice,
+                        PerUnit2         = s.PerUnit2,
+                        Order            = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        IsSetSession     = s.IsSetSession,
+                        SessionName      = s.SessionName,
+                        HasExpiration    = s.HasExpiration,
+                        StartDate        = s.StartDate,
+                        PriceType        = (Enums.PriceType)s.PriceType,
+                        ScheduleType     = (Enums.ScheduleType)s.ScheduleType,
+                        SchedulingUrl    = s.SchedulingUrl,
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        foreach (var schedule in activityDTO.Schedules)
+                        {
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
+
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
+                            }).ToList();
+                        }
+                    }
+                }
             }
 
             // search tags
@@ -761,6 +797,18 @@ public class ActivityRepository : IActivityRepository
                     PhoneNumber = customer.PhoneNumber
                 };
             }
+            // student
+            if (includeStudents && activity.Students != null)
+            {
+                var students = activity.Students;
+                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              && a.ExpirationDateEnd != DateTime.MinValue);
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+            }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
@@ -772,7 +820,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
     {
         try
         {
@@ -783,6 +831,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
+            if (includeStudents) includes.Add(a => a.Students);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -810,6 +859,7 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId
             };
 
             // address fields
@@ -862,9 +912,36 @@ public class ActivityRepository : IActivityRepository
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        SchedulingUrl = s.SchedulingUrl,
+                        ScheduleType = (Enums.ScheduleType)s.ScheduleType
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        foreach (var schedule in activityDTO.Schedules)
+                        {
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
+
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
+                            }).ToList();
+                        }
+                    }
+                }
             }
 
             // search tags
@@ -914,6 +991,18 @@ public class ActivityRepository : IActivityRepository
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
+            }
+            // student
+            if (includeStudents && activity.Students != null)
+            {
+                var students = activity.Students;
+                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                              && a.ExpirationDateEnd != DateTime.MinValue);
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -1329,8 +1418,13 @@ public class ActivityRepository : IActivityRepository
                 if (includeStudents && a.Students != null)
                 {
                     var students = a.Students;
-                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                    activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                                                                  && a.ExpirationDateEnd != DateTime.MinValue);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews
@@ -1429,34 +1523,78 @@ public class ActivityRepository : IActivityRepository
             {
                 return new ActivityDTO
                 {
-                    Description = s.Description,
+                    Description          = s.Description,
                     ExperienceCategoryId = s.ExperienceCategoryId ?? 0,
-                    ExperienceTypeId = s.ExperienceTypeId,
-                    Handler = s.Handler,
-                    Id = s.Id,
+                    ExperienceTypeId     = s.ExperienceTypeId,
+                    Handler              = s.Handler,
+                    Id                   = s.Id,
+                    Address1             = s.Address.Address1,
+                    Address2             = s.Address.Address2,
+                    City                 = s.Address.City,
+                    CityName             = s.Address.CityName,
+                    District             = s.Address.District,
+                    Subdivision          = s.Address.Subdivision,
+                    Region               = s.Address.Region,
+                    RegionName           = s.Address.RegionName,
                     Images = s.Images.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
                     {
-                        ActivityId = i.ActivityId,
-                        Id = i.Id,
+                        ActivityId    = i.ActivityId,
+                        Id            = i.Id,
                         ImageLocation = i.ImageLocation,
-                        ImageName = i.ImageName,
-                        Order = i.Order
+                        ImageName     = i.ImageName,
+                        Order         = i.Order
                     }).ToList(),
                     IsDeactivated = s.IsDeactivated,
-                    IsNew = s.IsNew,
-                    IsPublished = s.IsPublished,
-                    Price = s.Price,
-                    Remarks = s.Remarks,
-                    Status = s.Status == 0 ? ActivityStatus.InProgress : ActivityStatus.Submitted,
+                    IsNew         = s.IsNew,
+                    IsPublished   = s.IsPublished,
+                    Price         = s.Price,
+                    Remarks       = s.Remarks,
+                    Status        = s.Status == 0 ? ActivityStatus.InProgress : ActivityStatus.Submitted,
                     SubCategoryId = s.SubCategoryId ?? 0,
-                    SubTitle = s.Subtitle,
-                    Title = s.Title
+                    SubTitle      = s.Subtitle,
+                    Title         = s.Title,
+                    Schedules = s.Schedules.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                    {
+                        DateTime         = i.DateTime,
+                        Id               = i.Id,
+                        Name             = i.Name,
+                        PerUnit1         = i.PerUnit1,
+                        Price            = i.Price,
+                        PriceUnit1       = i.PriceUnit1,
+                        PriceUnit2       = i.PriceUnit2,
+                        UnitPrice        = i.UnitPrice,
+                        PerUnit2         = i.PerUnit2,
+                        Order            = i.Order,
+                        IsActiveSchedule = i.IsActiveSchedule,
+                        IsSetSession     = i.IsSetSession,
+                        SessionName      = i.SessionName,
+                        HasExpiration    = i.HasExpiration,
+                        StartDate        = i.StartDate,
+                    }).ToList(),
                 };
             }), "Successfully get recommended activities");
         }
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting recommended activities");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    {
+        try
+        {
+            var result = await dataStore.Activity.PopularActivities(take, skip);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
         }
     }
 }

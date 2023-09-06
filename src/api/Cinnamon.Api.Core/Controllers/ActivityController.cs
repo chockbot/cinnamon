@@ -3,6 +3,7 @@ using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -51,8 +52,13 @@ public class ActivityController : ControllerBase
     private readonly ICreateFavoriteHandler createFavoriteHandler;
     private readonly IRemoveFavoriteHandler removeFavoriteHandler;
     private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
+    private readonly IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler;
+    private readonly IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler;
+    private readonly ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler;
+
     private readonly ILogger _logger;
     private readonly IRecommendedActivitiesHandler recommendedActivitiesHandler;
+    private readonly IPopularActivitiesHandler popularActivitiesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -64,13 +70,15 @@ public class ActivityController : ControllerBase
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
-        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler,
+        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
-        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, 
+        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler,
         IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler,
         IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
-        IRecommendedActivitiesHandler recommendedActivitiesHandler)
+        IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
+        IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
+        IPopularActivitiesHandler popularActivitiesHandler)
     {
         _logger = logger;
 
@@ -110,6 +118,10 @@ public class ActivityController : ControllerBase
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.updateCouponHandler = updateCouponHandler;
         this.recommendedActivitiesHandler = recommendedActivitiesHandler;
+        this.getExperienceCreationTypeHandler = getExperienceCreationTypeHandler;
+        this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
+        this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
+        this.popularActivitiesHandler = popularActivitiesHandler;
     }
 
     [Route("CreateActivity")]
@@ -137,6 +149,16 @@ public class ActivityController : ControllerBase
                         SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime
+                        {
+                            DayOfWeek = s.DayOfWeek,
+                            EndTime = s.EndTime,
+                            StartTime = s.StartTime,
+                            IsEnabled = s.IsEnabled
+                        })
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
@@ -164,7 +186,8 @@ public class ActivityController : ControllerBase
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
-                Status = args.Status
+                Status = args.Status,
+                ExperienceCreationType = args.ExperienceCreationType
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -282,7 +305,20 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl,
+                            ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
+                            {
+                                DayOfWeek = a.DayOfWeek,
+                                EndTime = a.EndTime,
+                                StartTime = a.StartTime,
+                                ActivityScheduleId = a.ActivityScheduleId,
+                                ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                                ModelStatus = a.ModelStatus,
+                                IsEnabled = a.IsEnabled
+                            })
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -674,7 +710,8 @@ public class ActivityController : ControllerBase
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
                             IsVerified = a.Owner.IsVerified,
-                        } : null
+                        } : null,
+                        
                     };
                 })
             });
@@ -930,7 +967,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -960,7 +998,19 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl,
+                            ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = act.ActivityScheduleId,
+                                ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                                DayOfWeek = act.DayOfWeek,
+                                EndTime = act.EndTime,
+                                StartTime = act.StartTime,
+                                IsEnabled = act.IsEnabled
+                            }).ToList()
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1001,10 +1051,13 @@ public class ActivityController : ControllerBase
                     Handler = activity.Handler,
                     PinnedLocation= activity.PinnedLocation,
                     Status = activity.Status,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.OngoingStudents
                 }
             });
         }
@@ -1029,7 +1082,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1094,7 +1148,10 @@ public class ActivityController : ControllerBase
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.CompletedStudents
+                    
                 }
             });
         }
@@ -1120,7 +1177,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1150,7 +1208,8 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName  = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1191,6 +1250,7 @@ public class ActivityController : ControllerBase
                     Title = activity.Title,
                     Handler = activity.Handler,
                     PinnedLocation = activity.PinnedLocation,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id,
@@ -1202,7 +1262,9 @@ public class ActivityController : ControllerBase
                             IsOfficial = activity.Owner.IsOfficial,
                             Email = activity.Owner.Email,
                             PhoneNumber = activity.Owner.PhoneNumber
-                        } : null
+                        } : null,
+                    OngoingStudents = activity.OngoingStudents,
+                    CompletedStudents = activity.CompletedStudents
                 }
             });
         }
@@ -1228,7 +1290,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1258,7 +1321,10 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName  = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1299,10 +1365,13 @@ public class ActivityController : ControllerBase
                     Title = activity.Title,
                     Handler = activity.Handler,
                     PinnedLocation = activity.PinnedLocation,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
-                        } : null
+                        } : null,
+                    CompletedStudents = activity.CompletedStudents,
+                    OngoingStudents = activity.OngoingStudents
                 }
             });
         }
@@ -1321,9 +1390,9 @@ public class ActivityController : ControllerBase
         {
             var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
-                Image1 = args.Image1,
-                Image2 = args.Image2,
-                Image3 = args.Image3
+                Images = args.Images,
+                DeletedIds = args.DeletedIds,
+                Orders = args.Orders
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -1331,11 +1400,7 @@ public class ActivityController : ControllerBase
                 return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
             }
 
-            return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
-                Image1 = result.Result.Image1Path,
-                Image2 = result.Result.Image2Path,
-                Image3 = result.Result.Image3Path
-            }});
+            return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = true});
         }
         catch (Exception ex)
         {
@@ -2183,19 +2248,43 @@ public class ActivityController : ControllerBase
                 Result = result.Result.RecommendedActivities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
-                        ActivityId = a.Id,
-                        Handler = a.Handler,
-                        Description = a.Description,
-                        Title = a.Title,
-                        Price = a.Price,
-                        Images = a.Images.Select(i =>
+                        ActivityId       = a.Id,
+                        Handler          = a.Handler,
+                        Description      = a.Description,
+                        Title            = a.Title,
+                        Price            = a.Price,
+                        Address1         = a.Address1,
+                        Address2         = a.Address2,
+                        City             = a.City,
+                        CityName         = a.CityName,
+                        Subdivision      = a.Subdivision,
+                        Region           = a.Region,
+                        RegionName       = a.RegionName,
+                        Barangay         = a.Barangay,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Images           = a.Images.Select(i =>
                         {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
-                                Id = i.Id,
+                                Id       = i.Id,
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name,
-                                Order = i.Order
+                                Name     = i.Name,
+                                Order    = i.Order
+                            };
+                        }),
+                        ActivitySchedules = a.ActivitySchedules.Select(i =>
+                        {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                Id               = i.Id,
+                                DateTime         = i.DateTime,
+                                Name             = i.Name,
+                                PerUnit1         = i.PerUnit1,
+                                PerUnit2         = i.PerUnit2,
+                                Price            = i.Price,
+                                PriceUnit1       = i.PriceUnit1,
+                                PriceUnit2       = i.PriceUnit2,
+                                UnitPrice        = i.UnitPrice,
                             };
                         })
                     };
@@ -2205,6 +2294,163 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ExperienceCreationTypes")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExperienceCreationTypes()
+    {
+        try
+        {
+            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetExperienceCreationTypeResult
+            {
+                Result = result.Result.ExperienceCreationTypes.Select(e => {
+                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
+                    {
+                        Id = e.Id,
+                        Description = e.Description,
+                        ImagePath = e.ImagePath,
+                        IsActive = e.IsActive,
+                        Name = e.Name
+                    };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetActivityScheduleTimes")]
+    [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(GetActivityScheduleTimesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetActivityScheduleTimes([FromQuery] GetActivityScheduleTimesArgs args)
+    {
+        try
+        {
+            var result = await getActivityScheduleTimesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetActivityScheduleTimesArgs
+            {
+                ActivityScheduleId = args.ActivityScheduleId,
+                DayOfWeek = args.DayOfWeek,
+                ScheduleDate = args.ScheduleDate
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityScheduleTimesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetActivityScheduleTimesResult
+            {
+                Result = result.Result.ActivityScheduleTimes.Select(e => {
+                   return new Framework.ApiCommand.ApiCore.DTO.Schedule.ActivityScheduleTimeModel
+                   {
+                       ActivityScheduleId = e.ActivityScheduleId,
+                       ActivityScheduleTimeId = e.ActivityScheduleTimeId,
+                       DayOfWeek = e.DayOfWeek,
+                       EndTime = e.EndTime,
+                       StartTime = e.StartTime,
+                       IsAvailable = e.IsAvailable
+                   };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityScheduleTimesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateOngoingActivitySchedule")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOngoingActivityScheduleResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateOngoingActivitySchedule([FromBody] CreateOngoingActivityScheduleArgs args)
+    {
+        try
+        {
+            var result = await createOngoingActivityScheduleHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateOngoingActivityScheduleArgs
+            {
+                ActivityScheduleTimeId = args.ActivityScheduleTimeId,
+                IsCompleted = args.IsCompleted,
+                PurchaseOrderId = args.PurchaseOrderId,
+                ScheduleDate = args.ScheduleDate,
+                CreatedBy = args.CreatedBy
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateOngoingActivityScheduleResult
+            {
+               IsSuccess = result.Succeeded,
+               Result = result.Succeeded
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("PopularActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs {
+                Skip = args.PageIndex,
+                Take = args.CountPerPage
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new PopularActivitiesResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
+                    Activities = result.Result.Activities.Select(a => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
+                            CityName = a.CityName,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Handler = a.Handler,
+                            Id = a.Id,
+                            ImageSrc = a.ImageSrc,
+                            IsNew = a.IsNew,
+                            MakerId = a.MakerId,
+                            OngoingStudentCount = a.OngoingStudentCount,
+                            Price = a.Price,
+                            Rating = a.Rating,
+                            RegionName = a.RegionName,
+                            ReviewCount = a.ReviewCount,
+                            StudentCount = a.StudentCount,
+                            Title = a.Title
+                        };
+                    })
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

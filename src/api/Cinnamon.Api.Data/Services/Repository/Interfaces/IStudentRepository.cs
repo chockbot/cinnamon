@@ -17,10 +17,9 @@ public interface IStudentRepository
     Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
         int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate, bool? hasReview);
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
-    Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive);
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive, bool isExpired);
     Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement);
-    Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int? customerId, int? count, int? skip);
-
-    Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int? customerId, int? count, int? skip);
-
+    Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int customerId, int? count, int? skip);
+    Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int customerId, int? count, int? skip);
+    Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
 }

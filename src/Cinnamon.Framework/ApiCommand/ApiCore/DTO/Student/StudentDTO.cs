@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Schedule;
+
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 
 public class StudentDTO
 {
@@ -16,6 +18,6 @@ public class StudentDTO
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
     public bool HasReview { get; set; }
-
-    public int HasExpiration { get; set; }
+    public StudentAttendanceDTO studentAttendanceDTO { get; set; }
+    public ActivityScheduleDTO activityScheduleDTO { get; set; }
 }

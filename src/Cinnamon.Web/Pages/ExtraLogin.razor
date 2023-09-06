@@ -1,0 +1,102 @@
+@page "/6i3y0o8A6YVd0PdHEFdvXHsCZwwBVBReZUCgyzzGV93uCcvBLQC5eZ3F2NGX"
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Models;
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager navigationManager
+@inject IJSRuntime JS;
+
+<Container>
+    <div>
+        <Validations Mode="ValidationMode.Manual" Model="formModel" @ref="formValidation">
+            <Validation>
+                <Field class="mb-3">
+                    <FieldLabel class="font-16">Email Address</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="Your email address" Size="Size.Small" Role="TextRole.Email" @bind-Text="formModel.Email">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field class="mb-3">
+                    <FieldLabel class="font-16">Password</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="Your password" Size="Size.Small" Role="TextRole.Password" @bind-Text="formModel.Password">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <div>
+                <Button Type="ButtonType.Submit" class="btn-primary font-16" Border="Border.Is0"
+                    Loading="isSubmitting" Disabled="isSubmitting" Clicked="SubmitLogin">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        Logging In
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Login Account
+                    </ChildContent>
+                </Button>
+                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="!string.IsNullOrEmpty(errorMessage)">
+                    <AlertDescription>@errorMessage</AlertDescription>
+                </Alert>
+            </div>
+        </Validations>
+    </div>
+</Container>
+
+@code
+{
+    private FormModel? formModel = new(); 
+    private Validations? formValidation;
+    private bool isSubmitting = false;
+    private string errorMessage = string.Empty;
+    private IJSObjectReference? jsModule;
+
+    private async Task SubmitLogin()
+    {
+        errorMessage = string.Empty;
+        if(await formValidation.ValidateAll())
+        {
+            isSubmitting = true;
+            var loginRes = await accountApiHandler.SecretLogin(new Framework.ApiCommand.ApiCore.Account.Request.SecretLoginArgs {
+                Email = formModel.Email,
+                Password = formModel.Password
+            });
+            
+            if(!loginRes.Succeeded || loginRes.Result is null || !loginRes.Result.IsSuccess)
+            {
+                errorMessage = loginRes.Result?.ErrorInfo?.Message ?? loginRes.Message;
+                return;
+            }
+            
+            var payload = new {
+                TokenGeneratedToken = loginRes.Result.Result.GeneratedToken,
+                TokenGeneratedEmail = loginRes.Result.Result.Email
+            };
+            var jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/XfgTbGaz7DsUp2CwrcRuhLtj34mv95dPwjVasUDitymVkjUBCfz97LR8qHrm.js");
+            var jsResult = await jsModule.InvokeAsync<JsResultModel>("getUser", payload);
+            if(jsResult.Success)
+            {
+                navigationManager.NavigateTo("explore", true);
+            }
+            isSubmitting = false;
+        }
+    }
+
+    private class FormModel 
+    {
+        [Required]
+        [EmailAddress]
+        public string Email {get; set;}
+        [Required]
+        public string Password {get; set;}
+    }
+}

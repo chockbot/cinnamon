@@ -21,7 +21,7 @@
                         <label for="title" class="form-control-label right-margin">Type of experience</label>
                     </td>
                     <td>
-                        <img src="images/experience-creation/info-icon.svg" id="info-experience-type" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-3.png" />
+                        <img src="images/experience-creation/info-icon.svg" id="info-experience-type" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-2.svg" />
                     </td>
                 </tr>
             </table>
@@ -198,7 +198,8 @@
                         Code = r.Code,
                         Name = r.Name,
                         CityCode = r.CityCode
-                    });
+                    })
+                    .OrderBy(o => o.Name);
             }
         }
     }

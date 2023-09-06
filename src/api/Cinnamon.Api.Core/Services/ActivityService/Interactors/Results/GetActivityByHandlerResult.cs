@@ -1,3 +1,5 @@
+using Cinnamon.Framework.Enums;
+
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class GetActivityByHandlerResult 
@@ -36,11 +38,13 @@ public class GetActivityByHandlerResult
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
+    public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public CustomerOwner? Owner {get; set;}
-        
+    public int CompletedStudents { get; set; }
+    public int OngoingStudents { get; set; }
 
     public class ActivitySchedule 
     {
@@ -59,6 +63,9 @@ public class GetActivityByHandlerResult
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.PriceType PriceType { get; set; }
+        public Enums.ScheduleType ScheduleType { get; set; }
+        public string SchedulingUrl { get; set; }
     }
 
     public class ActivityImage 

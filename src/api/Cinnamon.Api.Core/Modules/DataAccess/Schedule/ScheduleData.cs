@@ -162,5 +162,47 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                 return AppResult<DeleteManySchedulesResult>.CreateFailed(ex, "An error occured when posting delete many schedule api");
             }
         }
+
+        public async Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                            .Request("Schedule/GetActivityScheduleTimes")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetActivityScheduleTimesResult>();
+
+                return AppResult<GetActivityScheduleTimesResult>.CreateSucceeded(result, "Successfully posted get activity schedule times api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, "An error occured when posting get activity schedule times api");
+            }
+        }
+
+        public async Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("Schedule/CreateOngoingActivitySchedule")
+                                .PostJsonAsync(args)
+                                .ReceiveJson<CreateOngoingActivityScheduleResult>();
+
+                return AppResult<CreateOngoingActivityScheduleResult>.CreateSucceeded(result, "Successfully called create ongoing activity schedule api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
+            }
+        }
     }
 }

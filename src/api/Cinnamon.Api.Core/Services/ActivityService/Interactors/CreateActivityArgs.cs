@@ -32,6 +32,7 @@ public class CreateActivityArgs : IInteractor
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
     public Enums.ActivityStatus Status { get; set; }
+    public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
 
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
@@ -53,5 +54,18 @@ public class CreateActivityArgs : IInteractor
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.PriceType PriceType { get; set; }
+        public string SchedulingUrl { get; set; }
+        public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
+    }
+
+    public class ActivityScheduleTime
+    {
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public bool IsEnabled { get; set; }
     }
 }
