@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using System.Security.Claims
+@using System.Globalization;
 @using Cinnamon.Web.Pages
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
@@ -35,24 +36,36 @@
         </div>
         <h6 class="gross-sale-text">Track the sales of your activities. This helps you see your most profitable activities in Cinnamon.</h6>
     </div>
-    <LineChart @ref="lineChart" TItem="GrossSales" Options="@lineChartOptions" />
-    <div class="legend col-12 d-flex justify-content-start">
-
+    <LineChart @ref="lineChart" TItem="WatcherEvent" Options="@lineChartOptions" />
+    <div class="gross-legend-1 col-12 d-flex justify-content-start">
+        <div class="legend-1 d-flex">
+            <img class="img-legend-2" src="images/Reports/gross-legend-1.png" />
+            <p>A. Legend 1</p>
+        </div>
+        <div class="legend-2 d-flex">
+            <img class="img-legend-2" src="images/Reports/gross-legend-2.png" />
+            <p>B. Legend 2</p>
+        </div>
+    </div>
+    <div class="gross-legend-2 col-12 justify-content-start">
+        <div class="legend-3 d-flex">
+            <img class="img-legend-3" src="images/Reports/gross-legend-3.png" />
+            <p>C. Legend 3</p>
+        </div>
     </div>
 </div>
 
 
 @code {
-    private List<GrossSales> priceData = new List<GrossSales>();
-    private LineChart<GrossSales> lineChart;
-    private List<string> backgroundColors = new() { ChartColor.FromRgba(255, 255, 255, 0.2f)};
-    private List<string> borderColors = new() { ChartColor.FromRgba(255, 169, 66, 1)};
-    private List<string> pointBorderColor = new List<string>() { ChartColor.FromRgba(75, 183, 73, 1)};
-    private List<string> pointHoverBorderColor = new List<string>() { ChartColor.FromRgba(52, 61, 76, 1)};
-    private CustomerProfile profile = new CustomerProfile();
-    private bool isAlreadyInitialised;
-    private string Token = string.Empty;
-    LineChartOptions lineChartOptions = new()
+    private LineChart<WatcherEvent> lineChart;
+    private List<WatcherEvent> priceData = new List<WatcherEvent>();
+    private string backgroundColors      = ChartColor.FromRgba(255, 255, 255, 0.2f);
+    private string borderColors          = ChartColor.FromRgba(255, 169, 66, 1);
+    private string pointBorderColor      = ChartColor.FromRgba(75, 183, 73, 1);
+    private string pointHoverBorderColor = ChartColor.FromRgba(52, 61, 76, 1);
+    private CustomerProfile profile      = new CustomerProfile();
+    private string Token                 = string.Empty;
+    LineChartOptions lineChartOptions    = new()
     {
         Parsing = new ChartParsing
         {
@@ -82,28 +95,11 @@
                          FirstName = args.FirstName,
                          LastName = args.LastName
                      };
+                     //Plot 1 month of Gross Sale
+                    await PlotLineChartData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
                 }
-                //Get gross sale by Activity Provider
-                var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
-                    {
-                        Id = profile.Id,
-                        DateFrom = DateTime.Today.ToString("yyyyMMddHHmmss")
-                    }, Token);
-                if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
-                {
-                    priceData = gross.Result.Result.Select(e =>
-                    {
-                        return new GrossSales
-                            {
-                                Total = e.Total,
-                                PurchaseDate = e.PurchaseDate
-                            };
-                    }).ToList();
-                }
-
-                await lineChart.Clear();
-                await lineChart.AddDataSet(GetLineChartDataset(priceData));
             }
+            
         }
         catch(Exception e)
         {
@@ -141,44 +137,64 @@
                 break;
         }
 
+        await PlotLineChartData(startDate.ToString("yyyyMMddHHmmss"));
+
+
+    }
+    private async Task PlotLineChartData(string startDate)
+    {
         //Get gross sale by Activity Provider
         var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
             {
                 Id = profile.Id,
-                DateFrom = startDate.ToString("yyyyMMddHHmmss")
+                DateFrom = startDate
             }, Token);
         if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
         {
-            priceData = gross.Result.Result.Select(e =>
+            priceData = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
             {
-                return new GrossSales
+                return new WatcherEvent
                     {
-                        Total = e.Total,
-                        PurchaseDate = e.PurchaseDate
+                        Sector = e.PurchaseDate.Date,
+                        Count = e.Total
                     };
             }).ToList();
         }
-
+        // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
+        priceData = priceData
+            .GroupBy(item => item.Sector)
+            .Select(group => new WatcherEvent
+                {
+                    Sector = group.Key,
+                    Count = group.Sum(item => item.Count)
+                })
+            .ToList();
         await lineChart.Clear();
         await lineChart.AddDataSet(GetLineChartDataset(priceData));
     }
-
-    private LineChartDataset<GrossSales> GetLineChartDataset(List<GrossSales> dataset)
+    private LineChartDataset<WatcherEvent> GetLineChartDataset(List<WatcherEvent> dataset)
     {
         return new()
             {
                 Label = "Gross Sale Chart",
                 Data = dataset,
-                BackgroundColor = backgroundColors[0], // line chart can only have one color
-                BorderColor = borderColors[0],
+                BackgroundColor = backgroundColors, // line chart can only have one color
+                BorderColor = borderColors,
                 Fill = true,
                 PointRadius = 5,
                 BorderWidth = 1,
-                PointBorderColor = backgroundColors[0],
-                PointBackgroundColor = pointBorderColor[0],
-                PointHoverBackgroundColor = pointHoverBorderColor[0],
+                PointBorderColor = backgroundColors,
+                PointBackgroundColor = pointBorderColor,
+                PointHoverBackgroundColor = pointHoverBorderColor,
                 CubicInterpolationMode = "monotone",
             };
+    }
+    public class WatcherEvent
+    {
+        public DateTime Sector { get; set; }
+
+        public decimal Count { get; set; }
+
     }
     private void NavigateToManageReports()
     {
