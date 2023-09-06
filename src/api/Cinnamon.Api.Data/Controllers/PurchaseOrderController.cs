@@ -225,7 +225,9 @@ public class PurchaseOrderController : ControllerBase
     {
         try
         {
-            var result = await purchaseOrderRepository.GetGrossSalesByProvider(args.Id, args.DateFrom);
+            DateTime From = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+            var result = await purchaseOrderRepository.GetGrossSalesByProvider(args.Id, From);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

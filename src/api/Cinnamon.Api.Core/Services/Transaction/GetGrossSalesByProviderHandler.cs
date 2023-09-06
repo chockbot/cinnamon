@@ -34,7 +34,7 @@ public class GetGrossSalesByProviderHandler : IGetGrossSalesByProviderHandler
 			var result = await purchaseOrderData.GetGrossSalesByProvider(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.GetGrossSalesByProviderArgs
 			{
 				Id       = args.Id,
-				DateFrom = args.DateFrom
+				DateFrom = args.DateFrom.ToString("yyyyMMddHHmmss")
 			});
 			if (!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
 			{

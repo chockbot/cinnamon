@@ -5,6 +5,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -125,7 +126,6 @@ public class TransactionController : ControllerBase
     [Route("GetGrossSalesByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetGrossSalesByProviderResult), StatusCodes.Status200OK)]
-    [AllowAnonymous]
     public async Task<IActionResult> GetGrossSalesByProvider([FromQuery] GetGrossSalesByProviderArgs args)
     {
         try
