@@ -44,7 +44,7 @@ export function confirmation() {
 
               $("#regForm *").attr("readonly", "readonly");
 
-              setTimeout(redirectToExplore, 2000);
+              setTimeout(redirectToDashboard, 2000);
             }
           } else {
             console.log("stayed on page");
@@ -82,9 +82,12 @@ export function scrollToRequiredField(container) {
   }, 200);
 }
 export function scrollToPricingandSchedule() {
-    $('html, body').animate({
-        scrollTop: $(".pricing-schedule").offset().top
-    }, 200); 
+  $("html, body").animate(
+    {
+      scrollTop: $(".pricing-schedule").offset().top,
+    },
+    200
+  );
 }
 
 function replaceEmptyvalue(value, replacement) {
