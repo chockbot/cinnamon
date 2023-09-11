@@ -1521,4 +1521,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting recommended activities");
         }
     }
+
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    {
+        try
+        {
+            var result = await dataStore.Activity.PopularActivities(take, skip);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+        }
+    }
 }

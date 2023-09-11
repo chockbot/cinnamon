@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using System.Data;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -76,7 +78,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<Activity>().Where(expression).OrderByDescending(a => a.PurchaseOrderCount).Skip(skipCount).Take(limitCount);
+            var query = applicationContext.Set<Activity>().Where(expression); //.OrderByDescending(a => a.PurchaseOrderCount).Skip(skipCount).Take(limitCount);
 
             if (includes != null)
             {
@@ -154,5 +156,114 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
 
         return results;
+    }
+
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    {
+        try
+        {
+            var takeValue = take ?? int.MaxValue;
+            var skipValue = skip ?? 0;
+            var dateString = DateTime.Now.ToString("yyyy-MM-dd");
+
+            string query = "with totalStundets as " +
+                           "( " +
+                               "select ac.\"Id\", Count(ac.\"Id\") \"StudentCount\" " +
+                               "from public.\"Activities\" ac " +
+                               "join public.\"Students\" st " +
+                                   "on ac.\"Id\" = st.\"ActivityId\" " +
+                               "where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " +
+                                   "and ac.\"IsNew\" = false " +
+                               "group by ac.\"Id\" " +
+                           "), " +
+                           "topActivities as " +
+                           "( " +
+                               "select * " +
+                               "from totalStundets ts " +
+                               "order by ts.\"StudentCount\" desc, ts.\"Id\" " +
+                               "limit " + takeValue + " offset " + skipValue + " " +
+                           "), " +
+                           "withRatings as " +
+                           "( " +
+                               "select ta.*, Count(ar.\"Id\") \"ReviewCount\", " +
+                                   "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " + 
+                               "from topActivities ta " +
+                               "left join public.\"Reviews\" ar " +
+                                   "on ta.\"Id\" = ar.\"ActivityId\" " +
+                               "group by ta.\"Id\", ta.\"StudentCount\" " +
+                           "), " +
+                           "withOngoingStudent as " +
+                           "( " +
+                               "select ac.*, " +
+                                   "(select Count(*) from public.\"Students\" st " +
+                                   "where st.\"ActivityId\" = ac.\"Id\" and " +
+                                   "((st.\"SessionsAttended\" < st.\"NumberOfSessions\") or " +
+                                   "(st.\"ExpirationDateEnd\" != '-infinity' " +
+                                       "and Date(st.\"ExpirationDateEnd\") > Date('" + dateString + "')) " +
+                                    ") " +
+                                   ") \"OngoingStudent\" " +
+                               "from withRatings ac " +
+                           "), " +
+                           "withCoverPhoto as " +
+                           "( " +
+                               "select aw.*, ac.\"Title\", ac.\"CreatedBy\", ac.\"IsNew\", ac.\"Handler\", " +
+                                   "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", " +
+                                   "Row_Number() over (partition by ac.\"Id\" order by ai.\"Order\", ai.\"Id\") \"RowCnt\", " +
+                                   "ai.\"ImageLocation\" " +
+                               "from withOngoingStudent aw " +
+                               "join public.\"Activities\" ac " +
+                                   "on aw.\"Id\" = ac.\"Id\" " +
+                               "join public.\"ActivityAddress\" ad " +
+                                   "on ac.\"Id\" = ad.\"ActivityId\" " +
+                               "join public.\"ActivityImages\" ai " +
+                                   "on ac.\"Id\" = ai.\"ActivityId\" " +
+                           ") " +
+                           "select ac.* " +
+                           "from withCoverPhoto ac " +
+                           "where ac.\"RowCnt\" = 1 " +
+                           "order by ac.\"StudentCount\" desc, ac.\"Id\" ";
+
+            IList<PopularActivityDTO> listResult = new List<PopularActivityDTO>();
+
+            using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = System.Data.CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using(var dr = await command.ExecuteReaderAsync())
+                {
+                    if(dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new PopularActivityDTO {
+                            CityName = item["CityName"].ToString() ?? string.Empty,
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            Id = Convert.ToInt32(item["Id"]),
+                            ImageSrc = item["ImageLocation"].ToString() ?? string.Empty,
+                            IsNew = Convert.ToBoolean(item["IsNew"]),
+                            MakerId = Convert.ToInt32(item["CreatedBy"]),
+                            OngoingStudentCount = Convert.ToInt32(item["OngoingStudent"]),
+                            Price = item["Price"].ToString() ?? string.Empty,
+                            Rating = Convert.ToDecimal(item["Rating"]),
+                            RegionName = item["RegionName"].ToString() ?? string.Empty,
+                            ReviewCount = Convert.ToInt32(item["ReviewCount"]),
+                            StudentCount = Convert.ToInt32(item["StudentCount"]),
+                            Title = item["Title"].ToString() ?? string.Empty
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(listResult, "Successfully get popular activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+        }
     }
 }
