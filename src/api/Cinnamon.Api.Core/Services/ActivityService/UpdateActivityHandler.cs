@@ -228,6 +228,16 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 SessionName = s.SessionName,
                                 HasExpiration = s.HasExpiration,
                                 StartDate = s.StartDate,
+                                ScheduleType = s.ScheduleType,
+                                PriceType = s.PriceType,
+                                SchedulingUrl = s.SchedulingUrl,
+                                ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
+                                {
+                                    DayOfWeek = s.DayOfWeek,
+                                    EndTime = s.EndTime,
+                                    StartTime = s.StartTime,
+                                    IsEnabled = s.IsEnabled
+                                })
                             };
                         })
                     });
@@ -262,7 +272,20 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 IsSetSession = s.IsSetSession,
                                 SessionName = s.SessionName ?? string.Empty,
                                 HasExpiration = s.HasExpiration,
-                                StartDate = s.StartDate
+                                StartDate = s.StartDate,
+                                PriceType = s.PriceType,
+                                ScheduleType = s.ScheduleType,
+                                SchedulingUrl = s.SchedulingUrl,
+                                ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs.UpdateActivityScheduleTime
+                                {
+                                    DayOfWeek = a.DayOfWeek,
+                                    EndTime   = a.EndTime,
+                                    StartTime = a.StartTime,
+                                    ActivityScheduleId = a.ActivityScheduleId,
+                                    ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                                    ModelStatus = a.ModelStatus,
+                                    IsEnabled = a.IsEnabled
+                                })
                             };
                         })
                     });

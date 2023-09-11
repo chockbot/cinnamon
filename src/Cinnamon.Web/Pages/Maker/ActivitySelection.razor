@@ -1,0 +1,92 @@
+﻿@layout DashboardLayout
+
+@page "/maker/activity-selection"
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IActivityApiHandler activityApiHandler;
+@attribute [Authorize]
+
+<div class="row activity-selection-section">
+    <div class="col-lg-6">
+        <div class="experience-title">
+            Choose type of experience
+        </div>
+        <div class="experience-briefing">
+            Choose the type of experience you are going to create. General Experiences are for usual experiences (e.g., Guitar Lessons for Kids).
+            Experience via Appointment are for experiences set by appointment. One Time Events are for events such as educational trip, museum trip, etc.
+        </div>
+    </div>
+    <div class="col-lg-6">
+        @foreach (var item in experienceCreationTypes)
+        {
+            <div class="experience-card" @onclick="() => NavigateToExperience(item.CreationType)">
+                <div class="row">
+                    <div class="col-lg-10">
+                        <div class="experience-title">
+                            @item.Name
+                        </div>
+                        <div class="experience-description">
+                            @item.Description
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <img src="@item.ImagePath" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
+    string token = string.Empty;
+    public Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var result = await activityApiHandler.GetExperienceCreationTypes(new Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Request.GetExperienceCreationTypeArgs { }, token);
+
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        experienceCreationTypes = result.Result.Result.Select(e => new ExperienceCreationType
+            {
+                CreationType = (Cinnamon.Framework.Enums.Enums.ExperienceCreationType)e.Id,
+                Description = e.Description,
+                ImagePath = e.ImagePath,
+                Name = e.Name
+            }).ToList();
+    }
+
+    private async Task NavigateToExperience(Cinnamon.Framework.Enums.Enums.ExperienceCreationType experienceCreationType)
+    {
+        if (experienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+        {
+            ExperienceCreationType = experienceCreationType;
+            NavigationManager.NavigateTo($"creation/{(int)experienceCreationType}");
+        }
+        else if (experienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            ExperienceCreationType = experienceCreationType;
+            NavigationManager.NavigateTo($"creation/{(int)experienceCreationType}");
+        }
+    }
+}
