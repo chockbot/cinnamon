@@ -9,4 +9,5 @@ public interface ITransactionApiHandler
     Task<AppResult<SubmitPurchaseOrderResult>> SubmitPurchaseOrder(SubmitPurchaseOrderArgs args, string token);
     Task<AppResult<GetPurchaseOrderResult>> GetPurchaseOrder(int id, string token);
     Task<AppResult<GetGrossSalesByProviderResult>> GetGrossSalesByProvider(GetGrossSalesByProviderArgs args, string token);
+    Task<AppResult<GetPayoutsByProviderResult>> GetPayoutsByProvider(GetPayoutsByProviderArgs args, string token);
 } 

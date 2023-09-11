@@ -9,4 +9,5 @@ public class PayoutLogDTO
     public int Status {get; set;}
     public string Remarks {get; set;}
     public string Payload {get; set;}
+    public DateTime PayoutDate { get; set;}
 }
