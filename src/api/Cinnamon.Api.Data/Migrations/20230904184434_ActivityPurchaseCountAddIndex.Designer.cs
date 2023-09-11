@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230904184434_ActivityPurchaseCountAddIndex")]
+    partial class ActivityPurchaseCountAddIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,17 +118,9 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Handler");
 
-                    b.HasIndex("IsDeactivated");
-
-                    b.HasIndex("IsNew");
-
-                    b.HasIndex("IsPublished");
-
                     b.HasIndex("PurchaseOrderCount");
 
                     b.HasIndex("SubCategoryId");
-
-                    b.HasIndex("PurchaseOrderCount", "IsPublished", "IsDeactivated", "IsNew");
 
                     b.ToTable("Activities");
                 });

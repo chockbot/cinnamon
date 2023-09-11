@@ -119,6 +119,22 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Activity>()
             .HasOne<Customer>(a => a.Customer);
 
+        // add index for purchase order count
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.PurchaseOrderCount);
+
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.IsPublished);
+
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.IsDeactivated);
+
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.IsNew);
+
+        modelBuilder.Entity<Activity>()
+            .HasIndex("PurchaseOrderCount","IsPublished","IsDeactivated", "IsNew");
+
         // experience type
         modelBuilder.Entity<ExperienceType>()
             .HasMany<Activity>(e => e.Activities)

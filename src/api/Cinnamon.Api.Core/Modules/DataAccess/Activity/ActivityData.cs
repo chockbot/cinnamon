@@ -245,4 +245,25 @@ public class ActivityData: IActivityData
 			return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, "An error occured when getting recommended activities api");
 		}
 	}
+
+	public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"Activity/PopularActivities")
+							.SetQueryParams(args)
+							.GetJsonAsync<PopularActivitiesResult>();
+
+			return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully getting popular activities");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when getting popular activities");
+		}
+	}
 }
