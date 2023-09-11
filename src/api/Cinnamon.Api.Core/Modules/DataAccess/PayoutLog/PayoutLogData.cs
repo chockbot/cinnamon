@@ -99,4 +99,24 @@ public class PayoutLogData : IPayoutLogData
             return AppResult<UpdatePayoutLogResult>.CreateFailed(ex, "An error occured when posting update payout log api");
         }
     }
+    public async Task<AppResult<GetPayoutsByProviderResult>> GetPayoutsByProvider(GetPayoutsByProviderArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("PayoutLog/GetPayoutsByProvider")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetPayoutsByProviderResult>();
+
+            return AppResult<GetPayoutsByProviderResult>.CreateSucceeded(result, "Successfully getting get all payout logs by provider api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, "An error occured when getting all payout logs by provider api");
+        }
+    }
 }
