@@ -10,4 +10,5 @@ public interface IPayoutLogData
     Task<AppResult<GetAllPayoutLogsResult>> GetAllPayoutLogs(GetAllPayoutLogsArgs args);
     Task<AppResult<CreatePayoutLogResult>> CreatePayoutLog(CreatePayoutLogArgs args);
     Task<AppResult<UpdatePayoutLogResult>> UpdatePayoutLog(UpdatePayoutLogArgs args);
+    Task<AppResult<GetPayoutsByProviderResult>> GetPayoutsByProvider(GetPayoutsByProviderArgs args);
 }

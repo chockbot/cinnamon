@@ -17,12 +17,15 @@ public class TransactionController : ControllerBase
     private readonly IPurchaseOrderHandler purchaseOrderHandler;
     private readonly IGetPurchaseOrderHandler getPurchaseOrderHandler;
     private readonly IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler;
+    private readonly IGetPayoutsByProviderHandler getPayoutsByProviderHandler;
 
-    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler)
+    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
+        IGetPayoutsByProviderHandler getPayoutsByProviderHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
         this.getGrossSalesByProviderHandler = getGrossSalesByProviderHandler;
+        this.getPayoutsByProviderHandler = getPayoutsByProviderHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -164,6 +167,47 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetPayoutsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPayoutsByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPayoutsByProvider([FromQuery] GetPayoutsByProviderArgs args)
+    {
+        try
+        {
+            var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            var result = await getPayoutsByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetPayoutsByProviderArgs
+            {
+                Id = args.Id,
+                DateFrom = date
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetPayoutsByProviderResult
+            {
+                IsSuccess = true,
+                Result = result.Result.PayoutsLog.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.PayoutLog.PayoutDTO
+                    {
+                        Id              = s.Id,
+                        PurchaseOrderId = s.PurchaseOrderId,
+                        CustomerId      = s.CustomerId,
+                        Amount          = s.Amount,
+                        Status          = s.Status,
+                        PayoutDate      = s.PayoutDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

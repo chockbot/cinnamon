@@ -1,4 +1,4 @@
-﻿@page "/maker/dashboard/grosssale"
+﻿@page "/maker/dashboard/recognized-report"
 @layout DashboardLayout
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
@@ -23,7 +23,7 @@
     </div>
     <div class="page-title">
         <div class="col-12 d-flex">
-            <h3 class="text-capitalize fw-bold header-title col-6 d-flex justify-content-start">Gross Sales Report </h3>
+            <h3 class="text-capitalize fw-bold header-title col-6 d-flex justify-content-start">Recognized Sales Report</h3>
             <div class="btn-group col-6 d-flex justify-content-end">
                 <button class="btn-today" @onclick="@(() => UpdateChatDataset("today"))">Today</button>
                 <button @onclick="@(() => UpdateChatDataset("1week"))">1w</button>
@@ -34,9 +34,9 @@
                 <button class="btn-months" @onclick="@(() => UpdateChatDataset("3months"))">3m</button>
             </div>
         </div>
-        <h6 class="gross-sale-text">Track the sales of your activities. This helps you see your most profitable activities in Cinnamon.</h6>
+        <h6 class="engagement-text">Track the actual recognized sales that has been transferred to your account. This will help you see how long it takes you to complete a session and how much each completion affects you.</h6>
     </div>
-    <LineChart @ref="lineChart" TItem="GrossSale" Options="@lineChartOptions" />
+    <LineChart @ref="lineChart" TItem="Payouts" Options="@lineChartOptions" />
     <div class="gross-legend-1 col-12 d-flex justify-content-start">
         <div class="legend-1 col-2 d-flex">
             <img class="img-legend-2" src="images/Reports/gross-legend-1.png" />
@@ -54,25 +54,23 @@
         </div>
     </div>
 </div>
-
-
 @code {
-    private LineChart<GrossSale> lineChart;
-    private List<GrossSale> priceData = new List<GrossSale>();
-    private string backgroundColors      = ChartColor.FromRgba(255, 255, 255, 0.2f);
-    private string borderColors          = ChartColor.FromRgba(255, 169, 66, 1);
-    private string pointBorderColor      = ChartColor.FromRgba(75, 183, 73, 1);
+    private LineChart<Payouts> lineChart;
+    private List<Payouts> payoutData = new List<Payouts>();
+    private string backgroundColors = ChartColor.FromRgba(255, 255, 255, 0.2f);
+    private string borderColors = ChartColor.FromRgba(255, 169, 66, 1);
+    private string pointBorderColor = ChartColor.FromRgba(75, 183, 73, 1);
     private string pointHoverBorderColor = ChartColor.FromRgba(52, 61, 76, 1);
-    private CustomerProfile profile      = new CustomerProfile();
-    private string Token                 = string.Empty;
-    LineChartOptions lineChartOptions    = new()
-    {
-        Parsing = new ChartParsing
+    private CustomerProfile profile = new CustomerProfile();
+    private string Token = string.Empty;
+    LineChartOptions lineChartOptions = new()
         {
-            XAxisKey = "sector1",
-            YAxisKey = "count",
-        },
-    };
+            Parsing = new ChartParsing
+            {
+                XAxisKey = "sector1",
+                YAxisKey = "count",
+            },
+        };
     protected override async Task OnInitializedAsync()
     {
         try
@@ -86,15 +84,15 @@
                 {
                     var args = result.Result.Result;
                     profile = new CustomerProfile
-                     {
-                         Id = args.Id,
-                         IsMaker = args.IsMaker,
-                         IsVerified = args.IsVerified,
-                         Birthdate = args.Birthdate,
-                         Email = args.Email,
-                         FirstName = args.FirstName,
-                         LastName = args.LastName
-                     };
+                        {
+                            Id = args.Id,
+                            IsMaker = args.IsMaker,
+                            IsVerified = args.IsVerified,
+                            Birthdate = args.Birthdate,
+                            Email = args.Email,
+                            FirstName = args.FirstName,
+                            LastName = args.LastName
+                        };
                     //Plot 1 month of Gross Sale
                     await PlotLineChartData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
                 }
@@ -103,8 +101,9 @@
                     NavigationManager.NavigateTo("/explore");
                 }
             }
+
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.Message.ToString();
         }
@@ -139,47 +138,46 @@
                 startDate = DateTime.Today.AddMonths(-1);
                 break;
         }
-
+        // Ploy Chat Dynamically
         await PlotLineChartData(startDate.ToString("yyyyMMddHHmmss"));
-
 
     }
     private async Task PlotLineChartData(string startDate)
     {
-        //Get gross sale by Activity Provider
-        var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+        //Get payouts by Activity Provider
+        var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
             {
                 Id = profile.Id,
                 DateFrom = startDate
             }, Token);
-        if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
+        if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
         {
-            priceData = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+            payoutData = payout.Result.Result.OrderBy(a => a.PayoutDate).Select(e =>
             {
-                return new GrossSale
-                    {
-                        Sector = e.PurchaseDate.Date,
-                        Count = e.Total
-                    };
+                return new Payouts
+                {
+                   Sector = e.PayoutDate.Date,
+                   Count  = e.Amount
+                };
             }).ToList();
         }
         // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
-        priceData = priceData
+        payoutData = payoutData
             .GroupBy(item => item.Sector)
-            .Select(group => new GrossSale
+            .Select(group => new Payouts
                 {
                     Sector = group.Key,
                     Count = group.Sum(item => item.Count)
                 })
             .ToList();
         await lineChart.Clear();
-        await lineChart.AddDataSet(GetLineChartDataset(priceData));
+        await lineChart.AddDataSet(GetLineChartDataset(payoutData));
     }
-    private LineChartDataset<GrossSale> GetLineChartDataset(List<GrossSale> dataset)
+    private LineChartDataset<Payouts> GetLineChartDataset(List<Payouts> dataset)
     {
         return new()
             {
-                Label = "Gross Sale Chart",
+                Label = "Engagement Chart",
                 Data = dataset,
                 BackgroundColor = backgroundColors, // line chart can only have one color
                 BorderColor = borderColors,
@@ -192,7 +190,7 @@
                 CubicInterpolationMode = "monotone",
             };
     }
-    public class GrossSale
+    public class Payouts
     {
         public DateTime Sector { get; set; }
 

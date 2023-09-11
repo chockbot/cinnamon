@@ -83,4 +83,27 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<GetGrossSalesByProviderResult>.CreateFailed(ex, "An error occurred when getting gross sales api");
         }
     }
+
+    public async Task<AppResult<GetPayoutsByProviderResult>> GetPayoutsByProvider(GetPayoutsByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Transaction/GetPayoutsByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetPayoutsByProviderResult>();
+
+            return AppResult<GetPayoutsByProviderResult>.CreateSucceeded(result, "Successfully getting payouts by provider api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, "An error occurred when getting payouts by provider api");
+        }
+    }
 }
