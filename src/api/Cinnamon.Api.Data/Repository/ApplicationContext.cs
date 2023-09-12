@@ -270,6 +270,9 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
         modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
         modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});
+
+        // for ote schedule
+        modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
