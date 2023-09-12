@@ -8,4 +8,5 @@ public class OteSchedule : BaseEntity
     public string Recurrences {get; set;}
 
     public virtual Activity Activity {get; set;}
+    public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}
 }

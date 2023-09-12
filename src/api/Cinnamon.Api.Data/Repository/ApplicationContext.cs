@@ -273,6 +273,7 @@ public class ApplicationContext : IdentityDbContext
 
         // for ote schedule
         modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
+        modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
