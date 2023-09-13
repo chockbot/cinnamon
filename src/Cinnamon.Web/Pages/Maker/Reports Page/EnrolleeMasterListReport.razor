@@ -1,0 +1,273 @@
+﻿@page "/maker/dashboard/enrollee-masterlist"
+@layout DashboardLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+@using System.Globalization;
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
+@using OfficeOpenXml;
+@inject IJSRuntime JSRuntime
+@inject IChatApiHandler chatApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IJSRuntime jsRuntime
+
+
+<section class="mt-5 enrollee-masterlist">
+    <div class="header col-12 d-flex">
+        <div class="export-file col-10 d-flex justify-content-start">
+            <button class="back-button" @onclick="@(() => NavigateToManageReports())"><img src="images/dashboard-back.png"></button>
+            <p class="back-text">Reports</p>
+        </div>
+        <div class="export-file col-2 d-flex justify-content-end">
+            <button class="btn-export" @onclick="ExportToExcel">Download Excel File
+            <img class="excel-icon" src="images/xls-icon.png" />
+            </button>
+        </div>
+    </div>
+    <div class="page-title">
+        <h3 class="text-capitalize fw-bold header-title">Enrollee Master List</h3>
+        <div class="col-12 d-flex">
+            <h6 class="masterlist-text col-10 d-flex justify-content-start">List of enrollees that purchased your activities. This will help you see the enrollees of your activities.</h6>
+            <div class="search-box col-2 d-flex justify-content-end">
+                <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+            </div>
+        </div>
+    </div>
+    <div class="enrollees-section">
+        <div class="table-list">
+            <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            Name
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Age
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Gender
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Session Attended
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Last Activity Purchased
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Email
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Student No.
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Remarks
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            Calendar of Attendance
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in FilteredEnrollees)
+                    {
+                        <TableRow>
+                            <TableRowCell class="name-body">@item.Name</TableRowCell>
+                            <TableRowCell class="name-body">@item.Age</TableRowCell>
+                            <TableRowCell class="name-body text-capitalize">@item.Gender</TableRowCell>
+                            <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.SessionsAttended/@item.NumberOfSessions</TableRowCell>
+                            <TableRowCell class="name-body">@item.ActivityName</TableRowCell>
+                            <TableRowCell class="name-body">@item.Email</TableRowCell>
+                            <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.StudentNo</TableRowCell>
+                            <TableRowCell class="name-body">@item.Remarks</TableRowCell>
+                            <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
+                                <button type="button" class="btn btn-primary border-0">Show Attendance</button>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+            <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                    <PaginationLink>
+                        <span aria-hidden="true">«</span>
+                    </PaginationLink>
+                </PaginationItem>
+                @{
+                    for (var i = 1; i <= Pagination.TotalPages; i++)
+                    {
+                        var pageNumberAsString = i.ToString();
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
+                    }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                    <PaginationLink>
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    private CustomerProfile profile = new CustomerProfile();
+    private List<Students> enrollees = new List<Students>();
+    public List<Students> FilteredEnrollees { get; set; } = new();
+    private List<Students> ExportEnrollees = new List<Students>();
+    private string Token = string.Empty;
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
+    private int pageItems = 10;
+    private string currentPage = "1";
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token = user.FindFirstValue("Token");
+            if (user != null && user.Identity.IsAuthenticated)
+            {
+                var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    var args = result.Result.Result;
+                    profile = new CustomerProfile
+                    {
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName
+                    };
+                    await GetEnrolleMasterList(1);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/explore");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.Message.ToString();
+        }
+    }
+    private async Task GetEnrolleMasterList(int pageIndex)
+    {
+        //Get Enrollee Master List
+        var enrollee = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
+            {
+                ProviderId = profile.Id,
+                CountPerPage = 10,
+                PageIndex = pageIndex
+            }, Token);
+        enrollees = enrollee.Result.Result.Select(e => new Students
+        {
+            Id               = e.Id,
+            CustomerId       = e.CustomerId,
+            ActivityId       = e.ActivityId,
+            ScheduleId       = e.ScheduleId,
+            Name             = e.Name,
+            SessionsAttended = e.SessionsAttended,
+            NumberOfSessions = e.NumberOfSessions,
+            Age              = e.Age,
+            ActivityName     = e.ActivityName,
+            Gender           = e.Gender,
+            Email            = e.Email,
+            Remarks          = e.Remarks,
+            Status           = e.Status,
+            StudentNo        = e.StudentNo
+        }).ToList();
+        Pagination = enrollee.Result.Pagination;
+        FilteredEnrollees = enrollees.OrderBy(s => s.Name).ToList();
+    }
+    private void TextSearchChanged(string search)
+    {
+        FilteredEnrollees = enrollees.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(e => e.Name).ToList();
+    }
+    private void NavigateToManageReports()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/reports");
+    }
+    private bool IsActive(string page)
+       => currentPage == page;
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(pageItems.ToString());
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1)
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+        }
+    }
+
+    private void Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < pageItems)
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+        }
+    }
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetEnrolleMasterList(int.Parse(page));
+    }
+    private async Task ExportToExcel()
+    {
+        //Get Enrollee Master List
+        var enrollee = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
+            {
+                ProviderId = profile.Id,
+            }, Token);
+
+        ExportEnrollees = enrollee.Result.Result.Select(e => new Students
+            {
+                Id = e.Id,
+                CustomerId = e.CustomerId,
+                ActivityId = e.ActivityId,
+                ScheduleId = e.ScheduleId,
+                Name = e.Name,
+                SessionsAttended = e.SessionsAttended,
+                NumberOfSessions = e.NumberOfSessions,
+                Age = e.Age,
+                ActivityName = e.ActivityName,
+                Gender = e.Gender,
+                Email = e.Email,
+                Remarks = e.Remarks,
+                Status = e.Status,
+                StudentNo = e.StudentNo
+            }).ToList();
+        // Export to Excel
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.masterListToExcel.execute", ExportEnrollees);
+    }
+}

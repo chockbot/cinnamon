@@ -27,5 +27,8 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<GetReviewsByCustomerIdResult>> GetReviewsByCustomerId(GetReviewsByCustomerIdArgs args);
 
     Task<AppResult<GetReviewsByActivityIdResult>> GetReviewsByActivityId(GetReviewsByActivityIdArgs args);
+
     Task<AppResult<GetStudentLastAtendanceResult>> GetStudentLastAttendance(GetStudentLastAttendanceArgs args, string token);
+
+    Task<AppResult<GetEnrolleeMasterListResult>> GetEnrolleeMasterList(GetEnrolleeMasterListArgs args, string token);
 }

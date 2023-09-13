@@ -363,4 +363,52 @@ public class StudentController : ControllerBase
             return new JsonResult(new GetExpiringStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetEnrolleeMasterList")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEnrolleeMasterList([FromQuery] GetEnrolleeMasterListArgs args)
+    {
+        try
+        {
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await studentRepository.GetEnrolleeMasterList(args.ProviderId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await studentRepository.GetAllAsync();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await studentRepository.GetEnrolleeMasterList(args.ProviderId, null, null) :
+                await studentRepository.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetEnrolledStudentsResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

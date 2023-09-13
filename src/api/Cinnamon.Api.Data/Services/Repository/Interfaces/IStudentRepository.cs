@@ -22,4 +22,5 @@ public interface IStudentRepository
     Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int customerId, int? count, int? skip);
     Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int customerId, int? count, int? skip);
     Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
+    Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolleeMasterList(int providerId, int? count, int? skip);
 }

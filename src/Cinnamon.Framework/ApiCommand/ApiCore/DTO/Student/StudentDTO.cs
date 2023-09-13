@@ -18,6 +18,10 @@ public class StudentDTO
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
     public bool HasReview { get; set; }
+    public string ActivityName { get; set; }
+    public int Age { get; set; }
+    public string Gender { get; set; }
+    public string Email { get; set; }
     public StudentAttendanceDTO studentAttendanceDTO { get; set; }
     public ActivityScheduleDTO activityScheduleDTO { get; set; }
 }

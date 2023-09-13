@@ -331,37 +331,37 @@
     }
     private void NavigateToManageStudent()
     {
-    NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void OnEditRemarksClick()
     {
-    isEditRemarks = !isEditRemarks;
-    if (isEditRemarks)
-    {
-        remarksLocalState = student.Remarks;
-    }
-    else 
-    {
-        remarksLocalState = string.Empty;
-    }
+        isEditRemarks = !isEditRemarks;
+        if (isEditRemarks)
+        {
+            remarksLocalState = student.Remarks;
+        }
+        else 
+        {
+            remarksLocalState = string.Empty;
+        }
     }
     private async Task SaveAboutClick()
     {
-    if (isEditRemarks)
-    {
-        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                    {
-                        Id = Id,
-                        Remarks = remarksLocalState,
-                    });
-
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if (isEditRemarks)
         {
-            student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
+            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = Id,
+                            Remarks = remarksLocalState,
+                        });
+
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
+            }
         }
+        isEditRemarks = false;
     }
-    isEditRemarks = false;
-        }
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
         try
