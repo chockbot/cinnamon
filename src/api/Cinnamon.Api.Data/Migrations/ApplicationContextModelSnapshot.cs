@@ -115,8 +115,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ExperienceCategoryId");
 
-                    b.HasIndex("ExperienceCreationTypeId")
-                        .IsUnique();
+                    b.HasIndex("ExperienceCreationTypeId");
 
                     b.HasIndex("ExperienceTypeId");
 

@@ -60,6 +60,20 @@ public class GenerateActivityHandler : IGenerateActivityHandler
                         // concatenated string without last identifier eg: chess-chess
                         var concatHandler = string.Join("-",splittedHandler.Take(splittedHandler.Count -1)).ToLower();
 
+                        if(activityHandler == handlerName)
+                        {
+                            if(int.TryParse(lastIdentifier, out int iResult))
+                            {
+                                handlerName = $"{concatHandler}-{iResult + 1}";
+                                break;
+                            }
+                            else 
+                            {
+                                handlerName = $"{handlerName}-1";
+                                break;
+                            }
+                        }
+
                         if(int.TryParse(lastIdentifier, out int intResult))
                         {
                             if(concatHandler == handlerName)

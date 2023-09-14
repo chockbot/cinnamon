@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230914044109_OteTableReMigrateAll")]
-    partial class OteTableReMigrateAll
+    [Migration("20230914084832_rebuild migration")]
+    partial class rebuildmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -117,8 +117,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ExperienceCategoryId");
 
-                    b.HasIndex("ExperienceCreationTypeId")
-                        .IsUnique();
+                    b.HasIndex("ExperienceCreationTypeId");
 
                     b.HasIndex("ExperienceTypeId");
 

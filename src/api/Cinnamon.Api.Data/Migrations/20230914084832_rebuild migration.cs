@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Cinnamon.Api.Data.Migrations
 {
-    public partial class OteTableReMigrateAll : Migration
+    public partial class rebuildmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -1306,8 +1306,7 @@ namespace Cinnamon.Api.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_ExperienceCreationTypeId",
                 table: "Activities",
-                column: "ExperienceCreationTypeId",
-                unique: true);
+                column: "ExperienceCreationTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_ExperienceTypeId",
