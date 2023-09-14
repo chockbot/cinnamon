@@ -472,7 +472,7 @@
                                 Id = student.Id,
                                 ScheduleId = student.ScheduleId,
                                 SessionName = schedule.SessionName,
-                                ExpirationStartDate = student.ExpirationDateStart,
+                                ExpirationStartDate = presentDate,
                                 ExpirationEndDate = student.ExpirationDateEnd
                             });
                     }
@@ -496,6 +496,7 @@
                 await loadingIndicator.Hide();
         }
     }
+
     private Task HideModal()
     {
         return modalRef.Hide();
