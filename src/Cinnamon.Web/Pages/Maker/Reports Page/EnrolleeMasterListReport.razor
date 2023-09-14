@@ -6,17 +6,17 @@
 @using System.Security.Claims
 @using System.Globalization;
 @using Cinnamon.Web.Pages
-@using Cinnamon.Web.Components
-@using Cinnamon.Web.Components.Pages;
-@using Microsoft.AspNetCore.SignalR.Client;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@using System.Security.Claims;
+@using System.Security.Claims
 @using Cinnamon.Web.Models.Entities;
-@using OfficeOpenXml;
+@using ClosedXML.Excel;
+@using System.IO;
+@using Microsoft.AspNetCore.Mvc
 @inject IJSRuntime JSRuntime
 @inject IChatApiHandler chatApiHandler;
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 @inject IJSRuntime jsRuntime
 
 
@@ -121,18 +121,103 @@
     </div>
 </section>
 
+@*Student Calendar*@
+<Modal ShowBackdrop=true ScrollToTop=false @ref="modalRef">
+    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
+        <ModalHeader>
+            <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
+            <button type="button" class="btn-close" @onclick="() => HideModal()" />
+        </ModalHeader>
+        <ModalBody MaxHeight="90">
+            <div class="student-details-container">
+                <div class="student-details">
+                    @if (studentAttendances.Count != 0)
+                    {
+                        var sessionAttended = studentAttendances.Sum(a => a.SessionsAttended);
+                        <div class="student-details-major">
+                            <p class="">Name : <span>@studentAttendances[0].Name</span></p>
+                            <p class="">Present Days : <span class="days-present">@sessionAttended</span></p>
+                        </div>
+                    }
+                </div>
+            </div>
+            @* CALENDAR *@
+            <div class="wrap-content calendar">
+                <div class="calendar-header">
+
+                    <h1 class="calendar-header-details">@monthName @year</h1>
+                    <div class="calendar-arrow">
+                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                    </div>
+                </div>
+                <hr />
+                <hr />
+                <section>
+                    @foreach (var days in CalendarDays)
+                    {
+                        <div class="calendar-days">
+                            <p>@days</p>
+                        </div>
+                    }
+                    @for (int i = 0; i < numDummyColumn; i++)
+                    {
+                        <div></div>
+                    }
+                    @for (int i = 1; i <= monthEnd.Day; i++)
+                    {
+                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                        <div class="calendar-body">
+                            @if (calendarItem != null && calendarItem.IsPresent == true)
+                            {
+                                //Display
+                                <button class="btn-date">@i</button>
+                            }
+                            else if (calendarItem != null && calendarItem.IsPresent == false)
+                            {
+                                //Update
+                                <button class="btn-date-absent">@i</button>
+                            }
+                            else
+                            {
+                                <p class="calendar-dates">@i</p>
+                            }
+                        </div>
+                    }
+                </section>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
 @code {
+    IJSObjectReference module;
+    public Modal modalRef;
     private CustomerProfile profile = new CustomerProfile();
     private List<Students> enrollees = new List<Students>();
     public List<Students> FilteredEnrollees { get; set; } = new();
     private List<Students> ExportEnrollees = new List<Students>();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     private string Token = string.Empty;
     private const string PREVIOUS = "previous";
     private const string NEXT = "next";
     private int pageItems = 10;
     private string currentPage = "1";
+    public string monthName = "";
+    public int monthsAway = 0;
+    public int numDummyColumn = 0;
+    public int year = 2023;
+    public int month = 0;
+    public DateTime passDates;
+    public DateTime monthEnd;
+    public bool disableButtonRight { get; set; } = false;
+    public bool disableButtonLeft { get; set; } = false;
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+
+    @functions {
+        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -168,6 +253,15 @@
             e.Message.ToString();
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
+    }
+
     private async Task GetEnrolleMasterList(int pageIndex)
     {
         //Get Enrollee Master List
@@ -197,16 +291,20 @@
         Pagination = enrollee.Result.Pagination;
         FilteredEnrollees = enrollees.OrderBy(s => s.Name).ToList();
     }
+
     private void TextSearchChanged(string search)
     {
         FilteredEnrollees = enrollees.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(e => e.Name).ToList();
     }
+
     private void NavigateToManageReports()
     {
         NavigationManager.NavigateTo("/maker/dashboard/reports");
     }
+
     private bool IsActive(string page)
        => currentPage == page;
+
     private bool IsPageNavigationDisabled(string navigation)
     {
         if (navigation.Equals(PREVIOUS))
@@ -237,20 +335,22 @@
             currentPage = (currentPageAsInt + 1).ToString();
         }
     }
+
     private async Task SetActive(string page)
     {
         currentPage = page;
         await GetEnrolleMasterList(int.Parse(page));
     }
+
     private async Task ExportToExcel()
     {
         //Get Enrollee Master List
-        var enrollee = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
+        var result = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
             {
                 ProviderId = profile.Id,
             }, Token);
 
-        ExportEnrollees = enrollee.Result.Result.Select(e => new Students
+        ExportEnrollees = result.Result.Result.Select(e => new Students
             {
                 Id = e.Id,
                 CustomerId = e.CustomerId,
@@ -267,7 +367,122 @@
                 Status = e.Status,
                 StudentNo = e.StudentNo
             }).ToList();
-        // Export to Excel
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.masterListToExcel.execute", ExportEnrollees);
+        using (var workbook = new XLWorkbook("wwwroot/Template/Masterlist.xlsx"))
+        {
+            // Access the first worksheet in the workbook (assuming it's the only one)
+            var worksheet = workbook.Worksheet(1);
+
+            // Define the starting row for your data (assuming headers are in the first row)
+            int startRow = 6;
+
+            // Loop through the ExportEnrollees list and populate the worksheet
+            foreach (var student in ExportEnrollees)
+            {
+                worksheet.Cell(1, 8).Value = $"Date:{DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = student.Name;
+                worksheet.Cell(startRow, 2).Value = student.Age;
+                worksheet.Cell(startRow, 3).Value = student.Gender;
+                worksheet.Cell(startRow, 4).Value = $"{student.SessionsAttended} / {student.NumberOfSessions}";
+                worksheet.Cell(startRow, 5).Value = student.ActivityName;
+                worksheet.Cell(startRow, 6).Value = student.Email;
+                worksheet.Cell(startRow, 7).Value = student.StudentNo;
+                worksheet.Cell(startRow, 8).Value = student.Remarks;
+                startRow++;
+            }
+            // Create a MemoryStream to save the workbook
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Specify the file name
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"MasterList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                // Convert the bytes to base64
+                var bytesBase64 = Convert.ToBase64String(bytes);
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+    }
+
+    public async Task OpenModal(Students student)
+    {
+        studentAttendances.Clear();
+
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = student.Id,
+            }, Token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Name = a.Name,
+                        HasReview = a.HasReview
+                    };
+            }).ToList();
+        }
+        await modalRef.Show();
+    }
+
+    private async Task HideModal()
+    {
+        await modalRef.Hide();
+    }
+
+    public async Task CreateMonth()
+    {
+        if (monthsAway <= 6 && monthsAway >= -1)
+        {
+            if (monthsAway == 6)
+            {
+                disableButtonRight = true;
+            }
+            else if (monthsAway == -1)
+            {
+                disableButtonLeft = true;
+            }
+            else
+            {
+                disableButtonRight = false;
+                disableButtonLeft = false;
+            }
+            var tempDate = DateTime.Now.AddMonths(monthsAway);
+            month = tempDate.Month;
+            year = tempDate.Year;
+
+            DateTime monthStart = new DateTime(year, month, 1);
+            monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            monthName = monthStart.Month switch
+            {
+                1 => "January",
+                2 => "February",
+                3 => "March",
+                4 => "April",
+                5 => "May",
+                6 => "June",
+                7 => "July",
+                8 => "August",
+                9 => "September",
+                10 => "October",
+                11 => "November",
+                12 => "December",
+                _ => ""
+            };
+            numDummyColumn = (int)monthStart.DayOfWeek;
+        }
     }
 }
