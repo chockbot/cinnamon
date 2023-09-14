@@ -388,7 +388,8 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
                         SessionsAttended = student.SessionsAttended,
                         Status = student.Status,
                         StudentNo = student.StudentNo,
-                        HasReview = student.HasReview
+                        HasReview = student.HasReview,
+                        NumberOfBackTracking = student.NumberOfBacktracking
                     };
                 }
 

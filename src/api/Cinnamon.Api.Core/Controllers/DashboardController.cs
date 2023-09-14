@@ -259,7 +259,8 @@ public class DashboardController : ControllerBase
                         SessionsAttended = s.SessionsAttended,
                         Status = s.Status,
                         StudentNo = s.StudentNo,
-                        StudentId = s.StudentId
+                        StudentId = s.StudentId,
+                        NumberOfBacktracking = s.NumberOfBackTracking
                     };
                 })
             }
