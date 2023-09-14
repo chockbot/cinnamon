@@ -22,5 +22,6 @@ public class GetAllStudentAttendanceByIdResult
         public bool IsPresent { get; set; }
         public DateTime AttendanceDate { get; set; }
         public string Remarks { get; set; }
+        public int NumberOfBackTracking { get; set; }
     }
 }
