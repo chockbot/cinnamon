@@ -15,6 +15,7 @@ public class StudentAttendance
     public int NumberOfSessions { get; set; }
     public int SessionsAttended { get; set; }
     public bool HasReview { get; set; }
+    public int NumberOfBackTracking { get; set; }
 
     // Extra properties
     public Modal ModalRef { get; set; } = new Modal();
