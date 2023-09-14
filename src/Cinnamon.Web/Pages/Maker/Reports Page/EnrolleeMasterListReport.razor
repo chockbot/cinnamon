@@ -12,6 +12,8 @@
 @using ClosedXML.Excel;
 @using System.IO;
 @using Microsoft.AspNetCore.Mvc
+@using Cinnamon.Web.Models.Maker
+@using Cinnamon.Framework.ApiCommand.ApiCore
 @inject IJSRuntime JSRuntime
 @inject IChatApiHandler chatApiHandler;
 @inject IAccountApiHandler accountApiHandler
@@ -76,7 +78,7 @@
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    @foreach (var item in FilteredEnrollees)
+                    @foreach (var item in Model.FilteredEnrollees)
                     {
                         <TableRow>
                             <TableRowCell class="name-body">@item.Name</TableRowCell>
@@ -88,7 +90,7 @@
                             <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.StudentNo</TableRowCell>
                             <TableRowCell class="name-body">@item.Remarks</TableRowCell>
                             <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
-                                <button type="button" class="btn btn-primary border-0">Show Attendance</button>
+                                <button type="button" class="btn btn-primary border-0" @onclick="@(() => OpenModal(item))">Show Attendance</button>
                             </TableRowCell>
                         </TableRow>
                     }
@@ -120,6 +122,7 @@
         </div>
     </div>
 </section>
+
 @*Student Calendar*@
 <Modal ShowBackdrop=true ScrollToTop=false @ref="modalRef">
     <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
@@ -130,24 +133,23 @@
         <ModalBody MaxHeight="90">
             <div class="student-details-container">
                 <div class="student-details">
-                    @if (studentAttendances.Count != 0)
+                    @if (Model.studentAttendances.Count != 0)
                     {
-                        var sessionAttended = studentAttendances.Sum(a => a.SessionsAttended);
+                        var sessionAttended = Model.studentAttendances.Sum(a => a.SessionsAttended);
                         <div class="student-details-major">
-                            <p class="">Name : <span>@studentAttendances[0].Name</span></p>
+                            <p class="">Name : <span>@Model.studentAttendances[0].Name</span></p>
                             <p class="">Present Days : <span class="days-present">@sessionAttended</span></p>
                         </div>
                     }
                 </div>
             </div>
-            @* CALENDAR *@
             <div class="wrap-content calendar">
                 <div class="calendar-header">
 
-                    <h1 class="calendar-header-details">@monthName @year</h1>
+                    <h1 class="calendar-header-details">@Model.monthName @Model.year</h1>
                     <div class="calendar-arrow">
-                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
-                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                        <button class="arrow-left" @onclick="() => { Model.monthsAway--; CreateMonth(); }" disabled="@Model.disableButtonLeft"><img src="images/calender icon left.png"></button>
+                        <button class="arrow-right" @onclick="() => { Model.monthsAway++; CreateMonth(); }" disabled="@Model.disableButtonRight"><img src="images/calender icon right.png"></button>
                     </div>
                 </div>
                 <hr />
@@ -159,22 +161,22 @@
                             <p>@days</p>
                         </div>
                     }
-                    @for (int i = 0; i < numDummyColumn; i++)
+                    @for (int i = 0; i < Model.numDummyColumn; i++)
                     {
                         <div></div>
                     }
-                    @for (int i = 1; i <= monthEnd.Day; i++)
+                    @for (int i = 1; i <= Model.monthEnd.Day; i++)
                     {
-                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                        var calendarItem = Model.studentAttendances.FirstOrDefault(n => n.Date == new DateTime(Model.year, Model.month, i));
                         <div class="calendar-body">
                             @if (calendarItem != null && calendarItem.IsPresent == true)
                             {
-                                //Display
+                                
                                 <button class="btn-date">@i</button>
                             }
                             else if (calendarItem != null && calendarItem.IsPresent == false)
                             {
-                                //Update
+                                
                                 <button class="btn-date-absent">@i</button>
                             }
                             else
@@ -192,25 +194,10 @@
 @code {
     IJSObjectReference module;
     public Modal modalRef;
+    private ReportModel Model = new ReportModel();
     private CustomerProfile profile = new CustomerProfile();
-    private List<Students> enrollees = new List<Students>();
-    public List<Students> FilteredEnrollees { get; set; } = new();
-    private List<Students> ExportEnrollees = new List<Students>();
-    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private string Token = string.Empty;
-    private const string PREVIOUS = "previous";
-    private const string NEXT = "next";
-    private int pageItems = 10;
-    private string currentPage = "1";
-    public string monthName = "";
-    public int monthsAway = 0;
-    public int numDummyColumn = 0;
-    public int year = 2023;
-    public int month = 0;
-    public DateTime passDates;
-    public DateTime monthEnd;
-    public bool disableButtonRight { get; set; } = false;
-    public bool disableButtonLeft { get; set; } = false;
+    public const string PREVIOUS    = "previous";
+    public const string NEXT        = "next";
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
 
     @functions {
@@ -222,10 +209,10 @@
         try
         {
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-            Token = user.FindFirstValue("Token");
+            Model.Token = user.FindFirstValue("Token");
             if (user != null && user.Identity.IsAuthenticated)
             {
-                var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Model.Token);
                 if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                 {
                     var args = result.Result.Result;
@@ -251,6 +238,7 @@
         {
             e.Message.ToString();
         }
+        await CreateMonth();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -269,8 +257,8 @@
                 ProviderId = profile.Id,
                 CountPerPage = 10,
                 PageIndex = pageIndex
-            }, Token);
-        enrollees = enrollee.Result.Result.Select(e => new Students
+            }, Model.Token);
+        Model.enrollees = enrollee.Result.Result.Select(e => new Students
         {
             Id               = e.Id,
             CustomerId       = e.CustomerId,
@@ -288,12 +276,12 @@
             StudentNo        = e.StudentNo
         }).ToList();
         Pagination = enrollee.Result.Pagination;
-        FilteredEnrollees = enrollees.OrderBy(s => s.Name).ToList();
+        Model.FilteredEnrollees = Model.enrollees.OrderBy(s => s.Name).ToList();
     }
 
     private void TextSearchChanged(string search)
     {
-        FilteredEnrollees = enrollees.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(e => e.Name).ToList();
+        Model.FilteredEnrollees = Model.enrollees.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(e => e.Name).ToList();
     }
 
     private void NavigateToManageReports()
@@ -302,42 +290,44 @@
     }
 
     private bool IsActive(string page)
-       => currentPage == page;
+       => Model.currentPage == page;
 
     private bool IsPageNavigationDisabled(string navigation)
     {
         if (navigation.Equals(PREVIOUS))
         {
-            return currentPage.Equals("1");
+            return Model.currentPage.Equals("1");
         }
         else if (navigation.Equals(NEXT))
         {
-            return currentPage.Equals(pageItems.ToString());
+            return Model.currentPage.Equals(Model.pageItems.ToString());
         }
         return false;
     }
 
-    private void Previous()
+        private async Task Previous()
     {
-        var currentPageAsInt = int.Parse(currentPage);
+        var currentPageAsInt = int.Parse(Model.currentPage);
         if (currentPageAsInt > 1)
         {
-            currentPage = (currentPageAsInt - 1).ToString();
+            Model.currentPage = (currentPageAsInt - 1).ToString();
+        await GetEnrolleMasterList(int.Parse(Model.currentPage));
         }
     }
 
-    private void Next()
+    private async Task Next()
     {
-        var currentPageAsInt = int.Parse(currentPage);
-        if (currentPageAsInt < pageItems)
-        {
-            currentPage = (currentPageAsInt + 1).ToString();
-        }
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt < Model.pageItems)
+            {
+                Model.currentPage = (currentPageAsInt + 1).ToString();
+                await GetEnrolleMasterList(int.Parse(Model.currentPage));
+            }
     }
 
     private async Task SetActive(string page)
     {
-        currentPage = page;
+        Model.currentPage = page;
         await GetEnrolleMasterList(int.Parse(page));
     }
 
@@ -347,9 +337,9 @@
         var result = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
             {
                 ProviderId = profile.Id,
-            }, Token);
+            }, Model.Token);
 
-        ExportEnrollees = result.Result.Result.Select(e => new Students
+        Model.ExportEnrollees = result.Result.Result.Select(e => new Students
             {
                 Id = e.Id,
                 CustomerId = e.CustomerId,
@@ -375,7 +365,7 @@
             int startRow = 6;
 
             // Loop through the ExportEnrollees list and populate the worksheet
-            foreach (var student in ExportEnrollees)
+            foreach (var student in Model.ExportEnrollees)
             {
                 worksheet.Cell(1, 8).Value = $"Date:{DateTime.Today.ToString("MMMM dd, yyyy")}";
                 worksheet.Cell(startRow, 1).Value = student.Name;
@@ -409,28 +399,27 @@
 
     public async Task OpenModal(Students student)
     {
-        studentAttendances.Clear();
+        Model.studentAttendances.Clear();
 
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
             {
                 StudentId = student.Id,
-            }, Token);
+            }, Model.Token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
-            studentAttendances = attendance.Result.Result.Select(a =>
+            Model.studentAttendances = attendance.Result.Result.Select(a =>
             {
                 return new StudentAttendance
                     {
-                        Id = a.Id,
-                        Date = a.Date,
-                        IsPresent = a.IsPresent,
-                        ActivityId = a.ActivityId,
+                        Id               = a.Id,
+                        Name             = a.Name,
+                        Date             = a.Date,
+                        IsPresent        = a.IsPresent,
+                        ActivityId       = a.ActivityId,
                         NumberOfSessions = a.NumberOfSessions,
                         SessionsAttended = a.SessionsAttended,
-                        ScheduleId = a.ScheduleId,
-                        StudentId = a.StudentId,
-                        Name = a.Name,
-                        HasReview = a.HasReview
+                        ScheduleId       = a.ScheduleId,
+                        StudentId        = a.StudentId,
                     };
             }).ToList();
         }
@@ -444,28 +433,28 @@
 
     public async Task CreateMonth()
     {
-        if (monthsAway <= 6 && monthsAway >= -1)
+        if (Model.monthsAway <= 6 && Model.monthsAway >= -1)
         {
-            if (monthsAway == 6)
+            if (Model.monthsAway == 6)
             {
-                disableButtonRight = true;
+                Model.disableButtonRight = true;
             }
-            else if (monthsAway == -1)
+            else if (Model.monthsAway == -1)
             {
-                disableButtonLeft = true;
+                Model.disableButtonLeft = true;
             }
             else
             {
-                disableButtonRight = false;
-                disableButtonLeft = false;
+                Model.disableButtonRight = false;
+                Model.disableButtonLeft = false;
             }
-            var tempDate = DateTime.Now.AddMonths(monthsAway);
-            month = tempDate.Month;
-            year = tempDate.Year;
+            var tempDate = DateTime.Now.AddMonths(Model.monthsAway);
+            Model.month = tempDate.Month;
+            Model.year = tempDate.Year;
 
-            DateTime monthStart = new DateTime(year, month, 1);
-            monthEnd = monthStart.AddMonths(1).AddDays(-1);
-            monthName = monthStart.Month switch
+            DateTime monthStart = new DateTime(Model.year, Model.month, 1);
+            Model.monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            Model.monthName = monthStart.Month switch
             {
                 1 => "January",
                 2 => "February",
@@ -481,7 +470,7 @@
                 12 => "December",
                 _ => ""
             };
-            numDummyColumn = (int)monthStart.DayOfWeek;
+            Model.numDummyColumn = (int)monthStart.DayOfWeek;
         }
     }
 }
