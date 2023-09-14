@@ -876,4 +876,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
         }
     }
+
+    public async Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteResult>();
+
+            return AppResult<CreateOteResult>.CreateSucceeded(result, "Successfully called create one time event api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOteResult>.CreateFailed(ex, "An error occured when calling create one time event api");
+        }
+    }
 }
