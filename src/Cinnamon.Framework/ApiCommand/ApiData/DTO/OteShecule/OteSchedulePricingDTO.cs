@@ -1,4 +1,4 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.PayoutAccount;
+﻿namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 public class OteSchedulePricingDTO
 {
@@ -7,6 +7,4 @@ public class OteSchedulePricingDTO
     public int MaxSlots { get; set; }
     public string Description { get; set; }
     public bool IsAbsorbFees { get; set; }
-
-    public IList<OteSchedulePricingDTO> OteSchedulePricingDTOs { get; set; }
 }

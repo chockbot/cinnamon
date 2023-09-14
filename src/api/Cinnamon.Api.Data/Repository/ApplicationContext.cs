@@ -72,6 +72,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<ActivityScheduleTime> ActivityScheduleTimes {get; set; }
     public DbSet<ExperienceCreationType> ExperienceCreationTypes {get; set; }
     public DbSet<OngoingActivityScheduleTime> OngoingActivityScheduleTimes {get; set; }
+    public DbSet<OteSchedule> OteSchedules {get; set;}
+    public DbSet<OteSchedulePricing> OteSchedulePricings {get; set;}
 
     #endregion
 

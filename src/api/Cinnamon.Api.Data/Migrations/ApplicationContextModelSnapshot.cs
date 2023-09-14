@@ -1412,7 +1412,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("OteSchedule");
+                    b.ToTable("OteSchedules");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteSchedulePricing", b =>
@@ -1455,7 +1455,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("OteScheduleId");
 
-                    b.ToTable("OteSchedulePricing");
+                    b.ToTable("OteSchedulePricings");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutAccount", b =>
