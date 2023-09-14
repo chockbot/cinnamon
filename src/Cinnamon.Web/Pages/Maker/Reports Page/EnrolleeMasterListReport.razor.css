@@ -39,7 +39,7 @@
     margin-top: 1rem;
     margin-left: 1rem;
 }
-.back-report {
+.export-file .back-report {
     font-family: Nunito;
     font-size: 24px;
     font-weight: 700;
@@ -231,7 +231,7 @@ hr {
 }
 
 
-section {
+/*section {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     font-family: 'Nunito';
@@ -239,13 +239,13 @@ section {
     font-size: 24px;
 }
 
-    section > div {
+    section > div {*/
         /*border: 1px solid black;*/
-        text-align: center;
+        /*text-align: center;
         padding: 10px;
         color: #343D4C;
         height: 80px;
-    }
+    }*/
 
 
 .calendar-dates {
@@ -297,6 +297,41 @@ section {
     font-size: 16px;
     color: #717171;
     margin: 0px !important;
+}
+.spinner-4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid #0000;
+    border-right-color: #ffa50097;
+    animation: s4 1s infinite linear;
+}
+
+    .spinner-4:before,
+    .spinner-4:after {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: inherit;
+        animation: inherit;
+        animation-duration: 2s;
+    }
+
+    .spinner-4:after {
+        animation-duration: 2s;
+    }
+
+@keyframes s4 {
+    100% {
+        transform: rotate(1turn)
+    }
 }
 
 /* For Tablet View */

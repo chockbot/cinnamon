@@ -29,8 +29,9 @@
             <p class="back-text">Reports</p>
         </div>
         <div class="export-file col-2 d-flex justify-content-end">
-            <button class="btn-export" @onclick="ExportToExcel">Download Excel File
-            <img class="excel-icon" src="images/xls-icon.png" />
+            <button class="btn-export" @onclick="ExportToExcel">
+                Download Excel File
+                <img class="excel-icon" src="images/xls-icon.png" />
             </button>
         </div>
     </div>
@@ -45,6 +46,7 @@
     </div>
     <div class="enrollees-section">
         <div class="table-list">
+            <div class="spinner-4" style="display:@IsDisplay"></div>
             <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                 <TableHeader>
                     <TableRow>
@@ -123,6 +125,7 @@
     </div>
 </section>
 
+
 @*Student Calendar*@
 <Modal ShowBackdrop=true ScrollToTop=false @ref="modalRef">
     <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
@@ -198,6 +201,7 @@
     private CustomerProfile profile = new CustomerProfile();
     public const string PREVIOUS    = "previous";
     public const string NEXT        = "next";
+    public string IsDisplay         = "none";
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
 
     @functions {
@@ -333,6 +337,7 @@
 
     private async Task ExportToExcel()
     {
+        IsDisplay = "block";
         //Get Enrollee Master List
         var result = await ongoingApiHandler.GetEnrolleeMasterList(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetEnrolleeMasterListArgs
             {
@@ -395,6 +400,7 @@
                 await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
             }
         }
+        IsDisplay = "none";
     }
 
     public async Task OpenModal(Students student)
