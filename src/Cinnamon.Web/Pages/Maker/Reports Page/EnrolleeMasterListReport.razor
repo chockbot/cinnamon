@@ -23,12 +23,12 @@
 
 <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <section class="mt-5 enrollee-masterlist">
-        <div class="header col-12 d-flex">
-            <div class="export-file col-10 d-flex justify-content-start">
+        <div class="header-masterlist">
+            <div class="export-file col-lg-10 col-md-7 col-sm-12 col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToManageReports())"><img src="images/dashboard-back.png"></button>
                 <p class="back-text">Reports</p>
             </div>
-            <div class="export-file col-2 d-flex justify-content-end">
+            <div class="export-file col-lg-2 col-md-5 col-sm-12 col-12 d-flex justify-content-end">
                 <button class="btn-export" @onclick="ExportToExcel">
                     Download Excel File
                     <img class="excel-icon" src="images/xls-icon.png" />
@@ -37,9 +37,9 @@
         </div>
         <div class="page-title">
             <h3 class="text-capitalize fw-bold header-title">Enrollee Master List</h3>
-            <div class="col-12 d-flex">
-                <h6 class="masterlist-text col-10 d-flex justify-content-start">List of enrollees that purchased your activities. This will help you see the enrollees of your activities.</h6>
-                <div class="search-box col-2 d-flex justify-content-end">
+            <div class="master-list">
+                <h6 class="masterlist-text col-lg-10 col-md-8 col-sm-12 col-12 d-flex justify-content-start">List of enrollees that purchased your activities. This will help you see the enrollees of your activities.</h6>
+                <div class="search-box col-lg-2 col-md-4 col-sm-12 col-12 d-flex justify-content-end">
                     <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
                 </div>
             </div>
