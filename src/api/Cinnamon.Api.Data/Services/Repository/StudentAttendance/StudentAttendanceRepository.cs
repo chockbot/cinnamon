@@ -503,4 +503,42 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
             return AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when getting the student attendance");
         }
     }
+
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByFamilyId(int familyId)
+    {
+        try
+        {
+            var result = await dataStore.StudentAttendance.GetAttendanceByFamilyId(familyId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var studentAttendances = result.Result;
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s =>
+            {
+                var studentAttendance = new StudentAttendanceDTO
+                {
+                    Date      = s.Date,
+                    IsPresent = s.IsPresent,
+                    Student   = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
+                    {
+                        Id               = s.Student.Id,
+                        ActivityId       = s.Student.ActivityId,
+                        CustomerId       = s.Student.CustomerId,
+                        ScheduleId       = s.Student.ScheduleId,
+                        Name             = s.Student.Name,
+                        SessionsAttended = s.Student.SessionsAttended,
+                        NumberOfSessions = s.Student.NumberOfSessions,
+                        FamilyMemberId   = s.Student.FamilyMemberId,
+                    }
+                };
+                return studentAttendance;
+            }), "Successfully get student attendances");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when getting all student attendance");
+        }
+    }
 }

@@ -18,4 +18,5 @@ public interface IStudentAttendanceRepository
         DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? scheduleIds = null);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetCompletedStudents(int? count, int? skip, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null);
     Task<AppResult<StudentAttendanceDTO>> GetLastStudentAttendance(int id, int activityId, int scheduleId, bool? includeStudent = false);
+    Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByFamilyId(int familyId);
 }

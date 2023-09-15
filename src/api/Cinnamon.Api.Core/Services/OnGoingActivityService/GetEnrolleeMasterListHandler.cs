@@ -65,7 +65,8 @@ public class GetEnrolleeMasterListHandler : IGetEnrolleeMasterListHandler
                         Age              = e.Age,
                         ActivityName     = e.ActivityTitle,
                         Email            = e.Email,
-                        Gender           = e.Gender  
+                        Gender           = e.Gender,
+                        FamilyMemberId   = e.FamilyMemberId
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

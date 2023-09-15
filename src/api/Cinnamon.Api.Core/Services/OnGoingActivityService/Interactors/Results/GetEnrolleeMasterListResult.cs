@@ -22,5 +22,6 @@ public class GetEnrolleeMasterListResult
         public string Gender { get; set; }
         public string Email { get; set; }
         public string ActivityName { get; set; }
+        public int FamilyMemberId { get; set; }
     }
 }

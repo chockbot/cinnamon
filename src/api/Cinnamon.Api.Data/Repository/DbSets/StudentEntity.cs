@@ -538,6 +538,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							Email            = item["Email"].ToString() ?? string.Empty,
 							StudentNo        = item["StudentNo"].ToString() ?? string.Empty,
 							Remarks          = item["Remarks"].ToString() ?? string.Empty,
+							FamilyMemberId   = Convert.ToInt32(item["FamilyMemberId"]),
 						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}

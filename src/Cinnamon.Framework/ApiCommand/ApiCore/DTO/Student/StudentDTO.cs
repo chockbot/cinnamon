@@ -22,6 +22,7 @@ public class StudentDTO
     public int Age { get; set; }
     public string Gender { get; set; }
     public string Email { get; set; }
+    public int FamilyMemberId { get; set; }
     public StudentAttendanceDTO studentAttendanceDTO { get; set; }
     public ActivityScheduleDTO activityScheduleDTO { get; set; }
 }

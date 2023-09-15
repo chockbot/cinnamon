@@ -20,6 +20,7 @@ public class Students
     public int Age { get; set; }
     public string Gender { get; set; }
     public string Email { get; set; }
+    public int FamilyMemberId { get; set; }
     public StudentAttendance studentAttendance { get; set; }
     public ActivitySchedule activitySchedule { get; set; }
 }

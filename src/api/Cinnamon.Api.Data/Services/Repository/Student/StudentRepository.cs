@@ -554,6 +554,7 @@ public class StudentRepository: IStudentRepository
 					Email            = s.Email,
 					StudentNo        = s.StudentNo,
 					Remarks          = s.Remarks,
+					FamilyMemberId   = s.FamilyMemberId
 				};
 				return studentDto;
 			});

@@ -1,7 +1,6 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.Common;
-using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Response;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface IOngoingActivitiesHandler
@@ -31,4 +30,5 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<GetStudentLastAtendanceResult>> GetStudentLastAttendance(GetStudentLastAttendanceArgs args, string token);
 
     Task<AppResult<GetEnrolleeMasterListResult>> GetEnrolleeMasterList(GetEnrolleeMasterListArgs args, string token);
+    Task<AppResult<GetStudentAttendanceByFamilyIdResult>> GetStudentAttendanceByFamilyId(GetStudentAttendanceByFamilyIdArgs args, string token);
 }

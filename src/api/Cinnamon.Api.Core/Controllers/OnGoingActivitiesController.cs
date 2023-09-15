@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.OnGoingActivityService;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Reviews;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Schedule;
@@ -28,25 +29,27 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler;
     private readonly IGetStudentLastAttendanceHandler getStudentLastAttendanceHandler;
     private readonly IGetEnrolleeMasterListHandler getEnrolleeMasterListHandler;
+    private readonly IGetAttendanceByFamilyIdHandler getAttendanceByFamilyIdHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
         IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
         IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler,
         IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler, IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler, IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler,
-        IGetStudentLastAttendanceHandler getStudentLastAttendanceHandler, IGetEnrolleeMasterListHandler getEnrolleeMasterListHandler)
+        IGetStudentLastAttendanceHandler getStudentLastAttendanceHandler, IGetEnrolleeMasterListHandler getEnrolleeMasterListHandler, IGetAttendanceByFamilyIdHandler getAttendanceByFamilyIdHandler)
     {
-        this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
-        this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
-        this.updateOngoingActivityHadler      = updateOngoingActivityHadler;
-        this.addActivityExpirationHandler     = addActivityExpirationHandler;
-        this.getEnrolledStudentsHandler       = getEnrolledStudentsHandler;
-        this.getCompletedStudentsByIdHandler  = getCompletedStudentsByIdHandler;
-        this.createReviewHandler              = createReviewHandler;
-        this.getAllStudentsByIdHandler        = getAllStudentsByIdHandler;
-        this.getReviewsByMakerIdHandler       = getReviewsByMakerIdHandler;
-        this.getReviewsByActivityIdHandler    = getReviewsByActivityIdHandler;
-        this.getReviewsByCustomerIdHandler    = getReviewsByCustomerIdHandler;
-        this.getStudentLastAttendanceHandler  = getStudentLastAttendanceHandler;
-        this.getEnrolleeMasterListHandler     = getEnrolleeMasterListHandler;
+        this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;
+        this.getOngoingActivityByIdHandler = getOngoingActivityByIdHandler;
+        this.updateOngoingActivityHadler = updateOngoingActivityHadler;
+        this.addActivityExpirationHandler = addActivityExpirationHandler;
+        this.getEnrolledStudentsHandler = getEnrolledStudentsHandler;
+        this.getCompletedStudentsByIdHandler = getCompletedStudentsByIdHandler;
+        this.createReviewHandler = createReviewHandler;
+        this.getAllStudentsByIdHandler = getAllStudentsByIdHandler;
+        this.getReviewsByMakerIdHandler = getReviewsByMakerIdHandler;
+        this.getReviewsByActivityIdHandler = getReviewsByActivityIdHandler;
+        this.getReviewsByCustomerIdHandler = getReviewsByCustomerIdHandler;
+        this.getStudentLastAttendanceHandler = getStudentLastAttendanceHandler;
+        this.getEnrolleeMasterListHandler = getEnrolleeMasterListHandler;
+        this.getAttendanceByFamilyIdHandler = getAttendanceByFamilyIdHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -629,7 +632,8 @@ public class OnGoingActivitiesController : ControllerBase
                         ActivityName     = s.ActivityName,
                         Email            = s.Email,
                         Gender           = s.Gender,
-                        Status           = s.Status
+                        Status           = s.Status,
+                        FamilyMemberId   = s.FamilyMemberId
                     };
                 })
             });
@@ -637,6 +641,49 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetEnrolleeMasterListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetStudentAttendanceByFamilyId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentAttendanceByFamilyIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+
+    public async Task<IActionResult> GetStudentAttendanceByFamilyId([FromQuery] GetStudentAttendanceByFamilyIdArgs args)
+    {
+        try
+        {
+            var result = await getAttendanceByFamilyIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetAttendanceByFamilyIdArgs
+            {
+                FamilyId = args.FamilyId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentAttendanceByFamilyIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetStudentAttendanceByFamilyIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.studentAttendaces.Select(s =>
+                {
+                    return new StudentAttendanceDTO
+                    {
+                        Id               = s.Id,
+                        ActivityId       = s.ActivityId,
+                        CustomerId       = s.CustomerId,
+                        FamilyMemberId   = s.FamilyId,
+                        ScheduleId       = s.ScheduleId,
+                        NumberOfSessions = s.NumberOfSessions,
+                        SessionsAttended = s.SessionsAttended,
+                        Name             = s.StudentName,
+                        Date             = s.AttendanceDate,
+                        IsPresent        = s.IsPresent
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentAttendanceByFamilyIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

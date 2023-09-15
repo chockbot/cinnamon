@@ -290,4 +290,26 @@ public class OnGoingActivityApiHandler : IOngoingActivitiesHandler
             return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, "An error occurred when getting enrollee master list by provider id api");
         }
     }
+
+    public async Task<AppResult<GetStudentAttendanceByFamilyIdResult>> GetStudentAttendanceByFamilyId(GetStudentAttendanceByFamilyIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetStudentAttendanceByFamilyId")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetStudentAttendanceByFamilyIdResult>();
+
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, "An error occurred when getting student attendance api");
+        }
+    }
 }
