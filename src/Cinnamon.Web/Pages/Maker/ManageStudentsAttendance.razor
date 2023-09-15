@@ -312,10 +312,10 @@
         if (isEditRemarks)
         {
             var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                            {
-                                Id = Id,
-                                Remarks = remarksLocalState,
-                            });
+                        {
+                            Id = Id,
+                            Remarks = remarksLocalState,
+                        });
 
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
@@ -324,7 +324,6 @@
         }
         isEditRemarks = false;
     }
-
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
         try

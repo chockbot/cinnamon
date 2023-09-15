@@ -287,17 +287,17 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 						var dt = new DataTable();
 						dt.Load(dr);
 
-						listResult = dt.AsEnumerable().Select(item => new DisburseStudentDTO {
-							Name = item["Name"].ToString() ?? string.Empty,
-							StudentId = Convert.ToInt32(item["StudentId"]),
-							TransactionId = Convert.ToInt32(item["TransactionId"]),
-							UnitCount = Convert.ToInt32(item["UnitCount"]),
-							UnitPrice = Convert.ToDecimal(item["UnitPrice"]),
-							ActivityId = Convert.ToInt32(item["ActivityId"]),
-							MakerId = Convert.ToInt32(item["MakerId"]),
-							IsInclusivePayment = Convert.ToBoolean(item["IsInclusivePayment"]),
+						listResult                = dt.AsEnumerable().Select(item => new DisburseStudentDTO {
+							Name                  = item["Name"].ToString() ?? string.Empty,
+							StudentId             = Convert.ToInt32(item["StudentId"]),
+							TransactionId         = Convert.ToInt32(item["TransactionId"]),
+							UnitCount             = Convert.ToInt32(item["UnitCount"]),
+							UnitPrice             = Convert.ToDecimal(item["UnitPrice"]),
+							ActivityId            = Convert.ToInt32(item["ActivityId"]),
+							MakerId               = Convert.ToInt32(item["MakerId"]),
+							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
 							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount = Convert.ToDecimal(item["TotalDisburseAmount"])
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
 						}).ToList();
 					}
 				}
@@ -470,6 +470,76 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 								StudentId = item["StudentId"] != DBNull.Value ? Convert.ToInt32(item["StudentId"]) : 0,
 							}
 						}).ToList();
+					}
+				}
+			}
+
+			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
+		}
+	}
+
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolleeMasterList(int providerId, int? count, int? skip)
+	{
+		try
+		{
+			int limitCount = count.HasValue ? count.Value : int.MaxValue;
+			int skipCount = skip.HasValue ? skip.Value : 0;
+
+			string query = "WITH StudentTotals AS ( SELECT a.\"FamilyMemberId\", SUM(a.\"NumberOfSessions\") AS \"TotalNumberOfSessions\", SUM(a.\"SessionsAttended\") AS \"TotalSessionsAttended\", MAX(a.\"CreatedOn\") AS \"LatestCreatedOn\"\r\n" +
+				"FROM public.\"Students\" AS a\r\n" +
+				"JOIN public.\"Activities\" AS b ON b.\"Id\" = a.\"ActivityId\"\r\n" +
+				"WHERE b.\"CreatedBy\" = 17 GROUP BY a.\"FamilyMemberId\"\r\n" +
+				")\r\n" +
+				"SELECT\r\n" +
+				"a.\"Id\",a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"StudentNo\", st.\"TotalNumberOfSessions\" AS \"FamilyTotalNumberOfSessions\",\r\n" +
+				"st.\"TotalSessionsAttended\" AS \"FamilyTotalSessionsAttended\", a.\"Remarks\", a.\"Status\", a.\"CreatedOn\", a.\"FamilyMemberId\",\r\n" +
+				"b.\"Title\", b.\"CreatedBy\", c.\"Name\" AS \"ChildName\", c.\"Gender\",\r\n" +
+				"EXTRACT(YEAR FROM AGE(current_date, DATE(c.\"BirthYear\" || '-' || c.\"BirthMonth\" || '-01'))) AS \"ChildAge\", d.\"Email\"\r\n" +
+				"FROM public.\"Students\" AS a\r\nJOIN public.\"Activities\" AS b ON b.\"Id\" = a.\"ActivityId\"\r\n" +
+				"JOIN public.\"FamilyMembers\" AS c ON c.\"Id\" = a.\"FamilyMemberId\"\r\n" +
+				"JOIN public.\"Customers\" AS d ON d.\"Id\" = a.\"CustomerId\"\r\n" +
+				"JOIN StudentTotals AS st ON st.\"FamilyMemberId\" = a.\"FamilyMemberId\" AND st.\"LatestCreatedOn\" = a.\"CreatedOn\"\r\n" +
+				"WHERE b.\"CreatedBy\" = "+providerId+"\r\n" +
+				"ORDER BY a.\"CreatedOn\";";
+
+			IList<StudentDTO> listResult = new List<StudentDTO>();
+
+
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+						//Get Enrollee Master List
+						listResult = dt.AsEnumerable().Select(item => new StudentDTO
+						{
+							Id               = Convert.ToInt32(item["Id"]),
+							ActivityId       = Convert.ToInt32(item["ActivityId"]),
+							CustomerId       = Convert.ToInt32(item["CustomerId"]),
+							ScheduleId       = Convert.ToInt32(item["ScheduleId"]),
+							Name             = item["Name"].ToString() ?? string.Empty,
+							Age              = Convert.ToInt32(item["ChildAge"]),
+							Gender           = item["Gender"].ToString() ?? string.Empty,
+							NumberOfSessions = Convert.ToInt32(item["FamilyTotalNumberOfSessions"]),
+							SessionsAttended  = Convert.ToInt32(item["FamilyTotalSessionsAttended"]),
+							ActivityTitle    = item["Title"].ToString() ?? string.Empty,
+							Email            = item["Email"].ToString() ?? string.Empty,
+							StudentNo        = item["StudentNo"].ToString() ?? string.Empty,
+							Remarks          = item["Remarks"].ToString() ?? string.Empty,
+							FamilyMemberId   = Convert.ToInt32(item["FamilyMemberId"]),
+						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}
 			}

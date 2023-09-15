@@ -227,4 +227,24 @@ public class StudentAttendanceData : IStudentAttendanceData
 			return AppResult<GetStudentLastAttendanceResult>.CreateFailed(ex, "An error occured when getting student last attendance api");
 		}
 	}
+	public async Task<AppResult<GetStudentAttendanceByFamilyIdResult>> GetStudentAttendanceByFamilyId(GetStudentAttendanceByFamilyIdArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("StudentAttendance/GetStudentAttendanceByFamilyId")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetStudentAttendanceByFamilyIdResult>();
+
+			return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, "An error occured when getting student attendance api");
+		}
+	}
 }
