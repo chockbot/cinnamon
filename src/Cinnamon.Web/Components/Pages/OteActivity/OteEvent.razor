@@ -116,12 +116,11 @@
                     isPrevent = false
                 };
                 await JS.InvokeVoidAsync("MyLib.Utils.countWords", maxObj);
-
-                NotificationService.Error("An error occured. Please try again later.");
             }
         }
         catch (System.Exception)
         {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
 
