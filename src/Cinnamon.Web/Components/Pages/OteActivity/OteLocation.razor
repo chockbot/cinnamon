@@ -3,6 +3,8 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 @inject INotificationService NotificationService;
+@inject IJSRuntime JS;
+@implements IFieldValid;
 
 <section class="ote-location-wrapper">
     <div class="border-radius-10 bg-white-200 p-4">
@@ -27,14 +29,15 @@
                 </p>
             </div>
             <div>
-                <Validations Model="model" Mode="FormMode">
+                <Validations @ref="formValidation" Model="model" Mode="FormMode">
                     <Validation>
                         <Field class="mb-4">
                             <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
                                 house no.
                             </FieldLabel>
                             <FieldBody>
-                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.HouseNo">
+                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" 
+                                    class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.HouseNo">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -47,12 +50,12 @@
                             region
                         </FieldLabel>
                         <FieldBody>
-                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
-                                @bind-SelectedValue="model.Region.Code">
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@RegionClass" 
+                                SelectedValue="model.Region.Code" SelectedValueChanged="SelectedRegionChanged">
                                 <SelectItem Disabled class="text-capitalize">--Select Region--</SelectItem>
                                 @foreach (var item in regions)
                                 {
-                                    <SelectItem Value="item.Code">@item.Name</SelectItem>
+                                    <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
                                 }
                             </Select>
                             <div class="invalid-feedback">The region field is mandatory.</div>
@@ -63,9 +66,13 @@
                             Town/City
                         </FieldLabel>
                         <FieldBody>
-                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
-                                @bind-SelectedValue="model.Region.Code">
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@CityClass" 
+                                SelectedValue="model.City.Code" SelectedValueChanged="SelectedCityChanged">
                                 <SelectItem Disabled class="text-capitalize">--Select City--</SelectItem>
+                                @foreach (var item in cities)
+                                {
+                                    <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
+                                }
                             </Select>
                             <div class="invalid-feedback">The city field is mandatory.</div>
                         </FieldBody>
@@ -75,9 +82,13 @@
                             barangay
                         </FieldLabel>
                         <FieldBody>
-                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
-                                @bind-SelectedValue="model.Region.Code">
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@BarangayClass" 
+                                SelectedValue="model.Barangay.Code" SelectedValueChanged="SelectedBarangayChanged">
                                 <SelectItem Disabled class="text-capitalize">--Select Barangay--</SelectItem>
+                                @foreach (var item in barangays)
+                                {
+                                    <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
+                                }
                             </Select>
                             <div class="invalid-feedback">The barangay field is mandatory.</div>
                         </FieldBody>
@@ -88,7 +99,8 @@
                                 postal code
                             </FieldLabel>
                             <FieldBody>
-                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PostaCode">
+                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" 
+                                    class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PostaCode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -111,7 +123,9 @@
         <div id="map-pinned-location">
             <Row VerticalGutter="10" HorizontalGutter="10">
                 <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is7.OnDesktop">
-                    <TextEdit Disabled="DisableLocation" Placeholder="search your location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
+                    <TextEdit Disabled="DisableLocation" Placeholder="search your location" 
+                        id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium" 
+                        class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is5.OnDesktop">
                     <Button Disabled="DisableLocation" class="bg-orange-100 color-white-100 text-capitalize w-100 font-20 hover-color-white px-5 border-radius-10">
@@ -130,10 +144,11 @@
     public EventCallback OnNextClick {get; set;}
 
     private FormModel model = new();
+    private Validations? formValidation;
     private bool isNextClick = false;
-    private IList<Barangay> barangays = new List<Barangay>();
-    private IList<Region> regions = new List<Region>();
-    private IList<City> cities = new List<City>();
+    private IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
+    private IDictionary<string, Region> regions = new Dictionary<string, Region>();
+    private IDictionary<string, City> cities = new Dictionary<string, City>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,13 +190,16 @@
                 return;
             }
 
-            var rg = regionRes.Result.Result.OrderBy(r => r.RegionName);
+            var rg = regionRes.Result.Result.OrderBy(r => r.Name);
             foreach(var item in rg)
             {
-                regions.Add(new Region {
-                    Code = item.Code,
-                    Name = item.RegionName
-                });
+                regions.Add(
+                    item.Code,
+                    new Region {
+                        Code = item.Code,
+                        Name = item.Name
+                    }
+                );
             }
         }
         catch (System.Exception)
@@ -190,6 +208,166 @@
         }
     }
 
+    private async Task SelectedRegionChanged(string code)
+    {
+        var region = regions[code];
+        if(region is not null)
+        {
+            model.Region.Code = region.Code;
+            model.Region.Name = region.Name;
+            await LoadCities();
+        }
+    }
+
+    private async Task LoadCities()
+    {
+        try
+        {
+            cities.Clear();
+            var cityRes = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs {
+                CountPerPage = 1000,
+                RegionCode = model.Region.Code
+            });
+            if(cityRes.Succeeded && cityRes.Result is not null && cityRes.Result.IsSuccess)
+            {
+                var ct = cityRes.Result.Result.OrderBy(c => c.Name);
+                foreach(var item in ct)
+                {
+                    cities.Add(
+                        item.Code,
+                        new City {
+                            Code = item.Code,
+                            Name = item.Name,
+                            IsCity = item.IsCity,
+                            IsMunicipality = item.IsMunicipality
+                        }
+                    );
+                }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task SelectedCityChanged(string code)
+    {
+        var city = cities[code];
+        if(city is not null)
+        {
+            model.City.Code = city.Code;
+            model.City.Name = city.Name;
+            model.City.IsCity = city.IsCity;
+            model.City.IsMunicipality = city.IsMunicipality;
+            await LoadBarangays();
+        }
+    }
+
+
+    private async Task LoadBarangays()
+    {
+        try
+        {
+            barangays.Clear();
+            var barangayRes = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs {
+                CityCode = model.City.Code,
+                CountPerPage = 1000,
+                IsCity = model.City.IsCity,
+                IsMunicipality = model.City.IsMunicipality
+            });
+            if(barangayRes.Succeeded && barangayRes.Result is not null && barangayRes.Result.IsSuccess)
+            {
+                var br = barangayRes.Result.Result.OrderBy(b => b .Name);
+                foreach(var item in br)
+                {
+                    barangays.Add(
+                        item.Code,
+                        new Barangay {
+                            Code = item.Code,
+                            Name = item.Name
+                        }
+                    );
+                }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    public async Task<bool> FieldValid()
+    {
+        if(formValidation is not null)
+        {
+            bool valid = await formValidation.ValidateAll() && !string.IsNullOrEmpty(model.Region.Code)
+                && !string.IsNullOrEmpty(model.City.Code) && !string.IsNullOrEmpty(model.Barangay.Code);
+
+            isNextClick = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-location-wrapper .is-invalid");
+            return valid;
+        }
+        return false;
+    }
+
+    private Task SelectedBarangayChanged(string code)
+    {
+        var barangay = barangays[code];
+        if(barangay is not null)
+        {
+            model.Barangay.Code = barangay.Code;
+            model.Barangay.Name = barangay.Name;
+        }
+        return Task.CompletedTask;
+    }
+
+    private string RegionClass {
+        get {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            if(isNextClick)
+            {
+                if(string.IsNullOrEmpty(model.Region.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private string CityClass {
+        get {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            if(isNextClick)
+            {
+                if(string.IsNullOrEmpty(model.City.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private string BarangayClass {
+        get {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            if(isNextClick)
+            {
+                if(string.IsNullOrEmpty(model.Barangay.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
 
     private class FormModel 
     {
@@ -228,6 +406,9 @@
 
         [Required(ErrorMessage = "The city field is mandatory.")]
         public string Code {get; set;}
+
+        public bool IsCity {get; set;}
+        public bool IsMunicipality {get; set;}
     }
 
     private class Barangay 
