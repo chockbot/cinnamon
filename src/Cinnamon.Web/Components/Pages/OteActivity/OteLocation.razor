@@ -1,0 +1,240 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@inject INotificationService NotificationService;
+
+<section class="ote-location-wrapper">
+    <div class="border-radius-10 bg-white-200 p-4">
+        <div id="event-type" class="d-flex mb-5">
+            <RadioGroup TValue="int" Name="experience-type" @bind-CheckedValue="model.SelectedType">
+                <label for="type-online" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4 text-capitalize cursor-pointer">
+                    <Radio class="checkbox-round" ElementId="type-online"  TValue="int" Value="2">Online</Radio>
+                </label>
+                <label for="type-in-person" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
+                    <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="1">In-Person</Radio>
+                </label>
+            </RadioGroup>
+        </div>
+        <div id="event-location">
+            <div class="d-flex justify-content-between mb-5">
+                <label class="d-flex align-items-center">
+                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">3</span>
+                    <p class="font-20 color-black-100 mb-0">Venue/Map Location</p>
+                </label>
+                <p class="mb-0 required-in-person font-16">
+                    *(required if in-person)
+                </p>
+            </div>
+            <div>
+                <Validations Model="model" Mode="FormMode">
+                    <Validation>
+                        <Field class="mb-4">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                house no.
+                            </FieldLabel>
+                            <FieldBody>
+                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.HouseNo">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Field class="mb-4" >
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                            region
+                        </FieldLabel>
+                        <FieldBody>
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
+                                @bind-SelectedValue="model.Region.Code">
+                                <SelectItem Disabled class="text-capitalize">--Select Region--</SelectItem>
+                                @foreach (var item in regions)
+                                {
+                                    <SelectItem Value="item.Code">@item.Name</SelectItem>
+                                }
+                            </Select>
+                            <div class="invalid-feedback">The region field is mandatory.</div>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-4" >
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                            Town/City
+                        </FieldLabel>
+                        <FieldBody>
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
+                                @bind-SelectedValue="model.Region.Code">
+                                <SelectItem Disabled class="text-capitalize">--Select City--</SelectItem>
+                            </Select>
+                            <div class="invalid-feedback">The city field is mandatory.</div>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-4" >
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                            barangay
+                        </FieldLabel>
+                        <FieldBody>
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="form-control font-18 text-capitalize color-black-100 border-radius-10" 
+                                @bind-SelectedValue="model.Region.Code">
+                                <SelectItem Disabled class="text-capitalize">--Select Barangay--</SelectItem>
+                            </Select>
+                            <div class="invalid-feedback">The barangay field is mandatory.</div>
+                        </FieldBody>
+                    </Field>
+                    <Validation>
+                        <Field class="mb-4">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                postal code
+                            </FieldLabel>
+                            <FieldBody>
+                                <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PostaCode">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </div>
+        </div>
+    </div>
+    <h3 class="font-24 font-weight-700 color-black-100 my-4">Where you’ll be</h3>
+    <div class="border-radius-10 bg-white-200 p-4">
+        <div id="iframe-map" class="mb-4">
+            @{
+                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(model.PinnedLocation) ? model.PinnedLocation : "''");
+                <iframe id="mapframe" height="373" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal w-100"></iframe>
+            }
+        </div>
+        <div id="map-pinned-location">
+            <Row VerticalGutter="10" HorizontalGutter="10">
+                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is7.OnDesktop">
+                    <TextEdit Disabled="DisableLocation" Placeholder="search your location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is5.OnDesktop">
+                    <Button Disabled="DisableLocation" class="bg-orange-100 color-white-100 text-capitalize w-100 font-20 hover-color-white px-5 border-radius-10">
+                        cofirm location
+                    </Button>
+                </Column>
+            </Row>
+        </div>
+    </div>
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    private FormModel model = new();
+    private bool isNextClick = false;
+    private IList<Barangay> barangays = new List<Barangay>();
+    private IList<Region> regions = new List<Region>();
+    private IList<City> cities = new List<City>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRegions();
+    }
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private bool DisableLocation 
+    {
+        get 
+        {
+            return model.SelectedType == 2;
+        }
+    }
+
+    private ValidationMode FormMode 
+    {
+        get 
+        {
+            return DisableLocation ? ValidationMode.Manual : (isNextClick ? ValidationMode.Auto : ValidationMode.Manual);
+        }
+    }
+
+    private async Task LoadRegions()
+    {
+        try
+        {
+            var regionRes = await activityApiHandler.GetAllRegions();
+            if(!regionRes.Succeeded || regionRes.Result is null || !regionRes.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            var rg = regionRes.Result.Result.OrderBy(r => r.RegionName);
+            foreach(var item in rg)
+            {
+                regions.Add(new Region {
+                    Code = item.Code,
+                    Name = item.RegionName
+                });
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+
+    private class FormModel 
+    {
+        [Required]
+        public int SelectedType {get; set;} = 1;
+
+        [Required(ErrorMessage = "The house # field is mandatory.")]
+        public string HouseNo {get; set;}
+
+        [Required(ErrorMessage = "The postal code field is mandatory.")]
+        public string PostaCode {get; set;}
+
+        public string PinnedLocation {get; set;} = string.Empty;
+
+        [Required]
+        public Region Region {get; set;} = new();
+
+        [Required]
+        public City City {get; set;} = new();
+
+        [Required]
+        public Barangay Barangay {get; set;} = new();
+    }
+
+    private class Region 
+    {
+        public string Name {get; set;}
+
+        [Required(ErrorMessage = "The region field is mandatory.")]
+        public string Code {get; set;}
+    }
+
+    private class City 
+    {
+        public string Name {get; set;}
+
+        [Required(ErrorMessage = "The city field is mandatory.")]
+        public string Code {get; set;}
+    }
+
+    private class Barangay 
+    {
+        public string Name {get; set;}
+
+        [Required(ErrorMessage = "The barangay field is mandatory.")]
+        public string Code {get; set;}
+    }
+}

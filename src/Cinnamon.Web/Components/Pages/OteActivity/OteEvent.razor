@@ -20,7 +20,7 @@
         <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="model" @ref="formValidation">
             <Validation @ref="eventNameValidation">
                 <Field class="mb-4" id="ote-event-name">
-                    <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
                         <span class="rounded-circle bg-orange-100 color-white-100 round-padding">1</span>
                         event name
                     </FieldLabel>
@@ -28,7 +28,7 @@
                         <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
-                                    <p class="mb-0">@JoinErrorMessages(eventNameValidation.Messages)</p>
+                                    <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
                                     <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100">Max of 15 words (0/15)</p>
                                 </div>
                             </Feedback>
@@ -38,7 +38,7 @@
             </Validation>
             <Validation @ref="eventDescriptionValidation">
                 <Field class="mb-4" id="ote-event-description">
-                    <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
                         <span class="rounded-circle bg-orange-100 color-white-100 round-padding">2</span>
                         description
                     </FieldLabel>
@@ -46,7 +46,7 @@
                         <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10" @bind-Text="model.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
-                                    <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation.Messages)</p>
+                                    <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
                                     <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100">Min of 10 words (0/10)</p>
                                 </div>
                             </Feedback>
@@ -55,7 +55,7 @@
                 </Field>
             </Validation>
             <Field class="mb-4" id="ote-event-category">
-                <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
                         <span class="rounded-circle bg-orange-100 color-white-100 round-padding">3</span>
                         select category
                     </FieldLabel>
@@ -157,7 +157,7 @@
 
     private string CategoryClass {
         get {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-000 border-radius-10";
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
             if(isNextClick)
             {
                 if(model.SelectedCategory <= 0)
