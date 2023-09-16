@@ -1,0 +1,208 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@inject IActivityApiHandler activityApiHandler;
+@inject IJSRuntime JS;
+@implements IFieldValid;
+@inject INotificationService NotificationService;
+
+<section class="ote-event-wrapper">
+    <p class="font-20 color-grey-100">
+        Note: A one-time event refers to a specific occurrence or happening that takes place at a 
+        designated time and location. It could be a seminar, workshop, conference, concert, 
+        or any other event that is not recurring on a regular basis.
+        <br>
+        <br>
+        After the event date, the one-time event will automatically deactivate in your page.
+    </p>
+    <div class="border-radius-10 p-4 bg-white-200">
+        <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="model" @ref="formValidation">
+            <Validation @ref="eventNameValidation">
+                <Field class="mb-4" id="ote-event-name">
+                    <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">1</span>
+                        event name
+                    </FieldLabel>
+                    <FieldBody>
+                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.EventName">
+                            <Feedback>
+                                <div class="invalid-feedback d-flex justify-content-between">
+                                    <p class="mb-0">@JoinErrorMessages(eventNameValidation.Messages)</p>
+                                    <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100">Max of 15 words (0/15)</p>
+                                </div>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation @ref="eventDescriptionValidation">
+                <Field class="mb-4" id="ote-event-description">
+                    <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">2</span>
+                        description
+                    </FieldLabel>
+                    <FieldBody>
+                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10" @bind-Text="model.Description">
+                            <Feedback>
+                                <div class="invalid-feedback d-flex justify-content-between">
+                                    <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation.Messages)</p>
+                                    <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100">Min of 10 words (0/10)</p>
+                                </div>
+                            </Feedback>
+                        </MemoEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Field class="mb-4" id="ote-event-category">
+                <FieldLabel class="font-20 text-capitalize color-black-000 mb-1">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">3</span>
+                        select category
+                    </FieldLabel>
+                <FieldBody>
+                    <Select Size="Size.Medium" class="@CategoryClass" @bind-SelectedValue="model.SelectedCategory">
+                        <SelectItem Value="0" Disabled class="text-capitalize">--Select Category--</SelectItem>
+                        @foreach (var item in categoryItems)
+                        {
+                            <SelectItem Value="item.Id" class="text-capitalize">@item.Name</SelectItem>
+                        }
+                    </Select>
+                    <div class="invalid-feedback">Select category to your event</div>
+                </FieldBody>
+            </Field>
+        </Validations>
+    </div>
+    <OteRouteButtons HavePrevious="false" OnNextClick="NextClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    private FormModel model = new();
+    private IList<CategoryItem> categoryItems = new List<CategoryItem>();
+    private Validations? formValidation;
+    private Validation? eventNameValidation;
+    private Validation? eventDescriptionValidation;
+    private bool isNextClick = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategory();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if(firstRender)
+            {
+                await Task.Delay(300);
+                var minObj = new {
+                    inputSelector = "#event-name-words-input",
+                    labelSelector = "#event-name-words-count",
+                    labelFormat = "Max of 15 words (###/15)",
+                    count = 15,
+                    isPrevent = true
+                };
+                await JS.InvokeVoidAsync("MyLib.Utils.countWords", minObj);
+
+                var maxObj = new {
+                    inputSelector = "#event-description-words-input",
+                    labelSelector = "#event-description-words-count",
+                    labelFormat = "Min of 10 words (###/10)",
+                    count = 10,
+                    isPrevent = false
+                };
+                await JS.InvokeVoidAsync("MyLib.Utils.countWords", maxObj);
+
+                NotificationService.Error("An error occured. Please try again later.");
+            }
+        }
+        catch (System.Exception)
+        {
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        var categoryRes = await activityApiHandler.GetExperienceCategories();
+        if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
+        {
+            var categories = categoryRes.Result.Result;
+            foreach(var item in categories)
+            {
+                categoryItems.Add(new CategoryItem {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Selected = false
+                });
+            }
+        }
+    }
+
+    public async Task<bool> FieldValid()
+    {
+        if(formValidation is not null)
+        {
+            bool valid = await formValidation.ValidateAll() && model.SelectedCategory > 0;
+            isNextClick = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            return valid;
+        }
+        return false;
+    }
+
+    private string CategoryClass {
+        get {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-000 border-radius-10";
+            if(isNextClick)
+            {
+                if(model.SelectedCategory <= 0)
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            isNextClick = true;
+            await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private string JoinErrorMessages(IEnumerable<string>? messages)
+    {
+        if(messages is null || messages.Count() == 0) return string.Empty;
+        return string.Join(". ", messages);
+    }
+    
+    private class FormModel
+    {
+        [Required(ErrorMessage = "The event name field is mandatory.")]
+        [LimitWords(Max = 15, ErrorMessage = "Max words limit is 15.")]
+        public string EventName {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "The event description field is mandatory.")]
+        [LimitWords(Min = 10, Max = int.MaxValue, ErrorMessage = "Minimum words limit is 10.")]
+        public string Description {get; set;} = string.Empty;
+
+        public int SelectedCategory {get; set;} = 0;
+    }
+
+    private class CategoryItem 
+    {
+        public int Id {get; set;}
+        public string Name {get; set;} = string.Empty;
+        public bool Selected {get; set;}
+    }
+}

@@ -402,7 +402,29 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n/* harmony import */ var _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToView.js */ \"./src/utils/scrollToView.js\");\n/* harmony import */ var _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wordsCount.js */ \"./src/utils/wordsCount.js\");\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  scrollToView: _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  countWords: _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__.countWords\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
+
+/***/ }),
+
+/***/ "./src/utils/scrollToView.js":
+/*!***********************************!*\
+  !*** ./src/utils/scrollToView.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ scrollToView)\n/* harmony export */ });\nfunction scrollToView(selector) {\n  const ele = document.querySelector(selector);\n\n  if (ele) {\n    ele.scrollIntoView({\n      behavior: \"smooth\",\n      block: \"center\"\n    });\n  }\n}\n\n//# sourceURL=webpack://MyLib/./src/utils/scrollToView.js?");
+
+/***/ }),
+
+/***/ "./src/utils/wordsCount.js":
+/*!*********************************!*\
+  !*** ./src/utils/wordsCount.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"countWords\": () => (/* binding */ countWords)\n/* harmony export */ });\nfunction countWords({\n  inputSelector,\n  count,\n  isPrevent,\n  labelSelector,\n  labelFormat\n}) {\n  const textInput = document.querySelector(inputSelector);\n  const wordCount = document.querySelector(labelSelector);\n  const maxWords = count;\n  $(textInput).on(\"input\", e => {\n    const words = $(textInput).val().split(/\\s+/);\n    const wordsTrimmed = words.filter(w => w !== \"\");\n    const wordsTrimmedCount = wordsTrimmed.length > maxWords ? maxWords : wordsTrimmed.length;\n    let labelValue;\n\n    if (labelFormat) {\n      labelValue = labelFormat.split(\"###\").join(wordsTrimmedCount);\n    }\n\n    $(wordCount).text(labelValue);\n\n    if (isPrevent && words.length > maxWords) {\n      $(textInput).val(words.slice(0, maxWords).join(\" \"));\n    }\n  });\n  $(inputSelector).trigger(\"input\");\n}\n\n//# sourceURL=webpack://MyLib/./src/utils/wordsCount.js?");
 
 /***/ }),
 
