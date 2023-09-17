@@ -9,7 +9,7 @@
 <section class="ote-location-wrapper">
     <div class="border-radius-10 bg-white-200 p-4">
         <div id="event-type" class="d-flex mb-5">
-            <RadioGroup TValue="int" Name="experience-type" @bind-CheckedValue="model.SelectedType">
+            <RadioGroup TValue="int" Name="experience-type" CheckedValue="model.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
                 <label for="type-online" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4 text-capitalize cursor-pointer">
                     <Radio class="checkbox-round" ElementId="type-online"  TValue="int" Value="2">Online</Radio>
                 </label>
@@ -145,7 +145,7 @@
 
     private FormModel model = new();
     private Validations? formValidation;
-    private bool isNextClick = false;
+    private bool showErrors = false;
     private IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
     private IDictionary<string, Region> regions = new Dictionary<string, Region>();
     private IDictionary<string, City> cities = new Dictionary<string, City>();
@@ -175,7 +175,7 @@
     {
         get 
         {
-            return DisableLocation ? ValidationMode.Manual : (isNextClick ? ValidationMode.Auto : ValidationMode.Manual);
+            return DisableLocation ? ValidationMode.Manual : (showErrors ? ValidationMode.Auto : ValidationMode.Manual);
         }
     }
 
@@ -299,12 +299,18 @@
 
     public async Task<bool> FieldValid()
     {
+        // for online type no need to validate 
+        if(model.SelectedType == 2)
+        {
+            return true;
+        }
+
         if(formValidation is not null)
         {
             bool valid = await formValidation.ValidateAll() && !string.IsNullOrEmpty(model.Region.Code)
                 && !string.IsNullOrEmpty(model.City.Code) && !string.IsNullOrEmpty(model.Barangay.Code);
 
-            isNextClick = true;
+            showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-location-wrapper .is-invalid");
@@ -327,7 +333,7 @@
     private string RegionClass {
         get {
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
-            if(isNextClick)
+            if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.Region.Code))
                 {
@@ -342,7 +348,7 @@
     private string CityClass {
         get {
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
-            if(isNextClick)
+            if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.City.Code))
                 {
@@ -357,7 +363,7 @@
     private string BarangayClass {
         get {
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
-            if(isNextClick)
+            if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.Barangay.Code))
                 {
@@ -367,6 +373,13 @@
             }
             return defaultStyle;
         }
+    }
+
+    private async Task CheckExperienceTypeChanged(int type)
+    {
+        model.SelectedType = type;
+        showErrors = false;
+        await formValidation.ClearAll();
     }
 
     private class FormModel 
