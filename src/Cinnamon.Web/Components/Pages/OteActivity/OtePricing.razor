@@ -1,0 +1,329 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Framework.ValidationAttributes;
+@inject INotificationService NotificationService;
+@inject IJSRuntime JS;
+@implements IFieldValid;
+
+<section class="ote-pricing-wrapper">
+    <div class="border-radius-10 bg-white-200 p-4">
+        <div class="mb-4">
+            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center">
+                <span>
+                    schedule
+                </span>
+                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2">4</span>
+            </h3>
+            <p class="font-16 color-grey-100">
+                Lorem ipsum dolor sit amet consectetur. Eget vivamus cras justo faucibus nulla. 
+                Arcu amet amet id cursus mi non eget nulla.
+            </p>
+        </div>
+        <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="modelSchedule">
+            <div class="data-form">
+                <div id="ote-pricing-from-date" class="mb-2">
+                    <label for="" class="text-capitalize font-20 color-black-100">from</label>
+                    <div class="d-flex">
+                        <div id="date-from" class="me-3">
+                            <Validation @ref="dateFromValidation">
+                                <Field class="mb-3">
+                                    <FieldBody>
+                                        <DateEdit class="font-18 border-radius-10 field-width" Size="Size.Medium" TValue="DateTime" @bind-Date="modelSchedule.DateFrom">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </div>
+                        <div id="time-from">
+                            <Field class="mb-3">
+                                <FieldBody>
+                                    <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeFrom" />
+                                </FieldBody>
+                            </Field>
+                        </div>
+                    </div>
+                </div>
+                <div id="ote-pricing-to-date" class="mb-2">
+                    <label for="" class="text-capitalize font-20 color-black-100">to</label>
+                    <div class="d-flex">
+                        <div id="date-to" class="me-3">
+                            <Validation @ref="dateToValidation">
+                                <Field class="mb-3">
+                                    <FieldBody>
+                                        <DateEdit class="font-18 border-radius-10 field-width" Size="Size.Medium" TValue="DateTime" @bind-Date="modelSchedule.DateTo">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </div>
+                        <div id="time-to">
+                            <Field class="mb-3">
+                                <FieldBody>
+                                    <TimeEdit class='@TimeToClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeTo" />
+                                </FieldBody>
+                            </Field>
+                        </div>
+                    </div>
+                </div>
+                <Field>
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        recurrences
+                    </FieldLabel>
+                    <FieldBody>
+                        <Select TValue="string" Size="Size.Medium" class="field-width form-control font-18 text-capitalize color-black-100 border-radius-10" 
+                            @bind-SelectedValue="modelSchedule.Recurrences">
+                            <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
+                        </Select>
+                        <div class="invalid-feedback">The recurrences field is mandatory.</div>
+                    </FieldBody>
+                </Field>
+            </div>
+        </Validations>
+    </div>
+    <div class="border-radius-10 bg-white-200 p-4 my-3">
+        <div class="mb-4">
+            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center">
+                <span>
+                    pricing
+                </span>
+                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2">5</span>
+            </h3>
+            <p class="font-16 color-grey-100">
+                Lorem ipsum dolor sit amet consectetur. Eget vivamus cras justo faucibus nulla. 
+                Arcu amet amet id cursus mi non eget nulla.
+            </p>
+        </div>
+        <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+            <Row VerticalGutter="10" class="mb-2">
+                <Column ColumnSize="ColumnSize.Is7">
+                    <Validation>
+                        <Field class="mb-4">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                price
+                            </FieldLabel>
+                            <FieldBody>
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="modelPricing.Price">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </NumericPicker>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is5">
+                    <Validation>
+                        <Field class="mb-4">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                max slots
+                            </FieldLabel>
+                            <FieldBody>
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="modelPricing.MaxSlots" >
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </NumericPicker>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Column>
+            </Row>
+            <Row VerticalGutter="10" class="mb-4">
+                <Column ColumnSize="ColumnSize.Is7">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
+                        <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize">view details</span>
+                    </div>
+                    <div>
+                        <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees">
+                            Absorb Fees: Ticketing fees are deducted from your ticket revenue.
+                        </Check>
+                    </div>
+                </Column>
+            </Row>
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        admission description
+                    </FieldLabel>
+                    <FieldBody>
+                        <MemoEdit class="font-18 border-radius-10" Rows="3" @bind-Text="modelPricing.Description" >
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </MemoEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <div>
+                <Button class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10">
+                    add more ticket price
+                </Button>
+            </div>
+        </Validations>
+    </div>
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    private Schedule modelSchedule = new();
+    private Pricing modelPricing = new();
+    private PricingList modelPricingList = new();
+    private Validations? scheduleFormValidation;
+    private Validations? pricingFormValidation;
+    private Validation? dateFromValidation;
+    private Validation? dateToValidation;
+    private bool showErrors = false;
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync();
+        }
+    }
+
+    public async Task<bool> FieldValid()
+    {
+        if(pricingFormValidation is not null && scheduleFormValidation is not null)
+        {
+            bool pricingValid = await pricingFormValidation.ValidateAll();
+            bool scheduleValid = await scheduleFormValidation.ValidateAll();
+            bool valid = pricingValid && scheduleValid;
+            showErrors = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+            return valid;
+        }
+        return false;
+    }
+
+    private ValidationMode FormMode 
+    {
+        get 
+        {
+            return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
+        }
+    }
+
+    private string TimeFromClass
+    {
+        get
+        {
+            string defaultClass = "font-18 border-radius-10";
+            if(dateFromValidation is not null && showErrors)
+            {
+                if(dateFromValidation.Status == ValidationStatus.Error)
+                {
+                    return $"{defaultClass} is-invalid";
+                }
+                else 
+                {
+                    return $"{defaultClass} is-valid";
+                }
+            }
+            return defaultClass;
+        }
+    }
+
+    private string TimeToClass
+    {
+        get 
+        {
+            string defaultClass = "font-18 border-radius-10";
+            if(dateToValidation is not null && showErrors)
+            {
+                if(dateToValidation.Status == ValidationStatus.Error)
+                {
+                    return $"{defaultClass} is-invalid";
+                }
+                else 
+                {
+                    return $"{defaultClass} is-valid";
+                }
+            }
+            return defaultClass; 
+        }
+    }
+
+    private class PricingList
+    {
+        public IList<Pricing> Pricings {get; set;} = new List<Pricing>();
+    }
+    
+
+    public class Schedule 
+    {
+        private DateTime dateFrom = DateTime.Now;
+        [Required(ErrorMessage = "The date from field is mandatory.")]
+        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
+        public DateTime DateFrom 
+        {
+            get
+            {
+                dateFrom = dateFrom.Date + TimeFrom;
+                return dateFrom;
+            }
+            set
+            {
+                dateFrom = value;
+            }
+        }
+
+        [Required(ErrorMessage = "The time field is mandatory.")]
+        public TimeSpan TimeFrom {get; set;} = DateTime.Now.TimeOfDay;
+
+        private DateTime dateTo = DateTime.Now;
+        [Required(ErrorMessage = "The date to field is mandatory.")]
+        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
+        [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
+        public DateTime DateTo
+        {
+            get 
+            {
+                dateTo = dateTo.Date + TimeTo;
+                return dateTo;
+            }
+            set 
+            {
+                dateTo = value;
+            }
+        }
+
+        [Required(ErrorMessage = "The time field is mandatory.")]
+        public TimeSpan TimeTo {get; set;} = DateTime.Now.TimeOfDay;
+
+        [Required(ErrorMessage = "The recurrences field is mandatory.")]
+        public string Recurrences {get; set;} = "do-not-repeat";
+    }
+
+    public class Pricing 
+    {
+        [Required(ErrorMessage = "The price field is mandatory.")]
+        [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
+        public decimal Price {get; set;}
+
+        [Required(ErrorMessage = "The max slots field is mandatory.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
+        public int MaxSlots {get; set;}
+
+        [Required(ErrorMessage = "The absorb fees field is mandatory.")]
+        public bool AbsorbFees {get; set;}
+
+        [Required(ErrorMessage = "The description field is mandatory.")]
+        public string Description {get; set;}
+
+        public bool IsOpen {get; set;} = false;
+    }
+}

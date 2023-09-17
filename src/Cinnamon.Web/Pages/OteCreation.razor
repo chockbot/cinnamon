@@ -4,7 +4,7 @@
 @attribute [Authorize]
 
 <PageTitle>Create an Experience | CinnamonPH</PageTitle>
-<SeoMeta Title="Create an Experience" Subject="Create an Experience" Url="/creation" />
+<SeoMeta Title="Create an Experience" Subject="Create an Experience" Url="/creation/ote" />
 
 <Container class="pb-5">
     <div class="progress-bar-section mt-4">
@@ -37,6 +37,9 @@
             <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
                 <OteLocation @ref="oteLocation" OnNextClick="NextClick" />
             </div>
+            <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                <OtePricing @ref="otePricing" OnNextClick="NextClick" />
+            </div>
         </Column>
     </Row>
 </Container>
@@ -46,6 +49,7 @@
     private int currentIndex = 0;
     private OteEvent? oteEvent;
     private OteLocation? oteLocation;
+    private OtePricing? otePricing;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IFieldValid>> components = new List<ComponentItem<IFieldValid>>();
@@ -201,6 +205,13 @@
         components.Add(new ComponentItem<IFieldValid> {
             Component = oteLocation,
             Name = "location",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IFieldValid> {
+            Component = otePricing,
+            Name = "pricing",
             HasNext = true,
             HasPrevious = true
         });
