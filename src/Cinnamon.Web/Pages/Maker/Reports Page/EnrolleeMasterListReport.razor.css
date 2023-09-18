@@ -51,7 +51,6 @@
     display: flex;
     padding: 0;
 }
-
 .master-list {
     display: flex;
 }
@@ -477,6 +476,10 @@ hr {
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    ::deep .search-box{
+        width: 100%;
+    }
+
     .calendar-header {
         display: flex;
         align-items: center;
@@ -564,170 +567,165 @@ hr {
 
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
-        .header-masterlist {
-            display: block;
-        }
+    ::deep .search-box {
+        width: 100%;
+    }
+    .header-masterlist {
+        display: block;
+    }
+    
+    .master-list {
+        display: block;
+    }
+    /*HEADER*/
+    .header {
+        display: flex;
+        color: var(--primary);
+        font-family: 'Nunito';
+        font-weight: 700;
+        font-size: 20px;
+        align-items: center;
+        margin-top: 30px;
+        margin-left: 0px;
+        margin-right: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .header-title {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        margin: 0;
+        padding-left: 0px;
+    }
+    
+    .back-button img {
+        width: 30px;
+        height: 30px;
+    }
+    /*CALENDAR*/
+    .calendar {
+        background: #FFFFFF;
+        box-shadow: 0px 4px 20px #D9D9D9;
+        border-radius: 5px;
+        margin-top: 15px !important;
+        margin: 12px;
+        padding: 15px;
+        padding-bottom: 10px !important;
+        height: 100%;
+    }
+    
+    
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 13px;
+    }
+    
+    .calendar-header-details {
+        color: #343D4C;
+        font-family: 'Nunito';
+        font-weight: 700;
+        font-size: 20px;
+    }
 
-        .master-list {
-            display: block;
-        }
-        /*HEADER*/
-        .header {
-            display: flex;
-            color: var(--primary);
-            font-family: 'Nunito';
-            font-weight: 700;
-            font-size: 20px;
-            align-items: center;
-            margin-top: 30px;
-            margin-left: 0px;
-            margin-right: 12px;
-            margin-bottom: 20px;
-        }
+    .arrow-right, .arrow-left {
+        outline: none;
+        border: none;
+        text-decoration: none;
+        box-sizing: border-box;
+        width: 30px !important;
+        height: 30px !important;
+        margin: 0px;
+        padding: 0px;
+        background-color: #FFFFFF;
+        border-radius: 50px;
+    }
+    
+    .arrow-right img, .arrow-left img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    
+    .arrow-right:hover img {
+        filter: brightness(0) invert(1);
+    }
+    
+    .arrow-right:hover {
+        background: var(--primary);
+    }
+    
+    .arrow-left:hover img {
+        filter: brightness(0) invert(1);
+    }
+    
+    .arrow-left:hover {
+        background: var(--primary);
+    }
 
-        .header-title {
-            font-family: 'Nunito';
-            font-style: normal;
-            font-weight: 700;
-            font-size: 20px;
-            margin: 0;
-            padding-left: 0px;
-        }
-
-        .back-button img {
-            width: 30px;
-            height: 30px;
-        }
-        /*CALENDAR*/
-        .calendar {
-            background: #FFFFFF;
-            box-shadow: 0px 4px 20px #D9D9D9;
-            border-radius: 5px;
-            margin-top: 15px !important;
-            margin: 12px;
-            padding: 15px;
-            padding-bottom: 10px !important;
-            height: 100%;
-        }
-
-
-        .calendar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-left: 5px;
-            padding-right: 5px;
-            margin-bottom: 13px;
-        }
-
-        .calendar-header-details {
-            color: #343D4C;
-            font-family: 'Nunito';
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-
-        .arrow-right, .arrow-left {
-            outline: none;
-            border: none;
-            text-decoration: none;
-            box-sizing: border-box;
-            width: 30px !important;
-            height: 30px !important;
-            margin: 0px;
-            padding: 0px;
-            background-color: #FFFFFF;
-            border-radius: 50px;
-        }
-
-            .arrow-right img, .arrow-left img {
-                width: 30px !important;
-                height: 30px !important;
-            }
-
-
-            .arrow-right:hover img {
-                filter: brightness(0) invert(1);
-            }
-
-            .arrow-right:hover {
-                background: var(--primary);
-            }
-
-            .arrow-left:hover img {
-                filter: brightness(0) invert(1);
-            }
-
-            .arrow-left:hover {
-                background: var(--primary);
-            }
-
-
-
-        .calendar-days {
-            align-items: center;
-            color: var(--primary);
-            font-family: 'Nunito';
-            font-weight: 500;
-            font-size: 12px;
-            text-align: center;
-            height: 30px !important;
-        }
-
-        /*section {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
+    .calendar-days {
+        align-items: center;
+        color: var(--primary);
         font-family: 'Nunito';
         font-weight: 500;
         font-size: 12px;
-    }*/
-
-        hr {
-            color: #FFFFFF;
-            display: none;
-        }
-
-        .calendar-dates {
-            /* transform: translate(-50%, -50%);*/
-            width: 25px;
-            height: 25px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-family: 'Nunito';
-            font-weight: 500;
-            margin-top: 5px;
-        }
-
-        .calendar-body {
-            min-width: 0;
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        .btn-date {
-            border: none;
-            background-color: #4BB749;
-            font-size: 12px;
-            font-family: 'Nunito';
-            font-weight: 500;
-            transform: translate(-110%, -110%);
-            width: 25px;
-            height: 25px;
-            border-radius: 50px;
-            margin-left: 35px;
-            margin-bottom: 1px;
-        }
-
-        .btn-date-absent {
-            border: none;
-            font-size: 12px;
-            font-family: 'Nunito';
-            font-weight: 500;
-            transform: translate(-110%, -110%);
-            width: 25px;
-            height: 25px;
-            border-radius: 50px;
-            margin-left: 35px;
-        }
+        text-align: center;
+        height: 30px !important;
     }
+    hr {
+        color: #FFFFFF;
+        display: none;
+    }
+    
+    .calendar-dates {
+        /* transform: translate(-50%, -50%);*/
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        margin-top: 5px;
+    }
+    
+    .calendar-body {
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+    
+    .btn-date {
+        border: none;
+        background-color: #4BB749;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        transform: translate(-110%, -110%);
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        margin-left: 35px;
+        margin-bottom: 1px;
+    }
+    
+    .btn-date-absent {
+        border: none;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        transform: translate(-110%, -110%);
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        margin-left: 35px;
+    }
+    .student-details-container {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
