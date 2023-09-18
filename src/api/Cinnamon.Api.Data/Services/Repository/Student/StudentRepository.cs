@@ -485,6 +485,8 @@ public class StudentRepository: IStudentRepository
 					ExpirationStartDate  = s.ExpirationStartDate,
 					ExpirationEndDate    = s.ExpirationEndDate,
 					HasReview            = s.HasReview,
+					PurchaseDate		 = s.PurchaseDate,
+					Title				 = s.Title,
 					activitySchedule = new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
 					{
 						Id            = s.activitySchedule.Id,
