@@ -40,6 +40,9 @@
             <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
                 <OtePricing @ref="otePricing" OnNextClick="NextClick" />
             </div>
+            <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
+            </div>
         </Column>
     </Row>
 </Container>
@@ -50,6 +53,7 @@
     private OteEvent? oteEvent;
     private OteLocation? oteLocation;
     private OtePricing? otePricing;
+    private OteGallery? oteGallery;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IFieldValid>> components = new List<ComponentItem<IFieldValid>>();
@@ -212,6 +216,13 @@
         components.Add(new ComponentItem<IFieldValid> {
             Component = otePricing,
             Name = "pricing",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IFieldValid> {
+            Component = oteGallery,
+            Name = "gallery",
             HasNext = true,
             HasPrevious = true
         });
