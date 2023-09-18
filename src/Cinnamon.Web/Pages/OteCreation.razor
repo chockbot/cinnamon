@@ -1,6 +1,13 @@
 @page "/creation/ote"
+@using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.OteActivity;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject INotificationService NotificationService;
+@inject IActivityApiHandler activityApiHandler;
+@inject IJSRuntime JS;
 @attribute [Authorize]
 
 <PageTitle>Create an Experience | CinnamonPH</PageTitle>
@@ -43,6 +50,9 @@
             <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
                 <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
             </div>
+            <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                <OteSummary @ref="oteSummary" OnNextClick="NextClick" />
+            </div>
         </Column>
     </Row>
 </Container>
@@ -54,14 +64,35 @@
     private OteLocation? oteLocation;
     private OtePricing? otePricing;
     private OteGallery? oteGallery;
+    private OteSummary? oteSummary;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IFieldValid>> components = new List<ComponentItem<IFieldValid>>();
+    private string token = string.Empty;
 
     protected override void OnInitialized()
     {
         LoadSidebarItems();
         LoadImages();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // get user token
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if(!user.Identity.IsAuthenticated || string.IsNullOrEmpty(token))
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+            }
+        }
+        catch (System.Exception)
+        {
+            NavigationManager.NavigateTo("explore");
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -226,6 +257,13 @@
             HasNext = true,
             HasPrevious = true
         });
+
+        components.Add(new ComponentItem<IFieldValid> {
+            Component = oteSummary,
+            Name = "summary",
+            HasNext = false,
+            HasPrevious = true
+        });
     }
 
     private async Task NextClick()
@@ -234,6 +272,9 @@
         if(valid && field.HasNext)
         {
             SetActiveItem(++currentIndex);
+        }
+        else {
+            await PublishOte();
         }
     }
 
@@ -246,6 +287,65 @@
            return Tuple.Create<bool, ComponentItem<IFieldValid>?>(valid, component);
         }
         return Tuple.Create<bool, ComponentItem<IFieldValid>?>(false, null);
+    }
+
+    private async Task PublishOte()
+    {
+        try
+        {
+            var eventData = oteEvent.GetData();
+            var location = oteLocation.GetData();
+            var schedule  = otePricing.GetData();
+
+            var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
+                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
+                    BarangayCode = location.BarangayCode,
+                    BarangayName = location.BarangayName,
+                    CityName = location.CityName,
+                    CityNumber = location.CityCode,
+                    Description = eventData.Description,
+                    EventName = eventData.Name,
+                    ExperienceCreationTypeId = 3,
+                    ExperienceTypeId = location.ExperienceType,
+                    HouseNo = location.HouseNo,
+                    IsPublished = true,
+                    PinnedLocation = location.PinnedLocation,
+                    PostalCode = location.PostalCode,
+                    Recurrence = schedule.Recurrences,
+                    RegionCode = location.RegionCode,
+                    RegionName = location.RegionName,
+                    ScheduleFrom = schedule.DateFrom,
+                    ScheduleTo = schedule.DateTo
+                },
+                Pricings = schedule.ItemPrices.Select(p => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
+                        Description = p.Description,
+                        IsAbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                    };
+                })
+            }, token);
+
+            if(!publishOte.Succeeded || publishOte.Result is null || !publishOte.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured when publishing OTE.", "Error");
+            }
+            else 
+            {
+                if(oteGallery is not null)
+                {
+                    var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
+                }
+
+                await JS.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+                NavigationManager.NavigateTo("/maker/dashboard");
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured when publishing OTE.", "Error");
+        }
     }
 
     private class ComponentItem<T> where T : IFieldValid 

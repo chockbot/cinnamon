@@ -201,8 +201,45 @@ export async function previewImage(imgSelector, inputSelector) {
   imgElem.src = urlSrc;
 }
 
+export async function uploadListImages(
+  selectors,
+  activityId,
+  deletedIds,
+  haveOteOrder
+) {
+  const formData = new FormData();
+  let orderCount = 0;
+  for (const selector of selectors) {
+    const file = dataUrlToFile($(selector).val(), "image");
+    if (file) {
+      if (haveOteOrder && orderCount === selectors.length - 1) {
+        orderCount = 100;
+      }
+      formData.append("Images", file);
+      formData.append("Orders", orderCount);
+      orderCount++;
+    }
+  }
+  formData.append("ActivityId", activityId);
+  // for deleted ids
+  for (const id of deletedIds) {
+    formData.append("DeletedIds", id);
+  }
+
+  try {
+    const result = await axios.postForm(
+      "api/activity/UploadActivityImage",
+      formData
+    );
+    return { success: result.data.success, message: result.data.message };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
 export default {
   initCreation,
   initCreationInProgress,
   previewImage,
+  uploadListImages,
 };

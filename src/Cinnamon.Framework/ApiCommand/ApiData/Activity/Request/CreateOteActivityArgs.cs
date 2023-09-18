@@ -28,32 +28,23 @@ public class CreateOteActivityArgs
         [Required]
         public string StringPrice {get; set;}
 
-        [Required]
-        public string HouseNo {get; set;}
+        public string? HouseNo {get; set;} = string.Empty;
 
-        [Required]
-        public string BarangayCode {get; set;}
+        public string? BarangayCode {get; set;} = string.Empty;
 
-        [Required]
-        public string BarangayName {get; set;}
+        public string? BarangayName {get; set;} = string.Empty;
 
-        [Required]
-        public string CityNumber {get; set;}
+        public string? CityNumber {get; set;} = string.Empty;
 
-        [Required]
-        public string CityName {get; set;}
+        public string? CityName {get; set;} = string.Empty;
 
-        [Required]
-        public string RegionCode {get; set;}
+        public string? RegionCode {get; set;} = string.Empty;
 
-        [Required]
-        public string RegionName {get; set;}
+        public string? RegionName {get; set;} = string.Empty;
 
-        [Required]
-        public string PostalCode {get; set;}
+        public string? PostalCode {get; set;} = string.Empty;
 
-        [Required]
-        public string PinnedLocation {get; set;}
+        public string? PinnedLocation {get; set;} = string.Empty;
 
         [Required]
         public bool IsPublished {get; set;}

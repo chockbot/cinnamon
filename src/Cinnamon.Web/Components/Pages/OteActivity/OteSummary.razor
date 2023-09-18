@@ -1,0 +1,47 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@implements IFieldValid;
+
+<section>
+    <div class="border-radius-10 bg-white-200 p-4">
+        <div>
+            <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">THE JUANS LIVE IN CEBU</h3>
+            <p class="font-20 color-black-100 mb-0">
+                This concert has a story not just based on the line up of songs that they will perform on stage, 
+                there would be a mix of song film element to be shown during the concert where audience can 
+                relate to and draw more connection to their listeners and convey their heartfelt hugot message 
+                to everyJUAN. The Juans will be performing hit tracks and more songs from their latest album, LIWANAG!
+            </p>
+        </div>
+        <Divider />
+        <div>
+            <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
+            <p class="font-20 color-black-100 mb-0">
+                20 May 2023 | 06:00 PM
+            </p>
+        </div>
+    </div>
+    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    private bool invokingNext = false;
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            invokingNext = true;
+            await OnNextClick.InvokeAsync();
+            invokingNext = false;
+        }
+    }
+
+    public Task<bool> FieldValid()
+    {
+        return Task.Run<bool>(() => true);
+    }
+}

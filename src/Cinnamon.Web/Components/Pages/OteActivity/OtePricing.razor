@@ -372,11 +372,51 @@
         }
     }
 
+    public ModelData GetData()
+    {
+        ModelData data = new ModelData 
+        {
+            DateFrom = modelSchedule.DateFrom,
+            DateTo = modelSchedule.DateTo,
+            Recurrences = modelSchedule.Recurrences,
+            ItemPrices = modelPricingList.Pricings.Select(p => {
+                return new ModelData.ItemPrice {
+                    AbsorbFees = p.AbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Description = p.Description
+                };
+            }).ToList()
+        };
+        data.ItemPrices.Add(new ModelData.ItemPrice {
+            AbsorbFees = modelPricing.AbsorbFees,
+            MaxSlots = modelPricing.MaxSlots,
+            Price = modelPricing.Price,
+            Description = modelPricing.Description
+        });
+        return data;
+    }
+
+    public class ModelData
+    {
+        public DateTime DateFrom {get; set;}
+        public DateTime DateTo {get; set;}
+        public string Recurrences {get; set;}
+        public IList<ItemPrice> ItemPrices {get; set;}
+
+        public class ItemPrice 
+        {
+            public decimal Price {get; set;}
+            public int MaxSlots {get; set;}
+            public bool AbsorbFees {get; set;}
+            public string Description {get; set;}
+        }
+    }
+
     private class PricingList
     {
         public IList<Pricing> Pricings {get; set;} = new List<Pricing>();
     }
-    
 
     public class Schedule 
     {

@@ -184,6 +184,23 @@
         if(messages is null || messages.Count() == 0) return string.Empty;
         return string.Join(". ", messages);
     }
+
+    public ModelData GetData()
+    {
+        ModelData data = new ModelData {
+            Category = model.SelectedCategory,
+            Description = model.Description,
+            Name = model.EventName
+        };
+        return data;
+    }
+
+    public class ModelData 
+    {
+        public string Name {get; set;}
+        public string Description {get; set;}
+        public int Category {get; set;}
+    }
     
     private class FormModel
     {

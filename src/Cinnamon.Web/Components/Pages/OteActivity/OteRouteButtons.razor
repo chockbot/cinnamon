@@ -4,13 +4,20 @@
     @if(HavePrevious)
     {
         <Button class="me-2 bg-white-200 color-black-100 text-capitalize font-24 
-            hover-color-black-100 px-5 border-radius-10" @onclick="PreviousClick">
+            hover-color-black-100 px-5 border-radius-10" Disabled="LoadingNext" @onclick="PreviousClick">
             Back
         </Button>
     }
     <Button class="bg-orange-100 color-white-100 text-capitalize font-24 
-        hover-color-white px-5 border-radius-10" @onclick="NextClick">
-        Next
+        hover-color-white px-5 border-radius-10" @onclick="NextClick"
+        Loading="LoadingNext" Disabled="LoadingNext">
+        <LoadingTemplate>
+            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+            @LoadingLabel
+        </LoadingTemplate>
+        <ChildContent>
+            Next
+        </ChildContent>
     </Button>
 </div>
 
@@ -24,6 +31,12 @@
 
     [Parameter]
     public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public bool LoadingNext {get; set;}
+
+    [Parameter]
+    public string LoadingLabel {get; set;} = "Next";
 
     private async Task PreviousClick()
     {

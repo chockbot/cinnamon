@@ -277,6 +277,21 @@
         }
     }
 
+    public async Task<bool> UploadImages(int createdActivityId)
+    {
+        var selectors = new List<string>();
+        selectors.Add($"#{coverPhoto.InputDataId}");
+        selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
+        bool haveOptionalPhoto = setplanPhoto.Display;
+        if(haveOptionalPhoto)
+        {
+            selectors.Add($"#{setplanPhoto.InputDataId}");
+        }
+        var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", 
+                selectors, createdActivityId, new List<int>(), haveOptionalPhoto);
+        return result.Success ?? false;
+    }
+
     private class ImageItem 
     {
         public string ContainerId {get; set;} = string.Empty;
@@ -286,5 +301,11 @@
         public decimal FileSize {get; set;} = 0;
         public bool Display {get; set;} = false;
         public int Order {get; set;} = 0;
+    }
+
+    private class UploadResult 
+    {
+        public string? Message {get; set;}
+        public bool? Success {get; set;}
     }
 }

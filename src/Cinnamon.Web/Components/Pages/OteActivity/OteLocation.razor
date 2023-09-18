@@ -382,6 +382,37 @@
         await formValidation.ClearAll();
     }
 
+    public ModelData GetData()
+    {
+        ModelData data = new ModelData {
+            BarangayCode = model.Barangay.Code,
+            BarangayName = model.Barangay.Name,
+            CityCode = model.City.Code,
+            CityName = model.City.Name,
+            ExperienceType = model.SelectedType,
+            HouseNo = model.HouseNo,
+            PinnedLocation = model.PinnedLocation,
+            PostalCode = model.PostaCode,
+            RegionCode = model.Region.Code,
+            RegionName = model.Region.Name
+        };
+        return data;
+    }
+
+    public class ModelData
+    {
+        public int ExperienceType {get; set;}
+        public string HouseNo {get; set;}
+        public string PostalCode {get; set;}
+        public string PinnedLocation {get; set;}
+        public string RegionName {get; set;}
+        public string RegionCode {get; set;}
+        public string CityName {get; set;}
+        public string CityCode {get; set;}
+        public string BarangayName {get; set;}
+        public string BarangayCode {get; set;}
+    }
+
     private class FormModel 
     {
         [Required]
@@ -393,7 +424,7 @@
         [Required(ErrorMessage = "The postal code field is mandatory.")]
         public string PostaCode {get; set;}
 
-        public string PinnedLocation {get; set;} = string.Empty;
+        public string PinnedLocation {get; set;}
 
         [Required]
         public Region Region {get; set;} = new();

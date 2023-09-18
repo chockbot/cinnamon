@@ -1601,8 +1601,8 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
-        string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
-        string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
+        string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId)
     {
         try
@@ -1629,15 +1629,15 @@ public class ActivityRepository : IActivityRepository
             };
 
             var address = new Entities.ActivityAddress {
-              Address1 = houseNo,
-              City = cityNumber,
-              CityName = cityName,
-              Barangay = barangayCode,
-              BarangayName = barangayName,
-              Region = regionCode,
-              RegionName = regionName,
-              PinnedLocation = pinnedLocation,
-              PostalCode = postalCode,  
+              Address1 = houseNo ?? string.Empty,
+              City = cityNumber ?? string.Empty,
+              CityName = cityName ?? string.Empty,
+              Barangay = barangayCode ?? string.Empty,
+              BarangayName = barangayName ?? string.Empty,
+              Region = regionCode ?? string.Empty,
+              RegionName = regionName ?? string.Empty,
+              PinnedLocation = pinnedLocation ?? string.Empty,
+              PostalCode = postalCode ?? string.Empty,  
             };
 
             var schedule = new Entities.OteSchedule {
@@ -1661,11 +1661,11 @@ public class ActivityRepository : IActivityRepository
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(new ActivityDTO {
-                Address1 = houseNo,
-                Barangay = barangayCode,
-                BarangayName = barangayName,
-                City = cityNumber,
-                CityName = cityName,
+                Address1 = houseNo ?? string.Empty,
+                Barangay = barangayCode ?? string.Empty,
+                BarangayName = barangayName ?? string.Empty,
+                City = cityNumber ?? string.Empty,
+                CityName = cityName ?? string.Empty,
                 Description = description,
                 ExperienceCategoryId = 1,
                 ExperienceCreationType = Enums.ExperienceCreationType.OneTimeEvents,
@@ -1674,13 +1674,13 @@ public class ActivityRepository : IActivityRepository
                 Id = createRes.Result.Id,
                 IsDeactivated = false,
                 IsNew = true,
-                PinnedLocation = pinnedLocation,
-                PostalCode = postalCode,
+                PinnedLocation = pinnedLocation ?? string.Empty,
+                PostalCode = postalCode ?? string.Empty,
                 Price = stringPrice,
                 Title = eventName,
                 IsPublished = isPublished,
-                Region = regionCode,
-                RegionName = regionName,
+                Region = regionCode ?? string.Empty,
+                RegionName = regionName ?? string.Empty,
                 SubCategoryId = 1,
             }, "One time event successfully created.");
         }

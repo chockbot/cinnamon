@@ -280,6 +280,7 @@ public class ActivityData: IActivityData
 		}
 		catch (FlurlHttpException ex)
 		{
+			var error = ex.GetResponseJsonAsync();
 			return AppResult<CreateOteActivityResult>.CreateFailed(ex, ex.Message);
 		}
 		catch (Exception ex)
