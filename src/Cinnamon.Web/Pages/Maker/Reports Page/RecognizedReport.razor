@@ -22,9 +22,12 @@
         <p class="back-text">Reports</p>
     </div>
     <div class="page-title">
-        <div class="col-12 d-flex">
-            <h3 class="text-capitalize fw-bold header-title col-6 d-flex justify-content-start">Recognized Sales Report</h3>
-            <div class="btn-group col-6 d-flex justify-content-end">
+        <div class="sub-header">
+            <h3 class="text-capitalize fw-bold header-title col-lg-6 col-md-6 col-sm-12 col-12 d-flex justify-content-start">Recognized Sales Report</h3>
+            <div class="mobile-text col-sm-12">
+                Track the actual recognized sales that has been transferred to your account. This will help you see how long it takes you to complete a session and how much each completion affects you.
+            </div>
+            <div class="btn-group col-lg-6 col-md-6 col-sm-12 col-12 d-flex">
                 <button class="btn-today" @onclick="@(() => UpdateChatDataset("today"))">Today</button>
                 <button @onclick="@(() => UpdateChatDataset("1week"))">1w</button>
                 <button @onclick="@(() => UpdateChatDataset("2weeks"))">2w</button>
@@ -36,19 +39,19 @@
         </div>
         <h6 class="engagement-text">Track the actual recognized sales that has been transferred to your account. This will help you see how long it takes you to complete a session and how much each completion affects you.</h6>
     </div>
-    <LineChart @ref="lineChart" TItem="Payouts" Options="@lineChartOptions" />
+    <LineChart @ref="lineChart" TItem="Payouts" Options="@lineChartOptions"/>
     <div class="gross-legend-1 col-12 d-flex justify-content-start">
-        <div class="legend-1 col-2 d-flex">
+        <div class="legend-1 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
             <img class="img-legend-2" src="images/Reports/gross-legend-1.png" />
             <p>A. Legend 1</p>
         </div>
-        <div class="legend-2 col-2 d-flex">
+        <div class="legend-2 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
             <img class="img-legend-2" src="images/Reports/gross-legend-2.png" />
             <p>B. Legend 2</p>
         </div>
     </div>
     <div class="gross-legend-2 col-12 justify-content-start">
-        <div class="legend-3 col-2 d-flex">
+        <div class="legend-3 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
             <img class="img-legend-3" src="images/Reports/gross-legend-3.png" />
             <p>C. Legend 3</p>
         </div>
