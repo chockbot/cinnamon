@@ -78,6 +78,11 @@
 
     private async Task NavigateToExperience(Cinnamon.Framework.Enums.Enums.ExperienceCreationType experienceCreationType)
     {
+        if(experienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+        {
+            NavigationManager.NavigateTo("/experiences/ote");
+            return;
+        }
         if (experienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
         {
             ExperienceCreationType = experienceCreationType;

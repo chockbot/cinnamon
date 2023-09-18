@@ -12,13 +12,15 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly IActivityData activityData;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IGenerateActivityHandler generateActivityHandler;
+    private readonly ICustomerData customerData;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
-        IGenerateActivityHandler generateActivityHandler)
+        IGenerateActivityHandler generateActivityHandler, ICustomerData customerData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
+        this.customerData = customerData;
     }
 
     public AppResult<OteCreateResult> Execute(OteCreateArgs args)
@@ -98,6 +100,19 @@ public class OteCreateHandler : IOteCreateHandler
             if(!createOteRes.Succeeded || createOteRes.Result is null || !createOteRes.Result.IsSuccess)
             {
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(createOteRes.Message), createOteRes.Message);
+            }
+
+            // update customer status to maker
+            if(!currentUser.Result.IsMaker)
+            {
+                var updateCustomerRes = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
+                    CustomerId = currentUser.Result.Id,
+                    IsMaker = true
+                });
+                if(!updateCustomerRes.Succeeded || updateCustomerRes.Result is null || !updateCustomerRes.Result.IsSuccess)
+                {
+                    return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(updateCustomerRes.Message), updateCustomerRes.Message);
+                }
             }
 
             return AppResult<OteCreateResult>.CreateSucceeded(new OteCreateResult {Id = createOteRes.Result.Result.Id}, "One time event successfully created.");
