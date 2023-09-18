@@ -56,7 +56,7 @@
 }  
 else
 {
-    @foreach (var item in students)
+    @foreach (var item in students.OrderBy(a => a.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd))
     {
         <div class="experience-box">
             <div class="top-content">
@@ -375,7 +375,7 @@ else
         }, Token);
         if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
         {
-            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            students = student.Result.Result.Select(a =>
             {
                 return new Students
                     {
@@ -412,7 +412,8 @@ else
 
         if(ActivityItemType == ItemType.Ongoing)
         {
-            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
+            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue))
+            .OrderBy(s => s.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd).ToList();
         }
         else
         {
@@ -421,7 +422,7 @@ else
         || (a.activitySchedule.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
         || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
         || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-            && a.ExpirationDateEnd != DateTime.MinValue).ToList();
+        && a.ExpirationDateEnd != DateTime.MinValue).OrderBy(s => s.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd).ToList();
         }
         await CreateMonth();
         isLoading = false;
