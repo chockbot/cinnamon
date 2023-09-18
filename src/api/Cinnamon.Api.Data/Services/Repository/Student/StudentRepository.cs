@@ -482,6 +482,8 @@ public class StudentRepository: IStudentRepository
 					ExpirationStartDate  = s.ExpirationStartDate,
 					ExpirationEndDate    = s.ExpirationEndDate,
 					HasReview            = s.HasReview,
+					PurchaseDate		 = s.PurchaseDate,
+					Title				 = s.Title,
 					activitySchedule = new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
 					{
 						Id            = s.activitySchedule.Id,
@@ -509,20 +511,20 @@ public class StudentRepository: IStudentRepository
 	}
 
 	public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
-    {
-        try
-        {
-            var result = await dataStore.Student.ExpiringStudents();
-            if(!result.Succeeded || result.Result == null)
-            {
-                return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
-            }
+	{
+		try
+		{
+			var result = await dataStore.Student.ExpiringStudents();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
 
-            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when getting students to disburse");
-        }
-    }
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when getting students to disburse");
+		}
+	}
 }

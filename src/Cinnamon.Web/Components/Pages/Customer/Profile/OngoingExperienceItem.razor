@@ -15,12 +15,12 @@
 
 @if (isLoading == true)
 {
-    for(int x=0; x < 5; x++)
+    for(int x=0; x < 3; x++)
     {
         <div class="experience-box skeleton">
             <div class="top-content">
                 <div class="experience-content">
-                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <a class="button" style="text-decoration:none;">
                         <label class="xp-title skeleton">Activity Title</label>
                     </a>
 
@@ -56,13 +56,13 @@
 }  
 else
 {
-    @foreach (var item in students.OrderBy(a => a.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd))
+    @foreach (var item in Students)
     {
         <div class="experience-box">
             <div class="top-content">
                 <div class="experience-content">
-                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                        <label class="xp-title">@Activity.Title</label>
+                    <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
+                        <label class="xp-title">@item.Title</label>
                     </a>
 
                     <div class="xp-body-item">
@@ -151,8 +151,8 @@ else
                     }
                 </div>
                 <div class="experience-header">
-                    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                        <img class="image-header" src="@GetImage()" />
+                    <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
+                        <img class="image-header" src="@GetImage(item.ActivityId)" />
                     </a>
                 </div>
             </div>
@@ -306,11 +306,14 @@ else
 @code
 {
     [Parameter]
-    public Activity Activity { get; set; }
-
+    public IEnumerable<Activity> Activity { get; set; }
+    [Parameter]
+    public IEnumerable<Students> Students { get; set; }
     [Parameter]
     public CustomerProfile Profile { get; set; }
-    public List<Students> students                     = new List<Students>();
+    [Parameter]
+    public bool isLoading { get; set; }
+
     public List<ActivitySchedule> Schedules            = new List<ActivitySchedule>();
     public Activity activity                           = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
@@ -327,7 +330,6 @@ else
     public bool disableButtonLeft { get; set; }        = false;
     private int pageIndex                              = 1;
     private int itemsPerPage                           = 8;
-    private bool isLoading                             = true;
     IJSObjectReference module;
     public DateTime passDates;
     public DateTime monthEnd;
@@ -350,83 +352,18 @@ else
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
-    private string GetImage()
+    private string GetImage(int Id)
     {
-    if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
-    return string.Empty;
+        var act = Activity.Where(a=> a.ActivityId == Id).FirstOrDefault();
+    if (act.Images.Count > 0) return act.Images[0].ImageSrc;
+        return string.Empty;
     }
     protected override async Task OnInitializedAsync()
     {
-        isLoading = true;
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         Token = token;
-        if (token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-
-        // Get All Ongoing Activities of the Customer
-        var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
-        {
-            CustomerId = Profile.Id,
-        }, Token);
-        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
-        {
-            students = student.Result.Result.Select(a =>
-            {
-                return new Students
-                    {
-                        ActivityId          = a.ActivityId,
-                        CustomerId          = a.CustomerId,
-                        Id                  = a.Id,
-                        Name                = a.Name,
-                        NumberOfSessions    = a.NumberOfSessions,
-                        Remarks             = a.Remarks,
-                        ScheduleId          = a.ScheduleId,
-                        SessionsAttended    = a.SessionsAttended,
-                        Status              = a.Status,
-                        StudentNo           = a.StudentNo,
-                        ExpirationDateStart = a.ExpirationStartDate,
-                        ExpirationDateEnd   = a.ExpirationEndDate,
-                        HasReview           = a.HasReview,
-                        studentAttendance = new StudentAttendance
-                        {
-                            IsPresent = a.studentAttendanceDTO.IsPresent,
-                            Date      = a.studentAttendanceDTO.Date,
-                            StudentId = a.studentAttendanceDTO.StudentId
-                        },
-                        activitySchedule = new ActivitySchedule
-                        {
-                            Id            = a.activityScheduleDTO.ScheduleId,
-                            HasExpiration = a.activityScheduleDTO.HasExpiration,
-                            IsSetSession  = a.activityScheduleDTO.IsSetSession
-                        }
-                    };
-                }).ToList();
-            }
-
-        students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
-
-        if(ActivityItemType == ItemType.Ongoing)
-        {
-            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue))
-            .OrderBy(s => s.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd).ToList();
-        }
-        else
-        {
-            students = students.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.activitySchedule.HasExpiration == 0) 
-        || (a.activitySchedule.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-        || (a.activitySchedule.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-        || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-        || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-        && a.ExpirationDateEnd != DateTime.MinValue).OrderBy(s => s.studentAttendance.Date).ThenBy(s => s.ExpirationDateEnd).ToList();
-        }
         await CreateMonth();
-        isLoading = false;
-        StateHasChanged();
     }
 
     public double GetPercentage(double session, double total)
@@ -535,8 +472,7 @@ else
         }
         selectedName = student.Name;
         //Get Activity
-        var resultId = studentAttendances.FirstOrDefault().ActivityId;
-        var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        var ActivityListData = await activityApiHandler.GetActivity(student.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                         {
                             IncludeActivityDescription = true,
                             IncludeActivityImages = true,

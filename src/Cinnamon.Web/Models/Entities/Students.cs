@@ -13,9 +13,12 @@ public class Students
     public int NumberOfBacktracking { get; set; }
     public string Remarks { get; set; }
     public string Status { get; set; }
+    public string Title { get; set; }
+    public DateTime PurchaseDate { get; set; }
     public DateTime ExpirationDateStart { get; set; }
     public DateTime ExpirationDateEnd { get;set; }
     public bool HasReview { get; set; }
     public StudentAttendance studentAttendance { get; set; }
     public ActivitySchedule activitySchedule { get; set; }
+    public string ActivityType { get; set; }
 }
