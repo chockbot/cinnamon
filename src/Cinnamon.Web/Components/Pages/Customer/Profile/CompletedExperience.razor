@@ -103,12 +103,12 @@
             }
             else if (s.studentAttendance.Date == DateTime.MinValue)
             {
-                // Only 'studentAttendance.Date' is valid
+                // Only 'ExpirationDateEnd' is valid
                 return s.ExpirationDateEnd.Date;
             }
             else if (s.ExpirationDateEnd == DateTime.MinValue)
             {
-                // Only 'ExpirationDateEnd' is valid
+                // Only 'studentAttendance.Date' is valid
                 return s.studentAttendance.Date;
             }
             else
