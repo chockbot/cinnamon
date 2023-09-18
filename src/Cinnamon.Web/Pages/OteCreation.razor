@@ -6,6 +6,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
+@inject IPageProgressService ProgressService;
 @inject IActivityApiHandler activityApiHandler;
 @inject IJSRuntime JS;
 @attribute [Authorize]
@@ -150,6 +151,7 @@
         if(currentIndex != 0)
         {
             var (valid, _) = await  CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
             if(valid)
             {
                 SetActiveItem(0);
@@ -163,6 +165,7 @@
         if(currentIndex != 1)
         {
             var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
             if(valid)
             {
                 SetActiveItem(1);
@@ -176,6 +179,7 @@
         if(currentIndex != 2)
         {
             var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
             if(valid)
             {
                 SetActiveItem(2);
@@ -189,6 +193,7 @@
         if(currentIndex != 3)
         {
             var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
             if(valid)
             {
                 SetActiveItem(3);
@@ -202,6 +207,7 @@
         if(currentIndex != 4)
         {
             var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
             if(valid)
             {
                 SetActiveItem(4);
@@ -219,6 +225,11 @@
         }
         currentIndex = index;
         sidebarItems[currentIndex].IsActive = true;
+    }
+
+    private void SetValidItem(int index, bool valid)
+    {
+        sidebarItems[index].IsValid = valid;
     }
 
     private void LoadImages()
@@ -271,6 +282,8 @@
     private async Task NextClick()
     {
         var (valid, field) = await CurrentFieldValid();
+        SetValidItem(currentIndex, valid);
+
         if(valid && field is not null)
         {
             if(field.HasNext)
@@ -308,6 +321,8 @@
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
 
+            await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
+
             var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
                 Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
                     BarangayCode = location.BarangayCode,
@@ -337,6 +352,8 @@
                     };
                 })
             }, token);
+
+            await ProgressService.Go(-1);
 
             if(!publishOte.Succeeded || publishOte.Result is null || !publishOte.Result.IsSuccess)
             {

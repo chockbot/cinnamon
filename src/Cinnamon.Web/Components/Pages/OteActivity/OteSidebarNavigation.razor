@@ -5,11 +5,15 @@
     {
         <div @key="item" class="sidebar-item text-capitalize p-3 cursor-pointer prevent-select 
             d-flex justify-content-between align-items-center" 
-            data-active="@item.IsActive" @onclick="() => OnItemClick(item)">
+            data-active="@item.IsActive" data-valid="@item.IsValid" @onclick="() => OnItemClick(item)">
             <span>
                 @item.Label
             </span>
-            <img src="images/experience-creation/play-desktop.png" alt="icon">
+            <img class="img-active" src="images/experience-creation/play-desktop.png" alt="icon">
+            @if(item.IsValid && !item.IsActive)
+            {
+                <img src="images/Dashboard/rounded-check.png" alt="icon">
+            }
         </div>
     }
 </div>
@@ -29,5 +33,6 @@
         public string Label {get; set;}
         public Func<Item,Task> OnClick {get; set;}
         public bool IsActive {get; set;}
+        public bool IsValid {get; set;}
     }
 }
