@@ -412,80 +412,80 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 		}
 	}
 
-    public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentById(int customerId)
-    {
-        try
-        {
-            string query = "SELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"NumberOfBacktracking\", " +
-                "a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\",a.\"CreatedOn\" as PurchaseDate, a.\"HasReview\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
-                "c.\"HasExpiration\", d.\"Title\" \r\nFROM public.\"Students\" as a " +
-                "JOIN public.\"ActivitySchedules\" as c ON c.\"Id\" = a.\"ScheduleId\"\r\n" +
-                "JOIN public.\"Activities\" as d ON d.\"Id\" = a.\"ActivityId\"\r\n" +
-                "LEFT JOIN ( SELECT sa.\"Id\", sa.\"StudentId\", sa.\"IsPresent\",sa.\"Date\"\r\n" +
-                "FROM public.\"StudentAttendances\" as sa WHERE sa.\"IsPresent\" = true\r\n" +
-                "AND sa.\"Date\" = (SELECT MAX(sa_sub.\"Date\") FROM public.\"StudentAttendances\" as sa_sub " +
-                "WHERE sa_sub.\"StudentId\" = sa.\"StudentId\"\r\nAND sa_sub.\"IsPresent\" = true)) as b ON b.\"StudentId\" = a.\"Id\"\r\n" +
-                "WHERE a.\"CustomerId\" = " + customerId + "ORDER BY a.\"ExpirationDateEnd\", b.\"Date\";";
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentById(int customerId)
+	{
+		try
+		{
+			string query = "SELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"NumberOfBacktracking\", " +
+				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\",a.\"CreatedOn\" as PurchaseDate, a.\"HasReview\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
+				"c.\"HasExpiration\", d.\"Title\" \r\nFROM public.\"Students\" as a " +
+				"JOIN public.\"ActivitySchedules\" as c ON c.\"Id\" = a.\"ScheduleId\"\r\n" +
+				"JOIN public.\"Activities\" as d ON d.\"Id\" = a.\"ActivityId\"\r\n" +
+				"LEFT JOIN ( SELECT sa.\"Id\", sa.\"StudentId\", sa.\"IsPresent\",sa.\"Date\"\r\n" +
+				"FROM public.\"StudentAttendances\" as sa WHERE sa.\"IsPresent\" = true\r\n" +
+				"AND sa.\"Date\" = (SELECT MAX(sa_sub.\"Date\") FROM public.\"StudentAttendances\" as sa_sub " +
+				"WHERE sa_sub.\"StudentId\" = sa.\"StudentId\"\r\nAND sa_sub.\"IsPresent\" = true)) as b ON b.\"StudentId\" = a.\"Id\"\r\n" +
+				"WHERE a.\"CustomerId\" = " + customerId + "ORDER BY a.\"ExpirationDateEnd\", b.\"Date\";";
 
-            IList<StudentDTO> listResult = new List<StudentDTO>();
+			IList<StudentDTO> listResult = new List<StudentDTO>();
 
 
-            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = System.Data.CommandType.Text;
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
 
-                applicationContext.Database.OpenConnection();
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
-                        //Get Student
-                        listResult = dt.AsEnumerable().Select(item => new StudentDTO
-                        {
-                            Id                   = Convert.ToInt32(item["Id"]),
-                            ActivityId           = Convert.ToInt32(item["ActivityId"]),
-                            CustomerId           = Convert.ToInt32(item["CustomerId"]),
-                            ScheduleId           = Convert.ToInt32(item["ScheduleId"]),
-                            Name                 = item["Name"].ToString() ?? string.Empty,
-                            NumberOfSessions     = Convert.ToInt32(item["NumberOfSessions"]),
-                            SessionsAttended     = Convert.ToInt32(item["SessionsAttended"]),
-                            NumberOfBackTracking = Convert.ToInt32(item["NumberOfBacktracking"]),
-                            ExpirationStartDate  = Convert.ToDateTime(item["ExpirationDateStart"]),
-                            ExpirationEndDate    = Convert.ToDateTime(item["ExpirationDateEnd"]),
-                            HasReview            = Convert.ToBoolean(item["HasReview"]),
-                            PurchaseDate         = Convert.ToDateTime(item["PurchaseDate"]),
-                            Title                = item["Title"].ToString() ?? string.Empty,
-                            activitySchedule     = new ActivityScheduleDTO
-                            {
-                                Id            = Convert.ToInt32(item["ActivityScheduleId"]),
-                                HasExpiration = Convert.ToInt32(item["HasExpiration"]),
-                                IsSetSession  = Convert.ToBoolean(item["IsSetSession"])
-                            },
-                            studentAttendance = new StudentAttendanceDTO
-                            {
-                                Id        = item["StudentAttendanceId"] != DBNull.Value ? Convert.ToInt32(item["StudentAttendanceId"]) : 0,
-                                Date      = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
-                                IsPresent = item["IsPresent"] != DBNull.Value ? Convert.ToBoolean(item["IsPresent"]) : false,
-                                StudentId = item["StudentId"] != DBNull.Value ? Convert.ToInt32(item["StudentId"]) : 0,
-                            }
-                        }).ToList();
-                    }
-                }
-            }
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+						//Get Student
+						listResult = dt.AsEnumerable().Select(item => new StudentDTO
+						{
+							Id                   = Convert.ToInt32(item["Id"]),
+							ActivityId           = Convert.ToInt32(item["ActivityId"]),
+							CustomerId           = Convert.ToInt32(item["CustomerId"]),
+							ScheduleId           = Convert.ToInt32(item["ScheduleId"]),
+							Name                 = item["Name"].ToString() ?? string.Empty,
+							NumberOfSessions     = Convert.ToInt32(item["NumberOfSessions"]),
+							SessionsAttended     = Convert.ToInt32(item["SessionsAttended"]),
+							NumberOfBackTracking = Convert.ToInt32(item["NumberOfBacktracking"]),
+							ExpirationStartDate  = Convert.ToDateTime(item["ExpirationDateStart"]),
+							ExpirationEndDate    = Convert.ToDateTime(item["ExpirationDateEnd"]),
+							HasReview            = Convert.ToBoolean(item["HasReview"]),
+							PurchaseDate         = Convert.ToDateTime(item["PurchaseDate"]),
+							Title                = item["Title"].ToString() ?? string.Empty,
+							activitySchedule     = new ActivityScheduleDTO
+							{
+								Id            = Convert.ToInt32(item["ActivityScheduleId"]),
+								HasExpiration = Convert.ToInt32(item["HasExpiration"]),
+								IsSetSession  = Convert.ToBoolean(item["IsSetSession"])
+							},
+							studentAttendance = new StudentAttendanceDTO
+							{
+								Id        = item["StudentAttendanceId"] != DBNull.Value ? Convert.ToInt32(item["StudentAttendanceId"]) : 0,
+								Date      = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+								IsPresent = item["IsPresent"] != DBNull.Value ? Convert.ToBoolean(item["IsPresent"]) : false,
+								StudentId = item["StudentId"] != DBNull.Value ? Convert.ToInt32(item["StudentId"]) : 0,
+							}
+						}).ToList();
+					}
+				}
+			}
 
-            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
-        }
-    }
+			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
+		}
+	}
 
-    public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolleeMasterList(int providerId, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolleeMasterList(int providerId, int? count, int? skip)
 	{
 		try
 		{
