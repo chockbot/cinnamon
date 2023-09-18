@@ -1,4 +1,4 @@
-export default function scrollToView(selector) {
+export function scrollToView(selector) {
   const ele = document.querySelector(selector);
   if (ele) {
     ele.scrollIntoView({
@@ -6,4 +6,10 @@ export default function scrollToView(selector) {
       block: "center",
     });
   }
+}
+
+export function scrollToTop() {
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 100);
 }

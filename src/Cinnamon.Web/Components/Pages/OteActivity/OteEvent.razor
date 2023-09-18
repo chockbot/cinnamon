@@ -4,7 +4,7 @@
 @using Cinnamon.Framework.ValidationAttributes;
 @inject IActivityApiHandler activityApiHandler;
 @inject IJSRuntime JS;
-@implements IFieldValid;
+@implements IOteComponent;
 @inject INotificationService NotificationService;
 
 <section class="ote-event-wrapper">
@@ -149,7 +149,10 @@
             isNextClick = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
-            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            if(!valid)
+            {
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            }
             return valid;
         }
         return false;

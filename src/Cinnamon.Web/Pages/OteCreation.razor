@@ -10,8 +10,8 @@
 @inject IJSRuntime JS;
 @attribute [Authorize]
 
-<PageTitle>Create an Experience | CinnamonPH</PageTitle>
-<SeoMeta Title="Create an Experience" Subject="Create an Experience" Url="/creation/ote" />
+<PageTitle>Create an One time event | CinnamonPH</PageTitle>
+<SeoMeta Title="Create an one time event" Subject="Create an one time event" Url="/creation/ote" />
 
 <Container class="pb-5">
     <div class="progress-bar-section mt-4">
@@ -22,7 +22,7 @@
             <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
     </div>
-    <div class="d-flex justify-content-start mt-5">
+    <div class="d-flex justify-content-start mt-5 mb-5">
         <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
     </div>
     <Row HorizontalGutter="100">
@@ -37,7 +37,7 @@
             }
           </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop">
+        <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper">
             <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
                 <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
             </div>
@@ -67,7 +67,7 @@
     private OteSummary? oteSummary;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
-    private IList<ComponentItem<IFieldValid>> components = new List<ComponentItem<IFieldValid>>();
+    private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private string token = string.Empty;
 
     protected override void OnInitialized()
@@ -230,35 +230,35 @@
     private void LoadComponents()
     {
         components.Clear();
-        components.Add(new ComponentItem<IFieldValid> {
+        components.Add(new ComponentItem<IOteComponent> {
             Component = oteEvent,
             Name = "event",
             HasNext = true,
             HasPrevious = false
         });
 
-        components.Add(new ComponentItem<IFieldValid> {
+        components.Add(new ComponentItem<IOteComponent> {
             Component = oteLocation,
             Name = "location",
             HasNext = true,
             HasPrevious = true
         });
 
-        components.Add(new ComponentItem<IFieldValid> {
+        components.Add(new ComponentItem<IOteComponent> {
             Component = otePricing,
             Name = "pricing",
             HasNext = true,
             HasPrevious = true
         });
 
-        components.Add(new ComponentItem<IFieldValid> {
+        components.Add(new ComponentItem<IOteComponent> {
             Component = oteGallery,
             Name = "gallery",
             HasNext = true,
             HasPrevious = true
         });
 
-        components.Add(new ComponentItem<IFieldValid> {
+        components.Add(new ComponentItem<IOteComponent> {
             Component = oteSummary,
             Name = "summary",
             HasNext = false,
@@ -269,24 +269,29 @@
     private async Task NextClick()
     {
         var (valid, field) = await CurrentFieldValid();
-        if(valid && field.HasNext)
+        if(valid && field is not null)
         {
-            SetActiveItem(++currentIndex);
-        }
-        else {
-            await PublishOte();
+            if(field.HasNext)
+            {
+                SetActiveItem(++currentIndex);
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+            }
+            else
+            {
+                await PublishOte();
+            }
         }
     }
 
-    private async Task<Tuple<bool, ComponentItem<IFieldValid>?>> CurrentFieldValid()
+    private async Task<Tuple<bool, ComponentItem<IOteComponent>?>> CurrentFieldValid()
     {
         var component = components[currentIndex];
         if(component.Component is not null)
         {
            bool valid = await component.Component.FieldValid();
-           return Tuple.Create<bool, ComponentItem<IFieldValid>?>(valid, component);
+           return Tuple.Create<bool, ComponentItem<IOteComponent>?>(valid, component);
         }
-        return Tuple.Create<bool, ComponentItem<IFieldValid>?>(false, null);
+        return Tuple.Create<bool, ComponentItem<IOteComponent>?>(false, null);
     }
 
     private async Task PublishOte()
@@ -348,7 +353,7 @@
         }
     }
 
-    private class ComponentItem<T> where T : IFieldValid 
+    private class ComponentItem<T> where T : IOteComponent 
     {
         public T? Component {get; set;}
         public string Name {get; set;} = string.Empty;

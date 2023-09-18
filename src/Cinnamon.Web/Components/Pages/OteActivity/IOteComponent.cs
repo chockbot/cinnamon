@@ -1,6 +1,6 @@
 namespace Cinnamon.Web.Components.Pages.OteActivity;
 
-public interface IFieldValid 
+public interface IOteComponent 
 {
     Task<bool> FieldValid();
 }

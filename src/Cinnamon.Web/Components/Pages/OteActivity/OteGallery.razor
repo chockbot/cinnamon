@@ -3,7 +3,7 @@
 @using Cinnamon.Web.Components;
 @inject IJSRuntime JS;
 @inject INotificationService NotificationService;
-@implements IFieldValid;
+@implements IOteComponent;
 
 <section class="ote-gallery-wrapper">
     <div class="border-radius-10 bg-white-200 p-4">
@@ -265,7 +265,10 @@
         errorMessage = message;
         StateHasChanged();
         await Task.Delay(300); // add delay to populate is-invalid class
-        await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-gallery-wrapper .is-invalid");
+        if(!isAllFieldsValid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-gallery-wrapper .is-invalid");
+        }
         return isAllFieldsValid;
     }
 
