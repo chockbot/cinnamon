@@ -4,6 +4,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Microsoft.Extensions.Logging;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -381,6 +382,47 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpPost]
+    [Route("CreateOteActivity")]
+    [ProducesResponseType(typeof(CreateOteActivityResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateOteActivity([FromBody] CreateOteActivityArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var pricings = args.Pricings.Select(p => {
+                return new OteSchedulePricingDTO {
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var result = await activityRepository.CreateOteActivity(activity.EventName, activity.Description, activity.ExperienceTypeId, 
+                activity.CustomerId, activity.StringPrice, activity.HouseNo, activity.CityNumber, activity.CityName,
+                activity.RegionCode, activity.RegionName, activity.BarangayCode, activity.BarangayName, activity.PostalCode,
+                activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
+                activity.Handler, activity.ExperienceCreationTypeId);
+            
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateOteActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(
+                new CreateOteActivityResult 
+                {
+                    Result = result.Result, 
+                    IsSuccess = true,
+                });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateOteActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

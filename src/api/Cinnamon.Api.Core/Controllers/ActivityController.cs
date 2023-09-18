@@ -59,6 +59,7 @@ public class ActivityController : ControllerBase
     private readonly ILogger _logger;
     private readonly IRecommendedActivitiesHandler recommendedActivitiesHandler;
     private readonly IPopularActivitiesHandler popularActivitiesHandler;
+    private readonly IOteCreateHandler oteCreateHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -78,7 +79,7 @@ public class ActivityController : ControllerBase
         IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
-        IPopularActivitiesHandler popularActivitiesHandler)
+        IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler)
     {
         _logger = logger;
 
@@ -122,6 +123,7 @@ public class ActivityController : ControllerBase
         this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
         this.popularActivitiesHandler = popularActivitiesHandler;
+        this.oteCreateHandler = oteCreateHandler;
     }
 
     [Route("CreateActivity")]
@@ -2451,6 +2453,63 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateOte([FromBody] CreateOteArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs {
+                Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo
+                },
+                Pricings = args.Pricings.Select(p => {
+                    return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
+                        Description = p.Description,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price
+                    };
+                })
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateOteResult
+            {
+               IsSuccess = result.Succeeded,
+               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                ActivityId = result.Result.Id
+               }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

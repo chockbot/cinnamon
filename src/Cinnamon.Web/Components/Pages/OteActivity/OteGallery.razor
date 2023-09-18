@@ -1,0 +1,314 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Components;
+@inject IJSRuntime JS;
+@inject INotificationService NotificationService;
+@implements IOteComponent;
+
+<section class="ote-gallery-wrapper">
+    <div class="border-radius-10 bg-white-200 p-4">
+        @if(!string.IsNullOrEmpty(errorMessage))
+        {
+            <div id="error-message-container" class="mb-4 invalid is-invalid">
+                <ul id="error-list" class="fw-bold mb-0">
+                    @((MarkupString)errorMessage)
+                </ul>
+            </div>
+        }
+
+        <h3 class="font-24 font-weight-700 color-black-100 mb-4 text-capitalize">post pictures</h3>
+        <p class="font-16 color-grey-100">Pictures must have:</p>
+        <ul class="font-16 color-grey-100">
+            <li>
+                Different angles and details, including photos of people at work.
+            </li>
+            <li>
+                Innocent, yet illuminating, snippets from the experience.
+            </li>
+            <li>
+                Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks.
+            </li>
+        </ul>
+        <div class="main-images-container-wrapper mb-5">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <div class="mt-4">
+                        <label class="d-flex align-items-center mb-2">
+                            <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
+                            <p class="font-16 color-grey-100 mb-0 text-capitalize">cover photo</p>
+                        </label>
+                        <label for="@coverPhoto.FileId" class='@(coverPhoto.Display ? "d-none" : "cursor-pointer w-100")'>
+                            <InputFile id="@coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadCoverPhotoFile" />
+                            <div class='empty-image-container bg-white-100'>
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                        </label>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
+                                <input type="hidden" id="@coverPhoto.InputDataId" name= "@coverPhoto.InputDataId" class="generated-input-data" />
+                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="() => coverPhoto.Display = false" src="images/ote/trashcan-icon.png" alt="delete">
+                            </div>
+                        </Row>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <div class="mt-4">
+                        <label class="d-flex align-items-center mb-2">
+                            <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">8</span>
+                            <p class="font-16 color-grey-100 mb-0 text-capitalize">set plan (optional)</p>
+                        </label>
+                        <label for="@setplanPhoto.FileId" class='@(setplanPhoto.Display ? "d-none" : "cursor-pointer w-100")'>
+                            <InputFile id="@setplanPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadSetplanPhotoFile" />
+                            <div class='empty-image-container bg-white-100'>
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                        </label>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(setplanPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@setplanPhoto.ContainerId">
+                                <input type="hidden" id="@setplanPhoto.InputDataId" name= "@setplanPhoto.InputDataId" class="generated-input-data" />
+                                <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="() => setplanPhoto.Display = false" src="images/ote/trashcan-icon.png" alt="delete">
+                            </div>
+                        </Row>
+                    </div>
+                </Column>
+            </Row>
+        </div>
+        <div class="supporting-images-container-wrapper text-center">
+            <label class="d-flex align-items-center mb-5">
+                <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
+                <p class="font-16 color-grey-100 mb-0 text-capitalize">Supporting Photos (Maximum of 6 Photos)</p>
+            </label>
+            <label for="photo-upload" class="cursor-pointer">
+                <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                    Choose Photos
+                </Button>
+                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadFiles" />
+                @if(imageItems.Count == 0)
+                {
+                    <div class="empty-image-container empty-supporting-container bg-white-100 mt-4">
+                        <div class="text-center">
+                            <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                            <p class="mb-0 mt-1 font-16 color-grey-100">JPEG or PNG only</p>
+                        </div>
+                    </div>
+                }
+            </label>
+            <Row class="supporting-images-container mt-4" HorizontalGutter="30" VerticalGutter="30">
+                @foreach(var item in imageItems)
+                {
+                    <div @key="item.ContainerId" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
+                        <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
+                        <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
+                        <img class="mt-2 cursor-pointer" @onclick="() => imageItems.Remove(item)" src="images/ote/trashcan-icon.png" alt="delete">
+                    </div>
+                }
+            </Row>
+        </div>
+    </div>
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+    <ImageCropper @ref="imageCropper" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    private ImageCropper? imageCropper;
+    private ImageItem coverPhoto = new ImageItem {
+        ContainerId = "cover-photo-container",
+        Display = false,
+        FileSize = 0,
+        ImageSrcId = "cover-photo-image-src",
+        InputDataId = "cover-photo-input-data",
+        FileId = "cover-photo-input-file",
+        Order = 0
+    };
+    private ImageItem setplanPhoto = new ImageItem {
+        ContainerId = "setplan-photo-container",
+        Display = false,
+        FileSize = 0,
+        ImageSrcId = "setplan-photo-image-src",
+        InputDataId = "setplan-photo-input-data",
+        FileId = "setplan-photo-input-file",
+        Order = 100
+    };
+    private IList<ImageItem> imageItems = new List<ImageItem>();
+    private string errorMessage = string.Empty;
+
+    private async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
+    {
+        if(imageCropper is not null)
+        {
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                FileInputIndex = 0,
+                FileSrcSelector = $"#{coverPhoto.FileId}",
+                Title = "Crop selected image",
+                OuputSelector = $"#{coverPhoto.InputDataId}",
+                HeightRatio = 5,
+                WidthRatio = 4
+            });
+            if(cropperResult.Cropped)
+            {
+                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{coverPhoto.ImageSrcId}", $"#{coverPhoto.InputDataId}");
+                coverPhoto.FileSize = cropperResult.FileSize;
+                coverPhoto.Display = true;
+            }
+            else 
+            {
+                coverPhoto.Display = false;
+            }
+        }
+    }
+
+    private async Task LoadSetplanPhotoFile(InputFileChangeEventArgs e)
+    {
+        if(imageCropper is not null)
+        {
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                FileInputIndex = 0,
+                FileSrcSelector = $"#{setplanPhoto.FileId}",
+                Title = "Crop selected image",
+                OuputSelector = $"#{setplanPhoto.InputDataId}",
+                HeightRatio = 5,
+                WidthRatio = 4
+            });
+            if(cropperResult.Cropped)
+            {
+                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{setplanPhoto.ImageSrcId}", $"#{setplanPhoto.InputDataId}");
+                setplanPhoto.FileSize = cropperResult.FileSize;
+                setplanPhoto.Display = true;
+            }
+            else 
+            {
+                setplanPhoto.Display = false;
+            }
+        }
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles();
+
+        for(int i = 0; i < files.Count; i++)
+        {
+            var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 0;
+            string inputId = $"img-preview-input-{lastIndex}";
+            string imgId = $"img-preview-src-{lastIndex}";
+
+            var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", Order = lastIndex};
+            imageItems.Add(imageItem);
+            StateHasChanged();
+
+            if(imageCropper is not null)
+            {
+                var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                    FileInputIndex = i,
+                    FileSrcSelector = "#photo-upload",
+                    Title = "Crop selected image",
+                    OuputSelector = $"#{imageItem.InputDataId}",
+                    HeightRatio = 4,
+                    WidthRatio = 5
+                });
+                if(cropperResult.Cropped)
+                {
+                    await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{imgId}", $"#{inputId}");
+                    imageItem.FileSize = cropperResult.FileSize;
+                    imageItem.Display = true;
+                }
+                else 
+                {
+                    imageItems.Remove(imageItem);
+                }
+            }
+            StateHasChanged();
+        }
+    }
+
+    public async Task<bool> FieldValid()
+    {
+        var supportedPhotosCount = imageItems.Count;
+        var isHaveCoverPhoto = coverPhoto.Display;
+        var totalFileSize = imageItems.Sum(i => i.FileSize) + coverPhoto.FileSize + setplanPhoto.FileSize;
+
+        var message = string.Empty;
+        var isAllFieldsValid = true;
+        if(supportedPhotosCount < 2 )
+        {
+            isAllFieldsValid = false;
+            message += "<li>Minimum of 2 supported photos</li>";
+        }
+        if(supportedPhotosCount > 6)
+        {
+            isAllFieldsValid = false;
+            message += "<li>Maximum of 6 supported photos</li>";
+        }
+        if(!isHaveCoverPhoto)
+        {
+            isAllFieldsValid = false;
+            message += "<li>Required cover photo</li>";
+        }
+        if(totalFileSize > 25)
+        {
+            isAllFieldsValid = false;
+            message += "<li>Total file size must only 25MB</li>";
+        }
+
+        errorMessage = message;
+        StateHasChanged();
+        await Task.Delay(300); // add delay to populate is-invalid class
+        if(!isAllFieldsValid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-gallery-wrapper .is-invalid");
+        }
+        return isAllFieldsValid;
+    }
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync();
+        }
+    }
+
+    public async Task<bool> UploadImages(int createdActivityId)
+    {
+        var selectors = new List<string>();
+        selectors.Add($"#{coverPhoto.InputDataId}");
+        selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
+        bool haveOptionalPhoto = setplanPhoto.Display;
+        if(haveOptionalPhoto)
+        {
+            selectors.Add($"#{setplanPhoto.InputDataId}");
+        }
+        var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", 
+                selectors, createdActivityId, new List<int>(), haveOptionalPhoto);
+        return result.Success ?? false;
+    }
+
+    private class ImageItem 
+    {
+        public string ContainerId {get; set;} = string.Empty;
+        public string ImageSrcId {get; set;} = string.Empty;
+        public string InputDataId {get; set;} = string.Empty;
+        public string FileId {get; set;} = string.Empty;
+        public decimal FileSize {get; set;} = 0;
+        public bool Display {get; set;} = false;
+        public int Order {get; set;} = 0;
+    }
+
+    private class UploadResult 
+    {
+        public string? Message {get; set;}
+        public bool? Success {get; set;}
+    }
+}
