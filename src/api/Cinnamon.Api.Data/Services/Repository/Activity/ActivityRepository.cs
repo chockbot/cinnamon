@@ -10,6 +10,8 @@ using Cinnamon.Api.Data.Repository.Entities;
 using static Cinnamon.Framework.Enums.Enums;
 using System;
 using Cinnamon.Framework.Enums;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -1597,4 +1599,95 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
         }
     }
+
+    public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
+        string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
+        string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int experienceCreationTypeId)
+    {
+        try
+        {
+            var activity = new Entities.Activity {
+                Description = description,
+                Title = eventName,
+                ExperienceTypeId = experienceTypeId,
+                Price = stringPrice,
+                IsPublished = isPublished,
+                ExperienceCategoryId = 1,
+                SubCategoryId = 1,
+                Handler = handler,
+                IsNew = true,
+                IsDeactivated = false,
+                Guid = Guid.NewGuid().ToString(),
+                Status = 1,
+                ExperienceCreationTypeId = experienceCreationTypeId,
+                CreatedBy = customerId
+            };
+
+            var activityDescription = new Entities.ActivityDescription {
+                Description = description
+            };
+
+            var address = new Entities.ActivityAddress {
+              Address1 = houseNo ?? string.Empty,
+              City = cityNumber ?? string.Empty,
+              CityName = cityName ?? string.Empty,
+              Barangay = barangayCode ?? string.Empty,
+              BarangayName = barangayName ?? string.Empty,
+              Region = regionCode ?? string.Empty,
+              RegionName = regionName ?? string.Empty,
+              PinnedLocation = pinnedLocation ?? string.Empty,
+              PostalCode = postalCode ?? string.Empty,  
+            };
+
+            var schedule = new Entities.OteSchedule {
+                From = scheduleFrom.SetKindUtc(),
+                To = scheduleTo.SetKindUtc(),
+                Recurrences = recurrence
+            };
+            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
+                return new OteSchedulePricing {
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule);
+            if(!createRes.Succeeded || createRes.Result is null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(new ActivityDTO {
+                Address1 = houseNo ?? string.Empty,
+                Barangay = barangayCode ?? string.Empty,
+                BarangayName = barangayName ?? string.Empty,
+                City = cityNumber ?? string.Empty,
+                CityName = cityName ?? string.Empty,
+                Description = description,
+                ExperienceCategoryId = 1,
+                ExperienceCreationType = Enums.ExperienceCreationType.OneTimeEvents,
+                Handler = handler,
+                ExperienceTypeId = experienceTypeId,
+                Id = createRes.Result.Id,
+                IsDeactivated = false,
+                IsNew = true,
+                PinnedLocation = pinnedLocation ?? string.Empty,
+                PostalCode = postalCode ?? string.Empty,
+                Price = stringPrice,
+                Title = eventName,
+                IsPublished = isPublished,
+                Region = regionCode ?? string.Empty,
+                RegionName = regionName ?? string.Empty,
+                SubCategoryId = 1,
+            }, "One time event successfully created.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when creating One time event.");
+        }
+    }
+    
 }

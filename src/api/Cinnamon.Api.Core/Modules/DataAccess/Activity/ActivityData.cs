@@ -266,4 +266,26 @@ public class ActivityData: IActivityData
 			return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when getting popular activities");
 		}
 	}
+
+	public async Task<AppResult<CreateOteActivityResult>> CreateOteActivity(CreateOteActivityArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/CreateOteActivity")
+							.PostJsonAsync(args)
+							.ReceiveJson<CreateOteActivityResult>();
+
+			return AppResult<CreateOteActivityResult>.CreateSucceeded(result, "One time event activity successfully created.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<CreateOteActivityResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<CreateOteActivityResult>.CreateFailed(ex, "An error occured when creating One time event activity");
+		}
+	}
 }
