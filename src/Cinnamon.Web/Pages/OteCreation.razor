@@ -51,7 +51,7 @@
                 <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
             </div>
             <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
-                <OteSummary @ref="oteSummary" OnNextClick="NextClick" />
+                <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" />
             </div>
         </Column>
     </Row>
@@ -69,6 +69,7 @@
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private string token = string.Empty;
+    private OteSummary.ComponentSummary? summary = default;
 
     protected override void OnInitialized()
     {
@@ -204,6 +205,7 @@
             if(valid)
             {
                 SetActiveItem(4);
+                summary = GetSummary();
                 StateHasChanged();
             }
         }
@@ -275,6 +277,10 @@
             {
                 SetActiveItem(++currentIndex);
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+                if(currentIndex == 4)
+                {
+                    summary = GetSummary();
+                }
             }
             else
             {
@@ -298,9 +304,9 @@
     {
         try
         {
-            var eventData = oteEvent.GetData();
-            var location = oteLocation.GetData();
-            var schedule  = otePricing.GetData();
+            var location = summary.LocationData;
+            var eventData = summary.EventData;
+            var schedule = summary.PricingData;
 
             var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
                 Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
@@ -351,6 +357,15 @@
         {
             await NotificationService.Error("An error occured when publishing OTE.", "Error");
         }
+    }
+
+    private OteSummary.ComponentSummary GetSummary()
+    {
+        return new OteSummary.ComponentSummary {
+            EventData = oteEvent.GetData(),
+            LocationData = oteLocation.GetData(),
+            PricingData = otePricing.GetData()
+        };
     }
 
     private class ComponentItem<T> where T : IOteComponent 
