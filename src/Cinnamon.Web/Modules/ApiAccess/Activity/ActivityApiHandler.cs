@@ -264,17 +264,32 @@ public class ActivityApiHandler : IActivityApiHandler
                 .WithOAuthBearerToken(token)
                 .Request($"Activity/UploadActivityImage")
                 .PostMultipartAsync(mp => {
-                    if(args.Image1 != null)
+                    // activity images
+                    if(args.Images is not null)
                     {
-                        mp.AddFile("Image1", args.Image1.OpenReadStream(), args.Image1.FileName, args.Image1.ContentType);
+                        foreach(var image in args.Images)
+                        {
+                            if(image is not null)
+                            {
+                                mp.AddFile("Images", image.OpenReadStream(), image.FileName, image.ContentType);
+                            }
+                        }
                     }
-                    if(args.Image2 != null)
+                    // activity order position
+                    if(args.Orders is not null)
                     {
-                        mp.AddFile("Image2", args.Image2.OpenReadStream(), args.Image2.FileName, args.Image2.ContentType);
+                        foreach(var order in args.Orders)
+                        {
+                            mp.AddString("Orders", order.ToString());
+                        }
                     }
-                    if(args.Image3 != null)
+                    // delete ids
+                    if(args.DeletedIds is not null)
                     {
-                        mp.AddFile("Image3", args.Image3.OpenReadStream(), args.Image3.FileName, args.Image3.ContentType);
+                        foreach(var id in args.DeletedIds)
+                        {
+                            mp.AddString("DeletedIds", id.ToString());
+                        }
                     }
                     mp.AddString("ActivityId", args.ActivityId.ToString());
                 })

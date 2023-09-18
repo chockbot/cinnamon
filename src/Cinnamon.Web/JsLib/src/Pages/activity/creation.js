@@ -237,9 +237,35 @@ export async function uploadListImages(
   }
 }
 
+export async function addImageTemplate(imgId, inputId, containerSelector) {
+  const template = `
+    <div class="col-12 col-md-6 mb-4 d-none" id="${imgId}-${inputId}">
+        <input type="hidden" id="${inputId}" name = "${inputId}" class="generated-input-data" />
+        <img id="${imgId}" class="w-100" src="" alt="supporting-photo">
+    </div>
+    `;
+  $(containerSelector).append(template);
+}
+
+export async function removeImageTemplate(selector) {
+  $(selector).remove();
+}
+
+export async function showImageTemplate(selector) {
+  $(selector).removeClass("d-none");
+}
+
+export async function removeImageItems(selector) {
+  $(selector).empty();
+}
+
 export default {
   initCreation,
   initCreationInProgress,
+  addImageTemplate,
   previewImage,
+  removeImageItems,
+  removeImageTemplate,
+  showImageTemplate,
   uploadListImages,
 };
