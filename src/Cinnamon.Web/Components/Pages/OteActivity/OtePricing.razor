@@ -76,13 +76,98 @@
                         recurrences
                     </FieldLabel>
                     <FieldBody>
-                        <Select TValue="string" Size="Size.Medium" class="field-width form-control font-18 text-capitalize color-black-100 border-radius-10" 
+                        <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
                             @bind-SelectedValue="modelSchedule.Recurrences">
                             <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
                         </Select>
                         <div class="invalid-feedback">The recurrences field is mandatory.</div>
                     </FieldBody>
                 </Field>
+            </div>
+        </Validations>
+    </div>
+    <div class="my-3 border-radius-10">
+        <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
+            <div class="accordion" id="pricings-accordion">
+                @foreach (var item in modelPricingList.Pricings)
+                {
+                    <div class="accordion-item" @key="item">
+                        <h2 class="accordion-header">
+                            <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")' 
+                                class='@(item.Valid ? "accordion-button bg-white-200 font-20" : "accordion-button bg-white-200 font-20 is-invalid")' 
+                                type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
+                                @($"{modelSchedule.DateFrom.ToString("MMM dd, yyyy")} | {modelSchedule.DateFrom.ToString("hh:mm tt")} | {item.Price.ToString("#,##0.00")}")
+                            </button>
+                        </h2>
+                        <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
+                        <div class="accordion-body bg-white-200">
+                            <div class="item-form-body">
+                                <Row VerticalGutter="10" class="mb-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <Validation>
+                                            <Field class="mb-4">
+                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                                    price
+                                                </FieldLabel>
+                                                <FieldBody>
+                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="item.Price">
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </NumericPicker>
+                                                </FieldBody>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <Validation>
+                                            <Field class="mb-4">
+                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                                    max slots
+                                                </FieldLabel>
+                                                <FieldBody>
+                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="item.MaxSlots" >
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </NumericPicker>
+                                                </FieldBody>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row VerticalGutter="10" class="mb-4">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
+                                            <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize">view details</span>
+                                        </div>
+                                        <div>
+                                            <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
+                                                Absorb Fees: Ticketing fees are deducted from your ticket revenue.
+                                            </Check>
+                                        </div>
+                                    </Column>
+                                </Row>
+                                <Validation>
+                                    <Field class="mb-4">
+                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                            admission description
+                                        </FieldLabel>
+                                        <FieldBody>
+                                            <MemoEdit class="font-18 border-radius-10" Rows="3" @bind-Text="item.Description" >
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </MemoEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                }
             </div>
         </Validations>
     </div>
@@ -162,7 +247,7 @@
                 </Field>
             </Validation>
             <div>
-                <Button class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10">
+                <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10">
                     add more ticket price
                 </Button>
             </div>
@@ -181,6 +266,7 @@
     private PricingList modelPricingList = new();
     private Validations? scheduleFormValidation;
     private Validations? pricingFormValidation;
+    private Validations? pringListFormValidation;
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
     private bool showErrors = false;
@@ -195,11 +281,12 @@
 
     public async Task<bool> FieldValid()
     {
-        if(pricingFormValidation is not null && scheduleFormValidation is not null)
+        if(pricingFormValidation is not null && scheduleFormValidation is not null && pricingFormValidation is not null)
         {
             bool pricingValid = await pricingFormValidation.ValidateAll();
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
-            bool valid = pricingValid && scheduleValid;
+            bool pricingListValid = await pringListFormValidation.ValidateAll();
+            bool valid = pricingValid && scheduleValid && pricingListValid;
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -254,6 +341,34 @@
                 }
             }
             return defaultClass; 
+        }
+    }
+
+    private string RecurrencesClass
+    {
+        get
+        {
+            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10";
+            if(showErrors)
+            {
+                if(string.IsNullOrEmpty(modelSchedule.Recurrences))
+                {
+                    return $"{defaultClass} is-invalid";
+                }
+                return $"{defaultClass} is-valid";
+            }
+            return defaultClass;
+        }
+    }
+
+    private async Task AddMoreTicketPrice()
+    {
+        bool priceValid = await pricingFormValidation.ValidateAll();
+        if(priceValid)
+        {
+            modelPricing.Id = modelPricingList.Pricings.Count + 1;
+            modelPricingList.Pricings.Add(modelPricing);
+            modelPricing = new();
         }
     }
 
@@ -324,6 +439,14 @@
         [Required(ErrorMessage = "The description field is mandatory.")]
         public string Description {get; set;}
 
+        // extras
         public bool IsOpen {get; set;} = false;
+        public int Id {get; set;}
+        public bool Valid 
+        {
+            get{
+                return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
+            }
+        }
     }
 }
