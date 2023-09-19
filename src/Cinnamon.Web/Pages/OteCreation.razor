@@ -30,7 +30,7 @@
             <Row class="align-items-center">
                 <Column ColumnSize="ColumnSize.Is2" class="text-start">
                     <div>
-                        <img class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
+                        <img @onclick="MovePrev" class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
                     </div>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is8" class="text-center">
@@ -38,7 +38,7 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2" class="text-end">
                     <div>
-                        <img src="images/experience-creation/play-mobile.png" alt="">
+                        <img @onclick="MoveNext" src="images/experience-creation/play-mobile.png" alt="">
                     </div>
                 </Column>
             </Row>
@@ -65,16 +65,16 @@
                     <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
                 </div>
                 <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
-                    <OteLocation @ref="oteLocation" OnNextClick="NextClick" />
+                    <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
-                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
+                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
-                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" />
+                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
                 </div>
             </Column>
         </Row>
@@ -406,6 +406,29 @@
             LocationData = oteLocation.GetData(),
             PricingData = otePricing.GetData()
         };
+    }
+
+    private async Task MoveNext()
+    {
+        var (valid, field) = await CurrentFieldValid();
+        if(valid && field.HasNext && currentIndex < sidebarItems.Count -1)
+        {
+            SetActiveItem(++currentIndex);
+            if(currentIndex == 4)
+            {
+                summary = GetSummary();
+            }
+        }
+    }
+
+    private async Task MovePrev()
+    {
+        var (valid, field) = await CurrentFieldValid();
+        if(valid && field.HasPrevious && currentIndex > 0)
+        {
+            SetActiveItem(--currentIndex);
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+        }
     }
 
     private class ComponentItem<T> where T : IOteComponent 

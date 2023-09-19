@@ -264,13 +264,16 @@
             </div>
         </Validations>
     </div>
-    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
 @code 
 {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
 
     private Schedule modelSchedule = new();
     private Pricing modelPricing = new();
@@ -287,6 +290,14 @@
         if(OnNextClick.HasDelegate)
         {
             await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
         }
     }
 

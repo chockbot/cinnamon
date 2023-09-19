@@ -6,7 +6,7 @@
 @implements IOteComponent;
 
 <section class="ote-gallery-wrapper">
-    <div class="border-radius-10 bg-white-200 p-4">
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
         @if(!string.IsNullOrEmpty(errorMessage))
         {
             <div id="error-message-container" class="mb-4 invalid is-invalid">
@@ -113,7 +113,7 @@
             </Row>
         </div>
     </div>
-    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
     <ImageCropper @ref="imageCropper" />
 </section>
 
@@ -121,6 +121,9 @@
 {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
 
     private ImageCropper? imageCropper;
     private ImageItem coverPhoto = new ImageItem {
@@ -277,6 +280,14 @@
         if(OnNextClick.HasDelegate)
         {
             await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
         }
     }
 
