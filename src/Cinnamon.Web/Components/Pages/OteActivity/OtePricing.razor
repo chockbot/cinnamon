@@ -6,15 +6,15 @@
 @implements IOteComponent;
 
 <section class="ote-pricing-wrapper">
-    <div class="border-radius-10 bg-white-200 p-4">
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
         <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center">
+            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
                 <span>
                     schedule
                 </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2">4</span>
+                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
             </h3>
-            <p class="font-16 color-grey-100">
+            <p class="font-16 color-grey-100 text-justify">
                 Lorem ipsum dolor sit amet consectetur. Eget vivamus cras justo faucibus nulla. 
                 Arcu amet amet id cursus mi non eget nulla.
             </p>
@@ -22,13 +22,14 @@
         <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="modelSchedule">
             <div class="data-form">
                 <div id="ote-pricing-from-date" class="mb-2">
-                    <label for="" class="text-capitalize font-20 color-black-100">from</label>
+                    <label for="" class="text-capitalize font-20 color-black-100 m-font-18">from</label>
                     <div class="d-flex">
-                        <div id="date-from" class="me-3">
+                        <div id="date-from" class="me-3 date-left">
                             <Validation @ref="dateFromValidation">
                                 <Field class="mb-3">
                                     <FieldBody>
-                                        <DateEdit class="font-18 border-radius-10 field-width" Size="Size.Medium" TValue="DateTime" @bind-Date="modelSchedule.DateFrom">
+                                        <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                            TValue="DateTime" @bind-Date="modelSchedule.DateFrom">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -37,7 +38,7 @@
                                 </Field>
                             </Validation>
                         </div>
-                        <div id="time-from">
+                        <div id="time-from" class="date-right">
                             <Field class="mb-3">
                                 <FieldBody>
                                     <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeFrom" />
@@ -47,13 +48,14 @@
                     </div>
                 </div>
                 <div id="ote-pricing-to-date" class="mb-2">
-                    <label for="" class="text-capitalize font-20 color-black-100">to</label>
+                    <label for="" class="text-capitalize font-20 color-black-100 m-font-18">to</label>
                     <div class="d-flex">
-                        <div id="date-to" class="me-3">
+                        <div id="date-to" class="me-3 date-left">
                             <Validation @ref="dateToValidation">
                                 <Field class="mb-3">
                                     <FieldBody>
-                                        <DateEdit class="font-18 border-radius-10 field-width" Size="Size.Medium" TValue="DateTime" @bind-Date="modelSchedule.DateTo">
+                                        <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                            TValue="DateTime" @bind-Date="modelSchedule.DateTo">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -62,7 +64,7 @@
                                 </Field>
                             </Validation>
                         </div>
-                        <div id="time-to">
+                        <div id="time-to" class="date-right">
                             <Field class="mb-3">
                                 <FieldBody>
                                     <TimeEdit class='@TimeToClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeTo" />
@@ -72,7 +74,7 @@
                     </div>
                 </div>
                 <Field>
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                         recurrences
                     </FieldLabel>
                     <FieldBody>
@@ -86,6 +88,7 @@
             </div>
         </Validations>
     </div>
+    <Divider class="d-none m-d-block" />
     <div class="my-3 border-radius-10">
         <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
             <div class="accordion" id="pricings-accordion">
@@ -94,7 +97,7 @@
                     <div class="accordion-item" @key="item">
                         <h2 class="accordion-header">
                             <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")' 
-                                class='@(item.Valid ? "accordion-button bg-white-200 font-20" : "accordion-button bg-white-200 font-20 is-invalid")' 
+                                class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")' 
                                 type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
                                 @($"{modelSchedule.DateFrom.ToString("MMM dd, yyyy")} | {modelSchedule.DateFrom.ToString("hh:mm tt")} | {item.Price.ToString("#,##0.00")}")
                             </button>
@@ -105,12 +108,13 @@
                                 <Row VerticalGutter="10" class="mb-2">
                                     <Column ColumnSize="ColumnSize.Is7">
                                         <Validation>
-                                            <Field class="mb-4">
-                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                            <Field>
+                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                                     price
                                                 </FieldLabel>
                                                 <FieldBody>
-                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="item.Price">
+                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" 
+                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.Price">
                                                         <Feedback>
                                                             <ValidationError />
                                                         </Feedback>
@@ -121,12 +125,13 @@
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is5">
                                         <Validation>
-                                            <Field class="mb-4">
-                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                            <Field>
+                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                                     max slots
                                                 </FieldLabel>
                                                 <FieldBody>
-                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="item.MaxSlots" >
+                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" 
+                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.MaxSlots" >
                                                         <Feedback>
                                                             <ValidationError />
                                                         </Feedback>
@@ -137,10 +142,10 @@
                                     </Column>
                                 </Row>
                                 <Row VerticalGutter="10" class="mb-4">
-                                    <Column ColumnSize="ColumnSize.Is7">
-                                        <div class="d-flex justify-content-between mb-2">
+                                    <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                        <div class="d-flex justify-content-between mb-3">
                                             <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
-                                            <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize">view details</span>
+                                            <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">view details</span>
                                         </div>
                                         <div>
                                             <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
@@ -151,11 +156,11 @@
                                 </Row>
                                 <Validation>
                                     <Field class="mb-4">
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                             admission description
                                         </FieldLabel>
                                         <FieldBody>
-                                            <MemoEdit class="font-18 border-radius-10" Rows="3" @bind-Text="item.Description" >
+                                            <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description" >
                                                 <Feedback>
                                                     <ValidationError />
                                                 </Feedback>
@@ -171,29 +176,34 @@
             </div>
         </Validations>
     </div>
-    <div class="border-radius-10 bg-white-200 p-4 my-3">
+    @if(modelPricingList.Pricings.Count > 0)
+    {
+        <Divider class="d-none m-d-block" />
+    }
+    <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
         <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center">
+            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
                 <span>
                     pricing
                 </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2">5</span>
+                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
             </h3>
-            <p class="font-16 color-grey-100">
+            <p class="font-16 color-grey-100 text-justify">
                 Lorem ipsum dolor sit amet consectetur. Eget vivamus cras justo faucibus nulla. 
                 Arcu amet amet id cursus mi non eget nulla.
             </p>
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
-            <Row VerticalGutter="10" class="mb-2">
+            <Row VerticalGutter="10">
                 <Column ColumnSize="ColumnSize.Is7">
                     <Validation>
-                        <Field class="mb-4">
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        <Field>
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                 price
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="modelPricing.Price">
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" 
+                                    class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -204,12 +214,13 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is5">
                     <Validation>
-                        <Field class="mb-4">
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        <Field>
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                 max slots
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10" @bind-Value="modelPricing.MaxSlots" >
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" 
+                                    class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" >
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -220,10 +231,10 @@
                 </Column>
             </Row>
             <Row VerticalGutter="10" class="mb-4">
-                <Column ColumnSize="ColumnSize.Is7">
-                    <div class="d-flex justify-content-between mb-2">
+                <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                    <div class="d-flex justify-content-between mb-3">
                         <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
-                        <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize">view details</span>
+                        <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">view details</span>
                     </div>
                     <div>
                         <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees">
@@ -234,11 +245,11 @@
             </Row>
             <Validation>
                 <Field class="mb-4">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                         admission description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10" Rows="3" @bind-Text="modelPricing.Description" >
+                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description" >
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -247,7 +258,7 @@
                 </Field>
             </Validation>
             <div>
-                <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10">
+                <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
                     add more ticket price
                 </Button>
             </div>
@@ -311,7 +322,7 @@
     {
         get
         {
-            string defaultClass = "font-18 border-radius-10";
+            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
             if(dateFromValidation is not null && showErrors)
             {
                 if(dateFromValidation.Status == ValidationStatus.Error)
@@ -331,7 +342,7 @@
     {
         get 
         {
-            string defaultClass = "font-18 border-radius-10";
+            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
             if(dateToValidation is not null && showErrors)
             {
                 if(dateToValidation.Status == ValidationStatus.Error)
@@ -351,7 +362,7 @@
     {
         get
         {
-            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10";
+            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(modelSchedule.Recurrences))

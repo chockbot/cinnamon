@@ -14,49 +14,72 @@
 <PageTitle>Create an One time event | CinnamonPH</PageTitle>
 <SeoMeta Title="Create an one time event" Subject="Create an one time event" Url="/creation/ote" />
 
-<Container class="pb-5">
-    <div class="progress-bar-section mt-4">
-        <p class="progress-details">
-            IN PROGRESS: Step @(currentIndex + 1) of 5 <span id="loader"></span>
-        </p>
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+<div class="xp-ote-page-wrapper">
+    <Container>
+        <div class="progress-bar-section mt-4">
+            <p class="progress-details">
+                IN PROGRESS: Step @(currentIndex + 1) of 5 <span id="loader"></span>
+            </p>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </div>
+    </Container>
+    <div class="mobile-navigation bg-white-200 py-2 my-4 m-d-block">
+        <Container>
+            <Row class="align-items-center">
+                <Column ColumnSize="ColumnSize.Is2" class="text-start">
+                    <div>
+                        <img class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is8" class="text-center">
+                    <label class="font-24 color-black-100 text-capitalize">@sidebarItems[currentIndex].Label</label>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2" class="text-end">
+                    <div>
+                        <img src="images/experience-creation/play-mobile.png" alt="">
+                    </div>
+                </Column>
+            </Row>
+        </Container>
     </div>
-    <div class="d-flex justify-content-start mt-5 mb-5">
-        <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
-    </div>
-    <Row HorizontalGutter="100">
-        <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="pe-5">
-          <OteSidebarNavigation SidebarItems="sidebarItems" />
-          <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
-          <div>
-            @if(currentIndex != 4)
-            {
-                <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
-                <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
-            }
-          </div>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper">
-            <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
-                <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
-            </div>
-            <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
-                <OteLocation @ref="oteLocation" OnNextClick="NextClick" />
-            </div>
-            <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                <OtePricing @ref="otePricing" OnNextClick="NextClick" />
-            </div>
-            <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
-                <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
-            </div>
-            <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
-                <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" />
-            </div>
-        </Column>
-    </Row>
-</Container>
+    <Container class="pb-5">
+        <div class="d-flex justify-content-start mt-5 mb-5 m-d-none">
+            <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
+        </div>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left m-d-none">
+                <OteSidebarNavigation SidebarItems="sidebarItems" />
+                <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
+                <div>
+                    @if(currentIndex != 4)
+                    {
+                        <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
+                        <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
+                    }
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
+                <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
+                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
+                </div>
+                <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                    <OteLocation @ref="oteLocation" OnNextClick="NextClick" />
+                </div>
+                <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" />
+                </div>
+                <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" />
+                </div>
+                <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" />
+                </div>
+            </Column>
+        </Row>
+    </Container>
+</div>
 
 @code 
 {
