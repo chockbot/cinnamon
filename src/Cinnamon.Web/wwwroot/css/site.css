@@ -1688,17 +1688,6 @@ input::-ms-clear {
   }
 }
 
-/* onboarding page styling */
-.onboarding-wrapper .hide-desktop {
-  display: none;
-}
-
-@media screen and (max-width: 767px) and (orientation: portrait) {
-  .onboarding-wrapper .hide-desktop {
-    display: initial;
-  }
-}
-
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -1739,11 +1728,11 @@ input::-ms-clear {
 }
 
 .font-18 {
-  font-size: 18px;
+  font-size: 18px !important;
 }
 
 .font-20 {
-  font-size: 20px;
+  font-size: 20px !important;
 }
 
 .font-32 {
@@ -1798,6 +1787,10 @@ input::-ms-clear {
   color: #344050;
 }
 
+.color-black-300 {
+  color: #2c3642;
+}
+
 .color-orange-100 {
   color: #ffa942;
 }
@@ -1812,14 +1805,6 @@ input::-ms-clear {
 
 .color-red-100 {
   color: #d13636;
-}
-
-.bg-white-100 {
-  background-color: #fff;
-}
-
-.bg-white-200 {
-  background-color: #f3f6fc;
 }
 
 .bg-green-100 {
@@ -1848,6 +1833,10 @@ input::-ms-clear {
 
 .bg-white-200 {
   background-color: #f3f6fc;
+}
+
+.bg-orange-100 {
+  background-color: #ffa942;
 }
 
 .min-width-130 {
@@ -1891,7 +1880,7 @@ input::-ms-clear {
 }
 
 .border-radius-10 {
-  border-radius: 10px;
+  border-radius: 10px !important;
 }
 
 .border-radius-15 {
@@ -1970,6 +1959,10 @@ input::-ms-clear {
 
 .hover-color-grey-100:hover {
   color: #717171;
+}
+
+.hover-color-black-100:hover {
+  color: #343d4c;
 }
 
 .prevent-select {
@@ -2165,6 +2158,48 @@ input::-ms-clear {
     margin-top: 0px;
     margin-top: 1rem;
   }
+}
+
+/* ote location section styling */
+.ote-location-wrapper .custom-radio {
+  display: flex;
+  align-items: center;
+}
+
+.ote-location-wrapper .custom-radio .custom-control-label {
+  font-size: 18px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* ote pricing section styling */
+.ote-pricing-wrapper .field-width {
+  width: 260px;
+}
+
+.ote-pricing-wrapper .custom-checkbox {
+  display: flex !important;
+  align-items: center;
+}
+
+.ote-pricing-wrapper .custom-checkbox input[type="checkbox"] {
+  width: 25px;
+  height: 25px;
+}
+
+.ote-location-wrapper .custom-checkbox input[type="checkbox"]:checked {
+  border-color: #ffa942;
+  background-color: #ffa942;
+}
+
+.ote-pricing-wrapper .custom-checkbox .custom-control-label {
+  margin-left: 15px !important;
+  line-height: 1.2 !important;
+  color: #717171 !important;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
 /* image cropper styles */

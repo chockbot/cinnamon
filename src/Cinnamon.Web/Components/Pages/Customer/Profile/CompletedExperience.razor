@@ -1,4 +1,9 @@
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using System.Security.Claims
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <article class="ongoing-experience-wrapper py-3">
@@ -7,10 +12,7 @@
         <div class="customer-wrapper">
             @if (Activities != null)
             {
-                foreach (var item in Activities)
-                {
-                    <OngoingExperienceItem ActivityItemType="OngoingExperienceItem.ItemType.Completed" Activity="item" Profile="Profile"/>
-                }
+                <OngoingExperienceItem Activity="Activities" Students="CompletedStudents" ActivityItemType="OngoingExperienceItem.ItemType.Completed" isLoading=isLoading Profile="Profile" />
             }
         </div>
     </div>
@@ -21,6 +23,101 @@
 {
     [Parameter]
     public IEnumerable<Activity> Activities { get; set; }
+
     [Parameter]
     public CustomerProfile Profile { get; set; }
+
+    public List<Students> CompletedStudents { get; set; } = new List<Students>();
+
+    public List<Students> students = new List<Students>();
+
+    public bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        // Get All Ongoing Activities of the Customer
+        var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
+            {
+                CustomerId = Profile.Id,
+            }, token);
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.Select(a =>
+            {
+                return new Students
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo,
+                        ExpirationDateStart = a.ExpirationStartDate,
+                        ExpirationDateEnd = a.ExpirationEndDate,
+                        HasReview = a.HasReview,
+                        PurchaseDate = a.PurchaseDate,
+                        Title = a.Title,
+                        studentAttendance = new StudentAttendance
+                        {
+                            IsPresent = a.studentAttendanceDTO.IsPresent,
+                            Date = a.studentAttendanceDTO.Date,
+                            StudentId = a.studentAttendanceDTO.StudentId
+                        },
+                        activitySchedule = new ActivitySchedule
+                        {
+                            Id = a.activityScheduleDTO.ScheduleId,
+                            HasExpiration = a.activityScheduleDTO.HasExpiration,
+                            IsSetSession = a.activityScheduleDTO.IsSetSession
+                        }
+                    };
+            }).ToList();
+        }
+        CompletedStudents = students
+        .Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.activitySchedule.HasExpiration == 0)
+            || (a.activitySchedule.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+            || (a.activitySchedule.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+            || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+            || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+            && a.ExpirationDateEnd != DateTime.MinValue)
+        .OrderBy(s =>
+        {
+            if (s.studentAttendance.Date != DateTime.MinValue && s.ExpirationDateEnd != DateTime.MinValue)
+            {
+                // Both dates are valid, choose the earliest
+                return s.studentAttendance.Date.CompareTo(s.ExpirationDateEnd) < 0
+                    ? s.studentAttendance.Date
+                    : s.ExpirationDateEnd;
+            }
+            else if (s.studentAttendance.Date == DateTime.MinValue)
+            {
+                // Only 'ExpirationDateEnd' is valid
+                return s.ExpirationDateEnd.Date;
+            }
+            else if (s.ExpirationDateEnd == DateTime.MinValue)
+            {
+                // Only 'studentAttendance.Date' is valid
+                return s.studentAttendance.Date;
+            }
+            else
+            {
+                // Both dates are equal to DateTime.MinValue, prioritize 'ExpirationDateEnd'
+                return s.ExpirationDateEnd;
+            }
+        }).ToList();
+
+        isLoading = false;
+    }
 }

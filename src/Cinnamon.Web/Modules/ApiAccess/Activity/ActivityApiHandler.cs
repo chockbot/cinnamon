@@ -806,6 +806,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/PopularActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<PopularActivitiesResult>();
+
+            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+        }
+    }
+
     public async Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token)
     {
         try
@@ -871,24 +892,26 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    public async Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token)
     {
         try
         {
             var result = await flurlClient
-                .Request("Activity/PopularActivities")
-                .SetQueryParams(args)
-                .GetJsonAsync<PopularActivitiesResult>();
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteResult>();
 
-            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+            return AppResult<CreateOteResult>.CreateSucceeded(result, "Successfully called create one time event api");
         }
         catch (FlurlHttpException ex)
         {
-            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+            return AppResult<CreateOteResult>.CreateFailed(ex, "An error occured when calling create one time event api");
         }
     }
 }
