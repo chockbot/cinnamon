@@ -7,37 +7,45 @@
 @implements IOteComponent;
 
 <section class="ote-location-wrapper">
-    <div class="border-radius-10 bg-white-200 p-4">
-        <div id="event-type" class="d-flex mb-5">
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
+        <div id="event-type" class="d-flex mb-5 m-margin-bottom-30">
             <RadioGroup TValue="int" Name="experience-type" CheckedValue="model.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
-                <label for="type-online" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4 text-capitalize cursor-pointer">
+                <p class="font-20 d-none m-d-block color-black-100 mb-1">Type of experience</p>
+                <label for="type-online" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4 
+                    text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200 m-margin-right-5">
                     <Radio class="checkbox-round" ElementId="type-online"  TValue="int" Value="2">Online</Radio>
                 </label>
-                <label for="type-in-person" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
+                <label for="type-in-person" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 
+                    text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200">
                     <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="1">In-Person</Radio>
                 </label>
             </RadioGroup>
         </div>
         <div id="event-location">
-            <div class="d-flex justify-content-between mb-5">
-                <label class="d-flex align-items-center">
+            <div class="d-flex justify-content-between mb-5 align-items-baseline m-margin-bottom-30">
+                <label class="d-flex align-items-center m-d-none">
                     <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">3</span>
                     <p class="font-20 color-black-100 mb-0">Venue/Map Location</p>
                 </label>
                 <p class="mb-0 required-in-person font-16">
-                    *(required if in-person)
+                    <span class="text-capitalize font-20 color-black-100 font-weight-700 d-none m-d-block">
+                        Where is your experience located? 
+                    </span>
+                    <span>
+                        *(required if in-person)
+                    </span>
                 </p>
             </div>
             <div>
                 <Validations @ref="formValidation" Model="model" Mode="FormMode">
                     <Validation>
                         <Field class="mb-4">
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                 house no.
                             </FieldLabel>
                             <FieldBody>
                                 <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" 
-                                    class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.HouseNo">
+                                    class="font-18 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="model.HouseNo">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -46,7 +54,7 @@
                         </Field>
                     </Validation>
                     <Field class="mb-4" >
-                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                             region
                         </FieldLabel>
                         <FieldBody>
@@ -62,7 +70,7 @@
                         </FieldBody>
                     </Field>
                     <Field class="mb-4" >
-                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                             Town/City
                         </FieldLabel>
                         <FieldBody>
@@ -78,7 +86,7 @@
                         </FieldBody>
                     </Field>
                     <Field class="mb-4" >
-                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                             barangay
                         </FieldLabel>
                         <FieldBody>
@@ -95,12 +103,12 @@
                     </Field>
                     <Validation>
                         <Field class="mb-4">
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                 postal code
                             </FieldLabel>
                             <FieldBody>
                                 <TextEdit Disabled="DisableLocation" id="event-name-words-input" Size="Size.Medium" 
-                                    class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PostaCode">
+                                    class="font-18 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="model.PostaCode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -112,8 +120,13 @@
             </div>
         </div>
     </div>
-    <h3 class="font-24 font-weight-700 color-black-100 my-4">Where you’ll be</h3>
-    <div class="border-radius-10 bg-white-200 p-4">
+    <h3 class="font-24 font-weight-700 color-black-100 my-4 m-font-20">Where you’ll be</h3>
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
+        <div class="mb-4 d-none m-d-block">
+            <TextEdit Disabled="DisableLocation" Placeholder="search your location" 
+                        id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium" 
+                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
+        </div>
         <div id="iframe-map" class="mb-4">
             @{
                 var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(model.PinnedLocation) ? model.PinnedLocation : "''");
@@ -122,26 +135,30 @@
         </div>
         <div id="map-pinned-location">
             <Row VerticalGutter="10" HorizontalGutter="10">
-                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is7.OnDesktop">
+                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is6.OnDesktop" class="m-d-none">
                     <TextEdit Disabled="DisableLocation" Placeholder="search your location" 
                         id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium" 
-                        class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
+                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="model.PinnedLocation" />
                 </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is5.OnDesktop">
-                    <Button Disabled="DisableLocation" class="bg-orange-100 color-white-100 text-capitalize w-100 font-20 hover-color-white px-5 border-radius-10">
+                <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is6.OnDesktop">
+                    <Button Disabled="DisableLocation" class="bg-orange-100 color-white-100 
+                        text-capitalize w-100 font-20 hover-color-white px-5 border-radius-10 m-border-radius-5">
                         cofirm location
                     </Button>
                 </Column>
             </Row>
         </div>
     </div>
-    <OteRouteButtons HavePrevious OnNextClick="NextClick" />
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
 @code 
 {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
 
     private FormModel model = new();
     private Validations? formValidation;
@@ -160,6 +177,14 @@
         if(OnNextClick.HasDelegate)
         {
             await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
         }
     }
 
@@ -335,7 +360,7 @@
 
     private string RegionClass {
         get {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.Region.Code))
@@ -350,7 +375,7 @@
 
     private string CityClass {
         get {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.City.Code))
@@ -365,7 +390,7 @@
 
     private string BarangayClass {
         get {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(model.Barangay.Code))
