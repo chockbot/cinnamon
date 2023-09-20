@@ -5,7 +5,7 @@
 <section class="ote-summary-wrapper">
     @if(Summary is not null)
     {
-        <div class="border-radius-10 bg-white-200 p-4">
+        <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
             <div>
                 <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">@Summary.EventData.Name</h3>
                 <p class="font-20 color-black-100 mb-0">
@@ -40,13 +40,16 @@
             </div>
         </div>
     }
-    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" />
+    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
 @code 
 {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
 
     [Parameter]
     public ComponentSummary Summary {get; set;}
@@ -60,6 +63,14 @@
             invokingNext = true;
             await OnNextClick.InvokeAsync();
             invokingNext = false;
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
         }
     }
 

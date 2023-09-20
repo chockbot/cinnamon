@@ -8,7 +8,7 @@
 @inject INotificationService NotificationService;
 
 <section class="ote-event-wrapper">
-    <p class="font-20 color-grey-100">
+    <p class="font-20 color-grey-100 text-justify m-font-16">
         Note: A one-time event refers to a specific occurrence or happening that takes place at a 
         designated time and location. It could be a seminar, workshop, conference, concert, 
         or any other event that is not recurring on a regular basis.
@@ -16,20 +16,21 @@
         <br>
         After the event date, the one-time event will automatically deactivate in your page.
     </p>
-    <div class="border-radius-10 p-4 bg-white-200">
+    <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
         <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="model" @ref="formValidation">
             <Validation @ref="eventNameValidation">
                 <Field class="mb-4" id="ote-event-name">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">1</span>
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">1</span>
                         event name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10" Role="TextRole.Text" @bind-Text="model.EventName">
+                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                            Role="TextRole.Text" @bind-Text="model.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
-                                    <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100">Max of 15 words (0/15)</p>
+                                    <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Max of 15 words (0/15)</p>
                                 </div>
                             </Feedback>
                         </TextEdit>
@@ -38,16 +39,17 @@
             </Validation>
             <Validation @ref="eventDescriptionValidation">
                 <Field class="mb-4" id="ote-event-description">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">2</span>
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">2</span>
                         description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10" @bind-Text="model.Description">
+                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                            @bind-Text="model.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
-                                    <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100">Min of 10 words (0/10)</p>
+                                    <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Min of 10 words (0/10)</p>
                                 </div>
                             </Feedback>
                         </MemoEdit>
@@ -55,8 +57,8 @@
                 </Field>
             </Validation>
             <Field class="mb-4" id="ote-event-category">
-                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding">3</span>
+                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span>
                         select category
                     </FieldLabel>
                 <FieldBody>
@@ -72,7 +74,7 @@
             </Field>
         </Validations>
     </div>
-    <OteRouteButtons HavePrevious="false" OnNextClick="NextClick" />
+    <OteRouteButtons NextButtonExtraClass="m-width-100" HavePrevious="false" OnNextClick="NextClick" />
 </section>
 
 @code 
@@ -160,7 +162,7 @@
 
     private string CategoryClass {
         get {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10";
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(isNextClick)
             {
                 if(model.SelectedCategory <= 0)
