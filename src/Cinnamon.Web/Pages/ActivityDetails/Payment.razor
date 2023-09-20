@@ -188,8 +188,14 @@
                                     <div class="card-label d-flex align-items-center">
                                         @if (SelectedPaymentCode != "CARD")
                                         {
-                                            <img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">
-                                            <span class="font-16">Credit or Debit Card</span>
+                                            <div class="d-flex">
+                                                <img class="me-2 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
+                                                <img class="h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                                            </div>
+                                            <div class="d-flex flex-column ps-3">
+                                                @*<img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">*@
+                                                <span class="font-16">Credit or Debit Card</span>
+                                            </div>
                                         }
                                         else
                                         {
@@ -210,11 +216,11 @@
                                         }
                                     </div>
                                     <div class="card-icon d-flex align-items-center">
-                                        @if (SelectedPaymentCode != "CARD")
+                                        @*@if (SelectedPaymentCode != "CARD")
                                         {
                                             <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
                                             <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
-                                        }
+                                        }*@
                                         <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.svg" alt="icon">
                                     </div>
                                 </div>
