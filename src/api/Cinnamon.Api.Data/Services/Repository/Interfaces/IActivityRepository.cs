@@ -50,4 +50,9 @@ public interface IActivityRepository
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId);
+
+    Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
+        string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
+        string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int categoryId);
 }

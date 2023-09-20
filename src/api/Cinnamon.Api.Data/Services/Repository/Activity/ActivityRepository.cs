@@ -1689,5 +1689,87 @@ public class ActivityRepository : IActivityRepository
             return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when creating One time event.");
         }
     }
+
+    public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
+        string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
+        string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int categoryId)
+    {
+        try
+        {
+            var activity = new Entities.Activity {
+                Id = id,
+                Description = description,
+                Title = eventName,
+                ExperienceTypeId = experienceTypeId,
+                Price = stringPrice,
+                IsPublished = isPublished,
+                ExperienceCategoryId = categoryId,
+                Handler = handler
+            };
+
+            var activityDescription = new Entities.ActivityDescription {
+                Description = description
+            };
+
+            var address = new Entities.ActivityAddress {
+              Address1 = houseNo,
+              City = cityNumber,
+              CityName = cityName,
+              Barangay = barangayCode,
+              BarangayName = barangayName,
+              Region = regionCode,
+              RegionName = regionName,
+              PinnedLocation = pinnedLocation,
+              PostalCode = postalCode,  
+            };
+
+            var schedule = new Entities.OteSchedule {
+                From = scheduleFrom.SetKindUtc(),
+                To = scheduleTo.SetKindUtc(),
+                Recurrences = recurrence
+            };
+            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
+                return new OteSchedulePricing {
+                    Id = p.Id,
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
+            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(new ActivityDTO {
+                Address1 = houseNo,
+                Barangay = barangayCode,
+                BarangayName = barangayName,
+                City = cityNumber,
+                CityName = cityName,
+                Description = description,
+                ExperienceCategoryId = categoryId,
+                ExperienceCreationType = Enums.ExperienceCreationType.OneTimeEvents,
+                Handler = handler,
+                ExperienceTypeId = experienceTypeId,
+                Id = id,
+                PinnedLocation = pinnedLocation,
+                PostalCode = postalCode,
+                Price = stringPrice,
+                Title = eventName,
+                IsPublished = isPublished,
+                Region = regionCode,
+                RegionName = regionName,
+            }, "One time event successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when updating One time event.");
+        }
+    }
     
 }

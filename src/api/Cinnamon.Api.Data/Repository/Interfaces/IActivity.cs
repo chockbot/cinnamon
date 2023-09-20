@@ -16,4 +16,5 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count);
     Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip);
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule);
+    Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule);
 }
