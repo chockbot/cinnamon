@@ -283,11 +283,11 @@
             <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
                 <div class="col-12 profile-wrapper d-flex">
                     <div class="col-lg-2 col-md-2 col-sm-3 col-3 profile-pic">
-                        <img class="rounded-2 rounded-circle m-3" src="/images/Profile/user.png" width="60" height="60" />
+                        <img class="rounded-2 rounded-circle m-3" src="@profile.ProfilePath" width="60" height="60" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-5 col-5 d-block">
-                        <p class="user-name">Juan Dela Cruz</p>
-                        <a class="view-profile">View Profile</a>
+                        <p class="user-name">@profile.FirstName @profile.LastName</p>
+                        <a class="view-profile" href="/maker/profile/@(profile != null && !string.IsNullOrEmpty(profile.Handler) ? profile.Handler : activity.CreatedBy.ToString() )">View Profile</a>
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-4 profile-badges">
                         <div class="d-flex">
@@ -321,6 +321,8 @@
 
     public Activity activity = new Activity();
 
+    public CustomerProfile profile = new CustomerProfile();
+
     string token = string.Empty;
 
     private bool IsNotVerified {get; set;}
@@ -349,6 +351,11 @@
                 return;
             }
             var customer = result.Result.Result;
+
+            profile.FirstName = customer.FirstName;
+            profile.LastName = customer.LastName;
+            profile.Handler = customer.Handler;
+            profile.ProfilePath = customer.ProfileImg;
 
             // check if customer is maker
             if (!customer.IsMaker)
