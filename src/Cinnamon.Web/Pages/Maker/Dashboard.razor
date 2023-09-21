@@ -289,23 +289,26 @@
                         <p class="user-name">@profile.FirstName @profile.LastName</p>
                         <a class="view-profile" href="/maker/profile/@(profile != null && !string.IsNullOrEmpty(profile.Handler) ? profile.Handler : activity.CreatedBy.ToString() )">View Profile</a>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-4 profile-badges">
-                        <div class="d-flex">
-                            <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Class="badges">
-                                <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
-                            </Tooltip>
-                            <p class="verified-text">Verified</p>
+                    @if (profile.IsVerified == 2)
+                    {
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 profile-badges">
+                            <div class="d-flex">
+                                <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Class="badges">
+                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                </Tooltip>
+                                <p class="verified-text">Verified</p>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <div class="faqs-wrapper">
                     <p class="faqs-title">Faqs</p>
-                    <p><a href="" class="link-questions">What’s gonna happen when someone enrolls?</a></p>
+                    <p><a href="" class="link-questions">What's gonna happen when someone enrolls?</a></p>
                     <p><a href="" class="link-questions">How will I get paid from my activity?</a></p>
-                    <p><a href="" class="link-questions">What’s gonna happen when someone enrolls?</a></p>
+                    <p><a href="" class="link-questions">What's gonna happen when someone enrolls?</a></p>
                     <p><a href="" class="link-questions">How will I get paid from my activity?</a></p>
-                    <p><a href="" class="link-questions">What’s gonna happen when someone enrolls?</a></p>
+                    <p><a href="" class="link-questions">What's gonna happen when someone enrolls?</a></p>
                     <p><a href="" class="link-questions">How will I get paid from my activity?</a></p>
                 </div>
             </div>
@@ -356,6 +359,7 @@
             profile.LastName = customer.LastName;
             profile.Handler = customer.Handler;
             profile.ProfilePath = customer.ProfileImg;
+            profile.IsVerified = customer.IsVerified;
 
             // check if customer is maker
             if (!customer.IsMaker)
