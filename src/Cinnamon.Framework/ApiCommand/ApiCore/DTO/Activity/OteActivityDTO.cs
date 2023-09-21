@@ -1,6 +1,4 @@
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
-
-namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 public class OteActivityDTO 
 {
@@ -25,6 +23,5 @@ public class OteActivityDTO
     public DateTime ScheduleTo {get; set;}
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
-
-    public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
+    public IEnumerable<OtePricingDTO> Pricings {get; set;}
 }

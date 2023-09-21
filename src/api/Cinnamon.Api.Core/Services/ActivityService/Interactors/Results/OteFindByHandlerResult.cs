@@ -1,8 +1,6 @@
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
-namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
-
-public class OteActivityDTO 
+public class OteFindByHandlerResult 
 {
     public int Id {get; set;}
     public string EventName {get; set;}
@@ -25,6 +23,15 @@ public class OteActivityDTO
     public DateTime ScheduleTo {get; set;}
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
+    public IEnumerable<OtePricing> Pricings {get; set;}
 
-    public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
+    public class OtePricing 
+    {
+        public int Id {get; set;}
+        public int OteScheduleId { get; set; }
+        public decimal Price { get; set; }
+        public int MaxSlots { get; set; }
+        public string Description { get; set; }
+        public bool IsAbsorbFees { get; set; }
+    }
 }

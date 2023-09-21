@@ -19,4 +19,5 @@ public interface IActivityData
     Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args);
     Task<AppResult<CreateOteActivityResult>> CreateOteActivity(CreateOteActivityArgs args);
     Task<AppResult<UpdateOteActivityResult>> UpdateOteActivity(UpdateOteActivityArgs args);
+    Task<AppResult<GetOteActivityByHandlerResult>> GetOteActivityByHandler(GetOteActivityArgs args, string handler);
 }

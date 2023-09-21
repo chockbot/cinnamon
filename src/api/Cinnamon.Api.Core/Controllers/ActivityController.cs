@@ -1,3 +1,4 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
@@ -8,6 +9,9 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -61,6 +65,8 @@ public class ActivityController : ControllerBase
     private readonly IPopularActivitiesHandler popularActivitiesHandler;
     private readonly IOteCreateHandler oteCreateHandler;
     private readonly IOteUpdateHandler oteUpdateHandler;
+    private readonly IOteFindByHandler oteFindByHandler;
+    private readonly IMapper mapper;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -81,7 +87,7 @@ public class ActivityController : ControllerBase
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IPopularActivitiesHandler popularActivitiesHandler,
         IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler, IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, 
         ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler, IOteCreateHandler oteCreateHandler,
-        IOteUpdateHandler oteUpdateHandler)
+        IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper)
     {
         _logger = logger;
 
@@ -127,6 +133,8 @@ public class ActivityController : ControllerBase
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
         this.oteCreateHandler = oteCreateHandler;
         this.oteUpdateHandler = oteUpdateHandler;
+        this.oteFindByHandler = oteFindByHandler;
+        this.mapper = mapper;
     }
 
     [Route("CreateActivity")]
@@ -2572,6 +2580,39 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteActivityResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> OteByHandler([FromQuery] OteActivityArgs args, string handler)
+    {
+        try
+        {
+            var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
+                Handler = handler,
+                IncludeAddress = args.IncludeAddress ?? false,
+                IncludeDescription = args.IncludeDescription ?? false,
+                IncludePricing = args.IncludePricing ?? false,
+                IncludeSchedule = args.IncludeSchedule ?? false
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResult = mapper.Map<ActivityResults.OteFindByHandlerResult, CoreDto.Activity.OteActivityDTO>(result.Result);
+            return new JsonResult(new OteActivityResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -24,6 +24,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.ScheduleTo, o => o.MapFrom(s => s.OteSchedule.To))
             .ForMember(d => d.Recurrences, o => o.MapFrom(s => s.OteSchedule.Recurrences))
             .ForMember(d => d.Pricings, o => o.MapFrom(s => s.OteSchedule.OteSchedulePricing))
+            .ForMember(d => d.ProviderId, o => o.MapFrom(s => s.CreatedBy))
             .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title));
         
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();

@@ -1776,11 +1776,11 @@ public class ActivityRepository : IActivityRepository
     }
     
     public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
-        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false)
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false)
     {
         try
         {
-            var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, includeSchedule, includePricing);
+            var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, includeSchedule, includePricing, includeProvider);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);

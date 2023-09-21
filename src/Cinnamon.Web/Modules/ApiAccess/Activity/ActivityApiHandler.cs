@@ -937,4 +937,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateOteResult>.CreateFailed(ex, "An error occured when calling update one time event api");
         }
     }
+
+    public async Task<AppResult<OteActivityResult>> GetActivityScheduleTimes(OteActivityArgs args, string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+               .Request($"Activity/OteByHandler/{handler}")
+               .SetQueryParams(args)
+               .GetJsonAsync<OteActivityResult>();
+
+            return AppResult<OteActivityResult>.CreateSucceeded(result, "Successfully getting ote activity by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, "An error occured when getting ote activity by handler api");
+        }
+    }
 }

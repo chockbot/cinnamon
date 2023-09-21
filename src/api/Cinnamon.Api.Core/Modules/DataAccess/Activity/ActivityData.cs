@@ -317,8 +317,8 @@ public class ActivityData: IActivityData
 		{
 			var result = await flurlClient
 							.Request($"Activity/OteActivity/{handler}")
-							.PostJsonAsync(args)
-							.ReceiveJson<GetOteActivityByHandlerResult>();
+							.SetQueryParams(args)
+							.GetJsonAsync<GetOteActivityByHandlerResult>();
 
 			return AppResult<GetOteActivityByHandlerResult>.CreateSucceeded(result, "One time event activity successfully get.");
 		}
