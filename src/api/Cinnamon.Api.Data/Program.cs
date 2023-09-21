@@ -10,6 +10,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
 using Azure.Identity;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,13 @@ var logger = new LoggerConfiguration()
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Data")
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
+
+// auto mapper
+var mapperConfig = new MapperConfiguration(mapper => {
+    mapper.AddProfile(new Cinnamon.Api.Data.Models.MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 // register application services
 builder.Services.ExtendServices();

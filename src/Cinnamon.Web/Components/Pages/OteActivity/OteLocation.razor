@@ -427,6 +427,21 @@
         return data;
     }
 
+    public void SetState(ModelData data)
+    {
+        model.Barangay.Code = data.BarangayCode;
+        model.Barangay.Name = data.BarangayName;
+        model.City.Code = data.CityCode;
+        model.City.Name = data.CityName;
+        model.HouseNo = data.HouseNo;
+        model.PinnedLocation = data.PinnedLocation;
+        model.PostaCode = data.PostalCode;
+        model.Region.Code = data.RegionCode;
+        model.Region.Name = data.RegionName;
+        model.SelectedType = data.ExperienceType;
+        StateHasChanged();
+    }
+
     public class ModelData
     {
         public int ExperienceType {get; set;}

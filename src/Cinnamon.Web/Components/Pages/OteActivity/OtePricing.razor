@@ -409,7 +409,8 @@
                     AbsorbFees = p.AbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Description = p.Description
+                    Description = p.Description,
+                    Id = p.Id
                 };
             }).ToList()
         };
@@ -417,9 +418,43 @@
             AbsorbFees = modelPricing.AbsorbFees,
             MaxSlots = modelPricing.MaxSlots,
             Price = modelPricing.Price,
-            Description = modelPricing.Description
+            Description = modelPricing.Description,
+            Id = modelPricing.Id
         });
         return data;
+    }
+
+    public void SetState(ModelData data)
+    {
+        modelSchedule.DateFrom = data.DateFrom;
+        modelSchedule.DateTo = data.DateTo;
+        modelSchedule.TimeFrom = data.DateFrom.TimeOfDay;
+        modelSchedule.TimeTo = data.DateTo.TimeOfDay;
+        modelSchedule.Recurrences = data.Recurrences;
+
+        var last = data.ItemPrices.LastOrDefault();
+        if(last is not null)
+        {
+            var notLast = data.ItemPrices.Where(p => p.Id != last.Id);
+            foreach(var item in notLast)
+            {
+                modelPricingList.Pricings.Add(new Pricing {
+                    AbsorbFees = item.AbsorbFees,
+                    Description = item.Description,
+                    Id = item.Id,
+                    MaxSlots = item.MaxSlots,
+                    Price = item.Price
+                });
+            }
+
+            modelPricing.AbsorbFees = last.AbsorbFees;
+            modelPricing.Description = last.Description;
+            modelPricing.Id = last.Id;
+            modelPricing.MaxSlots = last.MaxSlots;
+            modelPricing.Price = last.Price;
+        }
+
+        StateHasChanged();
     }
 
     public class ModelData
@@ -431,6 +466,7 @@
 
         public class ItemPrice 
         {
+            public int Id {get; set;}
             public decimal Price {get; set;}
             public int MaxSlots {get; set;}
             public bool AbsorbFees {get; set;}

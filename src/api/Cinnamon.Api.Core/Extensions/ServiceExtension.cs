@@ -153,6 +153,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.ICreateOngoingActivityScheduleHandler, Services.ActivityService.CreateOngoingActivityScheduleHandler>();
 
         services.AddTransient<Services.ActivityService.Handlers.IOteCreateHandler, Services.ActivityService.OteCreateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteUpdateHandler, Services.ActivityService.OteUpdateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteFindByHandler, Services.ActivityService.OteFindByHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

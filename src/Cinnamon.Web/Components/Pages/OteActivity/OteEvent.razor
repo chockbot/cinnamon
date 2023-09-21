@@ -200,6 +200,14 @@
         return data;
     }
 
+    public void SetState(ModelData data)
+    {
+        model.Description = data.Description;
+        model.EventName = data.Name;
+        model.SelectedCategory = data.Category;
+        StateHasChanged();
+    }
+
     public class ModelData 
     {
         public string Name {get; set;}

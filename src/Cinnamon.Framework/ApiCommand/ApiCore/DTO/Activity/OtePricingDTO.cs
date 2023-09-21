@@ -1,6 +1,6 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
-public class OteSchedulePricingDTO
+public class OtePricingDTO 
 {
     public int Id {get; set;}
     public int OteScheduleId { get; set; }
