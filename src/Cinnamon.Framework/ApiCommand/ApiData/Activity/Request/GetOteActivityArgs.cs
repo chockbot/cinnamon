@@ -6,4 +6,5 @@ public class GetOteActivityArgs
     public bool? IncludeAddress {get; set;}
     public bool? IncludeSchedule {get; set;}
     public bool? IncludePricing {get; set;}
+    public bool? IncludeImages {get; set;}
 }

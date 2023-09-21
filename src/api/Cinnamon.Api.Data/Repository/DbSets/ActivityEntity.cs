@@ -367,7 +367,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     }
 
     public async Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
-        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false)
+        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false)
     {
         try
         {
@@ -376,6 +376,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             if(includeAddress) query = query.Include(a => a.Address);
             if(includeDescription) query = query.Include(a => a.ActivityDescription);
             if(includeProvider) query = query.Include(a => a.Customer);
+            if(includeImages) query = query.Include(a => a.Images);
             if(includeSchedule && includePricing) query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 

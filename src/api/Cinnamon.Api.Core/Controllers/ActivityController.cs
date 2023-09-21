@@ -2596,7 +2596,8 @@ public class ActivityController : ControllerBase
                 IncludeAddress = args.IncludeAddress ?? false,
                 IncludeDescription = args.IncludeDescription ?? false,
                 IncludePricing = args.IncludePricing ?? false,
-                IncludeSchedule = args.IncludeSchedule ?? false
+                IncludeSchedule = args.IncludeSchedule ?? false,
+                IncludeImages = args.IncludeImages ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {

@@ -24,6 +24,7 @@ public class OteFindByHandlerResult
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
     public IEnumerable<OtePricing> Pricings {get; set;}
+    public IEnumerable<Image> Images {get; set;}
 
     public class OtePricing 
     {
@@ -33,5 +34,14 @@ public class OteFindByHandlerResult
         public int MaxSlots { get; set; }
         public string Description { get; set; }
         public bool IsAbsorbFees { get; set; }
+    }
+
+    public class Image 
+    {
+         public int Id { get; set; }
+        public int Order {get; set;}
+        public int ActivityId {get; set;}
+        public string ImageName { get; set; }
+        public string ImageLocation { get; set; }
     }
 }

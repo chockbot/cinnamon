@@ -11,8 +11,12 @@ public class MappingProfile : Profile
     {
         CreateMap<DataDto.Activity.OteActivityDTO, ActivityResults.OteFindByHandlerResult>();
         CreateMap<DataDto.OteSchedule.OteSchedulePricingDTO, ActivityResults.OteFindByHandlerResult.OtePricing>();
+        CreateMap<DataDto.ActivityImage.ActivityImageDTO, ActivityResults.OteFindByHandlerResult.Image>();
 
         CreateMap<ActivityResults.OteFindByHandlerResult, CoreDto.Activity.OteActivityDTO>();
         CreateMap<ActivityResults.OteFindByHandlerResult.OtePricing, CoreDto.Activity.OtePricingDTO>();
+        CreateMap<ActivityResults.OteFindByHandlerResult.Image, CoreDto.Activity.ActivityDTO.ActivityImage>()
+            .ForMember(d => d.ImageSrc, o => o.MapFrom(s => s.ImageLocation))
+            .ForMember(d => d.Name, o => o.MapFrom(s => s.ImageName));
     }
 }

@@ -57,5 +57,5 @@ public interface IActivityRepository
         bool isPublished, string handler, int categoryId);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
-        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false);
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
 }

@@ -477,7 +477,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
-                args.IncludeAddress ?? false, args.IncludePricing ?? false);
+                args.IncludeSchedule ?? false, args.IncludePricing ?? false, false, args.IncludeImages ?? false);
             
             if(!result.Succeeded || result.Result is null)
             {

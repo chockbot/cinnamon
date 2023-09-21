@@ -21,7 +21,14 @@ public class OteFindByHandler : IOteFindByHandler
 
     public AppResult<OteFindByHandlerResult> Execute(OteFindByHandlerArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {   
+            return AppResult<OteFindByHandlerResult>.CreateFailed(ex, "An error occured in IOteFindByHandler");
+        }
     }
 
     public async Task<AppResult<OteFindByHandlerResult>> ExecuteAsync(OteFindByHandlerArgs args)
@@ -32,7 +39,8 @@ public class OteFindByHandler : IOteFindByHandler
                 IncludeAddress = args.IncludeAddress,
                 IncludeDescription = args.IncludeDescription,
                 IncludePricing = args.IncludePricing,
-                IncludeSchedule = args.IncludeSchedule
+                IncludeSchedule = args.IncludeSchedule,
+                IncludeImages = args.IncludeImages
             }, args.Handler);
             if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
             {

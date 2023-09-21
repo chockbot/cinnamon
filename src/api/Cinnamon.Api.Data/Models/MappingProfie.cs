@@ -2,6 +2,7 @@ using AutoMapper;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -28,5 +29,6 @@ public class MappingProfile : Profile
             .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title));
         
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
+        CreateMap<ActivityImage, ActivityImageDTO>();
     }
 }

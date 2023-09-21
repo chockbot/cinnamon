@@ -473,6 +473,11 @@
                 throw new ApplicationException(updateRes.Message);
             }
 
+            if(oteGallery is not null)
+            {
+                var uploadRes = await oteGallery.UploadImages(oteId);
+            }
+
             NavigationManager.NavigateTo("/maker/dashboard");
         }
         catch (System.Exception)
@@ -487,7 +492,8 @@
             IncludeAddress = true,
             IncludeDescription = true,
             IncludePricing = true,
-            IncludeSchedule = true
+            IncludeSchedule = true,
+            IncludeImages = true
         }, Handler);
 
         if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
@@ -538,6 +544,14 @@
                 };
             }).ToList()
         });
+
+        oteGallery.SetState(ote.Images.Select(i => {
+            return new OteGallery.ImageItem {
+                Id = i.Id,
+                ImageSrc = i.ImageSrc,
+                Order = i.Order
+            };
+        }).ToList());
     }
 
     private OteSummary.ComponentSummary GetSummary()

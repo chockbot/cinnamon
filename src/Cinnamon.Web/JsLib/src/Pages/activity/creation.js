@@ -207,6 +207,7 @@ export async function uploadListImages(
   deletedIds,
   haveOteOrder
 ) {
+  debugger;
   const formData = new FormData();
   let orderCount = 0;
   for (const selector of selectors) {

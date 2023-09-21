@@ -1,3 +1,5 @@
+using static Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO;
+
 namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 public class OteActivityDTO 
@@ -24,4 +26,5 @@ public class OteActivityDTO
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
     public IEnumerable<OtePricingDTO> Pricings {get; set;}
+    public IEnumerable<ActivityImage> Images {get; set;}
 }

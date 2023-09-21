@@ -49,8 +49,8 @@
                         <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
                             <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
                                 <input type="hidden" id="@coverPhoto.InputDataId" name= "@coverPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
-                                <img class="mt-2 cursor-pointer" @onclick="() => coverPhoto.Display = false" src="images/ote/trashcan-icon.png" alt="delete">
+                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@coverPhoto.ImageSrc" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/ote/trashcan-icon.png" alt="delete">
                             </div>
                         </Row>
                     </div>
@@ -73,8 +73,8 @@
                         <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
                             <div class='@(setplanPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@setplanPhoto.ContainerId">
                                 <input type="hidden" id="@setplanPhoto.InputDataId" name= "@setplanPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
-                                <img class="mt-2 cursor-pointer" @onclick="() => setplanPhoto.Display = false" src="images/ote/trashcan-icon.png" alt="delete">
+                                <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@setplanPhoto.ImageSrc" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="DeleteSetplanPhoto" src="images/ote/trashcan-icon.png" alt="delete">
                             </div>
                         </Row>
                     </div>
@@ -106,8 +106,8 @@
                 {
                     <div @key="item.ContainerId" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
                         <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
-                        <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="" alt="supporting-photo">
-                        <img class="mt-2 cursor-pointer" @onclick="() => imageItems.Remove(item)" src="images/ote/trashcan-icon.png" alt="delete">
+                        <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
+                        <img class="mt-2 cursor-pointer" @onclick="() => DeleteImage(item)" src="images/ote/trashcan-icon.png" alt="delete">
                     </div>
                 }
             </Row>
@@ -146,6 +146,7 @@
     };
     private IList<ImageItem> imageItems = new List<ImageItem>();
     private string errorMessage = string.Empty;
+    private IList<int> deletedIds = new List<int>();
 
     private async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
     {
@@ -302,12 +303,78 @@
             selectors.Add($"#{setplanPhoto.InputDataId}");
         }
         var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", 
-                selectors, createdActivityId, new List<int>(), haveOptionalPhoto);
+                selectors, createdActivityId, deletedIds, haveOptionalPhoto);
         return result.Success ?? false;
     }
 
-    private class ImageItem 
+    public void SetState(IList<ImageItem> images)
     {
+        var orderedImages = images.OrderBy(i => i.Order).ThenBy(i => i.Id);
+        var coverImage = orderedImages.FirstOrDefault();
+        var setplanImage = orderedImages.FirstOrDefault(i => i.Order == 100);
+
+        if(setplanImage is not null)
+        {
+            setplanPhoto.Display = true;
+            setplanPhoto.ImageSrc = setplanImage.ImageSrc;
+            setplanPhoto.Id = setplanImage.Id;
+            setplanPhoto.Order = setplanImage.Order;
+        }
+    
+        if(coverImage is not null)
+        {
+            coverPhoto.Display = true;
+            coverPhoto.ImageSrc = coverImage.ImageSrc;
+            coverPhoto.Id = coverImage.Id;
+            coverPhoto.Order = coverImage.Order;
+
+            var supportedImages = images.Where(i => i.Id != coverImage.Id && i.Id != 100);
+            var lastIndex = supportedImages.Count() > 0 ? supportedImages.OrderByDescending(i => i.Order).First().Order + 1 : 0;
+
+            foreach(var item in supportedImages)
+            {
+                string inputId = $"img-preview-input-{lastIndex}";
+                string imgId = $"img-preview-src-{lastIndex}";
+
+                imageItems.Add(new ImageItem {
+                    ContainerId = $"{imgId}-{inputId}",
+                    Display = true,
+                    Id = item.Id,
+                    ImageSrc = item.ImageSrc,
+                    ImageSrcId = $"{imgId}",
+                    InputDataId = $"{inputId}",
+                    Order = lastIndex
+                });
+
+                lastIndex++;
+            }
+        }
+    }
+
+    private Task DeleteCoverPhoto()
+    {
+        coverPhoto.Display = false;
+        deletedIds.Add(coverPhoto.Id);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteSetplanPhoto()
+    {
+        setplanPhoto.Display = false;
+        deletedIds.Add(setplanPhoto.Id);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteImage(ImageItem imageItem)
+    {
+        imageItems.Remove(imageItem);
+        deletedIds.Add(imageItem.Id);
+        return Task.CompletedTask;
+    }
+
+    public class ImageItem 
+    {
+        public int Id {get; set;}
         public string ContainerId {get; set;} = string.Empty;
         public string ImageSrcId {get; set;} = string.Empty;
         public string InputDataId {get; set;} = string.Empty;
@@ -315,6 +382,7 @@
         public decimal FileSize {get; set;} = 0;
         public bool Display {get; set;} = false;
         public int Order {get; set;} = 0;
+        public string ImageSrc {get; set;} = string.Empty;
     }
 
     private class UploadResult 
