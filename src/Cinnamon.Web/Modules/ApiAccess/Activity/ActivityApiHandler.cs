@@ -938,7 +938,7 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<OteActivityResult>> GetActivityScheduleTimes(OteActivityArgs args, string handler)
+    public async Task<AppResult<OteActivityResult>> FindOteByHandler(OteActivityArgs args, string handler)
     {
         try
         {

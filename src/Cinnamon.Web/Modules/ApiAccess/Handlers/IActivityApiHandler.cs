@@ -51,5 +51,5 @@ public interface IActivityApiHandler
     Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token);
     Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token);
     Task<AppResult<UpdateOteResult>> UpdateOte(UpdateOteArgs args, string token);
-    Task<AppResult<OteActivityResult>> GetActivityScheduleTimes(OteActivityArgs args, string handler);
+    Task<AppResult<OteActivityResult>> FindOteByHandler(OteActivityArgs args, string handler);
 }
