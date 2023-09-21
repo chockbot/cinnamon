@@ -425,4 +425,70 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CreateOteActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+
+    [HttpPost]
+    [Route("UpdateOteActivity")]
+    [ProducesResponseType(typeof(UpdateOteActivityResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateOteActivity([FromBody] UpdateOteActivityArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var pricings = args.Pricings.Select(p => {
+                return new OteSchedulePricingDTO {
+                    Id = p.Id,
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
+                args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
+                args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty, 
+                args.Activity.BarangayCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
+                args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId);
+            
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(
+                new UpdateOteActivityResult 
+                {
+                    Result = result.Result, 
+                    IsSuccess = true,
+                });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("OteActivity/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteActivityByHandlerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteActivityByHandler(string handler, [FromQuery] GetOteActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
+                args.IncludeSchedule ?? false, args.IncludePricing ?? false, false, args.IncludeImages ?? false);
+            
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = result.Message } }); 
+            }
+
+            return new JsonResult(new GetOteActivityByHandlerResult { IsSuccess = true, Result = result.Result }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

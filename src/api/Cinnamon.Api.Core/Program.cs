@@ -18,6 +18,7 @@ using Cinnamon.Api.Core.Hubs;
 using Microsoft.Extensions.Options;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,13 @@ var logger = new LoggerConfiguration()
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Core")
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
+
+// auto mapper
+var mapperConfig = new MapperConfiguration(mapper => {
+    mapper.AddProfile(new Cinnamon.Api.Core.Models.MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 // register application services
 builder.Services.ExtendServices();
