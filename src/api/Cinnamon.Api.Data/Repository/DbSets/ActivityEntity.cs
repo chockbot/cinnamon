@@ -5,6 +5,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Data;
+using AutoMapper;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -362,6 +363,33 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<Activity>.CreateFailed(ex, "An error occured when updating One time event");
+        }
+    }
+
+    public async Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
+        bool includeSchedule = false, bool includePricing = false)
+    {
+        try
+        {
+            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower());
+
+            if(includeAddress) query = query.Include(a => a.Address);
+            if(includeDescription) query = query.Include(a => a.ActivityDescription);
+            if(includeSchedule && includePricing) query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+            if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
+
+            var result = await query.FirstOrDefaultAsync();
+
+            if(result is null)
+            {
+                return AppResult<Activity>.CreateFailed(new ApplicationException("Can't find ote activity"), "Can't find ote activity");
+            }
+
+            return AppResult<Activity>.CreateSucceeded(result, "Successfully find ote activity");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<Activity>.CreateFailed(ex, "An error occured when finding ote activity");
         }
     }
 }

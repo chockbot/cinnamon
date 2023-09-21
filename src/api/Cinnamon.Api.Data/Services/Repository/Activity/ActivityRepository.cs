@@ -12,16 +12,19 @@ using System;
 using Cinnamon.Framework.Enums;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Api.Data.Extensions;
+using AutoMapper;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
 public class ActivityRepository : IActivityRepository
 {
     private readonly IDataStore dataStore;
+    private readonly IMapper mapper;
 
-    public ActivityRepository(IDataStore dataStore)
+    public ActivityRepository(IDataStore dataStore, IMapper mapper)
     {
         this.dataStore = dataStore;
+        this.mapper = mapper;
     }
 
     public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
@@ -1772,4 +1775,23 @@ public class ActivityRepository : IActivityRepository
         }
     }
     
+    public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false)
+    {
+        try
+        {
+            var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, includeSchedule, includePricing);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var model = mapper.Map<OteActivityDTO>(result.Result);
+            return AppResult<OteActivityDTO>.CreateSucceeded(model, "Sucessfully find one time event");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
+        }
+    }
 }

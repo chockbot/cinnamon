@@ -468,4 +468,27 @@ public class ActivityController : ControllerBase
             return new JsonResult(new UpdateOteActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+
+    [Route("OteActivity/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteActivityByHandlerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteActivityByHandler(string handler, [FromQuery] GetOteActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
+                args.IncludeAddress ?? false, args.IncludePricing ?? false);
+            
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = result.Message } }); 
+            }
+
+            return new JsonResult(new GetOteActivityByHandlerResult { IsSuccess = true, Result = result.Result }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

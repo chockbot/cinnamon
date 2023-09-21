@@ -55,4 +55,7 @@ public interface IActivityRepository
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int categoryId);
+
+    Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false);
 }
