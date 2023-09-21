@@ -914,4 +914,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CreateOteResult>.CreateFailed(ex, "An error occured when calling create one time event api");
         }
     }
+
+    public async Task<AppResult<UpdateOteResult>> UpdateOte(UpdateOteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOteResult>();
+
+            return AppResult<UpdateOteResult>.CreateSucceeded(result, "Successfully called update one time event api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOteResult>.CreateFailed(ex, "An error occured when calling update one time event api");
+        }
+    }
 }

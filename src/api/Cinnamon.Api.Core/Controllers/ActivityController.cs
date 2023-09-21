@@ -60,6 +60,7 @@ public class ActivityController : ControllerBase
     private readonly IRecommendedActivitiesHandler recommendedActivitiesHandler;
     private readonly IPopularActivitiesHandler popularActivitiesHandler;
     private readonly IOteCreateHandler oteCreateHandler;
+    private readonly IOteUpdateHandler oteUpdateHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -79,7 +80,8 @@ public class ActivityController : ControllerBase
         IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IPopularActivitiesHandler popularActivitiesHandler,
         IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler, IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, 
-        ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler, IOteCreateHandler oteCreateHandler)
+        ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler, IOteCreateHandler oteCreateHandler,
+        IOteUpdateHandler oteUpdateHandler)
     {
         _logger = logger;
 
@@ -124,6 +126,7 @@ public class ActivityController : ControllerBase
         this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
         this.oteCreateHandler = oteCreateHandler;
+        this.oteUpdateHandler = oteUpdateHandler;
     }
 
     [Route("CreateActivity")]
@@ -2510,6 +2513,65 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOte([FromBody] UpdateOteArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs {
+                Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CategoryId = activity.CategoryId,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    Id = activity.Id,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                },
+                Pricings = args.Pricings.Select(p => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
+                        Description = p.Description,
+                        Id = p.Id,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price
+                    };
+                })
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateOteResult
+            {
+               IsSuccess = result.Succeeded,
+               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                ActivityId = result.Result.Id
+               }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
