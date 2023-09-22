@@ -424,30 +424,32 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id                   = a.Id,
-                    SubTitle             = a.Subtitle,
-                    Title                = a.Title,
-                    Description          = a.Description,
-                    Price                = a.Price,
-                    Remarks              = a.Remarks,
-                    IsPublished          = a.IsPublished,
-                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId        = a.SubCategoryId ?? 0,
-                    CreatedBy            = a.CreatedBy,
-                    CreatedOn            = a.CreatedOn,
-                    ExperienceTypeId     = a.ExperienceTypeId,
-                    Handler              = a.Handler,
-                    ExperienceType       = a.ExperienceType?.Name,
-                    ExperienceCategory   = a.ExperienceCategory?.Category,
-                    SubCategory          = a.SubCategory?.SubCatergory,
-                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
-                    IsDeactivated        = a.IsDeactivated,
-                    Status               = (Enums.ActivityStatus)a.Status
+                    Id                     = a.Id,
+                    SubTitle               = a.Subtitle,
+                    Title                  = a.Title,
+                    Description            = a.Description,
+                    Price                  = a.Price,
+                    Remarks                = a.Remarks,
+                    IsPublished            = a.IsPublished,
+                    ExperienceCategoryId   = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId          = a.SubCategoryId ?? 0,
+                    CreatedBy              = a.CreatedBy,
+                    CreatedOn              = a.CreatedOn,
+                    ExperienceTypeId       = a.ExperienceTypeId,
+                    Handler                = a.Handler,
+                    ExperienceType         = a.ExperienceType?.Name,
+                    ExperienceCategory     = a.ExperienceCategory?.Category,
+                    SubCategory            = a.SubCategory?.SubCatergory,
+                    IsNew                  = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsDeactivated          = a.IsDeactivated,
+                    Status                 = (Enums.ActivityStatus)a.Status,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
                 };
 
                 // address fields
                 if (includeAddres && a.Address != null)
                 {
+
                     activityDTO.Address1     = a.Address.Address1;
                     activityDTO.Address2     = a.Address.Address2;
                     activityDTO.City         = a.Address.City;
