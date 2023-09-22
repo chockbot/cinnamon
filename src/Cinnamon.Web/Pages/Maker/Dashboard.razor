@@ -381,7 +381,7 @@
                                                             <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                                                         </div>
                                                         <div class="button-section">
-                                                        <a button class="update-button" href="/experiences/ote/{@item.Handler}">Update</a>
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
                                                             @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
                                                             {
                                                                 <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -422,7 +422,7 @@
                                                             <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                                                         </div>
                                                         <div class="button-section">
-                                                        <a button class="update-button" href="/experiences/ote/{@item.Handler}">Update</a>
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
                                                             @if (item.Status == Enums.ActivityStatus.InProgress)
                                                             {
                                                                 <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -461,7 +461,7 @@
                                                             <span> In progress</span>
                                                         </div>
                                                         <div class="button-section">
-                                                        <a button class="update-button" href="/experiences/ote/{@item.Handler}">Update</a>
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
                                                             @if (item.Status == Enums.ActivityStatus.InProgress)
                                                             {
                                                                 <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -639,7 +639,7 @@
                     <div class="link-answer" style="display: @(selectedQuestion == 1 ? "block" : "none")">
                         <ol>
                             <li class="answers">Customers will be automatically added to your personal group chat. You can access the chat by going to the MESSAGES.</li>
-                            <li class="answers">You can check their contact information on the confirmation email that we’ve sent to you.</li>
+                            <li class="answers">You can check their contact information on the confirmation email that we've sent to you.</li>
                             <li class="answers">The enrollees are now available in the ATTENDANCE section.</li>
                         </ol>
                     </div>
@@ -650,7 +650,7 @@
                             To receive payment, a completed session is a per-requisite. In the ATTENDANCE section,
                             make sure that you are checking the attendance of your enrollees; once completed, 
                             Cinnamon will automatically process a payout request per completed enrollee. 
-                            Processing may take 2–3 business days according to bank and e-wallet policies for clearing.</p>
+                            Processing may take 2-3 business days according to bank and e-wallet policies for clearing.</p>
                     </div>
                     <p><a class="link-question" @onclick="() => ToggleAnswer(3)">I want to update the attendance of my enrollee, how can I change this?</a></p>
                     <div class="link-answer" style="display: @(selectedQuestion == 3 ? "block" : "none")">
