@@ -22,6 +22,7 @@ public class Activity : BaseEntity
     public bool IsDeactivated { get; set; }
     public string Guid { get; set; }
     public int Status { get; set; }
+    public int ExperienceCreationTypeId { get; set; }
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}
@@ -30,8 +31,10 @@ public class Activity : BaseEntity
     public virtual ExperienceType ExperienceType {get; set;}
     public virtual ExperienceCategory ExperienceCategory {get; set;}
     public virtual SubCategory SubCategory {get; set;}
+    public virtual ExperienceCreationType ExperienceCreationType {get; set; }
     [ForeignKey("CreatedBy")]
     public virtual Customer Customer {get; set;}
     public virtual IList<Student> Students {get; set; }
     public virtual IList<Reviews> Reviews {get; set; }
+    public virtual OteSchedule OteSchedule {get; set;}
 }

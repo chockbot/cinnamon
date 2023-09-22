@@ -85,6 +85,16 @@ public class DataStore : IDataStore
 
     public IChatConnection ChatConnection => new ChatConnectionEntity(applicationContext);
 
+    public IActivityScheduleTime ActivityScheduleTime => new ActivityScheduleTimeEntity(applicationContext);
+
+    public IExperienceCreationType ExperienceCreationType => new ExperienceCreationTypeEntity(applicationContext);
+
+    public IOngoingActivityScheduleTime OngoingActivityScheduleTime => new OngoingActivityScheduleTimeEntity(applicationContext);
+    
+    public IOteSchedule OteSchedule => new OteScheduleEntity(applicationContext);
+
+    public IOteSchedulePricing OteSchedulePricing => new OteSchedulePricingEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
@@ -568,6 +578,32 @@ public class DataStore : IDataStore
             });
         }
 
-        await applicationContext.SaveChangesAsync();
+        var experienceCreationType = await applicationContext.ExperienceCreationTypes.FirstOrDefaultAsync();
+        if (experienceCreationType == null)
+        {
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "General Experiences",
+                ImagePath = "/images/experience-creation/general-experience.svg",
+                IsActive = true,
+                Description = "Great for creating experiences (e.g., Piano Lessons for kids, Swimming Class, etc.)"
+            });
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "Experience via Appointment",
+                ImagePath = "/images/experience-creation/appointment.svg",
+                IsActive = true,
+                Description = "If you want customers to book your experience by appointment"
+            });
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "One Time Events",
+                ImagePath = "/images/experience-creation/one-time-event.svg",
+                IsActive = true,
+                Description = "Great for events like visiting a museum, an educational place, etc."
+            });
+        }
+
+            await applicationContext.SaveChangesAsync();
     }
 }

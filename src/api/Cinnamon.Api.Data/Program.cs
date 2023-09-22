@@ -10,6 +10,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
 using Azure.Identity;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ var certCredential = new ClientSecretCredential(tenantId, clientId, clientSecret
 var client = new SecretClient(new Uri(keyVaultUri), certCredential);
 
 // setup from config file
-var dbConnectionString = client.GetSecret(builder.Configuration.GetSection("KeyVault:CinnamonDbConnectionString").Value).Value.Value;
+var dbConnectionString = "Server=10.127.70.79;Port=5432;Database=CINNAMON;User Id=postgres;Password=postgres;"; //client.GetSecret(builder.Configuration.GetSection("KeyVault:CinnamonDbConnectionString").Value).Value.Value;
 
 builder.Services.AddDbContext<ApplicationContext>(opts => opts.UseNpgsql(dbConnectionString), ServiceLifetime.Transient);
 
@@ -41,6 +42,13 @@ var logger = new LoggerConfiguration()
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Data")
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
+
+// auto mapper
+var mapperConfig = new MapperConfiguration(mapper => {
+    mapper.AddProfile(new Cinnamon.Api.Data.Models.MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 // register application services
 builder.Services.ExtendServices();

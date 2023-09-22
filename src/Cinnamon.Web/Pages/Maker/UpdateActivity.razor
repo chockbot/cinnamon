@@ -268,7 +268,14 @@
                         </div>
 
                         <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                            <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
+                            @if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+                            {
+                                <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
+                            }
+                            else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                            {
+                                <PricingAndScheduleAppointmentUpdate @ref="pricingAndScheduleAppointmentComponent" Model="Model" />
+                            }
                         </div>
 
                         <div class='tab @(currentIndex == 4 ? "show" : "")'>
@@ -365,6 +372,7 @@
     private LocationUpdate locationComponent { get; set; }
 
     private PricingAndScheduleUpdate pricingAndScheduleComponent { get; set; }
+    private PricingAndScheduleAppointmentUpdate pricingAndScheduleAppointmentComponent { get; set; }
 
     private OptionalDetailsUpdate optionalDetailsComponent { get; set; }
 
@@ -577,7 +585,19 @@
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        PriceType = s.PriceType,
+                        ScheduleType = s.ScheduleType,
+                        SchedulingUrl = s.SchedulingUrl,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new ActivityScheduleTime
+                        {
+                            ActivityScheduleId = act.ActivityScheduleId,
+                            ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                            DayOfWeek = act.DayOfWeek,
+                            EndTime = act.EndTime,
+                            StartTime = act.StartTime,
+                            IsEnabled = act.IsEnabled
+                        }).ToList()
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -616,6 +636,7 @@
                 Title = activity.Title,
                 PinnedLocation = activity.PinnedLocation,
                 Status = activity.Status,
+                ExperienceCreationType = activity.ExperienceCreationType
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -663,6 +684,41 @@
             EnrolledStudents = enrolledStudents,
             Token = token
         };
+
+        if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            List<ScheduleTime> scheduleTimes = new List<ScheduleTime>();
+
+            foreach (var schedule in Model.Activity.ActivitySchedules)
+            {
+                scheduleTimes = new List<ScheduleTime>();
+
+                for (int i = 0; i < 7; i++)
+                {
+                    var activityScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.DayOfWeek == i).ToList();
+
+                    foreach (var item in activityScheduleTimes)
+                    {
+                        item.ModelStatus = ModelStatus.Updated;
+                        item.IsNew = false;
+                    }
+
+                    scheduleTimes.Add(new ScheduleTime
+                        {
+                            ActivityScheduleId = schedule.Id,
+                            DayOfWeek = i,
+                            Sort = i,
+                            IsEnabled = activityScheduleTimes.FirstOrDefault().IsEnabled,
+                            ActivityScheduleTimes = activityScheduleTimes,
+                        });
+                }
+
+                schedule.ScheduleTimes = scheduleTimes;
+            }
+
+            Model.Activity.ScheduleType = Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleType;
+            Model.Activity.SchedulingUrl = Model.Activity.ActivitySchedules.FirstOrDefault().SchedulingUrl;
+        }
 
         obj = DotNetObjectReference.Create(this);
     }
@@ -811,7 +867,7 @@
         }
 
         // update only the image order, not re uploading the image
-        if (!galleryComponent.IsImagesUpdated)
+        /**if (!galleryComponent.IsImagesUpdated)
         {
             var updateImageOrderRes = await activityApiHandler.UpdateActivityImageOrder(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs
                 {
@@ -828,10 +884,10 @@
 
             NavigationManager.NavigateTo("/maker/dashboard");
             return;
-        }
+        }**/
 
         // upload image without checking if there is error so that can't re update another activity
-        bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+        //bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
 
         NavigationManager.NavigateTo("/maker/dashboard");
         isLoading = false;
@@ -867,10 +923,34 @@
             var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
                 ActivityLevel = Model.Activity.ActivityLevel,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
+                    var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdateActivityScheduleTime>();
+                    if (s.ScheduleTimes != null)
+                    {
+                        foreach (var item in s.ScheduleTimes)
+                        {
+                            foreach (var scheduleTime in item.ActivityScheduleTimes)
+                            {
+                                if (!(scheduleTime.ModelStatus == ModelStatus.Deleted && scheduleTime.IsNew))
+                                {
+                                    scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdateActivityScheduleTime
+                                    {
+                                        ActivityScheduleId = scheduleTime.ActivityScheduleId,
+                                        ActivityScheduleTimeId = (int)scheduleTime.ActivityScheduleTimeId,
+                                        DayOfWeek = scheduleTime.DayOfWeek,
+                                        EndTime = scheduleTime.EndTime,
+                                        StartTime = scheduleTime.StartTime,
+                                        ModelStatus = scheduleTime.ModelStatus,
+                                        IsEnabled = item.IsEnabled
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
                         Id = s.Id,
-                        DateTime = s.DateTime,
-                        Name = s.Name,
+                        DateTime = s.DateTime ?? "N/A",
+                        Name = Model.Activity.ScheduleType == Enums.ScheduleType.Calendly ? "Calendly Appointment" : s.Name ?? "N/A",
                         PerUnit1 = s.PerUnit1,
                         PerUnit2 = s.PerUnit2,
                         Price = s.Price,
@@ -883,6 +963,10 @@
                         SessionName = s.SessionName ?? "N/A",
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
+                        PriceType = s.PriceType,
+                        ScheduleType = Model.Activity.ScheduleType,
+                        SchedulingUrl = Model.Activity.SchedulingUrl,
+                        ActivityScheduleTimes = scheduleTimes
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -923,26 +1007,8 @@
                 return;
             }
 
-            // update only the image order, not re uploading the image
-            if (!galleryComponent.IsImagesUpdated)
-            {
-                var updateImageOrderRes = await activityApiHandler.UpdateActivityImageOrder(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs {
-                    ActivityId = Model.Activity.ActivityId,
-                        ImageOrders = galleryComponent.ImageItems.Select(i =>
-                        {
-                        return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs.ImageOrder {
-                            NewOrder = i.NewOrder,
-                            OldOrder = i.Order
-                        };
-                    }).ToList()
-                }, Model.Token);
-
-                NavigationManager.NavigateTo("/maker/dashboard");
-                return;
-            }
-
             // upload image without checking if there is error so that can't re update another activity
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
@@ -977,11 +1043,22 @@
                     currentIndex = index;
                     break;
                 case 3:
-                    if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                     {
-                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                        return;
-                    };
+                        if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
+                    else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                    {
+                        if (Model.ExperienceHasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
 
                     isPricingAndScheduleComponentValid = true;
                     currentIndex = index;
@@ -1038,16 +1115,31 @@
             }
             else if (currentIndex == 3)
             {
-                if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                 {
-                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                    return;
+                    if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
-                else
+                else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
                 {
-                    isPricingAndScheduleComponentValid = true;
-
+                    if (Model.ExperienceHasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
+               
             }
             else if (currentIndex == 4)
             {
@@ -1085,18 +1177,27 @@
     {
         var result = new List<Models.Entities.ActivitySchedule>();
 
-        bool isSingle = activitySchedules.Count == 1;
-
-        foreach (var schedule in activitySchedules)
+        if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
         {
-            if (!(string.IsNullOrEmpty(schedule.Name) ||
-                string.IsNullOrEmpty(schedule.DateTime) ||
-                schedule.Price <= 0 ||
-                string.IsNullOrEmpty(schedule.UnitPrice) ||
-                schedule.PerUnit1 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit1) ||
-                schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)))
+            bool isSingle = activitySchedules.Count == 1;
+            foreach (var schedule in activitySchedules)
+            {
+                if (!(string.IsNullOrEmpty(schedule.Name) ||
+                    string.IsNullOrEmpty(schedule.DateTime) ||
+                    schedule.Price <= 0 ||
+                    string.IsNullOrEmpty(schedule.UnitPrice) ||
+                    schedule.PerUnit1 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                    schedule.PerUnit2 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit2)))
+                {
+                    result.Add(schedule);
+                }
+            }
+        }
+        else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            foreach (var schedule in activitySchedules)
             {
                 result.Add(schedule);
             }

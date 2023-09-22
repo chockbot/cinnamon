@@ -2,6 +2,6 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 
-public class UploadActivityImageResult : AbstractModel<ActivityImagesDTO>
+public class UploadActivityImageResult : AbstractModel<bool>
 {
 }

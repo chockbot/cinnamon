@@ -38,6 +38,11 @@ public interface IDataStore
     IFavorite Favorite { get; }
     ICoupon Coupon {get; }
     IChatConnection ChatConnection {get; }
+    IActivityScheduleTime ActivityScheduleTime {get; }
+    IExperienceCreationType ExperienceCreationType {get; }
+    IOngoingActivityScheduleTime OngoingActivityScheduleTime { get; }
+    IOteSchedule OteSchedule {get;}
+    IOteSchedulePricing OteSchedulePricing {get;}
 
     Task EnsureMigrate();
 

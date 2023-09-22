@@ -1,3 +1,4 @@
+using Cinnamon.Framework.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
@@ -39,6 +40,7 @@ public class ActivityDTO
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
     public Enums.Enums.ActivityStatus Status{ get; set; }
+    public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
@@ -71,6 +73,10 @@ public class ActivityDTO
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.Enums.PriceType PriceType { get; set; }
+        public string SchedulingUrl { get; set; }
+        public IList<ActivityScheduleTimeModelDTO> ActivityScheduleTimes { get; set; } = new List<ActivityScheduleTimeModelDTO>();
     }
 
     public class ActivityImage 
@@ -118,4 +124,16 @@ public class ActivityDTO
         public bool IsOfficial { get; set; }
         public string Email { get; set; }
     }
+
+    public class ActivityScheduleTimeModelDTO
+    {
+        public int ActivityScheduleTimeId { get; set; }
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public bool IsAvailable { get; set; }
+        public bool IsEnabled { get; set; }
+    }
+
 }

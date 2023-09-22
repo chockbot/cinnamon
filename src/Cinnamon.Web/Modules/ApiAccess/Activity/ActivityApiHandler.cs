@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
@@ -262,17 +264,32 @@ public class ActivityApiHandler : IActivityApiHandler
                 .WithOAuthBearerToken(token)
                 .Request($"Activity/UploadActivityImage")
                 .PostMultipartAsync(mp => {
-                    if(args.Image1 != null)
+                    // activity images
+                    if(args.Images is not null)
                     {
-                        mp.AddFile("Image1", args.Image1.OpenReadStream(), args.Image1.FileName, args.Image1.ContentType);
+                        foreach(var image in args.Images)
+                        {
+                            if(image is not null)
+                            {
+                                mp.AddFile("Images", image.OpenReadStream(), image.FileName, image.ContentType);
+                            }
+                        }
                     }
-                    if(args.Image2 != null)
+                    // activity order position
+                    if(args.Orders is not null)
                     {
-                        mp.AddFile("Image2", args.Image2.OpenReadStream(), args.Image2.FileName, args.Image2.ContentType);
+                        foreach(var order in args.Orders)
+                        {
+                            mp.AddString("Orders", order.ToString());
+                        }
                     }
-                    if(args.Image3 != null)
+                    // delete ids
+                    if(args.DeletedIds is not null)
                     {
-                        mp.AddFile("Image3", args.Image3.OpenReadStream(), args.Image3.FileName, args.Image3.ContentType);
+                        foreach(var id in args.DeletedIds)
+                        {
+                            mp.AddString("DeletedIds", id.ToString());
+                        }
                     }
                     mp.AddString("ActivityId", args.ActivityId.ToString());
                 })
@@ -807,6 +824,138 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+        }
+    }
+
+    public async Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+               .WithOAuthBearerToken(token)
+               .Request("Activity/ExperienceCreationTypes")
+               .GetJsonAsync<GetExperienceCreationTypeResult>();
+
+            return AppResult<GetExperienceCreationTypeResult>.CreateSucceeded(result, "Successfully getting experience creation types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExperienceCreationTypeResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExperienceCreationTypeResult>.CreateFailed(ex, "An error occured when getting experience creation types api");
+        }
+    }
+
+    public async Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+               .Request("Activity/GetActivityScheduleTimes")
+               .SetQueryParams(args)
+               .GetJsonAsync<GetActivityScheduleTimesResult>();
+
+            return AppResult<GetActivityScheduleTimesResult>.CreateSucceeded(result, "Successfully getting activity schedule times api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, "An error occured when getting activity schedule times api");
+        }
+    }
+
+    public async Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOngoingActivitySchedule")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOngoingActivityScheduleResult>();
+
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateSucceeded(result, "Successfully called create ongoing activity schedule api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
+        }
+    }
+
+    public async Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteResult>();
+
+            return AppResult<CreateOteResult>.CreateSucceeded(result, "Successfully called create one time event api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOteResult>.CreateFailed(ex, "An error occured when calling create one time event api");
+        }
+    }
+
+    public async Task<AppResult<UpdateOteResult>> UpdateOte(UpdateOteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOteResult>();
+
+            return AppResult<UpdateOteResult>.CreateSucceeded(result, "Successfully called update one time event api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOteResult>.CreateFailed(ex, "An error occured when calling update one time event api");
+        }
+    }
+
+    public async Task<AppResult<OteActivityResult>> FindOteByHandler(OteActivityArgs args, string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+               .Request($"Activity/OteByHandler/{handler}")
+               .SetQueryParams(args)
+               .GetJsonAsync<OteActivityResult>();
+
+            return AppResult<OteActivityResult>.CreateSucceeded(result, "Successfully getting ote activity by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, "An error occured when getting ote activity by handler api");
         }
     }
 }

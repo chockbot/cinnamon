@@ -1,6 +1,8 @@
 ﻿using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using Cinnamon.Framework.Enums;
+using static Cinnamon.Framework.Enums.Enums;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
@@ -28,7 +30,7 @@ public interface IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
         string city,string subdivision, string region, string barangay,string postalcode, string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements,
         string activityLevel, string skillLevel, int minimumAge, bool canAdultsJoin, string? searchtag1, string? searhtag2,
-        string? searchtag3, string? searchtag4, string? searchtag5, int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status);
+        string? searchtag3, string? searchtag4, string? searchtag5, int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status, Enums.ExperienceCreationType experienceCreationType);
     Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId, int? experienceTypeId, string? title, string? description, string? price,
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district,
         string? city, string? subdivision, string? region, string? barangay, string? postalcode, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements,
@@ -44,4 +46,16 @@ public interface IActivityRepository
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count);
     Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip);
+    Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
+        string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
+        string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int experienceCreationTypeId);
+
+    Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
+        string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
+        string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int categoryId);
+
+    Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
 }
