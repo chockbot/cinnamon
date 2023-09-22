@@ -315,10 +315,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 activityResult.Price = activity.Price;
                 activityResult.IsPublished = activity.IsPublished;
                 activityResult.ExperienceCategoryId = activity.ExperienceCategoryId;
-                activityResult.SubCategoryId = activity.SubCategoryId;
                 activityResult.Handler = activity.Handler;
-                activityResult.IsDeactivated = activity.IsDeactivated;
-                activityResult.Status = activity.Status;
 
                 activityResult.ActivityDescription.Description = description.Description;
 
