@@ -697,6 +697,7 @@ public class ActivityController : ControllerBase
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,

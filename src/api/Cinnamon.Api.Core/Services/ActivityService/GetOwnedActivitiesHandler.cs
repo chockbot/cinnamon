@@ -85,6 +85,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Id = a.Id,
                         IsPublished = a.IsPublished,
                         MinimumAge = a.MinimumAge,
