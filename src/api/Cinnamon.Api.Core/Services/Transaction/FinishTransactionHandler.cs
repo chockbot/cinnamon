@@ -127,7 +127,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 Amount = purchaseOrder.Total,
                 CoachName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
                 CoachNumber = activity.Owner.PhoneNumber,
-                CustomerName = $"{customer.FirstName} {customer.LastName}",
+                CustomerName = $"{customer.FirstName}",
                 Email = customer.Email,
                 ExperienceName = activity.Title,
                 PayerName = $"{customer.FirstName} {customer.LastName}",
@@ -156,7 +156,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 Amount = purchaseOrder.Total,
                 Email = $"{activity.Owner?.Email}",
                 ExperienceName = activity.Title,
-                MakerName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
+                MakerName = $"{activity.Owner?.FirstName}",
                 PayerName = $"{customer.FirstName} {customer.LastName}",
                 PurchaseDate = DateTime.Now,
                 Students = deserializedPayload.Students.Select(s => {
