@@ -10,6 +10,7 @@ public class GetOwnedActivitiesResult
         public int Id {get; set;}
         public int ExperienceTypeId {get; set;}
         public int ExperienceCategoryId {get; set;}
+        public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
         public int SubCategoryId {get; set;}
         public string Title {get; set;}
         public string Description {get; set;}
