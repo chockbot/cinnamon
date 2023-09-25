@@ -41,10 +41,12 @@
                             @if(!isShowImportantMessage)
                             {
                                 <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                                <p class="select-text">Choose student/s who will attend this activity. You can choose multiple student for this transaction or  you can add students if attendee is not yet listed below.</p>
                             }
                             else 
                             {
                                 <h5 class="fw-bold text-danger" style="font-size:1.125rem;">Select who will attend*</h5>
+                                <p class="select-text">Choose student/s who will attend this activity. You can choose multiple student for this transaction or  you can add students if attendee is not yet listed below.</p>
                             }
                             <Div class="details" Display="Display.Flex" Flex="Flex.Wrap">
                                 @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
