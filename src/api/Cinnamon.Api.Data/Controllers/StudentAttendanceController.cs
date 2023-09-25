@@ -359,4 +359,25 @@ public class StudentAttendanceController : ControllerBase
             return new JsonResult(new GetStudentLastAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("GetStudentAttendanceByFamilyId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentAttendanceByFamilyIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentAttendanceByFamilyId([FromQuery] GetStudentAttendanceByFamilyIdArgs args)
+    {
+        try
+        {
+            var result = await studentAttendanceRepository.GetAttendanceByFamilyId(args.familyId);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentAttendanceByFamilyIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetStudentAttendanceByFamilyIdResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentAttendanceByFamilyIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

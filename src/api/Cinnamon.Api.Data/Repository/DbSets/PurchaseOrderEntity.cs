@@ -3,6 +3,7 @@ using System.Data.Entity.Core.EntityClient;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -178,6 +179,77 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
         catch (Exception ex)
         {
             return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting inclusive transactions");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrder>>> GetGrossSalesByProvider(int? Id, DateTime? dateFrom)
+    {
+        try
+        {
+            string queryFilters = string.Empty;
+
+            if (Id.HasValue)
+            {
+                queryFilters += "AND b.\"CreatedBy\"= @Id";
+            }
+
+            if (dateFrom.HasValue )
+            {
+                queryFilters += " AND a.\"CreatedOn\" between @dateFrom and CURRENT_DATE";
+            }
+
+            string query = "SELECT a.\"Id\", a.\"ActivityId\", a.\"ScheduleId\", a.\"CustomerId\", a.\"Total\", a.\"CreatedOn\", a.\"CreatedBy\",a.\"Status\", \r\na.\"Payload\",a.\"UnitCount\", a.\"UnitPrice\", b.\"CreatedBy\",b.\"Title\",b.\"Description\"\r\n" +
+                "FROM public.\"PurchaseOrders\" as a \r\nLEFT JOIN public.\"Activities\" as b ON b.\"Id\" = a.\"ActivityId\"\r\nWHERE (a.\"Status\" = 1 OR a.\"Status\" = 5) " + queryFilters;
+
+            IList<PurchaseOrder> listResult = new List<PurchaseOrder>();
+
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = System.Data.CommandType.Text;
+
+                if (dateFrom.HasValue)
+                {
+                    var parameterDateFrom = new NpgsqlParameter("dateFrom", dateFrom);
+                    command.Parameters.Add(parameterDateFrom);
+                }
+                if (Id.HasValue)
+                {
+                    var parameterStatus = new NpgsqlParameter("Id", Id);
+                    command.Parameters.Add(parameterStatus);
+                }
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new PurchaseOrder
+                        {
+                           Id = Convert.ToInt32(item["Id"]),
+                           ActivityId = Convert.ToInt32(item["ActivityId"]),
+                           ScheduleId = Convert.ToInt32(item["ScheduleId"]),
+                           CustomerId = Convert.ToInt32(item["CustomerId"]),
+                           Total = Convert.ToDecimal(item["Total"]),
+                           CreatedOn = Convert.ToDateTime(item["CreatedOn"]),
+                           Status = Convert.ToInt32(item["Status"]),
+                           Payload = item["Payload"].ToString() ?? string.Empty,
+                           UnitCount = Convert.ToInt32(item["UnitCount"]),
+                           UnitPrice = Convert.ToDecimal(item["UnitPrice"])
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<PurchaseOrder>>.CreateSucceeded(listResult, "Successfully get gross sales by date range");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrder>>.CreateFailed(ex, "An error occured when trying to gross sales by date range");
         }
     }
 }

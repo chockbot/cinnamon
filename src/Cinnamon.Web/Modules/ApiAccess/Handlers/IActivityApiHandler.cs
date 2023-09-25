@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
@@ -43,5 +45,8 @@ public interface IActivityApiHandler
     Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token);
     Task<AppResult<UpdateCouponResult>> UpdateCoupon(UpdateCouponArgs args, string token);
     Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(string token);
+    Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token);
+    Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args);
+    Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token);
     Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args);
 }

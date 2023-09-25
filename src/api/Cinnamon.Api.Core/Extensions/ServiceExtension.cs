@@ -55,7 +55,8 @@ public static class ServiceExtenstion
 
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
-         
+        services.AddTransient<Modules.DataAccess.Handlers.IExperienceCreationTypeData, Modules.DataAccess.ExperienceCreationType.ExperienceCreationTypeData>();
+
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
 
@@ -146,6 +147,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.ICreateFavoriteHandler, Services.ActivityService.CreateFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRemoveFavoriteHandler, Services.ActivityService.RemoveFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetFavoritesByCustomerHandler, Services.ActivityService.GetFavoritesByCustomerHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCreationTypeHandler, Services.ActivityService.GetExperienceCreationTypeHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetActivityScheduleTimesHandler, Services.ActivityService.GetActivityScheduleTimesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ICreateOngoingActivityScheduleHandler, Services.ActivityService.CreateOngoingActivityScheduleHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IPopularActivitiesHandler, Services.ActivityService.PopularActivitiesHandler>();
 
         // transaction services
@@ -153,6 +157,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IRequestPaymentHandler, Services.TransactionService.RequestPaymentHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IFinishTransactionHandler, Services.TransactionService.FinishTransactionHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IGetGrossSalesByProviderHandler, Services.TransactionService.GetGrossSalesByProviderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IGetPayoutsByProviderHandler, Services.TransactionService.GetPayoutsByProviderHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -180,7 +186,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByCustomerIdHandler, Services.OnGoingActivityService.GetReviewsByCustomerIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByActivityIdHandler, Services.OnGoingActivityService.GetReviewsByActivityIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetStudentLastAttendanceHandler, Services.OnGoingActivityService.GetStudentLastAttendanceHandler>();
-
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetEnrolleeMasterListHandler, Services.OnGoingActivityService.GetEnrolleeMasterListHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAttendanceByFamilyIdHandler, Services.OnGoingActivityService.GetAttendanceByFamilyIdHandler>();
+        
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
         services.AddTransient<Services.SystemService.Handlers.IGenerateSitemapHandler, Services.SystemService.GenerateSitemapHandler>();

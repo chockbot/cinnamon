@@ -3,5 +3,5 @@ import excelWriter from "./excelWriter.js";
 
 export default {
   cookieManager,
-  excelWriter,
+    excelWriter,
 };

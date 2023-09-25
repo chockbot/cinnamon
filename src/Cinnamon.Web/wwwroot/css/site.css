@@ -1688,6 +1688,17 @@ input::-ms-clear {
   }
 }
 
+/* onboarding page styling */
+.onboarding-wrapper .hide-desktop {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .onboarding-wrapper .hide-desktop {
+    display: initial;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -1835,12 +1846,8 @@ input::-ms-clear {
   background-color: #fff;
 }
 
-.bg-orange-100 {
-  background-color: #ffa942;
-}
-
-.color-grey-400 {
-  color: #8896ab;
+.bg-white-200 {
+  background-color: #f3f6fc;
 }
 
 .min-width-130 {
@@ -1895,6 +1902,10 @@ input::-ms-clear {
   border-radius: 40px;
 }
 
+.border-radius-40 {
+  border-radius: 40px;
+}
+
 .border-0-solid {
   border-width: 0;
 }
@@ -1902,6 +1913,11 @@ input::-ms-clear {
 .border-1-solid {
   border-width: 1px;
   border-style: solid;
+}
+
+.border-1-dashed {
+  border-width: 1px;
+  border-style: dashed;
 }
 
 .border-bottom-1-solid {
@@ -1924,15 +1940,6 @@ input::-ms-clear {
   border-right-style: solid;
 }
 
-.border-right-1-solid {
-  border-right-width: 1px;
-  border-right-style: solid;
-}
-
-.border-color-black-100 {
-  border-color: #343d4c;
-}
-
 .border-color-grey-100 {
   border-color: #717171;
 }
@@ -1941,12 +1948,12 @@ input::-ms-clear {
   border-color: #d9d9d9 !important;
 }
 
-.border-color-black-100 {
-  border-color: #343d4c;
-}
-
 .border-color-grey-300 {
   border-color: #d5dae1 !important;
+}
+
+.border-color-black-100 {
+  border-color: #343d4c;
 }
 
 .cursor-pointer {
@@ -1963,6 +1970,20 @@ input::-ms-clear {
 
 .hover-color-grey-100:hover {
   color: #717171;
+}
+
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.left-0 {
+  left: 0;
+}
+
+.right-0 {
+  right: 0;
 }
 
 .width-70-p {
@@ -2003,20 +2024,6 @@ input::-ms-clear {
 
 .z-index-20 {
   z-index: 20;
-}
-
-.prevent-select {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
-.left-0 {
-  left: 0;
-}
-
-.right-0 {
-  right: 0;
 }
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
@@ -2158,4 +2165,17 @@ input::-ms-clear {
     margin-top: 0px;
     margin-top: 1rem;
   }
+}
+
+/* image cropper styles */
+.image-cropper-wrapper .cropper-container {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* activity image gallery styles */
+.activity-gallery-wrapper .image-grid div:nth-child(2) img {
+  height: 100%;
+  object-position: center;
+  object-fit: fill;
 }

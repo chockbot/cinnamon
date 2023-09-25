@@ -16,6 +16,11 @@ public class Students
     public DateTime ExpirationDateStart { get; set; }
     public DateTime ExpirationDateEnd { get;set; }
     public bool HasReview { get; set; }
+    public string ActivityName { get; set; }
+    public int Age { get; set; }
+    public string Gender { get; set; }
+    public string Email { get; set; }
+    public int FamilyMemberId { get; set; }
     public StudentAttendance studentAttendance { get; set; }
     public ActivitySchedule activitySchedule { get; set; }
 }

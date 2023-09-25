@@ -1,0 +1,119 @@
+@page "/Explore/{Identifier}/gallery"
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager NavigationManager;
+@inject IActivityApiHandler activityApiHandler;
+
+@if(seoData is not null)
+{
+    <PageTitle>@($"Cinnamon Activity - {seoData.Title} | CinnamonPH")</PageTitle>
+    <SeoMeta Title="@seoData.Title" Description="@seoData.Description" Image="@seoData.ImageSrc" Url="@seoData.Url" />
+}
+
+<Container class="mt-5 mb-5 activity-gallery-wrapper">
+    <div>
+        <img @onclick="OnBackClick" class="cursor-pointer" src="images/back-icon.png" alt="back-icon">
+    </div>
+    <Row VerticalGutter="10" HorizontalGutter="10" class="mt-3 image-grid">
+        @foreach(var image in activityImages)
+        {
+            <Column @key="image" ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                <Image class="w-100 cursor-pointer" @onclick="() => PreviewImage(image)" Source="@image.ImageSrc" Text="@image.ImageName" />
+            </Column>
+        }
+    </Row>
+</Container>
+
+@if(isShowPreviewImage)
+{
+    <div class="gallery-image-viewer">
+        <div class="preview-tools">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <img class="cursor-pointer close-preview" @onclick="() => isShowPreviewImage = false" src="images/close-icon.png" alt="close-icon">
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <span class="color-white-100 count-preview">
+                        @selectedImageIndex/@activityImages.Count
+                    </span>
+                </Column>
+            </Row>
+        </div>
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <img class="image-preview" src="@selectedImageSrc" alt="image">
+        </div>
+    </div>
+}
+
+@code 
+{
+    [Parameter]
+    public string? Identifier { get; set; }
+
+    private IList<ActivityImage> activityImages = new List<ActivityImage>();
+    private SeoData? seoData;
+    private string selectedImageSrc = string.Empty;
+    private int selectedImageIndex = 0;
+    private bool isShowPreviewImage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
+        var activityData = isIdentifierInt ? 
+        await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeActivityImages = true
+        }) : 
+        await activityApiHandler.GetActivityByHandler(Identifier?.Trim() ?? string.Empty, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeActivityImages = true
+        });
+        if(activityData.Succeeded && activityData.Result is not null && activityData.Result.IsSuccess)
+        {
+            var activity = activityData.Result.Result;
+            var orderedImages = activity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id);
+            foreach(var image in orderedImages)
+            {
+                activityImages.Add(new ActivityImage {
+                    ImageName = image.Name,
+                    ImageSrc = image.ImageSrc
+                });
+            }
+            seoData = new SeoData {
+                Description = activity.Description,
+                Title = activity.Title,
+                Url = $"/explore/{Identifier}/gallery",
+                ImageSrc = activityImages.FirstOrDefault()?.ImageSrc ?? string.Empty
+            };
+        }
+        else {
+            NavigationManager.NavigateTo($"/explore/{Identifier}");
+        }
+    }
+
+    private Task OnBackClick()
+    {
+        NavigationManager.NavigateTo($"/explore/{Identifier}");
+        return Task.CompletedTask;
+    }
+
+    private Task PreviewImage(ActivityImage image)
+    {
+        selectedImageSrc = image.ImageSrc;
+        selectedImageIndex = activityImages.IndexOf(image) + 1;
+        isShowPreviewImage = true;
+        return Task.CompletedTask;
+    }
+
+    private class ActivityImage
+    {
+        public string ImageSrc {get; set;} = string.Empty;
+        public string ImageName {get; set;} = string.Empty;
+    }
+
+    private class SeoData 
+    {
+        public string Title {get; set;} = string.Empty;
+        public string Description {get; set;} = string.Empty;
+        public string ImageSrc {get; set;} = string.Empty;
+        public string Url {get; set;} = string.Empty;
+    }
+}
