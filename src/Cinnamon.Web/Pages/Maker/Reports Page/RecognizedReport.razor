@@ -1,0 +1,203 @@
+﻿@page "/maker/dashboard/recognized-report"
+@layout DashboardLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+@using System.Globalization;
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
+@inject IChatApiHandler chatApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject ITransactionApiHandler transactionApiHandler
+
+<div class="container">
+    <div class="header">
+        <button class="back-button" @onclick="@(() => NavigateToManageReports())"><img src="images/dashboard-back.png"></button>
+        <p class="back-text">Reports</p>
+    </div>
+    <div class="page-title">
+        <div class="sub-header">
+            <h3 class="text-capitalize fw-bold header-title col-lg-6 col-md-6 col-sm-12 col-12 d-flex justify-content-start">Recognized Sales Report</h3>
+            <div class="mobile-text col-sm-12">
+                Track the actual recognized sales that has been transferred to your account. This will help you see how long it takes you to complete a session and how much each completion affects you.
+            </div>
+            <div class="btn-group col-lg-6 col-md-6 col-sm-12 col-12 d-flex">
+                <button class="btn-today" @onclick="@(() => UpdateChatDataset("today"))">Today</button>
+                <button @onclick="@(() => UpdateChatDataset("1week"))">1w</button>
+                <button @onclick="@(() => UpdateChatDataset("2weeks"))">2w</button>
+                <button @onclick="@(() => UpdateChatDataset("3weeks"))">3w</button>
+                <button @onclick="@(() => UpdateChatDataset("1month"))">1m</button>
+                <button @onclick="@(() => UpdateChatDataset("2months"))">2m</button>
+                <button class="btn-months" @onclick="@(() => UpdateChatDataset("3months"))">3m</button>
+            </div>
+        </div>
+        <h6 class="engagement-text">Track the actual recognized sales that has been transferred to your account. This will help you see how long it takes you to complete a session and how much each completion affects you.</h6>
+    </div>
+    <LineChart @ref="lineChart" TItem="Payouts" Options="@lineChartOptions"/>
+    <div class="gross-legend-1 col-12 d-flex justify-content-start">
+        <div class="legend-1 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
+            <img class="img-legend-2" src="images/Reports/gross-legend-1.png" />
+            <p>A. Amount in PHP</p>
+        </div>
+        <div class="legend-2 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
+            <img class="img-legend-2" src="images/Reports/gross-legend-2.png" />
+            <p>B. Date period</p>
+        </div>
+    </div>
+</div>
+@code {
+    private LineChart<Payouts> lineChart;
+    private List<Payouts> payoutData = new List<Payouts>();
+    private string backgroundColors = ChartColor.FromRgba(255, 255, 255, 0.2f);
+    private string borderColors = ChartColor.FromRgba(255, 169, 66, 1);
+    private string pointBorderColor = ChartColor.FromRgba(75, 183, 73, 1);
+    private string pointHoverBorderColor = ChartColor.FromRgba(52, 61, 76, 1);
+    private CustomerProfile profile = new CustomerProfile();
+    private string Token = string.Empty;
+    LineChartOptions lineChartOptions = new()
+        {
+            Parsing = new ChartParsing
+            {
+                XAxisKey = "sector1",
+                YAxisKey = "count",
+            },
+        };
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token = user.FindFirstValue("Token");
+            if (user != null && user.Identity.IsAuthenticated)
+            {
+                var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    var args = result.Result.Result;
+                    profile = new CustomerProfile
+                        {
+                            Id = args.Id,
+                            IsMaker = args.IsMaker,
+                            IsVerified = args.IsVerified,
+                            Birthdate = args.Birthdate,
+                            Email = args.Email,
+                            FirstName = args.FirstName,
+                            LastName = args.LastName
+                        };
+                    //Plot 1 month of Gross Sale
+                    await PlotLineChartData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/explore");
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.Message.ToString();
+        }
+    }
+    private async Task UpdateChatDataset(string dateRange)
+    {
+        DateTime startDate;
+        switch (dateRange)
+        {
+            case "today":
+                startDate = DateTime.Today;
+                break;
+            case "1week":
+                startDate = DateTime.Today.AddDays(-7);
+                break;
+            case "2weeks":
+                startDate = DateTime.Today.AddDays(-14);
+                break;
+            case "3weeks":
+                startDate = DateTime.Today.AddDays(-21);
+                break;
+            case "1month":
+                startDate = DateTime.Today.AddMonths(-1);
+                break;
+            case "2months":
+                startDate = DateTime.Today.AddMonths(-2);
+                break;
+            case "3months":
+                startDate = DateTime.Today.AddMonths(-3);
+                break;
+            default:
+                startDate = DateTime.Today.AddMonths(-1);
+                break;
+        }
+        // Ploy Chat Dynamically
+        await PlotLineChartData(startDate.ToString("yyyyMMddHHmmss"));
+
+    }
+    private async Task PlotLineChartData(string startDate)
+    {
+        //Get payouts by Activity Provider
+        var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
+            {
+                Id = profile.Id,
+                DateFrom = startDate
+            }, Token);
+        if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
+        {
+            payoutData = payout.Result.Result.OrderBy(a => a.PayoutDate).Select(e =>
+            {
+                return new Payouts
+                {
+                   Sector = e.PayoutDate.Date,
+                   Count  = e.Amount
+                };
+            }).ToList();
+        }
+        // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
+        payoutData = payoutData
+            .GroupBy(item => item.Sector)
+            .Select(group => new Payouts
+                {
+                    Sector = group.Key,
+                    Count = group.Sum(item => item.Count)
+                })
+            .ToList();
+        await lineChart.Clear();
+        await lineChart.AddDataSet(GetLineChartDataset(payoutData));
+    }
+    private LineChartDataset<Payouts> GetLineChartDataset(List<Payouts> dataset)
+    {
+        return new()
+            {
+                Label = "Recognized Report",
+                Data = dataset,
+                BackgroundColor = backgroundColors, // line chart can only have one color
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 5,
+                BorderWidth = 1,
+                PointBorderColor = backgroundColors,
+                PointBackgroundColor = pointBorderColor,
+                PointHoverBackgroundColor = pointHoverBorderColor,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+    public class Payouts
+    {
+        public DateTime Sector { get; set; }
+
+        public decimal Count { get; set; }
+
+        public string Sector1 { get { return Sector.ToString("MM/dd/yy"); } }
+
+    }
+    private void NavigateToManageReports()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/reports");
+    }
+}

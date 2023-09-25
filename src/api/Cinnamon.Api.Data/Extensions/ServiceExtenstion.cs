@@ -36,6 +36,7 @@ public static class ServiceExtenstion
         services.AddTransient<IReviews, ReviewsEntity>();
         services.AddTransient<IFavorite, FavoriteEntity>();
         services.AddTransient<IChatConnection, ChatConnectionEntity>();
+        services.AddTransient<IExperienceCreationType, ExperienceCreationTypeEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -71,6 +72,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.ICouponRepository, Services.Repository.Coupon.CouponRespository>();
         services.AddTransient<Services.Repository.Interfaces.IFavoriteRepository, Services.Repository.Favorite.FavoriteRepository>();
         services.AddTransient<Services.Repository.Interfaces.IChatConnectionRepository, Services.Repository.ChatConnection.ChatConnectionRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IExperienceCreationTypeRepository, Services.Repository.ExperienceCreationType.ExperienceCreationTypeRepository>();
 
         return services;
     }

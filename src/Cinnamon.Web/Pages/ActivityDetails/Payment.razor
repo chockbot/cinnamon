@@ -41,17 +41,19 @@
                             @if(!isShowImportantMessage)
                             {
                                 <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                                <p class="select-text">Choose student/s who will attend this activity. You can choose multiple student for this transaction or  you can add students if attendee is not yet listed below.</p>
                             }
                             else 
                             {
                                 <h5 class="fw-bold text-danger" style="font-size:1.125rem;">Select who will attend*</h5>
+                                <p class="select-text">Choose student/s who will attend this activity. You can choose multiple student for this transaction or  you can add students if attendee is not yet listed below.</p>
                             }
                             <Div class="details" Display="Display.Flex" Flex="Flex.Wrap">
                                 @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                 {
                                     <div class="card text-center px-3 py-2 m-1 d-flex flex-row align-items-center text-nowrap prevent-select cursor-pointer" 
                                         style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                        <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> 
+                                        <Check TValue="bool" id="@item.Id" Checked="item.IsSelected" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> 
                                         <label class="font-16" for="@item.Id">@item.Name</label>
                                     </div>
                                 }
@@ -188,8 +190,14 @@
                                     <div class="card-label d-flex align-items-center">
                                         @if (SelectedPaymentCode != "CARD")
                                         {
-                                            <img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">
-                                            <span class="font-16">Credit or Debit Card</span>
+                                            <div class="d-flex">
+                                                <img class="me-2 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
+                                                <img class="h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                                            </div>
+                                            <div class="d-flex flex-column ps-3">
+                                                @*<img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">*@
+                                                <span class="font-16">Credit or Debit Card</span>
+                                            </div>
                                         }
                                         else
                                         {
@@ -210,11 +218,11 @@
                                         }
                                     </div>
                                     <div class="card-icon d-flex align-items-center">
-                                        @if (SelectedPaymentCode != "CARD")
+                                        @*@if (SelectedPaymentCode != "CARD")
                                         {
                                             <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
                                             <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
-                                        }
+                                        }*@
                                         <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.svg" alt="icon">
                                     </div>
                                 </div>
@@ -460,7 +468,7 @@
                     </Button>
                     <div class="d-flex align-items-center">
                         <div class="prevent-select text-end" style="width: 160px;">
-                            <span class="font-20 font-weight-700 color-black-100">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
+                            <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
                         </div>
                     </div>
                 </div>
@@ -1501,12 +1509,6 @@
         }
     }
 
-    private Task NavigateBack()
-    {
-        NavigationManager.NavigateTo($"/explore/{Model.Activity.ActivityId}");
-        return Task.CompletedTask;
-    }
-
     private async Task PopulateEnrollee()
     {
         if (enrolleeCount <= 0) return;
@@ -1546,6 +1548,12 @@
             StateHasChanged();
             return;
         }
+    }
+
+    private Task NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/explore/{Model.Activity.ActivityId}");
+        return Task.CompletedTask;
     }
 
     class PaymentOption

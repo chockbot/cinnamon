@@ -265,7 +265,51 @@ public class OnGoingActivityApiHandler : IOngoingActivitiesHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetStudentLastAtendanceResult>.CreateFailed(ex, "An error occured when getting reviews by activity id api");
+            return AppResult<GetStudentLastAtendanceResult>.CreateFailed(ex, "An error occurred when getting reviews by activity id api");
+        }
+    }
+
+    public async Task<AppResult<GetEnrolleeMasterListResult>> GetEnrolleeMasterList(GetEnrolleeMasterListArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetEnrolleeMasterList")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEnrolleeMasterListResult>();
+
+            return AppResult<GetEnrolleeMasterListResult>.CreateSucceeded(result, "Successfully getting enrollee master list by provider id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, "An error occurred when getting enrollee master list by provider id api");
+        }
+    }
+
+    public async Task<AppResult<GetStudentAttendanceByFamilyIdResult>> GetStudentAttendanceByFamilyId(GetStudentAttendanceByFamilyIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetStudentAttendanceByFamilyId")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetStudentAttendanceByFamilyIdResult>();
+
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetStudentAttendanceByFamilyIdResult>.CreateFailed(ex, "An error occurred when getting student attendance api");
         }
     }
 }

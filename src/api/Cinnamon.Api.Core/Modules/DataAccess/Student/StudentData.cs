@@ -213,35 +213,56 @@ public class StudentData: IStudentData
 							.SetQueryParams(args)
 							.GetJsonAsync<GetAllStudentsByIdResult>();
 
-            return AppResult<GetAllStudentsByIdResult>.CreateSucceeded(result, "Successfully getting get all student attendance by id api");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, "An error occured when getting all student attendance by id api");
-        }
-    }
+			return AppResult<GetAllStudentsByIdResult>.CreateSucceeded(result, "Successfully getting get all student attendance by id api");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, "An error occured when getting all student attendance by id api");
+		}
+	}
 
-    public async Task<AppResult<GetExpiringStudentsResult>> GetExpiringStudents()
-    {
-        try
-        {
-            var result = await flurlClient
-                            .Request("Student/GetExpiringStudents")
-                            .GetJsonAsync<GetExpiringStudentsResult>();
+	public async Task<AppResult<GetExpiringStudentsResult>> GetExpiringStudents()
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Student/GetExpiringStudents")
+							.GetJsonAsync<GetExpiringStudentsResult>();
 
-            return AppResult<GetExpiringStudentsResult>.CreateSucceeded(result, "Successfully getting get all expiring students");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, "An error occured when getting all expiring students");
-        }
-    }
+			return AppResult<GetExpiringStudentsResult>.CreateSucceeded(result, "Successfully getting get all expiring students");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, "An error occurred when getting all expiring students");
+		}
+	}
+
+	public async Task<AppResult<GetEnrolleeMasterListResult>> GetEnrolleeMasters(GetEnrolleeMasterListArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Student/GetEnrolleeMasterList")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetEnrolleeMasterListResult>();
+
+			return AppResult<GetEnrolleeMasterListResult>.CreateSucceeded(result, "Successfully getting get enrollee master list by provider id api");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, "An error occurred when getting enrollee master list by provider id api");
+		}
+	}
 }

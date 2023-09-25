@@ -1,0 +1,731 @@
+﻿::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.enrollee-masterlist {
+    overflow-x: scroll;
+}
+
+::deep .page-item {
+    margin-left: 5px;
+}
+
+    ::deep .page-item:first-child .page-link {
+        border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
+    }
+
+    ::deep .page-item:last-child .page-link {
+        border-top-right-radius: 50px;
+        border-bottom-right-radius: 50px;
+    }
+
+::deep .page-link {
+    background-color: #ffffff;
+    color: #343D4C;
+    border: 1px solid #F1F1F1;
+    border-radius: 50px;
+    font-size: 13px;
+    font-family: 'Nunito';
+}
+
+    ::deep .page-link:hover {
+        background-color: var(--primary);
+        color: #FFFFFF;
+    }
+
+::deep .page-item.active .page-link {
+    background-color: var(--primary);
+    border: 1px solid #F1F1F1;
+}
+
+.header {
+    display: flex;
+    font-family: 'Nunito';
+    align-items: center;
+    margin-top: 10px;
+}
+
+.header-masterlist {
+    display: flex;
+    padding: 0;
+}
+.master-list {
+    display: flex;
+}
+
+.page-title {
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+
+.export-file .back-report {
+    font-family: Nunito;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.header-title {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 700;
+    color: #343D4C;
+}
+
+.masterlist-text {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    margin-top: 1rem;
+}
+
+.back-button {
+    border: none;
+    background-color: transparent;
+}
+
+.btn-export {
+    background-color: transparent;
+    color: #979797;
+    border-radius: 5px;
+    border: 1px solid #D8D8D8;
+    padding: 5px;
+    margin-right: 1rem;
+    height: 2.5rem;
+}
+
+.header-masterlist .back-text {
+    font-family: Nunito;
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    text-transform: uppercase;
+    color: #343D4C;
+}
+
+.enrollees-section {
+    margin-top: 1rem;
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-bottom: 50px;
+}
+/*TABLE COMPONENTS CSS*/
+::deep th {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    background-color: #343D4C;
+    color: #FFFFFF;
+    height: 60px;
+    padding: 10px 20px 10px 20px;
+    text-align: center;
+}
+
+::deep tr {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #343D4C;
+    height: 80px;
+    vertical-align: middle;
+}
+
+::deep td {
+    padding: 10px 20px 10px 20px;
+}
+
+::deep table {
+    border-collapse: separate;
+    border-spacing: 0;
+    outline: 1px solid #000000;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+::deep tr:last-child td:first-child {
+    border-bottom-left-radius: 0px;
+}
+
+::deep tr:last-child td:last-child {
+    border-bottom-right-radius: 0px;
+}
+
+::deep .search-box {
+    width: 250px;
+    height: 40px;
+    background-color: #F3F6FC;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Nunito';
+    border-style: none;
+}
+/*HEADER*/
+.header {
+    display: flex;
+    font-family: 'Nunito';
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.header-title {
+    margin: 0;
+    padding-left: 5px;
+}
+
+/*.back-button {
+    height: 50px;
+    width: 50px;
+}*/
+
+/* .back-button img {
+        height: 50px;
+        width: 50px;
+    }*/
+
+.student-details-container {
+    background-color: #343D4C;
+    border-radius: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.student-details {
+    background-color: #343D4C;
+    color: #FFFFFF;
+    font-family: 'Nunito';
+    font-weight: 700;
+    font-size: 24px;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.student-details-major {
+    display: flex;
+    flex-direction: column;
+    /*justify-content: space-between;*/
+}
+
+
+.student-details p {
+    margin: 0px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    color: #D9D9D9;
+}
+
+.student-details span {
+    font-family: 'Nunito';
+    font-weight: 700;
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+.text-remarks {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+}
+
+.days-present {
+    color: #4BB749 !important;
+}
+
+/*INSTRUCTION*/
+.instruction {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.instruction-image {
+    margin-right: 5px;
+}
+
+.instruction p {
+    margin: 0px;
+}
+
+.word {
+    font-family: 'Nunito';
+    font-weight: 400;
+    font-size: 16px;
+    color: #343D4C;
+}
+
+    .word::before {
+        color: #4BB749;
+        content: "GREEN CIRCLE ";
+    }
+
+/*CALENDAR*/
+.calendar {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 20px #D9D9D9;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    padding-top: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 20px !important;
+}
+
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 40px;
+    padding-right: 40px
+}
+
+.calendar-header-details {
+    color: #343D4C;
+    font-family: 'Nunito';
+    font-weight: 700;
+    font-size: 36px;
+    margin: 0px;
+}
+
+.arrow-right, .arrow-left {
+    height: 60px;
+    width: 60px;
+}
+
+    .arrow-right img, .arrow-left img {
+        height: 60px;
+        width: 60px;
+    }
+
+
+
+.arrow-right, .arrow-left {
+    outline: none;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    background-color: #FFFFFF;
+    border-radius: 50px;
+}
+
+
+    .arrow-right:hover img {
+        filter: brightness(0) invert(1);
+    }
+
+    .arrow-right:hover {
+        background: var(--primary);
+    }
+
+    .arrow-left:hover img {
+        filter: brightness(0) invert(1);
+    }
+
+    .arrow-left:hover {
+        background: var(--primary);
+    }
+
+/*.back-button:hover img {
+        filter: brightness(0) invert(1);
+    }
+
+    .back-button:hover {
+        background: var(--primary);
+    }*/
+
+
+hr {
+    color: #FFFFFF;
+}
+
+
+.calendar-days {
+    align-items: center;
+    color: var(--primary);
+    font-family: 'Nunito';
+    font-weight: 500;
+    font-size: 24px;
+    text-align: center;
+    height: 50px !important;
+}
+
+
+.calendar section {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-family: 'Nunito';
+    font-weight: 500;
+    font-size: 24px;
+}
+
+    .calendar section > div {
+        text-align: center;
+        padding: 10px;
+        color: #343D4C;
+        height: 80px;
+    }
+
+
+.calendar-dates {
+    margin: 0px;
+    position: relative;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    border-radius: 50px;
+}
+
+.btn-date {
+    border: none;
+    background-color: #4BB749;
+    color: white;
+    font-size: 24px;
+    font-family: 'Nunito';
+    font-weight: 500;
+    transform: translate(-65%, -65%);
+    width: 36px;
+    border-radius: 50px;
+    margin-left: 50px;
+    margin-top: 35px;
+}
+
+.btn-date-absent {
+    border: none;
+    background-color: white;
+    color: #343D4C;
+    font-size: 24px;
+    font-family: 'Nunito';
+    font-weight: 500;
+    transform: translate(-65%, -65%);
+    width: 36px;
+    border-radius: 50px;
+    margin-left: 50px;
+    margin-top: 35px;
+}
+
+.row {
+    margin-bottom: 5px;
+}
+
+.secondary-caption {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #717171;
+    margin: 0px !important;
+}
+
+.spinner-4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid #0000;
+    border-right-color: #ffa50097;
+    animation: s4 1s infinite linear;
+}
+
+    .spinner-4:before,
+    .spinner-4:after {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: inherit;
+        animation: inherit;
+        animation-duration: 2s;
+    }
+
+    .spinner-4:after {
+        animation-duration: 2s;
+    }
+
+@keyframes s4 {
+    100% {
+        transform: rotate(1turn)
+    }
+}
+
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    ::deep .search-box{
+        width: 100%;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .student-details-major {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .student-details {
+        background-color: #343D4C;
+        color: #FFFFFF;
+        font-family: 'Nunito';
+        font-weight: 700;
+        font-size: 24px;
+        border-radius: 10px;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        padding: 20px;
+        width: 100%;
+    }
+
+    .modal-title {
+        font-family: "Nunito";
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .calendar {
+        background: #FFFFFF;
+        box-shadow: 0px 4px 20px #D9D9D9;
+        border-radius: 10px;
+        margin-top: 10px;
+        margin-left: 40px;
+        margin-right: 40px;
+        margin-bottom: 40px;
+        padding-top: 40px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 20px !important;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .calendar-days {
+        align-items: center;
+        color: var(--primary);
+        font-family: 'Nunito';
+        font-weight: 500;
+        font-size: 20px;
+        text-align: center;
+        height: 50px !important;
+    }
+
+    .calendar-dates {
+        margin: 0px;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        border-radius: 50px;
+    }
+
+    ::deep .search-box {
+        width: 180px;
+    }
+
+    .btn-export {
+        margin-top: 1rem;
+        margin-right: 0;
+    }
+}
+
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    ::deep .search-box {
+        width: 100%;
+    }
+    .header-masterlist {
+        display: block;
+    }
+    
+    .master-list {
+        display: block;
+    }
+    /*HEADER*/
+    .header {
+        display: flex;
+        color: var(--primary);
+        font-family: 'Nunito';
+        font-weight: 700;
+        font-size: 20px;
+        align-items: center;
+        margin-top: 30px;
+        margin-left: 0px;
+        margin-right: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .header-title {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        margin: 0;
+        padding-left: 0px;
+    }
+    
+    .back-button img {
+        width: 30px;
+        height: 30px;
+    }
+    /*CALENDAR*/
+    .calendar {
+        background: #FFFFFF;
+        box-shadow: 0px 4px 20px #D9D9D9;
+        border-radius: 5px;
+        margin-top: 15px !important;
+        margin: 12px;
+        padding: 15px;
+        padding-bottom: 10px !important;
+        height: 100%;
+    }
+    
+    
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 13px;
+    }
+    
+    .calendar-header-details {
+        color: #343D4C;
+        font-family: 'Nunito';
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .arrow-right, .arrow-left {
+        outline: none;
+        border: none;
+        text-decoration: none;
+        box-sizing: border-box;
+        width: 30px !important;
+        height: 30px !important;
+        margin: 0px;
+        padding: 0px;
+        background-color: #FFFFFF;
+        border-radius: 50px;
+    }
+    
+    .arrow-right img, .arrow-left img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    
+    .arrow-right:hover img {
+        filter: brightness(0) invert(1);
+    }
+    
+    .arrow-right:hover {
+        background: var(--primary);
+    }
+    
+    .arrow-left:hover img {
+        filter: brightness(0) invert(1);
+    }
+    
+    .arrow-left:hover {
+        background: var(--primary);
+    }
+
+    .calendar-days {
+        align-items: center;
+        color: var(--primary);
+        font-family: 'Nunito';
+        font-weight: 500;
+        font-size: 12px;
+        text-align: center;
+        height: 30px !important;
+    }
+    hr {
+        color: #FFFFFF;
+        display: none;
+    }
+    
+    .calendar-dates {
+        /* transform: translate(-50%, -50%);*/
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        margin-top: 5px;
+    }
+    
+    .calendar-body {
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+    
+    .btn-date {
+        border: none;
+        background-color: #4BB749;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        transform: translate(-110%, -110%);
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        margin-left: 35px;
+        margin-bottom: 1px;
+    }
+    
+    .btn-date-absent {
+        border: none;
+        font-size: 12px;
+        font-family: 'Nunito';
+        font-weight: 500;
+        transform: translate(-110%, -110%);
+        width: 25px;
+        height: 25px;
+        border-radius: 50px;
+        margin-left: 35px;
+    }
+    .student-details-container {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}

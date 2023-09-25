@@ -5,4 +5,5 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Student.Request;
 public class GetStudentsToDisburseArgs 
 {
     public bool? IsInclusive {get; set;}
+    public bool? IsExpired { get; set; }
 }

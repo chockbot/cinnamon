@@ -12,5 +12,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces
         Task<AppResult<IEnumerable<ScheduleDTO>>> CreateSchedules(int activityId, IEnumerable<ScheduleDTO> schedules);
         Task<AppResult<IEnumerable<ScheduleDTO>>> UpdateManySchedules(IEnumerable<ScheduleDTO> schedules);
         Task<AppResult<bool>> DeleteManySchedules(IEnumerable<int> schedulesIds);
+        Task<AppResult<ScheduleDTO>> GetActivityScheduleTimes(int activityScheduleId, int dayOfWeek, DateTime scheduleDate);
+        Task<AppResult<bool>> CreateOngoingActivitySchedule(DateTime scheduleDate, int activityScheduleTimeId, int purchaseOrderId, bool isCompleted, int createdBy);
     }
 }

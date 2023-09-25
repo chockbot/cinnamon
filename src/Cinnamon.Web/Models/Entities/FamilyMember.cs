@@ -8,6 +8,8 @@ public class FamilyMember
     public string BirthMonth {get; set;}
     public string Gender {get; set;}
 
+    public bool IsNew { get; set; } = false;
+
     // extra properties
     public bool IsSelected {get; set;}
 }

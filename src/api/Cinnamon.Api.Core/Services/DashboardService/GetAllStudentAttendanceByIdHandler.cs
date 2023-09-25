@@ -25,7 +25,6 @@ public class GetAllStudentAttendanceByIdHandler: IGetAllStudentAttendanceByIdHan
 			return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured in GetAllStudentAttendanceByIdHandler");
 		}
 	}
-
 	public async Task<AppResult<GetAllStudentAttendanceByIdResult>> ExecuteAsync(GetAllStudentAttendanceByIdArgs args)
 	{
 		try

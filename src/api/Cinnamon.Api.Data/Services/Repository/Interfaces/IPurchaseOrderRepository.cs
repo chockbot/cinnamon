@@ -18,4 +18,5 @@ public interface IPurchaseOrderRepository
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllPurchaseOrderNeedToPayout();
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> UpdatePurchaseOrdersStatus(IEnumerable<int> ids, int status);
     Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);
+    Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetGrossSalesByProvider(int? id, DateTime? dateFrom);
 }

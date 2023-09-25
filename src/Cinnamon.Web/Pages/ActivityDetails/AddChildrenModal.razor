@@ -10,24 +10,23 @@
         </ModalHeader>
         <ModalBody Padding="Padding.Is0.FromTop">
             <Divider Margin="Margin.Is0.FromTop" />
-            <p class="font-14 text-center color-black-100 mb-0">
+            <p class="font-14 text-center color-black-100 mb-2">
                 We do not share your information. It will be used when you purchase an experience for attendance monitoring.
             </p>
             <div class="list-enrollees mb-4">
                 @for (int i = 0; i < localStateFamilyMembers.Count; i++)
                 {
                     <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
-                    <Divider Margin="Margin.Is4.FromTop" />
                 }
             </div>
             <Div Display="Display.Flex" Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                 <Button class="me-2 font-weight-700 font-16" Border="Border.Is0"
                         TextColor="TextColor.White" Color="Color.Primary" style="width: 120px;" @onclick="AddFamilyMember">
-                    Add
+                    Add More
                 </Button>
                 <Button Border="Border.Is0" class="font-weight-700 font-16" @onclick="OnSaveFamilyMember"
                     TextColor="TextColor.White" Color="Color.Primary" style="width: 120px;">
-                    Submit
+                    Save
                 </Button>
             </Div>
         </ModalBody>
@@ -70,7 +69,7 @@
 
     private void AddFamilyMember()
     {
-        localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male" });
+        localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male", IsNew=true});
     }
 
     public void AddMemberField(int fieldCount, bool isAutoSelect = false)

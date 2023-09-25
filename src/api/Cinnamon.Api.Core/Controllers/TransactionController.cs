@@ -1,10 +1,11 @@
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
 using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Response;
-using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -15,11 +16,16 @@ public class TransactionController : ControllerBase
 {
     private readonly IPurchaseOrderHandler purchaseOrderHandler;
     private readonly IGetPurchaseOrderHandler getPurchaseOrderHandler;
+    private readonly IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler;
+    private readonly IGetPayoutsByProviderHandler getPayoutsByProviderHandler;
 
-    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler)
+    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
+        IGetPayoutsByProviderHandler getPayoutsByProviderHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
+        this.getGrossSalesByProviderHandler = getGrossSalesByProviderHandler;
+        this.getPayoutsByProviderHandler = getPayoutsByProviderHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -117,6 +123,91 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetGrossSalesByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetGrossSalesByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrossSalesByProvider([FromQuery] GetGrossSalesByProviderArgs args)
+    {
+        try
+        {
+            var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            var result = await getGrossSalesByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetGrossSalesByProviderArgs
+            {
+                Id = args.Id,   
+                DateFrom = date
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetGrossSalesByProviderResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GrossSales.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.GrossSalesDTO
+                    {
+                        Id           = s.Id,
+                        ActivityId   = s.ActivityId,
+                        CustomerId   = s.CustomerId,
+                        ScheduleId   = s.ScheduleId,
+                        Payload      = s.Payload,
+                        PurchaseDate = s.PurchaseDate,
+                        Status       = s.Status,
+                        Total        = s.Total,
+                        UnitCount    = s.UnitCount
+                    };
+                })
+            }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetPayoutsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPayoutsByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPayoutsByProvider([FromQuery] GetPayoutsByProviderArgs args)
+    {
+        try
+        {
+            var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            var result = await getPayoutsByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetPayoutsByProviderArgs
+            {
+                Id = args.Id,
+                DateFrom = date
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetPayoutsByProviderResult
+            {
+                IsSuccess = true,
+                Result = result.Result.PayoutsLog.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.PayoutLog.PayoutDTO
+                    {
+                        Id              = s.Id,
+                        PurchaseOrderId = s.PurchaseOrderId,
+                        CustomerId      = s.CustomerId,
+                        Amount          = s.Amount,
+                        Status          = s.Status,
+                        PayoutDate      = s.PayoutDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
