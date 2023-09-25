@@ -1,59 +1,80 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-<div class="d-flex align-content-center justify-content-between mt-3">
-    <p class="font-16 font-weight-700 color-black-100 mb-1">Enrollee Number @ErolleeCount</p>
-    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="DeleteClick"> 
-        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
-    </Button>
+<div class="accordion mb-1" id="accordion-@Model.Id">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne-@Model.Id">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne-@Model.Id" aria-expanded="false" aria-controls="collapseOne-@Model.Id" style="background-color:#F3F6FC;color:#343D4C;font-family:Nunito;font-size:16px;font-weight:700;">
+                @if (string.IsNullOrEmpty(Model.Name))
+                {
+                    <span>Add Enrollee #@ErolleeCount</span>
+                }
+                else
+                {
+                    <span>@Model.Name</span>
+                }
+            </button>
+        </h2>
+        <div id="collapseOne-@Model.Id" class="accordion-collapse collapse @isNew()" aria-labelledby="headingOne-@Model.Id" data-bs-parent="#accordion-@Model.Id">
+            <div class="accordion-body">
+                <div class="d-flex align-content-center justify-content-between mt-3">
+                    <p class="font-16 font-weight-700 color-black-100 mb-1">Enrollee #@ErolleeCount</p>
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="DeleteClick">
+                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                    </Button>
+                </div>
+                <Div Position="Position.Relative" class="family-members">
+                    <Field class="profile-info-input name">
+                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Name</FieldLabel>
+                        <TextEdit class="border-10 color-black-100 font-16" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
+                    </Field>
+                    <Row HorizontalGutter="10">
+                        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <Field Margin="Margin.Is3.FromTop" class="profile-info-input-gender">
+                                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Gender</FieldLabel>
+                                <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender"
+                                        class="form-select border-10 text-capitalize color-black-100 font-15">
+                                    @foreach (var item in genders)
+                                    {
+                                        <SelectItem Value="item">@item</SelectItem>
+                                    }
+                                </Select>
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+                            <Row HorizontalGutter="2">
+                                <Column ColumnSize="ColumnSize.Is7.OnDesktop.IsFull.OnMobile">
+                                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input birthmonth">
+                                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Birth Month</FieldLabel>
+                                        <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.BirthMonth"
+                                                class="form-select border-10 text-capitalize color-black-100 font-15">
+                                            @foreach (var item in months)
+                                            {
+                                                <SelectItem Value="@item">@item</SelectItem>
+                                            }
+                                        </Select>
+                                    </Field>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsFull.OnMobile">
+                                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input year">
+                                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Year</FieldLabel>
+                                        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear"
+                                                class="form-select border-10 text-capitalize color-black-100 font-15">
+                                            @foreach (var item in years)
+                                            {
+                                                <SelectItem Value="@item">@item</SelectItem>
+                                            }
+                                        </Select>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                </Div>
+            </div>
+        </div>
+    </div>
 </div>
-<Div Position="Position.Relative" class="family-members">
-    <Field class="profile-info-input name">
-        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Name</FieldLabel>
-        <TextEdit class="border-10 color-black-100 font-16" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
-    </Field>
-    <Row HorizontalGutter="10">
-        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-            <Field Margin="Margin.Is3.FromTop" class="profile-info-input-gender">
-                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Gender</FieldLabel>
-                <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender" 
-                    class="form-select border-10 text-capitalize color-black-100 font-15">
-                    @foreach (var item in genders)
-                    {
-                        <SelectItem Value="item">@item</SelectItem>
-                    }
-                </Select>
-            </Field>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
-            <Row HorizontalGutter="2">
-                <Column ColumnSize="ColumnSize.Is7.OnDesktop.IsFull.OnMobile">
-                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input birthmonth">
-                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Birth Month</FieldLabel>
-                        <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.BirthMonth" 
-                            class="form-select border-10 text-capitalize color-black-100 font-15">
-                            @foreach (var item in months)
-                            {
-                                <SelectItem Value="@item">@item</SelectItem>
-                            }
-                        </Select>
-                    </Field>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsFull.OnMobile">
-                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input year">
-                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Year</FieldLabel>
-                        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" 
-                            class="form-select border-10 text-capitalize color-black-100 font-15">
-                            @foreach (var item in years)
-                            {
-                                <SelectItem Value="@item">@item</SelectItem>
-                            }
-                        </Select>
-                    </Field>
-                </Column>
-            </Row>
-        </Column>
-    </Row>
-</Div>
+
 
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No" 
     OnConfirmationChanged="ConfirmDeleteChanged">
@@ -83,7 +104,7 @@
     private IList<string> genders = new List<string>();
 
     private IList<int> years = new List<int>();
-    
+
     private IList<string> months = new List<string>();
 
     private ConfirmDialog confirmDialogRef {get; set;}
@@ -128,8 +149,18 @@
         }
         return Task.CompletedTask;
     }
+    private string isNew()
+    {
+        string showClass = Model.IsNew ? "show" : "";
+
+        return showClass;
+    }
 }
 <style scoped>
+    .accordion-button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
     .family-members .profile-info-input-gender {
         margin-left:0;
         margin-right: 1rem;
