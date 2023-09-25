@@ -265,15 +265,4 @@ public class StudentData: IStudentData
 			return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, "An error occurred when getting enrollee master list by provider id api");
 		}
 	}
-            return AppResult<GetExpiringStudentsResult>.CreateSucceeded(result, "Successfully getting get all expiring students");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, "An error occured when getting all expiring students");
-        }
-    }
 }
