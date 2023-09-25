@@ -492,7 +492,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 			string query = "WITH StudentTotals AS ( SELECT a.\"FamilyMemberId\", SUM(a.\"NumberOfSessions\") AS \"TotalNumberOfSessions\", SUM(a.\"SessionsAttended\") AS \"TotalSessionsAttended\", MAX(a.\"CreatedOn\") AS \"LatestCreatedOn\"\r\n" +
 				"FROM public.\"Students\" AS a\r\n" +
 				"JOIN public.\"Activities\" AS b ON b.\"Id\" = a.\"ActivityId\"\r\n" +
-				"WHERE b.\"CreatedBy\" = 17 GROUP BY a.\"FamilyMemberId\"\r\n" +
+				"WHERE b.\"CreatedBy\" = "+providerId+" GROUP BY a.\"FamilyMemberId\"\r\n" +
 				")\r\n" +
 				"SELECT\r\n" +
 				"a.\"Id\",a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"StudentNo\", st.\"TotalNumberOfSessions\" AS \"FamilyTotalNumberOfSessions\",\r\n" +
