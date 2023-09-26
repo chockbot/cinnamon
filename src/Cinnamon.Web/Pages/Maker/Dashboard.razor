@@ -18,7 +18,7 @@
 
 @if (Model != null)
 {
-    @if(IsNotVerified)
+    @if (IsNotVerified)
     {
         <div class="announcement">
             <img src="images/user-verification/warning.png" class="me-4" alt="icon">
@@ -26,154 +26,645 @@
                 <span>Account Verification!</span> <br>
                 Your account is not yet verified. Please check your account for the complete process of setting it up.
             </p>
-            <Button class="btn-primary width-150 m-margin-top-10" 
-                Border="Border.Is0" Clicked="NavigateToUserVerification">
+            <Button class="btn-primary width-150 m-margin-top-10"
+            Border="Border.Is0" Clicked="NavigateToUserVerification">
                 Get Started
             </Button>
         </div>
     }
-    else 
+    else
     {
         <div class="announcement">
             <img src="images/bulb.svg" class="me-4" alt="icon">
             <p class="m-0">
                 <span>Announcement! </span>
-                We would like to remind you to check the attendance of your students on the ATTENDANCE tab. 
-                This will help you keep track of your students progress and ensure that everyone is attending classes regularly. 
+                We would like to remind you to check the attendance of your students on the ATTENDANCE tab.
+                This will help you keep track of your students progress and ensure that everyone is attending classes regularly.
             </p>
         </div>
     }
-    <div class="header">
-        <p class="title">Activities</p>
-        <button class="create-button" @onclick="NavigateToCreation">Create New Activity</button>
-    </div>
-    @foreach (var item in activities)
+
+    @if (selectedTab == "general-activities" || selectedTab == "activity-via-appointment")
     {
-        if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
-        {
-            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
-                <div class="xp-content">
-                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
-                    <div class="xp-context">
-                        <p class="xp-title">@item.Title</p>
-                        <p class="xp-description">@item.Description</p>
-                        <div class="xp-category">
-                            @if (item.ExperienceTypeId == 1)
-                            {
-                                <img src="images/activity-summary/location.png">
-                                <span>Face to Face</span>
-                            }
-                            else
-                            {
-                                <img src="images/activity-summary/laptop-icon.png">
-                                <span>Online</span>
-                            }
+        //Earnings, Tickets and Schedule
+        <div class="dashboard-header">
+            <div class="dashboard-wrapper">
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-block justify-content-start">
+                                <p class="title">Total Earnings</p>
+                                <p class="amount">1,200</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-flex justify-content-start">
+                                <p class="description">Total earnings from all activities</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <a class="earnings-link" href="">View earnings</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <hr>
-                <div class="xp-actions">
-                    <div class="active">
-                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        </button>
-                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
-                    </div>
-                    <div class="button-section">
-                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
-                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
-                        {
-                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
-                        }
-                    </div>
-
-                </div>
-            </div>
-        }
-        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
-        {
-            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
-                <div class="xp-content">
-                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
-                    <div class="xp-context">
-                        <p class="xp-title">@item.Title</p>
-                        <p class="xp-description">@item.Description</p>
-                        <div class="xp-category">
-                            @if (item.ExperienceTypeId == 1)
-                            {
-                                <img src="images/activity-summary/location.png">
-                                <span>Face to Face</span>
-                            }
-                            else
-                            {
-                                <img src="images/activity-summary/laptop-icon.png">
-                                <span>Online</span>
-                            }
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-block justify-content-start">
+                                <p class="title">No. of Enrollees</p>
+                                <p class="amount">@NoOfEnrollees</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <img class="enrollees-icon" src="images/Dashboard/event-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-flex justify-content-start">
+                                <p class="description">See Enrolled Students</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <a class="earnings-link" href="/maker/dashboard/managestudents">Manage Students</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <hr>
-                <div class="xp-actions">
-                    <div class="active">
-                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        </button>
-                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
-                    </div>
-                    <div class="button-section">
-                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
-                        @if (item.Status == Enums.ActivityStatus.InProgress)
-                        {
-                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
-                        }
-                    </div>
-
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #B4A163;">
-                <div class="xp-content">
-                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
-                    <div class="xp-context">
-                        <p class="xp-title">@item.Title</p>
-                        <p class="xp-description">@item.Description</p>
-                        <div class="xp-category">
-                            @if (item.ExperienceTypeId == 1)
-                            {
-                                <img src="images/activity-summary/location.png">
-                                <span>Face to Face</span>
-                            }
-                            else
-                            {
-                                <img src="images/activity-summary/laptop-icon.png">
-                                <span>Online</span>
-                            }
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-10 d-block justify-content-start">
+                                <p class="title">Schedule</p>
+                                <p class="schedule-description">You have an ongoing experience. Check your attendance for today</p>
+                            </div>
+                            <div class="col-2 d-flex justify-content-end">
+                                <img class="calendar-icon" src="images/Dashboard/schedule-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end">
+                            <a class="earnings-link" href="/maker/dashboard/attendance">Check Attendance</a>
                         </div>
                     </div>
                 </div>
-                <hr>
-                <div class="xp-actions">
-                    <div class="active">
-                        <img class="img-inprogress" src="images/Dashboard/Inprogress.png" alt="check-icon">
-                        <span> In progress</span>
-                    </div>
-                    <div class="button-section">
-                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
-                        @if (item.Status == Enums.ActivityStatus.InProgress)
-                        {
-                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
-                        }
-                    </div>
-
-                </div>
             </div>
-        }
-
+        </div>
     }
-}
+    else
+    {
+        //Earnings, Tickets and Schedule
+        <div class="dashboard-header">
+            <div class="dashboard-wrapper">
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-block justify-content-start">
+                                <p class="title">Total Earnings</p>
+                                <p class="amount">1,200</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-flex justify-content-start">
+                                <p class="description">Total earnings from all activities</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <a class="earnings-link" href="">View earnings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-block justify-content-start">
+                                <p class="title">Event Ticket Sold</p>
+                                <p class="amount">10</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <img class="enrollees-icon" src="images/Dashboard/event-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex">
+                            <div class="col-8 d-flex justify-content-start">
+                                <p class="description">Manage your event</p>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <a class="earnings-link" href="">Go to Events</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-flex">
+                            <div class="col-10 d-block justify-content-start">
+                                <p class="title">Schedule</p>
+                                <p class="schedule-description">The Juans Live at Cebu is today, verify tickets admissions now!</p>
+                            </div>
+                            <div class="col-2 d-flex justify-content-end">
+                                <img class="calendar-icon" src="images/Dashboard/schedule-icon.png" />
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end">
+                            <a class="earnings-link" href="">Verify event goers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
+
+    <div class="col-12 justify-content-center user-information">
+        <div class="dashboard-wrapper">
+            @*Types of Activity Tab*@
+            <div class="col-lg-7 col-md-12 col-sm-12 col-12 dashboard-tab">
+                <section class="mt-5 customer-profile-details">
+                    <Container>
+                        <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                            <div class="swiper-wrapper">
+                                <div class='swiper-slide @(selectedTab == "general-activities" ? "swiper-slide-active" : "")'>
+                                    <div class='tab-item @(selectedTab == "general-activities" ? "active" : "")'
+                                     @onclick='() => selectedTab = "general-activities"'>
+                                        general activities
+                                    </div>
+                                </div>
+                                <div class='swiper-slide @(selectedTab == "one-time-events" ? "swiper-slide-active" : "")'>
+                                    <div class='tab-item @(selectedTab == "one-time-events" ? "active" : "")'
+                                     @onclick='() => selectedTab = "one-time-events"'>
+                                        one time events
+                                    </div>
+                                </div>
+                                <div class='swiper-slide @(selectedTab == "activity-via-appointment" ? "swiper-slide-active" : "")'>
+                                    <div class='tab-item @(selectedTab == "activity-via-appointment" ? "active" : "")'
+                                     @onclick='() => selectedTab = "activity-via-appointment"'>
+                                        activity via appointment
+                                    </div>
+                                </div>
+                            </div>
+                        </Div>
+                        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                            <Items>
+                                <Tab Name="general-activities" TextTransform="TextTransform.Capitalize">General Activities</Tab>
+                                <Tab Name="one-time-events" TextTransform="TextTransform.Capitalize">One Time Events</Tab>
+                                <Tab Name="activity-via-appointment" TextTransform="TextTransform.Capitalize">Activity via appointment</Tab>
+                            </Items>
+                            <Content>
+                                <TabPanel Name="general-activities">
+                                    <div class="header">
+                                        @*<p class="title">Activities</p>*@
+                                        <button class="create-button" @onclick="NavigateToCreation">Create New Activity</button>
+                                    </div>
+                                    @foreach (var item in GeneralActivities)
+                                    {
+                                        if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #B4A163;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <img class="img-inprogress" src="images/Dashboard/Inprogress.png" alt="check-icon">
+                                                        <span> In progress</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </TabPanel>
+                                <TabPanel Name="one-time-events">
+                                    <div class="header">
+                                        @*<p class="title">Activities</p>*@
+                                        <button class="create-button" @onclick="NavigateToOTECreation">Create New Event</button>
+                                    </div>
+                                    @foreach (var item in OTEActivities)
+                                    {
+                                        if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
+                                                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #B4A163;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <img class="img-inprogress" src="images/Dashboard/Inprogress.png" alt="check-icon">
+                                                        <span> In progress</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+
+                                </TabPanel>
+                                <TabPanel Name="activity-via-appointment">
+                                    <div class="header">
+                                        @*<p class="title">Activities</p>*@
+                                        <button class="create-button" @onclick="NavigateToAppointment">Create New Appointment</button>
+                                    </div>
+                                    @foreach (var item in AppointmentActvities)
+                                    {
+                                        if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                        </button>
+                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href=" /experiences/ote/{@item.Handler}">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #B4A163;">
+                                                <div class="xp-content">
+                                                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                                                    <div class="xp-context">
+                                                        <p class="xp-title">@item.Title</p>
+                                                        <p class="xp-description">@item.Description</p>
+                                                        <div class="xp-category">
+                                                            @if (item.ExperienceTypeId == 1)
+                                                            {
+                                                                <img src="images/activity-summary/location.png">
+                                                                <span>Face to Face</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="images/activity-summary/laptop-icon.png">
+                                                                <span>Online</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="xp-actions">
+                                                    <div class="active">
+                                                        <img class="img-inprogress" src="images/Dashboard/Inprogress.png" alt="check-icon">
+                                                        <span> In progress</span>
+                                                    </div>
+                                                    <div class="button-section">
+                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                                                        {
+                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </TabPanel>
+                            </Content>
+                        </Tabs>
+                    </Container>
+                </section>
+            </div>
+            @*Profile and Faqs*@
+            <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
+                <div class="col-12 profile-wrapper d-flex">
+                    <div class="col-lg-2 col-md-2 col-sm-3 col-3 profile-pic">
+                        <img class="rounded-2 rounded-circle m-3" src="@profile.ProfilePath" width="60" height="60" />
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-5 col-5 d-block">
+                        <p class="user-name">@profile.FirstName @profile.LastName</p>
+                        <a class="view-profile" href="/maker/profile/@(profile != null && !string.IsNullOrEmpty(profile.Handler) ? profile.Handler : activity.CreatedBy.ToString() )">View Profile</a>
+                    </div>
+                    @if (profile.IsVerified == 2)
+                    {
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 profile-badges">
+                            <div class="d-flex">
+                                <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Class="badges">
+                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                </Tooltip>
+                                <p class="verified-text">Verified</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="faqs-wrapper">
+                    <p class="faqs-title">Faqs</p>
+
+                    <p><a class="link-question" @onclick="() => ToggleAnswer(1)">What' s gonna happen when someone enrolls?</a></p>
+                    <div class="link-answer" style="display: @(selectedQuestion == 1 ? "block" : "none")">
+                        <ol>
+                            <li class="answers">Customers will be automatically added to your personal group chat. You can access the chat by going to the MESSAGES.</li>
+                            <li class="answers">You can check their contact information on the confirmation email that we've sent to you.</li>
+                            <li class="answers">The enrollees are now available in the ATTENDANCE section.</li>
+                        </ol>
+                    </div>
+
+                    <p><a class="link-question" @onclick="() => ToggleAnswer(2)">How will I get paid from my activity?</a></p>
+                    <div class="link-answer" style="display: @(selectedQuestion == 2 ? "block" : "none")">
+                        <p class="answers">
+                            To receive payment, a completed session is a per-requisite. In the ATTENDANCE section,
+                            make sure that you are checking the attendance of your enrollees; once completed,
+                            Cinnamon will automatically process a payout request per completed enrollee.
+                            Processing may take 2-3 business days according to bank and e-wallet policies for clearing.
+                        </p>
+                    </div>
+                    <p><a class="link-question" @onclick="() => ToggleAnswer(3)">I want to update the attendance of my enrollee, how can I change this?</a></p>
+                    <div class="link-answer" style="display: @(selectedQuestion == 3 ? "block" : "none")">
+                        <p class="answers">
+                            In the MANAGE STUDENT section, choose the enrollee and select UPDATE. Adjust attendance as necessary.
+                        </p>
+                    </div>
+                    <p><a class="link-question" @onclick="() => NavigateToHelp()">More information here.</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code
 {
@@ -181,10 +672,27 @@
 
     public List<Activity> activities = new List<Activity>();
 
+    public List<Activity> GeneralActivities = new List<Activity>();
+
+    public List<Activity> OTEActivities = new List<Activity>();
+
+    public List<Activity> AppointmentActvities = new List<Activity>();
+
     public Activity activity = new Activity();
+
+    private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
+
+    public CustomerProfile profile = new CustomerProfile();
+
     string token = string.Empty;
 
-    private bool IsNotVerified {get; set;}
+    private bool IsNotVerified { get; set; }
+
+    private int NoOfEnrollees = 0;
+
+    private string selectedTab = "general-activities";
+
+    private int selectedQuestion = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -208,6 +716,12 @@
                 return;
             }
             var customer = result.Result.Result;
+
+            profile.FirstName = customer.FirstName;
+            profile.LastName = customer.LastName;
+            profile.Handler = customer.Handler;
+            profile.ProfilePath = customer.ProfileImg;
+            profile.IsVerified = customer.IsVerified;
 
             // check if customer is maker
             if (!customer.IsMaker)
@@ -233,9 +747,10 @@
         }
     }
 
-    private void NavigateToCreation()
+    private Task OnSelectedTabChanged(string name)
     {
-        NavigationManager.NavigateTo("/maker/activity-selection");
+        selectedTab = name;
+        return Task.CompletedTask;
     }
 
     private void CheckUnCheckAllStudent(Activity activity)
@@ -267,6 +782,8 @@
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
             {
                 IncludeActivityImages = true,
+                IncludeStudents = true,
+                IncludeAtivitySchedules = true
             }, token);
 
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
@@ -281,23 +798,59 @@
                         Title = a.Title,
                         Description = a.Description,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
+                        Handler = a.Handler,
                         Images = a.Images.Select(i =>
                         {
-                                return new ActivityImage
-                                {
-                                    Id = i.Id,
-                                    ImageSrc = i.ImageSrc,
-                                    Name = i.Name
-                                };
-                            }).ToList(),
-                        Status = a.Status
+                            return new ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }).ToList(),
+                        Status = a.Status,
+                        OngoingStudents = a.OngoingStudents
                     };
             }).ToList();
         }
+        GeneralActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).ToList();
+        OTEActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).ToList();
+        AppointmentActvities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment).ToList();
+        NoOfEnrollees = activities.Sum(a => a.OngoingStudents);
     }
 
     private void NavigateToUserVerification()
     {
         NavigationManager.NavigateTo("customer/user-verification/?redirect=redirect_dashboard");
+    }
+    private void NavigateToOTECreation()
+    {
+        NavigationManager.NavigateTo("/experiences/ote");
+    }
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.GeneralExperience);
+    }
+
+    private void NavigateToAppointment()
+    {
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.ExperienceViaAppointment);
+    }
+
+    private void ToggleAnswer(int questionNumber)
+    {
+        if (selectedQuestion == questionNumber)
+        {
+            selectedQuestion = 0; // Hide the answer if the same question is clicked again
+        }
+        else
+        {
+            selectedQuestion = questionNumber;
+        }
+    }
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/help");
     }
 }
