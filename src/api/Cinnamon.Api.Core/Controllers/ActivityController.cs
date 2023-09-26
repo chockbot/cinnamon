@@ -2392,40 +2392,6 @@ public class ActivityController : ControllerBase
         }
     }
 
-    [Route("ExperienceCreationTypes")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetExperienceCreationTypes()
-    {
-        try
-        {
-            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetExperienceCreationTypeResult
-            {
-                Result = result.Result.ExperienceCreationTypes.Select(e => {
-                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
-                    {
-                        Id = e.Id,
-                        Description = e.Description,
-                        ImagePath = e.ImagePath,
-                        IsActive = e.IsActive,
-                        Name = e.Name
-                    };
-                }),
-                IsSuccess = true
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [Route("GetActivityScheduleTimes")]
     [HttpGet]
     [AllowAnonymous]
