@@ -25,6 +25,7 @@ public class OteFindByHandlerResult
     public int ProviderId {get; set;}
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<Image> Images {get; set;}
+    public bool IsComingSoon {get; set;}
 
     public class OtePricing 
     {
