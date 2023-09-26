@@ -26,6 +26,7 @@ public class OteActivityDTO
     public DateTime ScheduleTo {get; set;}
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
+    public bool IsComingSoon {get; set;}
 
     public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImageDTO> Images {get; set;}

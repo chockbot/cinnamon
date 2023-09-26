@@ -387,282 +387,308 @@
                     </div>
                     
                     @*Experience Schedule*@
-                    <div class="schedule-desktop">
-                        <hr />
-                        <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-                        @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
-                        {
-                            var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
-                            if (activeSchedule.Count > 0)
+                    @if(activity is not null && !activity.IsComingSoon)
+                    {
+                        <div class="schedule-desktop">
+                            <hr />
+                            <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
+                            @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                             {
-                                <div class="d-block mb-2">
-                                    @for (int x = 0; x < activeSchedule.Count; x++)
-                                    {
-                                        var schedule = activeSchedule.ElementAt(x);
-                                        @if (x <= 2)
+                                var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
+                                if (activeSchedule.Count > 0)
+                                {
+                                    <div class="d-block mb-2">
+                                        @for (int x = 0; x < activeSchedule.Count; x++)
                                         {
-                                            <div class="schedule-detail w-100 rounded-5">
-                                                <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
-                                                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
-                                                        <p>@activeSchedule.ElementAt(x).Name</p>
-                                                    </div>
-                                                    <a class="form-check col-lg-2 col-md-3 justify-content-center" @onclick="() => SelectSchedule(schedule.Id)">
-                                                        <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
-                                                            value="@schedule.Id" type="radio" name="schedule" id="@schedule.Id">
-
-                                                             @if(SelectedScheduleId == schedule.Id)
-                                                             {
-                                                                <label class="form-check-label" for="@schedule.Id">
-                                                                    Selected
-                                                                </label>
-                                                             }
-                                                             else
-                                                             {
-                                                                 <label class="form-check-label" for="@schedule.Id">
-                                                                     Select
-                                                                 </label>
-                                                             }
-                                                    </a>
-                                                    <div class="col-sm-3 col-xs-3 col-3 justify-content-center schedule-price-header">
-                                                        <p class="font-18">₱ @schedule.LongPrice</p>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="schedule-body">
-                                                    <div class="col-lg-10 col-md-9 col-sm-12 PES-details">
-                                                        @if(x == 0)
-                                                        {
-                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-mobile">
-                                                                <p class="recommended">Highly Recommended!</p>
-                                                            </div>
-                                                        }
-                                                        <div class="PE-details">
-                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 price-details">
-                                                                <div class="d-flex price-details-title">
-                                                                    <img class="img-price" src="images/schedule-icons/price-icon.png"/>
-                                                                    <p class="font-14">Price Details:</p>
-                                                                 </div>
-                                                                <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
-                                                            </div>
-                                                            @if (schedule.IsSetSession == true && x <= 2)
-                                                            {
-                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 expiration-details">
-                                                                    <div class="d-flex expiration-details-title">
-                                                                        <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
-                                                                        <p class="font-14">Expiration:</p>
-                                                                    </div>
-                                                                    <p class="font-16-d">Consume in - @schedule.SessionName</p>
-                                                                    <div class="cut-off-details">
-                                                                        @switch (schedule.HasExpiration)
-                                                                        {
-                                                                            case 1:
-                                                                                DateTime frequency = ExpirationData.CalculateFrequency(schedule);
-                                                                                string ordinal = ExpirationData.GetOrdinal(frequency.Day);
-                                                                                <small class="form-text sub-details">
-                                                                                    @ExpirationData.GetExpirationText(schedule.SessionName, frequency, ordinal)
-                                                                                </small>
-                                                                                break;
-                                                                            case 2:
-                                                                                <small class="form-text sub-details">
-                                                                                    Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
-                                                                                </small>
-                                                                                break;
-                                                                            default:
-                                                                                break;
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                            }
+                                            var schedule = activeSchedule.ElementAt(x);
+                                            @if (x <= 2)
+                                            {
+                                                <div class="schedule-detail w-100 rounded-5">
+                                                    <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
+                                                        <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
+                                                            <p>@activeSchedule.ElementAt(x).Name</p>
                                                         </div>
-                                                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                                                            <div class="d-flex schedule-details-title">
-                                                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                                                                <p class="font-14">Schedule:</p>
-                                                            </div>
-                                                            <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
-                                                            @if (x == 0)
+                                                        <a class="form-check col-lg-2 col-md-3 justify-content-center" @onclick="() => SelectSchedule(schedule.Id)">
+                                                            <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
+                                                                value="@schedule.Id" type="radio" name="schedule" id="@schedule.Id">
+
+                                                                @if(SelectedScheduleId == schedule.Id)
+                                                                {
+                                                                    <label class="form-check-label" for="@schedule.Id">
+                                                                        Selected
+                                                                    </label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label class="form-check-label" for="@schedule.Id">
+                                                                        Select
+                                                                    </label>
+                                                                }
+                                                        </a>
+                                                        <div class="col-sm-3 col-xs-3 col-3 justify-content-center schedule-price-header">
+                                                            <p class="font-18">₱ @schedule.LongPrice</p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="schedule-body">
+                                                        <div class="col-lg-10 col-md-9 col-sm-12 PES-details">
+                                                            @if(x == 0)
                                                             {
-                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-desktop">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-mobile">
                                                                     <p class="recommended">Highly Recommended!</p>
                                                                 </div>
                                                             }
+                                                            <div class="PE-details">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 price-details">
+                                                                    <div class="d-flex price-details-title">
+                                                                        <img class="img-price" src="images/schedule-icons/price-icon.png"/>
+                                                                        <p class="font-14">Price Details:</p>
+                                                                    </div>
+                                                                    <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                                </div>
+                                                                @if (schedule.IsSetSession == true && x <= 2)
+                                                                {
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 expiration-details">
+                                                                        <div class="d-flex expiration-details-title">
+                                                                            <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                                            <p class="font-14">Expiration:</p>
+                                                                        </div>
+                                                                        <p class="font-16-d">Consume in - @schedule.SessionName</p>
+                                                                        <div class="cut-off-details">
+                                                                            @switch (schedule.HasExpiration)
+                                                                            {
+                                                                                case 1:
+                                                                                    DateTime frequency = ExpirationData.CalculateFrequency(schedule);
+                                                                                    string ordinal = ExpirationData.GetOrdinal(frequency.Day);
+                                                                                    <small class="form-text sub-details">
+                                                                                        @ExpirationData.GetExpirationText(schedule.SessionName, frequency, ordinal)
+                                                                                    </small>
+                                                                                    break;
+                                                                                case 2:
+                                                                                    <small class="form-text sub-details">
+                                                                                        Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
+                                                                                    </small>
+                                                                                    break;
+                                                                                default:
+                                                                                    break;
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
+                                                                <div class="d-flex schedule-details-title">
+                                                                    <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                                    <p class="font-14">Schedule:</p>
+                                                                </div>
+                                                                <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
+                                                                @if (x == 0)
+                                                                {
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-desktop">
+                                                                        <p class="recommended">Highly Recommended!</p>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-lg-2 col-md-3 col-sm-12 justify-content-center schedule-price">
-                                                        <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
-                                                    </div>
-                                                    <a class="col-sm-12 col-xs-12 col-12 justify-content-center form-check-mobile" @onclick="() => SelectSchedule(schedule.Id)">
-                                                        <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input"
-                                                               value="@schedule.Id" type="radio" name="schedule-1" id="@schedule.Id-1">
+                                                        <div class="col-lg-2 col-md-3 col-sm-12 justify-content-center schedule-price">
+                                                            <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
+                                                        </div>
+                                                        <a class="col-sm-12 col-xs-12 col-12 justify-content-center form-check-mobile" @onclick="() => SelectSchedule(schedule.Id)">
+                                                            <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input"
+                                                                value="@schedule.Id" type="radio" name="schedule-1" id="@schedule.Id-1">
 
-                                                        @if (SelectedScheduleId == schedule.Id)
-                                                        {
-                                                            <label class="form-check-label" for="@schedule.Id-1">
-                                                                Selected
-                                                            </label>
-                                                        }
-                                                        else
-                                                        {
-                                                            <label class="form-check-label" for="@schedule.Id-1">
-                                                                Select
-                                                            </label>
-                                                        }
-                                                    </a>
+                                                            @if (SelectedScheduleId == schedule.Id)
+                                                            {
+                                                                <label class="form-check-label" for="@schedule.Id-1">
+                                                                    Selected
+                                                                </label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="form-check-label" for="@schedule.Id-1">
+                                                                    Select
+                                                                </label>
+                                                            }
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
                                         }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
+                                        <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
+                                    </div>
+                                }
                             }
-                            else
+                            @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                             {
-                                <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
-                                    <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
+                                <div class="d-flex col-12-lg justify-content-lg-end col-md-12 justify-content-md-end col-12 justify-content-center">
+                                    <button class="btn-show shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
+                                        See More Schedule
+                                    </button>
                                 </div>
                             }
-                        }
-                        @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
-                        {
-                            <div class="d-flex col-12-lg justify-content-lg-end col-md-12 justify-content-md-end col-12 justify-content-center">
-                                <button class="btn-show shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                    See More Schedule
-                                </button>
-                            </div>
-                        }
-                    </div>
+                        </div>
+                    }
+
+                    @* for coming soon events *@
+                    @if(activity is not null && activity.IsComingSoon)
+                    {
+                        <div class="my-5">
+                            <img class="max-width-100 h-auto" src="images/coming-soon.png" alt="coming soon">    
+                        </div>
+                    }
 
                     @*Important Information*@
-                    <div class="important-information">
-                        <hr />
-                        <p class="fw-bold mb-3 detail-label">Important Information</p>
-                        <p class="important-question">What will happen after I purchase?</p>
-                        <ol class="important-answer">
-                            <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
-                            <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
-                            <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
-                            <li>Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete.</li>
-                        </ol>
-                    </div>
+                    @if(activity is not null && !activity.IsComingSoon)
+                    {
+                        <div class="important-information">
+                            <hr />
+                            <p class="fw-bold mb-3 detail-label">Important Information</p>
+                            <p class="important-question">What will happen after I purchase?</p>
+                            <ol class="important-answer">
+                                <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
+                                <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
+                                <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
+                                <li>Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete.</li>
+                            </ol>
+                        </div>
 
-                    @*Map Details*@
-                    <hr />
-                    <div class="map-text">
-                        <p class="fw-bold mb-3 detail-label">Where you’ll be</p>
-                        @if (string.IsNullOrEmpty(activity.MapDetails))
-                        {
-                            @if (activity.ExperienceTypeId == 1)
+                        @*Map Details*@
+                        <hr />
+                        <div class="map-text">
+                            <p class="fw-bold mb-3 detail-label">Where you’ll be</p>
+                            @if (string.IsNullOrEmpty(activity.MapDetails))
                             {
-                                var address = !string.IsNullOrEmpty(activity.PinnedLocation) ? activity.PinnedLocation : activity.Address1 + "+" + activity.Subdivision + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
-                                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
-                                <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
-                                <span class="mt-3">
-                                    @(activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName)
-                                </span>
+                                @if (activity.ExperienceTypeId == 1)
+                                {
+                                    var address = !string.IsNullOrEmpty(activity.PinnedLocation) ? activity.PinnedLocation : activity.Address1 + "+" + activity.Subdivision + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
+                                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
+                                    <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
+                                    <span class="mt-3">
+                                        @(activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="mt-3">
+                                        @experience.Name
+                                    </span>
+                                }
                             }
                             else
                             {
+                                @if (!activity.MapDetails.Contains("Online"))
+                                {
+                                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.MapDetails.Replace(" ", "+");
+                                    <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
+                                }
                                 <span class="mt-3">
-                                    @experience.Name
+                                    @activity.MapDetails
                                 </span>
                             }
-                        }
-                        else
-                        {
-                            @if (!activity.MapDetails.Contains("Online"))
-                            {
-                                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.MapDetails.Replace(" ", "+");
-                                <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
-                            }
-                            <span class="mt-3">
-                                @activity.MapDetails
-                            </span>
-                        }
-                    </div>
-                    @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && !activity.CustomerBringWithThem.Contains("NOTHING"))
-                    {
-                        <hr />
-                        <div class="bring-text" style="overflow-wrap:break-word;">
-                            <label class="fw-bold mb-3 detail-label">Requirements</label>
-                            <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                         </div>
+                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && !activity.CustomerBringWithThem.Contains("NOTHING"))
+                        {
+                            <hr />
+                            <div class="bring-text" style="overflow-wrap:break-word;">
+                                <label class="fw-bold mb-3 detail-label">Requirements</label>
+                                <p>@((MarkupString)activity.CustomerBringWithThem)</p>
+                            </div>
+                        }
                     }
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
-                    <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
-                        <div class="bg-white-100 px-3 py-4 border-radius-10">
-                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
-                                TValue="int" Size="Size.Small" @bind-SelectedValue="SelectedScheduleId">
-                                <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
-                                @foreach (var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
-                                {
-                                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
-                                }
-                            </Select>
-                            <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
-                                <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
-                                <div @onclick="SubtractEnrollee"
-                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    -
+                    @if(activity is not null && !activity.IsComingSoon)
+                    {
+                        <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
+                            <div class="bg-white-100 px-3 py-4 border-radius-10">
+                                <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
+                                <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
+                                    TValue="int" Size="Size.Small" @bind-SelectedValue="SelectedScheduleId">
+                                    <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
+                                    @foreach (var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
+                                    {
+                                        <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                                    }
+                                </Select>
+                                <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
+                                    <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
+                                    <div @onclick="SubtractEnrollee"
+                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                        -
+                                    </div>
+                                    <div @onclick="AddEnrollee"
+                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                        +
+                                    </div>
                                 </div>
-                                <div @onclick="AddEnrollee"
-                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    +
-                                </div>
-                            </div>
-                            <Row class="color-grey-100 font-16 mt-4">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount  @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
-                                </Column>
-                            </Row>
-                            @if(!IsInclusivePricing)
-                            {
-                                <Row class="color-grey-100 font-16 mt-2">
+                                <Row class="color-grey-100 font-16 mt-4">
                                     <Column ColumnSize="ColumnSize.Is7">
-                                        <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                        <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount  @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is5">
-                                        <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                        <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                     </Column>
                                 </Row>
-                                <Row class="color-grey-100 font-16 mt-2">
+                                @if(!IsInclusivePricing)
+                                {
+                                    <Row class="color-grey-100 font-16 mt-2">
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                        </Column>
+                                    </Row>
+                                    <Row class="color-grey-100 font-16 mt-2">
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <p class="m-0">Handling  fee</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                        </Column>
+                                    </Row>
+                                }
+                                <Divider class="m-0 mt-2" />
+                                <Row class="font-16 mt-2 font-weight-700 color-black-100">
                                     <Column ColumnSize="ColumnSize.Is7">
-                                        <p class="m-0">Handling  fee</p>
+                                        <p class="m-0">Total Payment</p>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is5">
-                                        <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                        <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
                                     </Column>
                                 </Row>
-                            }
-                            <Divider class="m-0 mt-2" />
-                            <Row class="font-16 mt-2 font-weight-700 color-black-100">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Total Payment</p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
-                                </Column>
-                            </Row>
-                            <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
-                            <div>
-                                <Button Type="ButtonType.Button" Clicked="ProceedToPayment" class="btn-primary font-20 w-100 border-radius-10"
-                                    Border="Border.Is0">
-                                    Proceed
-                                </Button>
-                                @if (isShowErrorMessage)
-                                {
-                                    <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
-                                }
+                                <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
+                                <div>
+                                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment" class="btn-primary font-20 w-100 border-radius-10"
+                                        Border="Border.Is0">
+                                        Proceed
+                                    </Button>
+                                    @if (isShowErrorMessage)
+                                    {
+                                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
+                    @if(activity is not null && activity.IsComingSoon)
+                    {
+                        <div class="coming-soon-announcement border-radius-20 px-3 py-3 border-1-solid border-color-black-100">
+                            <p class="font-20 font-weight-700 mb-2">Announcement</p>
+                            <p class="mb-0 color-grey-100 font-18">
+                                Tickets will be sold and purchased on this page soon. Please come back again in a few weeks.
+                            </p>
+                        </div>
+                    }
                 </Column>
             </Row>
             <Div>
@@ -734,93 +760,96 @@
             </Div>
         </Div>
     </Container>
-    <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
-        <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
-        <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid
-            position-fixed left-0 right-0 bg-white-100">
-            <div>
-                <div class="calculator-inner-content px-3 pt-4">
-                    <div class="border-1-solid border-radius-5 border-color-black-100">
-                        <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
-                            <p class="m-0">@GetSelectedActivityName</p>
-                            <Button Clicked="() => DetailsModalSched.Open()" class="p-1 font-10 bg-orange-100 color-white-100">Change</Button>
-                        </div>
-                        <div class="prevent-select color-grey-100 font-16 d-flex">
-                            <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
-                            <div @onclick="SubtractEnrollee"
-                             class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
-                                -
+    @if(activity is not null && !activity.IsComingSoon)
+    {
+        <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
+            <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
+            <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="calculator-inner-content px-3 pt-4">
+                        <div class="border-1-solid border-radius-5 border-color-black-100">
+                            <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
+                                <p class="m-0">@GetSelectedActivityName</p>
+                                <Button Clicked="() => DetailsModalSched.Open()" class="p-1 font-10 bg-orange-100 color-white-100">Change</Button>
                             </div>
-                            <div @onclick="AddEnrollee"
-                             class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
-                                +
+                            <div class="prevent-select color-grey-100 font-16 d-flex">
+                                <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
+                                <div @onclick="SubtractEnrollee"
+                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    -
+                                </div>
+                                <div @onclick="AddEnrollee"
+                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    +
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="color-grey-100 font-16 mt-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                        @if(!IsInclusivePricing)
+                        {
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                </Column>
+                            </Row>
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Handling  fee</p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                </Column>
+                            </Row>
+                        }
+                        <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Total Payment</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                    </div>
+                    <Divider class="calculator-footer-divider m-0" />
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment"
+                            class="btn-primary font-14 width-120 border-radius-10"
+                            Border="Border.Is0">
+                            Proceed
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator">
+                                <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
+                                @if(isOpenMobileCalculator)
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
+                                }
+                                else 
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
+                                }
                             </div>
                         </div>
                     </div>
-                    <Row class="color-grey-100 font-16 mt-4">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
-                        </Column>
-                    </Row>
-                    @if(!IsInclusivePricing)
+                    @if(isShowErrorMessage)
                     {
-                        <Row class="color-grey-100 font-16 mt-2">
-                            <Column ColumnSize="ColumnSize.Is7">
-                                <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is5">
-                                <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
-                            </Column>
-                        </Row>
-                        <Row class="color-grey-100 font-16 mt-2">
-                            <Column ColumnSize="ColumnSize.Is7">
-                                <p class="m-0">Handling  fee</p>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is5">
-                                <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
-                            </Column>
-                        </Row>
+                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
                     }
-                    <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">Total Payment</p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
-                        </Column>
-                    </Row>
                 </div>
-                <Divider class="calculator-footer-divider m-0" />
-                <div class="p-3 d-flex justify-content-between align-items-center">
-                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment"
-                        class="btn-primary font-14 width-120 border-radius-10"
-                        Border="Border.Is0">
-                        Proceed
-                    </Button>
-                    <div class="d-flex align-items-center">
-                        <div class="prevent-select text-end" style="width: 160px;" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator">
-                            <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
-                            @if(isOpenMobileCalculator)
-                            {
-                                <img class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
-                            }
-                            else 
-                            {
-                                <img class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
-                            }
-                        </div>
-                    </div>
-                </div>
-                @if(isShowErrorMessage)
-                {
-                    <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
-                }
             </div>
         </div>
-    </div>
+    }
     
     @* commented first for migration *@
     <DetailsSchedulesModal @ref="DetailsModalSched" OnChooseSelected="ModalSelectedChanged"
@@ -967,6 +996,7 @@
                         CreatedBy = result.CreatedBy,
                         MapDetails = result.MapDetails,
                         PinnedLocation = result.PinnedLocation,
+                        IsComingSoon = result.IsComingSoon,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule

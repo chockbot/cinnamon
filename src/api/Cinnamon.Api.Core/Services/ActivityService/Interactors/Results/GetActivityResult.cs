@@ -43,6 +43,7 @@ public class GetActivityResult
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
+    public bool IsComingSoon {get; set;}
 
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
