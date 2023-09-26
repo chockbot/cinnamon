@@ -64,6 +64,9 @@ public class CreateOteActivityArgs
 
         [Required]
         public string Recurrence {get; set;}
+
+        [Required]
+        public bool IsComingSoon {get; set;}
     }
 
     public class OtePricing 

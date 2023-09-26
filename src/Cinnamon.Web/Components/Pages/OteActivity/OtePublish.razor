@@ -1,0 +1,139 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@implements IOteComponent;
+
+<section class="ote-publish-wrapper">
+    <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
+        <h3 class="font-24 font-weight-700 color-black-100">Your one time event is almost ready!</h3>
+        <Divider />
+        <div>
+            <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
+            <Row HorizontalGutter="20" VerticalGutter="20">
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
+                        <p class="mb-5 font-20 font-weight-700 color-black-100">
+                            What’s gonna happen 
+                            <br>
+                            when availed the 
+                            <br>
+                            ticket events?
+                        </p>
+                        <div class="publish-read-more">
+                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                Read more
+                            </Button>
+                        </div>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
+                        <p class="mb-5 font-20 font-weight-700 color-black-100">
+                            How will I get paid 
+                            <br>
+                            from this event?
+                        </p>
+                        <div class="publish-read-more">
+                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                Read more
+                            </Button>
+                        </div>
+                    </div>
+                </Column>
+            </Row>
+            <p class="mt-4 mb-5 font-20 font-weight-700 color-black-100">Final setup:</p>
+            <div class="mb-4">
+                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.Publish = !model.Publish">
+                    <img class="me-1" src='@(model.Publish ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <span class="font-20 color-black-100">
+                        Activate your activity now
+                    </span>
+                </span>
+            </div>
+            <div class="mb-4">
+                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.AcceptTerms = !model.AcceptTerms">
+                    <img class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <span class="font-20 color-black-100">
+                        [Terms and condition for one time event.]
+                        @if(showErrorMessage && !model.AcceptTerms)
+                        {
+                            <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
+                        }
+                    </span>
+                </span>
+            </div>
+            <div class="mb-4">
+                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.ComingSoon = !model.ComingSoon">
+                    <img class="me-1" src='@(model.ComingSoon ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <span class="font-20 color-black-100">
+                        Coming Soon
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
+
+    private FormModel model = new();
+    private bool invokingNext = false;
+    private bool showErrorMessage = false;
+
+    public Task<bool> FieldValid()
+    {
+        bool result = true;
+        if(!model.AcceptTerms)
+        {
+            result = false;
+            showErrorMessage = true;
+        }
+        return Task.Run<bool>(() => result);
+    }
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            invokingNext = true;
+            await OnNextClick.InvokeAsync();
+            invokingNext = false;
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
+        }
+    }
+
+    public ModelData GetData()
+    {
+        return new ModelData {
+            AcceptTerms = model.AcceptTerms,
+            ComingSoon = model.ComingSoon,
+            IsPublish = model.Publish
+        };
+    }
+
+    private class FormModel 
+    {
+        public bool Publish {get; set;} = true;
+        public bool AcceptTerms {get; set;} = true;
+        public bool ComingSoon {get; set;} = false;
+    }
+
+    public class ModelData 
+    {
+        public bool IsPublish {get; set;}
+        public bool AcceptTerms {get; set;}
+        public bool ComingSoon {get; set;}
+    }
+}

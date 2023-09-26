@@ -39,6 +39,7 @@ public class ActivityDTO
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public bool IsComingSoon {get; set;}
     public Enums.Enums.ActivityStatus Status{ get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public IEnumerable<string> SearchTags {get; set;}

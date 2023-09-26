@@ -40,7 +40,7 @@
             </div>
         </div>
     }
-    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
 @code 
@@ -84,5 +84,6 @@
         public OteEvent.ModelData EventData {get; set;}
         public OteLocation.ModelData LocationData {get; set;}
         public OtePricing.ModelData PricingData {get; set;}
+        public OtePublish.ModelData PublishData {get; set;}
     }
 }
