@@ -27,4 +27,5 @@ public class OteActivityDTO
     public int ProviderId {get; set;}
     public IEnumerable<OtePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+    public bool IsComingSoon {get; set;}
 }
