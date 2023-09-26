@@ -202,15 +202,16 @@
     {
         var files = e.GetMultipleFiles();
 
+        var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 1;
         for(int i = 0; i < files.Count; i++)
         {
-            var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 0;
             string inputId = $"img-preview-input-{lastIndex}";
             string imgId = $"img-preview-src-{lastIndex}";
 
             var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", Order = lastIndex};
             imageItems.Add(imageItem);
             StateHasChanged();
+            lastIndex++;
 
             if(imageCropper is not null)
             {
@@ -231,6 +232,7 @@
                 else 
                 {
                     imageItems.Remove(imageItem);
+                    lastIndex--;
                 }
             }
             StateHasChanged();
@@ -294,17 +296,39 @@
 
     public async Task<bool> UploadImages(int createdActivityId)
     {
-        var selectors = new List<string>();
-        selectors.Add($"#{coverPhoto.InputDataId}");
-        selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
-        bool haveOptionalPhoto = setplanPhoto.Display;
-        if(haveOptionalPhoto)
+        try
         {
-            selectors.Add($"#{setplanPhoto.InputDataId}");
+            var selectors = new List<ImageSelector>();
+            if(coverPhoto.Display)
+            {
+                selectors.Add(new ImageSelector {
+                    Selector = $"#{coverPhoto.InputDataId}",
+                    Order = coverPhoto.Order
+                });
+            }
+            selectors.AddRange(imageItems.Select(i => {
+                return new ImageSelector {
+                    Selector = $"#{i.InputDataId}",
+                    Order = i.Order
+                };
+            }));
+            if(setplanPhoto.Display)
+            {
+                selectors.Add(new ImageSelector {
+                    Order = setplanPhoto.Order,
+                    Selector = $"#{setplanPhoto.InputDataId}"
+                });
+            }
+
+            var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", 
+                    selectors, createdActivityId, deletedIds);
+                    
+            return result.Success ?? false;
         }
-        var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", 
-                selectors, createdActivityId, deletedIds, haveOptionalPhoto);
-        return result.Success ?? false;
+        catch (System.Exception ex)
+        {
+            throw ex;
+        }
     }
 
     public void SetState(IList<ImageItem> images)
@@ -328,13 +352,11 @@
             coverPhoto.Id = coverImage.Id;
             coverPhoto.Order = coverImage.Order;
 
-            var supportedImages = images.Where(i => i.Id != coverImage.Id && i.Id != 100);
-            var lastIndex = supportedImages.Count() > 0 ? supportedImages.OrderByDescending(i => i.Order).First().Order + 1 : 0;
-
+            var supportedImages = images.Where(i => i.Id != coverImage.Id && i.Id != setplanPhoto.Id);
             foreach(var item in supportedImages)
             {
-                string inputId = $"img-preview-input-{lastIndex}";
-                string imgId = $"img-preview-src-{lastIndex}";
+                string inputId = $"img-preview-input-{item.Order}";
+                string imgId = $"img-preview-src-{item.Order}";
 
                 imageItems.Add(new ImageItem {
                     ContainerId = $"{imgId}-{inputId}",
@@ -343,10 +365,8 @@
                     ImageSrc = item.ImageSrc,
                     ImageSrcId = $"{imgId}",
                     InputDataId = $"{inputId}",
-                    Order = lastIndex
+                    Order = item.Order
                 });
-
-                lastIndex++;
             }
         }
     }
@@ -389,5 +409,11 @@
     {
         public string? Message {get; set;}
         public bool? Success {get; set;}
+    }
+
+    private class ImageSelector 
+    {
+        public string Selector {get; set;}
+        public int Order {get; set;}
     }
 }
