@@ -1,0 +1,88 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+@implements IOteComponent;
+@inject IJSRuntime JS;
+
+<section class="ote-summary-wrapper">
+    @if(Summary is not null)
+    {
+        <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
+            <div>
+                <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">@Summary.EventData.Name</h3>
+                <p class="font-20 color-black-100 mb-0">
+                    @Summary.EventData.Description
+                </p>
+            </div>
+            <Divider />
+            <div>
+                <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
+                <p class="font-20 color-black-100 mb-0">
+                    @Summary.PricingData.DateFrom.ToString("dd MMM yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
+                </p>
+            </div>
+            <Divider />
+            @if(Summary.LocationData.ExperienceType == 1)
+            {
+                <div>
+                    <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">venue</h3>
+                    <p class="font-20 color-black-100 mb-0">
+                        @Summary.LocationData.BarangayName, @Summary.LocationData.CityName @Summary.LocationData.RegionName
+                    </p>
+                    <Divider />
+                </div>
+            }
+            <div>
+                <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-4">ticket prices</h3>
+                @foreach (var item in Summary.PricingData.ItemPrices)
+                {
+                    <p class="font-20 font-weight-700 color-green-100 mb-2">₱ @item.Price.ToString("#,###")</p>
+                    <p class="font-16 color-grey-100 mb-3">@item.Description</p>
+                }
+            </div>
+        </div>
+    }
+    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+</section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnPrevClick {get; set;}
+
+    [Parameter]
+    public ComponentSummary Summary {get; set;}
+
+    private bool invokingNext = false;
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            invokingNext = true;
+            await OnNextClick.InvokeAsync();
+            invokingNext = false;
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if(OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
+        }
+    }
+
+    public Task<bool> FieldValid()
+    {
+        return Task.Run<bool>(() => true);
+    }
+
+    public class ComponentSummary 
+    {
+        public OteEvent.ModelData EventData {get; set;}
+        public OteLocation.ModelData LocationData {get; set;}
+        public OtePricing.ModelData PricingData {get; set;}
+    }
+}

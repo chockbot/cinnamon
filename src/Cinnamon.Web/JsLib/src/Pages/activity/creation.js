@@ -194,28 +194,6 @@ export async function initCreationInProgress(obj, activityId) {
   return await creationInProgress.uploadImages(activityId);
 }
 
-export async function addImageTemplate(imgId, inputId, containerSelector) {
-  const template = `
-    <div class="col-12 col-md-6 mb-4 d-none" id="${imgId}-${inputId}">
-        <input type="hidden" id="${inputId}" name = "${inputId}" class="generated-input-data" />
-        <img id="${imgId}" class="w-100" src="" alt="supporting-photo">
-    </div>
-    `;
-  $(containerSelector).append(template);
-}
-
-export async function removeImageTemplate(selector) {
-  $(selector).remove();
-}
-
-export async function showImageTemplate(selector) {
-  $(selector).removeClass("d-none");
-}
-
-export async function removeImageItems(selector) {
-  $(selector).empty();
-}
-
 export async function previewImage(imgSelector, inputSelector) {
   const inputElem = document.querySelector(inputSelector);
   const imgElem = document.querySelector(imgSelector);
@@ -223,12 +201,21 @@ export async function previewImage(imgSelector, inputSelector) {
   imgElem.src = urlSrc;
 }
 
-export async function uploadListImages(selectors, activityId, deletedIds) {
+export async function uploadListImages(
+  selectors,
+  activityId,
+  deletedIds,
+  haveOteOrder
+) {
+  debugger;
   const formData = new FormData();
   let orderCount = 0;
   for (const selector of selectors) {
     const file = dataUrlToFile($(selector).val(), "image");
     if (file) {
+      if (haveOteOrder && orderCount === selectors.length - 1) {
+        orderCount = 100;
+      }
       formData.append("Images", file);
       formData.append("Orders", orderCount);
       orderCount++;
@@ -249,6 +236,28 @@ export async function uploadListImages(selectors, activityId, deletedIds) {
   } catch (error) {
     return { success: false, message: error.message };
   }
+}
+
+export async function addImageTemplate(imgId, inputId, containerSelector) {
+  const template = `
+    <div class="col-12 col-md-6 mb-4 d-none" id="${imgId}-${inputId}">
+        <input type="hidden" id="${inputId}" name = "${inputId}" class="generated-input-data" />
+        <img id="${imgId}" class="w-100" src="" alt="supporting-photo">
+    </div>
+    `;
+  $(containerSelector).append(template);
+}
+
+export async function removeImageTemplate(selector) {
+  $(selector).remove();
+}
+
+export async function showImageTemplate(selector) {
+  $(selector).removeClass("d-none");
+}
+
+export async function removeImageItems(selector) {
+  $(selector).empty();
 }
 
 export default {

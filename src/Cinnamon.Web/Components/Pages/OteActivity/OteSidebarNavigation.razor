@@ -1,0 +1,38 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+
+<div class="ote-activity-wrapper d-flex flex-column overflow-hidden font-16 color-black-100 bg-white-200 border-radius-10">
+    @foreach (var item in SidebarItems)
+    {
+        <div @key="item" class="sidebar-item text-capitalize p-3 cursor-pointer prevent-select 
+            d-flex justify-content-between align-items-center" 
+            data-active="@item.IsActive" data-valid="@item.IsValid" @onclick="() => OnItemClick(item)">
+            <span>
+                @item.Label
+            </span>
+            <img class="img-active" src="images/experience-creation/play-desktop.png" alt="icon">
+            @if(item.IsValid && !item.IsActive)
+            {
+                <img src="images/Dashboard/rounded-check.png" alt="icon">
+            }
+        </div>
+    }
+</div>
+
+@code 
+{
+    [Parameter]
+    public IEnumerable<Item> SidebarItems {get; set;}
+
+    private async Task OnItemClick(Item item)
+    {
+        await item.OnClick.Invoke(item);
+    }
+
+    public class Item 
+    {
+        public string Label {get; set;}
+        public Func<Item,Task> OnClick {get; set;}
+        public bool IsActive {get; set;}
+        public bool IsValid {get; set;}
+    }
+}

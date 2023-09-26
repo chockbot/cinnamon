@@ -72,6 +72,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<ActivityScheduleTime> ActivityScheduleTimes {get; set; }
     public DbSet<ExperienceCreationType> ExperienceCreationTypes {get; set; }
     public DbSet<OngoingActivityScheduleTime> OngoingActivityScheduleTimes {get; set; }
+    public DbSet<OteSchedule> OteSchedules {get; set;}
+    public DbSet<OteSchedulePricing> OteSchedulePricings {get; set;}
 
     #endregion
 
@@ -270,6 +272,10 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
         modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
         modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});
+
+        // for ote schedule
+        modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
+        modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
