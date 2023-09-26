@@ -9,8 +9,9 @@
 @using Cinnamon.Framework.Enums
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject ITransactionApiHandler transactionApiHandler
 @attribute [Authorize]
 
 <PageTitle>Dashboard | CinnamonPH</PageTitle>
@@ -54,7 +55,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Earnings</p>
-                                <p class="amount">1,200</p>
+                                <p class="amount">@totalEarnings</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -65,7 +66,7 @@
                                 <p class="description">Total earnings from all activities</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
-                                <a class="earnings-link" href="">View earnings</a>
+                                <a class="earnings-link" href="/maker/dashboard/grosssale">View earnings</a>
                             </div>
                         </div>
                     </div>
@@ -120,7 +121,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Earnings</p>
-                                <p class="amount">1,200</p>
+                                <p class="amount">@totalEarnings</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -131,7 +132,7 @@
                                 <p class="description">Total earnings from all activities</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
-                                <a class="earnings-link" href="">View earnings</a>
+                                <a class="earnings-link" href="/maker/dashboard/grosssale">View earnings</a>
                             </div>
                         </div>
                     </div>
@@ -179,10 +180,9 @@
 
 
     <div class="col-12 justify-content-center user-information">
-        <div class="dashboard-wrapper">
-            @*Types of Activity Tab*@
-            <div class="col-lg-7 col-md-12 col-sm-12 col-12 dashboard-tab">
-                <section class="mt-5 customer-profile-details">
+        @*Types of Activity Tab*@
+        <div class="col-lg-7 col-md-12 col-sm-12 col-12 dashboard-tab">
+                <section class="dashboard-details-tab">
                     <Container>
                         <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
                             <div class="swiper-wrapper">
@@ -206,7 +206,7 @@
                                 </div>
                             </div>
                         </Div>
-                        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" FullWidth>
                             <Items>
                                 <Tab Name="general-activities" TextTransform="TextTransform.Capitalize">General Activities</Tab>
                                 <Tab Name="one-time-events" TextTransform="TextTransform.Capitalize">One Time Events</Tab>
@@ -609,30 +609,46 @@
                     </Container>
                 </section>
             </div>
-            @*Profile and Faqs*@
-            <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
-                <div class="col-12 profile-wrapper d-flex">
-                    <div class="col-lg-2 col-md-2 col-sm-3 col-3 profile-pic">
-                        <img class="rounded-2 rounded-circle m-3" src="@profile.ProfilePath" width="60" height="60" />
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-5 col-5 d-block">
-                        <p class="user-name">@profile.FirstName @profile.LastName</p>
-                        <a class="view-profile" href="/maker/profile/@(profile != null && !string.IsNullOrEmpty(profile.Handler) ? profile.Handler : activity.CreatedBy.ToString() )">View Profile</a>
-                    </div>
-                    @if (profile.IsVerified == 2)
-                    {
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 profile-badges">
-                            <div class="d-flex">
-                                <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Class="badges">
-                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
-                                </Tooltip>
-                                <p class="verified-text">Verified</p>
+        @*Profile and Faqs*@
+        <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
+            <div class="col-12 profile-wrapper d-flex">
+                <div class="col-lg-2 col-md-2 col-sm-3 col-3 profile-pic">
+                    <img class="rounded-2 rounded-circle m-3" src="@profile.ProfilePath" width="60" height="60" />
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-9 col-9 d-block">
+                    <p class="user-name">Hi, @profile.FirstName @profile.LastName</p>
+                    <div class="row d-flex col-12 justify-content-center progress-bar-section">
+                        <div class="row journey-card-section">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                                <div class="journey-card verified-label">
+                                    Verified
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                                <div class="journey-card rare-label">
+                                    Rare
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                                <div class="journey-card epic-label">
+                                    Epic
+                                </div>
+                                <div class="epic-arrow-down"></div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                                <div class="journey-card legendary-label">
+                                    Legendary
+                                </div>
                             </div>
                         </div>
-                    }
+                        <div class="progress col-12">
+                            <div class="progress-bar" role="progressbar" style="width:@(GetPercentage())%" aria-valuenow="@(GetPercentage())%" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="faqs-wrapper">
+            <div class="faqs-wrapper">
                     <p class="faqs-title">Faqs</p>
 
                     <p><a class="link-question" @onclick="() => ToggleAnswer(1)">What' s gonna happen when someone enrolls?</a></p>
@@ -661,7 +677,6 @@
                     </div>
                     <p><a class="link-question" @onclick="() => NavigateToHelp()">More information here.</a></p>
                 </div>
-            </div>
         </div>
     </div>
 }
@@ -678,11 +693,15 @@
 
     public List<Activity> AppointmentActvities = new List<Activity>();
 
+    private List<GrossSales> priceData = new List<GrossSales>();
+
     public Activity activity = new Activity();
 
     private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
 
     public CustomerProfile profile = new CustomerProfile();
+
+    private double cnt = 0;
 
     string token = string.Empty;
 
@@ -690,9 +709,13 @@
 
     private int NoOfEnrollees = 0;
 
+    private int NoOfCompleted = 0;
+
     private string selectedTab = "general-activities";
 
     private int selectedQuestion = 1;
+
+    private decimal totalEarnings { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -716,7 +739,7 @@
                 return;
             }
             var customer = result.Result.Result;
-
+            profile.Id = customer.Id;
             profile.FirstName = customer.FirstName;
             profile.LastName = customer.LastName;
             profile.Handler = customer.Handler;
@@ -740,6 +763,26 @@
                     ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
                     Token = token
                 };
+
+            //Get 1 Month Earnings 
+            DateTime startDate = DateTime.Today.AddMonths(-1);
+            var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+                {
+                    Id = profile.Id,
+                    DateFrom = startDate.ToString("yyyyMMddHHmmss")
+                }, Model.Token);
+            if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
+            {
+                priceData = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+                {
+                    return new GrossSales
+                        {
+                            PurchaseDate = e.PurchaseDate.Date,
+                            Total = e.Total
+                        };
+                }).ToList();
+            }
+            totalEarnings = priceData.Sum(a => a.Total);
         }
         catch (Exception e)
         {
@@ -810,7 +853,8 @@
                             };
                         }).ToList(),
                         Status = a.Status,
-                        OngoingStudents = a.OngoingStudents
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents
                     };
             }).ToList();
         }
@@ -818,16 +862,37 @@
         OTEActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).ToList();
         AppointmentActvities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment).ToList();
         NoOfEnrollees = activities.Sum(a => a.OngoingStudents);
+        NoOfCompleted = activities.Sum(a => a.CompletedStudents);
+
+        //Get Badges Percentage AND Date Obtained
+        if (profile.IsVerified == 2)
+        {
+            cnt++;
+        }
+        if (NoOfCompleted >= 10)
+        {
+            cnt++;
+            if (NoOfCompleted >= 25)
+            {
+                cnt++;
+                if (NoOfCompleted >= 100)
+                {
+                    cnt++;
+                }
+            }
+        }
     }
 
     private void NavigateToUserVerification()
     {
         NavigationManager.NavigateTo("customer/user-verification/?redirect=redirect_dashboard");
     }
+
     private void NavigateToOTECreation()
     {
         NavigationManager.NavigateTo("/experiences/ote");
     }
+
     private void NavigateToCreation()
     {
         NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.GeneralExperience);
@@ -836,6 +901,11 @@
     private void NavigateToAppointment()
     {
         NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.ExperienceViaAppointment);
+    }
+
+    private void NavigateToGrossSale()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/grosssale");
     }
 
     private void ToggleAnswer(int questionNumber)
@@ -849,8 +919,15 @@
             selectedQuestion = questionNumber;
         }
     }
+
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/maker/dashboard/help");
     }
+
+    public double GetPercentage()
+    {
+        return Math.Round(cnt / 4 * 100);
+    }
+
 }
