@@ -63,12 +63,34 @@ export function confirmation() {
 
             popEventListenerAdded = true;
         }
+              createUpdateActivity();
+
+              $("#regForm *").attr("readonly", "readonly");
+
+              setTimeout(redirectToDashboard, 2000);
+            }
+          } else {
+            console.log("stayed on page");
+            history.pushState(null, null, window.location.pathname);
+            event.preventDefault();
+          }
+        });
 
 
         $("#regForm").on("mousedown", stopNavigate);
 
 
-    });
+              $("#regForm *").attr("readonly", "readonly");
+
+              setTimeout(redirectToDashboard, 2000);
+            }
+          } else {
+            console.log("stayed on page");
+            history.pushState(null, null, window.location.pathname);
+            event.preventDefault();
+          }
+        });
+      }
 
     function stopNavigate() {
         $(window).off("beforeunload");
