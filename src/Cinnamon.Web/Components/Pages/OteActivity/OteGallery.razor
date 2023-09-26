@@ -201,8 +201,8 @@
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         var files = e.GetMultipleFiles();
-
         var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 1;
+        
         for(int i = 0; i < files.Count; i++)
         {
             string inputId = $"img-preview-input-{lastIndex}";
