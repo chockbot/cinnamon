@@ -97,7 +97,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                     RegionName = args.Activity.RegionName,
                     ScheduleFrom = args.Activity.ScheduleFrom,
                     ScheduleTo = args.Activity.ScheduleTo,
-                    StringPrice = stringPrice
+                    StringPrice = stringPrice,
+                    IsComingSoon = args.Activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

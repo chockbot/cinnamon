@@ -86,7 +86,8 @@ public class OteCreateHandler : IOteCreateHandler
                     RegionName = activity.RegionName,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    StringPrice = stringPrice
+                    StringPrice = stringPrice,
+                    IsComingSoon = args.Activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {

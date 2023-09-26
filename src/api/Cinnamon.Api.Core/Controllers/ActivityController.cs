@@ -1277,7 +1277,8 @@ public class ActivityController : ControllerBase
                             PhoneNumber = activity.Owner.PhoneNumber
                         } : null,
                     OngoingStudents = activity.OngoingStudents,
-                    CompletedStudents = activity.CompletedStudents
+                    CompletedStudents = activity.CompletedStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -1384,7 +1385,8 @@ public class ActivityController : ControllerBase
                             Id  = activity.Owner.Id
                         } : null,
                     CompletedStudents = activity.CompletedStudents,
-                    OngoingStudents = activity.OngoingStudents
+                    OngoingStudents = activity.OngoingStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -2493,7 +2495,8 @@ public class ActivityController : ControllerBase
                     RegionCode = activity.RegionCode ?? string.Empty,
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2552,6 +2555,7 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

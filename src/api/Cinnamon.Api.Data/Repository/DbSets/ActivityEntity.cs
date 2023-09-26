@@ -316,6 +316,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 activityResult.IsPublished = activity.IsPublished;
                 activityResult.ExperienceCategoryId = activity.ExperienceCategoryId;
                 activityResult.Handler = activity.Handler;
+                activityResult.IsPublished = activity.IsPublished;
+                activityResult.IsComingSoon = activity.IsComingSoon;
 
                 activityResult.ActivityDescription.Description = description.Description;
 

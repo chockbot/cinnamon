@@ -1613,7 +1613,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon)
     {
         try
         {
@@ -1631,7 +1631,8 @@ public class ActivityRepository : IActivityRepository
                 Guid = Guid.NewGuid().ToString(),
                 Status = 1,
                 ExperienceCreationTypeId = experienceCreationTypeId,
-                CreatedBy = customerId
+                CreatedBy = customerId,
+                IsComingSoon = comingSoon
             };
 
             var activityDescription = new Entities.ActivityDescription {
@@ -1703,7 +1704,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId)
+        bool isPublished, string handler, int categoryId, bool comingSoon)
     {
         try
         {
@@ -1715,7 +1716,8 @@ public class ActivityRepository : IActivityRepository
                 Price = stringPrice,
                 IsPublished = isPublished,
                 ExperienceCategoryId = categoryId,
-                Handler = handler
+                Handler = handler,
+                IsComingSoon = comingSoon
             };
 
             var activityDescription = new Entities.ActivityDescription {
