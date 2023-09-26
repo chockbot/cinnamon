@@ -101,6 +101,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
                         Status = a.Status,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,
