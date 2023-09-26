@@ -92,6 +92,7 @@ public class GetActivityHandler : IGetActivityHandler
                 PinnedLocation= activity.PinnedLocation,
                 Status = activity.Status,
                 ExperienceCreationType = activity.ExperienceCreationType,
+                IsComingSoon = activity.IsComingSoon,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,
