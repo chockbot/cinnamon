@@ -81,14 +81,12 @@
         cropperResult.FileSize = 0;
     }
 
-    private Task LoopAsync()
+    private async Task LoopAsync()
     {
-        return Task.Run(() => {
-            while(!isCompleted)
-            {
-            }
-            return Task.CompletedTask;
-        });
+        while(!isCompleted)
+        {
+            await Task.Delay(25);
+        }
     }
 
     private async Task ExecuteCropImage()
