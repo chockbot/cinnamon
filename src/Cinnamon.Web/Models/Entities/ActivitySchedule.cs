@@ -67,7 +67,6 @@ public class ActivitySchedule
     public Cinnamon.Framework.Enums.Enums.PriceType PriceType { get; set; }
     public bool IsSelected { get; set; }
     public string SchedulingUrl { get; set; }
-    public bool IsSelected {get; set;}
     public long LongPrice { 
         get{
             return (long)Price;

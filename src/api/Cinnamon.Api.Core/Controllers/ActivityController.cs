@@ -2395,42 +2395,6 @@ public class ActivityController : ControllerBase
         }
     }
 
-=========
->>>>>>>>> Temporary merge branch 2
-    [Route("ExperienceCreationTypes")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetExperienceCreationTypes()
-    {
-        try
-        {
-            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetExperienceCreationTypeResult
-            {
-                Result = result.Result.ExperienceCreationTypes.Select(e => {
-                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
-                    {
-                        Id = e.Id,
-                        Description = e.Description,
-                        ImagePath = e.ImagePath,
-                        IsActive = e.IsActive,
-                        Name = e.Name
-                    };
-                }),
-                IsSuccess = true
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [Route("GetActivityScheduleTimes")]
     [HttpGet]
     [AllowAnonymous]
@@ -2503,54 +2467,6 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
-    [Route("PopularActivities")]
-    [HttpGet]
-    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
-    [AllowAnonymous]
-    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
-    {
-        try
-        {
-            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs {
-                Skip = args.PageIndex,
-                Take = args.CountPerPage
-            });
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new PopularActivitiesResult
-            {
-                IsSuccess = true,
-                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
-                    Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
-                            CityName = a.CityName,
-                            ExperienceTypeId = a.ExperienceTypeId,
-                            Handler = a.Handler,
-                            Id = a.Id,
-                            ImageSrc = a.ImageSrc,
-                            IsNew = a.IsNew,
-                            MakerId = a.MakerId,
-                            OngoingStudentCount = a.OngoingStudentCount,
-                            Price = a.Price,
-                            Rating = a.Rating,
-                            RegionName = a.RegionName,
-                            ReviewCount = a.ReviewCount,
-                            StudentCount = a.StudentCount,
-                            Title = a.Title
-                        };
-                    })
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
