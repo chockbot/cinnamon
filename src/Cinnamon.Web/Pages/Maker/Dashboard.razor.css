@@ -244,24 +244,6 @@ p {
     padding-top: 0.5rem;
 }
 
-.personal-tab-swiper .swiper-slide {
-    width: auto !important;
-}
-
-    .personal-tab-swiper .swiper-slide .tab-item {
-        padding: 0.5rem 1rem;
-        font-size: 18px;
-        font-weight: 700;
-        text-transform: capitalize;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-
-        .personal-tab-swiper .swiper-slide .tab-item.active {
-            background-color: var(--primary);
-            color: #fff;
-        }
-
 /*CONTENT*/
 .experience-container {
     background: #ffffff;
@@ -496,7 +478,23 @@ hr {
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
+::deep .personal-tab-swiper .swiper-slide {
+    width: auto !important;
+}
 
+    ::deep .personal-tab-swiper .swiper-slide .tab-item {
+        padding: 0.5rem 1rem;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: capitalize;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+        ::deep .personal-tab-swiper .swiper-slide .tab-item.active {
+            background-color: var(--primary);
+            color: #fff;
+        }
 ::deep .dashboard-details-tab .activitySwiper .swiper-slide {
     width: 100%;
 }
