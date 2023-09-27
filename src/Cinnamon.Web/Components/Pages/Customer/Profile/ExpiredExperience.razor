@@ -1,4 +1,4 @@
-@using Cinnamon.Web.Models.Entities;
+﻿@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
 @inject IOngoingActivitiesHandler ongoingApiHandler
@@ -7,12 +7,12 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <article class="ongoing-experience-wrapper py-3">
-    <h3 class="title">Ongoing Experiences</h3>
-    <div class="ongoing-experiences-containers" Margin="Margin.Is3.FromTop">
+    <h3 class="title">Expired Experiences</h3>
+    <div class="ongoing-experiences-container" Margin="Margin.Is3.FromTop">
         <div class="customer-wrapper">
             @if (Activities != null)
             {
-                <OngoingExperienceItem Activity="Activities" Students="OngoingStudents" ActivityItemType="OngoingExperienceItem.ItemType.Ongoing" isLoading="isLoading" Profile="Profile" />
+                <OngoingExperienceItem Activity="Activities" Students="ExpiredStudents" ActivityItemType="OngoingExperienceItem.ItemType.Expired" isLoading=isLoading Profile="Profile" />
             }
         </div>
     </div>
@@ -23,10 +23,11 @@
 {
     [Parameter]
     public IEnumerable<Activity> Activities { get; set; }
+
     [Parameter]
     public CustomerProfile Profile { get; set; }
 
-    public List<Students> OngoingStudents { get; set; } = new List<Students>();
+    public List<Students> ExpiredStudents { get; set; } = new List<Students>();
 
     public List<Students> students = new List<Students>();
 
@@ -84,10 +85,12 @@
                     };
             }).ToList();
         }
-
-        OngoingStudents = students.Where(a => a.SessionsAttended < a.NumberOfSessions 
-            && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue))
-           .OrderByDescending(s => s.PurchaseDate).ToList();
+        ExpiredStudents = students
+        .Where(a => (a.activitySchedule.HasExpiration == 0 && a.SessionsAttended < a.NumberOfSessions)
+                 || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended < a.NumberOfSessions)
+                 || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended < a.NumberOfSessions)
+                 && (a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateEnd != DateTime.MinValue)).
+                 OrderByDescending(a => a.ExpirationDateEnd).ToList();
         isLoading = false;
     }
 }

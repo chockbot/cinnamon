@@ -86,38 +86,13 @@
             }).ToList();
         }
         CompletedStudents = students
-        .Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.activitySchedule.HasExpiration == 0)
-            || (a.activitySchedule.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-            || (a.activitySchedule.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-            || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-            || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-            && a.ExpirationDateEnd != DateTime.MinValue)
-        .OrderBy(s =>
-        {
-            if (s.studentAttendance.Date != DateTime.MinValue && s.ExpirationDateEnd != DateTime.MinValue)
-            {
-                // Both dates are valid, choose the earliest
-                return s.studentAttendance.Date.CompareTo(s.ExpirationDateEnd) < 0
-                    ? s.studentAttendance.Date
-                    : s.ExpirationDateEnd;
-            }
-            else if (s.studentAttendance.Date == DateTime.MinValue)
-            {
-                // Only 'ExpirationDateEnd' is valid
-                return s.ExpirationDateEnd.Date;
-            }
-            else if (s.ExpirationDateEnd == DateTime.MinValue)
-            {
-                // Only 'studentAttendance.Date' is valid
-                return s.studentAttendance.Date;
-            }
-            else
-            {
-                // Both dates are equal to DateTime.MinValue, prioritize 'ExpirationDateEnd'
-                return s.ExpirationDateEnd;
-            }
-        }).ToList();
-
+        .Where(a => (a.activitySchedule.HasExpiration == 0 && a.SessionsAttended >= a.NumberOfSessions)
+                 || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                 || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                 && (a.ExpirationDateEnd >= a.studentAttendance.Date && a.ExpirationDateEnd != DateTime.MinValue 
+                 && a.studentAttendance.Date != DateTime.MinValue)).
+                 OrderByDescending(a => a.studentAttendance.Date).
+                 ToList();
         isLoading = false;
     }
 }
