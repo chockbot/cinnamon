@@ -97,9 +97,14 @@ else
                             }
                         }
                     }
-                    else
+                    else if (ActivityItemType == ItemType.Completed)
                     {
-                        if (item.activitySchedule != null)
+                        <div class="xp-body-item">
+                            <p class="secondary-caption">
+                                Completed: @item.studentAttendance.Date.ToString("MMMM dd, yyyy")
+                            </p>
+                        </div>
+                        @*if (item.activitySchedule != null)
                         {
                             switch (item.activitySchedule.HasExpiration)
                             {
@@ -147,7 +152,15 @@ else
                                     </p>
                                 }
                             </div>
-                        }
+                        }*@
+                    }
+                    else
+                    {
+                        <div class="xp-body-item">
+                            <p class="secondary-caption">
+                                Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                            </p>
+                        </div>
                     }
                 </div>
                 <div class="experience-header">
@@ -173,6 +186,22 @@ else
                 </div>
             }
             else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
+            {
+                <div class="view-button">
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                        Write a Review
+                    </Button>
+                </div>
+            }
+            else if (ActivityItemType == ItemType.Expired && item.HasReview == true)
+            {
+                <div class="view-button">
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
+                        View Attendance
+                    </Button>
+                </div>
+            }
+            else if (ActivityItemType == ItemType.Expired && item.HasReview == false)
             {
                 <div class="view-button">
                     <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
@@ -343,7 +372,8 @@ else
     public enum ItemType 
     {
         Ongoing = 0,
-        Completed = 1
+        Completed = 1,
+        Expired = 2
     }
 
     [Parameter]
