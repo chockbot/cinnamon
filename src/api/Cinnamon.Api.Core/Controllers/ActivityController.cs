@@ -127,10 +127,10 @@ public class ActivityController : ControllerBase
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.updateCouponHandler = updateCouponHandler;
         this.recommendedActivitiesHandler = recommendedActivitiesHandler;
+        this.popularActivitiesHandler = popularActivitiesHandler;
         this.getExperienceCreationTypeHandler = getExperienceCreationTypeHandler;
         this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
-        this.popularActivitiesHandler = popularActivitiesHandler;
         this.oteCreateHandler = oteCreateHandler;
         this.oteUpdateHandler = oteUpdateHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -697,6 +697,7 @@ public class ActivityController : ControllerBase
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
@@ -2309,6 +2310,88 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ExperienceCreationTypes")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExperienceCreationTypes()
+    {
+        try
+        {
+            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetExperienceCreationTypeResult
+            {
+                Result = result.Result.ExperienceCreationTypes.Select(e => {
+                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
+                    {
+                        Id = e.Id,
+                        Description = e.Description,
+                        ImagePath = e.ImagePath,
+                        IsActive = e.IsActive,
+                        Name = e.Name
+                    };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("PopularActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs {
+                Skip = args.PageIndex,
+                Take = args.CountPerPage
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new PopularActivitiesResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
+                    Activities = result.Result.Activities.Select(a => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
+                            CityName = a.CityName,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Handler = a.Handler,
+                            Id = a.Id,
+                            ImageSrc = a.ImageSrc,
+                            IsNew = a.IsNew,
+                            MakerId = a.MakerId,
+                            OngoingStudentCount = a.OngoingStudentCount,
+                            Price = a.Price,
+                            Rating = a.Rating,
+                            RegionName = a.RegionName,
+                            ReviewCount = a.ReviewCount,
+                            StudentCount = a.StudentCount,
+                            Title = a.Title
+                        };
+                    })
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
