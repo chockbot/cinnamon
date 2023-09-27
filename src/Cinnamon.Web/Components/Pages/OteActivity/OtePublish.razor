@@ -123,6 +123,13 @@
         };
     }
 
+    public void SetState(ModelData data)
+    {
+        model.AcceptTerms = data.AcceptTerms;
+        model.ComingSoon = data.ComingSoon;
+        model.Publish = data.IsPublish;
+    }
+
     private class FormModel 
     {
         public bool Publish {get; set;} = true;

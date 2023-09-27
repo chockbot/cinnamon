@@ -132,17 +132,15 @@
                 coverPhotoItem.Order = coverImage.Order;
 
                 var supportedImages = images.Where(i => i.Id != coverImage.Id);
-                int lastIndex = 0;
                 foreach(var image in supportedImages)
                 {
-                    string inputId = $"img-preview-input-{lastIndex}";
-                    string imgId = $"img-preview-src-{lastIndex}";
+                    string inputId = $"img-preview-input-{image.Order}";
+                    string imgId = $"img-preview-src-{image.Order}";
                     var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, 
                         ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", 
                         Order = image.Order, Display = true, ImageSrc = image.ImageSrc, ImageId = image.Id};
 
                     imageItems.Add(imageItem);
-                    lastIndex++;
                 }
             }
         }
@@ -176,16 +174,17 @@
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         var files = e.GetMultipleFiles();
+        var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 1;
 
         for(int i = 0; i < files.Count; i++)
         {
-            var lastIndex = imageItems.Count > 0 ? imageItems.OrderByDescending(i => i.Order).First().Order + 1 : 0;
             string inputId = $"img-preview-input-{lastIndex}";
             string imgId = $"img-preview-src-{lastIndex}";
 
             var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", Order = lastIndex};
             imageItems.Add(imageItem);
             StateHasChanged();
+            lastIndex++;
 
             if(imageCropper is not null)
             {
@@ -206,6 +205,7 @@
                 else 
                 {
                     imageItems.Remove(imageItem);
+                    lastIndex--;
                 }
             }
             StateHasChanged();
@@ -214,9 +214,18 @@
 
     public async Task<bool> UploadImages(int createdActivityId)
     {
-        var selectors = new List<string>();
-        selectors.Add($"#{coverPhotoItem.InputDataId}");
-        selectors.AddRange(imageItems.Select(i => $"#{i.InputDataId}"));
+        var selectors = new List<ImageSelector>();
+        selectors.Add(new ImageSelector {
+            Order = coverPhotoItem.Order,
+            Selector = $"#{coverPhotoItem.InputDataId}"
+        });
+        selectors.AddRange(imageItems.Select(i => {
+            return new ImageSelector {
+                Order = i.Order,
+                Selector = $"#{i.InputDataId}"
+            };
+        }));
+
         var result = await jsRuntime.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages", selectors, createdActivityId, deletedIds);
         return result.Success ?? false;
     }
@@ -284,5 +293,11 @@
     {
         public string? Message {get; set;}
         public bool? Success {get; set;}
+    }
+
+    private class ImageSelector 
+    {
+        public string Selector {get; set;}
+        public int Order {get; set;}
     }
 }

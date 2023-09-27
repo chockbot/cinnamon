@@ -365,7 +365,7 @@
             {
                 SetActiveItem(++currentIndex);
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
-                if(currentIndex >= 4)
+                if(currentIndex == 4)
                 {
                     summary = GetSummary();
                 }
@@ -399,6 +399,7 @@
     {
         try
         {
+            summary = GetSummary();
             var location = summary.LocationData;
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
@@ -462,6 +463,7 @@
     {
         try
         {
+            summary = GetSummary();
             var location = summary.LocationData;
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
@@ -588,6 +590,12 @@
                 Order = i.Order
             };
         }).ToList());
+
+        otePublish.SetState(new OtePublish.ModelData {
+            AcceptTerms = true,
+            ComingSoon = ote.IsComingSoon,
+            IsPublish = ote.IsPublished
+        });
     }
 
     private OteSummary.ComponentSummary GetSummary()
