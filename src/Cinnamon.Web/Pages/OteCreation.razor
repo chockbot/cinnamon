@@ -1,0 +1,641 @@
+@page "/experiences/ote"
+@page "/experiences/ote/{handler}"
+@using System.Security.Claims;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Components.Pages.OteActivity;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject INotificationService NotificationService;
+@inject IPageProgressService ProgressService;
+@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime JS;
+@attribute [Authorize]
+
+<PageTitle>Create an One time event | CinnamonPH</PageTitle>
+<SeoMeta Title="Create an one time event" Subject="Create an one time event" Url="/creation/ote" />
+
+<div class="xp-ote-page-wrapper">
+    <Container>
+        <div class="progress-bar-section mt-4">
+            <p class="progress-details">
+                IN PROGRESS: Step @(currentIndex + 1) of 6 <span id="loader"></span>
+            </p>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </Container>
+    <div class="mobile-navigation bg-white-200 py-2 my-4 m-d-block">
+        <Container>
+            <Row class="align-items-center">
+                <Column ColumnSize="ColumnSize.Is2" class="text-start">
+                    <div>
+                        <img @onclick="MovePrev" class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is8" class="text-center">
+                    <label class="font-24 color-black-100 text-capitalize">@sidebarItems[currentIndex].Label</label>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2" class="text-end">
+                    <div>
+                        <img @onclick="MoveNext" src="images/experience-creation/play-mobile.png" alt="">
+                    </div>
+                </Column>
+            </Row>
+        </Container>
+    </div>
+    <Container class="pb-5">
+        <div class="d-flex justify-content-start mt-5 mb-5 m-d-none">
+            <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
+        </div>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left m-d-none">
+                <OteSidebarNavigation SidebarItems="sidebarItems" />
+                <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
+                <div>
+                    @if(currentIndex < 4)
+                    {
+                        <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
+                        <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
+                    }
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
+                <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
+                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
+                </div>
+                <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                    <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                    <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
+            </Column>
+        </Row>
+    </Container>
+</div>
+
+@code 
+{
+    [Parameter]
+    public string Handler {get; set;}
+
+    private int currentIndex = 0;
+    private OteEvent? oteEvent;
+    private OteLocation? oteLocation;
+    private OtePricing? otePricing;
+    private OteGallery? oteGallery;
+    private OteSummary? oteSummary;
+    private OtePublish? otePublish;
+    private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
+    private IList<string> sidebarImages = new List<string>();
+    private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
+    private OteSummary.ComponentSummary? summary = default;
+    
+    private string token = string.Empty;
+    private int accountId = 0;
+    private int oteId = 0;
+
+    protected override void OnInitialized()
+    {
+        LoadSidebarItems();
+        LoadImages();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // get user token
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if(!user.Identity.IsAuthenticated || string.IsNullOrEmpty(token))
+            {
+                // don't have current user login
+                throw new ApplicationException("Invalid request");
+            }
+
+            var accountRes = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs {}, token);
+            if(!accountRes.Succeeded || accountRes.Result is null || !accountRes.Result.IsSuccess)
+            {
+                throw new ApplicationException("Invalid request");
+            }
+            accountId = accountRes.Result.Result.Id;
+
+            if(!string.IsNullOrEmpty(Handler))
+            {
+                LoadComponentState();
+            }
+        }
+        catch (System.Exception)
+        {
+            NavigationManager.NavigateTo("explore");
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            LoadComponents();
+        }
+    }
+
+    private double GetPerentCompletion
+    {
+        get
+        {
+            return Math.Round((currentIndex + 1) * 16.66);
+        }
+    }
+
+    private void LoadSidebarItems()
+    {
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "event",
+            IsActive = true,
+            OnClick = NavigateToEvent
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "location",
+            IsActive = false,
+            OnClick = NavigateToLocation
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "pricing & schedule",
+            IsActive = false,
+            OnClick = NavigateToPricings
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "gallery",
+            IsActive = false,
+            OnClick = NavigateToGallery
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "summary",
+            IsActive = false,
+            OnClick = NavigateToSummary
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "publish",
+            IsActive = false,
+            OnClick = NavigateToPublish
+        });
+    }
+
+    private async Task NavigateToEvent(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 0)
+        {
+            var (valid, _) = await  CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(0);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToLocation(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 1)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(1);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToPricings(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 2)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(2);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToGallery(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 3)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(3);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToSummary(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 4)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(4);
+                summary = GetSummary();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 5)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(5);
+                summary = GetSummary();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void SetActiveItem(int index)
+    {
+        foreach(var i in sidebarItems)
+        {
+            i.IsActive = false;
+        }
+        currentIndex = index;
+        sidebarItems[currentIndex].IsActive = true;
+    }
+
+    private void SetValidItem(int index, bool valid)
+    {
+        sidebarItems[index].IsValid = valid;
+    }
+
+    private void LoadImages()
+    {
+        sidebarImages.Add("images/ote/event-preview.svg");
+        sidebarImages.Add("images/ote/location-preview.svg");
+        sidebarImages.Add("images/ote/pricing-preview.svg");
+        sidebarImages.Add("images/ote/gallery-preview.svg");
+    }
+
+    private void LoadComponents()
+    {
+        components.Clear();
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = oteEvent,
+            Name = "event",
+            HasNext = true,
+            HasPrevious = false
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = oteLocation,
+            Name = "location",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = otePricing,
+            Name = "pricing",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = oteGallery,
+            Name = "gallery",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = oteSummary,
+            Name = "summary",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = otePublish,
+            Name = "publish",
+            HasNext = false,
+            HasPrevious = true
+        });
+    }
+
+    private async Task NextClick()
+    {
+        var (valid, field) = await CurrentFieldValid();
+        SetValidItem(currentIndex, valid);
+
+        if(valid && field is not null)
+        {
+            if(field.HasNext)
+            {
+                SetActiveItem(++currentIndex);
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+                if(currentIndex == 4)
+                {
+                    summary = GetSummary();
+                }
+            }
+            else
+            {
+                if(oteId == 0)
+                {
+                    await PublishOte();
+                }
+                else
+                {
+                    await UpdateOte();
+                }
+            }
+        }
+    }
+
+    private async Task<Tuple<bool, ComponentItem<IOteComponent>?>> CurrentFieldValid()
+    {
+        var component = components[currentIndex];
+        if(component.Component is not null)
+        {
+           bool valid = await component.Component.FieldValid();
+           return Tuple.Create<bool, ComponentItem<IOteComponent>?>(valid, component);
+        }
+        return Tuple.Create<bool, ComponentItem<IOteComponent>?>(false, null);
+    }
+
+    private async Task PublishOte()
+    {
+        try
+        {
+            summary = GetSummary();
+            var location = summary.LocationData;
+            var eventData = summary.EventData;
+            var schedule = summary.PricingData;
+            var publishData = summary.PublishData;
+
+            await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
+
+            var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
+                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
+                    BarangayCode = location.BarangayCode,
+                    BarangayName = location.BarangayName,
+                    CityName = location.CityName,
+                    CityNumber = location.CityCode,
+                    Description = eventData.Description,
+                    EventName = eventData.Name,
+                    ExperienceCreationTypeId = 3,
+                    ExperienceTypeId = location.ExperienceType,
+                    HouseNo = location.HouseNo,
+                    IsPublished = publishData.IsPublish,
+                    PinnedLocation = location.PinnedLocation,
+                    PostalCode = location.PostalCode,
+                    Recurrence = schedule.Recurrences,
+                    RegionCode = location.RegionCode,
+                    RegionName = location.RegionName,
+                    ScheduleFrom = schedule.DateFrom,
+                    ScheduleTo = schedule.DateTo,
+                    IsComingSoon = publishData.ComingSoon
+                },
+                Pricings = schedule.ItemPrices.Select(p => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
+                        Description = p.Description,
+                        IsAbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                    };
+                })
+            }, token);
+
+            await ProgressService.Go(-1);
+
+            if(!publishOte.Succeeded || publishOte.Result is null || !publishOte.Result.IsSuccess)
+            {
+                throw new ApplicationException(publishOte.Message);
+            }
+            
+            if(oteGallery is not null)
+            {
+                var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
+            }
+
+            await JS.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+            NavigationManager.NavigateTo("/maker/dashboard");
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured when publishing OTE.", "Error");
+        }
+    }
+
+    private async Task UpdateOte()
+    {
+        try
+        {
+            summary = GetSummary();
+            var location = summary.LocationData;
+            var eventData = summary.EventData;
+            var schedule = summary.PricingData;
+            var publishData = summary.PublishData;
+
+            await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
+
+            var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
+                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteActivity {
+                    BarangayCode = location.BarangayCode,
+                    BarangayName = location.BarangayName,
+                    CategoryId = eventData.Category,
+                    CityName = location.CityName,
+                    CityNumber = location.CityCode,
+                    Description = eventData.Description,
+                    EventName = eventData.Name,
+                    ExperienceTypeId = location.ExperienceType,
+                    HouseNo = location.HouseNo,
+                    Id = oteId,
+                    IsPublished = publishData.IsPublish,
+                    PinnedLocation = location.PinnedLocation,
+                    PostalCode = location.PostalCode,
+                    Recurrence = schedule.Recurrences,
+                    RegionCode = location.RegionCode,
+                    RegionName = location.RegionName,
+                    ScheduleFrom = schedule.DateFrom,
+                    ScheduleTo = schedule.DateTo,
+                    IsComingSoon = publishData.ComingSoon
+                },
+                Pricings = schedule.ItemPrices.Select(p => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OtePricing {
+                        Description = p.Description,
+                        Id = p.Id,
+                        IsAbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price
+                    };
+                })
+            }, token);
+
+            await ProgressService.Go(-1);
+
+            if(!updateRes.Succeeded || updateRes.Result is null || !updateRes.Result.IsSuccess)
+            {
+                throw new ApplicationException(updateRes.Message);
+            }
+
+            if(oteGallery is not null)
+            {
+                var uploadRes = await oteGallery.UploadImages(oteId);
+            }
+
+            NavigationManager.NavigateTo("/maker/dashboard");
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured when publishing OTE.", "Error");
+        }
+    }
+
+    private async Task LoadComponentState()
+    {
+        var oteRes = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {
+            IncludeAddress = true,
+            IncludeDescription = true,
+            IncludePricing = true,
+            IncludeSchedule = true,
+            IncludeImages = true
+        }, Handler);
+
+        if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+            return;
+        }
+
+        if(oteRes.Result.Result.ProviderId != accountId)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+        var ote = oteRes.Result.Result;
+
+        oteId = ote.Id;
+
+        oteEvent.SetState(new OteEvent.ModelData {
+            Category = ote.CategoryId,
+            Description = ote.Description,
+            Name = ote.EventName
+        });
+
+        oteLocation.SetState(new OteLocation.ModelData {
+            BarangayCode = ote.BarangayCode,
+            BarangayName = ote.BarangayName,
+            CityCode = ote.CityNumber,
+            CityName = ote.CityName,
+            ExperienceType = ote.ExperienceTypeId,
+            HouseNo = ote.HouseNo,
+            PinnedLocation = ote.PinnedLocation,
+            PostalCode = ote.PostalCode,
+            RegionCode = ote.RegionCode,
+            RegionName = ote.RegionName
+        });
+
+        otePricing.SetState(new OtePricing.ModelData {
+            DateFrom = ote.ScheduleFrom,
+            DateTo = ote.ScheduleTo,
+            Recurrences = ote.Recurrences,
+            ItemPrices = ote.Pricings.Select(p => {
+                return new OtePricing.ModelData.ItemPrice {
+                    AbsorbFees = p.IsAbsorbFees,
+                    Description = p.Description,
+                    Id = p.Id,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList()
+        });
+
+        oteGallery.SetState(ote.Images.Select(i => {
+            return new OteGallery.ImageItem {
+                Id = i.Id,
+                ImageSrc = i.ImageSrc,
+                Order = i.Order
+            };
+        }).ToList());
+
+        otePublish.SetState(new OtePublish.ModelData {
+            AcceptTerms = true,
+            ComingSoon = ote.IsComingSoon,
+            IsPublish = ote.IsPublished
+        });
+    }
+
+    private OteSummary.ComponentSummary GetSummary()
+    {
+        return new OteSummary.ComponentSummary {
+            EventData = oteEvent.GetData(),
+            LocationData = oteLocation.GetData(),
+            PricingData = otePricing.GetData(),
+            PublishData = otePublish.GetData()
+        };
+    }
+
+    private async Task MoveNext()
+    {
+        var (valid, field) = await CurrentFieldValid();
+        if(valid && field.HasNext && currentIndex < sidebarItems.Count -1)
+        {
+            SetActiveItem(++currentIndex);
+            if(currentIndex == 4)
+            {
+                summary = GetSummary();
+            }
+        }
+    }
+
+    private async Task MovePrev()
+    {
+        var (valid, field) = await CurrentFieldValid();
+        if(valid && field.HasPrevious && currentIndex > 0)
+        {
+            SetActiveItem(--currentIndex);
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+        }
+    }
+
+    private class ComponentItem<T> where T : IOteComponent 
+    {
+        public T? Component {get; set;}
+        public string Name {get; set;} = string.Empty;
+        public bool HasPrevious {get; set;}
+        public bool HasNext {get; set;}
+    }
+}

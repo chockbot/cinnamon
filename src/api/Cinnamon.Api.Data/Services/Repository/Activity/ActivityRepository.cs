@@ -10,16 +10,21 @@ using Cinnamon.Api.Data.Repository.Entities;
 using static Cinnamon.Framework.Enums.Enums;
 using System;
 using Cinnamon.Framework.Enums;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Api.Data.Extensions;
+using AutoMapper;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
 public class ActivityRepository : IActivityRepository
 {
     private readonly IDataStore dataStore;
+    private readonly IMapper mapper;
 
-    public ActivityRepository(IDataStore dataStore)
+    public ActivityRepository(IDataStore dataStore, IMapper mapper)
     {
         this.dataStore = dataStore;
+        this.mapper = mapper;
     }
 
     public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
@@ -75,7 +80,7 @@ public class ActivityRepository : IActivityRepository
                 IsNew = true,
                 Guid = Guid.NewGuid().ToString(),
                 Status = (int)status,
-                ExperienceCreationTypeId = (int)experienceCreationType
+                ExperienceCreationTypeId = (int)experienceCreationType,
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -224,7 +229,7 @@ public class ActivityRepository : IActivityRepository
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
                 Handler = handler,
-                
+                IsComingSoon = createdActitivityRes.Result.IsComingSoon
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -273,6 +278,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 Handler = activity.Handler,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -437,7 +443,8 @@ public class ActivityRepository : IActivityRepository
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
                     IsDeactivated        = a.IsDeactivated,
-                    Status               = (Enums.ActivityStatus)a.Status
+                    Status               = (Enums.ActivityStatus)a.Status,
+                    IsComingSoon         = a.IsComingSoon
                 };
 
                 // address fields
@@ -609,6 +616,7 @@ public class ActivityRepository : IActivityRepository
                     ExperienceTypeId = a.ExperienceTypeId,
                     MapDetails = a.MapDetails,
                     Handler = a.Handler,
+                    IsComingSoon = a.IsComingSoon
                 };
             });
 
@@ -663,6 +671,7 @@ public class ActivityRepository : IActivityRepository
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -859,7 +868,8 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
-                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -1304,6 +1314,7 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsComingSoon         = a.IsComingSoon
                 };
 
                 // address fields
@@ -1553,6 +1564,7 @@ public class ActivityRepository : IActivityRepository
                     SubCategoryId = s.SubCategoryId ?? 0,
                     SubTitle      = s.Subtitle,
                     Title         = s.Title,
+                    IsComingSoon  = s.IsComingSoon,
                     Schedules = s.Schedules.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
                     {
                         DateTime         = i.DateTime,
@@ -1595,6 +1607,202 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+        }
+    }
+
+    public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
+        string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
+        string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon)
+    {
+        try
+        {
+            var activity = new Entities.Activity {
+                Description = description,
+                Title = eventName,
+                ExperienceTypeId = experienceTypeId,
+                Price = stringPrice,
+                IsPublished = isPublished,
+                ExperienceCategoryId = 1,
+                SubCategoryId = 1,
+                Handler = handler,
+                IsNew = true,
+                IsDeactivated = false,
+                Guid = Guid.NewGuid().ToString(),
+                Status = 1,
+                ExperienceCreationTypeId = experienceCreationTypeId,
+                CreatedBy = customerId,
+                IsComingSoon = comingSoon
+            };
+
+            var activityDescription = new Entities.ActivityDescription {
+                Description = description
+            };
+
+            var address = new Entities.ActivityAddress {
+              Address1 = houseNo ?? string.Empty,
+              City = cityNumber ?? string.Empty,
+              CityName = cityName ?? string.Empty,
+              Barangay = barangayCode ?? string.Empty,
+              BarangayName = barangayName ?? string.Empty,
+              Region = regionCode ?? string.Empty,
+              RegionName = regionName ?? string.Empty,
+              PinnedLocation = pinnedLocation ?? string.Empty,
+              PostalCode = postalCode ?? string.Empty,  
+            };
+
+            var schedule = new Entities.OteSchedule {
+                From = scheduleFrom.SetKindUtc(),
+                To = scheduleTo.SetKindUtc(),
+                Recurrences = recurrence
+            };
+            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
+                return new OteSchedulePricing {
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule);
+            if(!createRes.Succeeded || createRes.Result is null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(new ActivityDTO {
+                Address1 = houseNo ?? string.Empty,
+                Barangay = barangayCode ?? string.Empty,
+                BarangayName = barangayName ?? string.Empty,
+                City = cityNumber ?? string.Empty,
+                CityName = cityName ?? string.Empty,
+                Description = description,
+                ExperienceCategoryId = 1,
+                ExperienceCreationType = Enums.ExperienceCreationType.OneTimeEvents,
+                Handler = handler,
+                ExperienceTypeId = experienceTypeId,
+                Id = createRes.Result.Id,
+                IsDeactivated = false,
+                IsNew = true,
+                PinnedLocation = pinnedLocation ?? string.Empty,
+                PostalCode = postalCode ?? string.Empty,
+                Price = stringPrice,
+                Title = eventName,
+                IsPublished = isPublished,
+                Region = regionCode ?? string.Empty,
+                RegionName = regionName ?? string.Empty,
+                SubCategoryId = 1,
+            }, "One time event successfully created.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when creating One time event.");
+        }
+    }
+
+    public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
+        string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
+        string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
+        bool isPublished, string handler, int categoryId, bool comingSoon)
+    {
+        try
+        {
+            var activity = new Entities.Activity {
+                Id = id,
+                Description = description,
+                Title = eventName,
+                ExperienceTypeId = experienceTypeId,
+                Price = stringPrice,
+                IsPublished = isPublished,
+                ExperienceCategoryId = categoryId,
+                Handler = handler,
+                IsComingSoon = comingSoon
+            };
+
+            var activityDescription = new Entities.ActivityDescription {
+                Description = description
+            };
+
+            var address = new Entities.ActivityAddress {
+              Address1 = houseNo,
+              City = cityNumber,
+              CityName = cityName,
+              Barangay = barangayCode,
+              BarangayName = barangayName,
+              Region = regionCode,
+              RegionName = regionName,
+              PinnedLocation = pinnedLocation,
+              PostalCode = postalCode,  
+            };
+
+            var schedule = new Entities.OteSchedule {
+                From = scheduleFrom.SetKindUtc(),
+                To = scheduleTo.SetKindUtc(),
+                Recurrences = recurrence
+            };
+            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
+                return new OteSchedulePricing {
+                    Id = p.Id,
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price
+                };
+            }).ToList();
+
+            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
+            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(new ActivityDTO {
+                Address1 = houseNo,
+                Barangay = barangayCode,
+                BarangayName = barangayName,
+                City = cityNumber,
+                CityName = cityName,
+                Description = description,
+                ExperienceCategoryId = categoryId,
+                ExperienceCreationType = Enums.ExperienceCreationType.OneTimeEvents,
+                Handler = handler,
+                ExperienceTypeId = experienceTypeId,
+                Id = id,
+                PinnedLocation = pinnedLocation,
+                PostalCode = postalCode,
+                Price = stringPrice,
+                Title = eventName,
+                IsPublished = isPublished,
+                Region = regionCode,
+                RegionName = regionName,
+            }, "One time event successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when updating One time event.");
+        }
+    }
+    
+    public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, 
+        bool includeProvider = false, bool includeImages = false)
+    {
+        try
+        {
+            var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, 
+                includeSchedule, includePricing, includeProvider, includeImages);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var model = mapper.Map<OteActivityDTO>(result.Result);
+            return AppResult<OteActivityDTO>.CreateSucceeded(model, "Sucessfully find one time event");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
         }
     }
 }

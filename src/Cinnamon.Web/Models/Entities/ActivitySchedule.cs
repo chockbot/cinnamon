@@ -65,8 +65,8 @@ public class ActivitySchedule
     public DateTime? StartDate { get; set; }
     public Cinnamon.Framework.Enums.Enums.ScheduleType ScheduleType { get; set; }
     public Cinnamon.Framework.Enums.Enums.PriceType PriceType { get; set; }
-    public bool IsSelected { get; set; }
     public string SchedulingUrl { get; set; }
+    public bool IsSelected {get; set;}
     public long LongPrice { 
         get{
             return (long)Price;

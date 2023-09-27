@@ -1,0 +1,73 @@
+@namespace Cinnamon.Web.Components.Pages.OteActivity
+
+<div class="section-footer mt-4 d-flex">
+    @if(HavePrevious)
+    {
+        <Button class="@PrevButtonClass" Disabled="LoadingNext" @onclick="PreviousClick">
+            Back
+        </Button>
+    }
+    <Button class="@NextButtonClass" @onclick="NextClick"
+        Loading="LoadingNext" Disabled="LoadingNext">
+        <LoadingTemplate>
+            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+            @LoadingLabel
+        </LoadingTemplate>
+        <ChildContent>
+            Next
+        </ChildContent>
+    </Button>
+</div>
+
+@code 
+{
+    [Parameter]
+    public bool HavePrevious {get; set;} = true;
+
+    [Parameter]
+    public EventCallback OnPreviousClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnNextClick {get; set;}
+
+    [Parameter]
+    public bool LoadingNext {get; set;}
+
+    [Parameter]
+    public string LoadingLabel {get; set;} = "Next";
+
+    [Parameter]
+    public string NextButtonExtraClass {get; set;}
+
+    private string NextButtonClass 
+    {
+        get
+        {
+            return $"bg-orange-100 color-white-100 text-capitalize font-24 hover-color-white px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 {NextButtonExtraClass}";
+        }
+    }
+
+    private string PrevButtonClass 
+    {
+        get
+        {
+            return "me-2 bg-white-200 color-black-100 text-capitalize font-24 hover-color-black-100 px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 m-margin-right-10";
+        }
+    }
+
+    private async Task PreviousClick()
+    {
+        if(OnPreviousClick.HasDelegate)
+        {
+            await OnPreviousClick.InvokeAsync();
+        }
+    }
+
+    private async Task NextClick()
+    {
+        if(OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync();
+        }
+    }
+}

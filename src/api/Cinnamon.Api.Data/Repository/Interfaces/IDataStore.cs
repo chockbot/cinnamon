@@ -41,6 +41,8 @@ public interface IDataStore
     IActivityScheduleTime ActivityScheduleTime {get; }
     IExperienceCreationType ExperienceCreationType {get; }
     IOngoingActivityScheduleTime OngoingActivityScheduleTime { get; }
+    IOteSchedule OteSchedule {get;}
+    IOteSchedulePricing OteSchedulePricing {get;}
 
     Task EnsureMigrate();
 

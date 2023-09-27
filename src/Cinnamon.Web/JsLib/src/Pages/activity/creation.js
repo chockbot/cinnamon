@@ -194,6 +194,39 @@ export async function initCreationInProgress(obj, activityId) {
   return await creationInProgress.uploadImages(activityId);
 }
 
+export async function previewImage(imgSelector, inputSelector) {
+  const inputElem = document.querySelector(inputSelector);
+  const imgElem = document.querySelector(imgSelector);
+  const urlSrc = inputElem.value;
+  imgElem.src = urlSrc;
+}
+
+export async function uploadListImages(selectors, activityId, deletedIds) {
+  const formData = new FormData();
+  for (const selector of selectors) {
+    const file = dataUrlToFile($(selector.selector).val(), "image");
+    if (file) {
+      formData.append("Images", file);
+      formData.append("Orders", selector.order);
+    }
+  }
+  formData.append("ActivityId", activityId);
+  // for deleted ids
+  for (const id of deletedIds) {
+    formData.append("DeletedIds", id);
+  }
+
+  try {
+    const result = await axios.postForm(
+      "api/activity/UploadActivityImage",
+      formData
+    );
+    return { success: result.data.success, message: result.data.message };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
 export async function addImageTemplate(imgId, inputId, containerSelector) {
   const template = `
     <div class="col-12 col-md-6 mb-4 d-none" id="${imgId}-${inputId}">
@@ -214,41 +247,6 @@ export async function showImageTemplate(selector) {
 
 export async function removeImageItems(selector) {
   $(selector).empty();
-}
-
-export async function previewImage(imgSelector, inputSelector) {
-  const inputElem = document.querySelector(inputSelector);
-  const imgElem = document.querySelector(imgSelector);
-  const urlSrc = inputElem.value;
-  imgElem.src = urlSrc;
-}
-
-export async function uploadListImages(selectors, activityId, deletedIds) {
-  const formData = new FormData();
-  let orderCount = 0;
-  for (const selector of selectors) {
-    const file = dataUrlToFile($(selector).val(), "image");
-    if (file) {
-      formData.append("Images", file);
-      formData.append("Orders", orderCount);
-      orderCount++;
-    }
-  }
-  formData.append("ActivityId", activityId);
-  // for deleted ids
-  for (const id of deletedIds) {
-    formData.append("DeletedIds", id);
-  }
-
-  try {
-    const result = await axios.postForm(
-      "api/activity/UploadActivityImage",
-      formData
-    );
-    return { success: result.data.success, message: result.data.message };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
 }
 
 export default {
