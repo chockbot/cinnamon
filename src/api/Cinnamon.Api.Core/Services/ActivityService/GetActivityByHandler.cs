@@ -125,7 +125,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     Id = activity.Owner.Id
                 } : null,
                 OngoingStudents = activity.OngoingStudents,
-                CompletedStudents = activity.CompletedStudents
+                CompletedStudents = activity.CompletedStudents,
+                IsComingSoon = activity.IsComingSoon
             };
 
             return AppResult<GetActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get activity");

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
@@ -8,6 +9,9 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -59,6 +63,10 @@ public class ActivityController : ControllerBase
     private readonly ILogger _logger;
     private readonly IRecommendedActivitiesHandler recommendedActivitiesHandler;
     private readonly IPopularActivitiesHandler popularActivitiesHandler;
+    private readonly IOteCreateHandler oteCreateHandler;
+    private readonly IOteUpdateHandler oteUpdateHandler;
+    private readonly IOteFindByHandler oteFindByHandler;
+    private readonly IMapper mapper;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -78,7 +86,8 @@ public class ActivityController : ControllerBase
         IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
-        IPopularActivitiesHandler popularActivitiesHandler)
+        IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
+        IOteFindByHandler oteFindByHandler, IMapper mapper)
     {
         _logger = logger;
 
@@ -118,10 +127,14 @@ public class ActivityController : ControllerBase
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.updateCouponHandler = updateCouponHandler;
         this.recommendedActivitiesHandler = recommendedActivitiesHandler;
+        this.popularActivitiesHandler = popularActivitiesHandler;
         this.getExperienceCreationTypeHandler = getExperienceCreationTypeHandler;
         this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
-        this.popularActivitiesHandler = popularActivitiesHandler;
+        this.oteCreateHandler = oteCreateHandler;
+        this.oteUpdateHandler = oteUpdateHandler;
+        this.oteFindByHandler = oteFindByHandler;
+        this.mapper = mapper;
     }
 
     [Route("CreateActivity")]
@@ -684,6 +697,7 @@ public class ActivityController : ControllerBase
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
@@ -1264,7 +1278,8 @@ public class ActivityController : ControllerBase
                             PhoneNumber = activity.Owner.PhoneNumber
                         } : null,
                     OngoingStudents = activity.OngoingStudents,
-                    CompletedStudents = activity.CompletedStudents
+                    CompletedStudents = activity.CompletedStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -1371,7 +1386,8 @@ public class ActivityController : ControllerBase
                             Id  = activity.Owner.Id
                         } : null,
                     CompletedStudents = activity.CompletedStudents,
-                    OngoingStudents = activity.OngoingStudents
+                    OngoingStudents = activity.OngoingStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -2327,7 +2343,59 @@ public class ActivityController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("PopularActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs
+            {
+                Skip = args.PageIndex,
+                Take = args.CountPerPage
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new PopularActivitiesResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO
+                {
+                    Activities = result.Result.Activities.Select(a =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity
+                        {
+                            CityName = a.CityName,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Handler = a.Handler,
+                            Id = a.Id,
+                            ImageSrc = a.ImageSrc,
+                            IsNew = a.IsNew,
+                            MakerId = a.MakerId,
+                            OngoingStudentCount = a.OngoingStudentCount,
+                            Price = a.Price,
+                            Rating = a.Rating,
+                            RegionName = a.RegionName,
+                            ReviewCount = a.ReviewCount,
+                            StudentCount = a.StudentCount,
+                            Title = a.Title
+                        };
+                    })
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -2406,51 +2474,155 @@ public class ActivityController : ControllerBase
         }
     }
 
-    [Route("PopularActivities")]
-    [HttpGet]
-    [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
-    [AllowAnonymous]
-    public async Task<IActionResult> PopularActivities([FromQuery] PopularActivitiesArgs args)
+    [Route("CreateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateOte([FromBody] CreateOteArgs args)
     {
         try
         {
-            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs {
-                Skip = args.PageIndex,
-                Take = args.CountPerPage
+            var activity = args.Activity;
+            var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs {
+                Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
+                },
+                Pricings = args.Pricings.Select(p => {
+                    return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
+                        Description = p.Description,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price
+                    };
+                })
             });
+
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new PopularActivitiesResult
+            return new JsonResult(new CreateOteResult
             {
-                IsSuccess = true,
-                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
-                    Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
-                            CityName = a.CityName,
-                            ExperienceTypeId = a.ExperienceTypeId,
-                            Handler = a.Handler,
-                            Id = a.Id,
-                            ImageSrc = a.ImageSrc,
-                            IsNew = a.IsNew,
-                            MakerId = a.MakerId,
-                            OngoingStudentCount = a.OngoingStudentCount,
-                            Price = a.Price,
-                            Rating = a.Rating,
-                            RegionName = a.RegionName,
-                            ReviewCount = a.ReviewCount,
-                            StudentCount = a.StudentCount,
-                            Title = a.Title
-                        };
-                    })
-                }
+               IsSuccess = result.Succeeded,
+               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                ActivityId = result.Result.Id
+               }
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateOte")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOte([FromBody] UpdateOteArgs args)
+    {
+        try
+        {
+            var activity = args.Activity;
+            var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs {
+                Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity {
+                    BarangayCode = activity.BarangayCode ?? string.Empty,
+                    BarangayName = activity.BarangayName ?? string.Empty,
+                    CategoryId = activity.CategoryId,
+                    CityName = activity.CityName ?? string.Empty,
+                    CityNumber = activity.CityNumber ?? string.Empty,
+                    Description = activity.Description,
+                    EventName = activity.EventName,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    HouseNo = activity.HouseNo ?? string.Empty,
+                    Id = activity.Id,
+                    IsPublished = activity.IsPublished,
+                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
+                    PostalCode = activity.PostalCode ?? string.Empty,
+                    Recurrence = activity.Recurrence,
+                    RegionCode = activity.RegionCode ?? string.Empty,
+                    RegionName = activity.RegionName ?? string.Empty,
+                    ScheduleFrom = activity.ScheduleFrom,
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
+                },
+                Pricings = args.Pricings.Select(p => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
+                        Description = p.Description,
+                        Id = p.Id,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price
+                    };
+                })
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateOteResult
+            {
+               IsSuccess = result.Succeeded,
+               Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                ActivityId = result.Result.Id
+               }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteActivityResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> OteByHandler([FromQuery] OteActivityArgs args, string handler)
+    {
+        try
+        {
+            var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
+                Handler = handler,
+                IncludeAddress = args.IncludeAddress ?? false,
+                IncludeDescription = args.IncludeDescription ?? false,
+                IncludePricing = args.IncludePricing ?? false,
+                IncludeSchedule = args.IncludeSchedule ?? false,
+                IncludeImages = args.IncludeImages ?? false
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResult = mapper.Map<ActivityResults.OteFindByHandlerResult, CoreDto.Activity.OteActivityDTO>(result.Result);
+            return new JsonResult(new OteActivityResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

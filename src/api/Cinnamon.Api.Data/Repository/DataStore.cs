@@ -90,6 +90,10 @@ public class DataStore : IDataStore
     public IExperienceCreationType ExperienceCreationType => new ExperienceCreationTypeEntity(applicationContext);
 
     public IOngoingActivityScheduleTime OngoingActivityScheduleTime => new OngoingActivityScheduleTimeEntity(applicationContext);
+    
+    public IOteSchedule OteSchedule => new OteScheduleEntity(applicationContext);
+
+    public IOteSchedulePricing OteSchedulePricing => new OteSchedulePricingEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {

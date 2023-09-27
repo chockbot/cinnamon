@@ -5,6 +5,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Data;
+using AutoMapper;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -265,6 +266,132 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+        }
+    }
+
+    public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    {
+        try
+        {
+            description.Activity = activity;
+            address.Activity = activity;
+            oteSchedule.Activity = activity;
+            var schedulePricing = oteSchedule.OteSchedulePricing.Select(p => {
+                p.OteSchedule = oteSchedule;
+                return p;
+            });
+
+            this.applicationContext.Activities.Add(activity);
+            this.applicationContext.ActivityAddress.Add(address);
+            this.applicationContext.ActivityDescriptions.Add(description);
+            this.applicationContext.OteSchedules.Add(oteSchedule);
+            this.applicationContext.OteSchedulePricings.AddRange(schedulePricing);
+            await this.applicationContext.SaveChangesAsync();
+
+            return AppResult<Activity>.CreateSucceeded(activity, "One time activity successfully created.");
+        }
+        catch (Exception ex) 
+        {
+            return AppResult<Activity>.CreateFailed(ex, "An error occured when creating One time event.");
+        }
+    }
+
+    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    {
+        try
+        {
+            var activityResult = await applicationContext.Activities
+                    .Where(a => a.Id == activity.Id)
+                    .Include(a => a.ActivityDescription)
+                    .Include(a => a.Address)
+                    .Include(a => a.OteSchedule)
+                    .ThenInclude(p => p.OteSchedulePricing)
+                    .FirstOrDefaultAsync();
+            
+            if(activityResult is not null)
+            {
+                activityResult.Description = activity.Description;
+                activityResult.Title = activity.Title;
+                activityResult.ExperienceTypeId = activity.ExperienceTypeId;
+                activityResult.Price = activity.Price;
+                activityResult.IsPublished = activity.IsPublished;
+                activityResult.ExperienceCategoryId = activity.ExperienceCategoryId;
+                activityResult.Handler = activity.Handler;
+                activityResult.IsPublished = activity.IsPublished;
+                activityResult.IsComingSoon = activity.IsComingSoon;
+
+                activityResult.ActivityDescription.Description = description.Description;
+
+                activityResult.Address.Address1 = address.Address1;
+                activityResult.Address.City = address.City;
+                activityResult.Address.CityName = address.CityName;
+                activityResult.Address.Barangay = address.Barangay;
+                activityResult.Address.BarangayName = address.BarangayName;
+                activityResult.Address.Region = address.Region;
+                activityResult.Address.RegionName = address.RegionName;
+                activityResult.Address.PinnedLocation = address.PinnedLocation;
+                activityResult.Address.PostalCode = address.PostalCode;
+
+                activityResult.OteSchedule.From = oteSchedule.From;
+                activityResult.OteSchedule.To = oteSchedule.To;
+                activityResult.OteSchedule.Recurrences = oteSchedule.Recurrences;
+
+                var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
+                foreach(var item in activityResult.OteSchedule.OteSchedulePricing)
+                {
+                    var local = updatedPricingList.FirstOrDefault(p => p.Id == item.Id);
+                    if(local is not null)
+                    {
+                        item.Description = local.Description;
+                        item.IsAbsorbFees = local.IsAbsorbFees;
+                        item.MaxSlots = local.MaxSlots;
+                        item.Price = local.Price;
+                    }
+                }
+
+                var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
+                foreach(var item in newPricingList)
+                {
+                    activityResult.OteSchedule.OteSchedulePricing.Add(item);
+                }
+
+                await applicationContext.SaveChangesAsync();
+            }
+
+            return AppResult<Activity>.CreateSucceeded(activityResult, "One time event successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<Activity>.CreateFailed(ex, "An error occured when updating One time event");
+        }
+    }
+
+    public async Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
+        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false)
+    {
+        try
+        {
+            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower());
+
+            if(includeAddress) query = query.Include(a => a.Address);
+            if(includeDescription) query = query.Include(a => a.ActivityDescription);
+            if(includeProvider) query = query.Include(a => a.Customer);
+            if(includeImages) query = query.Include(a => a.Images);
+            if(includeSchedule && includePricing) query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+            if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
+
+            var result = await query.FirstOrDefaultAsync();
+
+            if(result is null)
+            {
+                return AppResult<Activity>.CreateFailed(new ApplicationException("Can't find ote activity"), "Can't find ote activity");
+            }
+
+            return AppResult<Activity>.CreateSucceeded(result, "Successfully find ote activity");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<Activity>.CreateFailed(ex, "An error occured when finding ote activity");
         }
     }
 }
