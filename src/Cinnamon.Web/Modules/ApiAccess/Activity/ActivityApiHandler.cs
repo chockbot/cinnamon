@@ -806,6 +806,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/PopularActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<PopularActivitiesResult>();
+
+            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+        }
+    }
+
     public async Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token)
     {
         try
