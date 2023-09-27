@@ -1,0 +1,43 @@
+@namespace Cinnamon.Web.Components.Common
+
+<div class="calendar-wrapper" style="width: 500px;">
+    <div class="calendar-grid-container">
+        <div class="grid-item">sun</div>
+        <div class="grid-item">mon</div>
+        <div class="grid-item">tue</div>
+        <div class="grid-item">wed</div>
+        <div class="grid-item">thu</div>
+        <div class="grid-item">fri</div>
+        <div class="grid-item">sat</div>
+        @foreach (var item in calendarItems)
+        {
+            <div class="grid-item">@item.Date.Day</div>
+        }
+    </div>
+</div>
+
+@code 
+{
+    private IList<CalendarItem> calendarItems = new List<CalendarItem>();
+
+    protected override void OnInitialized()
+    {
+        LoadCalendarItems();
+    }
+
+    private void LoadCalendarItems()
+    {
+        var now = DateTime.Now;
+        for(int i = 0; i < 30; i++)
+        {
+            calendarItems.Add(new CalendarItem {
+                Date = new DateTime(now.Year, now.Month, i + 1)
+            });
+        }
+    }
+
+    private class CalendarItem 
+    {
+        public DateTime Date {get; set;}
+    }
+}

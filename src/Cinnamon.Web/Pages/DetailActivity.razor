@@ -20,6 +20,7 @@
 @using Microsoft.EntityFrameworkCore
 @using Cinnamon.Framework.Helpers
 @using Cinnamon.Web.Modules.Services
+@using Cinnamon.Web.Components.Common;
 
 <PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
     <SeoMeta Title="@(activity?.Title ?? string.Empty)"
@@ -28,6 +29,8 @@
          Url='@($"/explore/{Identifier}")'
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
+
+<Calendar />
 
 @if (Model.Customer != null)
 {
