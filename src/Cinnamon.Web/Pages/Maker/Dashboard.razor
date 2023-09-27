@@ -7,11 +7,15 @@
 @using Cinnamon.Web.Models.Maker;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Framework.Enums
+@using Microsoft.JSInterop
+@using Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject ITransactionApiHandler transactionApiHandler
+@inject IJSRuntime jsRuntime
 @attribute [Authorize]
 
 <PageTitle>Dashboard | CinnamonPH</PageTitle>
@@ -805,6 +809,11 @@
                 ActivityId = activity.ActivityId,
                 Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init");
     }
 
     private async Task DeleteActivity(int activityId)
