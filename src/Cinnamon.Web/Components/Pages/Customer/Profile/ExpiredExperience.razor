@@ -86,11 +86,10 @@
             }).ToList();
         }
         ExpiredStudents = students
-        .Where(a => (a.activitySchedule.HasExpiration == 0 && a.SessionsAttended < a.NumberOfSessions)
-                 || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended < a.NumberOfSessions)
+        .Where(a => (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended < a.NumberOfSessions)
                  || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended < a.NumberOfSessions)
-                 && (a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateEnd != DateTime.MinValue)).
-                 OrderByDescending(a => a.ExpirationDateEnd).ToList();
+                 && (a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateEnd != DateTime.MinValue))
+                 .OrderByDescending(a => a.ExpirationDateEnd).ToList();
         isLoading = false;
     }
 }
