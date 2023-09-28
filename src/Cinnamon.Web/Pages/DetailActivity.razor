@@ -42,7 +42,7 @@
             </div>
         </div>
     }
-    <Container>
+    <Container class="xp-details-wrapper">
         <div id="alertContainer" class="alertContainer">
             <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
         </div>
@@ -388,7 +388,7 @@
                     </div>
                     
                     @*Experience Schedule*@
-                    @if(activity is not null && !activity.IsComingSoon)
+                    @if(activity is not null && activity.ExperienceCreationType != Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents && !activity.IsComingSoon)
                     {
                         <div class="schedule-desktop">
                             <hr />
@@ -539,9 +539,89 @@
                         </div>
                     }
 
-                    <div class="p-4 bg-black-100" style="z-index: 99; position: relative;">
-                        <SelectCalendar CurrentDate="DateTime.Now" SelectedDates="new List<DateTime>{DateTime.Now}" ViewOnly />
-                    </div>
+                    @* for ote events schedule *@
+                    @if(activity is not null && activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents && !activity.IsComingSoon)
+                    {
+                        <div class="xp-ote-container mt-4 mb-5">
+                            <h3 class="font-24 font-weight-700 color-black-100">Date & Time</h3>
+                            <div class="select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
+                                <SelectCalendar CurrentDate="DateTime.Now" SelectedDates="new List<DateTime>{DateTime.Now}" ViewOnly />
+                                <Button class="font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
+                            </div>
+                            <div class="mt-4 border-radius-10 border-1-solid border-color-grey-200 overflow-hidden">
+                                <div class="p-3">
+                                    <p class="font-20 font-weight-700 color-black-100 mb-3">The Juans Live in Cebu</p>
+                                    <Row VerticalGutter="20">
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <div class="d-flex align-items-center">
+                                                <img class="me-3" src="images/ote/clock-repeat.png" alt="clock">
+                                                <label class="font-16 color-black-100">3 Hours</label>
+                                            </div>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <div class="d-flex align-items-center">
+                                                <img class="me-3" src="images/ote/clock.png" alt="clock">
+                                                <label class="font-16 color-black-100">06:00 PM</label>
+                                            </div>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                            <div class="d-flex align-items-center">
+                                                <img class="me-3" src="images/ote/location.png" alt="clock">
+                                                <label class="font-16 color-black-100">Waterfront Hotel & Casino, Cebu City</label>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                </div>
+                                <div class="border-top-1-solid border-color-grey-200 p-3">
+                                    <Row class="align-items-center">
+                                        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                                            <p class="font-20 font-weight-700 color-black-100 mb-0">Balcony</p>
+                                            <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ 1,100</p>
+                                            <p class="font-16 text-justify color-grey-100 mt-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero cum explicabo optio commodi, 
+                                                facere nisi rerum sit ullam incidunt qui?</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                                            <div class="d-flex border-1-solid item-counter-container text-center">
+                                                <span class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
+                                                <span class="p-1 border-right-1-solid counter-item">0</span>
+                                                <span class="p-1 counter-item prevent-select cursor-pointer">+</span>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                    <Row class="align-items-center">
+                                        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                                            <p class="font-20 font-weight-700 color-black-100 mb-0">Balcony</p>
+                                            <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ 1,100</p>
+                                            <p class="font-16 text-justify color-grey-100 mt-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero cum explicabo optio commodi, 
+                                                facere nisi rerum sit ullam incidunt qui?</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                                            <div class="d-flex border-1-solid item-counter-container text-center">
+                                                <span class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
+                                                <span class="p-1 border-right-1-solid counter-item">0</span>
+                                                <span class="p-1 counter-item prevent-select cursor-pointer">+</span>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                    <Row class="align-items-center">
+                                        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                                            <p class="font-20 font-weight-700 color-black-100 mb-0">Balcony</p>
+                                            <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ 1,100</p>
+                                            <p class="font-16 text-justify color-grey-100 mt-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero cum explicabo optio commodi, 
+                                                facere nisi rerum sit ullam incidunt qui?</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                                            <div class="d-flex border-1-solid item-counter-container text-center">
+                                                <span class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
+                                                <span class="p-1 border-right-1-solid counter-item">0</span>
+                                                <span class="p-1 counter-item prevent-select cursor-pointer">+</span>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
                     @* for coming soon events *@
                     @if(activity is not null && activity.IsComingSoon)
@@ -555,7 +635,11 @@
                     @if(activity is not null && !activity.IsComingSoon)
                     {
                         <div class="important-information">
-                            <hr />
+                            @* do not displaf if ote *@
+                            @if(activity is not null && !activity.IsComingSoon && activity.ExperienceCreationType != Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                            {
+                                <hr />
+                            }
                             <p class="fw-bold mb-3 detail-label">Important Information</p>
                             <p class="important-question">What will happen after I purchase?</p>
                             <ol class="important-answer">
@@ -1039,7 +1123,8 @@
                             Handler = result.Owner.Handler
                         } : null,
                         CompletedStudents = result.CompletedStudents,
-                        OngoingStudents = result.OngoingStudents
+                        OngoingStudents = result.OngoingStudents,
+                        ExperienceCreationType = result.ExperienceCreationType
                     };
                 MakerActivity.Add(activity);
 
