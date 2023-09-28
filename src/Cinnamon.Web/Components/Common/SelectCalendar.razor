@@ -1,0 +1,61 @@
+@namespace Cinnamon.Web.Components.Common
+
+<div class="select-calendar-wrapper position-relative" @onblur="() => displayCalendar = false">
+    <div class="input prevent-select" @onclick="() => displayCalendar = !displayCalendar">
+        <span class="font-18 color-grey-100">
+            @(selectedDate.HasValue ? selectedDate.Value.ToString("MMMM dd, yyyy") : "")
+        </span>
+        <span>
+            <img src="images/arrow-down.png" alt="arrow">
+        </span>
+    </div>
+    <div class="@DisplayCalendar">
+        <Calendar ViewOnly="ViewOnly" SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate" />
+    </div>
+</div>
+
+@code 
+{
+    [Parameter]
+    public IEnumerable<DateTime> SelectedDates {get; set;} = Enumerable.Empty<DateTime>();
+    [Parameter]
+    public DateTime CurrentDate {get; set;}
+    [Parameter]
+    public bool ViewOnly {get; set;}
+    [Parameter]
+    public EventCallback<DateTime> OnSelectedDate {get; set;}
+
+    private bool displayCalendar {get; set;}
+    private DateTime? selectedDate;
+
+    protected override void OnInitialized()
+    {
+        selectedDate = SelectedDates.FirstOrDefault();
+    }
+
+    private string DisplayCalendar
+    {
+        get
+        {
+            string result = "calendar-container mt-1";
+            if(!displayCalendar) 
+            {
+                result += " d-none";
+            }
+            return result;
+        }
+    }
+
+    private async Task SelectedDate(DateTime date)
+    {
+        if(SelectedDates.Any(d => d.Date == date.Date))
+        {
+            displayCalendar = false;
+            selectedDate = date;
+            if(OnSelectedDate.HasDelegate)
+            {
+                await OnSelectedDate.InvokeAsync(date);
+            }
+        }
+    }
+}

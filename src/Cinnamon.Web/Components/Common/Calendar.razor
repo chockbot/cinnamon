@@ -1,0 +1,140 @@
+@namespace Cinnamon.Web.Components.Common
+
+<div class="calendar-wrapper">
+    <div class="calendar-header d-flex align-items-center justify-content-between">
+        <div>
+            <img @onclick="PrevMonthClick" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
+        </div>
+        <div class="text-center font-20 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM")</div>
+        <div>
+            <img @onclick="NextMonthClick" style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
+        </div>
+    </div>
+    <div class="calendar-grid-container">
+        <div class="grid-item header">sun</div>
+        <div class="grid-item header">mon</div>
+        <div class="grid-item header">tue</div>
+        <div class="grid-item header">wed</div>
+        <div class="grid-item header">thu</div>
+        <div class="grid-item header">fri</div>
+        <div class="grid-item header">sat</div>
+        @foreach (var item in calendarItems)
+        {
+            <div class="grid-item" @key="item">
+                @if(!item.Empty)
+                {
+                    <span class="@DayClass(item.Selected)" @onclick="() => OnDayClick(item)">
+                        @NumberString(item.Date.Day)
+                    </span>
+                }
+                else {
+                    <span class="@DayClass(false)"></span>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code 
+{
+    [Parameter]
+    public DateTime CurrentDate {get; set;}
+    [Parameter]
+    public IEnumerable<DateTime> SelectedDates {get; set;} = Enumerable.Empty<DateTime>();
+    [Parameter]
+    public bool ViewOnly {get; set;}
+    [Parameter]
+    public EventCallback<DateTime> OnSelectedDate {get; set;}
+
+    private IList<CalendarItem> calendarItems = new List<CalendarItem>();
+    private DateTime activeDate;
+
+    protected override void OnInitialized()
+    {
+        activeDate = CurrentDate;
+        LoadCalendarItems();
+    }
+
+    private void LoadCalendarItems()
+    {
+        calendarItems.Clear();
+        var now = activeDate;
+        var startDate = new DateTime(now.Year, now.Month, 1);
+        var endDate = startDate.AddMonths(1).AddDays(-1);
+        var skipCount = (int)startDate.DayOfWeek;
+
+        for(int i = 0; i < endDate.Day + (skipCount + 1); i++)
+        {
+            if(i <= skipCount)
+            {
+                calendarItems.Add(new CalendarItem {
+                    Empty = true
+                });
+            }
+            else
+            {
+                var date = new DateTime(now.Year, now.Month, i - skipCount);
+                calendarItems.Add(new CalendarItem {
+                    Empty = false,
+                    Date = date,
+                    Selected = SelectedDates.Any(a => a.Date == date.Date)
+                });
+            }
+        }
+    }
+
+    private string DayClass(bool selected)
+    {
+        string result = "day prevent-select";
+        if(selected)
+        {
+            result += $" selected rounded-circle";
+        }
+        return result;
+    }
+
+    private async Task OnDayClick(CalendarItem item)
+    {
+        if(!ViewOnly)
+        {
+            item.Selected = !item.Selected;
+        }
+        if(OnSelectedDate.HasDelegate)
+        {
+            await OnSelectedDate.InvokeAsync(item.Date); 
+        }
+    }
+
+    private string NumberString(int number)
+    {
+        if(number.ToString().Length > 1) return number.ToString();
+        return $"0{number}";
+    }
+
+    private Task NextMonthClick()
+    {
+        if(activeDate != DateTime.MaxValue)
+        {
+            activeDate = activeDate.AddMonths(1);
+            LoadCalendarItems();
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task PrevMonthClick()
+    {
+        if(activeDate.Date != DateTime.MinValue)
+        {
+            activeDate = activeDate.AddMonths(-1);
+            LoadCalendarItems();
+        }
+        return Task.CompletedTask;
+    }
+
+    private class CalendarItem 
+    {
+        public DateTime Date {get; set;}
+        public bool Empty {get; set;}
+        public bool Selected {get; set;}
+    }
+}
