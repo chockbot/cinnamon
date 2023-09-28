@@ -1,6 +1,6 @@
 @namespace Cinnamon.Web.Components.Common
 
-<div class="calendar-wrapper" style="width: 500px;">
+<div class="calendar-wrapper">
     <div class="calendar-header d-flex align-items-center justify-content-between">
         <div>
             <img @onclick="PrevMonthClick" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
@@ -44,7 +44,7 @@
     [Parameter]
     public bool ViewOnly {get; set;}
     [Parameter]
-    public EventCallback<DateTime> SelectedDate {get; set;}
+    public EventCallback<DateTime> OnSelectedDate {get; set;}
 
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
     private DateTime activeDate;
@@ -99,9 +99,9 @@
         {
             item.Selected = !item.Selected;
         }
-        if(SelectedDate.HasDelegate)
+        if(OnSelectedDate.HasDelegate)
         {
-            await SelectedDate.InvokeAsync(item.Date); 
+            await OnSelectedDate.InvokeAsync(item.Date); 
         }
     }
 
@@ -113,15 +113,21 @@
 
     private Task NextMonthClick()
     {
-        activeDate = activeDate.AddMonths(1);
-        LoadCalendarItems();
+        if(activeDate != DateTime.MaxValue)
+        {
+            activeDate = activeDate.AddMonths(1);
+            LoadCalendarItems();
+        }
         return Task.CompletedTask;
     }
 
     private Task PrevMonthClick()
     {
-        activeDate = activeDate.AddMonths(-1);
-        LoadCalendarItems();
+        if(activeDate.Date != DateTime.MinValue)
+        {
+            activeDate = activeDate.AddMonths(-1);
+            LoadCalendarItems();
+        }
         return Task.CompletedTask;
     }
 

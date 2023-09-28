@@ -30,8 +30,6 @@
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
-<SelectCalendar />
-
 @if (Model.Customer != null)
 {
     @if(activity is not null && activity.Images.Count > 0)
@@ -540,6 +538,10 @@
                             }
                         </div>
                     }
+
+                    <div class="p-4 bg-black-100" style="z-index: 99; position: relative;">
+                        <SelectCalendar CurrentDate="DateTime.Now" SelectedDates="new List<DateTime>{DateTime.Now}" ViewOnly />
+                    </div>
 
                     @* for coming soon events *@
                     @if(activity is not null && activity.IsComingSoon)
