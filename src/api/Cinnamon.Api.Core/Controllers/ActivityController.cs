@@ -2334,7 +2334,7 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
                     Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity {
                             CityName = a.CityName,
                             ExperienceTypeId = a.ExperienceTypeId,
                             Handler = a.Handler,
