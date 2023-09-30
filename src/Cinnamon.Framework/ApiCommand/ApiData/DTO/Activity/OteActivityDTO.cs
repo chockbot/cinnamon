@@ -1,4 +1,5 @@
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
@@ -30,4 +31,5 @@ public class OteActivityDTO
 
     public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImageDTO> Images {get; set;}
+    public CustomerDTO Owner {get; set;}
 }
