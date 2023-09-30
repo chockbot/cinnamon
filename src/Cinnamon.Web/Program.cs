@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +113,13 @@ builder.Services.AddScoped(sp =>
         })
         .Build();
 });
+
+// auto mapper
+var mapperConfig = new MapperConfiguration(mapper => {
+    mapper.AddProfile(new Cinnamon.Web.Models.MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Services.AppExtendServices();
 
