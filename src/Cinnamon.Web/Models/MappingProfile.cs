@@ -12,5 +12,8 @@ public class MappingProfile : Profile
         CreateMap<CoreDto.Activity.OteActivityDTO, OteEntities.OteActivity>();
         CreateMap<CoreDto.Activity.OtePricingDTO, OteEntities.OtePricing>();
         CreateMap<CoreDto.Activity.ActivityDTO.ActivityImage, Entities.ActivityImage>();
+
+        CreateMap<CoreDto.Customer.CustomerDTO, Entities.CustomerProfile>()
+            .ForMember(d => d.ProfilePath, o => o.MapFrom(s => s.ProfileImg));
     }
 }
