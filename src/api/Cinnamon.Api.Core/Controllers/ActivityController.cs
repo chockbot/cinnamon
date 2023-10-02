@@ -955,7 +955,8 @@ public class ActivityController : ControllerBase
                         OngoingStudents = a.OngoingStudents,
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
-                        AverageRating = a.AverageRating
+                        AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType
                     };
                 }).AsQueryable()
             });
