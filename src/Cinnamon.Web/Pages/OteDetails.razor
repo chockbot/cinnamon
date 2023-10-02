@@ -200,23 +200,25 @@
                                 </Row>
                             </div>
                             <div class="border-top-1-solid border-color-grey-200 p-3">
-                                <Row class="align-items-center" VerticalGutter="30">
-                                    @foreach (var item in activity.Pricings)
-                                    {
+                                @foreach (var item in activity.Pricings)
+                                {
+                                    <Row @key="item" class="align-items-center mb-4">
                                         <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" Padding="Padding.Is1.FromBottom">
                                             <p class="font-20 font-weight-700 color-black-100 mb-0">Balcony</p>
                                             <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ @item.Price.ToString("#,##0")</p>
-                                            <p class="font-16 text-justify color-grey-100 mt-2 mb-0">@item.Description</p>
+                                            <p class="font-16 text-justify color-grey-100 mt-2 mb-1">@item.Description</p>
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
                                             <div class="d-flex border-1-solid item-counter-container text-center">
-                                                <span class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
-                                                <span class="p-1 border-right-1-solid counter-item">0</span>
-                                                <span class="p-1 counter-item prevent-select cursor-pointer">+</span>
+                                                <span @onclick="() => RemoveTicket(item.Id)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
+                                                <span class="p-1 border-right-1-solid counter-item">
+                                                    @(selectedTicketId == item.Id ? $"{ticketCount}" : 0)
+                                                </span>
+                                                <span @onclick="() => AddTicket(item.Id)" class="p-1 counter-item prevent-select cursor-pointer">+</span>
                                             </div>
                                         </Column> 
-                                    }
-                                </Row>
+                                    </Row>
+                                }
                             </div>
                         </div>
                     </section>
@@ -266,23 +268,18 @@
                 {
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
-                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
-                                TValue="int" Size="Size.Small" @bind-SelectedValue="selectedTicketId">
-                                <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
-                            </Select>
-                            <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
-                                <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Enrollees" : "Enrollee")</div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    -
+                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per ticket</p>
+                            <div class="overflow-hidden border-radius-5 border-1-solid border-color-grey-200">
+                                <div class="p-2 border-bottom-1-solid border-color-grey-200 color-grey-100">
+                                    Balcony
                                 </div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    +
+                                <div class="p-2 color-grey-100">
+                                    @ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")
                                 </div>
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Enrollees" : "Enrollee")</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Tickets" : "Ticket")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
@@ -364,7 +361,7 @@
     private OteActivity? activity;
     private CustomerProfile? provider;
     private int selectedTicketId = 0;
-    private int ticketCount = 0;
+    private int ticketCount = 1;
     private IJSObjectReference jsClipboard;
     private bool isActivityFavorite {get; set;}
     private CustomerProfile? currentLogin {get; set;}
@@ -463,6 +460,9 @@
             }
 
             activity = mapper.Map<OteActivity>(act);
+            
+            // select first ticket id
+            selectedTicketId = activity.Pricings.First().Id;
         }
         catch (System.Exception)
         {
@@ -632,5 +632,52 @@
 
             await NotificationService.Success("One time event removed to favorites.","Success");
         }
+    }
+
+    private string SelectedTicketName
+    {
+        get
+        {
+            string result = string.Empty;
+            if(activity is not null && selectedTicketId > 0)
+            {
+                var selected = activity.Pricings.FirstOrDefault(p => p.Id == selectedTicketId);
+                if(selected is not null){
+                    result = "Balcony";
+                }
+            }
+            return result;
+        }
+    }
+
+    private Task AddTicket(int id)
+    {
+        if(selectedTicketId != id)
+        {
+            ticketCount = 1;
+            selectedTicketId = id;
+        }
+        else 
+        {
+            ticketCount++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveTicket(int id)
+    {
+        if(selectedTicketId != id)
+        {
+            ticketCount = 1;
+            selectedTicketId = id;
+        }
+        else 
+        {
+            if(ticketCount > 1)
+            {
+                ticketCount--;
+            }
+        }
+        return Task.CompletedTask;
     }
 }
