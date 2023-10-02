@@ -27,7 +27,7 @@
 {
     <Container class="ote-details-wrapper pt-5">
         <section class="px-1">
-            <h3 class="font-36 font-weight-700 mb-3 color-black-100 text-capitalize">@activity.EventName</h3>
+            <h3 class="font-36 font-weight-700 mb-3 color-black-100 text-capitalize m-font-24">@activity.EventName</h3>
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                     @if(activity.ExperienceTypeId == 1)
@@ -43,11 +43,11 @@
                 </div>
                 <div class="d-flex">
                     <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
-                        <label class="cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
+                        <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
                         <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.png" : "images/ote/heart-default.png")' alt="favorite">
                     </div>
                     <div class="cursor-pointer prevent-select" @onclick="CopyToClipboard">
-                        <label class="cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
+                        <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
                         <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
                     </div>
                 </div>
@@ -109,7 +109,7 @@
                     </div>
                 }
             </div>
-            <div class="d-none m-d-block position-relative">
+            <div class="d-none m-d-block position-relative mb-3">
                 <img class="w-100 h-auto" src="@activity.Images.FirstOrDefault()?.ImageSrc" alt="cover-image">
                 <a style="right: 1rem; bottom: 1rem;" 
                     class="hover-color-black-100 prevent-select text-capitalize position-absolute 
@@ -123,11 +123,11 @@
                 {
                     <section>
                         <div class="d-inline-flex">
-                            <div class="d-flex align-items-center me-5">
+                            <div class="d-flex align-items-center me-2 me-md-5">
                                 <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
                                 <div class="ms-3">
-                                    <label class="font-16 font-weight-400 color-grey-100">Experience by</label>
-                                    <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0">@provider.FirstName @provider.LastName</p>
+                                    <label class="font-16 font-weight-400 color-grey-100 m-font-14">Experience by</label>
+                                    <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-14">@provider.FirstName @provider.LastName</p>
                                 </div>
                             </div>
                             <div class="d-inline-flex align-items-center">
@@ -156,17 +156,17 @@
                 }
 
                 <section id="ote-description">
-                    <h3 class="font-24 font-weight-700 color-black-100 mb-0">About </h3>
-                    <p class="text-justify font-18 color-grey-100 mt-4">@activity.Description</p>
+                    <h3 class="font-24 font-weight-700 color-black-100 mb-0 m-font-20">About </h3>
+                    <p class="text-justify font-18 color-grey-100 mt-2 mt-md-4 m-font-16">@activity.Description</p>
                 </section>
 
                 @if(!activity.IsComingSoon)
                 {
                     <section class="xp-ote-container mt-4 mb-5">
-                        <h3 class="font-24 font-weight-700 color-black-100">Date & Time</h3>
-                        <div class="select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
+                        <h3 class="font-24 font-weight-700 color-black-100 m-font-20">Date & Time</h3>
+                        <div class="flex-column flex-md-row select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
                             <SelectCalendar CurrentDate="DateTime.Now" SelectedDates="new List<DateTime>{DateTime.Now}" ViewOnly />
-                            <Button class="font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
+                            <Button id="ote-btn-check-avail" class="mt-3 mt-md-0 font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
                         </div>
                         <div class="mt-4 border-radius-10 border-1-solid border-color-grey-200 overflow-hidden">
                             <div class="p-3">
@@ -202,29 +202,31 @@
                             <div class="border-top-1-solid border-color-grey-200 p-3">
                                 @foreach (var item in activity.Pricings)
                                 {
-                                    <Row class="align-items-center">
-                                        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                                    <Row @key="item" class="align-items-center mb-4">
+                                        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" Padding="Padding.Is1.FromBottom">
                                             <p class="font-20 font-weight-700 color-black-100 mb-0">Balcony</p>
                                             <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ @item.Price.ToString("#,##0")</p>
-                                            <p class="font-16 text-justify color-grey-100 mt-2">@item.Description</p>
+                                            <p class="font-16 text-justify color-grey-100 mt-2 mb-1">@item.Description</p>
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
                                             <div class="d-flex border-1-solid item-counter-container text-center">
-                                                <span class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
-                                                <span class="p-1 border-right-1-solid counter-item">0</span>
-                                                <span class="p-1 counter-item prevent-select cursor-pointer">+</span>
+                                                <span @onclick="() => RemoveTicket(item.Id)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">-</span>
+                                                <span class="p-1 border-right-1-solid counter-item">
+                                                    @(selectedTicketId == item.Id ? $"{ticketCount}" : 0)
+                                                </span>
+                                                <span @onclick="() => AddTicket(item.Id)" class="p-1 counter-item prevent-select cursor-pointer">+</span>
                                             </div>
-                                        </Column>
-                                    </Row>   
+                                        </Column> 
+                                    </Row>
                                 }
                             </div>
                         </div>
                     </section>
 
                     <section id="important-information">
-                        <p class="font-weight-700 font-24 color-black-100 text-capitalize">Important Information</p>
-                        <p class="font-18 fw-bold color-black-100">What will happen after I purchase?</p>
-                        <ol class="color-grey-100 font-18">
+                        <p class="font-weight-700 font-24 color-black-100 text-capitalize m-font-20">Important Information</p>
+                        <p class="font-18 fw-bold color-black-100 m-font-16">What will happen after I purchase?</p>
+                        <ol class="color-grey-100 font-18 m-font-16">
                             <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
                             <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
                             <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
@@ -233,15 +235,15 @@
                     </section>
 
                     <section id="map-details" class="mt-5">
-                        <p class="font-24 font-weight-700 color-black-100">Venue</p>
+                        <p class="font-24 font-weight-700 color-black-100 m-font-20 mb-1 mb-md-3">Venue</p>
                         @if(activity.ExperienceTypeId == 1)
                         {
-                            <p class="mb-1 font-20 font-weight-400 color-black-100">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</p>
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</p>
                             <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else 
                         {
-                            <p>Online</p>
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">Online</p>
                         }
                     </section>
 
@@ -266,23 +268,18 @@
                 {
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
-                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
-                                TValue="int" Size="Size.Small" @bind-SelectedValue="selectedTicketId">
-                                <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
-                            </Select>
-                            <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
-                                <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Enrollees" : "Enrollee")</div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    -
+                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per ticket</p>
+                            <div class="overflow-hidden border-radius-5 border-1-solid border-color-grey-200">
+                                <div class="p-2 border-bottom-1-solid border-color-grey-200 color-grey-100">
+                                    Balcony
                                 </div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                    +
+                                <div class="p-2 color-grey-100">
+                                    @ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")
                                 </div>
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Enrollees" : "Enrollee")</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Tickets" : "Ticket")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
@@ -352,6 +349,93 @@
             </p>
         </Container>
     </section>
+
+    @if(!activity.IsComingSoon)
+    {
+        <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
+            <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
+            <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="calculator-inner-content px-3 pt-4">
+                        <div class="border-1-solid border-radius-5 border-color-black-100">
+                            <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
+                                <p class="m-0">@SelectedTicketName</p>
+                                @* <Button class="p-1 font-10 bg-orange-100 color-white-100">Change</Button> *@
+                            </div>
+                            <div class="prevent-select color-grey-100 font-16 d-flex">
+                                <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")</div>
+                                <div @onclick="() => RemoveTicket(selectedTicketId)"
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    -
+                                </div>
+                                <div @onclick="() => AddTicket(selectedTicketId)"
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    +
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="color-grey-100 font-16 mt-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                        @if(!IsInclusivePricing)
+                        {
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                </Column>
+                            </Row>
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Handling  fee</p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                </Column>
+                            </Row>
+                        }
+                        <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Total Payment</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                    </div>
+                    <Divider class="calculator-footer-divider m-0" />
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button"
+                            class="btn-primary font-14 width-120 border-radius-10"
+                            Border="Border.Is0">
+                            Proceed
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator">
+                                <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
+                                @if(isOpenMobileCalculator)
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
+                                }
+                                else 
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
@@ -364,7 +448,7 @@
     private OteActivity? activity;
     private CustomerProfile? provider;
     private int selectedTicketId = 0;
-    private int ticketCount = 0;
+    private int ticketCount = 1;
     private IJSObjectReference jsClipboard;
     private bool isActivityFavorite {get; set;}
     private CustomerProfile? currentLogin {get; set;}
@@ -372,6 +456,7 @@
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
     private bool IsInclusivePricing {get; set;}
+    private bool isOpenMobileCalculator {get; set;}
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -463,6 +548,9 @@
             }
 
             activity = mapper.Map<OteActivity>(act);
+            
+            // select first ticket id
+            selectedTicketId = activity.Pricings.First().Id;
         }
         catch (System.Exception)
         {
@@ -632,5 +720,52 @@
 
             await NotificationService.Success("One time event removed to favorites.","Success");
         }
+    }
+
+    private string SelectedTicketName
+    {
+        get
+        {
+            string result = string.Empty;
+            if(activity is not null && selectedTicketId > 0)
+            {
+                var selected = activity.Pricings.FirstOrDefault(p => p.Id == selectedTicketId);
+                if(selected is not null){
+                    result = "Balcony";
+                }
+            }
+            return result;
+        }
+    }
+
+    private Task AddTicket(int id)
+    {
+        if(selectedTicketId != id)
+        {
+            ticketCount = 1;
+            selectedTicketId = id;
+        }
+        else 
+        {
+            ticketCount++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveTicket(int id)
+    {
+        if(selectedTicketId != id)
+        {
+            ticketCount = 1;
+            selectedTicketId = id;
+        }
+        else 
+        {
+            if(ticketCount > 1)
+            {
+                ticketCount--;
+            }
+        }
+        return Task.CompletedTask;
     }
 }
