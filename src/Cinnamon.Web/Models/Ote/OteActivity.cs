@@ -1,10 +1,8 @@
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Web.Models.Entities;
 
-namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+namespace Cinnamon.Web.Models.Ote;
 
-public class OteActivityDTO 
+public class OteActivity 
 {
     public int Id {get; set;}
     public string EventName {get; set;}
@@ -28,8 +26,6 @@ public class OteActivityDTO
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
     public bool IsComingSoon {get; set;}
-
-    public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
-    public IEnumerable<ActivityImageDTO> Images {get; set;}
-    public CustomerDTO Owner {get; set;}
+    public IEnumerable<OtePricing> Pricings {get; set;}
+    public IEnumerable<ActivityImage> Images {get; set;}
 }
