@@ -956,6 +956,7 @@ public class ActivityController : ControllerBase
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType
                     };
                 }).AsQueryable()
             });
@@ -2369,7 +2370,7 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
                     Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity {
                             CityName = a.CityName,
                             ExperienceTypeId = a.ExperienceTypeId,
                             Handler = a.Handler,
@@ -2383,7 +2384,8 @@ public class ActivityController : ControllerBase
                             RegionName = a.RegionName,
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
-                            Title = a.Title
+                            Title = a.Title,
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId
                         };
                     })
                 }
