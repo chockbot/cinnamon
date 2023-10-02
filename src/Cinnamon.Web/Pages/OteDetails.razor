@@ -1,9 +1,11 @@
 @page "/explore/ote/{Handler}"
+@using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using AutoMapper;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Models.Ote;
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Components;
 @using Cinnamon.Web.Components.Common;
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
@@ -11,6 +13,7 @@
 @inject NavigationManager NavigationManager;
 @inject IMapper mapper;
 @inject IJSRuntime JS;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>@(activity?.EventName ?? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH") | CinnamonPH</PageTitle>
 <SeoMeta Title="@(activity?.EventName ?? string.Empty)"
@@ -39,12 +42,12 @@
                     }
                 </div>
                 <div class="d-flex">
-                    <div class="me-3 prevent-select">
-                        <label class="cursor-pointer me-3 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
-                        <img style="width: 25px;" class="cursor-pointer h-auto" src="images/ote/favorite.png" alt="favorite">
+                    <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
+                        <label class="cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
+                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.png" : "images/ote/heart-default.png")' alt="favorite">
                     </div>
                     <div class="cursor-pointer prevent-select" @onclick="CopyToClipboard">
-                        <label class="cursor-pointer me-3 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
+                        <label class="cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
                         <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
                     </div>
                 </div>
@@ -322,6 +325,8 @@
     </section>
 }
 
+<ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+
 @code
 {
     [Parameter]
@@ -332,6 +337,11 @@
     private int selectedTicketId = 0;
     private int ticketCount = 0;
     private IJSObjectReference jsClipboard;
+    private bool isActivityFavorite {get; set;}
+    private CustomerProfile? currentLogin {get; set;}
+    private string token {get; set;} = string.Empty;
+    private string signInReturnUrl = string.Empty;
+    private ModalLogin? loginModal;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -343,8 +353,48 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await LoadOteDetails();
-        await LoadProvider();
+        try
+        {
+            await LoadOteDetails();
+            await LoadProvider();
+            await LoadProfile();
+            await LoadFavorite();   
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task LoadProfile()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(user is not null && user.Identity.IsAuthenticated)
+        {
+            token = user.FindFirstValue("Token");
+            if(!string.IsNullOrEmpty(token))
+            {
+                var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+                if(profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
+                {
+                    currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+                }
+            }
+        }
+    }
+
+    private async Task LoadFavorite()
+    {
+        if(currentLogin is not null && activity is not null)
+        {
+            var customerFavorites = await activityHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs {
+                CustomerId = currentLogin.Id
+            }, token);
+            if(customerFavorites.Succeeded && customerFavorites.Result is not null && customerFavorites.Result.IsSuccess)
+            {
+                isActivityFavorite = customerFavorites.Result.Result.Any(a => a.ActivityId == activity.Id);
+            }
+        }
     }
 
     private async Task LoadOteDetails()
@@ -506,5 +556,36 @@
     {
         await jsClipboard.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri);
         await NotificationService.Info("Copied to clipboard", "Copied!");
+    }
+
+    private async Task OnFavoriteClick()
+    {
+        if(activity is null) return;
+
+        if(currentLogin is null)
+        {
+            signInReturnUrl = $"/explore/ote/{Handler}";
+            if(loginModal is not null)
+            {
+                loginModal.Show();
+            }
+            return;
+        }
+
+        isActivityFavorite = !isActivityFavorite;
+        if(isActivityFavorite)
+        {
+            var createFavorite = await activityHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs {
+                ActivityId = activity.Id,
+                CustomerId = currentLogin.Id 
+            }, token);
+        }
+        else 
+        {
+            var removeFavorite = await activityHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs {
+                ActivityId = activity.Id,
+                CustomerId = currentLogin.Id
+            }, token);
+        }
     }
 }
