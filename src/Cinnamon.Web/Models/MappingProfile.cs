@@ -15,5 +15,7 @@ public class MappingProfile : Profile
 
         CreateMap<CoreDto.Customer.CustomerDTO, Entities.CustomerProfile>()
             .ForMember(d => d.ProfilePath, o => o.MapFrom(s => s.ProfileImg));
+        
+        CreateMap<CoreDto.Customer.ProfileDTO, Entities.CustomerProfile>();
     }
 }
