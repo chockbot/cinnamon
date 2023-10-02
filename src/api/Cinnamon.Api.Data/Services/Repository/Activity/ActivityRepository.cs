@@ -444,7 +444,8 @@ public class ActivityRepository : IActivityRepository
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
                     IsDeactivated        = a.IsDeactivated,
                     Status               = (Enums.ActivityStatus)a.Status,
-                    IsComingSoon         = a.IsComingSoon
+                    IsComingSoon         = a.IsComingSoon,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
                 };
 
                 // address fields

@@ -1,8 +1,10 @@
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.PayoutLog.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.PayoutLog.Response;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -128,6 +130,33 @@ public class PayoutLogController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdatePayoutLogResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetPayoutsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPayoutsByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrossSalesByProvider([FromQuery] GetPayoutsByProviderArgs args)
+    {
+        try
+        {
+            DateTime From = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+            var result = await payoutLogRepository.GetPayoutByProvider(args.Id, From);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetPayoutsByProviderResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -697,6 +697,7 @@ public class ActivityController : ControllerBase
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
@@ -2312,6 +2313,40 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [Route("ExperienceCreationTypes")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExperienceCreationTypes()
+    {
+        try
+        {
+            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetExperienceCreationTypeResult
+            {
+                Result = result.Result.ExperienceCreationTypes.Select(e => {
+                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
+                    {
+                        Id = e.Id,
+                        Description = e.Description,
+                        ImagePath = e.ImagePath,
+                        IsActive = e.IsActive,
+                        Name = e.Name
+                    };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("PopularActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(PopularActivitiesResult), StatusCodes.Status200OK)]
@@ -2358,40 +2393,6 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
-    [Route("ExperienceCreationTypes")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetExperienceCreationTypeResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetExperienceCreationTypes()
-    {
-        try
-        {
-            var result = await getExperienceCreationTypeHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCreationTypeArgs { });
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetExperienceCreationTypeResult
-            {
-                Result = result.Result.ExperienceCreationTypes.Select(e => {
-                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
-                    {
-                        Id = e.Id,
-                        Description = e.Description,
-                        ImagePath = e.ImagePath,
-                        IsActive = e.IsActive,
-                        Name = e.Name
-                    };
-                }),
-                IsSuccess = true
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetExperienceCreationTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 

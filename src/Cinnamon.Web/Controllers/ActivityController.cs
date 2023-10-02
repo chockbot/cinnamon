@@ -74,6 +74,12 @@ public class ActivityController : Controller
                 return Json(new { success = false, message = "Unable to identify current user" });
             }
 
+            foreach (var schedule in args?.ActivitySchedules)
+            {
+                schedule.SessionName = schedule.SessionName ?? "N/A";
+                schedule.StartDate = schedule.StartDate ?? DateTime.MinValue;
+            }
+
             var result = await activityApiHandler.CreateActivity(args, token);
 
             if (!result.Succeeded || result.Result == null)
@@ -105,6 +111,12 @@ public class ActivityController : Controller
             if (token == null)
             {
                 return Json(new { success = false, message = "Unable to identify current user" });
+            }
+
+            foreach (var schedule in args?.ActivitySchedules)
+            {
+                schedule.SessionName = schedule.SessionName ?? "N/A";
+                schedule.StartDate = schedule.StartDate ?? DateTime.MinValue;
             }
 
             var result = await activityApiHandler.UpdateActivity(args, token);

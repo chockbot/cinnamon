@@ -423,4 +423,38 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting inclusive transactions");
         }
     }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetGrossSalesByProvider(int? id, DateTime? dateFrom)
+    {
+        try
+        {
+            var result = await dataStore.PurchaseOrder.GetGrossSalesByProvider(id , dateFrom);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var purchaseOrders = result.Result.Select(p => {
+                return new PurchaseOrderDTO
+                {
+                    Id = p.Id,
+                    ActivityId = p.ActivityId,
+                    ScheduleId = p.ScheduleId,
+                    CustomerId = p.CustomerId,
+                    Total = p.Total,
+                    PurchaseDate = p.CreatedOn,
+                    Status = p.Status,
+                    Payload = p.Payload,
+                    UnitCount = p.UnitCount,
+                    UnitPrice = p.UnitPrice
+                };
+            });
+            
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(purchaseOrders, "Successfully getting purchase orders");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting purchase order");
+        }
+    }
 }

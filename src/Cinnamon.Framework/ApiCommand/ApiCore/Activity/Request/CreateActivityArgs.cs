@@ -155,7 +155,7 @@ public class CreateActivityArgs
         public string SchedulingUrl { get; set; }
         public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
-
+    
     public class ActivityScheduleTime
     {
         public int ActivityScheduleId { get; set; }

@@ -198,10 +198,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "select ac.*, " +
                                    "(select Count(*) from public.\"Students\" st " +
                                    "where st.\"ActivityId\" = ac.\"Id\" and " +
-                                   "((st.\"SessionsAttended\" < st.\"NumberOfSessions\") or " +
-                                   "(st.\"ExpirationDateEnd\" != '-infinity' " +
-                                       "and Date(st.\"ExpirationDateEnd\") > Date('" + dateString + "')) " +
-                                    ") " +
+                                        "( " +
+                                           "(st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
+                                           "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
+                                               "and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " + 
+                                       ") " + 
                                    ") \"OngoingStudent\" " +
                                "from withRatings ac " +
                            "), " +

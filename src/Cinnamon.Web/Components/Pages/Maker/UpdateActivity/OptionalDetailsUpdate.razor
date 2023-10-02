@@ -71,6 +71,8 @@
     {
         if (firstRender)
         {
+            defaultContent = Model.Activity.CustomerBringWithThem;
+            
             await Task.Delay(3000);
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Requirements");
@@ -82,8 +84,6 @@
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide .ql-container", "#label-customer-requirement-editor", maxEditorWordLimit);
 
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
-
-            defaultContent = Model.Activity.CustomerBringWithThem;
         }
     }
 

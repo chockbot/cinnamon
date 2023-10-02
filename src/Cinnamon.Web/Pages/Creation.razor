@@ -136,6 +136,13 @@
                             {
                                 <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
                             }
+                            else
+                            {
+                                if (displayCreationOverviewComponentError)
+                                {
+                                    <img class="pull-right invalid-icon" src="images/not-icon.png" alt="check-icon" />
+                                }
+                            }
                         }
                     </a>
                     <a class="nav-link @(currentIndex == 2 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(2)">
@@ -150,6 +157,13 @@
                             {
                                 <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
                             }
+                            else
+                            {
+                                if (displayLocationComponentError)
+                                {
+                                    <img class="pull-right invalid-icon" src="images/not-icon.png" alt="check-icon" />
+                                }
+                            }
                         }
                     </a>
                     <a class="nav-link @(currentIndex == 3 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(3)">
@@ -163,6 +177,13 @@
                             if (isPricingAndScheduleComponentValid)
                             {
                                 <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (displayPricingAndScheduleComponentError)
+                                {
+                                    <img class="pull-right invalid-icon" src="images/not-icon.png" alt="check-icon" />
+                                }
                             }
                         }
                     </a>
@@ -192,6 +213,13 @@
                             {
                                 <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
                             }
+                            else
+                            {
+                                if (displayGalleryComponentError)
+                                {
+                                    <img class="pull-right invalid-icon" src="images/not-icon.png" alt="check-icon" />
+                                }
+                            }
                         }
                     </a>
                     <a class="nav-link @(currentIndex == 6 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(6)">
@@ -201,6 +229,9 @@
                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                     </a>
+                </div>
+                <div class="display-error" style="display:@(displayError ? "block" : "none")">
+                    You must fill in the required fields to publish an activity
                 </div>
                 <div class="dashed-divider col-lg-7"></div>
                 <div class="guide-section col-lg-7 text-center">
@@ -390,6 +421,14 @@
     public bool isPricingAndScheduleComponentValid { get; set; }
     public bool isOptionalDetailsComponentValid { get; set; }
     public bool isGalleryComponentValid { get; set; }
+
+    public bool displayCreationOverviewComponentError { get; set; }
+    public bool displayLocationComponentError { get; set; }
+    public bool displayPricingAndScheduleComponentError { get; set; }
+    public bool displayOptionalDetailsComponentError { get; set; }
+    public bool displayGalleryComponentError { get; set; }
+
+    bool displayError = false;
 
     public const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
 
@@ -603,6 +642,8 @@
 
     private async Task OnNextClick(int index = 0)
     {
+        displayError = false;
+
         // for submit action
         if (index == 0 && currentIndex == 6)
         {
@@ -730,7 +771,29 @@
                     };
 
                     isCreationOverviewComponentValid = true;
-                    currentIndex = index;
+
+                    if ((index - currentIndex) > 1)
+                    {
+                        for (int i = currentIndex + 1; i < index; i++)
+                        {
+                            var result = ValidateFormFields(i);
+
+                            if (result)
+                            {
+                                displayError = result;
+                            }
+                        }
+
+                        if (!displayError)
+                        {
+                            currentIndex = index;
+                        }
+                    }
+                    else
+                    {
+                        currentIndex = index;
+                    }
+
                     break;
                 case 2:
                     if (Model.HasError = !locationComponent.IsAllFieldsValidated())
@@ -740,7 +803,29 @@
                     };
 
                     isLocationComponentValid = true;
-                    currentIndex = index;
+                    
+                    if ((index - currentIndex) > 1)
+                    {
+                        for (int i = currentIndex + 1; i < index; i++)
+                        {
+                            var result = ValidateFormFields(i);
+
+                            if (result)
+                            {
+                                displayError = result;
+                            }
+                        }
+
+                        if (!displayError)
+                        {
+                            currentIndex = index;
+                        }
+                    }
+                    else
+                    {
+                        currentIndex = index;
+                    }
+
                     break;
                 case 3:
                     if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
@@ -761,7 +846,29 @@
                     }
 
                     isPricingAndScheduleComponentValid = true;
-                    currentIndex = index;
+                    
+                    if ((index - currentIndex) > 1)
+                    {
+                        for (int i = currentIndex + 1; i < index; i++)
+                        {
+                            var result = ValidateFormFields(i);
+
+                            if (result)
+                            {
+                                displayError = result;
+                            }
+                        }
+
+                        if (!displayError)
+                        {
+                            currentIndex = index;
+                        }
+                    }
+                    else
+                    {
+                        currentIndex = index;
+                    }
+
                     break;
                 case 4:
                     isOptionalDetailsComponentValid = true;
@@ -775,7 +882,29 @@
                     };
 
                     isGalleryComponentValid = true;
-                    currentIndex = index;
+                    
+                    if ((index - currentIndex) > 1)
+                    {
+                        for (int i = currentIndex + 1; i < index; i++)
+                        {
+                            var result = ValidateFormFields(i);
+
+                            if (result)
+                            {
+                                displayError = result;
+                            }
+                        }
+
+                        if (!displayError)
+                        {
+                            currentIndex = index;
+                        }
+                    }
+                    else
+                    {
+                        currentIndex = index;
+                    }
+
                     break;
                 case 6:
                     currentIndex = index;
@@ -1021,5 +1150,73 @@
         }
 
         return activitySchedules;
+    }
+
+    private bool ValidateFormFields(int index)
+    {
+        bool displayError = false;
+
+        switch (index)
+        {
+            case 1:
+                if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
+                {
+                    displayCreationOverviewComponentError = true;
+                }
+                else
+                {
+                    displayCreationOverviewComponentError = false;
+                }
+
+                displayError = displayCreationOverviewComponentError;
+
+                break;
+            case 2:
+                if (Model.HasError = !locationComponent.IsAllFieldsValidated())
+                {
+                    displayLocationComponentError = true;
+                }
+                else
+                {
+                    displayLocationComponentError = false;
+                }
+
+                displayError = displayLocationComponentError;
+
+                break;
+            case 3:
+                if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                {
+                    displayPricingAndScheduleComponentError = true;
+                }
+                else
+                {
+                    displayPricingAndScheduleComponentError = false;
+                }
+
+                displayError = displayPricingAndScheduleComponentError;
+
+                break;
+            case 4:
+                isOptionalDetailsComponentValid = true;
+                break;
+            case 5:
+                if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
+                {
+                    displayGalleryComponentError = true;
+                }
+                else
+                {
+                    displayGalleryComponentError = false;
+                }
+
+                displayError = displayGalleryComponentError;
+
+                break;
+            case 6:
+                break;
+        }
+
+        return displayError;
     }
 }

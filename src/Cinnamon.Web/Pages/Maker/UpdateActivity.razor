@@ -689,8 +689,7 @@
         {
             List<ScheduleTime> scheduleTimes = new List<ScheduleTime>();
 
-            foreach (var schedule in Model.Activity.ActivitySchedules)
-            {
+            foreach (var schedule in Model.Activity.ActivitySchedules)            {
                 scheduleTimes = new List<ScheduleTime>();
 
                 for (int i = 0; i < 7; i++)
@@ -965,7 +964,7 @@
                         StartDate = s.StartDate ?? DateTime.MinValue,
                         PriceType = s.PriceType,
                         ScheduleType = Model.Activity.ScheduleType,
-                        SchedulingUrl = Model.Activity.SchedulingUrl,
+                        SchedulingUrl = Model.Activity.SchedulingUrl ?? string.Empty,
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),

@@ -60,15 +60,12 @@ public class ActivitySchedule
     public int Order {get; set;}
     public bool IsActiveSchedule { get; set; } = true;
     public bool IsSetSession { get; set; } = false;
-
-    public bool IsSelected { get; set; } = false;
-
     public string SessionName { get; set; } = string.Empty;
-
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
     public Cinnamon.Framework.Enums.Enums.ScheduleType ScheduleType { get; set; }
     public Cinnamon.Framework.Enums.Enums.PriceType PriceType { get; set; }
+    public bool IsSelected { get; set; }
     public string SchedulingUrl { get; set; }
     public long LongPrice { 
         get{

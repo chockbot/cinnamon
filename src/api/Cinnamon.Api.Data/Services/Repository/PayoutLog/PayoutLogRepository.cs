@@ -171,4 +171,35 @@ public class PayoutLogRepository : IPayoutLogRepository
             return AppResult<PayoutLogDTO>.CreateFailed(ex, "An error occured when updating payout log");
         }
     }
+
+    public async Task<AppResult<IEnumerable<PayoutLogDTO>>> GetPayoutByProvider(int? id, DateTime? dateFrom)
+    {
+        try
+        {
+            var result = await dataStore.PayoutLog.GetPayoutByProvider(id, dateFrom);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<PayoutLogDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var payouts = result.Result.Select(p => {
+                return new PayoutLogDTO
+                {
+                    Id              = p.Id,
+                    CustomerId      = p.CustomerId,
+                    PurchaseOrderId = p.PurchaseOrderId,
+                    Amount          = p.Amount,
+                    Status          = p.Status,
+                    PayoutDate      = p.CreatedOn
+                };
+            });
+
+            return AppResult<IEnumerable<PayoutLogDTO>>.CreateSucceeded(payouts, "Successfully getting payouts by provider");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PayoutLogDTO>>.CreateFailed(ex, "An error occured when getting payouts by provider");
+        }
+    }
+
 }
