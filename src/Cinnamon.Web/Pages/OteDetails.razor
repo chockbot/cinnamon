@@ -315,7 +315,7 @@
                             </Row>
                             <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
                             <div>
-                                <Button Type="ButtonType.Button" class="btn-primary font-20 w-100 border-radius-10"
+                                <Button Clicked="ProceedToPayment" Type="ButtonType.Button" class="btn-primary font-20 w-100 border-radius-10"
                                     Border="Border.Is0">
                                     Proceed
                                 </Button>
@@ -413,7 +413,7 @@
                     </div>
                     <Divider class="calculator-footer-divider m-0" />
                     <div class="p-3 d-flex justify-content-between align-items-center">
-                        <Button Type="ButtonType.Button"
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment"
                             class="btn-primary font-14 width-120 border-radius-10"
                             Border="Border.Is0">
                             Proceed
@@ -766,6 +766,12 @@
                 ticketCount--;
             }
         }
+        return Task.CompletedTask;
+    }
+
+    private Task ProceedToPayment()
+    {
+        NavigationManager.NavigateTo($"/payment/ote/{Handler}/?ticket={selectedTicketId}");
         return Task.CompletedTask;
     }
 }
