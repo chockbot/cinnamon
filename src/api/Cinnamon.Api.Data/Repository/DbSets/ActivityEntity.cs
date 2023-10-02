@@ -210,7 +210,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "select aw.*, ac.\"Title\", ac.\"CreatedBy\", ac.\"IsNew\", ac.\"Handler\", " +
                                    "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", " +
                                    "Row_Number() over (partition by ac.\"Id\" order by ai.\"Order\", ai.\"Id\") \"RowCnt\", " +
-                                   "ai.\"ImageLocation\" " +
+                                   "ai.\"ImageLocation\", ac.\"ExperienceCreationTypeId\" " +
                                "from withOngoingStudent aw " +
                                "join public.\"Activities\" ac " +
                                    "on aw.\"Id\" = ac.\"Id\" " +
@@ -254,7 +254,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             RegionName = item["RegionName"].ToString() ?? string.Empty,
                             ReviewCount = Convert.ToInt32(item["ReviewCount"]),
                             StudentCount = Convert.ToInt32(item["StudentCount"]),
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"])
                         }).ToList();
                     }
                 }

@@ -954,7 +954,7 @@ public class ActivityController : ControllerBase
                         OngoingStudents = a.OngoingStudents,
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
-                        AverageRating = a.AverageRating,
+                        AverageRating = a.AverageRating
                     };
                 }).AsQueryable()
             });
@@ -2348,7 +2348,8 @@ public class ActivityController : ControllerBase
                             RegionName = a.RegionName,
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
-                            Title = a.Title
+                            Title = a.Title,
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId
                         };
                     })
                 }
