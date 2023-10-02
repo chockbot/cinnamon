@@ -349,6 +349,93 @@
             </p>
         </Container>
     </section>
+
+    @if(!activity.IsComingSoon)
+    {
+        <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
+            <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
+            <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="calculator-inner-content px-3 pt-4">
+                        <div class="border-1-solid border-radius-5 border-color-black-100">
+                            <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
+                                <p class="m-0">@SelectedTicketName</p>
+                                @* <Button class="p-1 font-10 bg-orange-100 color-white-100">Change</Button> *@
+                            </div>
+                            <div class="prevent-select color-grey-100 font-16 d-flex">
+                                <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")</div>
+                                <div @onclick="() => RemoveTicket(selectedTicketId)"
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    -
+                                </div>
+                                <div @onclick="() => AddTicket(selectedTicketId)"
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                    +
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="color-grey-100 font-16 mt-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                        @if(!IsInclusivePricing)
+                        {
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                </Column>
+                            </Row>
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Handling  fee</p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                </Column>
+                            </Row>
+                        }
+                        <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Total Payment</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                    </div>
+                    <Divider class="calculator-footer-divider m-0" />
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button"
+                            class="btn-primary font-14 width-120 border-radius-10"
+                            Border="Border.Is0">
+                            Proceed
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator">
+                                <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
+                                @if(isOpenMobileCalculator)
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
+                                }
+                                else 
+                                {
+                                    <img class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
@@ -369,6 +456,7 @@
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
     private bool IsInclusivePricing {get; set;}
+    private bool isOpenMobileCalculator {get; set;}
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
