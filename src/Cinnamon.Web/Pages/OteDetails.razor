@@ -53,6 +53,7 @@
                 </div>
             </div>
         </section>
+
         <section class="mt-3">
             <div class="d-block m-d-none">
                 @if(activity.Images.Count() >= 5)
@@ -152,10 +153,15 @@
                         </div>
                         <Divider />
                     </section>
-                    <section id="ote-description">
-                        <h3 class="font-24 font-weight-700 color-black-100 mb-0">About </h3>
-                        <p class="text-justify font-18 color-grey-100 mt-4">@activity.Description</p>
-                    </section>
+                }
+
+                <section id="ote-description">
+                    <h3 class="font-24 font-weight-700 color-black-100 mb-0">About </h3>
+                    <p class="text-justify font-18 color-grey-100 mt-4">@activity.Description</p>
+                </section>
+
+                @if(!activity.IsComingSoon)
+                {
                     <section class="xp-ote-container mt-4 mb-5">
                         <h3 class="font-24 font-weight-700 color-black-100">Date & Time</h3>
                         <div class="select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
@@ -214,6 +220,7 @@
                             </div>
                         </div>
                     </section>
+
                     <section id="important-information">
                         <p class="font-weight-700 font-24 color-black-100 text-capitalize">Important Information</p>
                         <p class="font-18 fw-bold color-black-100">What will happen after I purchase?</p>
@@ -224,6 +231,7 @@
                             <li>Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete.</li>
                         </ol>
                     </section>
+
                     <section id="map-details" class="mt-5">
                         <p class="font-24 font-weight-700 color-black-100">Venue</p>
                         @if(activity.ExperienceTypeId == 1)
@@ -236,6 +244,7 @@
                             <p>Online</p>
                         }
                     </section>
+
                     @if(!string.IsNullOrEmpty(SetPlanImage))
                     {
                         <section id="set-plan" class="mt-4">
@@ -244,69 +253,89 @@
                         </section>
                     }
                 }
+
+                @if(activity.IsComingSoon)
+                {
+                    <div class="my-5">
+                        <img class="max-width-100 h-auto" src="images/coming-soon.png" alt="coming soon">    
+                    </div>
+                }
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
-                <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
-                    <div class="bg-white-100 px-3 py-4 border-radius-10">
-                        <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
-                        <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
-                            TValue="int" Size="Size.Small" @bind-SelectedValue="selectedTicketId">
-                            <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
-                        </Select>
-                        <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
-                            <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Enrollees" : "Enrollee")</div>
-                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                -
+                @if(!activity.IsComingSoon)
+                {
+                    <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
+                        <div class="bg-white-100 px-3 py-4 border-radius-10">
+                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
+                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
+                                TValue="int" Size="Size.Small" @bind-SelectedValue="selectedTicketId">
+                                <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
+                            </Select>
+                            <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
+                                <div class="w-100 p-2">@ticketCount @(ticketCount > 1 ? "Enrollees" : "Enrollee")</div>
+                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                    -
+                                </div>
+                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                    +
+                                </div>
                             </div>
-                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                +
-                            </div>
-                        </div>
-                        <Row class="color-grey-100 font-16 mt-4">
-                            <Column ColumnSize="ColumnSize.Is7">
-                                <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Enrollees" : "Enrollee")</p>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is5">
-                                <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
-                            </Column>
-                        </Row>
-                        @if(!IsInclusivePricing)
-                        {
-                            <Row class="color-grey-100 font-16 mt-2">
+                            <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @ticketCount  @(ticketCount > 1 ? "Enrollees" : "Enrollee")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                    <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
-                            <Row class="color-grey-100 font-16 mt-2">
+                            @if(!IsInclusivePricing)
+                            {
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                    </Column>
+                                </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Handling  fee</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                    </Column>
+                                </Row>
+                            }
+                            <Divider class="m-0 mt-2" />
+                            <Row class="font-16 mt-2 font-weight-700 color-black-100">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Handling  fee</p>
+                                    <p class="m-0">Total Payment</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                    <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
-                        }
-                        <Divider class="m-0 mt-2" />
-                        <Row class="font-16 mt-2 font-weight-700 color-black-100">
-                            <Column ColumnSize="ColumnSize.Is7">
-                                <p class="m-0">Total Payment</p>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is5">
-                                <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
-                            </Column>
-                        </Row>
-                        <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
-                        <div>
-                            <Button Type="ButtonType.Button" class="btn-primary font-20 w-100 border-radius-10"
-                                Border="Border.Is0">
-                                Proceed
-                            </Button>
+                            <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
+                            <div>
+                                <Button Type="ButtonType.Button" class="btn-primary font-20 w-100 border-radius-10"
+                                    Border="Border.Is0">
+                                    Proceed
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+                
+                @if(activity.IsComingSoon)
+                {
+                    <div class="coming-soon-announcement border-radius-20 px-3 py-3 border-1-solid border-color-black-100">
+                        <p class="font-20 font-weight-700 mb-2">Announcement</p>
+                        <p class="mb-0 color-grey-100 font-18">
+                            Tickets will be sold and purchased on this page soon. Please come back again in a few weeks.
+                        </p>
+                    </div>
+                }
             </Column>
         </Row>
     </Container>
@@ -342,6 +371,7 @@
     private string token {get; set;} = string.Empty;
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
+    private bool IsInclusivePricing {get; set;}
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -357,8 +387,9 @@
         {
             await LoadOteDetails();
             await LoadProvider();
+            await LoadIsInclusiveOte();
             await LoadProfile();
-            await LoadFavorite();   
+            await LoadFavorite();
         }
         catch (Exception ex)
         {
@@ -380,6 +411,17 @@
                     currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
                 }
             }
+        }
+    }
+
+    private async Task LoadIsInclusiveOte()
+    {
+        if(provider is null) return;
+
+        var inclusiveRes = await activityHandler.OwnerPricingInclusive(provider.Id);
+        if(inclusiveRes.Succeeded && inclusiveRes.Result is not null && inclusiveRes.Result.IsSuccess)
+        {
+            IsInclusivePricing = inclusiveRes.Result.Result.IsInclusivePricing;
         }
     }
 
@@ -412,8 +454,15 @@
             {
                 throw new ApplicationException(result.Message);
             }
+            var act = result.Result.Result;
 
-            activity = mapper.Map<OteActivity>(result.Result.Result);
+            if(!act.IsPublished)
+            {
+                NavigationManager.NavigateTo("not-found");
+                return;
+            }
+
+            activity = mapper.Map<OteActivity>(act);
         }
         catch (System.Exception)
         {
@@ -496,14 +545,6 @@
         }
     }
 
-    private bool IsInclusivePricing 
-    {
-        get 
-        {
-            return false;
-        }
-    }
-
     private decimal PricePerHead
     {
         get
@@ -579,6 +620,8 @@
                 ActivityId = activity.Id,
                 CustomerId = currentLogin.Id 
             }, token);
+            
+            await NotificationService.Success("One time event added to favorites.","Success");
         }
         else 
         {
@@ -586,6 +629,8 @@
                 ActivityId = activity.Id,
                 CustomerId = currentLogin.Id
             }, token);
+
+            await NotificationService.Success("One time event removed to favorites.","Success");
         }
     }
 }
