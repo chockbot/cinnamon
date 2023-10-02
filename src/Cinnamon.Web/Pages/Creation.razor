@@ -222,13 +222,6 @@
                             }
                         }
                     </a>
-                    <a class="nav-link @(currentIndex == 6 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(6)">
-                        Publish
-                        @if (currentIndex == 6)
-                        {
-                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
-                        }
-                    </a>
                     <a class="nav-link @(currentIndex == 7 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(7)">
                         Publish
                         @if (currentIndex == 7)
@@ -242,7 +235,7 @@
                 </div>
                 <div class="dashed-divider col-lg-7"></div>
                 <div class="guide-section col-lg-7 text-center">
-                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
+                    <label class="guide-title @(currentIndex != 7 ? "d-block" : "d-none")">
                         How it will look like
                     </label>
                     <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
@@ -657,9 +650,9 @@
         displayError = false;
 
         // for submit action
-        if (index == 0 && currentIndex == 6)
+        if (index == 0 && currentIndex == 7)
         {
-            if (!ActivitySummary.Validate()) return;
+            if (!GeneralPublishPage.Validate()) return;
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);

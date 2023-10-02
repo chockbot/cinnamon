@@ -1,11 +1,12 @@
 ﻿@namespace Cinnamon.Web.Components.Pages.Creation
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Components
 @using Cinnamon.Web.Modules.Services
 @inject IJSRuntime jsRuntime;
 
 <section class="ote-publish-wrapper">
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
-        <h3 class="font-24 font-weight-700 color-black-100">Your one time event is almost ready!</h3>
+        <h3 class="font-24 font-weight-700 color-black-100 text-center">Your one time event is almost ready!</h3>
         <Divider />
         <div>
             <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
@@ -20,7 +21,7 @@
                             ticket events?
                         </p>
                         <div class="publish-read-more">
-                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button" Clicked="userFlowModal.ShowModal">
                                 Read more
                             </Button>
                         </div>
@@ -44,13 +45,11 @@
             <p class="mt-4 mb-5 font-20 font-weight-700 color-black-100">Final setup:</p>
             <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 m-font-size-12">
                 <input type="hidden" value="@Activity.IsPublishedDescription" id="activity-is-published" />
-
                 <button class="check-button" type="button" @onclick=TogglePublishActivity>
                     <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                     <span>Active</span>
                 </button>
             </div>
-            <Divider />
             <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
                 <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                     <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
@@ -81,6 +80,7 @@
         </div>
     </div>
 </section>
+<UserFlowModal @ref=userFlowModal/>
 
 @code
 {
@@ -94,6 +94,8 @@
     private bool isShowErrorMessage { get; set; }
 
     private DetailsSchedulesModal DetailsModalSched { get; set; }
+
+    private UserFlowModal userFlowModal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
