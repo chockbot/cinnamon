@@ -58,7 +58,7 @@
             </Validation>
             <Field class="mb-4" id="ote-event-category">
                 <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span>
+                        @* <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span> *@
                         select category
                     </FieldLabel>
                 <FieldBody>
@@ -131,7 +131,7 @@
         var categoryRes = await activityApiHandler.GetExperienceCategories();
         if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
         {
-            var categories = categoryRes.Result.Result;
+            var categories = categoryRes.Result.Result.Where(c => c.Name.ToLower() != "new");
             foreach(var item in categories)
             {
                 categoryItems.Add(new CategoryItem {

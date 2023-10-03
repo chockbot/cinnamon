@@ -43,6 +43,7 @@ public class OteCreateArgs : IInteractor
         public DateTime ScheduleTo {get; set;}
 
         public string Recurrence {get; set;}
+        public bool IsComingSoon {get; set;}
     }
 
     public class OtePricing 

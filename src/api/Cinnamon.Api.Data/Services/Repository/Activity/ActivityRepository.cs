@@ -80,7 +80,7 @@ public class ActivityRepository : IActivityRepository
                 IsNew = true,
                 Guid = Guid.NewGuid().ToString(),
                 Status = (int)status,
-                ExperienceCreationTypeId = (int)experienceCreationType
+                ExperienceCreationTypeId = (int)experienceCreationType,
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -229,7 +229,7 @@ public class ActivityRepository : IActivityRepository
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
                 Handler = handler,
-                
+                IsComingSoon = createdActitivityRes.Result.IsComingSoon
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -278,6 +278,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 Handler = activity.Handler,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -424,25 +425,26 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id                     = a.Id,
-                    SubTitle               = a.Subtitle,
-                    Title                  = a.Title,
-                    Description            = a.Description,
-                    Price                  = a.Price,
-                    Remarks                = a.Remarks,
-                    IsPublished            = a.IsPublished,
-                    ExperienceCategoryId   = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId          = a.SubCategoryId ?? 0,
-                    CreatedBy              = a.CreatedBy,
-                    CreatedOn              = a.CreatedOn,
-                    ExperienceTypeId       = a.ExperienceTypeId,
-                    Handler                = a.Handler,
-                    ExperienceType         = a.ExperienceType?.Name,
-                    ExperienceCategory     = a.ExperienceCategory?.Category,
-                    SubCategory            = a.SubCategory?.SubCatergory,
-                    IsNew                  = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
-                    IsDeactivated          = a.IsDeactivated,
-                    Status                 = (Enums.ActivityStatus)a.Status,
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
+                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    CreatedOn            = a.CreatedOn,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsDeactivated        = a.IsDeactivated,
+                    Status               = (Enums.ActivityStatus)a.Status,
+                    IsComingSoon         = a.IsComingSoon,
                     ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
                 };
 
@@ -615,6 +617,7 @@ public class ActivityRepository : IActivityRepository
                     ExperienceTypeId = a.ExperienceTypeId,
                     MapDetails = a.MapDetails,
                     Handler = a.Handler,
+                    IsComingSoon = a.IsComingSoon
                 };
             });
 
@@ -669,6 +672,7 @@ public class ActivityRepository : IActivityRepository
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -865,7 +869,8 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
-                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
+                IsComingSoon = activity.IsComingSoon
             };
 
             // address fields
@@ -1310,6 +1315,7 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsComingSoon         = a.IsComingSoon
                 };
 
                 // address fields
@@ -1559,6 +1565,7 @@ public class ActivityRepository : IActivityRepository
                     SubCategoryId = s.SubCategoryId ?? 0,
                     SubTitle      = s.Subtitle,
                     Title         = s.Title,
+                    IsComingSoon  = s.IsComingSoon,
                     Schedules = s.Schedules.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
                     {
                         DateTime         = i.DateTime,
@@ -1607,7 +1614,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon)
     {
         try
         {
@@ -1625,7 +1632,8 @@ public class ActivityRepository : IActivityRepository
                 Guid = Guid.NewGuid().ToString(),
                 Status = 1,
                 ExperienceCreationTypeId = experienceCreationTypeId,
-                CreatedBy = customerId
+                CreatedBy = customerId,
+                IsComingSoon = comingSoon
             };
 
             var activityDescription = new Entities.ActivityDescription {
@@ -1697,7 +1705,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId)
+        bool isPublished, string handler, int categoryId, bool comingSoon)
     {
         try
         {
@@ -1709,7 +1717,8 @@ public class ActivityRepository : IActivityRepository
                 Price = stringPrice,
                 IsPublished = isPublished,
                 ExperienceCategoryId = categoryId,
-                Handler = handler
+                Handler = handler,
+                IsComingSoon = comingSoon
             };
 
             var activityDescription = new Entities.ActivityDescription {

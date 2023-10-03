@@ -20,7 +20,7 @@
     <Container>
         <div class="progress-bar-section mt-4">
             <p class="progress-details">
-                IN PROGRESS: Step @(currentIndex + 1) of 5 <span id="loader"></span>
+                IN PROGRESS: Step @(currentIndex + 1) of 6 <span id="loader"></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
@@ -55,7 +55,7 @@
                 <OteSidebarNavigation SidebarItems="sidebarItems" />
                 <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
                 <div>
-                    @if(currentIndex != 4)
+                    @if(currentIndex < 4)
                     {
                         <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
                         <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
@@ -78,6 +78,9 @@
                 <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
                     <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
                 </div>
+                <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                    <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
             </Column>
         </Row>
     </Container>
@@ -94,6 +97,7 @@
     private OtePricing? otePricing;
     private OteGallery? oteGallery;
     private OteSummary? oteSummary;
+    private OtePublish? otePublish;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
@@ -152,7 +156,7 @@
     {
         get
         {
-            return Math.Round((currentIndex + 1) * 20.0);
+            return Math.Round((currentIndex + 1) * 16.66);
         }
     }
 
@@ -180,6 +184,12 @@
             Label = "gallery",
             IsActive = false,
             OnClick = NavigateToGallery
+        });
+
+        sidebarItems.Add(new OteSidebarNavigation.Item {
+            Label = "summary",
+            IsActive = false,
+            OnClick = NavigateToSummary
         });
 
         sidebarItems.Add(new OteSidebarNavigation.Item {
@@ -245,7 +255,7 @@
         }
     }
 
-    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    private async Task NavigateToSummary(OteSidebarNavigation.Item _)
     {
         if(currentIndex != 4)
         {
@@ -254,6 +264,21 @@
             if(valid)
             {
                 SetActiveItem(4);
+                summary = GetSummary();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 5)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(5);
                 summary = GetSummary();
                 StateHasChanged();
             }
@@ -317,6 +342,13 @@
         components.Add(new ComponentItem<IOteComponent> {
             Component = oteSummary,
             Name = "summary",
+            HasNext = true,
+            HasPrevious = true
+        });
+
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = otePublish,
+            Name = "publish",
             HasNext = false,
             HasPrevious = true
         });
@@ -367,9 +399,11 @@
     {
         try
         {
+            summary = GetSummary();
             var location = summary.LocationData;
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
+            var publishData = summary.PublishData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
@@ -384,14 +418,15 @@
                     ExperienceCreationTypeId = 3,
                     ExperienceTypeId = location.ExperienceType,
                     HouseNo = location.HouseNo,
-                    IsPublished = true,
+                    IsPublished = publishData.IsPublish,
                     PinnedLocation = location.PinnedLocation,
                     PostalCode = location.PostalCode,
                     Recurrence = schedule.Recurrences,
                     RegionCode = location.RegionCode,
                     RegionName = location.RegionName,
                     ScheduleFrom = schedule.DateFrom,
-                    ScheduleTo = schedule.DateTo
+                    ScheduleTo = schedule.DateTo,
+                    IsComingSoon = publishData.ComingSoon
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
@@ -428,14 +463,16 @@
     {
         try
         {
+            summary = GetSummary();
             var location = summary.LocationData;
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
+            var publishData = summary.PublishData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
             var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
-                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteActivity {
+                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateActivity {
                     BarangayCode = location.BarangayCode,
                     BarangayName = location.BarangayName,
                     CategoryId = eventData.Category,
@@ -446,7 +483,7 @@
                     ExperienceTypeId = location.ExperienceType,
                     HouseNo = location.HouseNo,
                     Id = oteId,
-                    IsPublished = true,
+                    IsPublished = publishData.IsPublish,
                     PinnedLocation = location.PinnedLocation,
                     PostalCode = location.PostalCode,
                     Recurrence = schedule.Recurrences,
@@ -454,9 +491,10 @@
                     RegionName = location.RegionName,
                     ScheduleFrom = schedule.DateFrom,
                     ScheduleTo = schedule.DateTo,
+                    IsComingSoon = publishData.ComingSoon
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OtePricing {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
                         Description = p.Description,
                         Id = p.Id,
                         IsAbsorbFees = p.AbsorbFees,
@@ -552,6 +590,12 @@
                 Order = i.Order
             };
         }).ToList());
+
+        otePublish.SetState(new OtePublish.ModelData {
+            AcceptTerms = true,
+            ComingSoon = ote.IsComingSoon,
+            IsPublish = ote.IsPublished
+        });
     }
 
     private OteSummary.ComponentSummary GetSummary()
@@ -559,7 +603,8 @@
         return new OteSummary.ComponentSummary {
             EventData = oteEvent.GetData(),
             LocationData = oteLocation.GetData(),
-            PricingData = otePricing.GetData()
+            PricingData = otePricing.GetData(),
+            PublishData = otePublish.GetData()
         };
     }
 

@@ -180,9 +180,11 @@ public class Activity
     public bool IsDeactivated { get; set; }
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public bool IsComingSoon {get; set;}
+
     string MaskEmail(string input)
     {
-        string pattern = @"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|((?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\""\.,<>?«»“”‘’]))\b)";
+        string pattern = @"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|((?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\""\.,<>?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]))\b)";
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
 

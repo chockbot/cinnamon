@@ -136,6 +136,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 						OngoingStudents = e.OngoingStudents,
 						AverageRating = e.AverageRating,
 						NumberOfReviews = e.NumberOfReviews,
+						ExperienceCreationType = e.ExperienceCreationType
 					};
 				}),
 				ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

@@ -956,6 +956,7 @@ public class ActivityController : ControllerBase
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType
                     };
                 }).AsQueryable()
             });
@@ -1278,7 +1279,8 @@ public class ActivityController : ControllerBase
                             PhoneNumber = activity.Owner.PhoneNumber
                         } : null,
                     OngoingStudents = activity.OngoingStudents,
-                    CompletedStudents = activity.CompletedStudents
+                    CompletedStudents = activity.CompletedStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -1385,7 +1387,8 @@ public class ActivityController : ControllerBase
                             Id  = activity.Owner.Id
                         } : null,
                     CompletedStudents = activity.CompletedStudents,
-                    OngoingStudents = activity.OngoingStudents
+                    OngoingStudents = activity.OngoingStudents,
+                    IsComingSoon = activity.IsComingSoon
                 }
             });
         }
@@ -2367,7 +2370,7 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
                     Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity {
                             CityName = a.CityName,
                             ExperienceTypeId = a.ExperienceTypeId,
                             Handler = a.Handler,
@@ -2381,7 +2384,8 @@ public class ActivityController : ControllerBase
                             RegionName = a.RegionName,
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
-                            Title = a.Title
+                            Title = a.Title,
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId
                         };
                     })
                 }
@@ -2494,7 +2498,8 @@ public class ActivityController : ControllerBase
                     RegionCode = activity.RegionCode ?? string.Empty,
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo
+                    ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2553,6 +2558,7 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
+                    IsComingSoon = activity.IsComingSoon
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

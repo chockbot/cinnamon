@@ -67,6 +67,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsComingSoon")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeactivated")
                         .HasColumnType("boolean");
 
@@ -115,7 +118,8 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ExperienceCategoryId");
 
-                    b.HasIndex("ExperienceCreationTypeId");
+                    b.HasIndex("ExperienceCreationTypeId")
+                        .IsUnique();
 
                     b.HasIndex("ExperienceTypeId");
 

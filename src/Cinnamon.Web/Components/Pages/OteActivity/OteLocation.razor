@@ -60,7 +60,7 @@
                         <FieldBody>
                             <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@RegionClass" 
                                 SelectedValue="model.Region.Code" SelectedValueChanged="SelectedRegionChanged">
-                                <SelectItem Disabled class="text-capitalize">--Select Region--</SelectItem>
+                                <SelectItem Value='"none"' Disabled class="text-capitalize">--Select Region--</SelectItem>
                                 @foreach (var item in regions)
                                 {
                                     <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
@@ -76,7 +76,7 @@
                         <FieldBody>
                             <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@CityClass" 
                                 SelectedValue="model.City.Code" SelectedValueChanged="SelectedCityChanged">
-                                <SelectItem Disabled class="text-capitalize">--Select City--</SelectItem>
+                                <SelectItem Value='"none"' Disabled class="text-capitalize">--Select City--</SelectItem>
                                 @foreach (var item in cities)
                                 {
                                     <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
@@ -92,7 +92,7 @@
                         <FieldBody>
                             <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@BarangayClass" 
                                 SelectedValue="model.Barangay.Code" SelectedValueChanged="SelectedBarangayChanged">
-                                <SelectItem Disabled class="text-capitalize">--Select Barangay--</SelectItem>
+                                <SelectItem Value='"none"' Disabled class="text-capitalize">--Select Barangay--</SelectItem>
                                 @foreach (var item in barangays)
                                 {
                                     <SelectItem Value="item.Value.Code">@item.Value.Name</SelectItem>
@@ -407,6 +407,7 @@
     {
         model.SelectedType = type;
         showErrors = false;
+        ClearLocationFields();
         await formValidation.ClearAll();
     }
 
@@ -440,6 +441,19 @@
         model.Region.Name = data.RegionName;
         model.SelectedType = data.ExperienceType;
         StateHasChanged();
+    }
+
+    private void ClearLocationFields()
+    {
+        model.HouseNo = string.Empty;
+        model.Region.Code = "none";
+        model.Region.Name = string.Empty;
+        model.City.Code = "none";
+        model.City.Name = string.Empty;
+        model.Barangay.Code = "none";
+        model.Barangay.Name = string.Empty;
+        model.PostaCode = string.Empty;
+        model.PinnedLocation = string.Empty;
     }
 
     public class ModelData
