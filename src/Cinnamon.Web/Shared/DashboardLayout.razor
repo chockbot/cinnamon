@@ -18,7 +18,8 @@
             {
                 if (Model.Profile != null && Model.Profile.IsMaker)
                 {
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0" id="menu">
+                        
                         <li class="nav-item">
                             <div class="nav-link item-link sidebar-header">
                                 <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
@@ -27,10 +28,8 @@
                                 </a>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a href="Explore" class="nav-link align-middle item-link">
-                                <img class="icon-home" src="images/Dashboard Icon/Home.png"> <span class="ms-1 d-sm-inline nav-text">Home</span>
-                            </a>
+                        <li class="experiences-title">
+                            <label>Experiences</label>
                         </li>
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
@@ -38,15 +37,35 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
-                                <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                            <a class="nav-link activities-link" @onclick="ToggleCollapse">
+                                <img class="icon-home" src="images/Dashboard Icon/my-activities-icon.png"> 
+                                <span class="ms-1 d-sm-inline nav-text">My Activities</span>
+                                <i class="fas @GetArrowIcon() arrow-icon"></i>
                             </a>
+                            <ul class="submenu" style="display:@GetSubMenuDisplay()">
+                                <li class="sub-nav-link">
+                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
+                                        <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                                    </a>
+                                </li>
+                                <li class="sub-nav-link">
+                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToManage">
+                                        <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToManage">
-                                <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/my-events-icon.png"> <span class="ms-1 d-sm-inline nav-text">My Events</span>
                             </a>
                         </li>
+
+
+                        <li class="experiences-title">
+                            <label>Others</label>
+                        </li>
+
                         <li class="nav-item messages-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToMessages">
                                 <img class="icon-home" src="images/Dashboard Icon/email.svg"> <span class="ms-1 d-sm-inline nav-text">Messages</span>
@@ -140,6 +159,8 @@
     List<ChatRoom> chatRooms = new List<ChatRoom>();
 
     private bool hasNewMessages = false;
+
+    private bool isCollapsed = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -277,4 +298,17 @@
         }
     }
 
+    private void ToggleCollapse()
+    {
+        isCollapsed = !isCollapsed;
+    }
+    private string GetArrowIcon()
+    {
+        return isCollapsed ? "fa-chevron-right" : "fa-chevron-down"; // Font Awesome icons
+    }
+
+    private string GetSubMenuDisplay()
+    {
+        return isCollapsed ? "none" : "block";
+    }
 }
