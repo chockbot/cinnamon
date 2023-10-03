@@ -45,12 +45,11 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							") " +
 							"select \"TransactionId\", \"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", \"StudentId\", " +
 								"\"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\", " +
-								"Date(\"Date\" + Interval '2 days') as \"EndDate\", Date('" + dateString  + "') as \"DateNow\", " +
 								"\"PerUnitDisburseAmount\", \"TotalDisburseAmount\" " +
 							"from summary sm " +
 							"join public.\"Activities\" ac " +
 								"on ac.\"Id\" = sm.\"ActivityId\" " +
-							"where \"RowCnt\" = 1 and Date(\"Date\" + Interval '2 days') <= Date('" + dateString  + "') ";
+							"where \"RowCnt\" = 1 ";
 
 			IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
 			

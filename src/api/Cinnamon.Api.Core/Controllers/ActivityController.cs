@@ -2356,7 +2356,8 @@ public class ActivityController : ControllerBase
     {
         try
         {
-            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs {
+            var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs
+            {
                 Skip = args.PageIndex,
                 Take = args.CountPerPage
             });
@@ -2368,9 +2369,12 @@ public class ActivityController : ControllerBase
             return new JsonResult(new PopularActivitiesResult
             {
                 IsSuccess = true,
-                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO {
-                    Activities = result.Result.Activities.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity {
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO
+                {
+                    Activities = result.Result.Activities.Select(a =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity
+                        {
                             CityName = a.CityName,
                             ExperienceTypeId = a.ExperienceTypeId,
                             Handler = a.Handler,
