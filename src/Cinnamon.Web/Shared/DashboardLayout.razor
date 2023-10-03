@@ -56,7 +56,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToEvents">
                                 <img class="icon-home" src="images/Dashboard Icon/my-events-icon.png"> <span class="ms-1 d-sm-inline nav-text">My Events</span>
                             </a>
                         </li>
@@ -231,7 +231,10 @@
     {
         navigationManager.NavigateTo("/maker/dashboard/coupons");
     }
-
+    private void NavigateToEvents()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/events");
+    }
     private void NavigateToContact()
     {
         navigationManager.NavigateTo("https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform");
@@ -267,7 +270,6 @@
     {
         navigationManager.NavigateTo("/api/account/logout", true);
     }
-
     private string GetStyle()
     {
         var result = string.Empty;
