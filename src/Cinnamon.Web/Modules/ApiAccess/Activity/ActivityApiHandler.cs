@@ -891,7 +891,6 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
         }
     }
-
     public async Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token)
     {
         try
