@@ -35,7 +35,7 @@
                             from this event?
                         </p>
                         <div class="publish-read-more">
-                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button" Clicked="moneyFlowsModal.ShowModal">
                                 Read more
                             </Button>
                         </div>
@@ -81,6 +81,7 @@
     </div>
 </section>
 <UserFlowModal @ref=userFlowModal/>
+<MoneyFlowsModal @ref=moneyFlowsModal/>
 
 @code
 {
@@ -96,6 +97,8 @@
     private DetailsSchedulesModal DetailsModalSched { get; set; }
 
     private UserFlowModal userFlowModal { get; set; }
+
+    private MoneyFlowsModal moneyFlowsModal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
