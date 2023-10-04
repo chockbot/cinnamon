@@ -19,6 +19,7 @@ public class PopularActivitiesDTO
         public string Price {get; set;}
         public string CityName {get; set;}
         public string RegionName {get; set;}
+        public string PinnedLocation { get; set; }
         public string ImageSrc {get; set;}
         public int ExperienceCreationTypeId {get; set;}
     }

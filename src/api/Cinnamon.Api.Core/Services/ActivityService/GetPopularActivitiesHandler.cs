@@ -89,6 +89,7 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                         BarangayName            = e.BarangayName,
                         RegionName              = e.RegionName,
                         CityName                = e.CityName,
+                        PinnedLocation          = e.PinnedLocation,
                         PostalCode              = e.PostalCode,
                         SearchTags              = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished             = e.IsPublished,
