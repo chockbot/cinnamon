@@ -214,7 +214,7 @@
                             <Items>
                                 <Tab Name="general-activities" TextTransform="TextTransform.Capitalize">General Activities</Tab>
                                 <Tab Name="one-time-events" TextTransform="TextTransform.Capitalize">One Time Events</Tab>
-                                <Tab Name="activity-via-appointment" TextTransform="TextTransform.Capitalize">Activity via appointment</Tab>
+                                @* <Tab Name="activity-via-appointment" TextTransform="TextTransform.Capitalize">Activity via appointment</Tab> *@
                             </Items>
                             <Content>
                                 <TabPanel Name="general-activities">
@@ -478,9 +478,8 @@
                                     }
 
                                 </TabPanel>
-                                <TabPanel Name="activity-via-appointment">
+                                @* <TabPanel Name="activity-via-appointment">
                                     <div class="header">
-                                        @*<p class="title">Activities</p>*@
                                         <button class="create-button" @onclick="NavigateToAppointment">Create New Appointment</button>
                                     </div>
                                     @foreach (var item in AppointmentActvities)
@@ -607,7 +606,7 @@
                                             </div>
                                         }
                                     }
-                                </TabPanel>
+                                </TabPanel> *@
                             </Content>
                         </Tabs>
                     </Container>
