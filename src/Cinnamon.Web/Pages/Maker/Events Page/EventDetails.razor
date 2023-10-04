@@ -106,10 +106,10 @@
                         <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                         <TableHeader>
                             <TableRow>
-                                <TableHeaderCell>
+                                <TableHeaderCell class="th-name">
                                     Name
                                 </TableHeaderCell>
-                                <TableHeaderCell>
+                                <TableHeaderCell class="th-email">
                                     Email
                                 </TableHeaderCell>
                                 <TableHeaderCell>
@@ -121,7 +121,7 @@
                                 <TableHeaderCell>
                                     QR Code
                                 </TableHeaderCell>
-                                <TableHeaderCell>
+                                <TableHeaderCell class="th-status">
                                     Status
                                 </TableHeaderCell>
                             </TableRow>
@@ -131,17 +131,17 @@
                                 {
                                     <TableRow>
                                         <TableRowCell class="tr-name">@item.Name</TableRowCell>
-                                        <TableRowCell class="tr-name">@item.Email</TableRowCell>
-                                        <TableRowCell class="tr-name">@item.Ticket</TableRowCell>
-                                        <TableRowCell class="tr-name">@item.Amount</TableRowCell>
-                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">@item.QRCode</TableRowCell>
-                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">
+                                        <TableRowCell class="tr-email">@item.Email</TableRowCell>
+                                        <TableRowCell class="tr-ticket">@item.Ticket</TableRowCell>
+                                        <TableRowCell class="tr-amount">@item.Amount</TableRowCell>
+                                        <TableRowCell class="tr-qr">@item.QRCode</TableRowCell>
+                                        <TableRowCell class="tr-button">
                                             <div class="btn-status">
                                                 <button class="check-button" type="button">
                                                     <img class="me-1" alt="check-icon"
                                                          src='@(item.Verify == true ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
                                                 </button>
-                                                <span>Active</span>
+                                                <span>Verify</span>
                                             </div>
                                         </TableRowCell>
                                     </TableRow>
