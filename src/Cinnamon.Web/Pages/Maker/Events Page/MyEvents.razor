@@ -1,0 +1,161 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/events"
+@using AutoMapper;
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote;
+@inject IActivityApiHandler activityApiHandler;
+@inject ITransactionApiHandler transactionApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@inject IMapper mapper;
+@attribute [Authorize]
+
+<PageTitle>Events | CinnamonPH</PageTitle>
+<SeoMeta Title="Events" Subject="Dashboard" Url="/maker/dashboard/events" />
+
+
+<div class="maker-events-wrapper">
+    <div class="header">
+        <p class="title">My Events</p>
+    </div>
+    <div class="events-section">
+        <div class="event-wrapper">
+            @if (isLoading == true)
+            {
+                for (int x = 0; x < 2; x++)
+                {
+                    <div class="event-details-content">
+                        <div class="event-content d-flex">
+                            <img class="event-image skeleton" />
+                            <div class="event-details">
+                                <p class="event-title skeleton">Title</p>
+                                <p class="event-schedule skeleton">30 March 2023 | 10:00 AM</p>
+                                <p class="event-location skeleton">Philippine Arena</p>
+                                <button class="view-details skeleton">View Details</button>
+                            </div>
+                        </div>
+                        <div class="ticket-details">
+                            <p class="ticket-slots skeleton">Slots: 60</p>
+                            <p class="ticket-sold skeleton">Sold: 20</p>
+                            <p class="ticket-available skeleton">Available: 40</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @foreach (var item in oteActivities)
+                {
+                    <div class="event-details-content">
+                        <div class="event-content d-flex">
+                            <img class="event-image" src="@(item.Images.Count() > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)" />
+                            <div class="event-details">
+                                <p class="event-title">@item.EventName</p>
+                                <p class="event-schedule">@item.ScheduleFrom.ToString("dd MMMM yyyy") | @item.ScheduleFrom.ToString("hh:mm tt")</p>
+                                @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                                {
+                                    <p class="event-location">
+                                        @item.PinnedLocation
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="event-location">
+                                        @item.CityName, @item.RegionName
+                                    </p>
+                                }
+                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(@item.Handler))">View Details</button>
+                            </div>
+                        </div>
+                        <div class="ticket-details">
+                            <p class="ticket-slots">Slots: 60</p>
+                            <p class="ticket-sold">Sold: 20</p>
+                            <p class="ticket-available">Available: 40</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>    
+</div>
+@code {
+    private List<Activity> activities = new List<Activity>();
+    private OteActivity? activity;
+    private List<OteActivity> oteActivities = new List<OteActivity>();
+    private string Token = string.Empty;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token = user.FindFirstValue("Token");
+            if (Token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            //Get Owned OTE's
+            await GetOwnedActivities(Token);
+            //Get OTE Details
+            foreach (var item in activities)
+            {
+                var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+                    {
+                        IncludeAddress = true,
+                        IncludeDescription = true,
+                        IncludePricing = true,
+                        IncludeSchedule = true,
+                        IncludeImages = true
+                    }, item.Handler);
+                if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+                {
+                    throw new ApplicationException(result.Message);
+                }
+                var act = result.Result.Result;
+                activity = mapper.Map<OteActivity>(act);
+                oteActivities.Add(activity);
+            }
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    private async Task GetOwnedActivities(string token)
+    {
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+            {
+                IncludeActivityImages = true,
+                IncludeStudents = true,
+                IncludeAtivitySchedules = true
+            }, token);
+
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        ExperienceCreationType = a.ExperienceCreationType,
+                        Handler = a.Handler,
+                    };
+            }).ToList();
+        }
+    }
+    private void NavigateToEventDetails(string handler)
+    {
+        NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}");
+    }
+}
