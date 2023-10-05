@@ -73,6 +73,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IFavoriteRepository, Services.Repository.Favorite.FavoriteRepository>();
         services.AddTransient<Services.Repository.Interfaces.IChatConnectionRepository, Services.Repository.ChatConnection.ChatConnectionRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExperienceCreationTypeRepository, Services.Repository.ExperienceCreationType.ExperienceCreationTypeRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOteTicketRepository, Services.Repository.OteTicket.OteTicketRepository>();
 
         return services;
     }
