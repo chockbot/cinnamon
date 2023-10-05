@@ -114,7 +114,7 @@ public class RequestRefundRepository : IRequestRefundRepository
                         ActivityId = r.PurchaseOrder.ActivityId,
                         Id = r.PurchaseOrder.Id,
                         OverAllTotal = r.PurchaseOrder.OverallTotal,
-                        ScheduleId = r.PurchaseOrder.ScheduleId
+                        ScheduleId = r.PurchaseOrder.ScheduleId ?? 0
                     };
                 }
 

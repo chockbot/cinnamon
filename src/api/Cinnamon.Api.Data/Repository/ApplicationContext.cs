@@ -254,8 +254,8 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Activity>()
             .HasOne(c => c.ExperienceCreationType)
-            .WithOne(c => c.Activity)
-            .HasForeignKey<Activity>(c => c.ExperienceCreationTypeId);
+            .WithMany(c => c.Activities)
+            .HasForeignKey(c => c.ExperienceCreationTypeId);
 
         modelBuilder.Entity<ActivitySchedule>()
           .HasMany<ActivityScheduleTime>(a => a.ActivityScheduleTimes)

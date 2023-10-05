@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231005042043_PurchaseOrderUpdateColumn")]
+    partial class PurchaseOrderUpdateColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2305,8 +2307,8 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasForeignKey("ExperienceCategoryId");
 
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCreationType", "ExperienceCreationType")
-                        .WithMany("Activities")
-                        .HasForeignKey("ExperienceCreationTypeId")
+                        .WithOne("Activity")
+                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.Activity", "ExperienceCreationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2747,7 +2749,8 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCreationType", b =>
                 {
-                    b.Navigation("Activities");
+                    b.Navigation("Activity")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceType", b =>
