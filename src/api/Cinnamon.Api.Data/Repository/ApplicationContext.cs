@@ -74,6 +74,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OngoingActivityScheduleTime> OngoingActivityScheduleTimes {get; set; }
     public DbSet<OteSchedule> OteSchedules {get; set;}
     public DbSet<OteSchedulePricing> OteSchedulePricings {get; set;}
+    public DbSet<OteTicket> OteTickets {get; set;}
 
     #endregion
 
@@ -276,6 +277,22 @@ public class ApplicationContext : IdentityDbContext
         // for ote schedule
         modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
         modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
+
+        // for ote tickets
+        modelBuilder.Entity<OteTicket>()
+            .HasOne(t => t.Activity);
+        modelBuilder.Entity<OteTicket>()
+            .HasOne(t => t.OteSchedule);
+        modelBuilder.Entity<OteTicket>()
+            .HasOne(t => t.OteSchedulePricing);
+        modelBuilder.Entity<OteTicket>()
+            .HasOne(t => t.Customer);
+        modelBuilder.Entity<OteTicket>()
+            .HasIndex(t => t.QRCode);
+        modelBuilder.Entity<OteTicket>()
+            .HasIndex(t => t.Status);
+        modelBuilder.Entity<OteTicket>()
+            .HasIndex("ActivityId","QRCode","Status");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -95,6 +95,8 @@ public class DataStore : IDataStore
 
     public IOteSchedulePricing OteSchedulePricing => new OteSchedulePricingEntity(applicationContext);
 
+    public IOteTicket OteTicket => new OteTicketEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
