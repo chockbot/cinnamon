@@ -19,6 +19,15 @@
     margin-top: 1rem;
     color: var(--primary);
 }
+.btn-export {
+    background-color: transparent;
+    color: #979797;
+    border-radius: 5px;
+    border: 1px solid #D8D8D8;
+    padding: 5px;
+    margin-right: 1rem;
+    height: 2.5rem;
+}
 .ticket-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -26,9 +35,13 @@
     justify-items: center;
 }
 /*TABLE COMPONENTS CSS*/
+::deep .table-list table tbody tr td:nth-child(3) span:last-child {
+    display: none;
+}
 .ticket-details .ticket-table {
     width: 100%;
-    max-height: 300px;
+    max-height:750px;
+    overflow-y: scroll;
 }
 ::deep .th-name {
     text-align: left;
@@ -72,7 +85,6 @@
     font-weight: 400;
     font-size: 16px;
     color: #343D4C;
-    height: 60px;
     vertical-align: middle;
     text-align: center;
 }
@@ -157,6 +169,9 @@
     .customer-list .ticket-table {
         margin-top: 0.5rem;
     }
+.customer-content{
+    display: flex;
+}
 ::deep .search-bar {
     width: 40%;
     height: 40px;
@@ -188,4 +203,479 @@
     color: #343D4C;
     font-weight: 500;
 }
+.mobile-ticket-details{
+    display: none;
+}
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .mobile-ticket-details {
+        display: block;
+        max-height: 350px;
+        overflow-y: scroll;
+    }
 
+    .mobile-wrapper {
+        border: 1px solid #D9D9D9;
+        border-radius: 10px;
+    }
+
+    .ticket-header {
+        border-bottom: 1px solid #D9D9D9;
+        background: #F3F6FC;
+        padding: 10px 0 0 10px;
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343D4C;
+    }
+
+    .ticket-column {
+        padding: 10px 0 10px 10px;
+    }
+
+    .mobile-ticketname {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343D4C;
+    }
+
+    .ticket-column p {
+        margin: 0;
+    }
+
+    .ticket-count {
+        gap: 20px;
+    }
+
+    .mobile-slot {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #343D4C;
+    }
+
+    .mobile-sold {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #FF0000;
+    }
+
+    .mobile-available {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #009220;
+    }
+
+    .event-details-wrapper {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 5px;
+        justify-items: start;
+    }
+
+    .event-section {
+        padding-left: 10px;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    .event-title {
+        font-size: 24px;
+        color: #343D4C;
+    }
+
+    .ticket-table {
+        padding-top: 10px;
+    }
+
+        .ticket-table:nth-of-type(1) {
+            order: 2;
+            display: none;
+        }
+
+    .event-section:nth-of-type(2) {
+        order: 1;
+    }
+
+    .event-content {
+        gap: 10px;
+    }
+
+    .event-image {
+        display: none;
+    }
+
+    .ticket-details .ticket-table {
+        display: none;
+    }
+
+    .customer-content {
+        display: block;
+    }
+
+        .customer-content .back-text {
+            display: none;
+        }
+
+    ::deep .search-bar {
+        width: 100%;
+        height: 40px;
+        background-color: #F3F6FC;
+        color: #717171;
+    }
+
+    .search-box {
+        margin-top: 1rem;
+    }
+    /*Customer Table styling*/
+    ::deep .table-list .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .table-list table thead {
+        display: none;
+    }
+
+    ::deep .table-list table tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+        border: 1px solid;
+    }
+
+        ::deep .table-list table tbody tr td {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+            ::deep .table-list table tbody tr td:first-child {
+                background-color: #343d4c;
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                ::deep .table-list table tbody tr td:first-child > span {
+                    display: block;
+                    margin-right: 10px;
+                }
+
+                ::deep .table-list table tbody tr td:first-child span::before {
+                    content: "Name: ";
+                    font-weight: bold;
+                    width: 70%;
+                }
+
+            ::deep .table-list table tbody tr td:nth-child(2)::before {
+                content: "Email: ";
+                font-weight: bold;
+            }
+
+    ::deep .tr-ticket {
+        text-align: left;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(3) {
+        display: flex;
+        padding: 0;
+    }
+
+        ::deep .table-list table tbody tr td:nth-child(3) span:first-child {
+            width: 70%;
+            padding: 10px;
+            border-right: 1px solid #000;
+        }
+
+            ::deep .table-list table tbody tr td:nth-child(3) span:first-child::before {
+                content: "Ticket: ";
+                font-weight: bold;
+            }
+
+        ::deep .table-list table tbody tr td:nth-child(3) span:last-child {
+            width: 30%;
+            padding: 10px;
+            display: block;
+        }
+
+            ::deep .table-list table tbody tr td:nth-child(3) span:last-child::before {
+                content: "Amount: ";
+                font-weight: bold;
+            }
+
+    ::deep .table-list table tbody tr td:nth-child(4) {
+        display: none;
+    }
+
+    ::deep .tr-qr {
+        text-align: left;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(5)::before {
+        content: "QR Code: ";
+        font-weight: bold;
+    }
+
+    ::deep .table-list table tbody tr td:last-child {
+        border: 0 !important;
+    }
+
+    ::deep .table-list .btn-status {
+        justify-content: flex-start;
+        padding: 0;
+        max-width: 80px;
+    }
+
+    ::deep .table-list .btn-primary {
+        font-size: 12px !important;
+    }
+
+    ::deep .table-list .check-button {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+        ::deep .table-list .check-button img {
+            width: 20px;
+            height: auto;
+        }
+
+    ::deep table {
+        outline: none;
+    }
+    .btn-export {
+        width: 350px;
+        margin-bottom: 0.5rem;
+    }
+}
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .mobile-ticket-details {
+        display: block;
+        max-height: 350px;
+        overflow-y: scroll;
+    }
+    .mobile-wrapper {
+        border: 1px solid #D9D9D9;
+        border-radius: 10px;
+    }
+    .ticket-header {
+        border-bottom: 1px solid #D9D9D9;
+        background: #F3F6FC;
+        padding: 10px 0 0 10px;
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343D4C;
+    }
+    .ticket-column {
+        padding: 10px 0 10px 10px;
+    }
+    .mobile-ticketname {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343D4C;
+    }
+    .ticket-column p {
+        margin: 0;
+    }
+    .ticket-count{
+        gap: 20px;
+    }
+    .mobile-slot {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #343D4C;
+    }
+    .mobile-sold {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #FF0000;
+    }
+    .mobile-available {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #009220;
+    }
+    .event-details-wrapper {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 5px;
+        justify-items: start;
+    }
+    .event-section {
+        padding-left: 10px;
+        width: 100%;
+        max-width: 420px;
+    }
+    .event-title {
+        font-size: 24px;
+        color: #343D4C;
+    }
+    .ticket-table{
+        padding-top: 10px;
+    }
+    .ticket-table:nth-of-type(1) {
+        order: 2;
+        display: none;
+    }
+    .event-section:nth-of-type(2) {
+        order: 1;
+    }
+    .event-content {
+        gap: 10px;
+    }
+    .event-image{
+        display: none;
+    }
+    .ticket-details .ticket-table {
+        display: none;
+    }
+    .customer-content {
+        display: block;
+    }
+    .customer-content .back-text{
+        display: none;
+    }
+    ::deep .search-bar {
+        width: 100%;
+        height: 40px;
+        background-color: #F3F6FC;
+        color: #717171;
+    }
+    .btn-export{
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .search-box {
+        margin-top: 1rem;
+        display: block;
+    }
+    /*Customer Table styling*/
+    ::deep .table-list .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+    ::deep .table-list table thead {
+        display: none;
+    }
+    ::deep .table-list table tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+        border: 1px solid;
+    }
+    ::deep .table-list table tbody tr td {
+        padding: 10px;
+        font-size: 12px;
+    }
+    ::deep .table-list table tbody tr td:first-child {
+        background-color: #343d4c;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+        ::deep .table-list table tbody tr td:first-child > span {
+            display: block;
+            margin-right: 10px;
+        }
+
+        ::deep .table-list table tbody tr td:first-child span::before {
+            content: "Name: ";
+            font-weight: bold;
+            width: 70%;
+        }
+
+        ::deep .table-list table tbody tr td:nth-child(2)::before {
+            content: "Email: ";
+            font-weight: bold;
+        }
+
+    ::deep .tr-ticket{
+        text-align: left;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(3) {
+        display: flex;
+        padding: 0;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(3) span:first-child {
+        width: 70%;
+        padding: 10px;
+        border-right: 1px solid #000;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(3) span:first-child::before {
+        content: "Ticket: ";
+        font-weight: bold;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(3) span:last-child {
+        width: 30%;
+        padding: 10px;
+        display: block;
+    }
+            ::deep .table-list table tbody tr td:nth-child(3) span:last-child::before {
+                content: "Amount: ";
+                font-weight: bold;
+            }
+
+    ::deep .table-list table tbody tr td:nth-child(4) {
+        display: none;
+    }
+
+    ::deep .tr-qr {
+        text-align: left;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(5)::before {
+        content: "QR Code: ";
+        font-weight: bold;
+    }
+
+    ::deep .table-list table tbody tr td:last-child {
+        border: 0 !important;
+    }
+
+    ::deep .table-list .btn-status {
+        justify-content: flex-start;
+        padding: 0;
+        max-width: 80px;
+    }
+
+    ::deep .table-list .btn-primary {
+        font-size: 12px !important;
+    }
+
+    ::deep .table-list .check-button {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+        ::deep .table-list .check-button img {
+            width: 20px;
+            height: auto;
+        }
+    ::deep table {
+        outline: none;
+    }
+}
