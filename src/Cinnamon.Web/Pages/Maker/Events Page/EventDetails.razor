@@ -92,12 +92,34 @@
                     </div>
                 </div>
             </div>
+            <div class="mobile-ticket-details">
+                <div class="mobile-wrapper">
+                    <div class="ticket-header">
+                        <p class="header-text">Ticket Details</p>
+                    </div>
+                    @foreach (var item in ticketList)
+                    {
+                        <div class="ticket-column">
+                            <p class="mobile-ticketname">@item.TicketName</p>
+                            <div class="ticket-count d-flex">
+                                <p class="mobile-slots">Slots: @item.Slots</p>
+                                <p class="mobile-sold">Sold: @item.Sold</p>
+                                <p class="mobile-available">Available: @item.Available</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
             <div class="customer-list">
-                <div class="col-12 d-flex">
-                    <div class="col-6 justify-content-start">
+                <div class="col-12 customer-content">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
                         <p class="back-text">Customer List</p>
                     </div>
-                    <div class="col-6 justify-content-end search-box">
+                    <div class="col-lg-6 col-md-12 justify-content-md-end col-sm-12 col-12 justify-content-end search-box">
+                        <button class="btn-export" @onclick="ExportToExcel">
+                            Download Excel File
+                            <img class="excel-icon" src="images/xls-icon.png" />
+                        </button>
                         <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
                     </div>
                 </div>
@@ -130,11 +152,22 @@
                             @foreach (var item in customerList)
                                 {
                                     <TableRow>
-                                        <TableRowCell class="tr-name">@item.Name</TableRowCell>
-                                        <TableRowCell class="tr-email">@item.Email</TableRowCell>
-                                        <TableRowCell class="tr-ticket">@item.Ticket</TableRowCell>
-                                        <TableRowCell class="tr-amount">@item.Amount</TableRowCell>
-                                        <TableRowCell class="tr-qr">@item.QRCode</TableRowCell>
+                                        <TableRowCell class="tr-name">
+                                            <span>@item.Name</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-email">
+                                            <span>@item.Email</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-ticket">
+                                            <span>@item.Ticket</span>
+                                            <span>@item.Amount</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-amount">
+                                            <span>@item.Amount</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-qr">
+                                            <span>@item.QRCode</span>
+                                        </TableRowCell>
                                         <TableRowCell class="tr-button">
                                             <div class="btn-status">
                                                 <button class="check-button" type="button">
@@ -219,6 +252,10 @@
     }
     private void TextSearchChanged(string search)
     {
-      
+
+    }
+    private async Task ExportToExcel()
+    {
+        
     }
 }
