@@ -95,19 +95,89 @@
                                                             @switch (schedule.HasExpiration)
                                                             {
                                                                 case 1:
-                                                                    DateTime frequency = ExpirationData.CalculateFrequency(schedule);
-                                                                    string ordinal = ExpirationData.GetOrdinal(frequency.Day);
-                                                                    <small class="form-text sub-details">
-                                                                        @ExpirationData.GetExpirationText(schedule.SessionName, frequency, ordinal)
-                                                                    </small>
+                                                                    string ordinal = "";
+                                                                    DateTime frequency = DateTime.Now;
+                                                                    int day = schedule.StartDate.Value.Day;
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(14);
+                                                                            break;
+                                                                        case "3 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(21);
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(1);
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(2);
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(3);
+                                                                            break;
+                                                                    }
+
+                                                                    switch (frequency.Day)
+                                                                    {
+                                                                        case 1:
+                                                                        case 21:
+                                                                        case 31:
+                                                                            ordinal = "st";
+                                                                            break;
+                                                                        case 2:
+                                                                        case 22:
+                                                                            ordinal = "nd";
+                                                                            break;
+                                                                        case 3:
+                                                                        case 23:
+                                                                            ordinal = "rd";
+                                                                            break;
+                                                                        default:
+                                                                            ordinal = "th";
+                                                                            break;
+                                                                    }
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                        case "3 Weeks":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                The expiration period is @schedule.SessionName (calendar days) and will start at @schedule.StartDate.Value.ToString("dd/MM/yyyy").
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                    }
                                                                     break;
-                                                                case 2:
-                                                                    <small class="form-text sub-details">
-                                                                        Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
-                                                                    </small>
-                                                                    break;
-                                                                default:
-                                                                    break;
+
+                                                                    case 2:
+                                                                        <small class="form-text sub-details">
+                                                                            Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
+                                                                        </small>
+                                                                        break;
+
+                                                                    default:
+                                                                        break;
                                                             }
                                                         </div>
                                                     </div>
