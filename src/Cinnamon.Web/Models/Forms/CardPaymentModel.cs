@@ -53,7 +53,11 @@ public class CardPaymentModel
             }
         }
     }
+
     [Required(ErrorMessage = "Required card CVV field.")]
     [StringLength(4, MinimumLength = 3, ErrorMessage = "Provide valid CVV")]
+    [DataType(DataType.Password)]
     public string CVV {get; set;}
+
+    public bool IsRevealPassword { get; set; }
 }
