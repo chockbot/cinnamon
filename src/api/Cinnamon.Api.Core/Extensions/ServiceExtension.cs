@@ -163,6 +163,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IFinishTransactionHandler, Services.TransactionService.FinishTransactionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetGrossSalesByProviderHandler, Services.TransactionService.GetGrossSalesByProviderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPayoutsByProviderHandler, Services.TransactionService.GetPayoutsByProviderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderHandler, Services.TransactionService.OtePurchaseOrderHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();

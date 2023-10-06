@@ -31,18 +31,18 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             }
 
             // check schedule if existed
-            var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
-            if(!scheduleRes.Succeeded || scheduleRes.Result == null)
-            {
-                return AppResult<PurchaseOrderDTO>.CreateFailed(new ApplicationException("Can't find schedule id provided"),"Can't find schedule id provided");
-            }
+            // var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
+            // if(!scheduleRes.Succeeded || scheduleRes.Result == null)
+            // {
+            //     return AppResult<PurchaseOrderDTO>.CreateFailed(new ApplicationException("Can't find schedule id provided"),"Can't find schedule id provided");
+            // }
 
             // check if schedule is associated to activity
-            if(activityRes.Result.Id != scheduleRes.Result.ActivityId)
-            {
-                return AppResult<PurchaseOrderDTO>.CreateFailed(
-                    new ApplicationException("Schedule id provided is not associated to activity"),"Schedule id provided is not associated to activity");
-            }
+            // if(activityRes.Result.Id != scheduleRes.Result.ActivityId)
+            // {
+            //     return AppResult<PurchaseOrderDTO>.CreateFailed(
+            //         new ApplicationException("Schedule id provided is not associated to activity"),"Schedule id provided is not associated to activity");
+            // }
 
             // check customer if existed
             var customerRes = await dataStore.Customer.GetByIdAsync(customerId);
