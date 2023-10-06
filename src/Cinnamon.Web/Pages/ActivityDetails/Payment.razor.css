@@ -1,7 +1,18 @@
 ﻿* {
   font-family: "Nunito";
 }
-
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+::deep input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.btn-close:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
 input {
   background-color: #edf2f8;
 }
@@ -128,6 +139,25 @@ input {
   right: 5px;
   bottom: 5px;
   cursor: pointer;
+}
+.span-radio {
+    width: 1.3em;
+    height: 1.32em;
+    border-radius: 50%;
+    border: 2px solid rgb(187, 187, 187);
+    display: inline-block;
+    background-color: #edf2f8;
+}
+
+    .span-radio.selected {
+        border-color: #ffa942;
+        border-width: 5px;
+    }
+.field-icon {
+    position: absolute;
+    top: 71.5%;
+    right: 35px;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 767px) {
