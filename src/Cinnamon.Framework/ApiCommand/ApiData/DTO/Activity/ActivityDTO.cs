@@ -49,6 +49,7 @@ public class ActivityDTO
     public bool IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus Status { get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
+    public bool IsComingSoon {get; set;}
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

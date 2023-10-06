@@ -806,6 +806,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/PopularActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<PopularActivitiesResult>();
+
+            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+        }
+    }
+
     public async Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token)
     {
         try
@@ -870,25 +891,70 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
         }
     }
-
-    public async Task<AppResult<PopularActivitiesResult>> PopularActivities(PopularActivitiesArgs args)
+    public async Task<AppResult<CreateOteResult>> CreateOte(CreateOteArgs args, string token)
     {
         try
         {
             var result = await flurlClient
-                .Request("Activity/PopularActivities")
-                .SetQueryParams(args)
-                .GetJsonAsync<PopularActivitiesResult>();
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteResult>();
 
-            return AppResult<PopularActivitiesResult>.CreateSucceeded(result, "Successfully called get popular activities api");
+            return AppResult<CreateOteResult>.CreateSucceeded(result, "Successfully called create one time event api");
         }
         catch (FlurlHttpException ex)
         {
-            return AppResult<PopularActivitiesResult>.CreateFailed(ex, ex.Message);
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<PopularActivitiesResult>.CreateFailed(ex, "An error occured when calling get popular activities api");
+            return AppResult<CreateOteResult>.CreateFailed(ex, "An error occured when calling create one time event api");
+        }
+    }
+
+    public async Task<AppResult<UpdateOteResult>> UpdateOte(UpdateOteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateOte")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOteResult>();
+
+            return AppResult<UpdateOteResult>.CreateSucceeded(result, "Successfully called update one time event api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOteResult>.CreateFailed(ex, "An error occured when calling update one time event api");
+        }
+    }
+
+    public async Task<AppResult<OteActivityResult>> FindOteByHandler(OteActivityArgs args, string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+               .Request($"Activity/OteByHandler/{handler}")
+               .SetQueryParams(args)
+               .GetJsonAsync<OteActivityResult>();
+
+            return AppResult<OteActivityResult>.CreateSucceeded(result, "Successfully getting ote activity by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteActivityResult>.CreateFailed(ex, "An error occured when getting ote activity by handler api");
         }
     }
 }

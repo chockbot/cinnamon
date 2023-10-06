@@ -1,5 +1,6 @@
-@namespace Cinnamon.Web.Components.Pages.Creation
+﻿@namespace Cinnamon.Web.Components.Pages.Creation
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.Services
 @inject IJSRuntime jsRuntime;
 
 <div class="activity-summary-wrapper col-lg-12 col-12">
@@ -49,29 +50,165 @@
         <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Pricing & Schedule
         </h3>
-        <div class="row">
+        <div class="schedule-desktop">
+            @if (Activity.ScheduleIndicator == "selection" || Activity.ActivitySchedules.Count > 0)
+            {
+                var activeSchedule = Activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
+                if (activeSchedule.Count > 0)
+                {
+                    <div class="d-block mb-2">
+                        @for (int x = 0; x < activeSchedule.Count; x++)
+                        {
+                            var schedule = activeSchedule.ElementAt(x);
+                            <div class="schedule-detail w-100 rounded-5">
+                                    <div class="schedule-header d-flex" style="border-top-left-radius:10px;border-top-right-radius:10px">
+                                        <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
+                                            <p>@activeSchedule.ElementAt(x).Name</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="schedule-body">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 PES-details">
+                                            @if (x == 0)
+                                            {
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-mobile">
+                                                    <p class="recommended">Highly Recommended!</p>
+                                                </div>
+                                            }
+                                            <div class="PE-details">
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 price-details">
+                                                    <div class="d-flex price-details-title">
+                                                        <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                                                        <p class="font-14">Price Details:</p>
+                                                    </div>
+                                                    <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                </div>
+                                                @if (schedule.IsSetSession == true)
+                                                {
+                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 expiration-details">
+                                                        <div class="d-flex expiration-details-title">
+                                                            <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                            <p class="font-14">Expiration:</p>
+                                                        </div>
+                                                        <p class="font-16-d">Consume in - @schedule.SessionName</p>
+                                                        <div class="cut-off-details">
+                                                            @switch (schedule.HasExpiration)
+                                                            {
+                                                                case 1:
+                                                                    string ordinal = "";
+                                                                    DateTime frequency = DateTime.Now;
+                                                                    int day = schedule.StartDate.Value.Day;
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(14);
+                                                                            break;
+                                                                        case "3 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(21);
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(1);
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(2);
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(3);
+                                                                            break;
+                                                                    }
 
+                                                                    switch (frequency.Day)
+                                                                    {
+                                                                        case 1:
+                                                                        case 21:
+                                                                        case 31:
+                                                                            ordinal = "st";
+                                                                            break;
+                                                                        case 2:
+                                                                        case 22:
+                                                                            ordinal = "nd";
+                                                                            break;
+                                                                        case 3:
+                                                                        case 23:
+                                                                            ordinal = "rd";
+                                                                            break;
+                                                                        default:
+                                                                            ordinal = "th";
+                                                                            break;
+                                                                    }
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                        case "3 Weeks":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                The expiration period is @schedule.SessionName (calendar days) and will start at @schedule.StartDate.Value.ToString("dd/MM/yyyy").
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                                                <small class="form-text sub-details">
+                                                                                    The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
+                                                                                </small>
+                                                                            </div>
+                                                                            break;
+                                                                    }
+                                                                    break;
 
-            <div class="schedule-swiper overflow-hidden">
-                <div class="swiper-wrapper">
-                    @foreach (var schedule in Activity.ActivitySchedules
-                    .Where(a => !string.IsNullOrEmpty(a.Name) &&
-                    !string.IsNullOrEmpty(a.DateTime) &&
-                    !string.IsNullOrEmpty(a.UnitPrice) &&
-                    !string.IsNullOrEmpty(a.PriceUnit1) &&
-                    !string.IsNullOrEmpty(a.PriceUnit2)))
-                    {
-                        <div class="swiper-slide schedule">
-                            <div class="activity-schedule-box text-center">
-                                <p class="font-size-20 mb-2 m-font-size-10">@schedule.Name</p>
-                                <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
-                                <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @Math.Truncate(schedule.Price) / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="swiper-scrollbar"></div>
-            </div>
+                                                                    case 2:
+                                                                        <small class="form-text sub-details">
+                                                                            Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
+                                                                        </small>
+                                                                        break;
+
+                                                                    default:
+                                                                        break;
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="d-flex schedule-details-title">
+                                                    <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                    <p class="font-14">Schedule:</p>
+                                                </div>
+                                                <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
+                                                @if (x == 0)
+                                                {
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-desktop">
+                                                        <p class="recommended">Highly Recommended!</p>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
+                        <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
+                    </div>
+                }
+            }
         </div>
     </div>
     <Divider />
@@ -99,99 +236,14 @@
             }
         </p>
     </div>
-    <Divider />
-    <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 m-font-size-12">
-        <input type="hidden" value="@Activity.IsPublishedDescription" id="activity-is-published" />
-
-        <button class="check-button" type="button" @onclick=TogglePublishActivity>
-            <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-            <span>Active</span>
-        </button>
-    </div>
-    <Divider />
-    <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
-        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-            <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
-                <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                <span>
-                    I understand that I need that to check and complete the attendance of my customers
-                    in the CHECK ATTENDANCE section so that I can receive the payment.
-                </span>
-            </button>
-        </div>
-        <div class="d-xl-none d-lg-none d-md-none d-sm-none d-block">
-            <span class="confirmation-description">
-                I understand that I need that to check and complete the attendance of my customers
-                in the CHECK ATTENDANCE section so that I can receive the payment.
-            </span>
-               <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
-                 <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                <span>
-                    Yes, I understand
-                </span>
-            </button>
-       </div>
-        @if (isShowErrorMessage && !CheckboxConfirmation)
-        {
-            <p style="color: red; font-size: 13px; text-align: center; margin-top: 5px;">Please accept and confirm</p>
-        }
-    </div>
 </div>
-
 @code
 {
     [Parameter]
     public Activity Activity { get; set; }
 
-    private bool isPublished { get; set; } = true;
-
-    private bool CheckboxConfirmation { get; set; }
-
-    private bool isShowErrorMessage { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (Activity.ActivityId == 0)
-        {
-            Activity.IsPublished = true;
-        }
-
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
-    }
-
-    private void CheckChange(bool value)
-    {
-        isPublished = isPublished;
-    }
-
-    private Task ConfirmationCheckChanged(bool value)
-    {
-        CheckboxConfirmation = value;
-        return Task.CompletedTask;
-    }
-
-    private Task ToggleConfirmationCheck()
-    {
-        CheckboxConfirmation = !CheckboxConfirmation;
-        return Task.CompletedTask;
-    }
-
-    private Task TogglePublishActivity()
-    {
-        Activity.IsPublished = !Activity.IsPublished;
-        return Task.CompletedTask;
-    }
-
-    public bool Validate()
-    {
-        if (!CheckboxConfirmation)
-        {
-            isShowErrorMessage = true;
-        }
-        return CheckboxConfirmation;
     }
 }

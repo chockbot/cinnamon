@@ -1,0 +1,53 @@
+﻿@namespace Cinnamon.Web.Components
+
+<Modal @ref="modalRef">
+    <ModalContent Size="ModalSize.Fullscreen" Style="background-color:transparent" Class="header-modal" Scrollable>
+        <ModalHeader>
+            <CloseButton Class="close-button" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="container">
+                <div class="col-12 justify-content-center money-flows-1">
+                    <img src="/images/experience-creation/money-flows-1.webp" />
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    private Modal modalRef;
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}
+<style scoped>
+    .money-flows-1 {
+        margin-bottom: 2rem;
+    }
+
+    .close-button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .close-button {
+        background: none;
+        color: #343D4C;
+        border: none;
+        margin-right: 1rem;
+    }
+
+    .modal-header {
+        border-bottom: 0;
+        justify-content: end;
+    }
+</style>

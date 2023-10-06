@@ -45,6 +45,7 @@ public class GetActivityByHandlerResult
     public CustomerOwner? Owner {get; set;}
     public int CompletedStudents { get; set; }
     public int OngoingStudents { get; set; }
+    public bool IsComingSoon {get; set;}
 
     public class ActivitySchedule 
     {
