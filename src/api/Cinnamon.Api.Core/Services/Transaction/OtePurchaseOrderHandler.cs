@@ -229,6 +229,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     ServiceFee = serviceFee
                 },
                 isInclusivePayment,
+                OteScheduleId = oteActivity.Pricings.First().OteScheduleId
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
