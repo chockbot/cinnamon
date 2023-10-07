@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
@@ -13,13 +14,18 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
     private readonly ApplicationConfig applicationConfig;
     private readonly IPurchaseOrderData purchaseOrderData;
     private readonly IFinishTransactionHandler finishTransactionHandler;
+    private readonly IGetActivityHandler getActivityHandler;
+    private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
 
     public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData,
-        IFinishTransactionHandler finishTransactionHandler)
+        IFinishTransactionHandler finishTransactionHandler, IGetActivityHandler getActivityHandler,
+        IOteFinishTransactionHandler oteFinishTransactionHandler)
     {
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
         this.finishTransactionHandler = finishTransactionHandler;
+        this.getActivityHandler = getActivityHandler;
+        this.oteFinishTransactionHandler = oteFinishTransactionHandler;
     }
 
     public AppResult<VerifyCallbackResult> Execute(VerifyCallbackArgs args)
@@ -55,6 +61,17 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
             {
                 return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Invalid transaction id"), "Invalid transaction id");
             }
+            var purchaseOrder = getPurchaseOrder.Result.Result;
+
+            // idenity what type of activity
+            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
+                ActivityId = purchaseOrder.ActivityId
+            });
+            if(!activityRes.Succeeded || activityRes.Result is null)
+            {
+                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Unable to identify activity id."), "Unable to identify activity id.");
+            }
+            var activity = activityRes.Result;
 
             // status already changed can't be altered
             if(getPurchaseOrder.Result.Result.Status != 0)
@@ -77,24 +94,37 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                 return AppResult<VerifyCallbackResult>.CreateSucceeded(new VerifyCallbackResult {}, "Success");
             }
 
-            // update purchase order status
-            var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
-                PurchaseOrderId = transactionId,
-                Status = status
-            });
-            if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
-            {
-                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
-            }
-
             if(status == 1)
             {
-                var finishResult = await finishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.FinishTransactionArgs {
-                    TransactionId = transactionId,
-                });
-                if(!finishResult.Succeeded || finishResult.Result == null)
+                if(activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
                 {
-                    return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
+                    var finishResult = await finishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.FinishTransactionArgs {
+                        TransactionId = transactionId,
+                    });
+                    if(!finishResult.Succeeded || finishResult.Result == null)
+                    {
+                        return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
+                    }
+                }
+                else if(activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                {
+                    var oteFinishResult  = await oteFinishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.OteFinishTransactionArgs {
+                        TransactionId = transactionId
+                    });
+                    if(!oteFinishResult.Succeeded || oteFinishResult.Result == null)
+                    {
+                        return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(oteFinishResult.Message), oteFinishResult.Message);
+                    }
+                }
+
+                // update purchase order status
+                var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
+                    PurchaseOrderId = transactionId,
+                    Status = status
+                });
+                if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
+                {
+                    return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
                 }
             }
 

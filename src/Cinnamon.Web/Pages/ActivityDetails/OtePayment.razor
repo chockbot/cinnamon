@@ -10,6 +10,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
+@inject ITransactionApiHandler transactionApiHandler;
 @inject IMapper mapper;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -18,7 +19,7 @@
 
 @if(activity is not null && !string.IsNullOrEmpty(token))
 {
-    <div class="xp-ote-payment-wrapper">
+    <div class="xp-ote-payment-wrapper pb-5">
         <Container>
             <div class="d-flex align-items-center mt-3">
                 <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" />
@@ -37,13 +38,13 @@
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4">
                                     <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
-                                        <span @onclick="() => RemoveTicket(item.Id)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">
+                                        <span @onclick="() => RemoveSelectedTicket(item)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">
                                             <span class="color-orange-100">-</span>
                                         </span>
                                         <span class="p-1 border-right-1-solid counter-item">
-                                            @(item.Id == selectedTicketId ? ticketCount : 0)
+                                            @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                         </span>
-                                        <span @onclick="() => AddTicket(item.Id)" class="p-1 counter-item prevent-select cursor-pointer">
+                                        <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select cursor-pointer">
                                             <span class="color-orange-100">+</span>
                                         </span>
                                     </div>
@@ -95,7 +96,7 @@
                     </section>
                     <section>
                         <Divider class="my-4" />
-                        <p class="font-20 color-black-100 font-weight-700" @onclick="CheckPaymentMethod">Pay with</p>
+                        <p class="font-20 color-black-100 font-weight-700">Pay with</p>
                         <div class="payment-card">
                             <label class="font-16 color-black-100 mb-1 m-font-12">Cards</label>
                             <label @onclick='() => cardModal.Show()' class="cursor-pointer d-flex justify-content-between border-1-solid border-color-grey-200 px-3 py-2 border-radius-15 overflow-hidden">
@@ -196,6 +197,16 @@
                             </div>
                         </div>
                     </section>
+                    <p class="font-12 color-grey-100 mt-3">By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</p>
+                    <Button Loading="submitting" Disabled="submitting" Clicked="ProceedToPayment"
+                        class="btn-primary border-radius-10 m-d-none" Border="Border.Is0" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Confirm and Pay
+                        </ChildContent>
+                    </Button>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop" class="right-order">
                     <div class="booking-total-container sticky-top mb-3" style="top:80px;">
@@ -214,14 +225,31 @@
                                 <Divider />
                                 <div class="price-details">
                                     <span class="font-16 font-weight-700 color-black-100">Price Details</span>
-                                    <div class="d-flex justify-content-between py-1 price-per-head">
-                                        <div>
-                                            @PricePerHead x @ticketCount @(ticketCount > 1 ? "Tickets" : "Ticket")
-                                        </div>
-                                        <div>
-                                            PHP @(GetTotalPerHeadPrice.ToString("#,##0.00"))
-                                        </div>
-                                    </div>
+                                    @if(selectedTickets.Count > 0)
+                                    {
+                                        @foreach (var item in selectedTickets)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    @item.Value.Price x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
+                                                </div>
+                                                <div>
+                                                    PHP @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
+                                                </div>
+                                            </div>   
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                0 x 0 Ticket
+                                            </div>
+                                            <div>
+                                                PHP 0.00
+                                            </div>
+                                        </div>   
+                                    }
                                     @if(!IsInclusivePricing)
                                     {
                                         <div class="d-flex justify-content-between py-1 price-per-head">
@@ -323,10 +351,15 @@
                 position-fixed left-0 right-0 bg-white-100">
                 <div>
                     <div class="p-3 d-flex justify-content-between align-items-center">
-                        <Button Type="ButtonType.Button"
-                            class="btn-primary font-14 width-120 border-radius-10 px-4"
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="submitting" Loading="submitting"
+                            class="btn-primary font-14 border-radius-10 px-4"
                             Border="Border.Is0">
-                            Confirm and Pay
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Confirm and Pay
+                            </ChildContent>
                         </Button>
                         <div class="d-flex align-items-center">
                             <div class="prevent-select text-end" style="width: 160px;">
@@ -436,6 +469,8 @@
     private Modal? cardModal;
     private Validations paymentValidation;
     private Models.Forms.CardPaymentModel cardPaymentModel = new();
+    private bool submitting = false;
+    private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -547,24 +582,11 @@
         }
     }
 
-    private decimal PricePerHead
+    private decimal GetSubTotal 
     {
         get
         {
-            if(activity is null) return 0;
-
-            var schedule = activity.Pricings.FirstOrDefault(p => p.Id == selectedTicketId);
-            if (schedule == null) return 0;
-
-            return schedule.Price;
-        }
-    }
-
-    private decimal GetTotalPerHeadPrice 
-    {
-        get
-        {
-            return PricePerHead * ticketCount;
+            return selectedTickets.Sum(t => t.Value.Price * t.Value.Count);
         }
     }
 
@@ -574,9 +596,9 @@
         {
             decimal result = 0;
 
-            if (ticketCount > 0 && !IsInclusivePricing)
+            if (selectedTickets.Count > 0 && !IsInclusivePricing)
             {
-                result = GetTotalPerHeadPrice * 0; //.05m;
+                result = GetSubTotal * 0; //.05m;
             }
 
             return result;
@@ -589,7 +611,7 @@
         {
             decimal result = 0;
 
-            if(ticketCount > 0 && !IsInclusivePricing)
+            if(selectedTickets.Count > 0 && !IsInclusivePricing)
             {
                 result = 39;
             }
@@ -618,11 +640,11 @@
                     decimal subTotal = 0;
                     if(IsInclusivePricing)
                     {
-                        subTotal = GetTotalPerHeadPrice;
+                        subTotal = GetSubTotal;
                     }
                     else 
                     {
-                        subTotal = GetTotalPerHeadPrice + GetConvinienceFee;
+                        subTotal = GetSubTotal + GetConvinienceFee;
                     }
                     result = subTotal * percentage;
                 }
@@ -651,7 +673,7 @@
             if (ticketCount > 0)
             {
                 decimal discount = 0;
-                result = ((GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = ((GetSubTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
                 result = result < 0 ? 0 : result;
             }
 
@@ -669,20 +691,6 @@
         else 
         {
             ticketCount ++;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task RemoveTicket(int ticketId)
-    {
-        if(selectedTicketId != ticketId)
-        {
-            ticketCount = 1;
-            selectedTicketId = ticketId;
-        }
-        else 
-        {
-            if(ticketCount > 1) ticketCount--;
         }
         return Task.CompletedTask;
     }
@@ -707,7 +715,7 @@
         {
             Coupon.IsValidating = true;
 
-            decimal subTotal = PricePerHead * ticketCount;
+            decimal subTotal = GetSubTotal;
             decimal paymentProviderFee = GetConvinienceFee;
             decimal serviceFee = GetServiceFee;
             decimal total = subTotal + paymentProviderFee + serviceFee;
@@ -774,18 +782,103 @@
         return Task.CompletedTask;
     }
 
-    private Task CheckPaymentMethod()
-    {
-        Console.WriteLine(SelectedPaymentCode);
-        return Task.CompletedTask;
-    }
-
     private async Task SelectCardPayment()
     {
         if (await paymentValidation.ValidateAll())
         {
             cardModal.Close(CloseReason.UserClosing);
             SelectedPaymentCode = "CARD";
+        }
+    }
+
+    private Task AddSelectedTicket(OtePricing pricing)
+    {
+        if(selectedTickets.ContainsKey(pricing.Id))
+        {
+            selectedTickets[pricing.Id].Count++;
+        }
+        else {
+            selectedTickets.Add(pricing.Id, new TicketInfo {
+                Count = 1,
+                Id = pricing.Id,
+                Price = pricing.Price
+            });
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveSelectedTicket(OtePricing pricing)
+    {
+        if(selectedTickets.ContainsKey(pricing.Id) && selectedTickets[pricing.Id].Count > 0)
+        {
+            selectedTickets[pricing.Id].Count--;
+            if(selectedTickets[pricing.Id].Count == 0) selectedTickets.Remove(pricing.Id);
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ProceedToPayment()
+    {
+        if(string.IsNullOrEmpty(SelectedPaymentCode))
+        {
+            await NotificationService.Error("Please select payment method.", "Payment Method");
+            return;
+        }
+        if(selectedTickets.Count == 0)
+        {
+            await NotificationService.Error("Please select ticket to purchase.", "Ticket");
+            return;
+        }
+        await SubmitTransaction();
+    }
+
+    private async Task SubmitTransaction()
+    {
+        try
+        {
+            submitting = true;
+
+            var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
+                ActivityId = activity.Id,
+                CardInformation = SelectedPaymentCode == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OteCardDetails {
+                    AccountHolder = cardPaymentModel.CardHolder ?? string.Empty,
+                    CardNumber = cardPaymentModel.CardNumber ?? string.Empty,
+                    CVV = cardPaymentModel.CVV ?? string.Empty,
+                    ExpireMonthYear = cardPaymentModel.Expiration ?? string.Empty
+                } : null,
+                CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
+                IsCreditsApplied = false,
+                PaymentChannel = SelectedPaymentCode,
+                PaymentMethod = SelectedPaymentCode == "CARD" ? "CARD" : "EWALLET",
+                Tickets = selectedTickets.Select(t => {
+                    return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.OTeTicket {
+                        Count = t.Value.Count,
+                        Id = t.Value.Id
+                    };
+                })
+            }, token);
+
+            if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+            {
+                submitting = false;
+                await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
+            }
+            else
+            {
+                submitting = false;
+                if (submit.Result.Result.Action == 1)
+                {
+                    NavigationManager.NavigateTo(submit.Result.Result.Url);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
+                }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
     }
 
@@ -801,5 +894,12 @@
 
         public string ErrorTitle {get; set;}
         public string ErrorDescription { get; set; }
+    }
+
+    private class TicketInfo
+    {
+        public int Id {get; set;}
+        public int Count {get; set;}
+        public decimal Price {get; set;}
     }
 }

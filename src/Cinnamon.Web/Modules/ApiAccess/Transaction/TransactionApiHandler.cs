@@ -106,4 +106,27 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, "An error occurred when getting payouts by provider api");
         }
     }
+
+    public async Task<AppResult<SubmitOtePurchaseOrderResult>> SubmitOtePurchaseOrder(SubmitOtePurchaseOrderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Transaction/SubmitOtePurchaseOrder")
+                .PostJsonAsync(args)
+                .ReceiveJson<SubmitOtePurchaseOrderResult>();
+
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateSucceeded(result, "Successfully posting submit purchase order api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateFailed(ex, "An error occured when posting submit purchase order api");
+        }
+    }
 }
