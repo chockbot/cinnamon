@@ -347,6 +347,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         item.IsAbsorbFees = local.IsAbsorbFees;
                         item.MaxSlots = local.MaxSlots;
                         item.Price = local.Price;
+                        item.Name = local.Name;
                     }
                 }
 
