@@ -4,6 +4,8 @@ using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
+using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -33,5 +35,9 @@ public class MappingProfile : Profile
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
         CreateMap<ActivityImage, ActivityImageDTO>();
         CreateMap<Customer, CustomerDTO>();
+
+        CreateMap<OteTicket, OteTicketDTO>();
+        CreateMap<OteTicketDTO, OteTicket>();
+        CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
     }
 }

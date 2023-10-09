@@ -18,14 +18,16 @@ public class TransactionController : ControllerBase
     private readonly IGetPurchaseOrderHandler getPurchaseOrderHandler;
     private readonly IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler;
     private readonly IGetPayoutsByProviderHandler getPayoutsByProviderHandler;
+    private readonly IOtePurchaseOrderHandler otePurchaseOrderHandler;
 
     public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
-        IGetPayoutsByProviderHandler getPayoutsByProviderHandler)
+        IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
         this.getGrossSalesByProviderHandler = getGrossSalesByProviderHandler;
         this.getPayoutsByProviderHandler = getPayoutsByProviderHandler;
+        this.otePurchaseOrderHandler = otePurchaseOrderHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -208,6 +210,55 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("SubmitOtePurchaseOrder")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubmitOtePurchaseOrderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubmitOtePurchaseOrder([FromBody] SubmitOtePurchaseOrderArgs args)
+    {
+        try
+        {
+            var result = await otePurchaseOrderHandler.ExecuteAsync(new Services.TransactionService.Interactors.OtePurchaseOrderArgs {
+                ActivityId = args.ActivityId,
+                CardInformation = args.CardInformation != null ? new Services.TransactionService.Interactors.OtePurchaseOrderArgs.CardDetails {
+                    AccountHolder = args.CardInformation.AccountHolder,
+                    CardNumber = args.CardInformation.CardNumber,
+                    CVV = args.CardInformation.CVV,
+                    ExpireMonthYear = args.CardInformation.ExpireMonthYear
+                } : null,
+                CouponCode = args.CouponCode,
+                IsCreditsApplied = args.IsCreditsApplied,
+                PaymentChannel = args.PaymentChannel,
+                PaymentMethod = args.PaymentMethod,
+                Tickets = args.Tickets.Select(t => {
+                    return new Services.TransactionService.Interactors.OtePurchaseOrderArgs.Ticket {
+                        Count = t.Count,
+                        Id = t.Id
+                    };
+                })
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubmitOtePurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new SubmitOtePurchaseOrderResult 
+                {
+                    IsSuccess = true, 
+                    Result = new PaymentOrderDTO {
+                        Action = result.Result.Action,
+                        Id = result.Result.Id,
+                        Url = result.Result.Url
+                    }
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubmitOtePurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

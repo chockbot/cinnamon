@@ -1826,6 +1826,32 @@ input::-ms-clear {
   align-items: center;
 }
 
+.xp-ote-payment-wrapper .right-order {
+  padding-left: 50px;
+}
+
+.xp-ote-payment-wrapper .left-order {
+  padding-right: 50px;
+}
+
+.xp-ote-payment-wrapper .payment-ewallets .custom-control.custom-radio {
+  display: flex;
+  align-items: center;
+}
+
+@media only screen and (max-width: 767px) {
+  .xp-ote-payment-wrapper .right-order {
+    order: 1;
+    /* padding-right: calc(var(--bs-gutter-x) * 0.5) !important; */
+    padding-left: calc(var(--bs-gutter-x) * 0.5) !important;
+  }
+  .xp-ote-payment-wrapper .left-order {
+    order: 2;
+    padding-right: calc(var(--bs-gutter-x) * 0.5) !important;
+    /* padding-left: calc(var(--bs-gutter-x) * 0.5) !important; */
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;

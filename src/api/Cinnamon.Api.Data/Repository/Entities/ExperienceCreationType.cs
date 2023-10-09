@@ -6,7 +6,6 @@
         public string Description { get; set; }
         public string ImagePath { get; set; }
         public bool IsActive { get; set; }
-        public virtual Activity Activity { get; set; }
-
+        public virtual IList<Activity> Activities { get; set; }
     }
 }

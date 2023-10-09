@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231005042043_PurchaseOrderUpdateColumn")]
+    partial class PurchaseOrderUpdateColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1460,77 +1462,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("OteSchedulePricings");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteTicket", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OteScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OteSchedulePricingId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PurchaseOrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("QRCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("QRImageData")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("OteScheduleId");
-
-                    b.HasIndex("OteSchedulePricingId");
-
-                    b.HasIndex("QRCode");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("ActivityId", "QRCode", "Status");
-
-                    b.ToTable("OteTickets");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -2376,8 +2307,8 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasForeignKey("ExperienceCategoryId");
 
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCreationType", "ExperienceCreationType")
-                        .WithMany("Activities")
-                        .HasForeignKey("ExperienceCreationTypeId")
+                        .WithOne("Activity")
+                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.Activity", "ExperienceCreationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2613,41 +2544,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("OteSchedule");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteTicket", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteSchedule", "OteSchedule")
-                        .WithMany()
-                        .HasForeignKey("OteScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteSchedulePricing", "OteSchedulePricing")
-                        .WithMany()
-                        .HasForeignKey("OteSchedulePricingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("OteSchedule");
-
-                    b.Navigation("OteSchedulePricing");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PurchaseOrder", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
@@ -2853,7 +2749,8 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCreationType", b =>
                 {
-                    b.Navigation("Activities");
+                    b.Navigation("Activity")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceType", b =>
