@@ -1662,7 +1662,8 @@ public class ActivityRepository : IActivityRepository
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -1748,7 +1749,8 @@ public class ActivityRepository : IActivityRepository
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
