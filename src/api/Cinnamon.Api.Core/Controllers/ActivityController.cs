@@ -2506,7 +2506,8 @@ public class ActivityController : ControllerBase
                         Description = p.Description,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
-                        Price = p.Price
+                        Price = p.Price,
+                        Name = p.Name
                     };
                 })
             });
@@ -2566,7 +2567,8 @@ public class ActivityController : ControllerBase
                         Id = p.Id,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
-                        Price = p.Price
+                        Price = p.Price,
+                        Name = p.Name
                     };
                 })
             });
