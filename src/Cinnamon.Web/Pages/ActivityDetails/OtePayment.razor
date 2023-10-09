@@ -231,7 +231,7 @@
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
                                                 <div>
-                                                    @item.Value.Price x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
+                                                    @item.Value.Price.ToString("#,##0") x @item.Value.Count @(item.Value.Count > 1 ? "Tickets" : "Ticket")
                                                 </div>
                                                 <div>
                                                     PHP @((item.Value.Price * item.Value.Count).ToString("#,##0.00"))
@@ -254,10 +254,10 @@
                                     {
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
-                                                Service Fee - <span class="text-decoration-line-through">15%</span>
+                                                Service Fee <span class="">@ServiceFeePercent%</span>
                                             </div>
                                             <div>
-                                                PHP @(GetConvinienceFee.ToString("#,##0.00"))
+                                                @(string.IsNullOrEmpty(SelectedPaymentCode) ? "Depends on payment method" : "PHP" + GetConvinienceFee.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                     }
@@ -591,6 +591,17 @@
         }
     }
 
+
+    private int ServiceFeePercent 
+    {
+        get
+        {
+            if(string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+            if(SelectedPaymentCode == "CARD") return 5;
+            else return 3;
+        }
+    }
+
     private decimal GetSubTotal 
     {
         get
@@ -605,9 +616,11 @@
         {
             decimal result = 0;
 
+            if(string.IsNullOrEmpty(SelectedPaymentCode)) return 0;
+
             if (selectedTickets.Count > 0 && !IsInclusivePricing)
             {
-                result = GetSubTotal * 0; //.05m;
+                result = GetSubTotal * ((decimal)ServiceFeePercent / 100); //.05m;
             }
 
             return result;
@@ -622,7 +635,7 @@
 
             if(selectedTickets.Count > 0 && !IsInclusivePricing)
             {
-                result = 39;
+                result = 15;
             }
 
             return result;
