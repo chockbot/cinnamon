@@ -9,11 +9,14 @@
 @using Cinnamon.Framework.Enums
 @using Cinnamon.Web.Models.Ote
 @using Cinnamon.Web.Components.Pages
+@using ClosedXML.Excel;
+@using System.IO;
 @inject IActivityApiHandler activityApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IMapper mapper;
+@inject IJSRuntime jsRuntime
 @attribute [Authorize]
 
 <PageTitle>Event Details | CinnamonPH</PageTitle>
@@ -21,7 +24,8 @@
 
 @if (activity != null)
 {
-    <div class="event-details-wrapper">
+    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+        <div class="event-details-wrapper">
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
@@ -54,7 +58,7 @@
                             @foreach (var item in ticketList)
                                 {
                                     <TableRow>
-                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">@item.OtePricing.Description</TableRowCell>
+                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">@item.OtePricing.Name</TableRowCell>
                                         <TableRowCell class="tr-slots" TextAlignment="TextAlignment.Center">@item.OtePricing.MaxSlots</TableRowCell>
                                         <TableRowCell class="tr-sold" TextAlignment="TextAlignment.Center">@item.OtePricing.Sold</TableRowCell>
                                         <TableRowCell class="tr-available" TextAlignment="TextAlignment.Center">@item.OtePricing.Available</TableRowCell>
@@ -85,8 +89,8 @@
                                 }
                                 <div class="overall-ticket">
                                     <p class="event-ticket">Total Ticket Slots: <span class="event-slots">@TotalSlots</span></p>
-                                    <p class="event-ticket">Available: <span class="event-available">@TotalSold</span></p>
-                                    <p class="event-ticket">Sold: <span class="event-sold">@TotalAvailable</span></p>
+                                    <p class="event-ticket">Available: <span class="event-available">@TotalAvailable</span></p>
+                                    <p class="event-ticket">Sold: <span class="event-sold">@TotalSold</span></p>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +105,7 @@
                     @foreach (var item in ticketList)
                     {
                         <div class="ticket-column">
-                            <p class="mobile-ticketname">@item.OtePricing.Description</p>
+                            <p class="mobile-ticketname">@item.OtePricing.Name</p>
                             <div class="ticket-count d-flex">
                                 <p class="mobile-slots">Slots: @item.OtePricing.MaxSlots</p>
                                 <p class="mobile-sold">Sold: @item.OtePricing.Sold</p>
@@ -211,14 +215,18 @@
         </div>
 
     </div>
+    </LoadingIndicator>
 }
 
 @code {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
+    LoadingIndicator loadingIndicator;
+    IJSObjectReference module;
     public List<OteTicket> oteCustomer = new List<OteTicket>();
     public List<OteTicket> FilteredCustomer = new();
     public List<OteSchedule> ticketList = new List<OteSchedule>();
+    public List<OteTicket> ExportCustomer = new List<OteTicket>();
     private OteActivity? activity;
     public const string PREVIOUS   = "previous";
     public const string NEXT       = "next";
@@ -255,6 +263,14 @@
         await GetTicketList();
         //Get Customer List
         await GetCustomerList(1);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
     }
     private async Task GetTicketList()
     {
@@ -315,7 +331,7 @@
     {
         NavigationManager.NavigateTo("/maker/dashboard/events");
     }
-   
+
     private bool IsActive(string page)
        => currentPage == page;
 
@@ -359,6 +375,68 @@
     }
     private async Task ExportToExcel()
     {
+        await loadingIndicator.Show();
+        await Task.Delay(1000);
+        //Get Customer List
+        var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
+            {
+                ActivityId = activity.Id,
+            }, Token);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            ExportCustomer = result.Result.Result.Select(e => new OteTicket
+                {
+                    ActivityId = e.ActivityId,
+                    Title = e.Title,
+                    Amount = e.Amount,
+                    QRCode = e.QRCode,
+                    Status = e.Status,
+                    Customer = new CustomerProfile
+                    {
+                        FirstName = e.Customer.FirstName,
+                        LastName = e.Customer.LastName,
+                        Email = e.Customer.Email
+                    }
+                }).ToList();
+        }
+        using (var workbook = new XLWorkbook("wwwroot/Template/CustomerList.xlsx"))
+        {
+            // Access the first worksheet in the workbook (assuming it's the only one)
+            var worksheet = workbook.Worksheet(1);
+
+            // Define the starting row for your data (assuming headers are in the first row)
+            int startRow = 3;
+
+            // Loop through the ExportEnrollees list and populate the worksheet
+            foreach (var item in ExportCustomer)
+            {
+                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
+                worksheet.Cell(startRow, 2).Value = item.Customer.Email;
+                worksheet.Cell(startRow, 3).Value = item.Title;
+                worksheet.Cell(startRow, 4).Value = item.Amount;
+                worksheet.Cell(startRow, 5).Value = item.QRCode;
+                worksheet.Cell(startRow, 6).Value = item.Status;
+                startRow++;
+            }
+            // Create a MemoryStream to save the workbook
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Specify the file name
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"CustomerList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                // Convert the bytes to base64
+                var bytesBase64 = Convert.ToBase64String(bytes);
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
 
     }
     private void TextSearchChanged(string search)
