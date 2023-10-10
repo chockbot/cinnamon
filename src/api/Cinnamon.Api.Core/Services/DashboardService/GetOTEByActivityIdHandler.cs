@@ -52,16 +52,17 @@ public class GetOTEByActivityIdHandler : IGetOTEByActivityIdHandler
                 {
                     return new GetOTEByActivityIdResult.OTEDetail
                     {
+                        Id     = e.Id,
+                        Title  = e.Title,
+                        Amount = e.Amount,
+                        QRCode = e.QRCode,
+                        Status = e.Status,
                         Customer = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO
                         {
                             FirstName = e.Customer.FirstName,
                             LastName  = e.Customer.LastName,
                             Email     = e.Customer.Email,   
                         },
-                        Title  = e.Title,
-                        Amount = e.Amount,
-                        QRCode = e.QRCode,
-                        Status = e.Status
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

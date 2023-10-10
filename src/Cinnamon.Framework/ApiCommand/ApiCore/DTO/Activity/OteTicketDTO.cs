@@ -4,6 +4,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 public class OteTicketDTO
 {
+    public int Id { get; set; }
     public int ActivityId { get; set; }
     public int OteScheduleId { get; set; }
     public int OteSchedulePricingId { get; set; }
