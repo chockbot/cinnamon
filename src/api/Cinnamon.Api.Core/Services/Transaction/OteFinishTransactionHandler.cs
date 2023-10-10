@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
@@ -19,11 +20,12 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ICustomerData customerData;
     private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
     private readonly IOteTicketData oteTicketData;
+    private readonly IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
-        IOteTicketData oteTicketData)
+        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -32,6 +34,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.customerData = customerData;
         this.updateCreditBalanceHandler = updateCreditBalanceHandler;
         this.oteTicketData = oteTicketData;
+        this.oteCustomerPayedNotificationHandler = oteCustomerPayedNotificationHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -79,6 +82,13 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
             var oteActivity = oteActivityRes.Result;
+
+            var providerRes = await customerData.GetCustomerById(oteActivity.ProviderId);
+            if(!providerRes.Succeeded || providerRes.Result is null || !providerRes.Result.IsSuccess)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+            var provider = providerRes.Result.Result;
 
             var deserializedPayload = jsonSerializationProvider.Deserialize<PayloadData>(purchaseOrder.Payload);
             if(deserializedPayload == null)
@@ -129,6 +139,50 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
+            var tickets = new Dictionary<int, Ticket>();
+            foreach(var item in deserializedPayload.Tickets)
+            {
+                if(!tickets.ContainsKey(item.Id))
+                {
+                    tickets.Add(item.Id, new Ticket {
+                        Name = item.Name,
+                        Price = item.Price,
+                        Count = 1
+                    });
+                }
+                else 
+                {
+                    tickets[item.Id].Count++;
+                }
+            }
+
+            var notifyEmailRes = await oteCustomerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs {
+                Email = customer.Email,
+                CustomerName = customer.FirstName,
+                EventDate = oteActivity.ScheduleFrom,
+                EventLocation = $"{oteActivity.HouseNo} {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}",
+                EventName = oteActivity.EventName,
+                HandlingFee = deserializedPayload.Fees.ServiceFee,
+                PaymentMethod = deserializedPayload.PaymentMethod,
+                ProviderEmail = provider.Email,
+                ProviderName = $"{provider.FirstName} {provider.LastName}",
+                ProviderNumber = provider.PhoneNumber,
+                ReferenceNumber = referenceId,
+                ServiceFee = deserializedPayload.Fees.PaymentProviderFee,
+                SubTotal = purchaseOrder.Total,
+                Tickets = tickets.Select(t => {
+                    return new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs.TicketDetails {
+                        TicketCount = t.Value.Count,
+                        TicketName = t.Value.Name,
+                        TicketPrice = t.Value.Price
+                    };
+                }),
+                TotalAmount = purchaseOrder.OverallTotal
+            });
+            if(!notifyEmailRes.Succeeded || notifyEmailRes.Result is null)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
 
             return AppResult<OteFinishTransactionResult>.CreateSucceeded(new OteFinishTransactionResult {}, "Successfully finish transaction");
         }
@@ -177,6 +231,9 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string Name {get; set;}
         public string ImageData {get; set;}
         public string Code {get; set;}
+
+        // extra field
+        public int Count {get; set;}
     }
 
     class Fees {
