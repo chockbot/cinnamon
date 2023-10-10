@@ -37,7 +37,28 @@ public class OteCustomerPayedNotificationHandler : IOteCustomerPayedNotification
     {
         try
         {
-            var emailBody = helper.GetTemplate();
+            var emailBody = helper.GetTemplate(new OtePurchaseVerification.TemplateArgs {
+                CustomerName = args.CustomerName,
+                EventDate = args.EventDate,
+                EventLocation = args.EventLocation,
+                EventName = args.EventName,
+                HandlingFee = args.HandlingFee,
+                PaymentMethod = args.PaymentMethod,
+                ProviderEmail = args.ProviderEmail,
+                ProviderName = args.ProviderName,
+                ProviderNumber = args.ProviderNumber,
+                ReferenceNumber = args.ReferenceNumber,
+                ServiceFee = args.ServiceFee,
+                SubTotal = args.SubTotal,
+                Tickets = args.Tickets.Select(t => {
+                    return new OtePurchaseVerification.TicketDetails {
+                        TicketCount = t.TicketCount,
+                        TicketName = t.TicketName,
+                        TicketPrice = t.TicketPrice
+                    };
+                }),
+                TotalAmount = args.TotalAmount,
+            });
 
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {
