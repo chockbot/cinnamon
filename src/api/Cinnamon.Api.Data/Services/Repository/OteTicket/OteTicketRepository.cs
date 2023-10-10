@@ -5,6 +5,7 @@ using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using System.Linq.Expressions;
 using AutoMapper;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Services.Repository.OteTicket;
 
@@ -48,11 +49,11 @@ public class OteTicketRepository : IOteTicketRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, bool includeCustomer = false, bool includeImageAsResult = false)
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageAsResult = false)
     {
         try
         {
-            var result = await dataStore.OteTicket.GetByActivityId(activityId, includeCustomer, includeImageAsResult);
+            var result = await dataStore.OteTicket.GetByActivityId(activityId, count, skip, includeCustomer, includeImageAsResult);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -111,4 +112,40 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when updating ticket");
         }
     }
+    public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.GetTicketDetails(activityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var ticket = result.Result.Select(s =>
+            {
+                var ticketDTO = new OteScheduleDTO
+                {
+                    ActivityId = activityId,
+                    From = s.From,
+                    To = s.To,
+                    Recurrences = s.Recurrences,
+                    OteSchedulePricingDTO = new OteSchedulePricingDTO
+                    {
+                        Name = s.OteSchedulePricingDTO.Name,
+                        Description = s.OteSchedulePricingDTO.Description,
+                        MaxSlots = s.OteSchedulePricingDTO.MaxSlots,
+                        Sold = s.OteSchedulePricingDTO.Sold,
+                        Available = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold
+                    }
+                };
+                return ticketDTO;
+            });
+            return AppResult<IEnumerable<OteScheduleDTO>>.CreateSucceeded(ticket, "Successfully get ticket details");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(ex, "An error occured when getting ticket details");
+        }
+    }
+
 }

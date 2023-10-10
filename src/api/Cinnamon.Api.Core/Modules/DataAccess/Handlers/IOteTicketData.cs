@@ -10,4 +10,5 @@ public interface IOteTicketData
     Task<AppResult<GetByActivityIdResult>> GetByActivityId(int activityId, GetByActivityIdArgs args);
     Task<AppResult<GetByCodeResult>> GetByCode(string code);
     Task<AppResult<UpdateTicketResult>> UpdateTicket(UpdateTicketArgs args);
+    Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args);
 }

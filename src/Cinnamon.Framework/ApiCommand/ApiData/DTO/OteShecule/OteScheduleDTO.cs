@@ -6,6 +6,6 @@ public class OteScheduleDTO
     public DateTime From { get; set; }
     public DateTime To { get; set; }
     public string Recurrences { get; set; }
-
+    public OteSchedulePricingDTO OteSchedulePricingDTO { get; set; }
     public IList<OteSchedulePricingDTO> OteSchedulePricingDTOs { get; set; }
 }

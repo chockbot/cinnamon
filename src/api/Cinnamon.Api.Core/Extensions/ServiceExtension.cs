@@ -179,6 +179,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetAllBadgesHandler, Services.DashboardService.GetAllBadgeHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentsAttendanceHandler, Services.DashboardService.GetAllStudentsAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetCompletedStudentsHandler, Services.DashboardService.GetCompletedStudentsHandler>();    
+        services.AddTransient<Services.DashboardService.Handlers.IGetOTEByProviderHandler, Services.DashboardService.GetOTEByProviderHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetOTEByActivityIdHandler, Services.DashboardService.GetOTEByActivityIdHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetTicketDetailsHandler, Services.DashboardService.GetTicketDetailsHandler>();    
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
