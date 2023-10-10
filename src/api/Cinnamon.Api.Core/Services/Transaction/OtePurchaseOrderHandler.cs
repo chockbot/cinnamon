@@ -131,13 +131,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
 
             decimal subTotal = selectedTickets.Sum(t => t.Price);
-            decimal paymentProviderFee = isInclusivePayment ? 0 : subTotal * 0; //.05m;
+            decimal providerFeePercent = args.PaymentMethod == "CARD" ? 5 : 3;
+            decimal paymentProviderFee = isInclusivePayment ? 0 : subTotal * (providerFeePercent / 100); //.05m;
             decimal discount = 0;
-            decimal serviceFee = isInclusivePayment ? 0 : 39; //50;
+            decimal serviceFee = isInclusivePayment ? 0 : 15; //50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
-            decimal perUnitDisburseAmount = 0;
+            decimal perUnitDisburseAmount = subTotal;
             decimal totalDisburseAmount = subTotal;
 
             // validate coupon
@@ -182,7 +183,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 }
 
                 // deduct from disbursement amount
-                perUnitDisburseAmount -= 0;
+                perUnitDisburseAmount -= disbursementDisccount;
                 totalDisburseAmount -= disbursementDisccount;
 
                 // deduct overall total to discount
@@ -204,7 +205,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 var percentage = customerPricing.Rate / 100;
                 amountToDeduct = percentage * subTotal;
 
-                perUnitDisburseAmount -= 0;
+                perUnitDisburseAmount -= (amountToDeduct);
                 totalDisburseAmount -= (amountToDeduct);
             }
 
