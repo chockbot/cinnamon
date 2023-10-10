@@ -5,6 +5,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Dto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Api.Data.Services.Repository.Student;
+using Cinnamon.Api.Data.Services.Repository.Activity;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -50,13 +52,34 @@ public class OteTicketController : ControllerBase
     {
         try
         {
-            var result = await oteTicketRepository.GetByActivityId(activityId, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
+            var result = await oteTicketRepository.GetByActivityId(activityId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
+            
             if(!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new GetByActivityIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new GetByActivityIdResult { IsSuccess = true, Result = result.Result });
+            // get all without pagination to get all rows
+            var all = await oteTicketRepository.GetByActivityId(activityId, null , null, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetByActivityIdResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetByActivityIdResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -106,6 +129,26 @@ public class OteTicketController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetTicketDetails")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetTicketDetailsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOTEByProvider([FromQuery] GetTicketDetailsArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.GetTicketDetails(args.ActivityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetTicketDetailsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

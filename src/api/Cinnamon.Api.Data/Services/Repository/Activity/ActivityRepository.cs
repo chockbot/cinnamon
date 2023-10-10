@@ -1808,4 +1808,43 @@ public class ActivityRepository : IActivityRepository
             return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetOTEByProvider(Id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var ote = result.Result.Select(s =>
+            {
+                var oteDTO = new OteActivityDTO
+                {
+                    Id               = s.Id,    
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    EventName        = s.Title,
+                    Description      = s.Description,
+                    Handler          = s.Handler,
+                    CityName         = s.CityName,
+                    RegionName       = s.RegionName,
+                    PinnedLocation   = s.PinnedLocation,
+                    EventImage       = s.OteSchedule.EventImage,
+                    ScheduleFrom     = s.OteSchedule.ScheduleFrom,
+                    ScheduleTo       = s.OteSchedule.ScheduleTo,
+                    Slots            = s.OteSchedule.Slots,
+                    Sold             = s.OteSchedule.Sold,
+                    Available        = s.OteSchedule.Slots - s.OteSchedule.Sold,
+                };
+                return oteDTO;
+            });
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateSucceeded(ote, "Successfully get ote activities");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
+        }
+    }
 }

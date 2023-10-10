@@ -8,4 +8,7 @@ public class OtePricingDTO
     public int MaxSlots { get; set; }
     public string Description { get; set; }
     public bool IsAbsorbFees { get; set; }
+    public string Name { get; set; }
+    public int Sold { get; set; }
+    public int Available { get; set; }
 }

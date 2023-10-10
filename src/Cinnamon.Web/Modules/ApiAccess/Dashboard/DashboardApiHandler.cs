@@ -233,4 +233,70 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting student attendance api");
         }
     }
+
+    public async Task<AppResult<GetOTEByProviderResult>> GetOTEByProvider(GetOTEByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetOTEByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetOTEByProviderResult>();
+
+            return AppResult<GetOTEByProviderResult>.CreateSucceeded(result, "Successfully getting ote activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetOTEByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOTEByProviderResult>.CreateFailed(ex, "An error occured when getting ote activities api");
+        }
+    }
+
+    public async Task<AppResult<GetOTEByActivityIdResult>> GetOTEByActivityId(GetOTEByActivityIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetOTEByActivityId")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetOTEByActivityIdResult>();
+
+            return AppResult<GetOTEByActivityIdResult>.CreateSucceeded(result, "Successfully getting ote activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetOTEByActivityIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOTEByActivityIdResult>.CreateFailed(ex, "An error occured when getting ote activities api");
+        }
+    }
+
+    public async Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetTicketDetails")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetTicketDetailsResult>();
+
+            return AppResult<GetTicketDetailsResult>.CreateSucceeded(result, "Successfully getting ticket details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetTicketDetailsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetTicketDetailsResult>.CreateFailed(ex, "An error occured when getting ticket details api");
+        }
+    }
 }

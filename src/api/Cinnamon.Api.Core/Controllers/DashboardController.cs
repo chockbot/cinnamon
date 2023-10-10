@@ -1,14 +1,12 @@
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
+using Cinnamon.Api.Core.Services.OnGoingActivityService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
-using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Badges;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
-using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
-using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -27,25 +25,27 @@ public class DashboardController : ControllerBase
     private readonly IGetAllBadgesHandler getAllBadgesHandler;
     private readonly IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler;
     private readonly IGetCompletedStudentsHandler getCompletedStudentsHandler;
-    
-
+    private readonly IGetOTEByProviderHandler getOTEByProviderHandler;
+    private readonly IGetOTEByActivityIdHandler getOTEByActivityIdHandler;
+    private readonly IGetTicketDetailsHandler getTicketDetailsHandler;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
-        IGetCompletedStudentsHandler getCompletedStudentsHandler)
+        IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler)
     {
-        this.getActivitySchedulesHandler = getActivitySchedulesHandler;
-        this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
-        this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
-        this.getStudentAttendanceHandler = getStudentAttendanceHandler;
+        this.getActivitySchedulesHandler        = getActivitySchedulesHandler;
+        this.getCurrentDateAttendanceHandler    = getCurrentDateAttendanceHandler;
+        this.updateStudentAttendanceHandler     = updateStudentAttendanceHandler;
+        this.getStudentAttendanceHandler        = getStudentAttendanceHandler;
         this.getAllStudentAttendanceByIdHandler = getAllStudentAttendanceByIdHandler;
-        this.createStudentAttendanceHandler = createStudentAttendanceHandler;
-        this.updateAttendanceHandler = updateAttendanceHandler;
-        this.getAllBadgesHandler = getAllBadgesHandler;
-        this.getAllStudentsAttendanceHandler = getAllStudentsAttendanceHandler;
-        this.getCompletedStudentsHandler = getCompletedStudentsHandler;
-        
-
+        this.createStudentAttendanceHandler     = createStudentAttendanceHandler;
+        this.updateAttendanceHandler            = updateAttendanceHandler;
+        this.getAllBadgesHandler                = getAllBadgesHandler;
+        this.getAllStudentsAttendanceHandler    = getAllStudentsAttendanceHandler;
+        this.getCompletedStudentsHandler        = getCompletedStudentsHandler;
+        this.getOTEByProviderHandler            = getOTEByProviderHandler;
+        this.getOTEByActivityIdHandler          = getOTEByActivityIdHandler;
+        this.getTicketDetailsHandler            = getTicketDetailsHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -457,6 +457,138 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetCompletedStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetOTEByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOTEByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOTEByProvider([FromQuery] GetOTEByProviderArgs args)
+    {
+        try
+        {
+            var result = await getOTEByProviderHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetOTEByProviderArgs
+            {
+                Id = args.Id
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOTEByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetOTEByProviderResult
+            {
+                IsSuccess = true,
+                Result = result.Result.OTEActivities.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.OteActivityDTO
+                    {
+                        Id               = s.Id,  
+                        ExperienceTypeId = s.ExperienceTypeId,
+                        EventName        = s.EventName,
+                        Description      = s.Description,
+                        Handler          = s.Handler,
+                        CityName         = s.CityName,
+                        RegionName       = s.RegionName,
+                        EventImage       = s.EventImage,
+                        PinnedLocation   = s.PinnedLocation,
+                        ScheduleFrom     = s.ScheduleFrom,
+                        ScheduleTo       = s.ScheduleTo,
+                        Slots            = s.Slots,
+                        Sold             = s.Sold,
+                        Available        = s.Available
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetOTEByActivityId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOTEByActivityIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOTEByActivityId([FromQuery] GetOTEByActivityIdArgs args)
+    {
+        try
+        {
+            var result = await getOTEByActivityIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetOTEByActivityIdArgs
+            {
+                ActivityId = args.ActivityId,
+                CountPerPage = args.CountPerPage,
+                PageIndex = args.PageIndex
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOTEByActivityIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetOTEByActivityIdResult
+            {
+                IsSuccess = true,
+                ErrorInfo = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result = result.Result.OTEDetails.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.OteTicketDTO
+                    {
+                        ActivityId = s.ActivityId,
+                        Title = s.Title,
+                        Amount = s.Amount,
+                        QRCode = s.QRCode,
+                        Status = s.Status,
+                        Customer = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO
+                        {
+                            FirstName = s.Customer.FirstName,
+                            LastName = s.Customer.LastName,
+                            Email = s.Customer.Email
+                        }
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByActivityIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetTicketDetails")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetTicketDetailsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTicketDetails([FromQuery] GetTicketDetailsArgs args)
+    {
+        try
+        {
+            var result = await getTicketDetailsHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetTicketDetailsArgs
+            {
+                ActivityId = args.ActivityId
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetTicketDetailsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.OTETickets.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.OteScheduleDTO
+                    {
+                        ActivityId= s.ActivityId,
+                        From = s.From,  
+                        To = s.To,
+                        Recurrences = s.Recurrences,
+                        OtePricingDTO = new Framework.ApiCommand.ApiCore.DTO.Activity.OtePricingDTO
+                        {
+                            Name = s.OtePricingDTO.Name,
+                            Description = s.OtePricingDTO.Description,
+                            MaxSlots = s.OtePricingDTO.MaxSlots,
+                            Sold = s.OtePricingDTO.Sold,
+                            Available = s.OtePricingDTO.Available
+                        }
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -53,7 +53,9 @@ public class ActivityDTO
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
+
     public CustomerDTO Owner {get; set;}
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public virtual OteActivityDTO OteSchedule { get; set; }
 }

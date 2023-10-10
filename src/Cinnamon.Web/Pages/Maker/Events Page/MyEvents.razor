@@ -2,17 +2,18 @@
 @page "/maker/dashboard/events"
 @using AutoMapper;
 @using System.Security.Claims
-@using System.ComponentModel.DataAnnotations;
-@using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@using Cinnamon.Framework.ValidationAttributes;
-@using Cinnamon.Web.Models.Entities;
+@using System.ComponentModel.DataAnnotations
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Framework.ValidationAttributes
+@using Cinnamon.Web.Models.Entities
 @using Cinnamon.Framework.Enums
-@using Cinnamon.Web.Models.Ote;
-@inject IActivityApiHandler activityApiHandler;
-@inject ITransactionApiHandler transactionApiHandler
-@inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject NavigationManager NavigationManager;
-@inject IMapper mapper;
+@using Cinnamon.Web.Models.Ote
+@inject IActivityApiHandler activityApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IMapper mapper
 @attribute [Authorize]
 
 <PageTitle>Events | CinnamonPH</PageTitle>
@@ -53,7 +54,7 @@
                 {
                     <div class="event-details-content">
                         <div class="event-content d-flex">
-                            <img class="event-image" src="@(item.Images.Count() > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)" />
+                            <img class="event-image" src="@item.EventImage" />
                             <div class="event-details">
                                 <p class="event-title">@item.EventName</p>
                                 <p class="event-schedule">@item.ScheduleFrom.ToString("dd MMMM yyyy") | @item.ScheduleFrom.ToString("hh:mm tt")</p>
@@ -73,9 +74,9 @@
                             </div>
                         </div>
                         <div class="ticket-details">
-                            <p class="ticket-slots">Slots: 60</p>
-                            <p class="ticket-sold">Sold: 20</p>
-                            <p class="ticket-available">Available: 40</p>
+                            <p class="ticket-slots">Slots: @item.Slots</p>
+                            <p class="ticket-sold">Sold: @item.Sold</p>
+                            <p class="ticket-available">Available: @item.Available</p>
                         </div>
                     </div>
                 }
@@ -87,6 +88,7 @@
     private List<Activity> activities = new List<Activity>();
     private OteActivity? activity;
     private List<OteActivity> oteActivities = new List<OteActivity>();
+    public CustomerProfile profile = new CustomerProfile();
     private string Token = string.Empty;
     private bool isLoading = true;
 
@@ -97,61 +99,48 @@
             isLoading = true;
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             Token = user.FindFirstValue("Token");
-            if (Token == null)
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
             {
-                // don't have current user login
+                // an error occured
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            //Get Owned OTE's
-            await GetOwnedActivities(Token);
+            var customer = result.Result.Result;
+            profile.Id = customer.Id;
             //Get OTE Details
-            foreach (var item in activities)
+            var resultOTE = await dashboardApiHandler.GetOTEByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByProviderArgs
             {
-                var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
-                    {
-                        IncludeAddress = true,
-                        IncludeDescription = true,
-                        IncludePricing = true,
-                        IncludeSchedule = true,
-                        IncludeImages = true
-                    }, item.Handler);
-                if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+                Id = profile.Id
+            }, Token);
+            if (resultOTE.Succeeded && resultOTE.Result != null && resultOTE.Result.IsSuccess)
+            {
+                oteActivities = resultOTE.Result.Result.Select(a =>
                 {
-                    throw new ApplicationException(result.Message);
-                }
-                var act = result.Result.Result;
-                activity = mapper.Map<OteActivity>(act);
-                oteActivities.Add(activity);
+                    return new OteActivity
+                    {
+                        Id               = a.Id,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        EventName        = a.EventName,
+                        Description      = a.Description,
+                        Handler          = a.Handler,
+                        CityName         = a.CityName,
+                        RegionName       = a.RegionName,
+                        PinnedLocation   = a.PinnedLocation,
+                        EventImage       = a.EventImage,
+                        ScheduleFrom     = a.ScheduleFrom,
+                        ScheduleTo       = a.ScheduleTo,
+                        Slots            = a.Slots,
+                        Sold             = a.Sold,
+                        Available        = a.Available
+                    };
+                }).ToList();
             }
             isLoading = false;
         }
         catch (Exception ex)
         {
             throw ex;
-        }
-    }
-    private async Task GetOwnedActivities(string token)
-    {
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-            {
-                IncludeActivityImages = true,
-                IncludeStudents = true,
-                IncludeAtivitySchedules = true
-            }, token);
-
-        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).Select(a =>
-            {
-                // map only required fields
-                return new Activity
-                    {
-                        ActivityId = a.ActivityId,
-                        ExperienceCreationType = a.ExperienceCreationType,
-                        Handler = a.Handler,
-                    };
-            }).ToList();
         }
     }
     private void NavigateToEventDetails(string handler)
