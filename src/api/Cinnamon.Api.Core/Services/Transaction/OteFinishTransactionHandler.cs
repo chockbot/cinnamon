@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
@@ -19,11 +20,12 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ICustomerData customerData;
     private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
     private readonly IOteTicketData oteTicketData;
+    private readonly IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
-        IOteTicketData oteTicketData)
+        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -32,6 +34,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.customerData = customerData;
         this.updateCreditBalanceHandler = updateCreditBalanceHandler;
         this.oteTicketData = oteTicketData;
+        this.oteCustomerPayedNotificationHandler = oteCustomerPayedNotificationHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -129,6 +132,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
+
+            var notifyEmailRes = await oteCustomerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs {
+                Email = customer.Email
+            });
+            if(!notifyEmailRes.Succeeded || notifyEmailRes.Result is null)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
 
             return AppResult<OteFinishTransactionResult>.CreateSucceeded(new OteFinishTransactionResult {}, "Successfully finish transaction");
         }
