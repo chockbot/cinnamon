@@ -24,7 +24,7 @@
 
 @if (activity != null)
 {
-    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+    
         <div class="event-details-wrapper">
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
@@ -115,7 +115,8 @@
                     }
                 </div>
             </div>
-            <div class="customer-list">
+            <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+                <div class="customer-list">
                 <div class="col-12 customer-content">
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
                         <p class="back-text">Customer List</p>
@@ -212,10 +213,9 @@
                     </div>
                 </div>
             </div>
+            </LoadingIndicator>
         </div>
-
     </div>
-    </LoadingIndicator>
 }
 
 @code {
@@ -282,16 +282,17 @@
         {
             ticketList = ticketResult.Result.Result.Select(s => new OteSchedule
             {
-                ActivityId = s.ActivityId,
-                From = s.From,
-                To = s.To,
+                ActivityId  = s.ActivityId,
+                From        = s.From,
+                To          = s.To,
                 Recurrences = s.Recurrences,
                 OtePricing = new OtePricing
                 {
-                    MaxSlots = s.OtePricingDTO.MaxSlots,
+                    Name        = s.OtePricingDTO.Name,
+                    MaxSlots    = s.OtePricingDTO.MaxSlots,
                     Description = s.OtePricingDTO.Description,
-                    Sold = s.OtePricingDTO.Sold,
-                    Available = s.OtePricingDTO.Available
+                    Sold        = s.OtePricingDTO.Sold,
+                    Available   = s.OtePricingDTO.Available,
                 }
             }).ToList();
         }
@@ -401,13 +402,8 @@
         }
         using (var workbook = new XLWorkbook("wwwroot/Template/CustomerList.xlsx"))
         {
-            // Access the first worksheet in the workbook (assuming it's the only one)
             var worksheet = workbook.Worksheet(1);
-
-            // Define the starting row for your data (assuming headers are in the first row)
             int startRow = 3;
-
-            // Loop through the ExportEnrollees list and populate the worksheet
             foreach (var item in ExportCustomer)
             {
                 worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
@@ -419,19 +415,17 @@
                 worksheet.Cell(startRow, 6).Value = item.Status;
                 startRow++;
             }
-            // Create a MemoryStream to save the workbook
             using (var memoryStream = new MemoryStream())
             {
                 workbook.SaveAs(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                // Specify the file name
                 var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
                 var fileName = $"CustomerList_{currentDate}.xlsx";
                 byte[] bytes = memoryStream.ToArray();
 
-                // Convert the bytes to base64
                 var bytesBase64 = Convert.ToBase64String(bytes);
+
                 // Download the saved memorystream file
                 await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
             }
