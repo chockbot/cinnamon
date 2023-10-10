@@ -1,5 +1,4 @@
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
-using Cinnamon.Api.Core.Services.OnGoingActivityService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
@@ -28,10 +27,12 @@ public class DashboardController : ControllerBase
     private readonly IGetOTEByProviderHandler getOTEByProviderHandler;
     private readonly IGetOTEByActivityIdHandler getOTEByActivityIdHandler;
     private readonly IGetTicketDetailsHandler getTicketDetailsHandler;
+    private readonly IUpdateOTETicketHandler updateOTETicketHandler;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
-        IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler)
+        IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler,
+        IUpdateOTETicketHandler updateOTETicketHandler)
     {
         this.getActivitySchedulesHandler        = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler    = getCurrentDateAttendanceHandler;
@@ -46,6 +47,7 @@ public class DashboardController : ControllerBase
         this.getOTEByProviderHandler            = getOTEByProviderHandler;
         this.getOTEByActivityIdHandler          = getOTEByActivityIdHandler;
         this.getTicketDetailsHandler            = getTicketDetailsHandler;
+        this.updateOTETicketHandler             = updateOTETicketHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -529,11 +531,12 @@ public class DashboardController : ControllerBase
                 {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.OteTicketDTO
                     {
+                        Id         = s.Id,
                         ActivityId = s.ActivityId,
-                        Title = s.Title,
-                        Amount = s.Amount,
-                        QRCode = s.QRCode,
-                        Status = s.Status,
+                        Title      = s.Title,
+                        Amount     = s.Amount,
+                        QRCode     = s.QRCode,
+                        Status     = s.Status,
                         Customer = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO
                         {
                             FirstName = s.Customer.FirstName,
@@ -589,6 +592,40 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOTEByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("UpdateOTETicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOTETicketResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateOTETicket([FromBody] UpdateOTETicketArgs args)
+    {
+        try
+        {
+            var result = await updateOTETicketHandler.ExecuteAsync(new Services.DashboardService.Interactors.UpdateOTETicketArgs
+            {
+                Id = args.Id,
+                Status = args.Status
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateOTETicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateOTETicketResult
+            {
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.OteTicketDTO
+                {
+                    Status     = result.Result.Status,
+                    Amount     = result.Result.Amount,
+                    Title      = result.Result.Title,
+                    QRCode     = result.Result.QRCode,
+                    ActivityId = result.Result.ActivityId,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOTETicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
