@@ -155,7 +155,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
                 Guid = guid.ToString(),
                 Payload = tokenSerializedPayload,
-                Token = token,
+                Token = encodedToken,
                 TokenType = "OTE-TICKET"
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)

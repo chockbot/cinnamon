@@ -18,5 +18,8 @@ public class MappingProfile : Profile
         CreateMap<ActivityResults.OteFindByHandlerResult.Image, CoreDto.Activity.ActivityDTO.ActivityImage>()
             .ForMember(d => d.ImageSrc, o => o.MapFrom(s => s.ImageLocation))
             .ForMember(d => d.Name, o => o.MapFrom(s => s.ImageName));
+
+        CreateMap<ActivityResults.OteTicketDetailsResult, CoreDto.Activity.OteTicketDetailsDTO>();
+        CreateMap<ActivityResults.OteTicketDetailsResult.Ticket, CoreDto.Activity.OteTicketDetailsDTO.Ticket>();
     }
 }
