@@ -108,6 +108,27 @@ public class OteTicketController : ControllerBase
         }
     }
 
+    [Route("by-purchase-order/{purchaseOrderId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetByPurchaseOrderIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetByPurchaseOrderId(int purchaseOrderId, [FromQuery] GetByPurchaseOrderIdArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.GetByPurchaseOrderId(purchaseOrderId, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetByPurchaseOrderIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetByPurchaseOrderIdResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetByPurchaseOrderIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("update-ticket-status")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateTicketResult), StatusCodes.Status200OK)]

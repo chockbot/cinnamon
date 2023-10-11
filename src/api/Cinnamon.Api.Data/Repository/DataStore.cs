@@ -97,6 +97,8 @@ public class DataStore : IDataStore
 
     public IOteTicket OteTicket => new OteTicketEntity(applicationContext);
 
+    public ITokenGenerated TokenGenerated => new TokenGenratedEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

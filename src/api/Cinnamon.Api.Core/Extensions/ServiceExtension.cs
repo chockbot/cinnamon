@@ -53,11 +53,11 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IChatHistoryData, Modules.DataAccess.ChatHistory.ChatHistoryData>();
         services.AddTransient<Modules.DataAccess.Handlers.IChatRoomData, Modules.DataAccess.ChatRoom.ChatRoomData>();
         services.AddTransient<Modules.DataAccess.Handlers.IFavoriteData, Modules.DataAccess.Favorite.FavoriteData>();
-
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceCreationTypeData, Modules.DataAccess.ExperienceCreationType.ExperienceCreationTypeData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteTicketData, Modules.DataAccess.OteTicket.OteTicketData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ITokenGeneratedData, Modules.DataAccess.TokenGenerated.TokenGeneratedData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -157,6 +157,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteCreateHandler, Services.ActivityService.OteCreateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteUpdateHandler, Services.ActivityService.OteUpdateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteFindByHandler, Services.ActivityService.OteFindByHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteTicketDetailsHandler, Services.ActivityService.OteTicketDetailsHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

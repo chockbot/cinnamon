@@ -1,3 +1,5 @@
+using System.Text;
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
@@ -7,7 +9,9 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Microsoft.AspNetCore.WebUtilities;
 using QRCoder;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -21,11 +25,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
     private readonly IOteTicketData oteTicketData;
     private readonly IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler;
+    private readonly ITokenGeneratedData tokenGeneratedData;
+    private readonly ApplicationConfig applicationConfig;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
-        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler)
+        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
+        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -35,11 +42,20 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.updateCreditBalanceHandler = updateCreditBalanceHandler;
         this.oteTicketData = oteTicketData;
         this.oteCustomerPayedNotificationHandler = oteCustomerPayedNotificationHandler;
+        this.tokenGeneratedData = tokenGeneratedData;
+        this.applicationConfig = applicationConfig;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteFinishTransactionResult>.CreateFailed(ex, "An error occured in OteFinishTransactionHandler");
+        }
     }
 
     public async Task<AppResult<OteFinishTransactionResult>> ExecuteAsync(OteFinishTransactionArgs args)
@@ -124,6 +140,36 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
+            // generate token and guid
+            var guid = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
+            byte[] key = guid.ToByteArray();
+            var token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            var tokenGeneratedPayload = new TokenGeneratedPayload {
+                PurchaseOrderId = purchaseOrder.Id
+            };
+            var tokenSerializedPayload = jsonSerializationProvider.Serialize(tokenGeneratedPayload);
+            var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
+                Guid = guid.ToString(),
+                Payload = tokenSerializedPayload,
+                Token = encodedToken,
+                TokenType = "OTE-TICKET"
+            });
+            if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            // create link for ticket details
+            var url = applicationConfig.FrontendUrl
+                .AppendPathSegment("transactions")
+                .AppendPathSegment("ote-tickets")
+                .AppendPathSegment(guid.ToString())
+                .AppendPathSegment(encodedToken);
+
             // if there is credit applied in purchase order then subract in balance credit
             if(purchaseOrder.CreditAmount > 0)
             {
@@ -177,7 +223,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         TicketPrice = t.Value.Price
                     };
                 }),
-                TotalAmount = purchaseOrder.OverallTotal
+                TotalAmount = purchaseOrder.OverallTotal,
+                TicketDetailsLink = url
             });
             if(!notifyEmailRes.Succeeded || notifyEmailRes.Result is null)
             {
@@ -239,5 +286,10 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     class Fees {
         public decimal PaymentProviderFee {get; set;}
         public decimal ServiceFee {get; set;}
+    }
+
+    class TokenGeneratedPayload 
+    {
+        public int PurchaseOrderId {get; set;}
     }
 }
