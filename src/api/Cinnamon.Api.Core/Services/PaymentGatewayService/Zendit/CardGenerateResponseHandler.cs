@@ -98,7 +98,7 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
                 card = new {
                     currency = currency,
                     channel_properties = new {
-                        success_return_url = applicationConfig.FrontendUrl.AppendPathSegment("purchase/order").SetQueryParam("purchaseid", args.TransactionId).ToString(),
+                        success_return_url = args.SuccessUrl,
                         cancel_return_url = applicationConfig.FrontendUrl,
                         failure_return_url = applicationConfig.FrontendUrl
                     },

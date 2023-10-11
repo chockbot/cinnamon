@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
@@ -6,6 +7,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -22,11 +24,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly ILogger<OtePurchaseOrderHandler> logger;
+    private readonly ApplicationConfig applicationConfig;
 
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData, ILogger<OtePurchaseOrderHandler> logger,
-        IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler)
+        IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
+        ApplicationConfig applicationConfig)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -39,6 +43,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.getActivityHandler = getActivityHandler;
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.logger = logger;
+        this.applicationConfig = applicationConfig;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -260,6 +265,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     new ApplicationException("Unable to create purchase order transaction."), "Unable to create purchase order transaction.");
             }
 
+            var successUrl = applicationConfig.FrontendUrl
+                .AppendPathSegment("purchase/order/ote")
+                .SetQueryParam("purchaseid", result.Result.Result.Id);
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
                 AmountCurrency = "PHP",
@@ -272,7 +280,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     CardNumber = args.CardInformation.CardNumber,
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
-                } : null
+                } : null,
+                SuccessUrl = successUrl
             });
             if(!requestPayment.Succeeded || requestPayment.Result == null)
             {
