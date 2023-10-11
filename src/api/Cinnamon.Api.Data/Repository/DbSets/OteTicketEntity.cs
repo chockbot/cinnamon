@@ -107,4 +107,41 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(ex, "An error occured when trying to get ticket details");
         }
     }
+
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageData = false)
+    {
+        try
+        {
+            var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
+
+            if(includeCustomer)
+            {
+                query = query.Include(t => t.Customer);
+            }
+
+            if(!includeImageData)
+            {
+                query = query.Select(t => new OteTicket {
+                    ActivityId = t.ActivityId,
+                    Amount = t.Amount,
+                    CustomerId = t.CustomerId,
+                    Id = t.Id,
+                    OteScheduleId = t.OteScheduleId,
+                    OteSchedulePricingId = t.OteSchedulePricingId,
+                    PurchaseOrderId = t.PurchaseOrderId,
+                    QRCode = t.QRCode,
+                    Status = t.Status,
+                    Title = t.Title,
+                    Customer = t.Customer
+                });
+            }
+
+            var result = await query.ToListAsync();
+            return AppResult<IEnumerable<Entities.OteTicket>>.CreateSucceeded(result, "Successfully get tickets by activity id.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<Entities.OteTicket>>.CreateFailed(ex, "An error occured when getting tickets.");
+        }
+    }
 }

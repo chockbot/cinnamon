@@ -19,7 +19,7 @@ public class OtePurchaseVerification
                         margin-right: 15px;
                         '
                     >
-                        {item.TicketName} x {item.TicketCount}
+                        <span style='text-transform: capitalize;'>{item.TicketName}</span> x {item.TicketCount}
                     </p>
                     <p
                         style='
@@ -91,8 +91,8 @@ public class OtePurchaseVerification
                         margin-bottom: 0;
                     '
                     >
-                    Hi {args.CustomerName}, we are excited to confirm your recent ticket purchase
-                    for {args.EventName} on {args.EventDate.ToString("MMMM dd, yyyy")}. Thank you for choosing to attend our
+                    Hi <span style='text-transform: capitalize;'>{args.CustomerName}</span>, we are excited to confirm your recent ticket purchase
+                    for <span style='text-transform: capitalize;'>{args.EventName}</span> on {args.EventDate.ToString("MMMM dd, yyyy")}. Thank you for choosing to attend our
                     event! This email serves as your official confirmation.
                     </p>
                     <div style='text-align: center; margin-top: 3rem'>
@@ -104,7 +104,7 @@ public class OtePurchaseVerification
                         border-radius: 20px;
                         text-decoration: none;
                         '
-                        href='https://cinnamon.ph'
+                        href='{args.TicketDetailsLink}'
                         ><b>View Ticket Here!</b></a
                     >
                     </div>
@@ -117,6 +117,7 @@ public class OtePurchaseVerification
                         font-weight: 700;
                         margin-bottom: 10px;
                         margin-top: 0;
+                        text-transform: capitalize;
                     '
                     >
                     {args.EventName}
@@ -173,6 +174,7 @@ public class OtePurchaseVerification
                         font-size: 16px;
                         margin-top: 0;
                         margin-bottom: 10px;
+                        text-transform: capitalize;
                     '
                     >
                     Paid To : {args.ProviderName}
@@ -243,7 +245,7 @@ public class OtePurchaseVerification
                 <div class='maker-details' style='padding: 2rem 2rem'>
                     <p style='font-size: 16px; margin: 0'>
                     <span style='color: #717171'>Experience By: </span>
-                    <span style='color: #000'>
+                    <span style='color: #000; text-transform: capitalize;'>
                         <u style='text-transform: capitalize'>{args.ProviderName}</u></span
                     >
                     </p>
@@ -279,6 +281,8 @@ public class OtePurchaseVerification
         public decimal ServiceFee {get; set;}
         public decimal HandlingFee {get; set;}
         public decimal TotalAmount {get; set;}
+
+        public string TicketDetailsLink {get; set;}
     }
 
     public class TicketDetails 

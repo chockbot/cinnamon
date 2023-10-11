@@ -8,4 +8,5 @@ public interface IOteTicket : IGenericEntity<OteTicket>
 {
     Task<AppResult<IEnumerable<OteTicket>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false);
     Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId);
+    Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageData = false);
 }

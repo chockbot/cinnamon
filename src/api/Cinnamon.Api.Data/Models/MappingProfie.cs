@@ -6,6 +6,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
 using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -39,5 +40,7 @@ public class MappingProfile : Profile
         CreateMap<OteTicket, OteTicketDTO>();
         CreateMap<OteTicketDTO, OteTicket>();
         CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
+
+        CreateMap<TokenGenerated, TokenGeneratedDTO>();
     }
 }
