@@ -294,6 +294,8 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(t => t.Status);
         modelBuilder.Entity<OteTicket>()
             .HasIndex("ActivityId","QRCode","Status");
+        modelBuilder.Entity<OteTicket>()
+            .HasIndex(t => t.PurchaseOrderId);
 
 
         modelBuilder.Entity<TokenGenerated>()

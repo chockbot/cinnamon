@@ -39,7 +39,7 @@ public class TokenGeneratedController : ControllerBase
 
     [Route("{guid}/{token}")]
     [HttpGet]
-    [ProducesResponseType(typeof(CreateTokenResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetTokenResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetToken(string guid, string token)
     {
         try
@@ -47,14 +47,14 @@ public class TokenGeneratedController : ControllerBase
             var result = await tokenGeneratedRepository.GetTokenGenerated(guid, token);
             if(!result.Succeeded || result.Result is null)
             {
-                return new JsonResult(new CreateTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new CreateTokenResult { IsSuccess = true, Result = result.Result });
+            return new JsonResult(new GetTokenResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -111,4 +111,23 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when updating ticket");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageAsResult = false)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.GetByPurchaseOrderId(purchaseOrderId, includeCustomer, includeImageAsResult);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtoTickets = mapper.Map<IEnumerable<OteTicketDTO>>(result.Result);
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(dtoTickets, "Successfully get tickets by purchase order id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when getting tickets.");
+        }
+    }
 }

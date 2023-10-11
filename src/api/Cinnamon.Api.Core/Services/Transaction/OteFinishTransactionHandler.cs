@@ -21,11 +21,13 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
     private readonly IOteTicketData oteTicketData;
     private readonly IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler;
+    private readonly ITokenGeneratedData tokenGeneratedData;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
-        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler)
+        IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
+        ITokenGeneratedData tokenGeneratedData)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -35,11 +37,19 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.updateCreditBalanceHandler = updateCreditBalanceHandler;
         this.oteTicketData = oteTicketData;
         this.oteCustomerPayedNotificationHandler = oteCustomerPayedNotificationHandler;
+        this.tokenGeneratedData = tokenGeneratedData;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteFinishTransactionResult>.CreateFailed(ex, "An error occured in OteFinishTransactionHandler");
+        }
     }
 
     public async Task<AppResult<OteFinishTransactionResult>> ExecuteAsync(OteFinishTransactionArgs args)

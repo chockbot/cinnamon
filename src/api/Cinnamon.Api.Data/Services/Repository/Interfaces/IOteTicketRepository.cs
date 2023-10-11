@@ -9,4 +9,5 @@ public interface IOteTicketRepository
     Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, bool includeCustomer = false, bool includeImageAsResult = false);
     Task<AppResult<IEnumerable<OteTicketDTO>>> CreateMany(IEnumerable<OteTicketDTO> tickets, bool includeImageAsResult = false);
     Task<AppResult<OteTicketDTO>> Update(OteTicketDTO ticket);
+    Task<AppResult<IEnumerable<OteTicketDTO>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageAsResult = false);
 }
