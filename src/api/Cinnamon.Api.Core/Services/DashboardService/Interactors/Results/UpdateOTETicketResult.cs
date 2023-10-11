@@ -1,7 +1,8 @@
-﻿using Cinnamon.Web.Models.Entities;
+﻿using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 
-namespace Cinnamon.Web.Models.Ote;
-public class OteTicket
+namespace Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
+
+public class UpdateOTETicketResult
 {
     public int Id { get; set; }
     public int ActivityId { get; set; }
@@ -14,5 +15,5 @@ public class OteTicket
     public string QRCode { get; set; }
     public string QRImageData { get; set; }
     public string Status { get; set; }
-    public CustomerProfile Customer { get; set; }
+    public CustomerDTO Customer { get; set; }
 }

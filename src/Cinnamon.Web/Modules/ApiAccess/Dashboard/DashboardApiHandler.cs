@@ -299,4 +299,26 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<GetTicketDetailsResult>.CreateFailed(ex, "An error occured when getting ticket details api");
         }
     }
+
+    public async Task<AppResult<UpdateOTETicketResult>> UpdateOTETicket(UpdateOTETicketArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Dashboard/UpdateOTETicket")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOTETicketResult>();
+
+            return AppResult<UpdateOTETicketResult>.CreateSucceeded(result, "Successfully posting update ote ticket");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOTETicketResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOTETicketResult>.CreateFailed(ex, "An error occured when posting update ote ticket");
+        }
+    }
 }

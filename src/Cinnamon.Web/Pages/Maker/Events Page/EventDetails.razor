@@ -176,7 +176,7 @@
                                         </TableRowCell>
                                         <TableRowCell class="tr-button">
                                             <div class="btn-status">
-                                                <button class="check-button" type="button">
+                                                <button class="check-button" type="button" @onclick="() => UpdateTicketStatus(item)">
                                                     <img class="me-1" alt="check-icon"
                                                          src='@(item.Status == "VERIFIED" ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
                                                 </button>
@@ -312,11 +312,12 @@
         {
             oteCustomer = result.Result.Result.Select(e => new OteTicket
                 {
+                    Id         = e.Id,
                     ActivityId = e.ActivityId,
-                    Title = e.Title,
-                    Amount = e.Amount,
-                    QRCode = e.QRCode,
-                    Status = e.Status,
+                    Title      = e.Title,
+                    Amount     = e.Amount,
+                    QRCode     = e.QRCode,
+                    Status     = e.Status,
                     Customer = new CustomerProfile
                     {
                         FirstName = e.Customer.FirstName,
@@ -325,7 +326,7 @@
                     }
                 }).ToList();
             Pagination = result.Result.Pagination;
-            FilteredCustomer = oteCustomer.ToList();
+            FilteredCustomer = oteCustomer.OrderBy(s=> s.Id).ToList();
         }
     }
     private void NavigateToMyEvents()
@@ -374,6 +375,7 @@
         currentPage = page;
         await GetCustomerList(int.Parse(page));
     }
+
     private async Task ExportToExcel()
     {
         await loadingIndicator.Show();
@@ -433,15 +435,20 @@
         await loadingIndicator.Hide();
 
     }
+
     private void TextSearchChanged(string search)
     {
         FilteredCustomer = oteCustomer.FindAll(s => s.Customer.FirstName.ToLower().Contains(search.ToLower())).OrderBy(e => e.Customer.FirstName).ToList();
     }
-    public class TicketInfo
+    public async Task UpdateTicketStatus(OteTicket ticket)
     {
-        public string TicketName { get; set; }
-        public int Slots { get; set; }
-        public int Sold { get; set; }
-        public int Available => Slots - Sold;
+        ticket.Status = ticket.Status == "VERIFIED" ? "UNVERIFIED" : "VERIFIED";
+        var updateRes = await dashboardApiHandler.UpdateOTETicket(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateOTETicketArgs
+            {
+                Id = ticket.Id,
+                Status = ticket.Status
+            }, Token);
+
+        await GetCustomerList(1);
     }
 }
