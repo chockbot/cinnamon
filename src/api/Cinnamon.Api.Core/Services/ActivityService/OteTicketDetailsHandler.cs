@@ -83,6 +83,7 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 IncludeAddress = true,
                 IncludeDescription = true,
                 IncludeImages = true,
+                IncludeSchedule = true
             });
             if(!oteActivityRes.Succeeded || oteActivityRes.Result is null)
             {
