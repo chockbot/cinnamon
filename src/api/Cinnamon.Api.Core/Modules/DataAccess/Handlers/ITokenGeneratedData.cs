@@ -6,6 +6,6 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
 public interface ITokenGeneratedData 
 {
-    Task<AppResult<CreateTokenResult>> CreateSubCategory(CreateTokenArgs args);
-    Task<AppResult<GetTokenResult>> GetAllSubCategory(string guid, string token);
+    Task<AppResult<CreateTokenResult>> CreateTokenGenerated(CreateTokenArgs args);
+    Task<AppResult<GetTokenResult>> GetTokenGenerated(string guid, string token);
 }

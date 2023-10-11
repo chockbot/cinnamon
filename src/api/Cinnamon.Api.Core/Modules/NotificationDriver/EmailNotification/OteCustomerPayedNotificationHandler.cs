@@ -58,6 +58,7 @@ public class OteCustomerPayedNotificationHandler : IOteCustomerPayedNotification
                     };
                 }),
                 TotalAmount = args.TotalAmount,
+                TicketDetailsLink = args.TicketDetailsLink
             });
 
             var sendMailResponse = await sendMailHandler

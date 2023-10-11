@@ -16,7 +16,7 @@ public class TokenGeneratedData : ITokenGeneratedData
         flurlClient = flurlFac.Get(config.ApiDataUrl);
     }
 
-    public async Task<AppResult<CreateTokenResult>> CreateSubCategory(CreateTokenArgs args)
+    public async Task<AppResult<CreateTokenResult>> CreateTokenGenerated(CreateTokenArgs args)
     {
         try
         {
@@ -37,7 +37,7 @@ public class TokenGeneratedData : ITokenGeneratedData
         }
     }
 
-    public async Task<AppResult<GetTokenResult>> GetAllSubCategory(string guid, string token)
+    public async Task<AppResult<GetTokenResult>> GetTokenGenerated(string guid, string token)
     {
         try
         {

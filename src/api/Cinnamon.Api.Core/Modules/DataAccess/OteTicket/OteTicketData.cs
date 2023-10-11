@@ -99,4 +99,25 @@ public class OteTicketData : IOteTicketData
             return AppResult<UpdateTicketResult>.CreateFailed(ex, "An error occured when posting update ticket");
         }
     }
+
+    public async Task<AppResult<GetByPurchaseOrderIdResult>> GetByPurchaseOrderId(int purchaseOrderId, GetByPurchaseOrderIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"OteTicket/by-purchase-order/{purchaseOrderId}")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetByPurchaseOrderIdResult>();
+
+            return AppResult<GetByPurchaseOrderIdResult>.CreateSucceeded(result, "Successfully getting get all tickets");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetByPurchaseOrderIdResult>.CreateFailed(ex, "An error occured when getting all tickets");
+        }
+    }
 }
