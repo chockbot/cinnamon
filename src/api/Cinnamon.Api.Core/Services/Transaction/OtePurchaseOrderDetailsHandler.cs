@@ -1,3 +1,4 @@
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
@@ -6,6 +7,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -16,15 +18,18 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IGetProfileHandler getProfileHandler;
+    private readonly ApplicationConfig applicationConfig;
 
     public OtePurchaseOrderDetailsHandler(IPurchaseOrderData purchaseOrderData, IGetActivityHandler getActivityHandler,
-        IOteFindByHandler oteFindByHandler, IJsonSerializationProvider jsonSerializationProvider, IGetProfileHandler getProfileHandler)
+        IOteFindByHandler oteFindByHandler, IJsonSerializationProvider jsonSerializationProvider, IGetProfileHandler getProfileHandler,
+        ApplicationConfig applicationConfig)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.getProfileHandler = getProfileHandler;
+        this.applicationConfig = applicationConfig;
     }
 
     public AppResult<OtePurchaseOrderDetailsResult> Execute(OtePurchaseOrderDetailsArgs args)
@@ -91,6 +96,12 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
             }
             var oteActivity = oteActivityRes.Result;
 
+            var url = applicationConfig.FrontendUrl
+                .AppendPathSegment("transactions")
+                .AppendPathSegment("ote-tickets")
+                .AppendPathSegment(deserializedPayload.Guid)
+                .AppendPathSegment(deserializedPayload.Token);
+
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
             var result = new OtePurchaseOrderDetailsResult {
                 EventDate = oteActivity.ScheduleFrom,
@@ -109,7 +120,9 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                         Name = t.Name,
                         Price = t.Price
                     };
-                })
+                }),
+                PurchasedDate = purchaseOrder.PurchaseDate,
+                TicketUrl = url
             };
 
             return AppResult<OtePurchaseOrderDetailsResult>.CreateSucceeded(result, "Ote purchase order details successfully get.");
@@ -128,6 +141,8 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public string PaymentChannel {get; set;}
         public bool IsInclusivePayment {get; set;}
         public int OteScheduleId { get; set; }
+        public string Guid {get; set;}
+        public string Token {get; set;}
     }
 
     private class Ticket 

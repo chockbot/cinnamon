@@ -1,4 +1,3 @@
-using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
@@ -9,8 +8,6 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.WebUtilities;
-using QRCoder;
 using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -134,22 +131,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
             var tokenGeneratedPayload = new TokenGeneratedPayload {
                 PurchaseOrderId = purchaseOrder.Id
             };
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(tokenGeneratedPayload);
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = guid.ToString(),
+                Guid = deserializedPayload.Guid,
                 Payload = tokenSerializedPayload,
-                Token = encodedToken,
+                Token = deserializedPayload.Token,
                 TokenType = "OTE-TICKET"
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -161,8 +150,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             var url = applicationConfig.FrontendUrl
                 .AppendPathSegment("transactions")
                 .AppendPathSegment("ote-tickets")
-                .AppendPathSegment(guid.ToString())
-                .AppendPathSegment(encodedToken);
+                .AppendPathSegment(deserializedPayload.Guid)
+                .AppendPathSegment(deserializedPayload.Token);
 
             // if there is credit applied in purchase order then subract in balance credit
             if(purchaseOrder.CreditAmount > 0)
@@ -241,6 +230,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string PaymentChannel {get; set;}
         public bool IsInclusivePayment {get; set;}
         public int OteScheduleId { get; set; }
+        public string Guid {get; set;}
+        public string Token {get; set;}
     }
 
     private class Ticket 

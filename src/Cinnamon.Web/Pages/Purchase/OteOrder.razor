@@ -66,7 +66,7 @@
                     <div>
                         <div class="d-flex align-items-center">
                             <p class="mb-0 font-20 font-weight-700 color-black-100 me-4">Your ticket is here!</p>
-                            <Button class="color-white-100 bg-orange-100 border-radius-5 px-4 hover-color-white">
+                            <Button Clicked="NavigateToTickets" class="color-white-100 bg-orange-100 border-radius-5 px-4 hover-color-white">
                                 View
                             </Button>
                         </div>
@@ -103,7 +103,7 @@
                         </div>
                         <div class="text-center">
                             <p class="font-14 color-grey-100 my-3">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
-                            <Button class="color-white-100 rounded-pill bg-orange-100 px-4 hover-color-white mt-3">
+                            <Button Clicked="NavigateToHome" class="color-white-100 rounded-pill bg-orange-100 px-4 hover-color-white mt-3">
                                 Back to Home
                             </Button>
                         </div>
@@ -182,6 +182,21 @@
 
             return tickets.Select(t => t.Value);           
         }    
+    }
+
+    private Task NavigateToTickets()
+    {
+        if(purchaseOrder is not null)
+        {
+            NavigationManager.NavigateTo(purchaseOrder.TicketUrl);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/explore");
+        return Task.CompletedTask;
     }
 
     private class TicketSummary 

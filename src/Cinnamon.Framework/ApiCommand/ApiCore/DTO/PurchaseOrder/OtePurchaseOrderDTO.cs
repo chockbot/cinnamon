@@ -12,6 +12,7 @@ public class OtePurchaseOrderDTO
     public decimal ServiceFee {get; set;}
     public decimal HandlingFee {get; set;}
     public decimal TotalPurchase {get; set;}
+    public string TicketUrl {get; set;}
 
     public class Ticket 
     {

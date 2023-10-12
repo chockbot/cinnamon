@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
@@ -8,6 +9,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
+using Microsoft.AspNetCore.WebUtilities;
 using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -229,6 +231,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             // zero out over all total if less than zero
             overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
+            // generate token and guid
+            var guid = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
+            byte[] key = guid.ToByteArray();
+            var token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            
             // serialize students data to use later
             var payloadData = new {
                 Tickets = selectedTickets,
@@ -239,7 +249,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     ServiceFee = serviceFee
                 },
                 isInclusivePayment,
-                OteScheduleId = oteActivity.Pricings.First().OteScheduleId
+                OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
+                Guid = guid.ToString(),
+                Token = encodedToken
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -271,7 +283,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             var successUrl = applicationConfig.FrontendUrl
                 .AppendPathSegment("purchase/order/ote")
-                .SetQueryParam("purchaseid", result.Result.Result.Id);
+                .AppendPathSegment(result.Result.Result.Id);
+                
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
                 AmountCurrency = "PHP",

@@ -250,7 +250,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 UnitPrice = result.Result.UnitPrice,
                 IsInclusivePayment = result.Result.IsInclusivePayment,
                 PerUnitDisburseAmount = result.Result.PerUnitDisburseAmount,
-                TotalDisburseAmount = result.Result.TotalDisburseAmount
+                TotalDisburseAmount = result.Result.TotalDisburseAmount,
+                PurchaseDate = result.Result.CreatedOn
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
