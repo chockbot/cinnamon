@@ -1,4 +1,3 @@
-using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
@@ -9,8 +8,6 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.WebUtilities;
-using QRCoder;
 using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -112,12 +109,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            foreach(var item in deserializedPayload.Tickets)
-            {
-                item.Code = CreateCode();
-                item.ImageData = GenerateQRCode(item.Code);
-            }
-
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
                 Tickets = deserializedPayload.Tickets.Select(t => {
@@ -140,22 +131,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
             var tokenGeneratedPayload = new TokenGeneratedPayload {
                 PurchaseOrderId = purchaseOrder.Id
             };
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(tokenGeneratedPayload);
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = guid.ToString(),
+                Guid = deserializedPayload.Guid,
                 Payload = tokenSerializedPayload,
-                Token = encodedToken,
+                Token = deserializedPayload.Token,
                 TokenType = "OTE-TICKET"
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -167,8 +150,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             var url = applicationConfig.FrontendUrl
                 .AppendPathSegment("transactions")
                 .AppendPathSegment("ote-tickets")
-                .AppendPathSegment(guid.ToString())
-                .AppendPathSegment(encodedToken);
+                .AppendPathSegment(deserializedPayload.Guid)
+                .AppendPathSegment(deserializedPayload.Token);
 
             // if there is credit applied in purchase order then subract in balance credit
             if(purchaseOrder.CreditAmount > 0)
@@ -185,15 +168,15 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
-            var tickets = new Dictionary<int, Ticket>();
+            var tickets = new Dictionary<int, TicketSummary>();
             foreach(var item in deserializedPayload.Tickets)
             {
                 if(!tickets.ContainsKey(item.Id))
                 {
-                    tickets.Add(item.Id, new Ticket {
+                    tickets.Add(item.Id, new TicketSummary {
                         Name = item.Name,
                         Price = item.Price,
-                        Count = 1
+                        Id = item.Id
                     });
                 }
                 else 
@@ -239,28 +222,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         }
     }
 
-    private string GenerateQRCode(string code)
-    {
-        string result = string.Empty;
-
-        using (QRCodeGenerator generator = new QRCodeGenerator())
-        using (QRCodeData data = generator.CreateQrCode(code, QRCodeGenerator.ECCLevel.Q))
-        {
-            var encoded = new PngByteQRCode(data);
-            var pngData = encoded.GetGraphic(20);
-            result = "data:image/png;base64," + Convert.ToBase64String(pngData);
-        }
-        
-        return result;
-    }
-
-    private string CreateCode()
-    {
-        var date = DateTime.Now.ToString("MMddyyyyhhmmss");
-        var guid = Guid.NewGuid().ToString();
-        return date + guid;
-    }
-
     class PayloadData 
     {
         public IEnumerable<Ticket> Tickets {get; set;}
@@ -269,6 +230,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string PaymentChannel {get; set;}
         public bool IsInclusivePayment {get; set;}
         public int OteScheduleId { get; set; }
+        public string Guid {get; set;}
+        public string Token {get; set;}
     }
 
     private class Ticket 
@@ -276,10 +239,15 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public int Id {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
-        public string ImageData {get; set;}
         public string Code {get; set;}
+        public string ImageData {get; set;}
+    }
 
-        // extra field
+    private class TicketSummary 
+    {
+        public int Id {get; set;}
+        public decimal Price {get; set;}
+        public string Name {get; set;}
         public int Count {get; set;}
     }
 

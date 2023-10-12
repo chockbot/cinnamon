@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
@@ -8,6 +9,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -24,13 +26,14 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
     private readonly ICustomerPricingData customerPricingData;
     private readonly ILogger logger;
+    private readonly ApplicationConfig applicationConfig;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData,
-        ILogger<PurchaseOrderHandler> logger)
+        ILogger<PurchaseOrderHandler> logger, ApplicationConfig applicationConfig)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -43,6 +46,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.customerPricingData = customerPricingData;
         this.logger = logger;
+        this.applicationConfig = applicationConfig;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -272,6 +276,10 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 }, "Successfully request purchase order details"); 
             }
 
+            var successUrl = applicationConfig.FrontendUrl
+                .AppendPathSegment("purchase/order")
+                .SetQueryParam("purchaseid", result.Result.Result.Id);
+
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
                 AmountCurrency = "PHP",
@@ -284,7 +292,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     CardNumber = args.CardInformation.CardNumber,
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
-                } : null
+                } : null,
+                SuccessUrl = successUrl
             });
 
             if(!requestPayment.Succeeded || requestPayment.Result == null)

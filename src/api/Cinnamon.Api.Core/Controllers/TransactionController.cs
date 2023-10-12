@@ -1,3 +1,4 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.PurchaseOrder;
@@ -19,15 +20,20 @@ public class TransactionController : ControllerBase
     private readonly IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler;
     private readonly IGetPayoutsByProviderHandler getPayoutsByProviderHandler;
     private readonly IOtePurchaseOrderHandler otePurchaseOrderHandler;
+    private readonly IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler;
+    private readonly IMapper mapper;
 
     public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
-        IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler)
+        IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler,
+        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
         this.getGrossSalesByProviderHandler = getGrossSalesByProviderHandler;
         this.getPayoutsByProviderHandler = getPayoutsByProviderHandler;
         this.otePurchaseOrderHandler = otePurchaseOrderHandler;
+        this.otePurchaseOrderDetailsHandler = otePurchaseOrderDetailsHandler;
+        this.mapper = mapper;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -259,6 +265,36 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SubmitOtePurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetOtePurchaseOrder/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteGetPurchaseOrderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOtePurchaseOrder(int id)
+    {
+        try
+        {
+            var result = await otePurchaseOrderDetailsHandler.ExecuteAsync(new Services.TransactionService.Interactors.OtePurchaseOrderDetailsArgs {
+                PurchaseOrderId = id
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteGetPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var resultData = mapper.Map<OtePurchaseOrderDTO>(result.Result);
+
+            return new JsonResult(new OteGetPurchaseOrderResult 
+            {
+                IsSuccess = true, 
+                Result = resultData
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteGetPurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

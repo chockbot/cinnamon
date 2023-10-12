@@ -74,7 +74,7 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
                     ewallet = new RequestPaymentArgs.EWallet {
                         channel_code = paymentChannel,
                         channel_properties = new RequestPaymentArgs.Channel_Properties {
-                            success_return_url = applicationConfig.FrontendUrl.AppendPathSegment("purchase/order").SetQueryParam("purchaseid", args.TransactionId),
+                            success_return_url = args.SuccessUrl,
                             cancel_return_url = applicationConfig.FrontendUrl,
                             failure_return_url = applicationConfig.FrontendUrl
                         }

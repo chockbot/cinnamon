@@ -13,6 +13,7 @@ public class RequestPaymentArgs : IInteractor
     public string PaymentChannel {get; set;}
     public IEnumerable<MetaData> MetaDatas {get; set;}
     public CardDetails? CardInformation {get; set;}
+    public string SuccessUrl {get; set;}
 
     public class CardDetails 
     {

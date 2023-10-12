@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.Text;
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
@@ -6,6 +8,9 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
+using Microsoft.AspNetCore.WebUtilities;
+using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -22,11 +27,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly ILogger<OtePurchaseOrderHandler> logger;
+    private readonly ApplicationConfig applicationConfig;
 
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData, ILogger<OtePurchaseOrderHandler> logger,
-        IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler)
+        IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
+        ApplicationConfig applicationConfig)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -39,6 +46,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.getActivityHandler = getActivityHandler;
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.logger = logger;
+        this.applicationConfig = applicationConfig;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -122,10 +130,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 // create selected ticket instance
                 for(int i = 0; i < ticket.Count; i++)
                 {
+                    var qrcode = CreateCode();
                     selectedTickets.Add(new Ticket {
                         Id = ticketPrice.Id,
                         Name = "Ticket",
-                        Price = ticketPrice.Price
+                        Price = ticketPrice.Price,
+                        Code = qrcode,
+                        ImageData = GenerateQRCode(qrcode)
                     });
                 }
             }
@@ -220,6 +231,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             // zero out over all total if less than zero
             overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
+            // generate token and guid
+            var guid = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
+            byte[] key = guid.ToByteArray();
+            var token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            
             // serialize students data to use later
             var payloadData = new {
                 Tickets = selectedTickets,
@@ -230,7 +249,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     ServiceFee = serviceFee
                 },
                 isInclusivePayment,
-                OteScheduleId = oteActivity.Pricings.First().OteScheduleId
+                OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
+                Guid = guid.ToString(),
+                Token = encodedToken
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -260,6 +281,10 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     new ApplicationException("Unable to create purchase order transaction."), "Unable to create purchase order transaction.");
             }
 
+            var successUrl = applicationConfig.FrontendUrl
+                .AppendPathSegment("purchase/order/ote")
+                .AppendPathSegment(result.Result.Result.Id);
+                
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
                 AmountCurrency = "PHP",
@@ -272,7 +297,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     CardNumber = args.CardInformation.CardNumber,
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
-                } : null
+                } : null,
+                SuccessUrl = successUrl
             });
             if(!requestPayment.Succeeded || requestPayment.Result == null)
             {
@@ -291,10 +317,34 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         }
     }
 
+    private string GenerateQRCode(string code)
+    {
+        string result = string.Empty;
+
+        using (QRCodeGenerator generator = new QRCodeGenerator())
+        using (QRCodeData data = generator.CreateQrCode(code, QRCodeGenerator.ECCLevel.Q))
+        {
+            var encoded = new PngByteQRCode(data);
+            var pngData = encoded.GetGraphic(20);
+            result = "data:image/png;base64," + Convert.ToBase64String(pngData);
+        }
+        
+        return result;
+    }
+
+    private string CreateCode()
+    {
+        var date = DateTime.Now.ToString("MMddyyyyhhmmss");
+        var guid = Guid.NewGuid().ToString();
+        return date + guid;
+    }
+
     private class Ticket 
     {
         public int Id {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
+        public string Code {get; set;}
+        public string ImageData {get; set;}
     }
 }
