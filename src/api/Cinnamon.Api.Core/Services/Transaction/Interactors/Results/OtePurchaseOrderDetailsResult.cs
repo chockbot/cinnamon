@@ -14,8 +14,10 @@ public class OtePurchaseOrderDetailsResult
 
     public class Ticket 
     {
-        public string TicketName {get; set;}
+        public int Id {get; set;}
         public decimal Price {get; set;}
-        public int Count {get; set;}
+        public string Name {get; set;}
+        public string Code {get; set;}
+        public string ImageData {get; set;}
     }
 }

@@ -11,4 +11,5 @@ public interface ITransactionApiHandler
     Task<AppResult<GetGrossSalesByProviderResult>> GetGrossSalesByProvider(GetGrossSalesByProviderArgs args, string token);
     Task<AppResult<GetPayoutsByProviderResult>> GetPayoutsByProvider(GetPayoutsByProviderArgs args, string token);
     Task<AppResult<SubmitOtePurchaseOrderResult>> SubmitOtePurchaseOrder(SubmitOtePurchaseOrderArgs args, string token);
+    Task<AppResult<OteGetPurchaseOrderResult>> GetOtePurchaseOrder(int id, string token);
 } 

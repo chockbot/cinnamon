@@ -91,24 +91,6 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
             }
             var oteActivity = oteActivityRes.Result;
 
-            var ticketDictionary = new Dictionary<int, Ticket>();
-            foreach(var item in deserializedPayload.Tickets)
-            {
-                if(!ticketDictionary.ContainsKey(item.Id))
-                {
-                    ticketDictionary.Add(item.Id, new Ticket {
-                        Count = 1,
-                        Id = item.Id,
-                        Name = item.Name,
-                        Price = item.Price
-                    });
-                }
-                else 
-                {
-                    ticketDictionary[item.Id].Count++;
-                }
-            }
-
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
             var result = new OtePurchaseOrderDetailsResult {
                 EventDate = oteActivity.ScheduleFrom,
@@ -119,11 +101,13 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 TotalPurchase = purchaseOrder.OverallTotal,
                 SubTotal = purchaseOrder.Total,
-                Tickets = ticketDictionary.Select(t => {
+                Tickets = deserializedPayload.Tickets.Select(t => {
                     return new OtePurchaseOrderDetailsResult.Ticket {
-                        Count = t.Value.Count,
-                        Price = t.Value.Price,
-                        TicketName = t.Value.Name
+                        Code = t.Code,
+                        Id = t.Id,
+                        ImageData = t.ImageData,
+                        Name = t.Name,
+                        Price = t.Price
                     };
                 })
             };
@@ -151,9 +135,8 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public int Id {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
-
-        // extra field
-        public int Count {get; set;}
+        public string Code {get; set;}
+        public string ImageData {get; set;}
     }
 
     class Fees {
