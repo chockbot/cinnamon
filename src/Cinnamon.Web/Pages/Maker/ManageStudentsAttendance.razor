@@ -244,9 +244,7 @@
 
         //Get Schedules
         await GetActivitySchedules();
-        
-        //Create Calendar Month
-        await CreateMonth();
+
     }
 
     public async Task CreateMonth()
@@ -448,6 +446,9 @@
                         await loadingIndicator.Hide();
                     }
                 }
+                await OnInitializedAsync();
+                StateHasChanged();
+                await loadingIndicator.Hide();
             }
             else
             {
@@ -464,6 +465,7 @@
                 await loadingIndicator.Hide();
         }
     }
+
     public async Task GetStudentAttendances()
     {
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
@@ -491,7 +493,10 @@
             }).ToList();
             studentAttendances = studentAttendances.Where(s => s.IsPresent).ToList();
         }
+        //Create Calendar Month
+        await CreateMonth();
     }
+
     public async Task GetActivitySchedules()
     {
         var schedules = await dashboardApiHandler.GetActivitySchedules(Token);
@@ -523,10 +528,12 @@
     {
         return modalRef.Hide();
     }
+
     private Task ShowModal()
     {
         return modalRef.Show();
     }
+
     public class Schedule 
     {
         public int ActivityId {get; set;}
