@@ -112,12 +112,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            foreach(var item in deserializedPayload.Tickets)
-            {
-                item.Code = CreateCode();
-                item.ImageData = GenerateQRCode(item.Code);
-            }
-
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
                 Tickets = deserializedPayload.Tickets.Select(t => {
@@ -185,15 +179,15 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
-            var tickets = new Dictionary<int, Ticket>();
+            var tickets = new Dictionary<int, TicketSummary>();
             foreach(var item in deserializedPayload.Tickets)
             {
                 if(!tickets.ContainsKey(item.Id))
                 {
-                    tickets.Add(item.Id, new Ticket {
+                    tickets.Add(item.Id, new TicketSummary {
                         Name = item.Name,
                         Price = item.Price,
-                        Count = 1
+                        Id = item.Id
                     });
                 }
                 else 
@@ -239,28 +233,6 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         }
     }
 
-    private string GenerateQRCode(string code)
-    {
-        string result = string.Empty;
-
-        using (QRCodeGenerator generator = new QRCodeGenerator())
-        using (QRCodeData data = generator.CreateQrCode(code, QRCodeGenerator.ECCLevel.Q))
-        {
-            var encoded = new PngByteQRCode(data);
-            var pngData = encoded.GetGraphic(20);
-            result = "data:image/png;base64," + Convert.ToBase64String(pngData);
-        }
-        
-        return result;
-    }
-
-    private string CreateCode()
-    {
-        var date = DateTime.Now.ToString("MMddyyyyhhmmss");
-        var guid = Guid.NewGuid().ToString();
-        return date + guid;
-    }
-
     class PayloadData 
     {
         public IEnumerable<Ticket> Tickets {get; set;}
@@ -276,10 +248,15 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public int Id {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
-        public string ImageData {get; set;}
         public string Code {get; set;}
+        public string ImageData {get; set;}
+    }
 
-        // extra field
+    private class TicketSummary 
+    {
+        public int Id {get; set;}
+        public decimal Price {get; set;}
+        public string Name {get; set;}
         public int Count {get; set;}
     }
 

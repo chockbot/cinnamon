@@ -8,6 +8,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
+using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -127,10 +128,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 // create selected ticket instance
                 for(int i = 0; i < ticket.Count; i++)
                 {
+                    var qrcode = CreateCode();
                     selectedTickets.Add(new Ticket {
                         Id = ticketPrice.Id,
                         Name = "Ticket",
-                        Price = ticketPrice.Price
+                        Price = ticketPrice.Price,
+                        Code = qrcode,
+                        ImageData = GenerateQRCode(qrcode)
                     });
                 }
             }
@@ -300,10 +304,34 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         }
     }
 
+    private string GenerateQRCode(string code)
+    {
+        string result = string.Empty;
+
+        using (QRCodeGenerator generator = new QRCodeGenerator())
+        using (QRCodeData data = generator.CreateQrCode(code, QRCodeGenerator.ECCLevel.Q))
+        {
+            var encoded = new PngByteQRCode(data);
+            var pngData = encoded.GetGraphic(20);
+            result = "data:image/png;base64," + Convert.ToBase64String(pngData);
+        }
+        
+        return result;
+    }
+
+    private string CreateCode()
+    {
+        var date = DateTime.Now.ToString("MMddyyyyhhmmss");
+        var guid = Guid.NewGuid().ToString();
+        return date + guid;
+    }
+
     private class Ticket 
     {
         public int Id {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
+        public string Code {get; set;}
+        public string ImageData {get; set;}
     }
 }
