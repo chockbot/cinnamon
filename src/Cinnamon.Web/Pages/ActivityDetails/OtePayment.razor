@@ -494,6 +494,7 @@
         try
         {
             await LoadOteDetails();
+            await LoadProvideDetails();
         }
         catch (Exception ex)
         {
@@ -547,6 +548,22 @@
                         }
                     }
                 }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task LoadProvideDetails()
+    {
+        try
+        {
+            var inclusiveCheckRes = await activityHandler.OwnerPricingInclusive(activity.ProviderId);
+            if(inclusiveCheckRes.Succeeded && inclusiveCheckRes.Result is not null && inclusiveCheckRes.Result.IsSuccess)
+            {
+                IsInclusivePricing = inclusiveCheckRes.Result.Result.IsInclusivePricing;
             }
         }
         catch (System.Exception)
