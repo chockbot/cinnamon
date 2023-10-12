@@ -725,7 +725,7 @@
         }
     }
 
-    private Task ProceedToPayment()
+    private async Task ProceedToPayment()
     {
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
@@ -733,8 +733,15 @@
             queryValue += $"{item.Value.Id}-{item.Value.Count},";
         }
 
-        NavigationManager.NavigateTo($"/payment/ote/{Handler}/?ticket={queryValue}");
-        return Task.CompletedTask;
+        string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
+        if(currentLogin is null)
+        {
+            await loginModal.Show();
+            signInReturnUrl = paymentUrl;
+            return;
+        }
+
+        NavigationManager.NavigateTo(paymentUrl);
     }
 
     private int OverallTicketCount
