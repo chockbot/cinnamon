@@ -5,7 +5,7 @@ public class OtePurchaseOrderDTO
     public string EventName {get; set;}
     public string EventLocation {get; set;}
     public DateTime EventDate {get; set;}
-    public IEnumerable<Ticket> Tickets {get; set;}
+    public IEnumerable<PurchaseTicket> Tickets {get; set;}
     public DateTime PurchasedDate {get; set;}
     public string PaymentMethod {get; set;}
     public decimal SubTotal {get; set;}
@@ -14,7 +14,7 @@ public class OtePurchaseOrderDTO
     public decimal TotalPurchase {get; set;}
     public string TicketUrl {get; set;}
 
-    public class Ticket 
+    public class PurchaseTicket 
     {
         public int Id {get; set;}
         public decimal Price {get; set;}

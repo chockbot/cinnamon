@@ -44,8 +44,21 @@
   margin-right: auto;
 }
 
+.item-counter-container[data-disabled=""] {
+  background-color: #f3f6fc;
+}
+
 .item-counter-container .counter-item {
   width: 33.33%;
+  cursor: pointer;
+}
+
+.item-counter-container[data-disabled=""] .counter-item {
+  cursor: not-allowed;
+}
+
+.item-counter-container:not([data-disabled=""]) .counter-item .item-action {
+  color: var(--primary);
 }
 
 .landing-header {

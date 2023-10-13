@@ -205,19 +205,36 @@
                                     <Row @key="item" class="align-items-center mb-4">
                                         <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" Padding="Padding.Is1.FromBottom">
                                             <p class="font-20 font-weight-700 color-black-100 mb-0">@item.Name</p>
-                                            <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2">₱ @item.Price.ToString("#,##0")</p>
+                                            <p class="mb-0 color-green-100 font-20 font-weight-700 mt-2 d-flex align-items-center">
+                                                <span>
+                                                    ₱ @item.Price.ToString("#,##0")
+                                                </span>
+                                                @if(item.MaxSlots <= item.TicketSold)
+                                                {
+                                                    <span class="ms-2 text-uppercase bg-red-200 font-10 color-white-100 border-radius-10 py-1 px-2">
+                                                        sold out
+                                                    </span>
+                                                }
+                                                @* display count left *@
+                                                @if(item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
+                                                {
+                                                    <span class="ms-2 text-uppercase bg-orange-100 font-10 color-white-100 border-radius-10 py-1 px-2">
+                                                        Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                                    </span>
+                                                }
+                                            </p>
                                             <p class="font-16 text-justify color-grey-100 mt-2 mb-1">@item.Description</p>
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
-                                            <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
-                                                <span @onclick="() => RemoveSelectedTicket(item)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">
-                                                    <span class="color-orange-100">-</span>
+                                            <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                                <span @onclick="() => RemoveSelectedTicket(item)" class="p-1 border-right-1-solid counter-item prevent-select">
+                                                    <span class="item-action">-</span>
                                                 </span>
                                                 <span class="p-1 border-right-1-solid counter-item">
                                                     @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                                 </span>
-                                                <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select cursor-pointer">
-                                                    <span class="color-orange-100">+</span>
+                                                <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select">
+                                                    <span class="item-action">+</span>
                                                 </span>
                                             </div>
                                         </Column> 
@@ -754,8 +771,18 @@
 
     private Task AddSelectedTicket(OtePricing pricing)
     {
+        if(pricing.TicketSold >= pricing.MaxSlots)
+        {
+            return Task.CompletedTask;
+        }
+
         if(selectedTickets.ContainsKey(pricing.Id))
         {
+            if(selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
+            {
+                return Task.CompletedTask;
+            }
+
             selectedTickets[pricing.Id].Count++;
         }
         else {
@@ -771,6 +798,11 @@
 
     private Task RemoveSelectedTicket(OtePricing pricing)
     {
+        if(pricing.TicketSold >= pricing.MaxSlots)
+        {
+            return Task.CompletedTask;
+        }
+
         if(selectedTickets.ContainsKey(pricing.Id) && selectedTickets[pricing.Id].Count > 0)
         {
             selectedTickets[pricing.Id].Count--;

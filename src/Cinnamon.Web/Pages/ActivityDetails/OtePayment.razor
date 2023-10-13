@@ -33,18 +33,33 @@
                             <Row @key="item" class="mb-4 align-items-center">
                                 <Column ColumnSize="ColumnSize.Is8">
                                     <p class="font-20 font-weight-700 color-black-100 mb-2">@item.Name</p>
-                                    <p class="font-20 font-weight-700 color-green-100 mb-0">₱ @item.Price.ToString("#,###")</p>
+                                    <p class="font-20 font-weight-700 color-green-100 mb-0 d-flex align-items-center">
+                                        <span>₱ @item.Price.ToString("#,###")</span>
+                                        @if(item.MaxSlots <= item.TicketSold)
+                                        {
+                                            <span class="ms-2 text-uppercase bg-red-200 font-10 color-white-100 border-radius-10 py-1 px-2">
+                                                sold out
+                                            </span>
+                                        }
+                                        @* display count left *@
+                                        @if(item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
+                                        {
+                                            <span class="ms-2 text-uppercase bg-orange-100 font-10 color-white-100 border-radius-10 py-1 px-2">
+                                                Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                            </span>
+                                        }
+                                    </p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4">
-                                    <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                    <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                         <span @onclick="() => RemoveSelectedTicket(item)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">
-                                            <span class="color-orange-100">-</span>
+                                            <span class="item-action">-</span>
                                         </span>
                                         <span class="p-1 border-right-1-solid counter-item">
                                             @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                         </span>
                                         <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select cursor-pointer">
-                                            <span class="color-orange-100">+</span>
+                                            <span class="item-action">+</span>
                                         </span>
                                     </div>
                                 </Column>
@@ -540,11 +555,20 @@
                         var sTicket = activity.Pricings.FirstOrDefault(t => t.Id == v1);
                         if(sTicket is not null)
                         {
-                            selectedTickets.Add(v1, new TicketInfo {
-                                Count = v2,
-                                Id = v1,
-                                Price = sTicket.Price
-                            });
+                            for(int i = 0; i < v2; i++)
+                            {
+                                var otePricing = new OtePricing {
+                                    Description = sTicket.Description,
+                                    Id = sTicket.Id,
+                                    IsAbsorbFees = sTicket.IsAbsorbFees,
+                                    MaxSlots = sTicket.MaxSlots,
+                                    Name = sTicket.Name,
+                                    OteScheduleId = sTicket.OteScheduleId,
+                                    Price = sTicket.Price,
+                                    TicketSold = sTicket.TicketSold
+                                };
+                                AddSelectedTicket(otePricing);
+                            }
                         }
                     }
                 }
@@ -831,8 +855,18 @@
 
     private Task AddSelectedTicket(OtePricing pricing)
     {
+        if(pricing.TicketSold >= pricing.MaxSlots)
+        {
+            return Task.CompletedTask;
+        }
+
         if(selectedTickets.ContainsKey(pricing.Id))
         {
+            if(selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
+            {
+                return Task.CompletedTask;
+            }
+
             selectedTickets[pricing.Id].Count++;
         }
         else {
@@ -847,6 +881,11 @@
 
     private Task RemoveSelectedTicket(OtePricing pricing)
     {
+        if(pricing.TicketSold >= pricing.MaxSlots)
+        {
+            return Task.CompletedTask;
+        }
+
         if(selectedTickets.ContainsKey(pricing.Id) && selectedTickets[pricing.Id].Count > 0)
         {
             selectedTickets[pricing.Id].Count--;
@@ -899,7 +938,7 @@
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 submitting = false;
-                await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
+                await NotificationService.Error(submit.Result?.ErrorInfo?.Message ?? submit.Message, "Error");
             }
             else
             {
