@@ -938,7 +938,7 @@
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 submitting = false;
-                await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
+                await NotificationService.Error(submit.Result?.ErrorInfo?.Message ?? submit.Message, "Error");
             }
             else
             {

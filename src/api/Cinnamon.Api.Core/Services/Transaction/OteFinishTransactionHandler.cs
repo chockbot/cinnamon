@@ -24,12 +24,13 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler;
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IActivityData activityData;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
-        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig)
+        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -41,6 +42,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.oteCustomerPayedNotificationHandler = oteCustomerPayedNotificationHandler;
         this.tokenGeneratedData = tokenGeneratedData;
         this.applicationConfig = applicationConfig;
+        this.activityData = activityData;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -176,13 +178,28 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                     tickets.Add(item.Id, new TicketSummary {
                         Name = item.Name,
                         Price = item.Price,
-                        Id = item.Id
+                        Id = item.Id,
+                        Count = 1
                     });
                 }
-                else 
+                else
                 {
                     tickets[item.Id].Count++;
                 }
+            }
+
+            // update tickets sold
+            var addTicketSoldRes = await activityData.AddTicketSolds(new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs {
+                TicketSolds = tickets.Select(t => {
+                    return new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs.AddTicketSold {
+                        Id = t.Value.Id,
+                        TicketSold = t.Value.Count
+                    };
+                })
+            });
+            if(!addTicketSoldRes.Succeeded || addTicketSoldRes.Result is null || !addTicketSoldRes.Result.IsSuccess)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
             var notifyEmailRes = await oteCustomerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs {
