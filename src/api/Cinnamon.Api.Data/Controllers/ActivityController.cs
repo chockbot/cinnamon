@@ -516,4 +516,32 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("ote/add-ticket-solds")]
+    [HttpPost]
+    [ProducesResponseType(typeof(AddTicketSoldResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddTicketSolds([FromBody] AddTicketSoldArgs args)
+    {
+        try
+        {
+            var ticketDtos = args.TicketSolds.Select(t => {
+                return new OteSchedulePricingDTO {
+                    Id = t.Id,
+                    TicketSold = t.TicketSold
+                };
+            });
+
+            var result = await activityRepository.AddTicketSold(ticketDtos);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new AddTicketSoldResult { ErrorInfo = new ErrorInfo { Message = result.Message } }); 
+            }
+
+            return new JsonResult(new AddTicketSoldResult { IsSuccess = true, Result = result.Result }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new AddTicketSoldResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

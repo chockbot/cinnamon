@@ -1849,4 +1849,41 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets)
+    {
+        try
+        {
+            var ids = tickets.Select(t => t.Id);
+            var ticketPricingsRes = await dataStore.OteSchedulePricing.FindAsync(t => ids.Contains(t.Id));
+            if(!ticketPricingsRes.Succeeded || ticketPricingsRes.Result is null)
+            {
+                return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(new ApplicationException(ticketPricingsRes.Message), ticketPricingsRes.Message);
+            }
+            var ticketPricings = ticketPricingsRes.Result;
+
+            // update only ticket sold field
+            foreach(var item in tickets)
+            {
+                var ticketPrice = ticketPricings.FirstOrDefault(t => t.Id == item.Id);
+                if(ticketPrice is not null)
+                {
+                    ticketPrice.TicketSold += item.TicketSold;
+                }
+            }
+
+            var updatedRes = await dataStore.OteSchedulePricing.UpdateRange(ticketPricings);
+            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            {
+                return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
+            }
+
+            var updated = mapper.Map<IEnumerable<OteSchedulePricingDTO>>(updatedRes.Result);
+            return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateSucceeded(updated, "Ote ticket pricing successfully updated");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(ex, "An error occured when updating ticket sold.");
+        }
+    }
 }

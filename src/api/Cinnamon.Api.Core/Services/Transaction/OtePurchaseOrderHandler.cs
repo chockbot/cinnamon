@@ -127,6 +127,17 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected ticket."), "Unable to identify selected ticket.");
                 }
 
+                if(ticketPrice.TicketSold >= ticketPrice.MaxSlots)
+                {
+                    return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
+                }
+
+                if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count)
+                {
+                    return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                        new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
+                }
+
                 // create selected ticket instance
                 for(int i = 0; i < ticket.Count; i++)
                 {
