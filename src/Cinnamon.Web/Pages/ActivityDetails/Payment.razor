@@ -1011,6 +1011,7 @@
             var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, Model.SelectedSchedule.SessionName);
             DateTime periodStart = datePeriod.PeriodStart;
             // to set the last time of the day
+
             DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
             DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
             DateTime now = DateTime.Now;
