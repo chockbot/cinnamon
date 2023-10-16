@@ -24,7 +24,7 @@ public class DateNextPeriod
         get {
             if (this.period == Period.Month)
             {
-                return currentPeriod.AddDays(1);
+                return currentPeriod;
             }
             else
             {

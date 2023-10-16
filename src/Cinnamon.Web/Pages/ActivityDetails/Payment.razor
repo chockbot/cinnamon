@@ -612,7 +612,7 @@
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is11">
                                     <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
-                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
                                 </Column>
                             </Row>
                         </Column>
@@ -1011,8 +1011,8 @@
             var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, Model.SelectedSchedule.SessionName);
             DateTime periodStart = datePeriod.PeriodStart;
             // to set the last time of the day
-
             DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+            
             DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
             DateTime now = DateTime.Now;
 
