@@ -1,5 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
 @using Cinnamon.Web.Components;
+@inject NavigationManager NavigationManager;
 @implements IOteComponent;
 
 <section class="ote-publish-wrapper">
@@ -50,10 +51,10 @@
                 </span>
             </div>
             <div class="mb-4">
-                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.AcceptTerms = !model.AcceptTerms">
-                    <img class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="font-20 color-black-100">
-                        [Terms and condition for one time event.]
+                <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
+                    <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <span class="font-20 color-black-100" @onclick="NavigateToTerms">
+                        Accept Terms and Conditions
                         @if(showErrorMessage && !model.AcceptTerms)
                         {
                             <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
@@ -134,6 +135,12 @@
         model.AcceptTerms = data.AcceptTerms;
         model.ComingSoon = data.ComingSoon;
         model.Publish = data.IsPublish;
+    }
+
+    private Task NavigateToTerms()
+    {
+        NavigationManager.NavigateTo("/help/terms");
+        return Task.CompletedTask;
     }
 
     private class FormModel 
