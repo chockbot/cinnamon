@@ -416,14 +416,15 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 		try
 		{
 			string query = "SELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"NumberOfBacktracking\", " +
-				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\", a.\"HasReview\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
-				"c.\"HasExpiration\"\r\nFROM public.\"Students\" as a " +
+				"a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\",a.\"CreatedOn\" as PurchaseDate, a.\"HasReview\", b.\"Id\" as StudentAttendanceId, b.\"StudentId\", b.\"IsPresent\", b.\"Date\", c.\"Id\" as ActivityScheduleId, c.\"IsSetSession\", " +
+				"c.\"HasExpiration\", d.\"Title\" \r\nFROM public.\"Students\" as a " +
 				"JOIN public.\"ActivitySchedules\" as c ON c.\"Id\" = a.\"ScheduleId\"\r\n" +
+				"JOIN public.\"Activities\" as d ON d.\"Id\" = a.\"ActivityId\"\r\n" +
 				"LEFT JOIN ( SELECT sa.\"Id\", sa.\"StudentId\", sa.\"IsPresent\",sa.\"Date\"\r\n" +
 				"FROM public.\"StudentAttendances\" as sa WHERE sa.\"IsPresent\" = true\r\n" +
 				"AND sa.\"Date\" = (SELECT MAX(sa_sub.\"Date\") FROM public.\"StudentAttendances\" as sa_sub " +
 				"WHERE sa_sub.\"StudentId\" = sa.\"StudentId\"\r\nAND sa_sub.\"IsPresent\" = true)) as b ON b.\"StudentId\" = a.\"Id\"\r\n" +
-				"WHERE a.\"CustomerId\" = " + customerId+";";
+				"WHERE a.\"CustomerId\" = " + customerId + "ORDER BY a.\"ExpirationDateEnd\", b.\"Date\";";
 
 			IList<StudentDTO> listResult = new List<StudentDTO>();
 
@@ -454,8 +455,10 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							NumberOfBackTracking = Convert.ToInt32(item["NumberOfBacktracking"]),
 							ExpirationStartDate  = Convert.ToDateTime(item["ExpirationDateStart"]),
 							ExpirationEndDate    = Convert.ToDateTime(item["ExpirationDateEnd"]),
-							HasReview			 = Convert.ToBoolean(item["HasReview"]),
-							activitySchedule     = new ActivityScheduleDTO
+							HasReview            = Convert.ToBoolean(item["HasReview"]),
+							PurchaseDate         = Convert.ToDateTime(item["PurchaseDate"]),
+							Title                = item["Title"].ToString() ?? string.Empty,
+							activitySchedule = new ActivityScheduleDTO
 							{
 								Id            = Convert.ToInt32(item["ActivityScheduleId"]),
 								HasExpiration = Convert.ToInt32(item["HasExpiration"]),
@@ -463,8 +466,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							},
 							studentAttendance = new StudentAttendanceDTO
 							{
-								Id = item["StudentAttendanceId"] != DBNull.Value ? Convert.ToInt32(item["StudentAttendanceId"]) : 0,
-								Date = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
+								Id        = item["StudentAttendanceId"] != DBNull.Value ? Convert.ToInt32(item["StudentAttendanceId"]) : 0,
+								Date      = item["Date"] != DBNull.Value ? Convert.ToDateTime(item["Date"]) : DateTime.MinValue,
 								IsPresent = item["IsPresent"] != DBNull.Value ? Convert.ToBoolean(item["IsPresent"]) : false,
 								StudentId = item["StudentId"] != DBNull.Value ? Convert.ToInt32(item["StudentId"]) : 0,
 							}
@@ -524,20 +527,20 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 						//Get Enrollee Master List
 						listResult = dt.AsEnumerable().Select(item => new StudentDTO
 						{
-							Id               = Convert.ToInt32(item["Id"]),
-							ActivityId       = Convert.ToInt32(item["ActivityId"]),
-							CustomerId       = Convert.ToInt32(item["CustomerId"]),
-							ScheduleId       = Convert.ToInt32(item["ScheduleId"]),
-							Name             = item["Name"].ToString() ?? string.Empty,
-							Age              = Convert.ToInt32(item["ChildAge"]),
-							Gender           = item["Gender"].ToString() ?? string.Empty,
-							NumberOfSessions = Convert.ToInt32(item["FamilyTotalNumberOfSessions"]),
+							Id                = Convert.ToInt32(item["Id"]),
+							ActivityId        = Convert.ToInt32(item["ActivityId"]),
+							CustomerId        = Convert.ToInt32(item["CustomerId"]),
+							ScheduleId        = Convert.ToInt32(item["ScheduleId"]),
+							Name              = item["Name"].ToString() ?? string.Empty,
+							Age               = Convert.ToInt32(item["ChildAge"]),
+							Gender            = item["Gender"].ToString() ?? string.Empty,
+							NumberOfSessions  = Convert.ToInt32(item["FamilyTotalNumberOfSessions"]),
 							SessionsAttended  = Convert.ToInt32(item["FamilyTotalSessionsAttended"]),
-							ActivityTitle    = item["Title"].ToString() ?? string.Empty,
-							Email            = item["Email"].ToString() ?? string.Empty,
-							StudentNo        = item["StudentNo"].ToString() ?? string.Empty,
-							Remarks          = item["Remarks"].ToString() ?? string.Empty,
-							FamilyMemberId   = Convert.ToInt32(item["FamilyMemberId"]),
+							ActivityTitle     = item["Title"].ToString() ?? string.Empty,
+							Email             = item["Email"].ToString() ?? string.Empty,
+							StudentNo         = item["StudentNo"].ToString() ?? string.Empty,
+							Remarks           = item["Remarks"].ToString() ?? string.Empty,
+							FamilyMemberId    = Convert.ToInt32(item["FamilyMemberId"]),
 						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}
