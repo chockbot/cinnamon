@@ -91,7 +91,7 @@ else
                                 <div class="xp-body-item">
                                     <p class="secondary-caption">
 
-                                        Valid until - @item.ExpirationDateEnd.AddDays(-1).ToString("MMMM dd, yyyy")
+                                        Valid until - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
                             }
@@ -158,7 +158,7 @@ else
                     {
                         <div class="xp-body-item">
                             <p class="secondary-caption">
-                                Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                Expired: @item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy")
                             </p>
                         </div>
                     }

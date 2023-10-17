@@ -527,20 +527,20 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 						//Get Enrollee Master List
 						listResult = dt.AsEnumerable().Select(item => new StudentDTO
 						{
-							Id               = Convert.ToInt32(item["Id"]),
-							ActivityId       = Convert.ToInt32(item["ActivityId"]),
-							CustomerId       = Convert.ToInt32(item["CustomerId"]),
-							ScheduleId       = Convert.ToInt32(item["ScheduleId"]),
-							Name             = item["Name"].ToString() ?? string.Empty,
-							Age              = Convert.ToInt32(item["ChildAge"]),
-							Gender           = item["Gender"].ToString() ?? string.Empty,
-							NumberOfSessions = Convert.ToInt32(item["FamilyTotalNumberOfSessions"]),
+							Id                = Convert.ToInt32(item["Id"]),
+							ActivityId        = Convert.ToInt32(item["ActivityId"]),
+							CustomerId        = Convert.ToInt32(item["CustomerId"]),
+							ScheduleId        = Convert.ToInt32(item["ScheduleId"]),
+							Name              = item["Name"].ToString() ?? string.Empty,
+							Age               = Convert.ToInt32(item["ChildAge"]),
+							Gender            = item["Gender"].ToString() ?? string.Empty,
+							NumberOfSessions  = Convert.ToInt32(item["FamilyTotalNumberOfSessions"]),
 							SessionsAttended  = Convert.ToInt32(item["FamilyTotalSessionsAttended"]),
-							ActivityTitle    = item["Title"].ToString() ?? string.Empty,
-							Email            = item["Email"].ToString() ?? string.Empty,
-							StudentNo        = item["StudentNo"].ToString() ?? string.Empty,
-							Remarks          = item["Remarks"].ToString() ?? string.Empty,
-							FamilyMemberId   = Convert.ToInt32(item["FamilyMemberId"]),
+							ActivityTitle     = item["Title"].ToString() ?? string.Empty,
+							Email             = item["Email"].ToString() ?? string.Empty,
+							StudentNo         = item["StudentNo"].ToString() ?? string.Empty,
+							Remarks           = item["Remarks"].ToString() ?? string.Empty,
+							FamilyMemberId    = Convert.ToInt32(item["FamilyMemberId"]),
 						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}
