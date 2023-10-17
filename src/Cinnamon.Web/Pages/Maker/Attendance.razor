@@ -346,7 +346,7 @@
             }, Model.Token);
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Attendances.AddRange(result.Result.Result.Where(a => a.ExpirationEndDate > DateTime.Now.Date || a.ExpirationEndDate == DateTime.MinValue).Select(s =>
+                Model.Attendances.AddRange(result.Result.Result.Where(a => a.ExpirationEndDate >= DateTime.Now.Date || a.ExpirationEndDate == DateTime.MinValue).Select(s =>
                 {
                     return new AttendanceModel.StudentAttendance {
                         ActivityName = schedule.ActivityTitle,
