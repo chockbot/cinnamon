@@ -146,7 +146,7 @@ public class ActivityController : ControllerBase
         {
             var result = await createActivityHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateActivityArgs {
                 ActivityLevel = args.ActivityLevel,
-                ActivitySchedules = args.ActivitySchedules.Select(s => {
+                ActivitySchedules = args.ActivitySchedules is not null ? args.ActivitySchedules.Select(s => {
                     return new Services.ActivityService.Interactors.CreateActivityArgs.ActivitySchedule {
                         DateTime = s.DateTime,
                         Name = s.Name,
@@ -164,16 +164,16 @@ public class ActivityController : ControllerBase
                         StartDate = s.StartDate ?? DateTime.MinValue,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
-                        SchedulingUrl = s.SchedulingUrl,
-                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime
+                        SchedulingUrl = s.SchedulingUrl ?? string.Empty,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes is not null ? s.ActivityScheduleTimes.Select(s => new Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime
                         {
                             DayOfWeek = s.DayOfWeek,
                             EndTime = s.EndTime,
                             StartTime = s.StartTime,
                             IsEnabled = s.IsEnabled
-                        })
+                        }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime>()
                     };
-                }),
+                }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivitySchedule>(),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
                 Address1 = args.Address1 ?? string.Empty,
                 Address2 = args.Address2 ?? string.Empty,
@@ -321,8 +321,8 @@ public class ActivityController : ControllerBase
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
                             ScheduleType = s.ScheduleType,
-                            SchedulingUrl = s.SchedulingUrl,
-                            ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
+                            SchedulingUrl = s.SchedulingUrl ?? string.Empty,
+                            ActivityScheduleTimes = s.ActivityScheduleTimes is not null ? s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
                             {
                                 DayOfWeek = a.DayOfWeek,
                                 EndTime = a.EndTime,
@@ -331,7 +331,7 @@ public class ActivityController : ControllerBase
                                 ActivityScheduleTimeId = a.ActivityScheduleTimeId,
                                 ModelStatus = a.ModelStatus,
                                 IsEnabled = a.IsEnabled
-                            })
+                            }) : Enumerable.Empty<Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime>()
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
