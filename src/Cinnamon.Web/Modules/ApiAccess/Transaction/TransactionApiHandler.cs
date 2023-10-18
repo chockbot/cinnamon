@@ -106,4 +106,49 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<GetPayoutsByProviderResult>.CreateFailed(ex, "An error occurred when getting payouts by provider api");
         }
     }
+
+    public async Task<AppResult<SubmitOtePurchaseOrderResult>> SubmitOtePurchaseOrder(SubmitOtePurchaseOrderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Transaction/SubmitOtePurchaseOrder")
+                .PostJsonAsync(args)
+                .ReceiveJson<SubmitOtePurchaseOrderResult>();
+
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateSucceeded(result, "Successfully posting submit purchase order api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitOtePurchaseOrderResult>.CreateFailed(ex, "An error occured when posting submit purchase order api");
+        }
+    }
+
+    public async Task<AppResult<OteGetPurchaseOrderResult>> GetOtePurchaseOrder(int id, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Transaction/GetOtePurchaseOrder/{id}")
+                .GetJsonAsync<OteGetPurchaseOrderResult>();
+
+            return AppResult<OteGetPurchaseOrderResult>.CreateSucceeded(result, "Successfully getting purchase order api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<OteGetPurchaseOrderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteGetPurchaseOrderResult>.CreateFailed(ex, "An error occurred when getting purchase order api");
+        }
+    }
 }

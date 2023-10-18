@@ -3,6 +3,11 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
+using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
+using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -26,9 +31,18 @@ public class MappingProfile : Profile
             .ForMember(d => d.Recurrences, o => o.MapFrom(s => s.OteSchedule.Recurrences))
             .ForMember(d => d.Pricings, o => o.MapFrom(s => s.OteSchedule.OteSchedulePricing))
             .ForMember(d => d.ProviderId, o => o.MapFrom(s => s.CreatedBy))
+            .ForMember(d => d.Owner, o => o.MapFrom(s => s.Customer))
             .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title));
         
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
+        CreateMap<OteSchedulePricingDTO, OteSchedulePricing>();
         CreateMap<ActivityImage, ActivityImageDTO>();
+        CreateMap<Customer, CustomerDTO>();
+
+        CreateMap<OteTicket, OteTicketDTO>();
+        CreateMap<OteTicketDTO, OteTicket>();
+        CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
+
+        CreateMap<TokenGenerated, TokenGeneratedDTO>();
     }
 }

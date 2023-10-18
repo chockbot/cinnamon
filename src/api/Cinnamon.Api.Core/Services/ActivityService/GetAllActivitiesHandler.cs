@@ -94,6 +94,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 						RegionName              = e.RegionName,
 						CityName                = e.CityName,
 						PostalCode              = e.PostalCode,
+						PinnedLocation			= e.PinnedLocation,
 						SearchTags              = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
 						IsPublished             = e.IsPublished,
 						CreatedBy               = e.CreatedBy,
@@ -136,6 +137,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 						OngoingStudents = e.OngoingStudents,
 						AverageRating = e.AverageRating,
 						NumberOfReviews = e.NumberOfReviews,
+						ExperienceCreationType = e.ExperienceCreationType
 					};
 				}),
 				ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

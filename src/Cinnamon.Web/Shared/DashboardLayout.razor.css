@@ -82,9 +82,10 @@
 }
 
 .contact {
-  /* position: absolute; */
-  bottom: 0;
-  margin: 31.5px;
+    /* position: absolute; */
+    bottom: 0;
+    margin: 31.5px;
+    cursor: pointer;
 }
 
 .contact-box {
@@ -130,17 +131,44 @@
 .messages-item {
     position: relative;
 }
-
-.has-new-message-badge {
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    left: 60px;
-    top: 20px;
-    background: #ad2323;
-    border-radius: 50%;
+.submenu {
+    text-decoration: none;
+    list-style: none;
 }
-
+    .sub-nav-link .nav-text {
+        font-family: Nunito;
+        font-size: 14px;
+        font-weight: 600;
+        color: #717171;
+    }
+    .sub-nav-link .icon-home {
+        width: 16px;
+        height: 16px;
+        color: #717171;
+    }
+    .has-new-message-badge {
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        left: 60px;
+        top: 20px;
+        background: #ad2323;
+        border-radius: 50%;
+    }
+.experiences-title {
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 600;
+    color:#343D4C;
+    padding-left: 10px;
+}
+.nav-item .activities-link:hover {
+    color: var(--primary);
+}
+.arrow-icon {
+    color: #343D4C;
+    margin-left: 1rem;
+}
 /*.nav-item{
     margin-bottom: 1rem;
 }
@@ -165,7 +193,6 @@ a{
     padding: 5px;
     border-radius: 5px;
 }*/
-
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
 }
@@ -281,6 +308,12 @@ a{
 
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
+    .experiences-title {
+        font-family: Nunito;
+        font-size: 14px;
+        font-weight: 600;
+        color: #343D4C;
+    }
   .header-mobile {
     display: flex;
     /* align-items: center; */
@@ -389,7 +422,7 @@ a{
 
 .sidebar-header {
   margin-top: 3rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
 }

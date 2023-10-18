@@ -451,17 +451,18 @@ public class ActivityRepository : IActivityRepository
                 // address fields
                 if (includeAddres && a.Address != null)
                 {
-                    activityDTO.Address1     = a.Address.Address1;
-                    activityDTO.Address2     = a.Address.Address2;
-                    activityDTO.City         = a.Address.City;
-                    activityDTO.District     = a.Address.District;
-                    activityDTO.Subdivision  = a.Address.Subdivision;
-                    activityDTO.Region       = a.Address.Region;
-                    activityDTO.Barangay     = a.Address.Barangay;
-                    activityDTO.PostalCode   = a.Address.PostalCode;
-                    activityDTO.CityName     = a.Address.CityName;
-                    activityDTO.RegionName   = a.Address.RegionName;
-                    activityDTO.BarangayName = a.Address.BarangayName;
+                    activityDTO.Address1       = a.Address.Address1;
+                    activityDTO.Address2       = a.Address.Address2;
+                    activityDTO.City           = a.Address.City;
+                    activityDTO.District       = a.Address.District;
+                    activityDTO.Subdivision    = a.Address.Subdivision;
+                    activityDTO.Region         = a.Address.Region;
+                    activityDTO.Barangay       = a.Address.Barangay;
+                    activityDTO.PostalCode     = a.Address.PostalCode;
+                    activityDTO.CityName       = a.Address.CityName;
+                    activityDTO.RegionName     = a.Address.RegionName;
+                    activityDTO.BarangayName   = a.Address.BarangayName;
+                    activityDTO.PinnedLocation = a.Address.PinnedLocation;
                 }
 
                 // description fields
@@ -561,12 +562,12 @@ public class ActivityRepository : IActivityRepository
                 {
                     var students = a.Students;
                     activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
                                                                   ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
                                                                   ||(activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                                                                   && a.ExpirationDateEnd != DateTime.MinValue);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews
@@ -812,12 +813,12 @@ public class ActivityRepository : IActivityRepository
             {
                 var students = activity.Students;
                 activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
                                                               || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
                                                               || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                                                               && a.ExpirationDateEnd != DateTime.MinValue);
-                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -1008,12 +1009,12 @@ public class ActivityRepository : IActivityRepository
             {
                 var students = activity.Students;
                 activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
                                                               || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
                                                               || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                                                               && a.ExpirationDateEnd != DateTime.MinValue);
-                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -1332,6 +1333,7 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.CityName = a.Address.CityName;
                     activityDTO.RegionName = a.Address.RegionName;
                     activityDTO.BarangayName = a.Address.BarangayName;
+                    activityDTO.PinnedLocation = a.Address.PinnedLocation;
                 }
 
                 // description fields
@@ -1431,12 +1433,12 @@ public class ActivityRepository : IActivityRepository
                 {
                     var students = a.Students;
                     activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                                                                  || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
                                                                   || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
                                                                   || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                                                                   && a.ExpirationDateEnd != DateTime.MinValue);
-                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
                 }
 
                 // reviews
@@ -1662,7 +1664,8 @@ public class ActivityRepository : IActivityRepository
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -1748,7 +1751,8 @@ public class ActivityRepository : IActivityRepository
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -1804,6 +1808,82 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets)
+    {
+        try
+        {
+            var ids = tickets.Select(t => t.Id);
+            var ticketPricingsRes = await dataStore.OteSchedulePricing.FindAsync(t => ids.Contains(t.Id));
+            if(!ticketPricingsRes.Succeeded || ticketPricingsRes.Result is null)
+            {
+                return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(new ApplicationException(ticketPricingsRes.Message), ticketPricingsRes.Message);
+            }
+            var ticketPricings = ticketPricingsRes.Result;
+
+            // update only ticket sold field
+            foreach(var item in tickets)
+            {
+                var ticketPrice = ticketPricings.FirstOrDefault(t => t.Id == item.Id);
+                if(ticketPrice is not null)
+                {
+                    ticketPrice.TicketSold += item.TicketSold;
+                }
+            }
+
+            var updatedRes = await dataStore.OteSchedulePricing.UpdateRange(ticketPricings);
+            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            {
+                return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
+            }
+
+            var updated = mapper.Map<IEnumerable<OteSchedulePricingDTO>>(updatedRes.Result);
+            return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateSucceeded(updated, "Ote ticket pricing successfully updated");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(ex, "An error occured when updating ticket sold.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetOTEByProvider(Id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var ote = result.Result.Select(s =>
+            {
+                var oteDTO = new OteActivityDTO
+                {
+                    Id               = s.Id,    
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    EventName        = s.Title,
+                    Description      = s.Description,
+                    Handler          = s.Handler,
+                    CityName         = s.CityName,
+                    RegionName       = s.RegionName,
+                    PinnedLocation   = s.PinnedLocation,
+                    EventImage       = s.OteSchedule.EventImage,
+                    ScheduleFrom     = s.OteSchedule.ScheduleFrom,
+                    ScheduleTo       = s.OteSchedule.ScheduleTo,
+                    Slots            = s.OteSchedule.Slots,
+                    Sold             = s.OteSchedule.Sold,
+                    Available        = s.OteSchedule.Slots - s.OteSchedule.Sold,
+                };
+                return oteDTO;
+            });
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateSucceeded(ote, "Successfully get ote activities");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
         }
     }
 }

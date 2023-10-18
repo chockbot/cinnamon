@@ -106,7 +106,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         Id = p.Id,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
-                        Price = p.Price
+                        Price = p.Price,
+                        Name = p.Name
                     };
                 }).ToList()
             };

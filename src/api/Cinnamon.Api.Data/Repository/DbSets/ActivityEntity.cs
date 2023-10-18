@@ -211,7 +211,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "select aw.*, ac.\"Title\", ac.\"CreatedBy\", ac.\"IsNew\", ac.\"Handler\", " +
                                    "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", " +
                                    "Row_Number() over (partition by ac.\"Id\" order by ai.\"Order\", ai.\"Id\") \"RowCnt\", " +
-                                   "ai.\"ImageLocation\" " +
+                                   "ai.\"ImageLocation\", ac.\"ExperienceCreationTypeId\" " +
                                "from withOngoingStudent aw " +
                                "join public.\"Activities\" ac " +
                                    "on aw.\"Id\" = ac.\"Id\" " +
@@ -255,7 +255,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             RegionName = item["RegionName"].ToString() ?? string.Empty,
                             ReviewCount = Convert.ToInt32(item["ReviewCount"]),
                             StudentCount = Convert.ToInt32(item["StudentCount"]),
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"])
                         }).ToList();
                     }
                 }
@@ -346,6 +347,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         item.IsAbsorbFees = local.IsAbsorbFees;
                         item.MaxSlots = local.MaxSlots;
                         item.Price = local.Price;
+                        item.Name = local.Name;
                     }
                 }
 
@@ -392,6 +394,70 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<Activity>.CreateFailed(ex, "An error occured when finding ote activity");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id)
+    {
+        try
+        {
+            string query = "WITH MaxSlotsSum AS (\r\n" +
+                "SELECT \"OteScheduleId\", SUM(\"MaxSlots\") AS \"TotalMaxSlots\"\r\n" +
+                "FROM public.\"OteSchedulePricings\"\r\n  GROUP BY \"OteScheduleId\")\r\n" +
+                "SELECT a.\"Id\", a.\"ExperienceTypeId\", a.\"Title\", a.\"Description\", a.\"CreatedOn\", \r\n" +
+                "a.\"CreatedBy\", a.\"Handler\", a.\"Status\", a.\"ExperienceCreationTypeId\",d.\"CityName\", \r\n" +
+                "d.\"RegionName\", d.\"PinnedLocation\",b.\"From\", b.\"To\",ms.\"OteScheduleId\", ms.\"TotalMaxSlots\",\r\n" +
+                "(SELECT COUNT(*) FROM public.\"OteTickets\" WHERE \"OteScheduleId\" = ms.\"OteScheduleId\") AS \"TotalOteTickets\",\r\n" +
+                "(SELECT \"ImageLocation\" FROM public.\"ActivityImages\" WHERE \"ActivityId\" = a.\"Id\" ORDER BY \"Id\" LIMIT 1) AS \"EventImage\"\r\n" +
+                "FROM public.\"Activities\" as a\r\n" +
+                "JOIN public.\"OteSchedules\" as b ON a.\"Id\" = b.\"ActivityId\"\r\n" +
+                "JOIN MaxSlotsSum as ms ON ms.\"OteScheduleId\" = b.\"Id\"\r\n" +
+                "JOIN public.\"ActivityAddress\" as d ON d.\"ActivityId\" = a.\"Id\"\r\n" +
+                "WHERE a.\"CreatedBy\" = "+ Id +" AND a.\"ExperienceCreationTypeId\" = 3;";
+                
+            IList<ActivityDTO> listResult = new List<ActivityDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+                        //Get Activity
+                        listResult = dt.AsEnumerable().Select(item => new ActivityDTO
+                        {
+                            Id               = Convert.ToInt32(item["Id"]),
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Title            = item["Title"].ToString() ?? string.Empty,
+                            Description      = item["Description"].ToString() ?? string.Empty,
+                            CreatedBy        = Convert.ToInt32(item["CreatedBy"]),
+                            Handler          = item["Handler"].ToString() ?? string.Empty,
+                            CityName         = item["CityName"].ToString() ?? string.Empty,
+                            RegionName       = item["RegionName"].ToString() ?? string.Empty,
+                            PinnedLocation   = item["PinnedLocation"].ToString() ?? string.Empty,
+                            OteSchedule      = new OteActivityDTO()
+                            {
+                                ScheduleFrom       = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+                                ScheduleTo         = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+                                Slots              = Convert.ToInt32(item["TotalMaxSlots"]),
+                                Sold               = Convert.ToInt32(item["TotalOteTickets"]),
+                                EventImage         = item["EventImage"].ToString() ?? string.Empty,
+                            }
+                        }).ToList();
+                    }
+                }
+             }
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(listResult, "Successfully get ote");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when trying to get ote");
         }
     }
 }

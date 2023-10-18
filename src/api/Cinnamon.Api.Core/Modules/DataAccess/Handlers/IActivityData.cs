@@ -1,5 +1,7 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
@@ -20,4 +22,6 @@ public interface IActivityData
     Task<AppResult<CreateOteActivityResult>> CreateOteActivity(CreateOteActivityArgs args);
     Task<AppResult<UpdateOteActivityResult>> UpdateOteActivity(UpdateOteActivityArgs args);
     Task<AppResult<GetOteActivityByHandlerResult>> GetOteActivityByHandler(GetOteActivityArgs args, string handler);
+    Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args);
+    Task<AppResult<GetOTEByProvideResult>> GetOTEByProvider(GetOTEByProvideArgs args);
 }

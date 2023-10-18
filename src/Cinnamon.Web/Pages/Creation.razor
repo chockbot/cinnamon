@@ -92,7 +92,7 @@
                             Gallery
                         </label>
                     }
-                    else if (currentIndex == 6)
+                    else if (currentIndex == 6 || currentIndex == 7)
                     {
                         <label class="experience-progress-label">
                             Publish
@@ -100,7 +100,7 @@
                     }
                 </div>
                 <div class="col-1 next-button-section">
-                    @if (currentIndex < 6)
+                    @if (currentIndex < 7)
                     {
                         <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
                             <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
@@ -222,9 +222,9 @@
                             }
                         }
                     </a>
-                    <a class="nav-link @(currentIndex == 6 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(6)">
+                    <a class="nav-link @(currentIndex == 7 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(7)">
                         Publish
-                        @if (currentIndex == 6)
+                        @if (currentIndex == 7)
                         {
                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
@@ -235,7 +235,7 @@
                 </div>
                 <div class="dashed-divider col-lg-7"></div>
                 <div class="guide-section col-lg-7 text-center">
-                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
+                    <label class="guide-title @(currentIndex != 7 ? "d-block" : "d-none")">
                         How it will look like
                     </label>
                     <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
@@ -308,6 +308,9 @@
                         <div class='tab @(currentIndex == 6 ? "show" : "")'>
                             <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
                         </div>
+                        <div class='tab @(currentIndex ==  7 ? "show" : "")'>
+                            <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                        </div>
                     </EditForm>
                 </div>
                 <div class="button-container">
@@ -323,7 +326,7 @@
                                         <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
                                     </LoadingTemplate>
                                     <ChildContent>
-                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                        @(currentIndex == 7 ? "Publish" : "Next")
                                     </ChildContent>
                                 </Button>
                             </div>
@@ -336,7 +339,7 @@
                                         <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
                                     </LoadingTemplate>
                                     <ChildContent>
-                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                        @(currentIndex == 7 ? "Publish" : "Next")
                                     </ChildContent>
                                 </Button>
                             </div>
@@ -415,6 +418,8 @@
     private string errorMessage = "There was a problem publishing the experience creation. Please refresh the page and try again.";
 
     private ActivitySummary ActivitySummary { get; set; }
+
+    private GeneralPublishPage GeneralPublishPage { get; set; }
 
     public bool isCreationOverviewComponentValid { get; set; }
     public bool isLocationComponentValid { get; set; }
@@ -651,9 +656,9 @@
         displayError = false;
 
         // for submit action
-        if (index == 0 && currentIndex == 6)
+        if (index == 0 && currentIndex == 7)
         {
-            if (!ActivitySummary.Validate()) return;
+            if (!GeneralPublishPage.Validate()) return;
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);

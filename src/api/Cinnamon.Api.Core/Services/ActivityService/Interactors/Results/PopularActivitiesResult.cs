@@ -4,7 +4,7 @@ public class PopularActivitiesResult
 {
     public IEnumerable<Activity> Activities {get; set;}
     
-    public class Activity 
+    public class Activity
     {
         public int Id {get; set;}
         public int StudentCount {get; set;}
@@ -20,5 +20,7 @@ public class PopularActivitiesResult
         public string CityName {get; set;}
         public string RegionName {get; set;}
         public string ImageSrc {get; set;}
+        public int ExperienceCreationTypeId {get; set;}
+        public string PinnedLocation { get; set; }
     }
 }

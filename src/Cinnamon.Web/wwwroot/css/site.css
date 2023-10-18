@@ -1799,6 +1799,100 @@ input::-ms-clear {
   object-fit: fill;
 }
 
+/* activity details page ote details */
+.ote-details-wrapper .xp-ote-container .select-calendar-wrapper {
+  width: 60%;
+}
+
+.ote-details-wrapper
+  .xp-ote-container
+  .select-calendar-wrapper
+  .calendar-container {
+  width: 130%;
+}
+
+@media only screen and (max-width: 767px) {
+  .ote-details-wrapper #ote-btn-check-avail {
+    width: 45%;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .ote-details-wrapper #ote-btn-check-avail {
+    width: 45%;
+  }
+
+  .ote-details-wrapper .xp-ote-container .select-calendar-wrapper {
+    width: 100%;
+  }
+
+  .ote-details-wrapper #ote-btn-check-avail {
+    width: 75%;
+  }
+}
+
+/* for ote payment page styling */
+.xp-ote-payment-wrapper .payment-card .custom-control.custom-radio {
+  display: flex;
+  align-items: center;
+}
+
+.xp-ote-payment-wrapper .right-order {
+  padding-left: 50px;
+}
+
+.xp-ote-payment-wrapper .left-order {
+  padding-right: 50px;
+}
+
+.xp-ote-payment-wrapper .payment-ewallets .custom-control.custom-radio {
+  display: flex;
+  align-items: center;
+}
+
+@media only screen and (max-width: 767px) {
+  .xp-ote-payment-wrapper .right-order {
+    order: 1;
+    /* padding-right: calc(var(--bs-gutter-x) * 0.5) !important; */
+    padding-left: calc(var(--bs-gutter-x) * 0.5) !important;
+  }
+  .xp-ote-payment-wrapper .left-order {
+    order: 2;
+    padding-right: calc(var(--bs-gutter-x) * 0.5) !important;
+    /* padding-left: calc(var(--bs-gutter-x) * 0.5) !important; */
+  }
+}
+
+/* for ote ticket details page */
+.ticket-details-wrapper .ticket-box {
+  width: 835px;
+  border: 2px solid #343d4c;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fffcf9;
+}
+
+.ticket-details-wrapper .border-ticket-dashed {
+  border-left: 1px dashed #000;
+}
+
+@media only screen and (max-width: 991px) {
+  .ticket-details-wrapper .ticket-box {
+    width: 100% !important;
+  }
+
+  .ticket-details-wrapper .img-banner {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .ticket-details-wrapper .img-qrcode {
+    width: 55% !important;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -1854,6 +1948,10 @@ input::-ms-clear {
   font-size: 24px;
 }
 
+.font-36 {
+  font-size: 36px;
+}
+
 .font-weight-400 {
   font-weight: 400;
 }
@@ -1907,7 +2005,7 @@ input::-ms-clear {
 }
 
 .color-green-100 {
-  color: #4bb749;
+  color: #4bb749 !important;
 }
 
 .color-red {
@@ -1948,6 +2046,14 @@ input::-ms-clear {
 
 .bg-orange-100 {
   background-color: #ffa942;
+}
+
+.bg-black-100 {
+  background-color: #343d4c;
+}
+
+.bg-red-200 {
+  background-color: #f35252;
 }
 
 .color-grey-400 {
@@ -2003,7 +2109,7 @@ input::-ms-clear {
 }
 
 .border-radius-20 {
-  border-radius: 20px;
+  border-radius: 20px !important;
 }
 
 .border-radius-40 {
@@ -2174,6 +2280,10 @@ input::-ms-clear {
     padding: 0 !important;
   }
 
+  .m-width-10-px {
+    width: 10px !important;
+  }
+
   .m-width-50 {
     width: 50% !important;
   }
@@ -2220,6 +2330,14 @@ input::-ms-clear {
 
   .m-margin-bottom-30 {
     margin-bottom: 30px !important;
+  }
+
+  .m-font-7 {
+    font-size: 7px !important;
+  }
+
+  .m-font-10 {
+    font-size: 10px !important;
   }
 
   .m-font-12 {
@@ -2326,5 +2444,15 @@ input::-ms-clear {
     margin: 0 auto;
     margin-top: 0px;
     margin-top: 1rem;
+  }
+
+  .snackbar-stack-bottom {
+    left: 50% !important;
+    transform: translate(-50%, 0%) !important;
+    bottom: 1.5rem !important;
+  }
+
+  .snackbar.snackbar-show {
+    transform: translate(0, 0) !important;
   }
 }

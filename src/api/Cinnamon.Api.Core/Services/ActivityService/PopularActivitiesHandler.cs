@@ -50,7 +50,8 @@ public class PopularActivitiesHandler : IPopularActivitiesHandler
                         RegionName = a.RegionName,
                         ReviewCount = a.ReviewCount,
                         StudentCount = a.StudentCount,
-                        Title = a.Title
+                        Title = a.Title,
+                        ExperienceCreationTypeId = a.ExperienceCreationTypeId
                     };
                 })
             }, "Popular activities successfully get");

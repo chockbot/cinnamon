@@ -67,6 +67,7 @@ public class ActivityController : ControllerBase
     private readonly IOteUpdateHandler oteUpdateHandler;
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IMapper mapper;
+    private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -87,7 +88,7 @@ public class ActivityController : ControllerBase
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
-        IOteFindByHandler oteFindByHandler, IMapper mapper)
+        IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler)
     {
         _logger = logger;
 
@@ -135,6 +136,7 @@ public class ActivityController : ControllerBase
         this.oteUpdateHandler = oteUpdateHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.mapper = mapper;
+        this.oteTicketDetailsHandler = oteTicketDetailsHandler;
     }
 
     [Route("CreateActivity")]
@@ -914,6 +916,7 @@ public class ActivityController : ControllerBase
                         BarangayName = a.BarangayName,
                         RegionName = a.RegionName,
                         PostalCode = a.PostalCode,
+                        PinnedLocation = a.PinnedLocation,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -956,6 +959,7 @@ public class ActivityController : ControllerBase
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType
                     };
                 }).AsQueryable()
             });
@@ -2372,7 +2376,7 @@ public class ActivityController : ControllerBase
                 {
                     Activities = result.Result.Activities.Select(a =>
                     {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.Activity
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity
                         {
                             CityName = a.CityName,
                             ExperienceTypeId = a.ExperienceTypeId,
@@ -2387,7 +2391,9 @@ public class ActivityController : ControllerBase
                             RegionName = a.RegionName,
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
-                            Title = a.Title
+                            Title = a.Title,
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId,
+                            PinnedLocation = a.PinnedLocation
                         };
                     })
                 }
@@ -2508,7 +2514,8 @@ public class ActivityController : ControllerBase
                         Description = p.Description,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
-                        Price = p.Price
+                        Price = p.Price,
+                        Name = p.Name
                     };
                 })
             });
@@ -2568,7 +2575,8 @@ public class ActivityController : ControllerBase
                         Id = p.Id,
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
-                        Price = p.Price
+                        Price = p.Price,
+                        Name = p.Name
                     };
                 })
             });
@@ -2623,6 +2631,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("TicketDetails/{guid}/{token}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteTicketDetailsResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> TicketDetails(string guid, string token)
+    {
+        try
+        {
+            var result = await oteTicketDetailsHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteTicketDetailsArgs {
+                Guid = guid,
+                Token = token
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResult = mapper.Map<CoreDto.Activity.OteTicketDetailsDTO>(result.Result);
+            return new JsonResult(new OteTicketDetailsResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
