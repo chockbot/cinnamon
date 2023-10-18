@@ -86,7 +86,7 @@
         }
 
         OngoingStudents = students.Where(a => a.SessionsAttended < a.NumberOfSessions 
-            && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue))
+            && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue))
            .OrderByDescending(s => s.PurchaseDate).ToList();
         isLoading = false;
     }
