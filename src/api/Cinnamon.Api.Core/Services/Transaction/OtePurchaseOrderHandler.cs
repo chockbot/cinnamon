@@ -144,7 +144,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     var qrcode = CreateCode();
                     selectedTickets.Add(new Ticket {
                         Id = ticketPrice.Id,
-                        Name = "Ticket",
+                        Name = ticketPrice.Name,
                         Price = ticketPrice.Price,
                         Code = qrcode,
                         ImageData = GenerateQRCode(qrcode)
