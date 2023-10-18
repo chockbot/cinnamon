@@ -540,11 +540,6 @@
                                 <Validation>
                                     <Field class="mb-3">
                                         <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
-                                        @*<TextEdit @bind-Text="CardPaymentModel.CVV" Placeholder="123">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>*@
                                         @if (CardPaymentModel.IsRevealPassword)
                                         {
                                             <TextEdit Role="TextRole.Text" Placeholder="Ex.123" @bind-Text="CardPaymentModel.CVV">
