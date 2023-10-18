@@ -43,6 +43,8 @@ public interface IDataStore
     IOngoingActivityScheduleTime OngoingActivityScheduleTime { get; }
     IOteSchedule OteSchedule {get;}
     IOteSchedulePricing OteSchedulePricing {get;}
+    IOteTicket OteTicket {get;}
+    ITokenGenerated TokenGenerated {get;}
 
     Task EnsureMigrate();
 

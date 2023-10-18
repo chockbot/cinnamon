@@ -72,6 +72,9 @@ public class CreateOteActivityArgs
     public class OtePricing 
     {
         [Required]
+        public string Name {get; set;}
+        
+        [Required]
         public string Description {get; set;}
 
         [Required]

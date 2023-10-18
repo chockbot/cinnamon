@@ -34,7 +34,9 @@ public class OteFindByHandlerResult
         public decimal Price { get; set; }
         public int MaxSlots { get; set; }
         public string Description { get; set; }
+        public string Name {get; set;}
         public bool IsAbsorbFees { get; set; }
+        public int TicketSold {get; set;}
     }
 
     public class Image 

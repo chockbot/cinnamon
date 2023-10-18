@@ -12,6 +12,7 @@ public class GenerateResponseArgs : IInteractor
     public IEnumerable<MetaData> MetaDatas {get; set;}
     // for card payment
     public CardInformation? CardDetails {get; set;}
+    public string SuccessUrl {get; set;}
 
     public class CardInformation 
     {

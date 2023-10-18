@@ -31,18 +31,18 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             }
 
             // check schedule if existed
-            var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
-            if(!scheduleRes.Succeeded || scheduleRes.Result == null)
-            {
-                return AppResult<PurchaseOrderDTO>.CreateFailed(new ApplicationException("Can't find schedule id provided"),"Can't find schedule id provided");
-            }
+            // var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
+            // if(!scheduleRes.Succeeded || scheduleRes.Result == null)
+            // {
+            //     return AppResult<PurchaseOrderDTO>.CreateFailed(new ApplicationException("Can't find schedule id provided"),"Can't find schedule id provided");
+            // }
 
             // check if schedule is associated to activity
-            if(activityRes.Result.Id != scheduleRes.Result.ActivityId)
-            {
-                return AppResult<PurchaseOrderDTO>.CreateFailed(
-                    new ApplicationException("Schedule id provided is not associated to activity"),"Schedule id provided is not associated to activity");
-            }
+            // if(activityRes.Result.Id != scheduleRes.Result.ActivityId)
+            // {
+            //     return AppResult<PurchaseOrderDTO>.CreateFailed(
+            //         new ApplicationException("Schedule id provided is not associated to activity"),"Schedule id provided is not associated to activity");
+            // }
 
             // check customer if existed
             var customerRes = await dataStore.Customer.GetByIdAsync(customerId);
@@ -140,7 +140,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CustomerId = p.CustomerId,
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
-                    ScheduleId = p.ScheduleId,
+                    ScheduleId = p.ScheduleId ?? 0,
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
@@ -202,7 +202,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CustomerId = p.CustomerId,
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
-                    ScheduleId = p.ScheduleId,
+                    ScheduleId = p.ScheduleId ?? 0,
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
@@ -241,7 +241,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CustomerId = result.Result.CustomerId,
                 Id = result.Result.Id,
                 OverallTotal = result.Result.OverallTotal,
-                ScheduleId = result.Result.ScheduleId,
+                ScheduleId = result.Result.ScheduleId ?? 0,
                 Total = result.Result.Total,
                 Status = result.Result.Status,
                 Payload = result.Result.Payload,
@@ -250,7 +250,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 UnitPrice = result.Result.UnitPrice,
                 IsInclusivePayment = result.Result.IsInclusivePayment,
                 PerUnitDisburseAmount = result.Result.PerUnitDisburseAmount,
-                TotalDisburseAmount = result.Result.TotalDisburseAmount
+                TotalDisburseAmount = result.Result.TotalDisburseAmount,
+                PurchaseDate = result.Result.CreatedOn
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -319,7 +320,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CouponAmount = updated.CouponAmount,
                 CustomerId = updated.CustomerId,
                 OverallTotal = updated.OverallTotal,
-                ScheduleId = updated.ScheduleId,
+                ScheduleId = updated.ScheduleId ?? 0,
                 Total = updated.Total,
                 Status = updated.Status,
                 Payload = updated.Payload,
@@ -356,7 +357,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CustomerId = p.CustomerId,
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
-                    ScheduleId = p.ScheduleId,
+                    ScheduleId = p.ScheduleId ?? 0,
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
@@ -439,7 +440,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 {
                     Id = p.Id,
                     ActivityId = p.ActivityId,
-                    ScheduleId = p.ScheduleId,
+                    ScheduleId = p.ScheduleId ?? 0,
                     CustomerId = p.CustomerId,
                     Total = p.Total,
                     PurchaseDate = p.CreatedOn,

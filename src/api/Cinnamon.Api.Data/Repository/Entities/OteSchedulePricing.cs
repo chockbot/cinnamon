@@ -7,6 +7,8 @@ public class OteSchedulePricing : BaseEntity
     public int MaxSlots {get; set;}
     public string Description {get; set;}
     public bool IsAbsorbFees {get; set;}
+    public string Name {get; set;}
+    public int TicketSold {get; set;}
 
     public virtual OteSchedule OteSchedule {get; set;}
 }

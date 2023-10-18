@@ -84,7 +84,8 @@ public class RequestPaymentHandler : IRequestPaymentHandler
                 MetaDatas = args.MetaDatas,
                 PaymentChannel = paymentChannel,
                 TransactionId = args.TransactionId,
-                CardDetails = cardInfo
+                CardDetails = cardInfo,
+                SuccessUrl = args.SuccessUrl
             });
 
             if(!result.Succeeded || result.Result == null)

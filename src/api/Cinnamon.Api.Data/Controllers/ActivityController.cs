@@ -398,7 +398,8 @@ public class ActivityController : ControllerBase
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -440,7 +441,8 @@ public class ActivityController : ControllerBase
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -477,7 +479,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
-                args.IncludeSchedule ?? false, args.IncludePricing ?? false, false, args.IncludeImages ?? false);
+                args.IncludeSchedule ?? false, args.IncludePricing ?? false, args.IncludeProvider ?? false, args.IncludeImages ?? false);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -489,6 +491,34 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ote/add-ticket-solds")]
+    [HttpPost]
+    [ProducesResponseType(typeof(AddTicketSoldResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddTicketSolds([FromBody] AddTicketSoldArgs args)
+    {
+        try
+        {
+            var ticketDtos = args.TicketSolds.Select(t => {
+                return new OteSchedulePricingDTO {
+                    Id = t.Id,
+                    TicketSold = t.TicketSold
+                };
+            });
+
+            var result = await activityRepository.AddTicketSold(ticketDtos);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new AddTicketSoldResult { ErrorInfo = new ErrorInfo { Message = result.Message } }); 
+            }
+
+            return new JsonResult(new AddTicketSoldResult { IsSuccess = true, Result = result.Result }); 
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new AddTicketSoldResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

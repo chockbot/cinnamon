@@ -5,12 +5,12 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 public class UpdateOteArgs
 {
     [Required]
-    public OteActivity Activity {get; set;}
+    public OteUpdateActivity Activity {get; set;}
 
     [Required]
-    public IEnumerable<OtePricing> Pricings {get; set;}
+    public IEnumerable<OteUpdatePricing> Pricings {get; set;}
 
-    public class OteActivity 
+    public class OteUpdateActivity 
     {
         [Required]
         public int Id {get; set;}
@@ -61,10 +61,13 @@ public class UpdateOteArgs
         public bool IsComingSoon {get; set;}
     }
 
-    public class OtePricing 
+    public class OteUpdatePricing 
     {
         [Required]
         public int Id {get; set;}
+
+        [Required]
+        public string Name {get; set;}
 
         [Required]
         public string Description {get; set;}

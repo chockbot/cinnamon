@@ -1,0 +1,133 @@
+using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
+using Cinnamon.Framework.Common;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
+using System.Linq.Expressions;
+using AutoMapper;
+
+namespace Cinnamon.Api.Data.Services.Repository.OteTicket;
+
+public class OteTicketRepository : IOteTicketRepository
+{
+    private readonly IDataStore dataStore;
+    private readonly IMapper mapper;
+
+    public OteTicketRepository(IDataStore dataStore, IMapper mapper)
+    {
+        this.dataStore = dataStore;
+        this.mapper = mapper;
+    }
+    
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> CreateMany(IEnumerable<OteTicketDTO> tickets, bool includeImageAsResult = false)
+    {
+        try
+        {
+            var oteTickets = mapper.Map<IEnumerable<Entities.OteTicket>>(tickets);
+            var result = await dataStore.OteTicket.AddRange(oteTickets);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            // remove image data to make result body lighter
+            if(!includeImageAsResult)
+            {
+                foreach(var item in result.Result)
+                {
+                    item.QRImageData = string.Empty;
+                }
+            }
+
+            var dtoTickets = mapper.Map<IEnumerable<OteTicketDTO>>(result.Result);
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(dtoTickets, "Tickets successfully created");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when creating tickets");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, bool includeCustomer = false, bool includeImageAsResult = false)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.GetByActivityId(activityId, includeCustomer, includeImageAsResult);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtoTickets = mapper.Map<IEnumerable<OteTicketDTO>>(result.Result);
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(dtoTickets, "Successfully get tickets by activity id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when getting tickets.");
+        }
+    }
+
+    public async Task<AppResult<OteTicketDTO>> GetByCode(string code)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.FindFirstAsync(t => t.QRCode == code);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtoTicket = mapper.Map<OteTicketDTO>(result.Result);
+            return AppResult<OteTicketDTO>.CreateSucceeded(dtoTicket, "Successfullt get ticket by code.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when getting ticket by code");
+        }
+    }
+
+    public async Task<AppResult<OteTicketDTO>> Update(OteTicketDTO ticket)
+    {
+        try
+        {
+            var ticketRes = await dataStore.OteTicket.FindFirstAsync(t => t.Id == ticket.Id);
+            if(!ticketRes.Succeeded || ticketRes.Result is null)
+            {
+                return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(ticketRes.Message), ticketRes.Message);
+            }
+            ticketRes.Result.Status = ticket.Status;
+
+            var updatedRes = await dataStore.OteTicket.Update(ticketRes.Result);
+            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            {
+                return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
+            }
+
+            var dtoTicket = mapper.Map<OteTicketDTO>(updatedRes.Result);
+            return AppResult<OteTicketDTO>.CreateSucceeded(dtoTicket, "Ticket successfully updated");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when updating ticket");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageAsResult = false)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.GetByPurchaseOrderId(purchaseOrderId, includeCustomer, includeImageAsResult);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtoTickets = mapper.Map<IEnumerable<OteTicketDTO>>(result.Result);
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateSucceeded(dtoTickets, "Successfully get tickets by purchase order id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(ex, "An error occured when getting tickets.");
+        }
+    }
+}

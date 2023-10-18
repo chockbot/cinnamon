@@ -332,4 +332,26 @@ public class ActivityData: IActivityData
 			return AppResult<GetOteActivityByHandlerResult>.CreateFailed(ex, "An error occured when getting One time event activity");
 		}
 	}
+
+	public async Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/ote/add-ticket-solds")
+							.PostJsonAsync(args)
+							.ReceiveJson<AddTicketSoldResult>();
+
+			return AppResult<AddTicketSoldResult>.CreateSucceeded(result, "One time event ticket sold successfully updated");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<AddTicketSoldResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<AddTicketSoldResult>.CreateFailed(ex, "An error occured when updating one time event ticket sold");
+		}
+	}
 }

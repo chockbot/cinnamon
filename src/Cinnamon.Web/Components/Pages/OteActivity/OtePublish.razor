@@ -1,4 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
+@using Cinnamon.Web.Components;
+@inject NavigationManager NavigationManager;
 @implements IOteComponent;
 
 <section class="ote-publish-wrapper">
@@ -18,7 +20,7 @@
                             ticket events?
                         </p>
                         <div class="publish-read-more">
-                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                            <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
                                 Read more
                             </Button>
                         </div>
@@ -32,7 +34,7 @@
                             from this event?
                         </p>
                         <div class="publish-read-more">
-                            <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                            <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
                                 Read more
                             </Button>
                         </div>
@@ -49,10 +51,10 @@
                 </span>
             </div>
             <div class="mb-4">
-                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.AcceptTerms = !model.AcceptTerms">
-                    <img class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="font-20 color-black-100">
-                        [Terms and condition for one time event.]
+                <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
+                    <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <span class="font-20 color-black-100" @onclick="NavigateToTerms">
+                        Accept Terms and Conditions
                         @if(showErrorMessage && !model.AcceptTerms)
                         {
                             <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
@@ -73,6 +75,9 @@
     <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
+<UserFlowModal @ref=userFlowModal Image="user-flow-1.webp"/>
+<UserFlowModal @ref=moneyFlowsModal Image="money-flows-1.webp"/>
+
 @code 
 {
     [Parameter]
@@ -84,6 +89,8 @@
     private FormModel model = new();
     private bool invokingNext = false;
     private bool showErrorMessage = false;
+    private UserFlowModal? userFlowModal;
+    private UserFlowModal? moneyFlowsModal;
 
     public Task<bool> FieldValid()
     {
@@ -128,6 +135,12 @@
         model.AcceptTerms = data.AcceptTerms;
         model.ComingSoon = data.ComingSoon;
         model.Publish = data.IsPublish;
+    }
+
+    private Task NavigateToTerms()
+    {
+        NavigationManager.NavigateTo("/help/terms");
+        return Task.CompletedTask;
     }
 
     private class FormModel 
