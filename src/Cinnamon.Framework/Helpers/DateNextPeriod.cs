@@ -22,7 +22,14 @@ public class DateNextPeriod
     public DateTime PeriodStart 
     {
         get {
-            return currentPeriod;
+            if (this.period == Period.Month)
+            {
+                return currentPeriod;
+            }
+            else
+            {
+                return currentPeriod;
+            }
         }
     }
 
@@ -37,7 +44,14 @@ public class DateNextPeriod
 
     public DateNextPeriod NextPeriod()
     {
-        currentPeriod = CalculatePeriod(currentPeriod).AddDays(1);
+        if (this.period == Period.Month)
+        {
+            currentPeriod = CalculatePeriod(currentPeriod);
+        }
+        else
+        {
+            currentPeriod = CalculatePeriod(currentPeriod).AddDays(1);
+        }
         return this;
     }
 

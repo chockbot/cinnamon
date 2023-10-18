@@ -1,0 +1,35 @@
+﻿@namespace Cinnamon.Web.Components
+
+<Modal @ref="modalRef">
+    <ModalContent Size="ModalSize.Fullscreen" Style="background-color:rgba(0, 0, 0, 0.9)" Class="header-modal" Scrollable>
+        <ModalHeader Border="Border.Is0">
+            <p class="col-11 modal-title text-center"></p>
+            <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+        </ModalHeader>
+        <ModalBody TextAlignment="TextAlignment.Center">
+            <div class="col-12 justify-content-center image-viewer">
+                <label>
+                    <input type="checkbox">
+                    <img class="img-item" src="@Image" />
+                </label>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public string Image { get; set; }
+
+    private Modal modalRef;
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}

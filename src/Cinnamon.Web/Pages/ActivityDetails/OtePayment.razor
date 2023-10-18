@@ -437,13 +437,25 @@
                                 </div>
                                 <div class="col">
                                     <Validation>
-                                        <Field class="mb-3">
-                                            <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
-                                            <TextEdit @bind-Text="cardPaymentModel.CVV" Placeholder="123">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
+                                        @if (cardPaymentModel.IsRevealPassword)
+                                            {
+                                                <TextEdit Role="TextRole.Text" Placeholder="Ex.123" @bind-Text="cardPaymentModel.CVV">
+                                                    <Feedback>
+                                                        <ValidationError TextAlignment="TextAlignment.Start" />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            }
+                                            else
+                                            {
+                                                <TextEdit Role="TextRole.Password" Placeholder="Ex.123" @bind-Text="cardPaymentModel.CVV">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            }
+                                            <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => cardPaymentModel.IsRevealPassword = !cardPaymentModel.IsRevealPassword"></span>
                                         </Field>
                                     </Validation>
                                 </div>

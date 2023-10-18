@@ -21,5 +21,6 @@ public class PopularActivitiesResult
         public string RegionName {get; set;}
         public string ImageSrc {get; set;}
         public int ExperienceCreationTypeId {get; set;}
+        public string PinnedLocation { get; set; }
     }
 }

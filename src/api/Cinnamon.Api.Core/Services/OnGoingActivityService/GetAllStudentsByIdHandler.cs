@@ -58,6 +58,8 @@ public class GetAllStudentsByIdHandler : IGetAllStudentsByIdHandler
                         ExpirationStartDate = e.ExpirationStartDate,
                         ExpirationEndDate   = e.ExpirationEndDate,
                         HasReview           = e.HasReview,
+                        PurchaseDate        = e.PurchaseDate,
+                        Title               = e.Title,
                         studentAttendanceDTO = new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
                         {
                             StudentId = e.studentAttendance.Id,

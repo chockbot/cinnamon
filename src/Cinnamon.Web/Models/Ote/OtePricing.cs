@@ -10,4 +10,6 @@ public class OtePricing
     public string Name {get; set;}
     public bool IsAbsorbFees { get; set; }
     public int TicketSold {get; set;}
+    public int Sold { get; set; }
+    public int Available { get; set; }
 }

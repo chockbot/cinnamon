@@ -272,7 +272,7 @@
                     {
                         <section id="set-plan" class="mt-4">
                             <p class="font-24 font-weight-700 color-black-100">Seat Plan</p>
-                            <img style="width: 330px; height: auto;" src="@SetPlanImage" alt="seatplan">
+                            <img style="width: 330px; height: auto; cursor:pointer" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
                         </section>
                     }
                 }
@@ -458,6 +458,7 @@
 }
 
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
+<ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
 
 @code
 {
@@ -472,8 +473,11 @@
     private string token {get; set;} = string.Empty;
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
+    private ImageViewer imageViewer;
     private bool IsInclusivePricing {get; set;}
     private bool isOpenMobileCalculator {get; set;}
+    private bool isShowPreview = false;
+    private string selectedImage = string.Empty;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

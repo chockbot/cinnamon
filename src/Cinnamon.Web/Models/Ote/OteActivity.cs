@@ -26,6 +26,10 @@ public class OteActivity
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
     public bool IsComingSoon {get; set;}
+    public int Slots { get; set; }
+    public int Sold { get; set; }
+    public int Available { get; set; }
+    public string EventImage { get; set; }
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
 }

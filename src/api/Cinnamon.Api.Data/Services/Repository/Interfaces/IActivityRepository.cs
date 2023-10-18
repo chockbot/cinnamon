@@ -60,4 +60,6 @@ public interface IActivityRepository
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
     
     Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets);
+
+    Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id);
 }

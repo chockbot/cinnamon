@@ -94,6 +94,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 						RegionName              = e.RegionName,
 						CityName                = e.CityName,
 						PostalCode              = e.PostalCode,
+						PinnedLocation			= e.PinnedLocation,
 						SearchTags              = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
 						IsPublished             = e.IsPublished,
 						CreatedBy               = e.CreatedBy,

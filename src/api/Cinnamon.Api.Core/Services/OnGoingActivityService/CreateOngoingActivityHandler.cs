@@ -105,13 +105,13 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 if(args.SelectedPeriod == "currentperiod")
                 {
                     startExpiration = datePeriod.PeriodStart.Date;
-                    endExpiration = datePeriod.PeriodEnd.AddDays(1).Date;
+                    endExpiration = datePeriod.PeriodEnd;
                 }
                 else if (args.SelectedPeriod == "nextperiod")
                 {
                     datePeriod.NextPeriod();
                     startExpiration = datePeriod.PeriodStart.Date;
-                    endExpiration = datePeriod.PeriodEnd.AddDays(1).Date;
+                    endExpiration = datePeriod.PeriodEnd;
                 }
             }
 

@@ -916,6 +916,7 @@ public class ActivityController : ControllerBase
                         BarangayName = a.BarangayName,
                         RegionName = a.RegionName,
                         PostalCode = a.PostalCode,
+                        PinnedLocation = a.PinnedLocation,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -2391,7 +2392,8 @@ public class ActivityController : ControllerBase
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
                             Title = a.Title,
-                            ExperienceCreationTypeId = a.ExperienceCreationTypeId
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId,
+                            PinnedLocation = a.PinnedLocation
                         };
                     })
                 }

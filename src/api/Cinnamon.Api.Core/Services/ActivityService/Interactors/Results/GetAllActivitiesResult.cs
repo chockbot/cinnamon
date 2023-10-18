@@ -55,6 +55,7 @@ public class GetAllActivitiesResult
         public string CityName { get; set; } = string.Empty;
         public string RegionName { get; set; } = string.Empty;
         public string BarangayName { get; set; } = string.Empty;
+        public string PinnedLocation { get; set; } = string.Empty;
         public bool IsDeactivated { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfReviews { get; set; }

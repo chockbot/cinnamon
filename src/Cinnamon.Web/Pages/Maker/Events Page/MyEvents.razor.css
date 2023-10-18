@@ -1,0 +1,171 @@
+﻿.skeleton {
+    position: relative;
+}
+
+    .skeleton::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background: linear-gradient(90deg, #eee, #b6b6b6, #eee);
+        background-size: 200%;
+        animation: skeleton 2s infinite reverse;
+    }
+
+@keyframes skeleton {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
+.maker-events-wrapper {
+    color: #343d4c;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+    .header .title {
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 700;
+        font-size: 32px;
+        color: #ffa942;
+        margin: 0px;
+    }
+.maker-events-wrapper {
+    margin:0 10px 0 10px;
+}
+.event-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30PX;
+    justify-items: center;
+}
+.event-details-content {
+    background: none;
+    border-radius: 15px;
+    padding: 10px;
+    z-index: 1;
+    border: 1px solid #D9D9D9;
+    width: 100%;
+    box-shadow: 2px 4px 6px 0px #71717199;
+}
+.event-content {
+    gap: 30px;
+}
+.event-image {
+    width: 138px;
+    height: 172px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.ticket-details {
+    border-top: 1px solid #D9D9D9;
+    margin-top: 0.5rem;
+    display: flex;
+    padding-top: 10px;
+}
+    .ticket-details p {
+        margin-bottom: 0;
+        flex-wrap: wrap;
+        margin-right: 1rem;
+    }
+.ticket-slots {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #343D4C;
+}
+.ticket-sold {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #AD0C0C;
+}
+.ticket-available {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #5F906A;
+}
+.event-title {
+    font-family: Nunito;
+    font-size: 24px;
+    font-weight: 700;
+    color: #343D4C;
+}
+.event-schedule, .event-location {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #343D4C;
+    line-height:10px;
+}
+.view-details {
+    width: auto;
+    height: 35px;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    background: var(--primary);
+    border: none;
+}
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .event-wrapper {
+        margin: 10px;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        margin-left: 0.5rem;
+    }
+    .event-schedule, .event-location {
+        line-height: 20px;
+        font-size: 14px;
+    }
+    .event-title {
+        font-size: 18px;
+    }
+    .event-wrapper {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        justify-items: center;
+    }
+    .maker-events-wrapper {
+        margin: 0px;
+    }
+}
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .header {
+        margin-top: 30px;
+        margin-left: 0rem;
+        margin-bottom: 10px;
+    }
+    .event-wrapper {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 30PX;
+        justify-items: center;
+    }
+}
+
+
