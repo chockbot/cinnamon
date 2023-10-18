@@ -1,4 +1,4 @@
-@using Cinnamon.Web.Models.Entities;
+﻿@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
 @inject IOngoingActivitiesHandler ongoingApiHandler
@@ -7,12 +7,12 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <article class="ongoing-experience-wrapper py-3">
-    <h3 class="title">Completed Experiences</h3>
+    <h3 class="title">Expired Experiences</h3>
     <div class="ongoing-experiences-container" Margin="Margin.Is3.FromTop">
         <div class="customer-wrapper">
             @if (Activities != null)
             {
-                <OngoingExperienceItem Activity="Activities" Students="CompletedStudents" ActivityItemType="OngoingExperienceItem.ItemType.Completed" isLoading=isLoading Profile="Profile" />
+                <OngoingExperienceItem Activity="Activities" Students="ExpiredStudents" ActivityItemType="OngoingExperienceItem.ItemType.Expired" isLoading=isLoading Profile="Profile" />
             }
         </div>
     </div>
@@ -27,7 +27,7 @@
     [Parameter]
     public CustomerProfile Profile { get; set; }
 
-    public List<Students> CompletedStudents { get; set; } = new List<Students>();
+    public List<Students> ExpiredStudents { get; set; } = new List<Students>();
 
     public List<Students> students = new List<Students>();
 
@@ -55,44 +55,43 @@
             {
                 return new Students
                     {
-                        ActivityId = a.ActivityId,
-                        CustomerId = a.CustomerId,
-                        Id = a.Id,
-                        Name = a.Name,
-                        NumberOfSessions = a.NumberOfSessions,
-                        Remarks = a.Remarks,
-                        ScheduleId = a.ScheduleId,
-                        SessionsAttended = a.SessionsAttended,
-                        Status = a.Status,
-                        StudentNo = a.StudentNo,
+                        ActivityId          = a.ActivityId,
+                        CustomerId          = a.CustomerId,
+                        Id                  = a.Id,
+                        Name                = a.Name,
+                        NumberOfSessions    = a.NumberOfSessions,
+                        Remarks             = a.Remarks,
+                        ScheduleId          = a.ScheduleId,
+                        SessionsAttended    = a.SessionsAttended,
+                        Status              = a.Status,
+                        StudentNo           = a.StudentNo,
                         ExpirationDateStart = a.ExpirationStartDate,
-                        ExpirationDateEnd = a.ExpirationEndDate,
-                        HasReview = a.HasReview,
-                        PurchaseDate = a.PurchaseDate,
-                        Title = a.Title,
+                        ExpirationDateEnd   = a.ExpirationEndDate,
+                        HasReview           = a.HasReview,
+                        PurchaseDate        = a.PurchaseDate,
+                        Title               = a.Title,
                         studentAttendance = new StudentAttendance
                         {
                             IsPresent = a.studentAttendanceDTO.IsPresent,
-                            Date = a.studentAttendanceDTO.Date,
+                            Date      = a.studentAttendanceDTO.Date,
                             StudentId = a.studentAttendanceDTO.StudentId
                         },
                         activitySchedule = new ActivitySchedule
                         {
-                            Id = a.activityScheduleDTO.ScheduleId,
+                            Id            = a.activityScheduleDTO.ScheduleId,
                             HasExpiration = a.activityScheduleDTO.HasExpiration,
-                            IsSetSession = a.activityScheduleDTO.IsSetSession
+                            IsSetSession  = a.activityScheduleDTO.IsSetSession
                         }
                     };
             }).ToList();
         }
-        CompletedStudents = students
-        .Where(a => (a.activitySchedule.HasExpiration == 0 && a.SessionsAttended >= a.NumberOfSessions)
-                 || (a.activitySchedule.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-                 || (a.activitySchedule.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-                 && (a.ExpirationDateEnd >= a.studentAttendance.Date && a.ExpirationDateEnd != DateTime.MinValue 
-                 && a.studentAttendance.Date != DateTime.MinValue)).
-                 OrderByDescending(a => a.studentAttendance.Date).
-                 ToList();
+        ExpiredStudents = students
+        .Where(a => (a.activitySchedule.HasExpiration == 1 || a.activitySchedule.HasExpiration == 2) &&
+                    a.SessionsAttended < a.NumberOfSessions &&
+                    a.ExpirationDateEnd < DateTime.Now.Date &&
+                    a.ExpirationDateEnd != DateTime.MinValue)
+        .OrderByDescending(a => a.ExpirationDateEnd)
+        .ToList();
         isLoading = false;
     }
 }

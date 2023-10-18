@@ -19,6 +19,8 @@ public class GetAllStudentsByIdResult
         public int SessionsAttended { get; set; }
         public string Remarks { get; set; }
         public string Status { get; set; }
+        public string Title { get; set; }
+        public DateTime PurchaseDate { get; set; }
         public DateTime ExpirationStartDate { get; set; }
         public DateTime ExpirationEndDate { get; set; }
         public bool HasReview { get; set; }

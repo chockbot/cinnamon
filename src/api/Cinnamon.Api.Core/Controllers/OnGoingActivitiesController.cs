@@ -394,6 +394,8 @@ public class OnGoingActivitiesController : ControllerBase
                         ExpirationStartDate = e.ExpirationStartDate,
                         ExpirationEndDate   = e.ExpirationEndDate,
                         HasReview           = e.HasReview,
+                        PurchaseDate        = e.PurchaseDate,
+                        Title               = e.Title,
                         studentAttendanceDTO = new StudentAttendanceDTO
                         {
                             IsPresent = e.studentAttendanceDTO.IsPresent,

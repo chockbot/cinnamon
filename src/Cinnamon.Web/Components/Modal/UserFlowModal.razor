@@ -1,0 +1,41 @@
+﻿@namespace Cinnamon.Web.Components
+
+<Modal @ref="modalRef">
+    <ModalContent Size="ModalSize.Fullscreen" Style="background-color:transparent" Class="header-modal" Scrollable>
+        <ModalHeader>
+           <p class="col-11 modal-title text-center"></p>
+           <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+        </ModalHeader>
+        <ModalBody>
+           <div class="container">
+                <div class="col-12 justify-content-center user-flow-1">
+                    <img class="img-flow" src="/images/experience-creation/@Image" />
+                </div>
+           </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter]
+    public string Image { get; set; }
+
+    private Modal modalRef;
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}
+<style scoped>
+    .modal-header {
+        border-bottom: 0;
+        justify-content: end;
+    }
+</style>
