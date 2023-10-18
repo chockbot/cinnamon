@@ -135,6 +135,9 @@
                         <TableHeader>
                             <TableRow>
                                 <TableHeaderCell class="th-name">
+                                    Id
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-name">
                                     Name
                                 </TableHeaderCell>
                                 <TableHeaderCell class="th-email">
@@ -158,6 +161,9 @@
                             @foreach (var item in FilteredCustomer)
                                 {
                                     <TableRow>
+                                        <TableRowCell class="tr-name">
+                                            <span>@FormattedId(item.Id)</span>
+                                        </TableRowCell>
                                         <TableRowCell class="tr-name">
                                             <span>@item.Customer.FirstName @item.Customer.LastName</span>
                                         </TableRowCell>
@@ -450,5 +456,13 @@
             }, Token);
 
         await GetCustomerList(1);
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
     }
 }
