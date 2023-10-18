@@ -32,8 +32,8 @@ public class CreateManySchedulesArgs
         public DateTime? StartDate { get; set; }
         public Enums.Enums.ScheduleType ScheduleType { get; set; }
         public Enums.Enums.PriceType PriceType { get; set; }
-        public string SchedulingUrl { get; set; }
-        public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
+        public string? SchedulingUrl { get; set; }
+        public IEnumerable<ActivityScheduleTime>? ActivityScheduleTimes { get; set; }
     }
 
     public class ActivityScheduleTime

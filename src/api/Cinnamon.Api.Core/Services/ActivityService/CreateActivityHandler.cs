@@ -129,7 +129,7 @@ public class CreateActivityHandler : ICreateActivityHandler
             int order = 0;
             var createdSchedules = await scheduleData.CreateManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs {
                 ActivityId = activity.Id,
-                Schedules = args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
+                Schedules = args.ActivitySchedules is not null ? args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
                     order += 1;
                     return new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.Schedule {
                         DateTime = s.DateTime,
@@ -149,15 +149,15 @@ public class CreateActivityHandler : ICreateActivityHandler
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
                         SchedulingUrl = s.SchedulingUrl,
-                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
+                        ActivityScheduleTimes = s.ActivityScheduleTimes is not null ? s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
                         {
                             DayOfWeek = s.DayOfWeek,
                             EndTime = s.EndTime,
                             StartTime = s.StartTime,
                             IsEnabled = s.IsEnabled
-                        })
+                        }) : Enumerable.Empty<Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime>()
                     };
-                })
+                }) : Enumerable.Empty<Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.Schedule>()
             });
 
             if(!createdSchedules.Succeeded || createdSchedules.Result == null)
