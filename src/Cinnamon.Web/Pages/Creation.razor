@@ -593,17 +593,23 @@
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
                {
                    var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>();
-                   foreach (var item in s.ScheduleTimes)
+                   if(s.ScheduleTimes is not null)
                    {
-                       foreach (var scheduleTime in item.ActivityScheduleTimes)
-                       {
-                           scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
-                           {
-                               DayOfWeek = scheduleTime.DayOfWeek,
-                               StartTime = scheduleTime.StartTime,
-                               EndTime = scheduleTime.EndTime
-                           });
-                       }
+                        foreach (var item in s.ScheduleTimes)
+                        {
+                            if(item.ActivityScheduleTimes is not null)
+                            {
+                                    foreach (var scheduleTime in item.ActivityScheduleTimes)
+                                    {
+                                        scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
+                                        {
+                                            DayOfWeek = scheduleTime.DayOfWeek,
+                                            StartTime = scheduleTime.StartTime,
+                                            EndTime = scheduleTime.EndTime
+                                        });
+                                    }
+                            }
+                        }
                    }
 
                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
