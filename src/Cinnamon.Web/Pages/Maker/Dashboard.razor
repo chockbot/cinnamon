@@ -7,6 +7,7 @@
 @using Cinnamon.Web.Models.Maker;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote
 @using Microsoft.JSInterop
 @using Cinnamon.Web.Components
 @using Microsoft.AspNetCore.Components.Web
@@ -15,6 +16,7 @@
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject ITransactionApiHandler transactionApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 @inject IJSRuntime jsRuntime
 @attribute [Authorize]
 
@@ -146,7 +148,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Event Ticket Sold</p>
-                                <p class="amount">10</p>
+                                <p class="amount">@TotalTicketSold</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="enrollees-icon" src="images/Dashboard/event-icon.png" />
@@ -167,7 +169,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-10 d-block justify-content-start">
                                 <p class="title">Schedule</p>
-                                @if (OTEActivities != null)
+                                @if (OTEActivities.Count != 0)
                                 {
                                     <p class="schedule-description">@OTEActivities.LastOrDefault().Title is coming, verify tickets admissions now!</p>
                                 }
@@ -181,7 +183,7 @@
                             </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end">
-                            @if(OTEActivities != null)
+                            @if(OTEActivities.Count != 0)
                             {
                                 <a class="earnings-link" href="/maker/dashboard/events/@OTEActivities.LastOrDefault().Handler">Verify event goers</a>
                             }
@@ -624,45 +626,50 @@
             </div>
         @*Profile and Faqs*@
         <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
-            <div class="col-12 profile-wrapper d-flex">
-                <div class="col-lg-2 col-md-2 col-sm-3 col-3 profile-pic">
-                    <img class="rounded-2 rounded-circle m-3" src="@profile.ProfilePath" width="60" height="60" />
-                </div>
-                <div class="col-lg-10 col-md-10 col-sm-9 col-9 d-block">
-                    <p class="user-name">Hi, @profile.FirstName @profile.LastName</p>
-                    <div class="row d-flex col-12 justify-content-center progress-bar-section">
-                        <div class="row journey-card-section">
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                <div class="journey-card verified-label">
-                                    Verified
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                <div class="journey-card rare-label">
-                                    Rare
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                <div class="journey-card epic-label">
-                                    Epic
-                                </div>
-                                <div class="epic-arrow-down"></div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                <div class="journey-card legendary-label">
-                                    Legendary
-                                </div>
-                            </div>
-                        </div>
-                        <div class="progress col-12">
-                            <div class="progress-bar" role="progressbar" style="width:@(GetPercentage())%" aria-valuenow="@(GetPercentage())%" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
+            <div class="col-12 profile-wrapper">
+                <div class="col-lg-5 justify-content-lg-start col-md-6 justify-content-md-start col-sm-12 justify-content-sm-center col-12 justify-content-center profile-details">
+                    <div class="profile-pic">
+                        <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                        @if (profile.IsVerified == 2)
+                        {
+                            <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                        }
                     </div>
+                    <div class="profile-name">
+                        <p class="user-name">@profile.FirstName @profile.LastName</p>
+                        <a class="view-profile" href="/maker/profile/@profile.Handler" target="_blank">View Profile</a>
+                    </div>
+                </div>
+                <div class="col-lg-7 justify-content-lg-start col-md-6 justify-content-md-start col-sm-12 justify-content-sm-center col-12 justify-content-center progress-bar-section">
+                    <div class="progress-item">
+                        <p class="badge-type-1">@badgeName1</p>
+                        <div class="line dashed-line"></div>
+                        <p class="badge-type-2">@badgeName2</p>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width:@(GetPercentage())%" aria-valuenow="@(GetPercentage())%" aria-valuemin="0" aria-valuemax="100">@NoOfCompleted/125</div>
+                    </div>
+                    @if(cnt == 1)
+                    {
+                        <p class="badge-text">Completed 10 students</p>
+                    }
+                    else if (cnt == 2)
+                    {
+                        <p class="badge-text">Completed 25 & received 10 reviews</p>
+                    }
+                    else if (cnt == 3)
+                    {
+                        <p class="badge-text">Completed 100 students & received 25 reviews</p>
+                    }
+                    else
+                    {
+                        <p class="badge-text"></p>
+                    }
                 </div>
             </div>
 
             <div class="faqs-wrapper">
-                    <p class="faqs-title">Faqs</p>
+                    <p class="faqs-title">FAQS</p>
 
                     <p><a class="link-question" @onclick="() => ToggleAnswer(1)">What' s gonna happen when someone enrolls?</a></p>
                     <div class="link-answer" style="display: @(selectedQuestion == 1 ? "block" : "none")">
@@ -714,6 +721,8 @@
 
     public CustomerProfile profile = new CustomerProfile();
 
+    private List<OteActivity> oteActivities = new List<OteActivity>();
+
     private double cnt = 0;
 
     string token = string.Empty;
@@ -724,9 +733,15 @@
 
     private int NoOfCompleted = 0;
 
+    private int TotalTicketSold = 0;
+
     private string selectedTab = "general-activities";
 
     private int selectedQuestion = 1;
+
+    private string badgeName1 = "Rare";
+
+    private string badgeName2 = "Epic";
 
     private string totalEarnings { get; set; }
 
@@ -884,20 +899,39 @@
         NoOfEnrollees = activities.Sum(a => a.OngoingStudents);
         NoOfCompleted = activities.Sum(a => a.CompletedStudents);
 
-        //Get Badges Percentage AND Date Obtained
-        if (profile.IsVerified == 2)
+        //Get Total Ticket Sold
+        var resultOTE = await dashboardApiHandler.GetOTEByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByProviderArgs
+         {
+             Id = profile.Id
+         }, token);
+        if (resultOTE.Succeeded && resultOTE.Result != null && resultOTE.Result.IsSuccess)
         {
-            cnt++;
+            oteActivities = resultOTE.Result.Result.Select(a =>
+            {
+                return new OteActivity
+                 {
+                     Slots            = a.Slots,
+                     Sold             = a.Sold,
+                     Available        = a.Available
+                 };
+            }).ToList();
         }
+        TotalTicketSold = oteActivities.Sum(a => a.Sold);
+
+        //Get Badges Percentage AND Date Obtained
         if (NoOfCompleted >= 10)
         {
             cnt++;
             if (NoOfCompleted >= 25)
             {
                 cnt++;
+                badgeName1 = "Epic";
+                badgeName2 = "Legend";
                 if (NoOfCompleted >= 100)
                 {
                     cnt++;
+                    badgeName1 = "Epic";
+                    badgeName2 = "Legend";
                 }
             }
         }
@@ -947,7 +981,7 @@
 
     public double GetPercentage()
     {
-        return Math.Round(cnt / 4 * 100);
+        return Math.Round(cnt / 3 * 100);
     }
 
 }

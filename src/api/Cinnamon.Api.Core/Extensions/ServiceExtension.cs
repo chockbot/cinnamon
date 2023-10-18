@@ -56,6 +56,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceCreationTypeData, Modules.DataAccess.ExperienceCreationType.ExperienceCreationTypeData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IOteTicketData, Modules.DataAccess.OteTicket.OteTicketData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -163,6 +164,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IFinishTransactionHandler, Services.TransactionService.FinishTransactionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetGrossSalesByProviderHandler, Services.TransactionService.GetGrossSalesByProviderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPayoutsByProviderHandler, Services.TransactionService.GetPayoutsByProviderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderHandler, Services.TransactionService.OtePurchaseOrderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOteFinishTransactionHandler, Services.TransactionService.OteFinishTransactionHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -176,6 +179,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetAllBadgesHandler, Services.DashboardService.GetAllBadgeHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentsAttendanceHandler, Services.DashboardService.GetAllStudentsAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetCompletedStudentsHandler, Services.DashboardService.GetCompletedStudentsHandler>();    
+        services.AddTransient<Services.DashboardService.Handlers.IGetOTEByProviderHandler, Services.DashboardService.GetOTEByProviderHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetOTEByActivityIdHandler, Services.DashboardService.GetOTEByActivityIdHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetTicketDetailsHandler, Services.DashboardService.GetTicketDetailsHandler>();    
+        services.AddTransient<Services.DashboardService.Handlers.IUpdateOTETicketHandler, Services.DashboardService.UpdateOTETicketHandler>();  
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();

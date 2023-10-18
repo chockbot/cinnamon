@@ -2,6 +2,8 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;
@@ -330,6 +332,28 @@ public class ActivityData: IActivityData
 		catch (Exception ex)
 		{
 			return AppResult<GetOteActivityByHandlerResult>.CreateFailed(ex, "An error occured when getting One time event activity");
+		}
+	}
+
+	public async Task<AppResult<GetOTEByProvideResult>> GetOTEByProvider(GetOTEByProvideArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"Activity/GetOTEByProvider")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetOTEByProvideResult>();
+
+			return AppResult<GetOTEByProvideResult>.CreateSucceeded(result, "One time event activity successfully get.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<GetOTEByProvideResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetOTEByProvideResult>.CreateFailed(ex, "An error occured when getting One time event activity");
 		}
 	}
 }

@@ -5,6 +5,8 @@ using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Microsoft.Extensions.Logging;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -398,7 +400,8 @@ public class ActivityController : ControllerBase
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -440,7 +443,8 @@ public class ActivityController : ControllerBase
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
-                    Price = p.Price
+                    Price = p.Price,
+                    Name = p.Name
                 };
             }).ToList();
 
@@ -489,6 +493,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOTEByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOTEByProvideResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOTEByProvider([FromQuery] GetOTEByProvideArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.GetOTEByProvider(args.Id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetOTEByProvideResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

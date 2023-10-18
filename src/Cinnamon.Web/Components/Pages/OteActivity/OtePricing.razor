@@ -105,6 +105,34 @@
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
                         <div class="accordion-body bg-white-200">
                             <div class="item-form-body">
+                                <Validation>
+                                    <Field class="mb-4">
+                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                            ticket name
+                                        </FieldLabel>
+                                        <FieldBody>
+                                            <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name" >
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                                <Validation>
+                                    <Field class="mb-4">
+                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                            admission description
+                                        </FieldLabel>
+                                        <FieldBody>
+                                            <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description" >
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </MemoEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
                                 <Row VerticalGutter="10" class="mb-2">
                                     <Column ColumnSize="ColumnSize.Is7">
                                         <Validation>
@@ -154,20 +182,6 @@
                                         </div>
                                     </Column>
                                 </Row>
-                                <Validation>
-                                    <Field class="mb-4">
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            admission description
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description" >
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </MemoEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
                             </div>
                         </div>
                         </div>
@@ -189,11 +203,39 @@
                 <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
             </h3>
             <p class="font-16 color-grey-100 text-justify">
-                Lorem ipsum dolor sit amet consectetur. Eget vivamus cras justo faucibus nulla. 
-                Arcu amet amet id cursus mi non eget nulla.
+                Add your price range or your admission categories for every budget. From affordable offers to more premium experience. 
+                Fill up prices and max slots for every category. 
             </p>
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        ticket name
+                    </FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name" >
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        admission description
+                    </FieldLabel>
+                    <FieldBody>
+                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description" >
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </MemoEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
             <Row VerticalGutter="10">
                 <Column ColumnSize="ColumnSize.Is7">
                     <Validation>
@@ -243,20 +285,6 @@
                     </div>
                 </Column>
             </Row>
-            <Validation>
-                <Field class="mb-4">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        admission description
-                    </FieldLabel>
-                    <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description" >
-                            <Feedback>
-                                <ValidationError />
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
             <div>
                 <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
                     add more ticket price
@@ -410,7 +438,8 @@
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Description = p.Description,
-                    Id = p.Id
+                    Id = p.Id,
+                    Name = p.Name
                 };
             }).ToList()
         };
@@ -419,7 +448,8 @@
             MaxSlots = modelPricing.MaxSlots,
             Price = modelPricing.Price,
             Description = modelPricing.Description,
-            Id = modelPricing.Id
+            Id = modelPricing.Id,
+            Name = modelPricing.Name
         });
         return data;
     }
@@ -432,6 +462,8 @@
         modelSchedule.TimeTo = data.DateTo.TimeOfDay;
         modelSchedule.Recurrences = data.Recurrences;
 
+        data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
+
         var last = data.ItemPrices.LastOrDefault();
         if(last is not null)
         {
@@ -443,7 +475,8 @@
                     Description = item.Description,
                     Id = item.Id,
                     MaxSlots = item.MaxSlots,
-                    Price = item.Price
+                    Price = item.Price,
+                    Name = item.Name
                 });
             }
 
@@ -452,6 +485,7 @@
             modelPricing.Id = last.Id;
             modelPricing.MaxSlots = last.MaxSlots;
             modelPricing.Price = last.Price;
+            modelPricing.Name = last.Name;
         }
 
         StateHasChanged();
@@ -471,6 +505,7 @@
             public int MaxSlots {get; set;}
             public bool AbsorbFees {get; set;}
             public string Description {get; set;}
+            public string Name {get; set;}
         }
     }
 
@@ -539,6 +574,9 @@
 
         [Required(ErrorMessage = "The description field is mandatory.")]
         public string Description {get; set;}
+
+        [Required(ErrorMessage = "The name field is mandatory.")]
+        public string Name {get; set;}
 
         // extras
         public bool IsOpen {get; set;} = false;
