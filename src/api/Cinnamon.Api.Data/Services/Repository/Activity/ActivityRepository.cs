@@ -451,17 +451,18 @@ public class ActivityRepository : IActivityRepository
                 // address fields
                 if (includeAddres && a.Address != null)
                 {
-                    activityDTO.Address1     = a.Address.Address1;
-                    activityDTO.Address2     = a.Address.Address2;
-                    activityDTO.City         = a.Address.City;
-                    activityDTO.District     = a.Address.District;
-                    activityDTO.Subdivision  = a.Address.Subdivision;
-                    activityDTO.Region       = a.Address.Region;
-                    activityDTO.Barangay     = a.Address.Barangay;
-                    activityDTO.PostalCode   = a.Address.PostalCode;
-                    activityDTO.CityName     = a.Address.CityName;
-                    activityDTO.RegionName   = a.Address.RegionName;
-                    activityDTO.BarangayName = a.Address.BarangayName;
+                    activityDTO.Address1       = a.Address.Address1;
+                    activityDTO.Address2       = a.Address.Address2;
+                    activityDTO.City           = a.Address.City;
+                    activityDTO.District       = a.Address.District;
+                    activityDTO.Subdivision    = a.Address.Subdivision;
+                    activityDTO.Region         = a.Address.Region;
+                    activityDTO.Barangay       = a.Address.Barangay;
+                    activityDTO.PostalCode     = a.Address.PostalCode;
+                    activityDTO.CityName       = a.Address.CityName;
+                    activityDTO.RegionName     = a.Address.RegionName;
+                    activityDTO.BarangayName   = a.Address.BarangayName;
+                    activityDTO.PinnedLocation = a.Address.PinnedLocation;
                 }
 
                 // description fields
@@ -1332,6 +1333,7 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.CityName = a.Address.CityName;
                     activityDTO.RegionName = a.Address.RegionName;
                     activityDTO.BarangayName = a.Address.BarangayName;
+                    activityDTO.PinnedLocation = a.Address.PinnedLocation;
                 }
 
                 // description fields

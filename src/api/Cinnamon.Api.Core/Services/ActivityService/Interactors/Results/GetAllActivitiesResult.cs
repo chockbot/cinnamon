@@ -1,5 +1,6 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore;
 using System.Diagnostics;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
@@ -54,9 +55,11 @@ public class GetAllActivitiesResult
         public string CityName { get; set; } = string.Empty;
         public string RegionName { get; set; } = string.Empty;
         public string BarangayName { get; set; } = string.Empty;
+        public string PinnedLocation { get; set; } = string.Empty;
         public bool IsDeactivated { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfReviews { get; set; }
+        public ExperienceCreationType ExperienceCreationType {get; set;}
 
         public class ActivitySchedule
         {

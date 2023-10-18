@@ -1,0 +1,261 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/events/{Handler}"
+@using AutoMapper;
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote;
+@using Cinnamon.Web.Components.Pages;
+@inject IActivityApiHandler activityApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@inject IMapper mapper;
+@attribute [Authorize]
+
+<PageTitle>Event Details | CinnamonPH</PageTitle>
+<SeoMeta Title="Event Details" Subject="Dashboard" Url='@($"/maker/dashboard/events/{Handler}")' />
+
+@if (activity != null)
+{
+    <div class="event-details-wrapper">
+        <div class="header">
+            <div class="col-12 d-flex justify-content-start">
+                <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
+                <p class="back-text">Event Details</p>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="ticket-details">
+                <div class="ticket-table">
+                    <div class="table-list">
+                        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell>
+                                    Ticket
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Slots
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Sold
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Available
+                                </TableHeaderCell>
+
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var item in ticketList)
+                                {
+                                    <TableRow>
+                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">@item.TicketName</TableRowCell>
+                                        <TableRowCell class="tr-slots" TextAlignment="TextAlignment.Center">@item.Slots</TableRowCell>
+                                        <TableRowCell class="tr-sold" TextAlignment="TextAlignment.Center">@item.Sold</TableRowCell>
+                                        <TableRowCell class="tr-available" TextAlignment="TextAlignment.Center">@item.Available</TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+                <div class="event-section">
+                    <div class="event-details-content">
+                        <div class="event-content d-flex">
+                            <img class="event-image" src="@(activity.Images.Count() > 0 ? activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+                            <div class="event-details">
+                                <p class="event-title">@activity.EventName</p>
+                                <p class="event-schedule">@activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt")</p>
+                                @if (!string.IsNullOrEmpty(activity.PinnedLocation))
+                                {
+                                    <p class="event-location">
+                                        @activity.PinnedLocation
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="event-location">
+                                        @activity.CityName, @activity.RegionName
+                                    </p>
+                                }
+                                <div class="overall-ticket">
+                                    <p class="event-ticket">Total Ticket Slots: <span class="event-slots">60</span></p>
+                                    <p class="event-ticket">Available: <span class="event-available">60</span></p>
+                                    <p class="event-ticket">Sold: <span class="event-sold">60</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-ticket-details">
+                <div class="mobile-wrapper">
+                    <div class="ticket-header">
+                        <p class="header-text">Ticket Details</p>
+                    </div>
+                    @foreach (var item in ticketList)
+                    {
+                        <div class="ticket-column">
+                            <p class="mobile-ticketname">@item.TicketName</p>
+                            <div class="ticket-count d-flex">
+                                <p class="mobile-slots">Slots: @item.Slots</p>
+                                <p class="mobile-sold">Sold: @item.Sold</p>
+                                <p class="mobile-available">Available: @item.Available</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="customer-list">
+                <div class="col-12 customer-content">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
+                        <p class="back-text">Customer List</p>
+                    </div>
+                    <div class="col-lg-6 col-md-12 justify-content-md-end col-sm-12 col-12 justify-content-end search-box">
+                        <button class="btn-export" @onclick="ExportToExcel">
+                            Download Excel File
+                            <img class="excel-icon" src="images/xls-icon.png" />
+                        </button>
+                        <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                    </div>
+                </div>
+                <div class="ticket-table">
+                    <div class="table-list">
+                        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell class="th-name">
+                                    Name
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-email">
+                                    Email
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Ticket
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Amount
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    QR Code
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-status">
+                                    Status
+                                </TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var item in customerList)
+                                {
+                                    <TableRow>
+                                        <TableRowCell class="tr-name">
+                                            <span>@item.Name</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-email">
+                                            <span>@item.Email</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-ticket">
+                                            <span>@item.Ticket</span>
+                                            <span>@item.Amount</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-amount">
+                                            <span>@item.Amount</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-qr">
+                                            <span>@item.QRCode</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-button">
+                                            <div class="btn-status">
+                                                <button class="check-button" type="button">
+                                                    <img class="me-1" alt="check-icon"
+                                                         src='@(item.Verify == true ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
+                                                </button>
+                                                <span>Verify</span>
+                                            </div>
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Handler { get; set; } = string.Empty;
+    public  List<TicketInfo> ticketList = new List<TicketInfo>();
+    public List<Customer> customerList = new List<Customer>();
+    private OteActivity? activity;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ticketList.Add(new TicketInfo { TicketName = "Bronze",  Slots = 25, Sold = 4 });
+        ticketList.Add(new TicketInfo { TicketName = "Silver",  Slots = 20, Sold = 2 });
+        ticketList.Add(new TicketInfo { TicketName = "Gold",    Slots = 10, Sold = 0 });
+        ticketList.Add(new TicketInfo { TicketName = "Platinum",Slots = 10, Sold = 0 });
+
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Bronze",  Amount = 450, QRCode = "20230620-600-1600-001", Verify = true});
+        customerList.Add(new Customer { Name = "Rica Namoro",      Email = "rica.namoro@cinnamon.ph",    Ticket = "Silver",  Amount = 450, QRCode = "20230620-600-1600-002", Verify = false });
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Gold",    Amount = 450, QRCode = "20230620-600-1600-003", Verify = true });
+        customerList.Add(new Customer { Name = "Rica Namoro",      Email = "rica.namoro@cinnamon.ph",    Ticket = "Platinum",Amount = 450, QRCode = "20230620-600-1600-004", Verify = false });
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Bronze",  Amount = 450, QRCode = "20230620-600-1600-005", Verify = true});
+        customerList.Add(new Customer { Name = "Rica Namoro",      Email = "rica.namoro@cinnamon.ph",    Ticket = "Silver",  Amount = 450, QRCode = "20230620-600-1600-006", Verify = true });
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Gold",    Amount = 450, QRCode = "20230620-600-1600-007", Verify = false});
+        customerList.Add(new Customer { Name = "Rica Namoro",      Email = "rica.namoro@cinnamon.ph",    Ticket = "Platinum",Amount = 450, QRCode = "20230620-600-1600-002", Verify = true });
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Bronze",  Amount = 450, QRCode = "20230620-600-1600-008", Verify = true });
+        customerList.Add(new Customer { Name = "Rica Namoro",      Email = "rica.namoro@cinnamon.ph",    Ticket = "Silver",  Amount = 450, QRCode = "20230620-600-1600-009", Verify = true });
+        customerList.Add(new Customer { Name = "Angelo Maligalig", Email = "angelo.maligalig@gmail.com", Ticket = "Gold",    Amount = 450, QRCode = "20230620-600-1600-010", Verify = false });
+
+        var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+            {
+                IncludeAddress = true,
+                IncludeDescription = true,
+                IncludePricing = true,
+                IncludeSchedule = true,
+                IncludeImages = true
+            }, Handler);
+        if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            throw new ApplicationException(result.Message);
+        }
+        var act = result.Result.Result;
+        activity = mapper.Map<OteActivity>(act);
+    }
+    public class TicketInfo
+    {
+        public string TicketName { get; set; }
+        public int Slots { get; set; }
+        public int Sold { get; set; }
+        public int Available => Slots - Sold;
+    }
+    public class Customer
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Ticket { get; set; }
+        public decimal Amount { get; set; }
+        public string QRCode { get; set; }
+        public bool Verify { get; set; }
+    }
+    private void NavigateToMyEvents()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/events");
+    }
+    private void TextSearchChanged(string search)
+    {
+
+    }
+    private async Task ExportToExcel()
+    {
+        
+    }
+}

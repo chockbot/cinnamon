@@ -59,7 +59,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Earnings</p>
-                                <p class="amount">@totalEarnings</p>
+                                <p class="amount">&#8369;@totalEarnings</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -125,7 +125,7 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Earnings</p>
-                                <p class="amount">@totalEarnings</p>
+                                <p class="amount">&#8369;@totalEarnings</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -157,7 +157,7 @@
                                 <p class="description">Manage your event</p>
                             </div>
                             <div class="col-4 d-flex justify-content-end">
-                                <a class="earnings-link" href="">Go to Events</a>
+                                <a class="earnings-link" href="/maker/dashboard/events">Go to Events</a>
                             </div>
                         </div>
                     </div>
@@ -167,14 +167,24 @@
                         <div class="col-12 d-flex">
                             <div class="col-10 d-block justify-content-start">
                                 <p class="title">Schedule</p>
-                                <p class="schedule-description">The Juans Live at Cebu is today, verify tickets admissions now!</p>
+                                @if (OTEActivities != null)
+                                {
+                                    <p class="schedule-description">@OTEActivities.LastOrDefault().Title is coming, verify tickets admissions now!</p>
+                                }
+                                else
+                                {
+                                    <p class="schedule-description">No scheduled event!</p>
+                                }
                             </div>
                             <div class="col-2 d-flex justify-content-end">
                                 <img class="calendar-icon" src="images/Dashboard/schedule-icon.png" />
                             </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end">
-                            <a class="earnings-link" href="">Verify event goers</a>
+                            @if(OTEActivities != null)
+                            {
+                                <a class="earnings-link" href="/maker/dashboard/events/@OTEActivities.LastOrDefault().Handler">Verify event goers</a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -718,7 +728,7 @@
 
     private int selectedQuestion = 1;
 
-    private decimal totalEarnings { get; set; }
+    private string totalEarnings { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -785,7 +795,8 @@
                         };
                 }).ToList();
             }
-            totalEarnings = priceData.Sum(a => a.Total);
+            var amount = priceData.Sum(a => a.Total);
+            totalEarnings = String.Format("{0:N}", amount);
         }
         catch (Exception e)
         {
@@ -851,6 +862,7 @@
                         ExperienceTypeId = a.ExperienceTypeId,
                         ExperienceCreationType = a.ExperienceCreationType,
                         Handler = a.Handler,
+                        CityName = a.CityName,
                         Images = a.Images.Select(i =>
                         {
                             return new ActivityImage

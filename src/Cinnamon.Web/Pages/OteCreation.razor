@@ -472,7 +472,7 @@
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
             var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
-                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteActivity {
+                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateActivity {
                     BarangayCode = location.BarangayCode,
                     BarangayName = location.BarangayName,
                     CategoryId = eventData.Category,
@@ -494,7 +494,7 @@
                     IsComingSoon = publishData.ComingSoon
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OtePricing {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
                         Description = p.Description,
                         Id = p.Id,
                         IsAbsorbFees = p.AbsorbFees,

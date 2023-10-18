@@ -914,6 +914,7 @@ public class ActivityController : ControllerBase
                         BarangayName = a.BarangayName,
                         RegionName = a.RegionName,
                         PostalCode = a.PostalCode,
+                        PinnedLocation = a.PinnedLocation,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -956,6 +957,7 @@ public class ActivityController : ControllerBase
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType
                     };
                 }).AsQueryable()
             });
@@ -2387,7 +2389,9 @@ public class ActivityController : ControllerBase
                             RegionName = a.RegionName,
                             ReviewCount = a.ReviewCount,
                             StudentCount = a.StudentCount,
-                            Title = a.Title
+                            Title = a.Title,
+                            ExperienceCreationTypeId = a.ExperienceCreationTypeId,
+                            PinnedLocation = a.PinnedLocation
                         };
                     })
                 }
