@@ -1811,6 +1811,7 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
+<<<<<<<<< Temporary merge branch 1
     public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
     {
         try

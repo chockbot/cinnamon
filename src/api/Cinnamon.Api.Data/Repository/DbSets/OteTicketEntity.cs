@@ -58,6 +58,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         }
     }
 
+<<<<<<<<< Temporary merge branch 1
     public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
     {
         try

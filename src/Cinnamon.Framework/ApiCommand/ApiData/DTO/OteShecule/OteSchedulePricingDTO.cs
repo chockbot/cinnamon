@@ -9,6 +9,7 @@ public class OteSchedulePricingDTO
     public string Description { get; set; }
     public string Name {get; set;}
     public bool IsAbsorbFees { get; set; }
+<<<<<<<<< Temporary merge branch 1
     public int Sold { get; set; }
     public int Available { get; set; }
     public int TicketSold {get; set;}

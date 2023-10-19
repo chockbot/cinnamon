@@ -78,6 +78,7 @@ public class OteTicketData : IOteTicketData
 			return AppResult<GetByCodeResult>.CreateFailed(ex, "An error occured when getting ticket by code");
 		}
 	}
+
 	public async Task<AppResult<UpdateTicketResult>> UpdateTicket(UpdateTicketArgs args)
 	{
 		try

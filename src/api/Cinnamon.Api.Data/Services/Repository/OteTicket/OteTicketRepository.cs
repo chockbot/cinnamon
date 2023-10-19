@@ -112,7 +112,7 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when updating ticket");
         }
     }
-    
+<<<<<<<<< Temporary merge branch 1
     public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
     {
         try
