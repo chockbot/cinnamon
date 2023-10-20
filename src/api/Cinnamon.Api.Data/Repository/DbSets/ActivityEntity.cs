@@ -373,7 +373,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower());
+            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower() && a.ExperienceCreationTypeId == 3);
 
             if(includeAddress) query = query.Include(a => a.Address);
             if(includeDescription) query = query.Include(a => a.ActivityDescription);

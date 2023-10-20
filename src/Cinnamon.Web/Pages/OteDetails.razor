@@ -559,13 +559,14 @@
             }, Handler);
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
-                throw new ApplicationException(result.Message);
+                NavigationManager.NavigateTo("page-not-found");
+                return;
             }
             var act = result.Result.Result;
 
             if(!act.IsPublished)
             {
-                NavigationManager.NavigateTo("not-found");
+                NavigationManager.NavigateTo("page-not-found");
                 return;
             }
 
