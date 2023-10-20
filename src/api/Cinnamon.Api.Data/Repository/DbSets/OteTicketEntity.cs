@@ -57,7 +57,6 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             return AppResult<IEnumerable<Entities.OteTicket>>.CreateFailed(ex, "An error occured when getting tickets.");
         }
     }
-
     public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
     {
         try

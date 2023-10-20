@@ -40,6 +40,7 @@
                                 </div>
 
                                 <div class="text-center">
+                                    <p style="margin-bottom: -5px;">@FormattedId(item.Id)</p>
                                     <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
                                 </div>
 
@@ -92,5 +93,13 @@
         {
             await NotificationService.Error("An error occured. Please contact support.");
         }
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
     }
 }

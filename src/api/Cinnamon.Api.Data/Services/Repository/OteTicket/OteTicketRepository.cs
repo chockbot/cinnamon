@@ -112,7 +112,6 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<OteTicketDTO>.CreateFailed(ex, "An error occured when updating ticket");
         }
     }
-    
     public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
     {
         try

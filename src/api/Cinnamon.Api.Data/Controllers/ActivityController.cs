@@ -495,28 +495,6 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
-    [Route("GetOTEByProvider")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetOTEByProvideResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetOTEByProvider([FromQuery] GetOTEByProvideArgs args)
-    {
-        try
-        {
-            var result = await activityRepository.GetOTEByProvider(args.Id);
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetOTEByProvideResult { Result = result.Result, IsSuccess = true });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [Route("ote/add-ticket-solds")]
     [HttpPost]
     [ProducesResponseType(typeof(AddTicketSoldResult), StatusCodes.Status200OK)]
@@ -542,6 +520,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new AddTicketSoldResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOTEByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOTEByProvideResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOTEByProvider([FromQuery] GetOTEByProvideArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.GetOTEByProvider(args.Id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetOTEByProvideResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

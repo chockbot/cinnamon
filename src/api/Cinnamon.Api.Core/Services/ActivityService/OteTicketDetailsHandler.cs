@@ -110,6 +110,7 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 ImageSrc = imageSrc,
                 Tickets = tickets.Select(t => {
                     return new OteTicketDetailsResult.Ticket {
+                        Id = t.Id,
                         Name = t.Title,
                         QRCodeData = t.QRImageData
                     };
