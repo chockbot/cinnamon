@@ -1810,8 +1810,6 @@ public class ActivityRepository : IActivityRepository
             return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
         }
     }
-
-<<<<<<<<< Temporary merge branch 1
     public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
     {
         try

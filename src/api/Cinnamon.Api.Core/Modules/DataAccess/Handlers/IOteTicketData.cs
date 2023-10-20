@@ -10,7 +10,6 @@ public interface IOteTicketData
     Task<AppResult<GetByActivityIdResult>> GetByActivityId(int activityId, GetByActivityIdArgs args);
     Task<AppResult<GetByCodeResult>> GetByCode(string code);
     Task<AppResult<UpdateTicketResult>> UpdateTicket(UpdateTicketArgs args);
-<<<<<<<<< Temporary merge branch 1
     Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args);
     Task<AppResult<GetByPurchaseOrderIdResult>> GetByPurchaseOrderId(int purchaseOrderId, GetByPurchaseOrderIdArgs args);
 }

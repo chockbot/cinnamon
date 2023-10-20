@@ -10,7 +10,6 @@ public interface IOteTicketRepository
     Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageAsResult = false);
     Task<AppResult<IEnumerable<OteTicketDTO>>> CreateMany(IEnumerable<OteTicketDTO> tickets, bool includeImageAsResult = false);
     Task<AppResult<OteTicketDTO>> Update(OteTicketDTO ticket);
-<<<<<<<<< Temporary merge branch 1
     Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId);
     Task<AppResult<IEnumerable<OteTicketDTO>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageAsResult = false);
 }
