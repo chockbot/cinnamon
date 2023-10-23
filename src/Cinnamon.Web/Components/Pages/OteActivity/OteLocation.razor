@@ -208,6 +208,7 @@
     {
         try
         {
+            regions.Clear();
             var regionRes = await activityApiHandler.GetAllRegions();
             if(!regionRes.Succeeded || regionRes.Result is null || !regionRes.Result.IsSuccess)
             {
@@ -216,18 +217,22 @@
             }
 
             var rg = regionRes.Result.Result.OrderBy(r => r.Name);
+
             foreach(var item in rg)
             {
-                regions.Add(
-                    item.Code,
-                    new Region {
-                        Code = item.Code,
-                        Name = item.Name
-                    }
-                );
+                if(!regions.ContainsKey(item.Code))
+                {
+                    regions.Add(
+                        item.Code,
+                        new Region {
+                            Code = item.Code,
+                            Name = item.Name
+                        }
+                    );
+                }
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
@@ -258,15 +263,18 @@
                 var ct = cityRes.Result.Result.OrderBy(c => c.Name);
                 foreach(var item in ct)
                 {
-                    cities.Add(
-                        item.Code,
-                        new City {
-                            Code = item.Code,
-                            Name = item.Name,
-                            IsCity = item.IsCity,
-                            IsMunicipality = item.IsMunicipality
-                        }
-                    );
+                    if(!cities.ContainsKey(item.Code))
+                    {
+                        cities.Add(
+                            item.Code,
+                            new City {
+                                Code = item.Code,
+                                Name = item.Name,
+                                IsCity = item.IsCity,
+                                IsMunicipality = item.IsMunicipality
+                            }
+                        );
+                    }
                 }
             }
         }
@@ -306,13 +314,16 @@
                 var br = barangayRes.Result.Result.OrderBy(b => b .Name);
                 foreach(var item in br)
                 {
-                    barangays.Add(
-                        item.Code,
-                        new Barangay {
-                            Code = item.Code,
-                            Name = item.Name
-                        }
-                    );
+                    if(!barangays.ContainsKey(item.Code))
+                    {
+                        barangays.Add(
+                            item.Code,
+                            new Barangay {
+                                Code = item.Code,
+                                Name = item.Name
+                            }
+                        );
+                    }
                 }
             }
         }
@@ -428,17 +439,27 @@
         return data;
     }
 
-    public void SetState(ModelData data)
+    public async Task SetState(ModelData data)
     {
-        model.Barangay.Code = data.BarangayCode;
-        model.Barangay.Name = data.BarangayName;
-        model.City.Code = data.CityCode;
-        model.City.Name = data.CityName;
         model.HouseNo = data.HouseNo;
+
+        await LoadRegions();
+        //model.Region.Code = data.RegionCode;
+        //model.Region.Name = data.RegionName;
+        await SelectedRegionChanged(data.RegionCode);
+
+        //model.City.Code = data.CityCode;
+        //model.City.Name = data.CityName;
+        await SelectedCityChanged(data.CityCode);
+
+        //model.Barangay.Code = data.BarangayCode;
+        //model.Barangay.Name = data.BarangayName;
+        await SelectedBarangayChanged(data.BarangayCode);
+        
+        //await SelectedBarangayChanged(model.Barangay.Code);
         model.PinnedLocation = data.PinnedLocation;
         model.PostaCode = data.PostalCode;
-        model.Region.Code = data.RegionCode;
-        model.Region.Name = data.RegionName;
+        
         model.SelectedType = data.ExperienceType;
         StateHasChanged();
     }

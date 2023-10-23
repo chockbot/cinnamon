@@ -17,7 +17,7 @@ public class MappingProfile : Profile
     {
         CreateMap<Activity, OteActivityDTO>()
             .ForMember(d => d.CategoryId, o => o.MapFrom(s => s.ExperienceCategoryId))
-            .ForMember(d => d.BarangayCode, o => o.MapFrom(s => s.Address.Region))
+            .ForMember(d => d.BarangayCode, o => o.MapFrom(s => s.Address.Barangay))
             .ForMember(d => d.BarangayName, o => o.MapFrom(s => s.Address.BarangayName))
             .ForMember(d => d.CityNumber, o => o.MapFrom(s => s.Address.City))
             .ForMember(d => d.CityName, o => o.MapFrom(s => s.Address.CityName))
