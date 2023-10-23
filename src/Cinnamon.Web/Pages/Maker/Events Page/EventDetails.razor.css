@@ -67,7 +67,7 @@
     justify-items: center;
 }
 /*TABLE COMPONENTS CSS*/
-::deep .table-list table tbody tr td:nth-child(3) span:last-child {
+::deep .table-list table tbody tr td:nth-child(4) span:last-child {
     display: none;
 }
 .ticket-details .ticket-table {
@@ -638,12 +638,16 @@
         }
 
         ::deep .table-list table tbody tr td:first-child span::before {
-            content: "Name: ";
+            content: "Id: ";
             font-weight: bold;
             width: 70%;
         }
 
         ::deep .table-list table tbody tr td:nth-child(2)::before {
+            content: "Name: ";
+            font-weight: bold;
+        }
+        ::deep .table-list table tbody tr td:nth-child(3)::before {
             content: "Email: ";
             font-weight: bold;
         }
@@ -652,33 +656,33 @@
         text-align: left;
     }
 
-    ::deep .table-list table tbody tr td:nth-child(3) {
+    ::deep .table-list table tbody tr td:nth-child(4) {
         display: flex;
         padding: 0;
     }
 
-    ::deep .table-list table tbody tr td:nth-child(3) span:first-child {
-        width: 70%;
+    ::deep .table-list table tbody tr td:nth-child(4) span:first-child {
+        width: 60%;
         padding: 10px;
         border-right: 1px solid #000;
     }
 
-    ::deep .table-list table tbody tr td:nth-child(3) span:first-child::before {
+    ::deep .table-list table tbody tr td:nth-child(4) span:first-child::before {
         content: "Ticket: ";
         font-weight: bold;
     }
 
-    ::deep .table-list table tbody tr td:nth-child(3) span:last-child {
-        width: 30%;
+    ::deep .table-list table tbody tr td:nth-child(4) span:last-child {
+        width: 40%;
         padding: 10px;
         display: block;
     }
-            ::deep .table-list table tbody tr td:nth-child(3) span:last-child::before {
+            ::deep .table-list table tbody tr td:nth-child(4) span:last-child::before {
                 content: "Amount: ";
                 font-weight: bold;
             }
 
-    ::deep .table-list table tbody tr td:nth-child(4) {
+    ::deep .table-list table tbody tr td:nth-child(5) {
         display: none;
     }
 
@@ -686,7 +690,7 @@
         text-align: left;
     }
 
-    ::deep .table-list table tbody tr td:nth-child(5)::before {
+    ::deep .table-list table tbody tr td:nth-child(6)::before {
         content: "QR Code: ";
         font-weight: bold;
     }
