@@ -560,10 +560,10 @@
                                                     </TooltipContent>
                                                 </CustomTooltip>
                                             }
-                                            @if (CustomerModel.Favorites != null)
+                                            @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
                                             {
                                                 act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                                if (act.IsFavorite != false)
+                                                if (act.IsFavorite)
                                                 {
                                                     <div class="favorite-section">
                                                         <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
@@ -903,7 +903,7 @@
     private async Task AddFavoriteActivity(Activity activity)
     {
         activity.IsFavorite = !activity.IsFavorite;
-        await AddToFavorites(activity.Id, activity.IsFavorite);
+        await AddToFavorites(activity.ActivityId, activity.IsFavorite);
     }
 
     private async Task AddToFavorites(int activityId, bool isFavorite)
@@ -938,7 +938,7 @@
     private async Task CreateFavoriteAtivity(Activity activity)
     {
         activity.IsFavorite = !activity.IsFavorite;
-        await CreateFavorite(activity.Id);
+        await CreateFavorite(activity.ActivityId);
     }
 
     private async Task CreateFavorite(int activityId)
