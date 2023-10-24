@@ -193,9 +193,9 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
                 queryFilters += "AND b.\"CreatedBy\"= @Id";
             }
 
-            if (dateFrom.HasValue )
+            if (dateFrom.HasValue)
             {
-                queryFilters += " AND a.\"CreatedOn\" between @dateFrom and CURRENT_DATE";
+                queryFilters += " AND a.\"CreatedOn\" between @dateFrom and CURRENT_DATE + 1";
             }
 
             string query = "SELECT a.\"Id\", a.\"ActivityId\", a.\"ScheduleId\", a.\"CustomerId\", a.\"Total\", a.\"CreatedOn\", a.\"CreatedBy\",a.\"Status\", \r\na.\"Payload\",a.\"UnitCount\", a.\"UnitPrice\", b.\"CreatedBy\",b.\"Title\",b.\"Description\"\r\n" +
@@ -230,16 +230,16 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
 
                         listResult = dt.AsEnumerable().Select(item => new PurchaseOrder
                         {
-                           Id = Convert.ToInt32(item["Id"]),
+                           Id         = Convert.ToInt32(item["Id"]),
                            ActivityId = Convert.ToInt32(item["ActivityId"]),
                            ScheduleId = Convert.ToInt32(item["ScheduleId"]),
                            CustomerId = Convert.ToInt32(item["CustomerId"]),
-                           Total = Convert.ToDecimal(item["Total"]),
-                           CreatedOn = Convert.ToDateTime(item["CreatedOn"]),
-                           Status = Convert.ToInt32(item["Status"]),
-                           Payload = item["Payload"].ToString() ?? string.Empty,
-                           UnitCount = Convert.ToInt32(item["UnitCount"]),
-                           UnitPrice = Convert.ToDecimal(item["UnitPrice"])
+                           Total      = Convert.ToDecimal(item["Total"]),
+                           CreatedOn  = Convert.ToDateTime(item["CreatedOn"]),
+                           Status     = Convert.ToInt32(item["Status"]),
+                           Payload    = item["Payload"].ToString() ?? string.Empty,
+                           UnitCount  = Convert.ToInt32(item["UnitCount"]),
+                           UnitPrice  = Convert.ToDecimal(item["UnitPrice"])
                         }).ToList();
                     }
                 }
