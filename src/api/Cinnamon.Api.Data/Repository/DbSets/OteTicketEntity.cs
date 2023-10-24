@@ -99,11 +99,12 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
     {
         try
         {
-            string query = "SELECT a.\"Id\", a.\"ActivityId\", a.\"From\", a.\"To\", a.\"Recurrences\"," +
-                "\r\nb.\"Name\", b.\"Description\",b.\"MaxSlots\",\r\n" +
-                "(SELECT COUNT(*) FROM public.\"OteTickets\" WHERE \"OteSchedulePricingId\" = b.\"Id\") AS Sold\r\n" +
-                "FROM public.\"OteSchedules\" as a\r\n" +
-                "JOIN public.\"OteSchedulePricings\" as b ON b.\"OteScheduleId\" = a.\"Id\"\r\nWHERE a.\"ActivityId\" = "+ activityId + ";";
+            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"MaxSlots\", \r\n" +
+                "(SELECT COUNT(*) FROM public.\"OteTickets\" as ote JOIN public.\"PurchaseOrders\" as po ON ote.\"PurchaseOrderId\" = po.\"Id\"\r\n" +
+                "WHERE ote.\"OteSchedulePricingId\" = b.\"Id\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS Sold\r\n" +
+                "FROM public.\"OteSchedules\" AS a\r\n" +
+                "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
+                "WHERE a.\"ActivityId\" = "+ activityId +";";
 
             IList<OteScheduleDTO> listResult = new List<OteScheduleDTO>();
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
@@ -125,7 +126,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                             ActivityId  = Convert.ToInt32(item["ActivityId"]),
                             From        = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
                             To          = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-                            Recurrences = item["Recurrences"].ToString() ?? string.Empty,
+                            Recurrences = item["Recurrences"].ToString() ?? string.Empty, 
                             OteSchedulePricingDTO = new OteSchedulePricingDTO()
                             {
                                 Name        = item["Name"].ToString() ?? string.Empty,
