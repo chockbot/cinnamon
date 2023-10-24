@@ -373,7 +373,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower());
+            var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower() && a.ExperienceCreationTypeId == 3);
 
             if(includeAddress) query = query.Include(a => a.Address);
             if(includeDescription) query = query.Include(a => a.ActivityDescription);
@@ -403,17 +403,16 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         {
             string query = "WITH MaxSlotsSum AS (\r\n" +
                 "SELECT \"OteScheduleId\", SUM(\"MaxSlots\") AS \"TotalMaxSlots\"\r\n" +
-                "FROM public.\"OteSchedulePricings\"\r\n  GROUP BY \"OteScheduleId\")\r\n" +
-                "SELECT a.\"Id\", a.\"ExperienceTypeId\", a.\"Title\", a.\"Description\", a.\"CreatedOn\", \r\n" +
-                "a.\"CreatedBy\", a.\"Handler\", a.\"Status\", a.\"ExperienceCreationTypeId\",d.\"CityName\", \r\n" +
-                "d.\"RegionName\", d.\"PinnedLocation\",b.\"From\", b.\"To\",ms.\"OteScheduleId\", ms.\"TotalMaxSlots\",\r\n" +
-                "(SELECT COUNT(*) FROM public.\"OteTickets\" WHERE \"OteScheduleId\" = ms.\"OteScheduleId\") AS \"TotalOteTickets\",\r\n" +
+                "FROM public.\"OteSchedulePricings\"\r\n" +
+                "GROUP BY \"OteScheduleId\")\r\nSELECT a.\"Id\", a.\"ExperienceTypeId\", a.\"Title\", a.\"Description\", a.\"CreatedOn\",\r\n" +
+                "a.\"CreatedBy\", a.\"Handler\", a.\"Status\", a.\"ExperienceCreationTypeId\", d.\"CityName\",\r\n" +
+                "d.\"RegionName\", d.\"PinnedLocation\", b.\"From\", b.\"To\", ms.\"OteScheduleId\", ms.\"TotalMaxSlots\",\r\n" +
+                "(SELECT COUNT(*) FROM public.\"OteTickets\" as ote JOIN public.\"PurchaseOrders\" as po ON ote.\"PurchaseOrderId\" = po.\"Id\"\r\n" +
+                "WHERE ote.\"OteScheduleId\" = ms.\"OteScheduleId\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS \"TotalOteTickets\",\r\n" +
                 "(SELECT \"ImageLocation\" FROM public.\"ActivityImages\" WHERE \"ActivityId\" = a.\"Id\" ORDER BY \"Id\" LIMIT 1) AS \"EventImage\"\r\n" +
-                "FROM public.\"Activities\" as a\r\n" +
-                "JOIN public.\"OteSchedules\" as b ON a.\"Id\" = b.\"ActivityId\"\r\n" +
-                "JOIN MaxSlotsSum as ms ON ms.\"OteScheduleId\" = b.\"Id\"\r\n" +
-                "JOIN public.\"ActivityAddress\" as d ON d.\"ActivityId\" = a.\"Id\"\r\n" +
-                "WHERE a.\"CreatedBy\" = "+ Id +" AND a.\"ExperienceCreationTypeId\" = 3;";
+                "FROM public.\"Activities\" as a\r\nJOIN public.\"OteSchedules\" as b ON a.\"Id\" = b.\"ActivityId\"\r\n" +
+                "JOIN MaxSlotsSum as ms ON ms.\"OteScheduleId\" = b.\"Id\"\r\nJOIN public.\"ActivityAddress\" as d ON d.\"ActivityId\" = a.\"Id\"\r\n" +
+                "WHERE a.\"CreatedBy\" = "+ Id + " AND a.\"ExperienceCreationTypeId\" = 3;";
                 
             IList<ActivityDTO> listResult = new List<ActivityDTO>();
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
