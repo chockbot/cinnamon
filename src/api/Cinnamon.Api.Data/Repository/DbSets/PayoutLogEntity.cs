@@ -24,7 +24,7 @@ public class PayoutLogEntity : GenericEntity<PayoutLog>, IPayoutLog
 
             if (dateFrom.HasValue)
             {
-                queryFilters += " AND \"CreatedOn\" between @dateFrom and CURRENT_DATE";
+                queryFilters += " AND \"CreatedOn\" between @dateFrom and CURRENT_DATE + 1";
             }
 
             string query = "SELECT \"Id\", \"PurchaseOrderId\", \"CustomerId\", \"Amount\", \"Status\", \"Remarks\", \"CreatedOn\", \"CreatedBy\", \"ChangedOn\", \"ChangedBy\", \"Payload\"\r\nFROM public.\"PayoutLogs\" " +

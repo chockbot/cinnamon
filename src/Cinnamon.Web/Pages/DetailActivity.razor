@@ -1051,6 +1051,14 @@
             if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
             {
                 var result = ActivityListData.Result.Result;
+
+                // preven to proceed to the page if not general exp
+                if(result.ExperienceCreationType != Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                {
+                    NavigationManager.NavigateTo("/page-not-found");
+                    return;
+                }
+
                 activity = new Activity
                     {
                         Id = result.ActivityId,
