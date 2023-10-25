@@ -3,80 +3,86 @@
 @using Cinnamon.Web.Models.Account;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using static Cinnamon.Web.Models.Customer.RequestRefundModel;
+@using Cinnamon.Web.Models.Entities
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
+@inject ITransactionApiHandler transactionApiHandler
 
 <article class="request-refund-wrapper">
-    <div class="request-refund-containers">
-        <h3 class="request-refund-title">Earnings</h3>
-        <div class="earnings-wrapper">
-            <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
-                <div class="experience-content">
-                    <div class="col-12 d-block justify-content-start">
-                        <p class="title">Receivables from Cinnamon</p>
-                        <p class="amount">&#8369;5,000</p>
-                        <p class="amount-description">Complete your enrollee’s attendance to automatically receive this amount in your payout account.</p>
+    @if (Profile.IsMaker == true)
+    {
+        <div class="request-refund-containers">
+            <h3 class="request-refund-title">Earnings</h3>
+            <div class="earnings-wrapper">
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-block justify-content-start">
+                            <p class="title">Gross Sales</p>
+                            <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
+                            <p class="amount-description">This is the sales for your activities/events.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
-                <div class="experience-content">
-                    <div class="col-12 d-block justify-content-start">
-                        <p class="title">For bank clearing</p>
-                        <p class="amount">&#8369;10,000</p>
-                        <p class="amount-description">Bank clearing takes at least 2 business days to complete.</p>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-block justify-content-start">
+                            <p class="title">Receivables from Cinnamon</p>
+                            <p class="amount">&#8369;@String.Format("{0:N}",receivables)</p>
+                            <p class="amount-description">Complete your enrollee’s attendance to automatically receive this amount in your payout account.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
-                <div class="experience-content">
-                    <div class="col-12 d-block justify-content-start">
-                        <p class="title">Total Earnings</p>
-                        <p class="amount">&#8369;7,000</p>
-                        <p class="amount-description">This is the total credited amount to your account.</p>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-block justify-content-start">
+                            <p class="title">Total Earnings</p>
+                            <p class="amount">&#8369;@String.Format("{0:N}",totalEarnings.Sum(t => t.Amount))</p>
+                            <p class="amount-description">This is the total credited amount to your account.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="payout-information">
-        <p class="payout-title">Payout Information</p>
-        <div class="details col-4 d-flex justify-content-start">
-            @if (PayoutAccount == null)
-            {
-                <span>No Data Found</span>
-                <span class="edit">
-                    <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Add</NavLink>
-                </span>
-            }
-            else
-            {
-                if (PayoutAccount.UnMaskedNumber[0] == '2' || PayoutAccount.UnMaskedNumber[0] == '5')
+        <div class="payout-information">
+            <p class="payout-title">Payout Information</p>
+            <div class="details col-4 d-flex justify-content-start">
+                @if (PayoutAccount == null)
                 {
-                    <img class="me-2" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
-                    <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
-                }
-                else if (PayoutAccount.UnMaskedNumber[0] == '4')
-                {
-                    <img class="me-2" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
-                    <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
+                    <span>No Data Found</span>
+                    <span class="edit">
+                        <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
+                    </span>
                 }
                 else
                 {
-                    <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
+                    if (PayoutAccount.UnMaskedNumber[0] == '2' || PayoutAccount.UnMaskedNumber[0] == '5')
+                    {
+                        <img class="me-2" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
+                        <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
+                    }
+                    else if (PayoutAccount.UnMaskedNumber[0] == '4')
+                    {
+                        <img class="me-2" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                        <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
+                    }
+                    else
+                    {
+                        <span class="font-16">@MaskedString(PayoutAccount.UnMaskedNumber, 4)</span>
+                    }
+                    <span class="edit">
+                        <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Edit</NavLink>
+                    </span>
                 }
-                <span class="edit">
-                    <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Edit</NavLink>
-                </span>
-            }
+            </div>
         </div>
-    </div>
-    <Divider/>
-    <p class="payout-remider">
-        *You will receive payment once a session is completed. Please allow 2 banking days for clearing. Payout schedule is Tuesday and Friday every week.
-    </p>
+        <Divider />
+        <p class="payout-remider">
+            *You will receive payment once a session is completed. Please allow 2 banking days for clearing. Payout schedule is Tuesday and Friday every week.
+        </p>
+    }
+    
     @*Payout History*@
-    <div class="payout-history">
+    @*<div class="payout-history">
         <p class="payout-title">Payout History</p>
         <div class="col-lg-8 col-md-10 col-sm-12 col-12">
             <div class="payout-table">
@@ -132,7 +138,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>*@
     @*Cinnamon Credits*@
     <div class="cinnamon-credits-table">
         <div class="col-lg-6 col-md-10 col-sm-12 col-12">
@@ -169,7 +175,6 @@
         </Table>
         </div>
     </div>
-   
     @*Request Refund*@
     <div class="request-refund-table">
         <div class="col-lg-6 col-md-10 col-sm-12 col-12">
@@ -274,6 +279,12 @@
 
     private IList<Requested> requestedRefunds = new List<Requested>();
 
+    private List<GrossSales> grossSales = new List<GrossSales>();
+
+    private List<Payouts> totalEarnings = new List<Payouts>();
+
+    private decimal receivables { get; set; } = 0;
+
     private string Status = "Pending";
 
     protected override async Task OnInitializedAsync()
@@ -283,6 +294,8 @@
             FetchRequestedRefunds();
             FetchPayoutAccount();
             FetchCinnamonCredits();
+            GetTotalEarnings();
+            GetGrossSale();
             Model.EnrolledExperiences = new List<RequestRefundModel.EnrolledExperience>();
 
             var refundableResult = await activityApiHandler.GetRefundableExperience(Token);
@@ -295,6 +308,7 @@
                     };
                 });
             }
+            receivables = grossSales.Sum(g => g.Total) - totalEarnings.Sum(t => t.Amount);
             payouts.Add(new PayoutHistory { Id = 1, Date = Convert.ToDateTime("2023-09-11").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = true});
             payouts.Add(new PayoutHistory { Id = 2, Date = Convert.ToDateTime("2023-09-12").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
             payouts.Add(new PayoutHistory { Id = 3, Date = Convert.ToDateTime("2023-09-13").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
@@ -400,6 +414,46 @@
                         ReferenceNo = r.ReferenceNo,
                         Status = r.Status,
                         RefundAmountGiven = r.RefundAmountGiven
+                    };
+            }).ToList();
+        }
+    }
+    private async Task GetGrossSale()
+    {
+        //Get gross sale by Activity Provider
+        var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+            {
+                Id       = Profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+            }, Token);
+        if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
+        {
+            grossSales = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+            {
+                return new GrossSales
+                    {
+                        PurchaseDate = e.PurchaseDate,
+                        Total = e.Total
+                    };
+            }).ToList();
+        }
+    }
+    private async Task GetTotalEarnings()
+    {
+        //Get payouts by Activity Provider
+        var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
+            {
+                Id       = Profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+            }, Token);
+        if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
+        {
+            totalEarnings = payout.Result.Result.OrderBy(a => a.PayoutDate).Select(e =>
+            {
+                return new Payouts
+                    {
+                        Date   = e.PayoutDate.Date,
+                        Amount = e.Amount
                     };
             }).ToList();
         }
