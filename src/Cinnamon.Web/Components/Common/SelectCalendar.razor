@@ -10,7 +10,8 @@
         </span>
     </div>
     <div class="@DisplayCalendar">
-        <Calendar ViewOnly="ViewOnly" SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate" />
+        <Calendar ViewOnly="ViewOnly" StrikeOutNotSelected="StrikeOutNotSelected" 
+            SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate" />
     </div>
 </div>
 
@@ -24,6 +25,8 @@
     public bool ViewOnly {get; set;}
     [Parameter]
     public EventCallback<DateTime> OnSelectedDate {get; set;}
+    [Parameter]
+    public bool StrikeOutNotSelected {get; set;}
 
     private bool displayCalendar {get; set;}
     private DateTime? selectedDate;
