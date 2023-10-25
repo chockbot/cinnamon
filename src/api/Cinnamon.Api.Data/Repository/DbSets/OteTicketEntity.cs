@@ -64,7 +64,8 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"MaxSlots\", \r\n" +
                 "(SELECT COUNT(*) FROM public.\"OteTickets\" as ote JOIN public.\"PurchaseOrders\" as po ON ote.\"PurchaseOrderId\" = po.\"Id\"\r\n" +
                 "WHERE ote.\"OteSchedulePricingId\" = b.\"Id\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS Sold\r\n" +
-                "FROM public.\"OteSchedules\" AS a\r\nJOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
+                "FROM public.\"OteSchedules\" AS a\r\n" +
+                "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
                 "WHERE a.\"ActivityId\" = "+ activityId +";";
 
             IList<OteScheduleDTO> listResult = new List<OteScheduleDTO>();
