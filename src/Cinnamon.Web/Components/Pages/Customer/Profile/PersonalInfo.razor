@@ -20,9 +20,9 @@
             </div>
             <section class="profile-content">
                 <Row>
-                        <Column class="profile-column-card" ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnTablet.Is12.OnMobile">
-                            <Card class="customer-profile-card">
-                                <CardBody Border="Border.Is0" Padding="Padding.Is3">
+                    <Column class="profile-column-card" ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnTablet.Is12.OnMobile">
+                        <Card class="customer-profile-card">
+                                <CardBody Class="profile-card-body">
                                     @if (Model.CustomerProfile.IsMaker == true)
                                     {
                                         <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
@@ -89,15 +89,14 @@
                                     }
                                 </CardBody>
                             </Card>
-                        </Column>
-                    </Row>
+                    </Column>
+                </Row>
             </section>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-12">
             <div class="p-section name-section">
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is10.OnDesktop">
-                        <div>
+                <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                    <div>
                             <p class="main-title">Personal Information</p>
                             <p class="title-description mb-4">Update your photo and personal details here.</p>
 
@@ -162,8 +161,8 @@
                             }
 
                         </div>
-                        <Divider />
-                        <div class="mt-2">
+                    <Divider />
+                    <div class="mt-2">
                             <p class="title mb-1">Date of Birth</p>
                             @if (!isEditBirthDate)
                             {
@@ -193,8 +192,8 @@
                                 }
                             }
                         </div>
-                        <Divider />
-                        <div class="mt-2">
+                    <Divider />
+                    <div class="mt-2">
                             <p class="title mb-1">Phone Number</p>
                             @if (!isEditPhoneNumber)
                             {
@@ -224,8 +223,8 @@
                                 }
                             }
                         </div>
-                        <Divider />
-                        <div class="p-section ids-section">
+                    <Divider />
+                    <div class="p-section ids-section">
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                                     <p class="title mb-1">Government ID</p>
@@ -236,7 +235,7 @@
                                 </Column>
                             </Row>
                         </div>
-                        @if (Model.CustomerProfile.IsMaker)
+                    @if (Model.CustomerProfile.IsMaker)
                         {
                             <Divider />
                             <div class="p-section payout-account-section">
@@ -248,14 +247,14 @@
                                             {
                                                 <span>No Data Found</span>
                                                 <span class="edit">
-                                                    <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Add</NavLink>
+                                                <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
                                                 </span>
                                             }
                                             else
                                             {
                                                 <span class="info-item">@PayoutAccount.AccountNumber</span>
                                                 <span class="edit">
-                                                    <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Edit</NavLink>
+                                                    <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Edit</NavLink>
                                                 </span>
                                             }
                                         </Div>
@@ -263,15 +262,13 @@
                                 </Row>
                             </div>
                         }
-                    </Column>
-                </Row>
+                </Column>
             </div>
             <Divider />
             <div class="p-section children-section">
-                <Row>
-                    @if (!isEditFamilyMember)
-                    {
-                        <Column ColumnSize="ColumnSize.Is10.OnDesktop">
+                @if (!isEditFamilyMember)
+                {
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                             <p class="main-title">Kids Information</p>
                             <p class="title-description mb-4">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
                             <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
@@ -297,35 +294,34 @@
                                 </Column>
                             </Div>
                         </Column>
-                    }
-                    else
-                    {
-                        <Column ColumnSize="ColumnSize.Is10.OnDesktop.Is10.OnMobile">
-                            <p class="main-title">Kids Information</p>
-                            <p class="title-description mb-4">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
-                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                                <p class="title mb-1">Details</p>
-                                <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
-                            </Div>
-                            <Div Margin="Margin.Is2">
-                                @for (int i = 0; i < localStateFamilyMembers.Count; i++)
-                                {
-                                    <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
-                                }
-                            </Div>
-                            <Div Display="Display.Flex">
-                                <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
-                                    TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">
-                                    Add
-                                </Button>
-                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="SaveEditedFamilyMember"
-                                    TextColor="TextColor.White" Color="Color.Primary">
-                                    Save
-                                </Button>
-                            </Div>
-                        </Column>
-                    }
-                </Row>
+                }
+                else
+                {
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                        <p class="main-title">Kids Information</p>
+                        <p class="title-description mb-4">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
+                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                            <p class="title mb-1">Details</p>
+                            <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
+                        </Div>
+                        <Div Margin="Margin.Is2">
+                            @for (int i = 0; i < localStateFamilyMembers.Count; i++)
+                            {
+                                <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                            }
+                        </Div>
+                        <Div Display="Display.Flex">
+                            <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
+                                TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">
+                                Add
+                            </Button>
+                            <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="SaveEditedFamilyMember"
+                                TextColor="TextColor.White" Color="Color.Primary">
+                                Save
+                            </Button>
+                        </Div>
+                    </Column>
+                }
             </div>
         </div>
     </div>
