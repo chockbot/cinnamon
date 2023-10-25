@@ -111,7 +111,11 @@ a,
 }
 
 .personal-tab-swiper {
-  border-bottom: 1px solid #dee2e6 !important;
+  border-bottom: none;
+  cursor: pointer;
+}
+.customer-profile-details .nav {
+    justify-content: space-between;
 }
 
 @media only screen and (max-width: 576px) {
@@ -189,17 +193,30 @@ a,
 }
 
 .customer-profile-details .nav-tabs .nav-link {
-  color: #343d4c;
-  font-size: 18px;
-  font-weight: 700;
+    color: #717171;
+    font-size: 18px;
+    font-weight: 700;
+    outline: none;
+    border: none;
 }
 
-.customer-profile-details .nav-tabs .nav-link.active {
-  background-color: var(--primary);
-  color: #fff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
+    .customer-profile-details .nav-tabs .nav-link.active {
+        background-color: none;
+        color: #343D4C;
+        text-decoration: underline 3px solid #FFA942;
+        text-underline-position: under;
+        outline: none;
+        border: none;
+    }
+    .customer-profile-details .nav-tabs .nav-link:hover {
+        outline: none;
+        border: none;
+        color: #343D4C;
+    }
+    .customer-profile-details .nav-tabs .nav-link:focus {
+        outline: none;
+        border: none;
+    }
 
 .customer-profile-details .activitySwiper .swiper-slide {
   width: 100%;
