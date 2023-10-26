@@ -174,19 +174,24 @@
                                 <Row VerticalGutter="20">
                                     <Column ColumnSize="ColumnSize.Is6">
                                         <div class="d-flex align-items-center">
-                                            <img class="me-3" src="images/ote/clock-repeat.png" alt="clock">
-                                            <label class="font-16 color-black-100">3 Hours</label>
+                                            <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
+                                            <label class="ote-schedule me-1">Duration:</label>
+                                            <label class="font-16 color-black-100">
+                                                  @String.Format("{0}Hour{1}", Duration.Hours, Duration.Hours == 1 ? "" : "s")
+                                            </label>
                                         </div>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is6">
                                         <div class="d-flex align-items-center">
-                                            <img class="me-3" src="images/ote/clock.png" alt="clock">
+                                            <img class="me-2" src="images/ote/clock.png" alt="clock">
+                                            <label class="ote-schedule me-1">Time Start:</label>
                                             <label class="font-16 color-black-100">@activity.ScheduleFrom.ToString("hh:mm tt")</label>
                                         </div>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12">
                                         <div class="d-flex align-items-center">
-                                            <img class="me-3" src="images/ote/location.png" alt="clock">
+                                            <img class="me-2" src="images/ote/location.png" alt="clock">
+                                            <label class="ote-schedule me-1">Location:</label>
                                             @if(activity.ExperienceTypeId == 1)
                                             {
                                                 <label class="font-16 color-black-100">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</label>
@@ -477,6 +482,7 @@
     private bool isShowPreview = false;
     private string selectedImage = string.Empty;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+    private TimeSpan Duration { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -571,7 +577,9 @@
             activity = mapper.Map<OteActivity>(act);
 
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
-            
+
+            Duration = (activity.ScheduleFrom - activity.ScheduleTo).Duration();
+
             // select first ticket id
             if(activity.Pricings.Count() > 0)
             {
