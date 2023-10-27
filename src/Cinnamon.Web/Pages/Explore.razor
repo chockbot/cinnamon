@@ -352,7 +352,7 @@
                                     <div class="swiper-wrapper">
                                         @foreach (var act in popularActivities)
                                         {
-                                            <div class="swiper-slide swiper-slide-popular">
+                                            <div @key="act" class="swiper-slide swiper-slide-popular">
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card activities-card">
@@ -731,16 +731,6 @@
     protected override async Task OnInitializedAsync()
     {
         LoadRedirectUrls();
-        if (string.IsNullOrEmpty(landingSearch))
-        {
-            await FetchPopularActivities();
-            await FetchActivities(false);
-        }
-        else
-        {
-            searchValue = landingSearch;
-            await Search();
-        }
 
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
@@ -968,17 +958,26 @@
         {
             await LoadSigninUser();
             await GetFavorites();
+
+            if (string.IsNullOrEmpty(landingSearch))
+            {
+                await FetchPopularActivities();
+                await FetchActivities(false);
+            }
+            else
+            {
+                searchValue = landingSearch;
+                await Search();
+            }
+
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+
             await InitializeSwiper();
             await InitializeCarouselSwipe();
             await LoadWelcomeDialog();
-        }
-        else
-        {
-            await GetFavorites();
-            await InitializeSwiper();
-            await InitializeCarouselSwipe();
+
+            StateHasChanged();
         }
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
