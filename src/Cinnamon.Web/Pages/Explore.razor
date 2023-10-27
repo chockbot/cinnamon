@@ -352,7 +352,7 @@
                                     <div class="swiper-wrapper">
                                         @foreach (var act in popularActivities)
                                         {
-                                            <div class="swiper-slide swiper-slide-popular">
+                                            <div @key="act" class="swiper-slide swiper-slide-popular">
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card activities-card">
@@ -731,6 +731,11 @@
     protected override async Task OnInitializedAsync()
     {
         LoadRedirectUrls();
+        showOverlayPopularActivities = true;
+
+        await LoadSigninUser();
+        await GetFavorites();
+        
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities();
@@ -741,6 +746,8 @@
             searchValue = landingSearch;
             await Search();
         }
+
+        showOverlayPopularActivities = false;
 
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
@@ -842,17 +849,6 @@
                             }
                         }
                     }
-                }
-            }
-        }
-        else 
-        {
-            if(!string.IsNullOrEmpty(QueryRedirect))
-            {
-                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
-                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
-                {
-                    await signinModal.Show();
                 }
             }
         }
@@ -966,20 +962,27 @@
     {
         if (firstRender)
         {
-            await LoadSigninUser();
-            await GetFavorites();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
-            await InitializeSwiper();
-            await InitializeCarouselSwipe();
             await LoadWelcomeDialog();
         }
-        else
+
+        /**
+        if(CustomerModel.CustomerProfile is null)
         {
-            await GetFavorites();
-            await InitializeSwiper();
-            await InitializeCarouselSwipe();
+            if(!string.IsNullOrEmpty(QueryRedirect))
+            {
+                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
+                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
+                {
+                    await signinModal.Show();
+                }
+            }
         }
+        **/
+
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await InitializeSwiper();
+        await InitializeCarouselSwipe();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
