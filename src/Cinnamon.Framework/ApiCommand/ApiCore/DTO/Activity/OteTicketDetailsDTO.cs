@@ -6,10 +6,10 @@ public class OteTicketDetailsDTO
     public string EventLocation {get; set;}
     public DateTime EventDate {get; set;}
     public string ImageSrc {get; set;}
-    public IEnumerable<Ticket> Tickets {get; set;}
+    public IEnumerable<TicketDetails> Tickets {get; set;}
     
     
-    public class Ticket 
+    public class TicketDetails 
     {
         public int Id {get; set;}
         public string Name {get; set;}
