@@ -55,41 +55,22 @@
                         <div class="d-flex activity-title">
                             <label class="fw-bold mb-3 col-lg-12 col-md-12 title-text"> @activity.Title </label>
                         </div>
-                        @*Experience Type*@
-                        <div class="d-flex activity-experiencetype">
-                            <label class="col-lg-12 col-md-12 mb-3 mb-3">
-                                @if (activity.ExperienceTypeId == 1)
-                                {
-                                    <img class="img-thumbnail border-0" src="images/activity-summary/location.png" />
-                                }
-                                else
-                                {
-                                    <img class="img-thumbnail border-0" src="images/activity-summary/laptop-icon.png" />
-                                }
-                                <span class="experience-name">@experience.Name</span>
-                            </label>
-                        </div>
-                        @*Ongoing Enrolees*@
-                        <div class="d-flex">
-                            <label class="col-lg-6 justify-content-lg-start col-md-8 justify-content-md-start mb-3 ongoing-students">
-                                @if (activity.OngoingStudents != 0)
-                                {
-                                    <label class="active-badge">
-                                        <span class="pulse"></span>
-                                        <span class="active-text">Ongoing Enrollees</span>
-                                        <span class="active-tag-label">@activity.OngoingStudents</span>
-                                    </label>
-                                }
-                                @if (activity.CompletedStudents != 0)
-                                {
-                                    <label class="active-badge">
-                                        <span class="pulse-complete"></span>
-                                        <span class="active-text">Completed Enrollees</span>
-                                        <span class="active-tag-label-complete">@activity.CompletedStudents</span>
-                                    </label>
-                                }
-                            </label>
-                            <label class="col-lg-6 justify-content-lg-end col-md-4 justify-content-md-end mb-3 share-link">
+                        <div class="d-flex justify-content-between mb-2">
+                            @*Experience Type*@
+                            <div class="d-flex activity-experiencetype">
+                                <label class="col-lg-12 col-md-12">
+                                    @if (activity.ExperienceTypeId == 1)
+                                    {
+                                        <img class="img-thumbnail border-0" src="images/activity-summary/location.png" />
+                                    }
+                                    else
+                                    {
+                                        <img class="img-thumbnail border-0" src="images/activity-summary/laptop-icon.png" />
+                                    }
+                                    <span style="font-size: 14px;" class="bg-black-100 color-white-100 rounded-pill px-3 py-1">@experience.Name</span>
+                                </label>
+                            </div>
+                            <label class="share-link">
                                 <label class="active-badge">
                                     @if (CustomerModel.CustomerProfile != null)
                                     {
@@ -206,8 +187,8 @@
                             <label class="fw-bold mb-3 col-12 title-text-small"> @activity.Title </label>
                         </div>
                         @*Experience Type*@
-                        <div class="d-flex activity-experiencetype-small">
-                            <label class="col-6 justify-content-start mb-3 mb-3">
+                        <div class="d-flex activity-experiencetype-small justify-content-between">
+                            <label class="mb-3">
                                 @if (activity.ExperienceTypeId == 1)
                                 {
                                     <img class="img-thumbnail-small border-0" src="images/activity-summary/location.png" />
@@ -216,9 +197,9 @@
                                 {
                                     <img class="img-thumbnail-small border-0" src="images/activity-summary/laptop-icon.png" />
                                 }
-                                <span class="experience-name-small">@experience.Name</span>
+                                <span class="experience-name-small ms-2">@experience.Name</span>
                             </label>
-                            <label class="col-6 justify-content-end mb-3 share-link-small">
+                            <label class="share-link-small">
                                 <label class="active-badge">
                                     @if (CustomerModel.CustomerProfile != null)
                                     {
@@ -226,33 +207,25 @@
                                         if (activity.IsFavorite != false)
                                         {
                                             <label class="favorite-small">
-                                                <button class="btn btn-copy" @onclick="() =>AddToFavorites(activity)">
-                                                    <img src="@(activity.IsFavorite ? "images/favorites/heart-selected.png" : "images/favorites/heart-default.png")">
-                                                </button>
+                                                <img style="width: 30px; height: auto;" @onclick="() =>AddToFavorites(activity)" src="@(activity.IsFavorite ? "images/favorites/heart-selected.png" : "images/favorites/heart-default.png")">
                                             </label>
                                         }
                                         else
                                         {
                                             <label class="favorite-small">
-                                                <button class="btn btn-copy" @onclick="() =>CreateFavorite(activity)">
-                                                    <img src="images/favorites/heart-default.png">
-                                                </button>
+                                                <img style="width: 30px; height: auto;" @onclick="() =>CreateFavorite(activity)" src="images/favorites/heart-default.png">
                                             </label>
                                         }
                                     }
                                     else
                                     {
                                         <label class="favorite-small">
-                                            <button class="btn btn-copy" @onclick="() =>signinModal.Show()">
-                                                <img src="images/favorites/heart-default.png">
-                                            </button>
+                                            <img style="width: 30px; height: auto;" @onclick="() =>signinModal.Show()" src="images/favorites/heart-default.png">
                                         </label>
                                     }
                                 </label>
-                                <label class="copy-link-small">
-                                    <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                        <img src="images/copytoclipboard.png">
-                                    </button>
+                                <label class="copy-link-small ms-2">
+                                    <img style="width: 30px; height: auto;" @onclick="() => CopyToClipboard()" src="images/copytoclipboard.png">
                                 </label>
                             </label>
                         </div>
@@ -261,7 +234,7 @@
                             <label class="col-12 justify-content-start mb-1 ongoing-students-small">
                                 @if (activity.OngoingStudents != 0)
                                 {
-                                    <label class="ongoing-badge-small">
+                                    <label class="ongoing-badge-small mb-3">
                                         <span class="pulse-small"></span>
                                         <span class="active-text-small">Ongoing Enrollees</span>
                                         <span class="active-tag-label-small">@activity.OngoingStudents</span>
@@ -269,7 +242,7 @@
                                 }
                                 @if (activity.CompletedStudents != 0)
                                 {
-                                    <label class="completed-badge-small">
+                                    <label class="completed-badge-small mb-3">
                                         <span class="pulse-small-complete"></span>
                                         <span class="active-text-small">Completed Enrollees</span>
                                         <span class="active-tag-label-complete-small">@activity.CompletedStudents</span>
@@ -278,18 +251,11 @@
                             </label>
                         </div>
                     </div>
-                </div>
-            </Animate>
-        </Div>
-        <Div>
-            <Row HorizontalGutter="30">
-                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet">
-                    <div class="py-2">
-                        @*Customer Details*@
-                        @if (customerDetail != null && customerDetail.IsMaker == true)
-                        {
-                            <div class="col-8 d-flex flex-lg-row flex-md-row flex-sm-column flex-column profile-container w-100">
-                                @*Customer Profile*@
+                    @* customer details and enrollee count *@
+                    @if(customerDetail is not null && customerDetail.IsMaker)
+                    {
+                        <Row class="mx-0">
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop" class="m-bg-white-200">
                                 <div class="d-flex">
                                     <div class="maker-pic">
                                         <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath" />
@@ -347,28 +313,46 @@
 
                                     </div>
                                 </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-8 d-flex flex-lg-row flex-md-row flex-sm-column flex-column border-bottom profile-container">
-                                <div class="profile-container d-flex" style="background:#F3F6FC">
-                                    <img class="rounded-2 rounded-circle m-3" src="/images/Profile/user.png" width="60" height="60" />
-                                    <div class="d-flex flex-column m-2">
-                                        <span>Sample Owner</span>
-                                        <span>Owner Name</span>
-                                        <label>View Profile</label>
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
-                                        <img class="px-3" src="images/details_profile_badge.png" />
-                                    </div>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="m-d-none">
+                                <div class="d-flex flex-column h-100 justify-content-center">
+                                    @if (activity is not null && activity.OngoingStudents > 0)
+                                    {
+                                        <div class="d-flex align-items-center justify-content-between active-badge mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="pulse mt-0"></span>
+                                                <span class="ms-3 font-20 color-grey-100">Ongoing Enrollees</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-20 color-grey-100">@activity.OngoingStudents</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (activity is not null && activity.CompletedStudents > 0)
+                                    {
+                                        <div class="d-flex align-items-center justify-content-between active-badge">
+                                            <div class="d-flex align-items-center">
+                                                <span class="pulse-complete mt-0"></span>
+                                                <span class="ms-3 font-20 color-grey-100">Completed Enrollees</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-20 color-grey-100">@activity.CompletedStudents</span>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
-                            </div>
-                        }
-                    </div>
+                            </Column>
+                        </Row>
+                        <Divider />
+                    }
+                </div>
+            </Animate>
+        </Div>
+        <Div>
+            <Row HorizontalGutter="30">
+                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet">
                     @*Activity Details*@
                     <div class="description-label">
-                         <hr />
                         <p class="fw-bold mb-3 detail-label">About</p>
                         @if (String.IsNullOrEmpty(activity.Description))
                         {
