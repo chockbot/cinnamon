@@ -124,7 +124,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enjoy the experience! If you&apos;re not satisfied, let us know and we&apos;ll immediately give you a free booking on your next experience with us!.
+        ///   Looks up a localized string similar to Enjoy the experiences you’ll find and meet people to be part of your life, growth, and wellness!.
         /// </summary>
         internal static string attendDescription {
             get {
@@ -133,7 +133,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Become a Cinnamon Maker.
+        ///   Looks up a localized string similar to Become an Activity Provider.
         /// </summary>
         internal static string Become {
             get {
@@ -151,7 +151,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Become a Cinnamon Maker.
+        ///   Looks up a localized string similar to Become an Activity Provider.
         /// </summary>
         internal static string becomeAMaker {
             get {
@@ -178,7 +178,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It&apos;s quick and easy. Once you find your experience, just click book and you&apos;re all set! You can even contact the Cinnamon Maker if you have some questions about the experience..
+        ///   Looks up a localized string similar to Once you find your experience, just click book and you&apos;re all set! You can even contact the Activity Provider regarding about the experience..
         /// </summary>
         internal static string bookDescription {
             get {
@@ -214,7 +214,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cinnamon Makers are enthusiastic people who may give individual, families, especially those with children, a memorable and exciting opportunity to try something new. Here are the traits of a Cinnamon Maker:.
+        ///   Looks up a localized string similar to Activity Providers are enthusiastic people who may give individual, families, especially those with children, a memorable and exciting opportunity to try something new. Here are the traits of a Activity Provider:.
         /// </summary>
         internal static string cinnamonMakers {
             get {
@@ -223,7 +223,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign-up to become a Cinnamon Maker!.
+        ///   Looks up a localized string similar to Sign-up to become an Activity Provider!.
         /// </summary>
         internal static string cinnamonMakerSignup {
             get {
@@ -484,7 +484,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to How do you create a Cinnamon Maker profile that stands out?.
+        ///   Looks up a localized string similar to How do you create an Activity Provider profile that stands out?.
         /// </summary>
         internal static string howToCreate {
             get {
@@ -637,7 +637,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Live your passion, share your knowledge, and leave a mark on people&apos;s lives! A Cinnamon Maker is someone who provides experiences on the Cinnamon platform..
+        ///   Looks up a localized string similar to Live your passion, share your knowledge, and leave a mark on people&apos;s lives! An Activity Provider is someone who provides experiences on the Cinnamon platform..
         /// </summary>
         internal static string makerDescription {
             get {
@@ -738,7 +738,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Online - join via video conferencing software (provided by Cinnamon Maker).
+        ///   Looks up a localized string similar to Online - join via video conferencing software (provided by the Activity Provider).
         /// </summary>
         internal static string onlineType {
             get {
@@ -891,7 +891,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View experiences and skilled Cinnamon Makers according to your criteria (location, activity, learning, experience), you can click on the experience you like to see more details!.
+        ///   Looks up a localized string similar to Find experiences and activity providers according to your criteria (location, activity, learning, experience).
         /// </summary>
         internal static string searchDescription {
             get {
@@ -963,7 +963,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Steps to become a Cinnamon Maker.
+        ///   Looks up a localized string similar to Steps to become an Activity Provider.
         /// </summary>
         internal static string stepsToBecome {
             get {
@@ -1062,7 +1062,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Try Cinnamon Making.
+        ///   Looks up a localized string similar to Create an Activity.
         /// </summary>
         internal static string tryCinnamon {
             get {
