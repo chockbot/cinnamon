@@ -436,49 +436,63 @@
             <div class="row d-flex justify-content-start">
                 <div class="landing-text landing-lg">
                     <div class="col-12 overview-cards row mx-auto">
-                        <div class="col-lg-4 col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/search.png"
-                                          Title=@Resources.App.search
-                                          Text=@Resources.App.searchDescription />
+                        <div class="search-section">
+                            <img src="images/search.png" class="how-search"/>
+                            <div class="search-content">
+                                <p class="seach-text">1. Search</p>
+                                <p class="search-description">Find experiences and activity providers according to your criteria (location, activity, learning, experience).</p>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/book.png"
-                                          Title=@Resources.App.book
-                                          Text=@Resources.App.bookDescription />
+                        <div class="book-section">
+                            <img src="images/book.png" class="how-book" />
+                            <div class="book-content">
+                                <p class="book-text">2. Book</p>
+                                <p class="book-description">Once you find your experience, just click book and you're all set! You can even contact the Activity Provider regarding about the experience.</p>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/attend.png"
-                                          Title=@Resources.App.attend
-                                          Text=@Resources.App.attendDescription />
+                        <div class="attend-section">
+                            <img src="images/attend.png" class="how-attend" />
+                            <div class="attend-content">
+                                <p class="attend-text">3. Attend</p>
+                                <p class="attend-description">Enjoy the experiences you’ll find and meet people to be part of your life, growth, and wellness!</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="landing-text landing-md">
-                    <div class="col-12 overview-cards row">
-                        <div class="col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/search.png"
-                                          Title=@Resources.App.search
-                                          Text=@Resources.App.searchDescription />
-                        </div>
-                        <div class="col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/book.png"
-                                          Title=@Resources.App.book
-                                          Text=@Resources.App.bookDescription />
-                        </div>
-                        <div class="col-md-4 overview-card">
-                            <OverviewCard ImageSource="images/attend.png"
-                                          Title=@Resources.App.attend
-                                          Text=@Resources.App.attendDescription />
-                        </div>
-                    </div>
-                </div>
-                <div class="landing-text landing-sm">
                     <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
                         <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                             <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
                             <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
                         </div>
+                    </div>
+                </div>
+                <div class="landing-text landing-sm">
+                    <div id="carouselSection4" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="col-sm-12">
@@ -501,6 +515,11 @@
                                                   Text=@Resources.App.attendDescription />
                                 </div>
                             </div>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="2" aria-label="Slide 3"></button>
                         </div>
                     </div>
                 </div>
@@ -625,6 +644,7 @@
         }
         else
         {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await GetFavorites();
         }
     }
