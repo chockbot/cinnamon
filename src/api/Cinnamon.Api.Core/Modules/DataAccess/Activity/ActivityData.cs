@@ -378,4 +378,25 @@ public class ActivityData: IActivityData
 			return AppResult<AddTicketSoldResult>.CreateFailed(ex, "An error occured when updating one time event ticket sold");
 		}
 	}
+
+	public async Task<AppResult<CustomerOteResult>> CustomerOte(int customerId)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"customer-ote/{customerId}")
+							.GetJsonAsync<CustomerOteResult>();
+
+			return AppResult<CustomerOteResult>.CreateSucceeded(result, "Successfully get customer ote.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<CustomerOteResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<CustomerOteResult>.CreateFailed(ex, "An error occured when getting customer ote.");
+		}
+	}
 }
