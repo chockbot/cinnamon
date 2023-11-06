@@ -6,6 +6,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Data;
 using AutoMapper;
+using Npgsql;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -458,6 +459,71 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when trying to get ote");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId)
+    {
+        try
+        {
+            string query = "with groupTickets as ( " +
+                           "select distinct t.\"ActivityId\", t.\"CustomerId\", t.\"PurchaseOrderId\" " +
+                           "from public.\"OteTickets\" t " +
+                           "where t.\"CustomerId\" = @customerId " +
+                           "), " +
+                           "activityTicket as ( " +
+                           "select t.*, c.\"Email\", ac.\"Title\", ai.\"ImageLocation\", " +
+                               "Row_Number() over ( " +
+                                   "partition by t.\"PurchaseOrderId\" " + 
+                                   "order by t.\"PurchaseOrderId\", ai.\"Id\", ai.\"Order\" " +
+                               ") as \"RowCnt\" " +
+                           "from groupTickets t " +
+                           "join public.\"Customers\" c " +
+                               "on c.\"Id\" = t.\"CustomerId\" " +
+                           "join public.\"Activities\" ac " +
+                               "on ac.\"Id\" = t.\"ActivityId\" " +
+                           "left join public.\"ActivityImages\" ai " +
+                               "on ai.\"ActivityId\" = ac.\"Id\" " +
+                           ") " +
+                           "select * " +
+                           "from activityTicket " +
+                           "where \"RowCnt\" = 1 ";
+            
+            IList<OteOngoingDTO> listResult = new List<OteOngoingDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                var customerParameter = new NpgsqlParameter("customerId", customerId);
+                command.Parameters.Add(customerParameter);
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new OteOngoingDTO {
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            CustomerEmail = item["Email"].ToString() ?? string.Empty,
+                            CustomerId = Convert.ToInt32(item["CustomerId"]),
+                            EventTitle = item["Title"].ToString() ?? string.Empty,
+                            ImageSrc = item["ImageLocation"].ToString() ?? string.Empty,
+                            PurchaseOrderId = Convert.ToInt32(item["PurchaseOrderId"])
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<OteOngoingDTO>>.CreateSucceeded(listResult, "Successfully get customer ote.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(ex, "An error occured when trying to get customer ote");
         }
     }
 }
