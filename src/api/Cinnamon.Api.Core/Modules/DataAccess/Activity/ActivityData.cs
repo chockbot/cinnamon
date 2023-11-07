@@ -384,7 +384,7 @@ public class ActivityData: IActivityData
 		try
 		{
 			var result = await flurlClient
-							.Request($"customer-ote/{customerId}")
+							.Request($"Activity/customer-ote/{customerId}")
 							.GetJsonAsync<CustomerOteResult>();
 
 			return AppResult<CustomerOteResult>.CreateSucceeded(result, "Successfully get customer ote.");

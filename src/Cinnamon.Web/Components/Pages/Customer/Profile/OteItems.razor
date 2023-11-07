@@ -1,0 +1,50 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
+@inject IActivityApiHandler activityApiHandler;
+
+<article class="events-wrapper">
+    <div class="events-container" Margin="Margin.Is3.FromTop">
+        <h3 class="title">Events</h3>
+        @if(otesItems is not null)
+        {
+            <div class="event-container-item-wrapper">
+                @foreach (var item in otesItems)
+                {
+                    <div class="experience-box">
+                        <div class="top-content">
+                            <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
+                                <label class="xp-title text-capitalize">@item.EventTitle</label>
+                            </a>
+                            <div class="experience-header">
+                                <img class="image-header" src="@item.ImageSrc" />
+                            </div>
+                        </div>
+                        <div class="view-button">
+                            <Button Color="Color.Primary" Border="Border.Is0" class="w-100">
+                                View Ticket Details
+                            </Button>
+                        </div>
+                    </div>   
+                }
+            </div>
+        }
+    </div>
+</article>
+
+@code
+{
+    [Parameter]
+    public string Token { get; set; }
+
+    private IEnumerable<CustomerOteDTO> otesItems {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await activityApiHandler.CustomerOte(Token);
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            otesItems = result.Result.Result;
+        }
+    }
+}
