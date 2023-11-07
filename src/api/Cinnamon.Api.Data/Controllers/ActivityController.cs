@@ -543,4 +543,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOTEByProvideResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("customer-ote/{customerId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(CustomerOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CustomerOte(int customerId)
+    {
+        try
+        {
+            var result = await activityRepository.CustomerOte(customerId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CustomerOteResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
