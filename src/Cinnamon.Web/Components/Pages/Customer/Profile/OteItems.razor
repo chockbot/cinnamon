@@ -2,6 +2,9 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 @inject IActivityApiHandler activityApiHandler;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject NavigationManager NavigationManager;
+@inject INotificationService NotificationService;
 
 <article class="events-wrapper">
     <div class="events-container" Margin="Margin.Is3.FromTop">
@@ -11,18 +14,23 @@
             <div class="event-container-item-wrapper">
                 @foreach (var item in otesItems)
                 {
-                    <div class="experience-box">
+                    <div class="experience-box" @key="item">
                         <div class="top-content">
-                            <a class="button" href="/explore/@item.ActivityId" style="text-decoration:none;">
-                                <label class="xp-title text-capitalize">@item.EventTitle</label>
-                            </a>
+                            <label class="xp-title text-capitalize">@item.EventName</label>
                             <div class="experience-header">
                                 <img class="image-header" src="@item.ImageSrc" />
                             </div>
                         </div>
                         <div class="view-button">
-                            <Button Color="Color.Primary" Border="Border.Is0" class="w-100">
-                                View Ticket Details
+                            <Button Loading="item.Loading" Disabled="item.Loading" 
+                                Color="Color.Primary" Clicked="() => RedirectTicketDetails(item)" Border="Border.Is0" class="w-100">
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                    Getting Ticket Details
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    View Ticket Details
+                                </ChildContent>
                             </Button>
                         </div>
                     </div>   
@@ -37,14 +45,45 @@
     [Parameter]
     public string Token { get; set; }
 
-    private IEnumerable<CustomerOteDTO> otesItems {get; set;}
+    private IEnumerable<TicketItemWithLoader> otesItems {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
         var result = await activityApiHandler.CustomerOte(Token);
         if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            otesItems = result.Result.Result;
+            otesItems = result.Result.Result.Select(t => {
+                return new TicketItemWithLoader {
+                    EventName = t.EventTitle,
+                    ImageSrc = t.ImageSrc,
+                    PurchaseOrderId = t.PurchaseOrderId
+                };
+            });
         }
+    }
+
+    private async Task RedirectTicketDetails(TicketItemWithLoader item)
+    {
+        item.Loading = true;
+        StateHasChanged();
+
+        var result = await transactionApiHandler.GetOtePurchaseOrder(item.PurchaseOrderId, Token);
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo(result.Result.Result.TicketUrl);
+        }
+        else 
+        {
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
+        }
+        item.Loading = false;
+    }
+
+    private class TicketItemWithLoader 
+    {
+        public int PurchaseOrderId {get; set;}
+        public string EventName {get; set;}
+        public string ImageSrc {get; set;}
+        public bool Loading {get; set;}
     }
 }
