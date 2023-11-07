@@ -327,39 +327,99 @@
 <!--Testimonials-->
 <div class="testimonial-section">
     <div class="container">
-        <div class="testimonial-wrapper">
-            <div class="testimonial-content">
-                <div class="testimonial-image">
-                    <img src="images/landing-page-images/main-image.png">
+        <div id="carouselSection5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <div class="star-rating">
+                                        <Rating Color="Color.Warning" @bind-SelectedValue="@SelectedValue" MaxValue="5" ReadOnly />
+                                    </div>
+                                    <p>
+                                        I can't express how grateful I am to www.cinnamon.ph for the
+                                        incredible Mandarin language lessons they offer! My kids were
+                                        initially hesitant about learning a new language, but the engaging
+                                        and interactive lessons provided by their experienced instructor have
+                                        truly made a difference. The lessons are not only educational but also
+                                        loads of fun. It's an amazing feeling to see them confidently speaking
+                                        and understanding Mandarin. Cinnamon PH has made language
+                                        learning a delightful family journey, and we can't wait to explore
+                                        more lessons on their platform!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Emman</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
+                                    <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
+                                </div>
+                            </div>
+                            <div class="elipse">
+                                <img class="testimonial-elipse" alt="testimonial-elipse" src="images/landing-page-images/testimonial-elipse.png">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="testimonial-items">
-                    <div class="testimonial-title">
-                        <img class="testimonial-quote" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
-                        <p class="header-title">Testimonials</p>
-                    </div>
-                    <div class="testimonial-message">
-                        <p>Lorem ipsum dolor sit amet consectetur. Sollicitudin diam lectus vitae 
-                            nam adipiscing magna. Risus posuere vel egestas sit eu consequat 
-                            vitae quam enim. Et accumsan tortor congue ultrices. Lectus viverra 
-                            accumsan cursus amet a netus rhoncus ipsum.
-                        </p>
-                    </div>
-                    <div class="testimonial-review">
-                        <p class="testimonial-name">-Rosalinda Estova</p>
-                        <p class="testimonial-from">Review from Facebook</p>
-                    </div>
-                    <div class="reviews-profile">
-                        <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
-                        <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
-                        <img class="profile-3" alt="profile-3" src="images/landing-page-images/profile-3.png">
-                        <img class="profile-4" alt="profile-4" src="images/landing-page-images/profile-4.png">
+                <div class="carousel-item">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image-1.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <div class="star-rating">
+                                        <Rating Color="Color.Warning" @bind-SelectedValue="@SelectedValue" MaxValue="5" ReadOnly />
+                                    </div>
+                                    <p>
+                                        Cinnamon has been a game-changer in managing our kids' activities.
+                                        The easy payment options, the seamless program selection process,
+                                        and the flexibility in choosing enrollment periods have made it our
+                                        go-to platform. I can confidently say that Cinnamon has made
+                                        choosing my kids' various interest activities manageable and
+                                        enjoyable, and I wholeheartedly recommend it to all parents seeking
+                                        top-notch programs and tutors for their children. Thank you, 
+                                        Cinnamon!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Mommy Lea</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="emman-profile" alt="profile-1" src="images/landing-page-images/emman-profile.png">
+                                    <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
+                                </div>
+                            </div>
+                            <div class="elipse">
+                                <img class="testimonial-elipse" alt="testimonial-elipse" src="images/landing-page-images/testimonial-elipse.png">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="elipse">
-                    <img class="testimonial-elipse" alt="testimonial-elipse" src="images/landing-page-images/testimonial-elipse.png">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="1" aria-label="Slide 2"></button>
                 </div>
             </div>
         </div>
+
+        
     </div>
 </div>
 
@@ -603,6 +663,8 @@
     public string searchValue = string.Empty;
 
     public string buttonLabel = "Browse all";
+
+    int SelectedValue = 5;
 
     protected override async Task OnInitializedAsync()
     {
