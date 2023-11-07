@@ -33,7 +33,7 @@ public class ExpiringStudentNotificationHelper
                     style='padding: 1.5rem; padding-bottom: 0.5rem'
                 >
                     <p style='margin: 0; font-size: 16px; color: #717171'>
-                    Date: {dateSend.ToString("MMMM, dd yyyy")}
+                    Date: {dateSend.ToString("MMMM dd, yyyy")}
                     </p>
                     <p style='margin: 0; margin-top: 10px; color: #ffa942; font-size: 20px'>
                     Hi <span style='text-transform: capitalize'>{firstname}</span>,
