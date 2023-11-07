@@ -158,6 +158,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteUpdateHandler, Services.ActivityService.OteUpdateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteFindByHandler, Services.ActivityService.OteFindByHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteTicketDetailsHandler, Services.ActivityService.OteTicketDetailsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ICustomerOteHandler, Services.ActivityService.CustomerOteHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

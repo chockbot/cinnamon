@@ -68,6 +68,7 @@ public class ActivityController : ControllerBase
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IMapper mapper;
     private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
+    private readonly ICustomerOteHandler customerOteHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -88,7 +89,8 @@ public class ActivityController : ControllerBase
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler,
-        IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler)
+        IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper, 
+        IOteTicketDetailsHandler oteTicketDetailsHandler, ICustomerOteHandler customerOteHandler)
     {
         _logger = logger;
 
@@ -137,6 +139,7 @@ public class ActivityController : ControllerBase
         this.oteFindByHandler = oteFindByHandler;
         this.mapper = mapper;
         this.oteTicketDetailsHandler = oteTicketDetailsHandler;
+        this.customerOteHandler = customerOteHandler;
     }
 
     [Route("CreateActivity")]
@@ -2661,6 +2664,32 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CustomerOte")]
+    [HttpGet]
+    [ProducesResponseType(typeof(CustomerOteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CustomerOte()
+    {
+        try
+        {
+            var result = await customerOteHandler.ExecuteAsync(new ());
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResult = mapper.Map<IEnumerable<CoreDto.Activity.CustomerOteDTO>>(result.Result.CustomerOtes);
+            return new JsonResult(new CustomerOteResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
