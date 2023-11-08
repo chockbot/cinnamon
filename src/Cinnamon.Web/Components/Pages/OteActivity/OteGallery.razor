@@ -182,27 +182,14 @@
 
     private async Task LoadSetplanPhotoFile(InputFileChangeEventArgs e)
     {
-        if(imageCropper is not null)
-        {
-            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
-                FileInputIndex = 0,
-                FileSrcSelector = $"#{setplanPhoto.FileId}",
-                Title = "Crop selected image",
-                OuputSelector = $"#{setplanPhoto.InputDataId}",
-                HeightRatio = 5,
-                WidthRatio = 4
-            });
-            if(cropperResult.Cropped)
-            {
-                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{setplanPhoto.ImageSrcId}", $"#{setplanPhoto.InputDataId}");
-                setplanPhoto.FileSize = cropperResult.FileSize;
-                setplanPhoto.Display = true;
-            }
-            else 
-            {
-                setplanPhoto.Display = false;
-            }
-        }
+        var options = new {
+            imgSelector = $"#{setplanPhoto.ImageSrcId}",
+            inputSelector = $"#{setplanPhoto.FileId}",
+            fileIndex = 0,
+            inputSelectorToWriteBlob = $"#{setplanPhoto.InputDataId}"
+        };
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImageByFileInput", options);
+        setplanPhoto.Display = true;
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)

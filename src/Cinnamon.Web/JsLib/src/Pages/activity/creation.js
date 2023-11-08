@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Buffer } from "buffer";
+import Compressor from "compressorjs";
 
 const creation = {};
 const creationInProgress = {};
@@ -201,6 +202,25 @@ export async function previewImage(imgSelector, inputSelector) {
   imgElem.src = urlSrc;
 }
 
+export async function previewImageByFileInput({
+  imgSelector,
+  inputSelector,
+  fileIndex,
+  inputSelectorToWriteBlob,
+}) {
+  const inputElem = document.querySelector(inputSelector);
+  const imgElem = document.querySelector(imgSelector);
+  if (inputElem.files[fileIndex]) {
+    const image = await compressImage(inputElem.files[fileIndex]);
+    if (inputSelectorToWriteBlob) {
+      const blob = await blobToBase64(image);
+      const el = document.querySelector(inputSelectorToWriteBlob);
+      el.value = blob;
+    }
+    imgElem.src = URL.createObjectURL(image);
+  }
+}
+
 export async function uploadListImages(selectors, activityId, deletedIds) {
   const formData = new FormData();
   for (const selector of selectors) {
@@ -249,6 +269,30 @@ export async function removeImageItems(selector) {
   $(selector).empty();
 }
 
+const compressImage = (blob) => {
+  return new Promise((resolve, reject) => {
+    if (!blob) return reject();
+
+    new Compressor(blob, {
+      quality: 0.4,
+      success: (result) => {
+        return resolve(result);
+      },
+      error: (error) => {
+        return reject(error);
+      },
+    });
+  });
+};
+
+function blobToBase64(blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export default {
   initCreation,
   initCreationInProgress,
@@ -258,4 +302,5 @@ export default {
   removeImageTemplate,
   showImageTemplate,
   uploadListImages,
+  previewImageByFileInput,
 };
