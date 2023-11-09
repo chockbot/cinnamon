@@ -74,8 +74,8 @@
                             Town/City
                         </FieldLabel>
                         <FieldBody>
-                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@CityClass" 
-                                SelectedValue="model.City.Code" SelectedValueChanged="SelectedCityChanged">
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@CityClass"
+                                    SelectedValue="model.City.Code" SelectedValueChanged="SelectedCityChanged">
                                 <SelectItem Value='"none"' Disabled class="text-capitalize">--Select City--</SelectItem>
                                 @foreach (var item in cities)
                                 {
@@ -90,8 +90,8 @@
                             barangay
                         </FieldLabel>
                         <FieldBody>
-                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@BarangayClass" 
-                                SelectedValue="model.Barangay.Code" SelectedValueChanged="SelectedBarangayChanged">
+                            <Select Disabled="DisableLocation" TValue="string" Size="Size.Medium" class="@BarangayClass"
+                                    SelectedValue="model.Barangay.Code" SelectedValueChanged="SelectedBarangayChanged">
                                 <SelectItem Value='"none"' Disabled class="text-capitalize">--Select Barangay--</SelectItem>
                                 @foreach (var item in barangays)
                                 {
@@ -442,6 +442,9 @@
     public async Task SetState(ModelData data)
     {
         model.HouseNo = data.HouseNo;
+        model.PinnedLocation = data.PinnedLocation;
+        model.PostaCode = data.PostalCode;
+        model.SelectedType = data.ExperienceType;
 
         await LoadRegions();
         //model.Region.Code = data.RegionCode;
@@ -457,23 +460,20 @@
         await SelectedBarangayChanged(data.BarangayCode);
         
         //await SelectedBarangayChanged(model.Barangay.Code);
-        model.PinnedLocation = data.PinnedLocation;
-        model.PostaCode = data.PostalCode;
         
-        model.SelectedType = data.ExperienceType;
         StateHasChanged();
     }
 
     private void ClearLocationFields()
     {
-        model.HouseNo = string.Empty;
-        model.Region.Code = "none";
-        model.Region.Name = string.Empty;
-        model.City.Code = "none";
-        model.City.Name = string.Empty;
-        model.Barangay.Code = "none";
-        model.Barangay.Name = string.Empty;
-        model.PostaCode = string.Empty;
+        model.HouseNo        = string.Empty;
+        model.Region.Code    = "none";
+        model.Region.Name    = string.Empty;
+        model.City.Code      = "none";
+        model.City.Name      = string.Empty;
+        model.Barangay.Code  = "none";
+        model.Barangay.Name  = string.Empty;
+        model.PostaCode      = string.Empty;
         model.PinnedLocation = string.Empty;
     }
 

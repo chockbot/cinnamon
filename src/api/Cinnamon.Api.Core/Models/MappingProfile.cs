@@ -21,7 +21,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.Name, o => o.MapFrom(s => s.ImageName));
 
         CreateMap<ActivityResults.OteTicketDetailsResult, CoreDto.Activity.OteTicketDetailsDTO>();
-        CreateMap<ActivityResults.OteTicketDetailsResult.Ticket, CoreDto.Activity.OteTicketDetailsDTO.Ticket>();
+        CreateMap<ActivityResults.OteTicketDetailsResult.Ticket, CoreDto.Activity.OteTicketDetailsDTO.TicketDetails>();
         
         CreateMap<TransactionResults.OtePurchaseOrderDetailsResult, CoreDto.PurchaseOrder.OtePurchaseOrderDTO>();
         CreateMap<TransactionResults.OtePurchaseOrderDetailsResult.Ticket, CoreDto.PurchaseOrder.OtePurchaseOrderDTO.Ticket>();
