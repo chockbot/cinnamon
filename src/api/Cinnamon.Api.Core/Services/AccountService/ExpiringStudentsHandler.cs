@@ -47,7 +47,9 @@ public class ExpiringStudentsHandler : IExpiringStudentsHandler
             }
 
             var now = DateTime.Now;
-            var tasks = studentsRes.Result.Result.Select(s =>
+            var uniqueStudents = studentsRes.Result.Result.Distinct().ToList();
+
+            var tasks = uniqueStudents.Select(s =>
             {
                 var link = applicationConfig.FrontendUrl.AppendPathSegment($"explore/{s.Handler}");
                 return expiringStudentNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ExpiringStudentNotificationArgs
