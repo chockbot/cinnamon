@@ -224,6 +224,37 @@
                             }
                         </div>
                     <Divider />
+                    <div class="mt-2">
+                        <p class="title mb-1">Email</p>
+                        @if (!isEditEmail)
+                        {
+                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                <span class="info-email">@Model.CustomerProfile.Email</span>
+                                <span class="edit" @onclick="EditEmail">Edit</span>
+                            </Div>
+                        }
+                        else
+                        {
+                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                <span>Input a valid email.</span>
+                                <span class="edit" @onclick="() => isEditEmail = !isEditEmail">Cancel</span>
+                            </Div>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                    <Field class="form-floating mt-3 profile-info-input">
+                                        <TextEdit class="border-10" id="email" Size="Size.Default" @bind-Text="emailLocalstate" />
+                                        <FieldLabel for="email">Email</FieldLabel>
+                                    </Field>
+                                </Column>
+                            </Row>
+                            <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveEmail">Save</Button>
+                            @if (!string.IsNullOrEmpty(errorMessage1))
+                            {
+                                <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
+                            }
+                        }
+                    </div>
+                    <Divider />
                     <div class="p-section ids-section">
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is12.OnDesktop">
@@ -352,6 +383,10 @@
 
     private bool isEditPhoneNumber = false;
 
+    private bool isEditEmail = false;
+
+    private string emailLocalstate { get; set; } = string.Empty;
+
     private string phoneNumberLocalstate { get; set; } = string.Empty;
 
     private string birthDateLocalstate = string.Empty;
@@ -391,6 +426,7 @@
     public List<Favorite> favorites = new List<Favorite>();
 
     public string displayText = "d-flex";
+
     private string Token { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -575,6 +611,39 @@
             }
         }
     }
+
+    private void EditEmail()
+    {
+        isEditEmail = !isEditEmail;
+        if (isEditEmail)
+        {
+            emailLocalstate = Model.CustomerProfile.Email;
+        }
+        else
+        {
+            emailLocalstate = string.Empty;
+        }
+    }
+
+    private async Task SaveEmail()
+    {
+        if (isEditEmail)
+        {
+            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                {
+                    Email     = emailLocalstate,
+                    Datebirth = Model.CustomerProfile.Birthdate
+                }, Model.Token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.CustomerProfile.Email = emailLocalstate;
+                await ModelChanged.InvokeAsync(Model);
+            }
+        }
+        isEditEmail = false;
+    }
+
     private async Task SaveBirthDate()
     {
         if (isEditBirthDate)
@@ -614,6 +683,7 @@
         if (number != null) return Regex.IsMatch(number, regex);
         else return false;
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

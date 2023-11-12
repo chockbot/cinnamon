@@ -601,12 +601,13 @@ public class AccountController : ControllerBase
         try
         {
             var result = await updateProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitUpdateProfileArgs {
-                About = args.About,
-                Birthdate = args.Datebirth,
-                FirstName = args.FirstName,
-                LastName = args.LastName,
+                About         = args.About,
+                Birthdate     = args.Datebirth,
+                FirstName     = args.FirstName,
+                LastName      = args.LastName,
+                Email         = args.Email,
                 VerifiedBadge = args.VerifiedBadge,
-                PhoneNumber = args.PhoneNumber
+                PhoneNumber   = args.PhoneNumber
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -616,10 +617,11 @@ public class AccountController : ControllerBase
 
             return new JsonResult(new UpdateProfileDetailsResult {
                 Result = new CustomerDTO {
-                    About = result.Result.About,
-                    Birthdate = result.Result.Birthdate,
-                    FirstName = result.Result.FirstName,
-                    LastName = result.Result.LastName,
+                    About       = result.Result.About,
+                    Birthdate   = result.Result.Birthdate,
+                    FirstName   = result.Result.FirstName,
+                    LastName    = result.Result.LastName,
+                    Email       = result.Result.Email,
                     PhoneNumber = result.Result.PhoneNumber
                 },
                 IsSuccess = true
