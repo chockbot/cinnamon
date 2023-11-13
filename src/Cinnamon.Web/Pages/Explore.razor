@@ -273,10 +273,10 @@
                                 {
                                     <div class="swiper-slide category">
                                         <div>
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
-                                                <img src=@category.IconPath class="img-icon text-center">
-                                                <p class="card-title">@category.Category</p>
-                                            </a>
+                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                            <img src=@category.IconPath class="img-icon text-center">
+                                            <p class="card-title">@category.Category</p>
+                                        </a>
                                         </div>
                                     </div>
                                 }
@@ -689,6 +689,7 @@
     public string searchValue = string.Empty;
     public string filterId = string.Empty;
     public int cnt = 0;
+    public int cntCategories = 0;
     public int experienceCategoryId = 0;
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
