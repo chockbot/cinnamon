@@ -352,7 +352,7 @@
                                     <div class="swiper-wrapper">
                                         @foreach (var act in popularActivities)
                                         {
-                                            <div class="swiper-slide swiper-slide-popular">
+                                            <div @key="act" class="swiper-slide swiper-slide-popular">
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card activities-card">
@@ -442,10 +442,18 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="row price-badge-section">
-                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act.Price)</p></div>
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3 mb-0">@GetPriceLabel(act.Price)</p></div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                     </div>
                                                                 </div>
+                                                                @if(act.ExperienceCreationTypeId == 3)
+                                                                {
+                                                                    <div class="mt-2">
+                                                                        <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                                            One time event
+                                                                        </span>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                         </div>
                                                     </Animate>
@@ -628,10 +636,18 @@
                                             </div>
                                         </div>
                                         <div class="row price-badge-section">
-                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act.Price)</p></div>
+                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3 mb-0">@GetPriceLabel(act.Price)</p></div>
                                             <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                             </div>
                                         </div>
+                                        @if(act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                        {
+                                            <div class="mt-2">
+                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                    One time event
+                                                </span>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </Animate>
@@ -731,6 +747,11 @@
     protected override async Task OnInitializedAsync()
     {
         LoadRedirectUrls();
+        showOverlayPopularActivities = true;
+
+        await LoadSigninUser();
+        await GetFavorites();
+        
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities();
@@ -741,6 +762,8 @@
             searchValue = landingSearch;
             await Search();
         }
+
+        showOverlayPopularActivities = false;
 
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
@@ -842,17 +865,6 @@
                             }
                         }
                     }
-                }
-            }
-        }
-        else 
-        {
-            if(!string.IsNullOrEmpty(QueryRedirect))
-            {
-                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
-                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
-                {
-                    await signinModal.Show();
                 }
             }
         }
@@ -966,20 +978,27 @@
     {
         if (firstRender)
         {
-            await LoadSigninUser();
-            await GetFavorites();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
-            await InitializeSwiper();
-            await InitializeCarouselSwipe();
             await LoadWelcomeDialog();
         }
-        else
+
+        /**
+        if(CustomerModel.CustomerProfile is null)
         {
-            await GetFavorites();
-            await InitializeSwiper();
-            await InitializeCarouselSwipe();
+            if(!string.IsNullOrEmpty(QueryRedirect))
+            {
+                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
+                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
+                {
+                    await signinModal.Show();
+                }
+            }
         }
+        **/
+
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await InitializeSwiper();
+        await InitializeCarouselSwipe();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);

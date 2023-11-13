@@ -24,4 +24,5 @@ public interface IActivityData
     Task<AppResult<GetOteActivityByHandlerResult>> GetOteActivityByHandler(GetOteActivityArgs args, string handler);
     Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args);
     Task<AppResult<GetOTEByProvideResult>> GetOTEByProvider(GetOTEByProvideArgs args);
+    Task<AppResult<CustomerOteResult>> CustomerOte(int customerId);
 }

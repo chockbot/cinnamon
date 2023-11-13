@@ -23,7 +23,7 @@
             <div class="grid-item" @key="item">
                 @if(!item.Empty)
                 {
-                    <span class="@DayClass(item.Selected)" @onclick="() => OnDayClick(item)">
+                    <span class="@DayClass(item.Selected, item.StrikeOut)" @onclick="() => OnDayClick(item)">
                         @NumberString(item.Date.Day)
                     </span>
                 }
@@ -45,6 +45,8 @@
     public bool ViewOnly {get; set;}
     [Parameter]
     public EventCallback<DateTime> OnSelectedDate {get; set;}
+    [Parameter]
+    public bool StrikeOutNotSelected {get; set;}
 
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
     private DateTime activeDate;
@@ -74,21 +76,27 @@
             else
             {
                 var date = new DateTime(now.Year, now.Month, i - skipCount);
+                var selected = SelectedDates.Any(a => a.Date == date.Date);
                 calendarItems.Add(new CalendarItem {
                     Empty = false,
                     Date = date,
-                    Selected = SelectedDates.Any(a => a.Date == date.Date)
+                    Selected = selected,
+                    StrikeOut = StrikeOutNotSelected && !selected
                 });
             }
         }
     }
 
-    private string DayClass(bool selected)
+    private string DayClass(bool selected, bool strikeOut = false)
     {
         string result = "day prevent-select";
         if(selected)
         {
             result += $" selected rounded-circle";
+        }
+        if(strikeOut)
+        {
+            result += $" strike-out";
         }
         return result;
     }
@@ -136,5 +144,6 @@
         public DateTime Date {get; set;}
         public bool Empty {get; set;}
         public bool Selected {get; set;}
+        public bool StrikeOut {get; set;}
     }
 }

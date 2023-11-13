@@ -40,7 +40,7 @@
                         Cover Photo
                     </p>
                 </div>
-                <label for="cover-photo-upload" style="cursor: pointer;">
+                <label for="cover-photo-upload" class="cursor-pointer w-100">
                     <InputFile id="cover-photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadFile" />
                     <div class='@(!coverPhotoItem.Display ? "empty-image-container bg-white-100" : "d-none")'>
                         <div>
@@ -48,14 +48,14 @@
                             <p class="mb-0 mt-1 font-16 color-grey-100">JPEG or PNG only</p>
                         </div>
                     </div>
+                    <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30" VerticalGutter="30">
+                        <div class='@(coverPhotoItem.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@coverPhotoItem.ContainerId">
+                            <input type="hidden" id="@coverPhotoItem.InputDataId" name= "@coverPhotoItem.InputDataId" class="generated-input-data" />
+                            <img id="@coverPhotoItem.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src=@coverPhotoItem.ImageSrc"" alt="supporting-photo">
+                            <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/trashcan-icon.png" alt="delete">
+                        </div>
+                    </Row>
                 </label>
-                <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30" VerticalGutter="30">
-                    <div class='@(coverPhotoItem.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@coverPhotoItem.ContainerId">
-                        <input type="hidden" id="@coverPhotoItem.InputDataId" name= "@coverPhotoItem.InputDataId" class="generated-input-data" />
-                        <img id="@coverPhotoItem.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src=@coverPhotoItem.ImageSrc"" alt="supporting-photo">
-                        <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/trashcan-icon.png" alt="delete">
-                    </div>
-                </Row>
             </div>
             <div class="photo-upload-section supporting-images-container-wrapper text-center">
                 <div class="text-start font-16 mb-4 d-flex align-items-center">
@@ -82,9 +82,12 @@
                 <Row class="supporting-images-container mt-4" HorizontalGutter="30" VerticalGutter="30">
                     @foreach(var item in imageItems)
                     {
-                        <div @key="item.ContainerId" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
-                            <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
-                            <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
+                        <div @key="item" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
+                            <label for="@item.InputFileSrcId" class="cursor-pointer">
+                                <InputFile id="@item.InputFileSrcId" accept=".png,.jpg,.jpeg" name="@item.InputFileSrcId" class="d-none" OnChange="(e) => LoadPerPhoto(e, item)" />
+                                <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
+                                <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
+                            </label>
                             <img class="mt-2 cursor-pointer" @onclick="() => DeleteImage(item)" src="images/trashcan-icon.png" alt="delete">
                         </div>
                     }
@@ -136,9 +139,19 @@
                 {
                     string inputId = $"img-preview-input-{image.Order}";
                     string imgId = $"img-preview-src-{image.Order}";
-                    var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, 
-                        ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", 
-                        Order = image.Order, Display = true, ImageSrc = image.ImageSrc, ImageId = image.Id};
+                    string inputFileSrc = $"input-file-src-{image.Order}";
+
+                    var imageItem = new ImageItem {
+                        ContainerId = $"{imgId}-{inputId}", 
+                        FileSize = 0, 
+                        ImageSrcId = imgId, 
+                        InputDataId = inputId, 
+                        Order = image.Order, 
+                        Display = true, 
+                        ImageSrc = image.ImageSrc, 
+                        ImageId = image.Id,
+                        InputFileSrcId = inputFileSrc
+                    };
 
                     imageItems.Add(imageItem);
                 }
@@ -180,8 +193,16 @@
         {
             string inputId = $"img-preview-input-{lastIndex}";
             string imgId = $"img-preview-src-{lastIndex}";
+            string inputFileSrc = $"input-file-src-{lastIndex}";
 
-            var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", Order = lastIndex};
+            var imageItem = new ImageItem {
+                ContainerId = $"{imgId}-{inputId}", 
+                FileSize = 0, 
+                ImageSrcId = imgId, 
+                InputDataId = inputId, 
+                Order = lastIndex,
+                InputFileSrcId = inputFileSrc
+            };
             imageItems.Add(imageItem);
             StateHasChanged();
             lastIndex++;
@@ -277,6 +298,27 @@
         return Task.CompletedTask;
     }
 
+    private async Task LoadPerPhoto(InputFileChangeEventArgs e, ImageItem imageItem)
+    {
+        if(imageCropper is not null)
+        {
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                FileInputIndex = 0,
+                FileSrcSelector = $"#{imageItem.InputFileSrcId}",
+                Title = "Crop selected image",
+                OuputSelector = $"#{imageItem.InputDataId}",
+                HeightRatio = 4,
+                WidthRatio = 5
+            });
+            if(cropperResult.Cropped)
+            {
+                await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{imageItem.ImageSrcId}", $"#{imageItem.InputDataId}");
+                imageItem.FileSize = cropperResult.FileSize;
+                imageItem.Display = true;
+            }
+        }
+    }
+
     private class ImageItem 
     {
         public string ContainerId {get; set;} = string.Empty;
@@ -287,6 +329,7 @@
         public int Order {get; set;} = 0;
         public string ImageSrc {get; set;} = string.Empty;
         public int ImageId {get; set;}
+        public string InputFileSrcId {get; set;}
     }
 
     private class UploadResult 

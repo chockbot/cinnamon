@@ -4,215 +4,389 @@
 @using Cinnamon.Web.Models.Entities;
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Framework.ValidationAttributes;
-@using System.Text.RegularExpressions;
-@inject IAccountApiHandler accountApiHandler;
+@using System.Text.RegularExpressions
+@inject IJSRuntime jsRuntime
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 
 <article class="personal-info-wrapper p-3">
-    <div class="p-section name-section">
-        <Row>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                <div>
-                    <p class="title mb-1">Legal Name</p>
-                    @if(!isEditLegalName)
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span class="text-capitalize">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</span>
-                            <span class="edit" @onclick="EditLegalNameClick">Edit</span>
-                        </Div>
-                    }
-                    else
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span>Your name should match the name in your submitted Government ID.</span>
-                            <span class="edit" @onclick="() => isEditLegalName = !isEditLegalName">Cancel</span>
-                        </Div>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                                <Field class="form-floating mt-3 profile-info-input">
-                                    <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="firstNameLocalState" />
-                                    <FieldLabel for="legalFirstname">First name</FieldLabel>
-                                </Field>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                                <Field class="form-floating mt-3 profile-info-input">
-                                    <TextEdit class="border-10" id="legalLastname" Size="Size.Default" @bind-Text="lastNameLocalState" />
-                                    <FieldLabel for="legalLastname">Last name</FieldLabel>
-                                </Field>
-                            </Column>
-                        </Row>
-                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveLegalName">Save</Button>
-                    }
-                </div>
-                <div class="mt-2">
-                    <p class="title mb-1">Date of Birth</p>
-                    @if(!isEditBirthDate)
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span class="text-capitalize">@Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy")</span>
-                            <span class="edit" @onclick="EditBirthDate">Edit</span>
-                        </Div>
-                    }
-                    else
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span>Your birth date should match the date in your submitted Government ID.</span>
-                            <span class="edit" @onclick="() => isEditBirthDate = !isEditBirthDate">Cancel</span>
-                        </Div>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                                <Field class="form-floating mt-3 profile-info-input">
-                                    <TextEdit type="date" class="border-10" id="birthdate" Size="Size.Default" @bind-Text="birthDateLocalstate" />
-                                    <FieldLabel for="birthdate">Birth Date</FieldLabel>
-                                </Field>
-                            </Column>
-                        </Row>
-                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveBirthDate">Save</Button>
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <p class="activity-image-photos-error-message text-center">@errorMessage</p>
-                        }
-                    }
-                </div>
-                <div class="mt-2">
-                    <p class="title mb-1">Phone Number</p>
-                    @if (!isEditPhoneNumber)
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span class="text-capitalize">@Model.CustomerProfile.PhoneNumber</span>
-                            <span class="edit" @onclick="EditPhoneNumber">Edit</span>
-                        </Div>
-                    }
-                    else
-                    {
-                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <span>Input a valid phone number.</span>
-                        <span class="edit" @onclick="() => isEditPhoneNumber = !isEditPhoneNumber">Cancel</span>
-                        </Div>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                                <Field class="form-floating mt-3 profile-info-input">
-                                    <TextEdit class="border-10" id="phonenumber" Size="Size.Default" @bind-Text="phoneNumberLocalstate" />
-                                    <FieldLabel for="phonenumber">Phone Number</FieldLabel>
-                                </Field>
-                            </Column>
-                        </Row>
-                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SavePhoneNumber">Save</Button>
-                        @if (!string.IsNullOrEmpty(errorMessage1))
-                        {
-                            <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
-                        }
-                    }
-                </div>
-            </Column>
-        </Row>
-    </div>
-    <Divider />
-    <div class="p-section children-section">
-        <Row>
-            @if(!isEditFamilyMember)
-            {
-                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <p class="title mb-1">Kids Info</p>
-                        <span class="edit" @onclick="EditFamilyMemberClick">Edit</span>
-                    </Div>
-                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <Column>
-                            @foreach (var item in Model.FamilyMembers)
+    <div class="personal-info-section">
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div id="alertContainer" class="alertContainer">
+                <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+            </div>
+            <section class="profile-content">
+                <Row>
+                    <Column class="profile-column-card" ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnTablet.Is12.OnMobile">
+                        <Card class="customer-profile-card">
+                                <CardBody Class="profile-card-body">
+                                    @if (Model.CustomerProfile.IsMaker == true)
+                                    {
+                                        <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                            <img src="images/copytoclipboard.png">
+                                        </button>
+                                    }
+                                    <Figure class="profile-pic">
+                                        <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                    </Figure>
+                                    <div class="edit-icon">
+                                        <Button @onclick="() => upload.ShowModal()">
+                                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                                        </Button>
+                                    </div>
+                                    @switch (Model.CustomerProfile.IsVerified)
+                                    {
+                                        case 0:
+                                            <CardTitle TextAlignment="TextAlignment.Center">
+                                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                                <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
+                                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
+                                                Get Verified
+                                                </Button>
+                                                </CardTitle>
+                                            break;
+                                        case 1:
+                                            <CardTitle TextAlignment="TextAlignment.Center">
+                                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                                <p class="text-color-8080 font-16 mb-1">@Resources.App.pendingVerification</p>
+
+                                                <p class="text-color-8080 my-1 font-24">
+                                                    <img class="img-pending" src="images/PendingIcon.png" />
+                                                    <span class="span-pending">Pending Verification</span>
+                                                </p>
+
+                                            </CardTitle>
+                                            break;
+                                        case 2:
+                                            <CardTitle TextAlignment="TextAlignment.Center">
+                                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                                <p class="text-color-8080 my-1 font-24">
+                                                    <img class="img-verified" src="images/Badges/VERIFIED.svg" />
+                                                    <span class="span-verified">Verified</span>
+                                                </p>
+                                            </CardTitle>
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    @if (MakerOngoingStudent != 0)
+                                    {
+                                        <div class="ongoing-students">
+                                            <p class="ongoing-students-label">Ongoing Enrollees</p>
+                                            <p class="ongoing-students-number">@MakerOngoingStudent</p>
+                                        </div>
+                                    }
+                                    @if (MakerCompletedStudent != 0)
+                                    {
+                                        <div class="completed-students">
+                                            <p class="completed-students-label">Completed Enrollees</p>
+                                            <p class="completed-students-number">@MakerCompletedStudent</p>
+                                        </div>
+                                    }
+                                </CardBody>
+                            </Card>
+                    </Column>
+                </Row>
+            </section>
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+            <div class="p-section name-section">
+                <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                    <div>
+                            <p class="main-title">Personal Information</p>
+                            <p class="title-description mb-4">Update your photo and personal details here.</p>
+
+                            <p class="title mb-1">About you</p>
+                            <p class="mb-2 text-color-8080 font-14">Joined in @Model.CustomerProfile.DateJoined.Year</p>
+                            @if (!isEditAbout)
                             {
-                                <Row style="flex: 0 0 auto;" class="mb-2">
-                                    <Column>
-                                        <p class="text-capitalize">@item.Name</p>
-                                    </Column>
-                                    <Column>
-                                        <p class="text-capitalize text-center">@item.Gender</p>
-                                    </Column>
-                                    <Column>
-                                        <p class="text-capitalize text-end">@item.BirthMonth @item.BirthYear</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="about-info">@Model.CustomerProfile.About</span>
+                                    <span class="edit" @onclick="OnEditAboutClick">Edit</span>
+                                </Div>
+                            }
+                            else
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span>Write something about yourself.</span>
+                                    <span class="edit" @onclick="() => isEditAbout = !isEditAbout">Cancel</span>
+                                </Div>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is10.OnDesktop">
+                                        <Field class="form-floating mt-3 profile-info-input">
+                                            <MemoEdit @bind-Text="aboutLocalState" Rows="10" Height="Height.Is100" />
+                                        </Field>
                                     </Column>
                                 </Row>
+                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveAboutClick">Save</Button>
+                                @if (!string.IsNullOrEmpty(errorMessage1))
+                                {
+                                    <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
+                                }
                             }
-                        </Column>
-                    </Div>
-                </Column>
-            }
-            else 
-            {
-                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <p class="title mb-1">Kids Info</p>
-                        <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
-                    </Div>
-                    <Div Margin="Margin.Is2">
-                    <p class="details">
-                        We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
-                    </p>
-                    @for(int i = 0; i < localStateFamilyMembers.Count ; i++)
-                    {
-                        <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
-                    }
-                    </Div>
-                    <Div Display="Display.Flex">
-                        <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop" 
-                            TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">Add</Button>
-                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="SaveEditedFamilyMember" 
-                            TextColor="TextColor.White" Color="Color.Primary">Save</Button>
-                    </Div>
-                </Column>
-            }
-        </Row>
-    </div>
-    <Divider />
-    <div class="p-section ids-section">
-        <Row>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                <p class="title mb-1">Government ID</p>
-                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                    <span>ID no. 1</span>
-                    <span class="edit" @onclick="() => OnEditIdClick.InvokeAsync()">Edit</span>
-                </Div>
-            </Column>
-        </Row>
-    </div>
-    @if(Model.CustomerProfile.IsMaker)
-    {
-        <Divider />
-        <div class="p-section payout-account-section">
-            <Row>
-                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                    <p class="title mb-1">Payout Information</p>
-                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        @if(PayoutAccount == null)
-                        {
-                            <span>No Data Found</span>
-                            <span class="edit">
-                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Add</NavLink>
-                            </span>
-                        }
-                        else 
-                        {
-                            <span>@PayoutAccount.AccountNumber</span>
-                            <span class="edit">
-                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Edit</NavLink>
-                            </span>
-                        }
-                    </Div>
-                </Column>
-            </Row>
-        </div>
-    }
-</article>
+                            <Divider />
+                            <p class="title mb-1">Legal Name</p>
+                            @if (!isEditLegalName)
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</span>
+                                    <span class="edit" @onclick="EditLegalNameClick">Edit</span>
+                                </Div>
+                            }
+                            else
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span>Your name should match the name in your submitted Government ID.</span>
+                                    <span class="edit" @onclick="() => isEditLegalName = !isEditLegalName">Cancel</span>
+                                </Div>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                        <Field class="form-floating mt-3 profile-info-input">
+                                            <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="firstNameLocalState" />
+                                            <FieldLabel for="legalFirstname">First name</FieldLabel>
+                                        </Field>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                        <Field class="form-floating mt-3 profile-info-input">
+                                            <TextEdit class="border-10" id="legalLastname" Size="Size.Default" @bind-Text="lastNameLocalState" />
+                                            <FieldLabel for="legalLastname">Last name</FieldLabel>
+                                        </Field>
+                                    </Column>
+                                </Row>
+                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveLegalName">Save</Button>
+                            }
 
-@code 
+                        </div>
+                    <Divider />
+                    <div class="mt-2">
+                            <p class="title mb-1">Date of Birth</p>
+                            @if (!isEditBirthDate)
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item">@Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy")</span>
+                                    <span class="edit" @onclick="EditBirthDate">Edit</span>
+                                </Div>
+                            }
+                            else
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span>Your birth date should match the date in your submitted Government ID.</span>
+                                    <span class="edit" @onclick="() => isEditBirthDate = !isEditBirthDate">Cancel</span>
+                                </Div>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                        <Field class="form-floating mt-3 profile-info-input">
+                                            <TextEdit type="date" class="border-10" id="birthdate" Size="Size.Default" @bind-Text="birthDateLocalstate" />
+                                            <FieldLabel for="birthdate">Birth Date</FieldLabel>
+                                        </Field>
+                                    </Column>
+                                </Row>
+                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveBirthDate">Save</Button>
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <p class="activity-image-photos-error-message text-center">@errorMessage</p>
+                                }
+                            }
+                        </div>
+                    <Divider />
+                    <div class="mt-2">
+                            <p class="title mb-1">Phone Number</p>
+                            @if (!isEditPhoneNumber)
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item">@Model.CustomerProfile.PhoneNumber</span>
+                                    <span class="edit" @onclick="EditPhoneNumber">Edit</span>
+                                </Div>
+                            }
+                            else
+                            {
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span>Input a valid phone number.</span>
+                                    <span class="edit" @onclick="() => isEditPhoneNumber = !isEditPhoneNumber">Cancel</span>
+                                </Div>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                        <Field class="form-floating mt-3 profile-info-input">
+                                            <TextEdit class="border-10" id="phonenumber" Size="Size.Default" @bind-Text="phoneNumberLocalstate" />
+                                            <FieldLabel for="phonenumber">Phone Number</FieldLabel>
+                                        </Field>
+                                    </Column>
+                                </Row>
+                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SavePhoneNumber">Save</Button>
+                                @if (!string.IsNullOrEmpty(errorMessage1))
+                                {
+                                    <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
+                                }
+                            }
+                        </div>
+                    <Divider />
+                    <div class="p-section ids-section">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                    <p class="title mb-1">Government ID</p>
+                                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                        <span class="info-item">ID no. 1</span>
+                                        <span class="edit" @onclick="() => OnEditIdClick.InvokeAsync()">Edit</span>
+                                    </Div>
+                                </Column>
+                            </Row>
+                        </div>
+                    @if (Model.CustomerProfile.IsMaker)
+                        {
+                            <Divider />
+                            <div class="p-section payout-account-section">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                        <p class="title mb-1">Payout Information</p>
+                                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                            @if (PayoutAccount == null)
+                                            {
+                                                <span>No Data Found</span>
+                                                <span class="edit">
+                                                <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="info-item">@PayoutAccount.AccountNumber</span>
+                                                <span class="edit">
+                                                    <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Edit</NavLink>
+                                                </span>
+                                            }
+                                        </Div>
+                                    </Column>
+                                </Row>
+                            </div>
+                        }
+                </Column>
+            </div>
+            <Divider />
+            <div class="p-section children-section">
+                @if (!isEditFamilyMember)
+                {
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                            <p class="main-title">Kids Information</p>
+                            <p class="title-description mb-4">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
+                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                <p class="title mb-1">Details</p>
+                                <span class="edit" @onclick="EditFamilyMemberClick">Edit</span>
+                            </Div>
+                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                <Column>
+                                    @foreach (var item in Model.FamilyMembers)
+                                    {
+                                        <Row style="flex: 0 0 auto;" class="mb-2">
+                                            <Column>
+                                                <p class="info-item">@item.Name</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-center">@item.Gender</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-end">@item.BirthMonth @item.BirthYear</p>
+                                            </Column>
+                                        </Row>
+                                    }
+                                </Column>
+                            </Div>
+                        </Column>
+                }
+                else
+                {
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                        <p class="main-title">Kids Information</p>
+                        <p class="title-description mb-4">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
+                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                            <p class="title mb-1">Details</p>
+                            <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
+                        </Div>
+                        <Div Margin="Margin.Is2">
+                            @for (int i = 0; i < localStateFamilyMembers.Count; i++)
+                            {
+                                <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                            }
+                        </Div>
+                        <Div Display="Display.Flex">
+                            <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
+                                TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">
+                                Add
+                            </Button>
+                            <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="SaveEditedFamilyMember"
+                                TextColor="TextColor.White" Color="Color.Primary">
+                                Save
+                            </Button>
+                        </Div>
+                    </Column>
+                }
+            </div>
+            <Divider />
+            <div class="p-section">
+                <p class="main-title">Badges</p>
+                @if(Model.CustomerProfile.IsVerified == 2)
+                {
+                    <div class="badges-container d-flex justify-content-start pt-3">
+                        @if (Model.CustomerProfile.IsVerified == 2)
+                        {
+                            <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/VERIFIED.svg" />
+                            </Tooltip>
+                        }
+                        @if (Model.CustomerProfile.IsOG == true)
+                        {
+                            <Tooltip Multiline=true Text="For being part of the alpha and beta testing." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/OG.svg" />
+                            </Tooltip>
+                        }
+                        @if (Model.CustomerProfile.IsOfficial == true)
+                        {
+                            <Tooltip Multiline=true Text="Legitimate experience provider in the platform." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/OFFICIAL PARTNER.svg" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 10)
+                        {
+                            var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@rare.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@rare.ImgScr" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 25)
+                        {
+                            var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@epic.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@epic.ImgScr" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 100)
+                        {
+                            var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@legendary.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@legendary.ImgScr" />
+                            </Tooltip>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</article>
+<ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
+@code
 {
     [Parameter]
-    public Models.Customer.Profile Model {get; set;}
+    public Models.Customer.Profile Model { get; set; }
 
     [Parameter]
-    public EventCallback<Models.Customer.Profile> ModelChanged {get; set;}
+    public EventCallback<Models.Customer.Profile> ModelChanged { get; set; }
 
     [Parameter]
-    public EventCallback OnEditIdClick {get; set;}
+    public EventCallback OnEditIdClick { get; set; }
+
+    IJSObjectReference module;
 
     private bool isEditLegalName = false;
 
@@ -234,7 +408,7 @@
 
     private IList<int> RemovedIds = new List<int>();
 
-    private PayoutAccountModel PayoutAccount {get; set;}
+    private PayoutAccountModel PayoutAccount { get; set; }
 
     private string errorMessage = string.Empty;
 
@@ -242,24 +416,55 @@
 
     public const string regex = @"((^(\+)(\d){12}$)|(^\d{11}$))";
 
+    private MakerExperiences makerExperiences;
+
+    private string selectedTab = "personal-info";
+
+    private string ImageSource { get; set; } = "images/Profile/user";
+
+    protected ModalUploadingProfile upload;
+
+    private bool isEditAbout = false;
+
+    private string aboutLocalState = string.Empty;
+
+    public int MakerOngoingStudent { get; set; }
+
+    public int MakerCompletedStudent { get; set; }
+
+    public string displayBadge = "d-flex";
+
+    public List<BadgeList> badges = new List<BadgeList>();
+
+    public List<Favorite> favorites = new List<Favorite>();
+
+    public string displayText = "d-flex";
+    private string Token { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Model.Token);
-        if(fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
         {
             var payoutAccount = fetchPayoutAccount.Result.Result;
-            PayoutAccount = new PayoutAccountModel {
-                AccountHolder = payoutAccount.AccountHolder,
-                AccountNumber = payoutAccount.AccountNumber,
-                Id = payoutAccount.Id
-            };
+            PayoutAccount = new PayoutAccountModel
+                {
+                    AccountHolder = payoutAccount.AccountHolder,
+                    AccountNumber = payoutAccount.AccountNumber,
+                    Id = payoutAccount.Id
+                };
         }
+        ImageSource = Model.CustomerProfile.ProfilePath;
+
+        //Get Ongoing and completed enrollees
+        MakerOngoingStudent = Model.OwnedActivities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = Model.OwnedActivities.Sum(x => x.CompletedStudents);
     }
 
     private void EditLegalNameClick()
     {
         isEditLegalName = !isEditLegalName;
-        if(isEditLegalName)
+        if (isEditLegalName)
         {
             firstNameLocalState = Model.CustomerProfile.FirstName;
             lastNameLocalState = Model.CustomerProfile.LastName;
@@ -273,7 +478,7 @@
 
     private async Task SaveLegalName()
     {
-        if(isEditLegalName)
+        if (isEditLegalName)
         {
             var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
                 {
@@ -282,7 +487,7 @@
                     Datebirth = Model.CustomerProfile.Birthdate
                 }, Model.Token);
 
-            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
                 Model.CustomerProfile.FirstName = firstNameLocalState;
                 Model.CustomerProfile.LastName = lastNameLocalState;
@@ -295,9 +500,9 @@
 
     private void AddFamilyMember()
     {
-        if(isEditFamilyMember)
+        if (isEditFamilyMember)
         {
-            localStateFamilyMembers.Add(new () {BirthMonth = "january", BirthYear = 1900, Gender = "male"});
+            localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male" });
         }
     }
 
@@ -315,40 +520,47 @@
 
     private async Task SaveEditedFamilyMember()
     {
-        if(isEditFamilyMember)
+        if (isEditFamilyMember)
         {
             // delete family members
-            var deleted = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs {
-                Ids = RemovedIds
-            }, Model.Token);
+            var deleted = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs
+                {
+                    Ids = RemovedIds
+                }, Model.Token);
 
             // add members
-            var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
-                FamilyMembers = localStateFamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
-                                    .Select(m => {
-                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
-                                            BirthMonth = m.BirthMonth,
-                                            BirthYear = m.BirthYear,
-                                            Gender = m.Gender,
-                                            Id = m.Id,
-                                            Name = m.Name
-                                        };
-                                    }),
-            }, Model.Token);
+            var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs
+                {
+                    FamilyMembers = localStateFamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                        .Select(m =>
+                                        {
+                                            return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
+                                            {
+                                                BirthMonth = m.BirthMonth,
+                                                BirthYear = m.BirthYear,
+                                                Gender = m.Gender,
+                                                Id = m.Id,
+                                                Name = m.Name
+                                            };
+                                        }),
+                }, Model.Token);
 
             // update members
-            var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
-                FamilyMembers = localStateFamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
-                                    .Select(m => {
-                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
-                                            BirthMonth = m.BirthMonth,
-                                            BirthYear = m.BirthYear,
-                                            Gender = m.Gender,
-                                            Id = m.Id,
-                                            Name = m.Name
-                                        };
-                                    })
-            }, Model.Token);
+            var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs
+                {
+                    FamilyMembers = localStateFamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                        .Select(m =>
+                                        {
+                                            return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
+                                            {
+                                                BirthMonth = m.BirthMonth,
+                                                BirthYear = m.BirthYear,
+                                                Gender = m.Gender,
+                                                Id = m.Id,
+                                                Name = m.Name
+                                            };
+                                        })
+                }, Model.Token);
 
             Model.FamilyMembers = localStateFamilyMembers.Where(m => !string.IsNullOrEmpty(m.Name)).ToList();
         }
@@ -358,7 +570,7 @@
     private void EditBirthDate()
     {
         isEditBirthDate = !isEditBirthDate;
-        if(isEditBirthDate)
+        if (isEditBirthDate)
         {
             birthDateLocalstate = Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy");
         }
@@ -413,7 +625,7 @@
     }
     private async Task SaveBirthDate()
     {
-        if(isEditBirthDate)
+        if (isEditBirthDate)
         {
             //Check B-Day
             DateTime birthDate = DateTime.Parse(birthDateLocalstate);
@@ -449,6 +661,87 @@
     {
         if (number != null) return Regex.IsMatch(number, regex);
         else return false;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
+        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
+    }
+
+    private void OnEditAboutClick()
+    {
+        isEditAbout = !isEditAbout;
+        if (isEditAbout)
+        {
+            aboutLocalState = Model.CustomerProfile.About;
+        }
+        else
+        {
+            aboutLocalState = string.Empty;
+        }
+    }
+
+    private async Task SaveAboutClick()
+    {
+        if (isEditAbout)
+        {
+            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                {
+                    About = aboutLocalState,
+                }, Model.Token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.CustomerProfile.About = string.IsNullOrEmpty(result.Result.Result.About) ? string.Empty : result.Result.Result.About;
+            }
+        }
+
+        isEditAbout = false;
+    }
+
+    private void NavigateToGetVerified()
+    {
+        if (Model.CustomerProfile.IsMaker)
+        {
+            NavigationManager.NavigateTo("/customer/user-verification/?redirect=redirect_account");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/uploadGovermentId/");
+        }
+    }
+
+    private void NavigateToUploadId()
+    {
+        NavigationManager.NavigateTo("/uploadGovermentId/");
+    }
+    private async Task FetchMakerBadges()
+    {
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
+        }
+    }
+    private async Task CopyToClipboard()
+    {
+        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.BaseUri + "maker/profile/" + Model.CustomerProfile.Handler));
     }
 }
 

@@ -37,22 +37,24 @@
                             <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
                             <p class="font-16 color-grey-100 mb-0 text-capitalize">cover photo</p>
                         </label>
-                        <label for="@coverPhoto.FileId" class='@(coverPhoto.Display ? "d-none" : "cursor-pointer w-100")'>
+                        <label for="@coverPhoto.FileId" class="cursor-pointer w-100">
                             <InputFile id="@coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadCoverPhotoFile" />
-                            <div class='empty-image-container bg-white-100'>
-                                <div class="text-center">
-                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
-                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                            <div class='@(coverPhoto.Display ? "d-none" : "")'>
+                                <div class='empty-image-container bg-white-100'>
+                                    <div class="text-center">
+                                        <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                        <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                    </div>
                                 </div>
                             </div>
+                            <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                                <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
+                                    <input type="hidden" id="@coverPhoto.InputDataId" name= "@coverPhoto.InputDataId" class="generated-input-data" />
+                                    <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@coverPhoto.ImageSrc" alt="supporting-photo">
+                                    <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/ote/trashcan-icon.png" alt="delete">
+                                </div>
+                            </Row>
                         </label>
-                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
-                            <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
-                                <input type="hidden" id="@coverPhoto.InputDataId" name= "@coverPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@coverPhoto.ImageSrc" alt="supporting-photo">
-                                <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/ote/trashcan-icon.png" alt="delete">
-                            </div>
-                        </Row>
                     </div>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
@@ -61,22 +63,24 @@
                             <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">8</span>
                             <p class="font-16 color-grey-100 mb-0 text-capitalize">seat plan (optional)</p>
                         </label>
-                        <label for="@setplanPhoto.FileId" class='@(setplanPhoto.Display ? "d-none" : "cursor-pointer w-100")'>
+                        <label class="cursor-pointer w-100">
                             <InputFile id="@setplanPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadSetplanPhotoFile" />
-                            <div class='empty-image-container bg-white-100'>
-                                <div class="text-center">
-                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
-                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                            <div for="@setplanPhoto.FileId" class='@(setplanPhoto.Display ? "d-none" : "")'>
+                                <div class='empty-image-container bg-white-100'>
+                                    <div class="text-center">
+                                        <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                        <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                    </div>
                                 </div>
                             </div>
+                            <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                                <div class='@(setplanPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@setplanPhoto.ContainerId">
+                                    <input type="hidden" id="@setplanPhoto.InputDataId" name= "@setplanPhoto.InputDataId" class="generated-input-data" />
+                                    <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@setplanPhoto.ImageSrc" alt="supporting-photo">
+                                    <img class="mt-2 cursor-pointer" @onclick="DeleteSetplanPhoto" src="images/ote/trashcan-icon.png" alt="delete">
+                                </div>
+                            </Row>
                         </label>
-                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
-                            <div class='@(setplanPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@setplanPhoto.ContainerId">
-                                <input type="hidden" id="@setplanPhoto.InputDataId" name= "@setplanPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@setplanPhoto.ImageSrc" alt="supporting-photo">
-                                <img class="mt-2 cursor-pointer" @onclick="DeleteSetplanPhoto" src="images/ote/trashcan-icon.png" alt="delete">
-                            </div>
-                        </Row>
                     </div>
                 </Column>
             </Row>
@@ -104,9 +108,12 @@
             <Row class="supporting-images-container mt-4" HorizontalGutter="30" VerticalGutter="30">
                 @foreach(var item in imageItems)
                 {
-                    <div @key="item.ContainerId" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
-                        <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
-                        <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
+                    <div @key="item" class='@(item.Display ? "col-12 col-md-6 mb-4" : "d-none")' id="@item.ContainerId">
+                        <label for="@item.InputFileSrcId" class="cursor-pointer">
+                            <InputFile id="@item.InputFileSrcId" accept=".png,.jpg,.jpeg" name="@item.InputFileSrcId" class="d-none" OnChange="(e) => LoadPerPhoto(e, item)" />
+                            <input type="hidden" id="@item.InputDataId" name= "@item.InputDataId" class="generated-input-data" />
+                            <img id="@item.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@item.ImageSrc" alt="supporting-photo">
+                        </label>
                         <img class="mt-2 cursor-pointer" @onclick="() => DeleteImage(item)" src="images/ote/trashcan-icon.png" alt="delete">
                     </div>
                 }
@@ -175,27 +182,14 @@
 
     private async Task LoadSetplanPhotoFile(InputFileChangeEventArgs e)
     {
-        if(imageCropper is not null)
-        {
-            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
-                FileInputIndex = 0,
-                FileSrcSelector = $"#{setplanPhoto.FileId}",
-                Title = "Crop selected image",
-                OuputSelector = $"#{setplanPhoto.InputDataId}",
-                HeightRatio = 5,
-                WidthRatio = 4
-            });
-            if(cropperResult.Cropped)
-            {
-                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{setplanPhoto.ImageSrcId}", $"#{setplanPhoto.InputDataId}");
-                setplanPhoto.FileSize = cropperResult.FileSize;
-                setplanPhoto.Display = true;
-            }
-            else 
-            {
-                setplanPhoto.Display = false;
-            }
-        }
+        var options = new {
+            imgSelector = $"#{setplanPhoto.ImageSrcId}",
+            inputSelector = $"#{setplanPhoto.FileId}",
+            fileIndex = 0,
+            inputSelectorToWriteBlob = $"#{setplanPhoto.InputDataId}"
+        };
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImageByFileInput", options);
+        setplanPhoto.Display = true;
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -207,8 +201,16 @@
         {
             string inputId = $"img-preview-input-{lastIndex}";
             string imgId = $"img-preview-src-{lastIndex}";
+            string inputFileSrc = $"input-file-src-{lastIndex}";
 
-            var imageItem = new ImageItem {ContainerId = $"{imgId}-{inputId}", FileSize = 0, ImageSrcId = $"{imgId}", InputDataId = $"{inputId}", Order = lastIndex};
+            var imageItem = new ImageItem {
+                ContainerId = $"{imgId}-{inputId}", 
+                FileSize = 0, 
+                ImageSrcId = imgId, 
+                InputDataId = inputId, 
+                Order = lastIndex,
+                InputFileSrcId = inputFileSrc
+            };
             imageItems.Add(imageItem);
             StateHasChanged();
             lastIndex++;
@@ -236,6 +238,27 @@
                 }
             }
             StateHasChanged();
+        }
+    }
+
+    private async Task LoadPerPhoto(InputFileChangeEventArgs e, ImageItem imageItem)
+    {
+        if(imageCropper is not null)
+        {
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
+                FileInputIndex = 0,
+                FileSrcSelector = $"#{imageItem.InputFileSrcId}",
+                Title = "Crop selected image",
+                OuputSelector = $"#{imageItem.InputDataId}",
+                HeightRatio = 4,
+                WidthRatio = 5
+            });
+            if(cropperResult.Cropped)
+            {
+                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{imageItem.ImageSrcId}", $"#{imageItem.InputDataId}");
+                imageItem.FileSize = cropperResult.FileSize;
+                imageItem.Display = true;
+            }
         }
     }
 
@@ -357,15 +380,17 @@
             {
                 string inputId = $"img-preview-input-{item.Order}";
                 string imgId = $"img-preview-src-{item.Order}";
+                string inputFileSrc = $"input-file-src-{item.Order}";
 
                 imageItems.Add(new ImageItem {
                     ContainerId = $"{imgId}-{inputId}",
                     Display = true,
                     Id = item.Id,
                     ImageSrc = item.ImageSrc,
-                    ImageSrcId = $"{imgId}",
-                    InputDataId = $"{inputId}",
-                    Order = item.Order
+                    ImageSrcId = imgId,
+                    InputDataId = inputId,
+                    Order = item.Order,
+                    InputFileSrcId = inputFileSrc
                 });
             }
         }
@@ -403,6 +428,7 @@
         public bool Display {get; set;} = false;
         public int Order {get; set;} = 0;
         public string ImageSrc {get; set;} = string.Empty;
+        public string InputFileSrcId {get; set;}
     }
 
     private class UploadResult 

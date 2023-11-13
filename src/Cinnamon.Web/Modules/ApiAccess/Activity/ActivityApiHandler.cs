@@ -977,4 +977,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OteTicketDetailsResult>.CreateFailed(ex, "An error occured when getting ote activity ticket details");
         }
     }
+
+    public async Task<AppResult<CustomerOteResult>> CustomerOte(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+               .Request($"Activity/CustomerOte")
+               .GetJsonAsync<CustomerOteResult>();
+
+            return AppResult<CustomerOteResult>.CreateSucceeded(result, "Successfully getting customer ote.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CustomerOteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerOteResult>.CreateFailed(ex, "An error occured when getting customer ote.");
+        }
+    }
 }

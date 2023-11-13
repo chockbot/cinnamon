@@ -62,4 +62,5 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets);
 
     Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id);
+    Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
 }
