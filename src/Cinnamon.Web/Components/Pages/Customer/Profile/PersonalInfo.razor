@@ -323,6 +323,54 @@
                     </Column>
                 }
             </div>
+            <Divider />
+            <div class="p-section">
+                <p class="main-title">Badges</p>
+                @if(Model.CustomerProfile.IsVerified == 2)
+                {
+                    <div class="badges-container d-flex justify-content-start pt-3">
+                        @if (Model.CustomerProfile.IsVerified == 2)
+                        {
+                            <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/VERIFIED.svg" />
+                            </Tooltip>
+                        }
+                        @if (Model.CustomerProfile.IsOG == true)
+                        {
+                            <Tooltip Multiline=true Text="For being part of the alpha and beta testing." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/OG.svg" />
+                            </Tooltip>
+                        }
+                        @if (Model.CustomerProfile.IsOfficial == true)
+                        {
+                            <Tooltip Multiline=true Text="Legitimate experience provider in the platform." Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="images/Badges/OFFICIAL PARTNER.svg" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 10)
+                        {
+                            var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@rare.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@rare.ImgScr" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 25)
+                        {
+                            var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@epic.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@epic.ImgScr" />
+                            </Tooltip>
+                        }
+                        @if (MakerCompletedStudent >= 100)
+                        {
+                            var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                            <Tooltip Multiline=true Text="@legendary.Description" Flex="Flex.AlignContent">
+                                <img class="verified-logo account-badge" src="@legendary.ImgScr" />
+                            </Tooltip>
+                        }
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </article>
