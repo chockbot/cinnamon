@@ -442,10 +442,18 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="row price-badge-section">
-                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act.Price)</p></div>
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3 mb-0">@GetPriceLabel(act.Price)</p></div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                     </div>
                                                                 </div>
+                                                                @if(act.ExperienceCreationTypeId == 3)
+                                                                {
+                                                                    <div class="mt-2">
+                                                                        <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                                            One time event
+                                                                        </span>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                         </div>
                                                     </Animate>
@@ -628,10 +636,18 @@
                                             </div>
                                         </div>
                                         <div class="row price-badge-section">
-                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act.Price)</p></div>
+                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3 mb-0">@GetPriceLabel(act.Price)</p></div>
                                             <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                             </div>
                                         </div>
+                                        @if(act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                        {
+                                            <div class="mt-2">
+                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                    One time event
+                                                </span>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </Animate>
