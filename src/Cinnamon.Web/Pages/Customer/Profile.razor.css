@@ -28,6 +28,20 @@
   min-height: 300px;
   color: #343d4c;
 }
+.customer-profile-details{
+    margin-top: 5rem;
+}
+::deep .nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    justify-content: space-around;
+}
+::deep .nav-tabs{
+    border-bottom: none;
+}
 ::deep .card-image-full {
   height: 150px;
   aspect-ratio: auto 150 / 150;
@@ -121,24 +135,39 @@
 .profile-info-input label {
     padding-top: 0.5rem;
 }
-
 .personal-tab-swiper .swiper-slide {
-  width: auto !important;
+    width: auto !important;
+    
 }
 
-.personal-tab-swiper .swiper-slide .tab-item {
-  padding: 0.5rem 1rem;
-  font-size: 18px;
-  font-weight: 700;
-  text-transform: capitalize;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
+    .personal-tab-swiper .swiper-slide .tab-item {
+        padding: 0.5rem 1rem;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: capitalize;
+        outline: none;
+        border: none;
+        cursor: pointer;
+    }
 
-.personal-tab-swiper .swiper-slide .tab-item.active {
-  background-color: var(--primary);
-  color: #fff;
-}
+    .personal-tab-swiper .swiper-slide .tab-item.active {
+        background-color: none;
+        color: #343D4C;
+        text-decoration: underline 3px solid #FFA942;
+        text-underline-position: under;
+        outline: none;
+        border: none;
+    }
+        .personal-tab-swiper .swiper-slide .tab-item:hover {
+            outline: none;
+            border: none;
+            color: #343D4C;
+        }
+
+        .personal-tab-swiper .swiper-slide .tab-item:focus {
+            outline: none;
+            border: none;
+        }
 .img-pending {
     height: 28px;
     width: 28px;
