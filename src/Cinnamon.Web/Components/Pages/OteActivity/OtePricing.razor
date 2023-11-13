@@ -172,7 +172,9 @@
                                     <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
-                                            <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">view details</span>
+                                            <span @onclick="() => ViewDetails(item)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
+                                                view details
+                                            </span>
                                         </div>
                                         <div>
                                             <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
@@ -274,8 +276,12 @@
             <Row VerticalGutter="10" class="mb-4">
                 <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
-                        <span class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">view details</span>
+                        <span class="font-14 font-weight-700 color-orange-100">
+                            Buyer total: ₱ @(CalCulateBuyerTotal(modelPricing).ToString("#,##0.00"))
+                        </span>
+                        <span @onclick="() => ViewDetails(modelPricing)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
+                            view details
+                        </span>
                     </div>
                     <div>
                         <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees">
@@ -292,6 +298,48 @@
         </Validations>
     </div>
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+
+    <Modal @ref="modalFeeBreakdown">
+        <ModalContent Centered class="border-radius-15">
+            <ModalHeader class="justify-content-center pb-0">
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Absorb Fees Breakdown</p>
+                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseDetails" />
+            </ModalHeader>
+            <ModalBody class="px-4">
+                <div class="color-black-100">
+                    <label class="font-weight-700 font-16 mb-2">Cost of Buyer</label>
+                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                        <p class="mb-0">Ticket Price:</p>
+                        <p class="mb-0">₱ @modalTicketPricing.TicketPrice.ToString("#,##0.00")</p>
+                    </div>
+                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                        <p class="mb-0">Service Fee:</p>
+                        <p class="mb-0">₱ @modalTicketPricing.ServiceFee.ToString("#,##0.00")</p>
+                    </div>
+                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                        <p class="mb-0">Handling Fee:</p>
+                        <p class="mb-0">₱ @modalTicketPricing.HandlingFee.ToString("#,##0.00")</p>
+                    </div>
+                    <div class="mb-2 d-flex font-weight-700 justify-content-between">
+                        <p class="mb-0">Total:</p>
+                        <p class="mb-0">₱ @modalTicketPricing.SubTotal.ToString("#,##0.00")</p>
+                    </div>
+                </div>
+                <div class="color-black-100 mt-4">
+                    <label class="font-weight-700 font-16 mb-1">Your Payout</label>
+                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                        <p class="mb-0">Ticket Revenue:</p>
+                        <p class="mb-0">₱ @modalTicketPricing.PayoutAmount.ToString("#,##0.00")</p>
+                    </div>
+                </div>
+                <div class="color-grey-100 font-12 mt-4">
+                    <p class="mb-0">Note: Service will may change depending on the payment method used.</p>
+                    <p class="mb-0">E-wallet - 3%</p>
+                    <p class="mb-0">Cards - 5%</p>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </section>
 
 @code 
@@ -311,6 +359,8 @@
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
     private bool showErrors = false;
+    private Modal? modalFeeBreakdown {get; set;}
+    private ModalTicketPricing modalTicketPricing = new();
 
     private async Task NextClick()
     {
@@ -490,6 +540,30 @@
         StateHasChanged();
     }
 
+    private async Task ViewDetails(Pricing ticketPricing)
+    {
+        if(modalFeeBreakdown is not null)
+        {
+            modalTicketPricing.TicketPrice = ticketPricing.Price;
+            modalTicketPricing.IsAbsorbFee = ticketPricing.AbsorbFees;
+            await modalFeeBreakdown.Show();
+        }
+    }
+
+    private async Task CloseDetails()
+    {
+        if(modalFeeBreakdown is not null)
+        {
+            await modalFeeBreakdown.Close(CloseReason.UserClosing);
+        }
+    }
+
+    private decimal CalCulateBuyerTotal(Pricing ticketPrice)
+    {
+        ModalTicketPricing price = new ModalTicketPricing {IsAbsorbFee = ticketPrice.AbsorbFees, TicketPrice = ticketPrice.Price};
+        return price.SubTotal;
+    }
+
     public class ModelData
     {
         public DateTime DateFrom {get; set;}
@@ -584,6 +658,45 @@
         {
             get{
                 return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
+            }
+        }
+    }
+
+    private class ModalTicketPricing
+    {
+        public decimal TicketPrice {get; set;}
+        public bool IsAbsorbFee {get; set;}
+        public decimal ServiceFee 
+        {
+            get 
+            {
+                return (TicketPrice * 0.05m);
+            }
+        }
+
+        public decimal HandlingFee 
+        {
+            get {
+                return 15;
+            }
+        }
+
+        public decimal SubTotal 
+        {
+            get
+            {
+                if(!IsAbsorbFee) return TicketPrice + ServiceFee + HandlingFee;
+                return TicketPrice;
+            }
+        }
+
+        public decimal PayoutAmount 
+        {
+            get 
+            {
+                if(!IsAbsorbFee) return TicketPrice;
+
+                return SubTotal - ServiceFee - HandlingFee;
             }
         }
     }
