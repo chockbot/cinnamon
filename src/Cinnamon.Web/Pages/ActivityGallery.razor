@@ -15,14 +15,16 @@
     <div>
         <img @onclick="OnBackClick" class="cursor-pointer" src="images/back-icon.png" alt="back-icon">
     </div>
-    <Row VerticalGutter="10" HorizontalGutter="10" class="mt-3 image-grid">
-        @foreach(var image in activityImages)
+    <div class="gallery mt-3">
+        @foreach (var item in activityImages.Select((image, count) => new {Image = image, Count = count}))
         {
-            <Column @key="image" ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <Image class="w-100 cursor-pointer" @onclick="() => PreviewImage(image)" Source="@image.ImageSrc" Text="@image.ImageName" />
-            </Column>
+            <div @key="item.Image" class='@($"gallery__item gallery__item--{item.Count + 1}")'>
+                <span class="gallery__link cursor-pointer" @onclick="() => PreviewImage(item.Image)">
+                    <img src="@item.Image.ImageSrc" class="gallery__image" />
+                </span>
+            </div>
         }
-    </Row>
+    </div>
 </Container>
 
 @if(isShowPreviewImage)
