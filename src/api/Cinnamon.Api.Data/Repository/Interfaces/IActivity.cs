@@ -20,4 +20,5 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);
+    Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
 }

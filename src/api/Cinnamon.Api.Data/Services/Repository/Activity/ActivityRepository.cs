@@ -1886,4 +1886,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId)
+    {
+        try
+        {
+            var result = await dataStore.Activity.CustomerOte(customerId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            
+            return AppResult<IEnumerable<OteOngoingDTO>>.CreateSucceeded(result.Result, "Sucessfully find customer ote");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(ex, "An error occured when getting customet ote.");
+        }
+    }
 }
