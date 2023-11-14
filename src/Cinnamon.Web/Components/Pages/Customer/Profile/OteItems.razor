@@ -5,6 +5,7 @@
 @inject ITransactionApiHandler transactionApiHandler;
 @inject NavigationManager NavigationManager;
 @inject INotificationService NotificationService;
+@inject IJSRuntime JSRuntime
 
 <article class="events-wrapper">
     <div class="events-container" Margin="Margin.Is3.FromTop">
@@ -70,7 +71,7 @@
         var result = await transactionApiHandler.GetOtePurchaseOrder(item.PurchaseOrderId, Token);
         if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            NavigationManager.NavigateTo(result.Result.Result.TicketUrl);
+            await JSRuntime.InvokeAsync<object>("open", result.Result.Result.TicketUrl, "_blank");
         }
         else 
         {
