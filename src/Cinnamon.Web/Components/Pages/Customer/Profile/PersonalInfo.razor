@@ -629,16 +629,26 @@
     {
         if (isEditEmail)
         {
-            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            //Change AspNetUser Email
+            var email = await accountApiHandler.ChangeEmailAddress(new Framework.ApiCommand.ApiCore.Account.Request.ChangeEmailArgs
                 {
-                    Email     = emailLocalstate,
-                    Datebirth = Model.CustomerProfile.Birthdate
+                    CurrentEmail = Model.CustomerProfile.Email,
+                    NewEmail     = emailLocalstate,
                 }, Model.Token);
-
-            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            if (email.Succeeded && email.Result != null && email.Result.IsSuccess)
             {
-                Model.CustomerProfile.Email = emailLocalstate;
-                await ModelChanged.InvokeAsync(Model);
+                //Change Customer Email
+                var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                    {
+                        Email     = emailLocalstate,
+                        Datebirth = Model.CustomerProfile.Birthdate
+                    }, Model.Token);
+
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    Model.CustomerProfile.Email = emailLocalstate;
+                    await ModelChanged.InvokeAsync(Model);
+                }
             }
         }
         isEditEmail = false;
