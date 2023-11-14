@@ -73,7 +73,7 @@
                             <Table class="w-100">
                                 <TableHeader class="bg-grey-100 color-white-100 font-14 font-weight-700">
                                     <TableRow>
-                                        <TableHeaderCell class="p-2 text-center">QR Code</TableHeaderCell>
+                                        <TableHeaderCell class="p-2 text-center">Ticket #</TableHeaderCell>
                                         <TableHeaderCell class="p-2">Ticket</TableHeaderCell>
                                         <TableHeaderCell class="p-2">Amount</TableHeaderCell>
                                     </TableRow>
@@ -83,7 +83,7 @@
                                     {
                                         <TableRow>
                                             <TableRowCell class="p-2 text-center" VerticalAlignment="VerticalAlignment.Middle">
-                                                <img style="width: 32px; height: auto;" src="@item.ImageData" alt="qrcode">
+                                                @FormattedId(item.Id)
                                             </TableRowCell>
                                             <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">@item.Name</TableRowCell>
                                             <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">P @item.Price.ToString("#,##0.00")</TableRowCell>
@@ -188,6 +188,14 @@
     {
         NavigationManager.NavigateTo("/explore");
         return Task.CompletedTask;
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
     }
 
     private class TicketSummary 

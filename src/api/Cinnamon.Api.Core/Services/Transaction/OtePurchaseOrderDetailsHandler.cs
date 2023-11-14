@@ -19,10 +19,11 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IOteTicketData oteTicketData;
 
     public OtePurchaseOrderDetailsHandler(IPurchaseOrderData purchaseOrderData, IGetActivityHandler getActivityHandler,
         IOteFindByHandler oteFindByHandler, IJsonSerializationProvider jsonSerializationProvider, IGetProfileHandler getProfileHandler,
-        ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig, IOteTicketData oteTicketData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.getActivityHandler = getActivityHandler;
@@ -30,6 +31,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.getProfileHandler = getProfileHandler;
         this.applicationConfig = applicationConfig;
+        this.oteTicketData = oteTicketData;
     }
 
     public AppResult<OtePurchaseOrderDetailsResult> Execute(OtePurchaseOrderDetailsArgs args)
@@ -103,6 +105,14 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 .AppendPathSegment(deserializedPayload.Token);
 
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
+            
+            var ticketsRes = await oteTicketData.GetByPurchaseOrderId(purchaseOrder.Id, new());
+            if(!ticketsRes.Succeeded || ticketsRes.Result is null || !ticketsRes.Result.IsSuccess)
+            {
+                return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(ticketsRes.Error?.Description), ticketsRes.Message);
+            }
+            var tickets = ticketsRes.Result.Result;
+            
             var result = new OtePurchaseOrderDetailsResult {
                 EventDate = oteActivity.ScheduleFrom,
                 EventLocation = location,
@@ -112,13 +122,13 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 TotalPurchase = purchaseOrder.OverallTotal,
                 SubTotal = purchaseOrder.Total,
-                Tickets = deserializedPayload.Tickets.Select(t => {
+                Tickets = tickets.Select(t => {
                     return new OtePurchaseOrderDetailsResult.Ticket {
-                        Code = t.Code,
+                        Code = t.QRCode,
                         Id = t.Id,
-                        ImageData = t.ImageData,
-                        Name = t.Name,
-                        Price = t.Price
+                        ImageData = t.QRImageData,
+                        Name = t.Title,
+                        Price = t.Amount
                     };
                 }),
                 PurchasedDate = purchaseOrder.PurchaseDate,
