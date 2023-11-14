@@ -18,4 +18,5 @@ public interface ICustomerData
     Task<AppResult<GetCustomerResult>> GetCustomerByHandler(string handler);
     Task<AppResult<GenerateResetPasswordTokenResult>> GenerateResetPasswordToken(GenerateResetPasswordTokenArgs args);
     Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args);
+    Task<AppResult<ChangeEmailAddressResult>> ChangeEmailAddress(ChangeEmailAddressArgs args);
 }

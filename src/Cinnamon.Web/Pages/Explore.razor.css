@@ -102,7 +102,7 @@ a.dropdown-item {
 
 .categories-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 img.img-icon,
@@ -112,8 +112,11 @@ img.img-icon-home {
 }
 
 .card-title {
-  font-size: 12px;
-  font-family: "Nunito-Bold";
+    font-size:14px;
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
 }
 
 .card-slider {
@@ -248,7 +251,7 @@ img.img-icon-home {
   font-weight: 400;
   font-size: 16px;
   line-height: 22px;
-  color: #717171;
+  color: white;
 }
 
 .card-title3 {
@@ -308,7 +311,7 @@ img {
   height: 20px;
   margin-top: 5px;
   border-radius: 50%;
-  background: #00acee;
+  background: white;
   cursor: pointer;
   box-shadow: 0 0 0 rgba(52, 168, 83, 0.4);
   animation: pulse 1s infinite;
@@ -474,6 +477,25 @@ img {
   outline: none;
   box-shadow: none;
 }
+.schedule-swiper .swiper-wrapper {
+    display: flex;
+    flex-wrap: nowrap; /* Ensure items stay in a single row */
+}
+.schedule-swiper .swiper-slide:nth-child(3) {
+    order:3;
+}
+.schedule-swiper .swiper-slide:nth-child(4) {
+    order: 4;
+}
+.schedule-swiper .swiper-slide:nth-child(5) {
+    order: 5;
+}
+.schedule-swiper .swiper-slide:nth-child(6) {
+    order: 6;
+}
+.schedule-swiper .swiper-slide:nth-child(7) {
+    order: 7;
+}
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
@@ -619,7 +641,7 @@ img {
     font-weight: 400;
     font-size: 12px;
     line-height: 22px;
-    color: #717171;
+    color: white;
   }
 
   .card-title3-carousel {
@@ -802,17 +824,18 @@ img {
     font-weight: 400;
     font-size: 14px;
     line-height: 19px;
-    color: #717171;
+    color: white;
   }
 
   .active-badge {
     margin-top: 11px;
   }
 
-  .ongoing-section {
-    width: 60px;
-    height: 28px;
-  }
+    .ongoing-section {
+        width: 75px;
+        height: 35px;
+        border-top-left-radius: 20px;
+    }
 
   .pulse {
     width: 14px;
@@ -1003,7 +1026,7 @@ img {
     font-weight: 400;
     font-size: 12px;
     line-height: 22px;
-    color: #717171;
+    color: white;
   }
 
   .card-title3-carousel {
@@ -1117,7 +1140,7 @@ img {
   }
 
   .categories .swiper-slide.category {
-    width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
+    width: 100px; /*tied up with margin-left of .categories .schedule-swiper*/
   }
 
   .categories .schedule-swiper {
@@ -1180,7 +1203,7 @@ img {
     font-weight: 400;
     font-size: 14px;
     line-height: 19px;
-    color: #717171;
+    color: white;
   }
 
   .active-badge {
@@ -1188,8 +1211,9 @@ img {
   }
 
   .ongoing-section {
-    width: 52px;
-    height: 24px;
+    width:75px;
+    height: 35px;
+    border-top-left-radius: 20px;
   }
 
   .pulse {
@@ -1490,7 +1514,7 @@ img {
     font-weight: 400;
     font-size: 14px;
     line-height: 19px;
-    color: #717171;
+    color: white;
   }
 
   .active-badge {
@@ -1498,8 +1522,9 @@ img {
   }
 
   .ongoing-section {
-    width: 52px;
-    height: 24px;
+    width: 80px;
+    height: 38px;
+    border-top-left-radius: 20px;
   }
 
   .pulse {
@@ -1639,7 +1664,7 @@ img {
     font-weight: 400;
     font-size: 16px;
     line-height: 22px;
-    color: #717171;
+    color: white;
   }
 
   .card-title3-carousel {
@@ -1728,21 +1753,21 @@ img {
     margin-top: -3px;
   }
 
-  .categories img.img-icon {
+  /*.categories img.img-icon {
     width: 38px;
     height: 38px;
   }
 
   .categories .swiper-slide.category {
-    width: 80px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
+    width: 80px;*/ /*tied up with margin-left of .categories .schedule-swiper*/
+  /*}
 
   .categories .schedule-swiper {
     margin-top: 50px;
     margin-bottom: 50px;
     margin-left: 0px;
     margin-right: 0px;
-  }
+  }*/
 
   .activity-heart-badge-section {
     text-align: right;
@@ -1766,7 +1791,7 @@ img {
     font-weight: 400;
     font-size: 14px;
     line-height: 19px;
-    color: #717171;
+    color: white;
   }
 
   .active-badge {
@@ -2010,7 +2035,7 @@ img {
     font-weight: 400;
     font-size: 16px;
     line-height: 22px;
-    color: #717171;
+    color: white;
   }
 
   .price-badge-section {
@@ -2018,12 +2043,14 @@ img {
   }
 
   .categories img.img-icon {
-    width: 38px;
-    height: 38px;
+    width: 30px;
+    height: 30px;
   }
 
   .categories .swiper-slide.category {
-    width: 80px; /*tied up with margin-left of .categories .schedule-swiper*/
+      display: flex;
+      justify-content: space-around;
+      width: 100px; /*tied up with margin-left of .categories .schedule-swiper*/
   }
 
   .categories .schedule-swiper {
@@ -2044,17 +2071,18 @@ img {
     font-weight: 400;
     font-size: 16px;
     line-height: 22px;
-    color: #717171;
+    color: white;
   }
 
   .active-badge {
     margin-top: 13px;
   }
 
-  .ongoing-section {
-    width: 60px;
-    height: 28px;
-  }
+    .ongoing-section {
+        width: 80px;
+        height: 40px;
+        border-top-left-radius: 20px;
+    }
 
   .pulse {
     width: 16px;
@@ -2125,11 +2153,11 @@ img {
 }
 
 .ongoing-section {
-  position: absolute;
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
+    position: absolute;
+    background: #279BE1;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: -5px;
+    right: -10px;
 }

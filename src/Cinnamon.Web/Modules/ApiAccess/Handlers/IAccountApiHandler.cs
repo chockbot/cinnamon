@@ -43,4 +43,5 @@ public interface IAccountApiHandler
     Task<AppResult<VerifyUserNotificationResult>> NotifyCustomerVerification(VerifyUserNotificationArgs args, string token);
     Task<AppResult<BlockedAccountResult>> BlockAccount(BlockedAccountArgs args, string token);
     Task<AppResult<SecretLoginResult>> SecretLogin(SecretLoginArgs args);
+    Task<AppResult<ChangEmailAddressResult>> ChangeEmailAddress(ChangeEmailArgs args, string token);
 } 

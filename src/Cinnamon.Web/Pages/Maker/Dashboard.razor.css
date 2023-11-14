@@ -487,29 +487,10 @@ hr {
         color: #343D4C;
         background-color: white;
         text-decoration: underline 3px solid #FFA942;
+        text-underline-position: under;
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
-::deep .personal-tab-swiper .swiper-slide {
-    width: auto !important;
-}
-
-    ::deep .personal-tab-swiper .swiper-slide .tab-item {
-        padding: 0.5rem 1rem;
-        font-size: 18px;
-        font-weight: 700;
-        text-transform: capitalize;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-
-        ::deep .personal-tab-swiper .swiper-slide .tab-item.active {
-            background-color: var(--primary);
-            color: #fff;
-        }
-::deep .dashboard-details-tab .activitySwiper .swiper-slide {
-    width: 100%;
-}
 /*Badges*/
 .journey-card {
     width: 95px;
@@ -620,6 +601,34 @@ hr {
     width: 20px;
     height: 20px;
 }
+.personal-tab-swiper .swiper-slide {
+    width: auto !important;
+}
+
+    .personal-tab-swiper .swiper-slide .tab-item {
+        padding: 1rem 1rem;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: capitalize;
+        outline: none;
+        border: none;
+        cursor: pointer;
+    }
+
+        .personal-tab-swiper .swiper-slide .tab-item.active {
+            background-color: white;
+            color: #343D4C;
+            text-decoration: underline 3px solid #FFA942;
+            text-underline-position: under;
+            outline: none;
+            border: none;
+        }
+
+        .personal-tab-swiper .swiper-slide .tab-item:hover {
+            outline: none;
+            border: none;
+            color: #343D4C;
+        }
 
 
 /* For Tablet View */
