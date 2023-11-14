@@ -273,7 +273,7 @@
                                 {
                                     <div class="swiper-slide category">
                                         <div>
-                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id, category.Category))">
                                             <img src=@category.IconPath class="img-icon text-center">
                                             <p class="card-title">@category.Category</p>
                                         </a>
@@ -364,7 +364,7 @@
                                                                 {
                                                                     <CustomTooltip MarginLeft="-100">
                                                                         <TextContent>
-                                                                            <div class="rounded-pill ongoing-section">
+                                                                            <div class="ongoing-section">
                                                                                 <div class="active-badge" style="text-align:center">
                                                                                     <span class="pulse"></span>
                                                                                     <span class="active-tag-label">@act.OngoingStudentCount</span>
@@ -546,7 +546,7 @@
                                             {
                                                 <CustomTooltip MarginLeft="-100">
                                                     <TextContent>
-                                                        <div class="rounded-pill ongoing-section">
+                                                        <div class="ongoing-section">
                                                             <div class="active-badge" style="text-align:center">
                                                                 <span class="pulse"></span>
                                                                 <span class="active-tag-label">@act.OngoingStudents</span>
