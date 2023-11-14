@@ -219,8 +219,9 @@
 
             if(imageCropper is not null)
             {
+                await Task.Delay(500);
                 await loadingIndicator?.Hide();
-                
+
                 var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions {
                     FileInputIndex = i,
                     FileSrcSelector = "#photo-upload",
