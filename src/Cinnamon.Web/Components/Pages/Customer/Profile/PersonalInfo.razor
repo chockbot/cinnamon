@@ -5,6 +5,7 @@
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Framework.ValidationAttributes;
 @using System.Text.RegularExpressions
+@using System.Net.Mail
 @inject IJSRuntime jsRuntime
 @inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
@@ -14,7 +15,7 @@
 
 <article class="personal-info-wrapper p-3">
     <div class="personal-info-section">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-12">
             <div id="alertContainer" class="alertContainer">
                 <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
             </div>
@@ -93,7 +94,7 @@
                 </Row>
             </section>
         </div>
-        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+        <div class="col-lg-8 col-md-6 col-sm-12 col-12">
             <div class="p-section name-section">
                 <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                     <div>
@@ -166,6 +167,7 @@
                             <p class="title mb-1">Date of Birth</p>
                             @if (!isEditBirthDate)
                             {
+                                errorMessage = string.Empty;
                                 <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                                     <span class="info-item">@Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy")</span>
                                     <span class="edit" @onclick="EditBirthDate">Edit</span>
@@ -197,6 +199,7 @@
                             <p class="title mb-1">Phone Number</p>
                             @if (!isEditPhoneNumber)
                             {
+                                errorMessage1 = string.Empty;
                                 <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                                     <span class="info-item">@Model.CustomerProfile.PhoneNumber</span>
                                     <span class="edit" @onclick="EditPhoneNumber">Edit</span>
@@ -228,6 +231,7 @@
                         <p class="title mb-1">Email</p>
                         @if (!isEditEmail)
                         {
+                            errorMessage2 = string.Empty;
                             <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                                 <span class="info-email">@Model.CustomerProfile.Email</span>
                                 <span class="edit" @onclick="EditEmail">Edit</span>
@@ -248,9 +252,9 @@
                                 </Column>
                             </Row>
                             <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveEmail">Save</Button>
-                            @if (!string.IsNullOrEmpty(errorMessage1))
+                            @if (!string.IsNullOrEmpty(errorMessage2))
                             {
-                                <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
+                                <p class="activity-image-photos-error-message text-center">@errorMessage2</p>
                             }
                         }
                     </div>
@@ -276,7 +280,7 @@
                                         <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                                             @if (PayoutAccount == null)
                                             {
-                                                <span>No Data Found</span>
+                                            <span class="info-item">No Data Found</span>
                                                 <span class="edit">
                                                 <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
                                                 </span>
@@ -400,6 +404,8 @@
     private string errorMessage = string.Empty;
 
     private string errorMessage1 = string.Empty;
+
+    private string errorMessage2 = string.Empty;
 
     public const string regex = @"((^(\+)(\d){12}$)|(^\d{11}$))";
 
@@ -596,8 +602,8 @@
                 if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                 {
                     Model.CustomerProfile.PhoneNumber = result.Result.Result.PhoneNumber;
-                    errorMessage1 = string.Empty;
-                    isEditPhoneNumber = false;
+                    errorMessage1                     = string.Empty;
+                    isEditPhoneNumber                 = false;
                     await ModelChanged.InvokeAsync(Model);
                 }
                 else
@@ -629,29 +635,37 @@
     {
         if (isEditEmail)
         {
-            //Change AspNetUser Email
-            var email = await accountApiHandler.ChangeEmailAddress(new Framework.ApiCommand.ApiCore.Account.Request.ChangeEmailArgs
-                {
-                    CurrentEmail = Model.CustomerProfile.Email,
-                    NewEmail     = emailLocalstate,
-                }, Model.Token);
-            if (email.Succeeded && email.Result != null && email.Result.IsSuccess)
+            if (checkIsValidEmail(emailLocalstate))
             {
-                //Change Customer Email
-                var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                //Change AspNetUser Email
+                var email = await accountApiHandler.ChangeEmailAddress(new Framework.ApiCommand.ApiCore.Account.Request.ChangeEmailArgs
                     {
-                        Email     = emailLocalstate,
-                        Datebirth = Model.CustomerProfile.Birthdate
+                        CurrentEmail = Model.CustomerProfile.Email,
+                        NewEmail = emailLocalstate,
                     }, Model.Token);
-
-                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                if (email.Succeeded && email.Result != null && email.Result.IsSuccess)
                 {
-                    Model.CustomerProfile.Email = emailLocalstate;
-                    await ModelChanged.InvokeAsync(Model);
+                    //Change Customer Email
+                    var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                        {
+                            Email = emailLocalstate,
+                            Datebirth = Model.CustomerProfile.Birthdate
+                        }, Model.Token);
+
+                    if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                    {
+                        Model.CustomerProfile.Email = emailLocalstate;
+                        errorMessage2               = string.Empty;
+                        isEditPhoneNumber           = false;
+                        await ModelChanged.InvokeAsync(Model);
+                    }
                 }
             }
+            else
+            {
+                errorMessage2 = "Please provide valid email address.";
+            }
         }
-        isEditEmail = false;
     }
 
     private async Task SaveBirthDate()
@@ -691,6 +705,19 @@
     public static bool checkPhoneNumber(string number)
     {
         if (number != null) return Regex.IsMatch(number, regex);
+        else return false;
+    }
+
+    public static bool checkIsValidEmail(string email)
+    {
+        // Define a regular expression pattern for a valid email address
+        string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+        // Create a Regex object with the pattern
+        Regex regex = new Regex(pattern);
+
+        // Use the IsMatch method to check if the email matches the pattern
+        if (email != null) return regex.IsMatch(email);
         else return false;
     }
 

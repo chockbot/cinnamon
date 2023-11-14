@@ -1,5 +1,8 @@
-﻿.request-refund-wrapper{
+﻿.request-refund{
     margin-top: 5rem;
+}
+.credit-text{
+    text-align: end;
 }
 .earnings-wrapper {
     display: flex;
@@ -137,9 +140,6 @@
     width: 100%;
 }
 
-
-
-
 ::deep .cinnamon-credits-table th {
     font-family: 'Nunito';
     font-style: normal;
@@ -172,7 +172,6 @@
     border-top-left-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    width: 100%;
 }
 
 
@@ -209,7 +208,6 @@
     border-top-left-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    width: 100%;
 }
 
 .payout-status {
@@ -244,5 +242,91 @@
 
     .experience-box {
         margin-bottom: 0.5rem;
+    }
+    ::deep .cinnamon-credits-table .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .cinnamon-credits-table table thead {
+        display: none;
+    }
+
+    ::deep .cinnamon-credits-table .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .cinnamon-credits-table table thead {
+        display: none;
+    }
+
+    ::deep .cinnamon-credits-table table tbody tr {
+        display: flex;
+        flex-direction: column;
+    }
+    ::deep .cinnamon-credits-table table tbody tr td:first-child::before {
+        content: "Refund No: ";
+        font-weight: bold;
+    }
+    ::deep .cinnamon-credits-table table tbody tr td:nth-child(2)::before {
+        content: "Experience Title: ";
+        font-weight: bold;
+    }
+    ::deep .cinnamon-credits-table table tbody tr td:nth-child(3)::before {
+        content: "Status: ";
+        font-weight: bold;
+    }
+    ::deep .cinnamon-credits-table table tbody tr td:nth-child(4)::before {
+        content: "Credits: ";
+        font-weight: bold;
+    }
+    ::deep .cinnamon-credits-table td {
+        padding:5px;
+        border-style: none;
+    }
+    .credit-text {
+        text-align: start;
+    }
+
+    ::deep .request-refund-table .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .request-refund-table table thead {
+        display: none;
+    }
+
+    ::deep .request-refund-table .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .request-refund-table table thead {
+        display: none;
+    }
+
+    ::deep .request-refund-table table tbody tr {
+        display: flex;
+        flex-direction: column;
+    }
+
+        ::deep .request-refund-table table tbody tr td:first-child::before {
+            content: "Refund No: ";
+            font-weight: bold;
+        }
+
+        ::deep .request-refund-table table tbody tr td:nth-child(2)::before {
+            content: "Experience Title: ";
+            font-weight: bold;
+        }
+
+        ::deep .request-refund-table table tbody tr td:nth-child(3)::before {
+            content: "Status: ";
+            font-weight: bold;
+        }
+    ::deep .request-refund-table td {
+        padding: 5px;
     }
 }
