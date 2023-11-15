@@ -20,6 +20,7 @@ public class PurchaseOrderDTO
     public bool IsInclusivePayment {get; set;}
     public decimal PerUnitDisburseAmount {get; set;}
     public decimal TotalDisburseAmount {get; set;}
+    public string? PGPayload {get; set;}
 
     public AssociatedActivity Activity {get; set;}
     public AssociatedSchedule Schedule {get; set;}

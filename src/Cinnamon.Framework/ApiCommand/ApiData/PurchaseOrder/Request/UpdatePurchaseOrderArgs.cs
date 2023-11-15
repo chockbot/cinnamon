@@ -16,4 +16,5 @@ public class UpdatePurchaseOrderArgs
     public decimal? CreditAmount {get; set;}
     public decimal? UnitPrice {get; set;}
     public int? UnitCount {get; set;}
+    public string? PGPayload {get; set;}
 }

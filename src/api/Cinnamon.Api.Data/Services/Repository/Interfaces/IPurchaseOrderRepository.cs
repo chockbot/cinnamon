@@ -14,7 +14,7 @@ public interface IPurchaseOrderRepository
             decimal unitPrice, int unitCount, bool isInclusivePayment, decimal perUnitDisburseAmount, decimal totalDisburseAmount);
     Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, decimal? convinienceFee,
         string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount,
-        decimal? unitPrice, int? unitCount);
+        decimal? unitPrice, int? unitCount, string? pgPayload);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllPurchaseOrderNeedToPayout();
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> UpdatePurchaseOrdersStatus(IEnumerable<int> ids, int status);
     Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);

@@ -149,7 +149,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     UnitPrice = p.UnitPrice,
                     IsInclusivePayment = p.IsInclusivePayment,
                     PerUnitDisburseAmount = p.PerUnitDisburseAmount,
-                    TotalDisburseAmount = p.TotalDisburseAmount
+                    TotalDisburseAmount = p.TotalDisburseAmount,
+                    PGPayload = p.PGPayload
                 };
 
                 // include activity details
@@ -211,7 +212,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     UnitPrice = p.UnitPrice,
                     IsInclusivePayment = p.IsInclusivePayment,
                     PerUnitDisburseAmount = p.PerUnitDisburseAmount,
-                    TotalDisburseAmount = p.TotalDisburseAmount
+                    TotalDisburseAmount = p.TotalDisburseAmount,
+                    PGPayload = p.PGPayload
                 };
             });
 
@@ -251,7 +253,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 IsInclusivePayment = result.Result.IsInclusivePayment,
                 PerUnitDisburseAmount = result.Result.PerUnitDisburseAmount,
                 TotalDisburseAmount = result.Result.TotalDisburseAmount,
-                PurchaseDate = result.Result.CreatedOn
+                PurchaseDate = result.Result.CreatedOn,
+                PGPayload = result.Result.PGPayload
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -262,7 +265,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 
     public async Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, 
         decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount,
-        decimal? unitPrice, int? unitCount)
+        decimal? unitPrice, int? unitCount, string? pgPayload)
     {
         try
         {
@@ -303,6 +306,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             purchaseOrder.CreditAmount = creditAmount ?? purchaseOrder.CreditAmount;
             purchaseOrder.UnitCount = unitCount ?? purchaseOrder.UnitCount;
             purchaseOrder.UnitPrice = unitPrice ?? purchaseOrder.UnitPrice;
+            purchaseOrder.PGPayload = pgPayload ?? purchaseOrder.PGPayload;
 
             var updatedPurchaseOrder = await dataStore.PurchaseOrder.Update(purchaseOrder);
             if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null)
@@ -329,7 +333,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 UnitPrice = updated.UnitPrice,
                 IsInclusivePayment = updated.IsInclusivePayment,
                 PerUnitDisburseAmount = updated.PerUnitDisburseAmount,
-                TotalDisburseAmount = updated.TotalDisburseAmount
+                TotalDisburseAmount = updated.TotalDisburseAmount,
+                PGPayload = updated.PGPayload
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)
@@ -364,7 +369,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CreditAmount = p.CreditAmount,
                     IsInclusivePayment = p.IsInclusivePayment,
                     PerUnitDisburseAmount = p.PerUnitDisburseAmount,
-                    TotalDisburseAmount = p.TotalDisburseAmount
+                    TotalDisburseAmount = p.TotalDisburseAmount,
+                    PGPayload = p.PGPayload
                 };
             });
 

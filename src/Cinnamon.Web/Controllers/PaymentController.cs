@@ -29,7 +29,8 @@ public class PaymentController : ControllerBase
             var result = await paymentApiHandler.VerifyCallback(new Framework.ApiCommand.ApiCore.Payment.Request.VerifyCallbackArgs {
                 CallbackToken = callbackToken,
                 Status = args.data.status,
-                TransactionId = args.data.reference_id
+                TransactionId = args.data.reference_id,
+                Payload = args
             });
 
             if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)

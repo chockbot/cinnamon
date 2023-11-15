@@ -32,7 +32,8 @@ public class PaymentController : ControllerBase
             var result = await verifyCallbackHandler.ExecuteAsync(new Services.PaymentGatewayService.Interactors.VerifyCallbackArgs {
                 CallbackToken = args.CallbackToken,
                 Status = args.Status,
-                TransactionId = args.TransactionId
+                TransactionId = args.TransactionId,
+                Payload = args.Payload
             });
             if(!result.Succeeded || result.Result == null)
             {
