@@ -19,6 +19,7 @@ public class PurchaseOrder : BaseEntity
     public bool IsInclusivePayment {get; set;}
     public decimal PerUnitDisburseAmount {get; set;}
     public decimal TotalDisburseAmount {get; set;}
+    public string? PGPayload {get; set;}
 
     public Activity Activity {get; set;}
     public ActivitySchedule? Schedule {get; set;}

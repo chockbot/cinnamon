@@ -10,4 +10,6 @@ public class VerifyCallbackArgs
     public string CallbackToken {get; set;}
     [Required]
     public string Status {get; set;}
+    [Required]
+    public object Payload {get; set;}
 }

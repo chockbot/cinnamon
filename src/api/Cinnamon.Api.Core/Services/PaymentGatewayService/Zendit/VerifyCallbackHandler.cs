@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
@@ -16,16 +17,18 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
     private readonly IFinishTransactionHandler finishTransactionHandler;
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
 
     public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData,
         IFinishTransactionHandler finishTransactionHandler, IGetActivityHandler getActivityHandler,
-        IOteFinishTransactionHandler oteFinishTransactionHandler)
+        IOteFinishTransactionHandler oteFinishTransactionHandler, IJsonSerializationProvider jsonSerializationProvider)
     {
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
         this.finishTransactionHandler = finishTransactionHandler;
         this.getActivityHandler = getActivityHandler;
         this.oteFinishTransactionHandler = oteFinishTransactionHandler;
+        this.jsonSerializationProvider = jsonSerializationProvider;
     }
 
     public AppResult<VerifyCallbackResult> Execute(VerifyCallbackArgs args)
@@ -94,6 +97,19 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                 return AppResult<VerifyCallbackResult>.CreateSucceeded(new VerifyCallbackResult {}, "Success");
             }
 
+            var serializedPayload = jsonSerializationProvider.Serialize(args.Payload);
+
+            // update purchase order status
+            var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
+                PurchaseOrderId = transactionId,
+                Status = status,
+                PGPayload = serializedPayload
+            });
+            if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
+            {
+                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
+            }
+
             if(status == 1)
             {
                 if(activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
@@ -115,16 +131,6 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                     {
                         return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(oteFinishResult.Message), oteFinishResult.Message);
                     }
-                }
-
-                // update purchase order status
-                var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
-                    PurchaseOrderId = transactionId,
-                    Status = status
-                });
-                if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
-                {
-                    return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
                 }
             }
 
