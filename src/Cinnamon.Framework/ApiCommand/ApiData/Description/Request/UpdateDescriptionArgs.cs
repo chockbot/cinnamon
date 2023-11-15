@@ -21,5 +21,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Description.Request
         public int MinimumAge { get; set; }
         [Required]
         public bool CanAdultsJoin { get; set; }
+        [Required]
+        public string? ClassPolicies { get; set; }
     }
 }

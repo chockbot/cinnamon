@@ -89,7 +89,8 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName, 
+                SessionName = activity.SessionName,
+                ClassPolicies = activity.ClassPolicies,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,

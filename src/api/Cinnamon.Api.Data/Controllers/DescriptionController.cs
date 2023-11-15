@@ -101,7 +101,7 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _descriptionRepository.CreateDescription(descriptionArgs.ActivityId, descriptionArgs.Description, descriptionArgs.SpecificsYouWillProvide
                                                               , descriptionArgs.CustomerBringWithThem, descriptionArgs.AdditionalRequirements, descriptionArgs.ActivityLevel, 
-                                                              descriptionArgs.SkillLevel, descriptionArgs.MinimumAge, descriptionArgs.CanAdultsJoin);
+                                                              descriptionArgs.SkillLevel, descriptionArgs.MinimumAge, descriptionArgs.CanAdultsJoin, descriptionArgs.ClassPolicies);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new CreateDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -124,7 +124,7 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _descriptionRepository.UpdateDescription(updateDescription.Id, updateDescription.Description, updateDescription.SpecificsYouWillProvide,
                                                               updateDescription.CustomerBringWithThem, updateDescription.AdditionalRequirements, updateDescription.ActivityLevel,
-                                                              updateDescription.SkillLevel, updateDescription.MinimumAge, updateDescription.CanAdultsJoin);
+                                                              updateDescription.SkillLevel, updateDescription.MinimumAge, updateDescription.CanAdultsJoin, updateDescription.ClassPolicies);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new UpdatedDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
