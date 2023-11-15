@@ -88,7 +88,7 @@
         <div class="supporting-images-container-wrapper text-center">
             <label class="d-flex align-items-center mb-5">
                 <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
-                <p class="font-16 color-grey-100 mb-0 text-capitalize">Supporting Photos (Maximum of 6 Photos)</p>
+                <p class="font-16 color-grey-100 mb-0">Supporting Photos (Min of 4 and Max of 6 photos)</p>
             </label>
             <label for="photo-upload" class="cursor-pointer supporting-photos-container">
                 <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
@@ -270,10 +270,10 @@
 
         var message = string.Empty;
         var isAllFieldsValid = true;
-        if(supportedPhotosCount < 2 )
+        if(supportedPhotosCount < 4 )
         {
             isAllFieldsValid = false;
-            message += "<li>Minimum of 2 supported photos</li>";
+            message += "<li>Minimum of 4 supported photos</li>";
         }
         if(supportedPhotosCount > 6)
         {
