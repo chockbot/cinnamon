@@ -123,7 +123,7 @@ public class PurchaseOrderController : ControllerBase
         {
             var result = await purchaseOrderRepository.Update(args.PurchaseOrderId, args.ScheduleId, args.Total,
                 args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status, args.CreditAmount,
-                args.UnitPrice, args.UnitCount);
+                args.UnitPrice, args.UnitCount, args.PGPayload);
 
             if (!result.Succeeded || result.Result == null)
             {
