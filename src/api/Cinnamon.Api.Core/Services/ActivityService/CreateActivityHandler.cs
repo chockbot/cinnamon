@@ -59,12 +59,13 @@ public class CreateActivityHandler : ICreateActivityHandler
             const int maxWords = 80;
             var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
             var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+            var classPoliciesLength = WordsLenght(args.ClassPolicies ?? string.Empty);
 
-            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            if (customerBringLength > maxWords || specificProvideLength > maxWords || classPoliciesLength > maxWords)
             {
                 return AppResult<CreateActivityResult>.CreateFailed(
-                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
-                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields.");
             }
 
             // generate activity handler
@@ -78,40 +79,41 @@ public class CreateActivityHandler : ICreateActivityHandler
             var handlerName = generateHandlerRes.Result.GeneratedHandler;
 
             var activityRes = await activityData.CreateActivity(new Framework.ApiCommand.ApiData.Activity.Request.CreateActivityArgs {
-                ActivityLevel = args.ActivityLevel,
-                AdditionalRequirements = args.AdditionalRequirements,
-                Address1 = args.Address1,
-                Address2 = args.Address2,
-                CanAdultsJoin = args.CanAdultsJoin,
-                City = args.City,
-                Subdivision = args.Subdivision,
-                Region = args.Region,
-                Barangay = args.Barangay,
-                PostalCode= args.PostalCode,
-                CustomerBringWithThem = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
-                CustomerId = id,
-                Description = args.Description,
-                District = args.District,
-                ExperienceCategoryId = args.ExperienceCategoryId,
-                ExperienceTypeId = args.ExperienceTypeId,
-                IsPublished = args.IsPublished,
-                MinimumAge = args.MinimumAge,
-                Price = args.Price,
-                Remarks = args.Remarks,
-                ScheduleIndicator = args.ScheduleIndicator,
-                Searchtag1 = args.SearchTags.Count() >= 1 ? args.SearchTags.ElementAt(0) : null,
-                Searhtag2 = args.SearchTags.Count() >= 2 ? args.SearchTags.ElementAt(1) : null,
-                Searhtag3 = args.SearchTags.Count() >= 3 ? args.SearchTags.ElementAt(2) : null,
-                Searchtag4 = args.SearchTags.Count() >= 4 ? args.SearchTags.ElementAt(3) : null,
-                Searchtag5 = args.SearchTags.Count() >= 5 ? args.SearchTags.ElementAt(4) : null,
-                SkillLevel = args.SkillLevel,
+                ActivityLevel           = args.ActivityLevel,
+                AdditionalRequirements  = args.AdditionalRequirements,
+                Address1                = args.Address1,
+                Address2                = args.Address2,
+                CanAdultsJoin           = args.CanAdultsJoin,
+                City                    = args.City,
+                Subdivision             = args.Subdivision,
+                Region                  = args.Region,
+                Barangay                = args.Barangay,
+                PostalCode              = args.PostalCode,
+                CustomerBringWithThem   = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
+                CustomerId              = id,
+                Description             = args.Description,
+                District                = args.District,
+                ExperienceCategoryId    = args.ExperienceCategoryId,
+                ExperienceTypeId        = args.ExperienceTypeId,
+                IsPublished             = args.IsPublished,
+                MinimumAge              = args.MinimumAge,
+                Price                   = args.Price,
+                Remarks                 = args.Remarks,
+                ScheduleIndicator       = args.ScheduleIndicator,
+                Searchtag1              = args.SearchTags.Count() >= 1 ? args.SearchTags.ElementAt(0) : null,
+                Searhtag2               = args.SearchTags.Count() >= 2 ? args.SearchTags.ElementAt(1) : null,
+                Searhtag3               = args.SearchTags.Count() >= 3 ? args.SearchTags.ElementAt(2) : null,
+                Searchtag4              = args.SearchTags.Count() >= 4 ? args.SearchTags.ElementAt(3) : null,
+                Searchtag5              = args.SearchTags.Count() >= 5 ? args.SearchTags.ElementAt(4) : null,
+                SkillLevel              = args.SkillLevel,
                 SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
-                SubCategoryId = args.SubCategoryId,
-                Title = args.Title,
-                Handler = handlerName,
-                PinnedLocation = args.PinnedLocation,
-                Status = args.Status,
-                ExperienceCreationType = args.ExperienceCreationType
+                SubCategoryId           = args.SubCategoryId,
+                Title                   = args.Title,
+                Handler                 = handlerName,
+                PinnedLocation          = args.PinnedLocation,
+                Status                  = args.Status,
+                ExperienceCreationType  = args.ExperienceCreationType,
+                ClassPolicies           = classPoliciesLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.ClassPolicies ?? string.Empty)
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)
@@ -223,6 +225,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
+                ClassPlicies = activity.ClassPolicies,
                 ActivitySchedules = createdSchedules.Result.Result.Select(s => {
                     return new CreateActivityResult.ActivitySchedule {
                         DateTime = s.DateTime,

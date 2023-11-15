@@ -51,6 +51,40 @@
                     </div>
                 </div>
             </div>
+
+            <div class="form-group">
+                <table class="field-heading-section">
+                    <tr>
+                        <td>
+                            <label for="title" class="form-control-label label-top-margin">Add your class policies (optional)</label>
+                        </td>
+                    </tr>
+                </table>
+
+                <small class="form-text text-muted sub-details">Add your class policies regarding about the rules and regulations of your class. Tackle your reminders or what not to do, discuss to them what will happen if there are conflicts in schedule example are absences, internet problem or confusion in session consumption.</small>
+
+                <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                    <div class="d-flex flex-column">
+                        <RichTextEdit @ref="EditClassPolicies"
+                                      Theme="RichTextEditTheme.Snow"
+                                      ContentChanged="@EditPolicies"
+                                      PlaceHolder="Type your post here..."
+                                      SubmitOnEnter="false"
+                                      ToolbarPosition="Placement.Start" id="customer-bring-with-them">
+                            <Editor>@((MarkupString)defaultContent1)</Editor>
+                            <Toolbar>
+                                <RichTextEditToolbarGroup>
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                                </RichTextEditToolbarGroup>
+                            </Toolbar>
+                        </RichTextEdit>
+                        <label id="label-specific-editor"></label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -63,16 +97,21 @@
 
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
+    private RichTextEdit EditClassPolicies;
     IJSObjectReference module;
 
     private string defaultContent = string.Empty;
+
+    private string defaultContent1 = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             defaultContent = Model.Activity.CustomerBringWithThem;
-            
+
+            defaultContent1 = Model.Activity.ClassPolicies;
+
             await Task.Delay(3000);
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Requirements");
@@ -141,5 +180,9 @@
     private async Task EditCustomerRequirement()
     {
         Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
+    }
+    private async Task EditPolicies()
+    {
+        Model.Activity.ClassPolicies = await EditClassPolicies.GetHtmlAsync();
     }
 }

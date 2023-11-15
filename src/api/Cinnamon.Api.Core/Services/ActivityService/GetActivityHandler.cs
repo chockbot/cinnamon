@@ -93,6 +93,7 @@ public class GetActivityHandler : IGetActivityHandler
                 Status = activity.Status,
                 ExperienceCreationType = activity.ExperienceCreationType,
                 IsComingSoon = activity.IsComingSoon,
+                ClassPolicies = activity.ClassPolicies,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,

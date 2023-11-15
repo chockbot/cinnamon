@@ -97,6 +97,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 PinnedLocation = activity.PinnedLocation,
                 Status = activity.Status,
                 ExperienceCreationType = activity.ExperienceCreationType,
+                ClassPolicies = activity.ClassPolicies,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,

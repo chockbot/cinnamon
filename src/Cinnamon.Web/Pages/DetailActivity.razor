@@ -676,6 +676,14 @@
                                 <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                             </div>
                         }
+                        @if (!string.IsNullOrEmpty(activity.ClassPolicies) && !activity.ClassPolicies.Contains("NOTHING"))
+                        {
+                            <hr />
+                            <div class="bring-text" style="overflow-wrap:break-word;">
+                                <label class="fw-bold mb-3 detail-label">Class Policies</label>
+                                <p>@((MarkupString)activity.ClassPolicies)</p>
+                            </div>
+                        }
                     }
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
@@ -1078,6 +1086,7 @@
                         MapDetails = result.MapDetails,
                         PinnedLocation = result.PinnedLocation,
                         IsComingSoon = result.IsComingSoon,
+                        ClassPolicies = result.ClassPolicies,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule
