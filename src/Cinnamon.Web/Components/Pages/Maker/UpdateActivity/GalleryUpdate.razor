@@ -61,7 +61,7 @@
                 <div class="text-start font-16 mb-4 d-flex align-items-center">
                     <span class="field-number d-inline-block me-2 flex-shrink-0">7</span>
                     <p class="color-grey-100 mb-0">
-                        Supporting Phptos (Mimimum of 2 Photos. Maximum of 6 Photos)
+                        Supporting Phptos (Minimum of 4 Photos. Maximum of 6 Photos)
                     </p>
                 </div>
                 <label for="photo-upload" style="cursor: pointer;">
@@ -259,10 +259,10 @@
 
         var message = string.Empty;
         var isAllFieldsValid = true;
-        if(supportedPhotosCount < 2 )
+        if(supportedPhotosCount < 4 )
         {
             isAllFieldsValid = false;
-            message += "<li>Minimum of 2 supported photos</li>";
+            message += "<li>Minimum of 4 supported photos</li>";
         }
         if(supportedPhotosCount > 6)
         {
