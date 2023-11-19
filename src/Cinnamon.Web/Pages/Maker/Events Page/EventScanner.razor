@@ -1,0 +1,144 @@
+@page "/maker/dashboard/events/{Handler}/verification"
+
+<section class="wrapper-ote-ticket-verification py-5">
+    <Container>
+        <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-3">The Juans Live at Cebu</h3>
+        <div class="scanner-log-container">
+            <div class="scanner-container text-center">
+                <div class="video-container border-1-dashed border-color-black-100">
+
+                </div>
+                <Button class="text-capitalize bg-orange-100 color-white-100 hover-color-primary mt-3">
+                    scan qr code
+                </Button>
+            </div>
+            <div class="log-container">
+                <Table class="w-100 border-radius-10 border-color-black-100 border-1-solid">
+                    <TableHeader class="bg-black-100 color-white-100 font-16">
+                        <TableRow>
+                            <TableRowCell>
+                                Logs
+                            </TableRowCell>
+                            <TableHeaderCell>
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody class="font-16 m-font-14 log-body">
+                        <TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-invalid">
+                                            Invalid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-valid">
+                                            Valid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-valid">
+                                            Valid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-duplicate">
+                                            Duplicate Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-duplicate">
+                                            Duplicate Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-invalid">
+                                            Invalid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-invalid">
+                                            Invalid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow><TableRow>
+                            <TableRowCell class="item-qr color-grey-100">
+                                20230620-600-1600-001
+                            </TableRowCell>
+                            <TableRowCell>
+                                <div class="item-message d-flex justify-content-end">
+                                    <label>
+                                        <span class="d-flex align-items-center log-invalid">
+                                            Invalid Ticket
+                                        </span>
+                                    </label>
+                                </div>
+                            </TableRowCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    </Container>
+</section>
+
+@code 
+{
+    [Parameter]
+    public string Handler {get; set;}
+}
