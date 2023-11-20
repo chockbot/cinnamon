@@ -1,0 +1,49 @@
+﻿@namespace Cinnamon.Web.Components
+
+<Modal @ref="modalRef">
+    <ModalContent Class="header-modal" Size="ModalSize.Large" Style="border-radius:1rem;">
+        <ModalHeader>
+            <div class="col-12 d-flex modal-header-section">
+                <img src="images/experience-creation/light-bulb-icon.png" id="info-title" class="light-icon" alt="check-icon" />
+                <p class="modal-title text-center">@Title</p>
+            </div>
+        </ModalHeader>
+        <ModalBody>
+            <div class="container mt-2">
+                <div class="col-12">
+                    @htmlMarkup
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter]
+    public string HtmlContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    private Modal modalRef;
+
+    private MarkupString htmlMarkup = new MarkupString();
+
+    public Task ShowModal()
+    {
+        htmlMarkup = new MarkupString(HtmlContent);
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}
+<style scoped>
+    .modal-header {
+        border-bottom: 0;
+        justify-content: end;
+    }
+</style>
