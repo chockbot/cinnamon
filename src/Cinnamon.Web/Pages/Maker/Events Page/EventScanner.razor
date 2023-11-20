@@ -39,112 +39,23 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody class="font-16 m-font-14 log-body">
-                        <TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-invalid">
-                                            Invalid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-valid">
-                                            Valid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-valid">
-                                            Valid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-duplicate">
-                                            Duplicate Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-duplicate">
-                                            Duplicate Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-invalid">
-                                            Invalid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-invalid">
-                                            Invalid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow><TableRow>
-                            <TableRowCell class="item-qr color-grey-100">
-                                20230620-600-1600-001
-                            </TableRowCell>
-                            <TableRowCell>
-                                <div class="item-message d-flex justify-content-end">
-                                    <label>
-                                        <span class="d-flex align-items-center log-invalid">
-                                            Invalid Ticket
-                                        </span>
-                                    </label>
-                                </div>
-                            </TableRowCell>
-                        </TableRow>
+                        @foreach (var item in verificationLogs)
+                        {
+                            <TableRow>
+                                <TableRowCell class="item-qr color-grey-100">
+                                    @item.QrCode
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <div class="item-message d-flex justify-content-end">
+                                        <label>
+                                            <span class="@LogStyle(item.ErrorCode)">
+                                                @item.Message
+                                            </span>
+                                        </label>
+                                    </div>
+                                </TableRowCell>
+                            </TableRow>    
+                        }
                     </TableBody>
                 </Table>
             </div>
@@ -163,6 +74,7 @@
     private ScanStatus scanStatus = ScanStatus.NotStarted;
     private string token = string.Empty;
     private EventDetail? eventDetail;
+    private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
 
     enum ScanStatus {
         NotStarted = 0,
@@ -290,8 +202,34 @@
         validating = true;
         StateHasChanged();
 
-        Console.WriteLine(qr);
-        await Task.Delay(3000);
+        string defaultErrorMessage = "An error occured. Please contact support.";
+
+        var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
+            Handler = Handler,
+            QrCode = qr
+        }, token);
+        if(!verificationRes.Succeeded || verificationRes.Result is null)
+        {
+            NotificationService.Error(defaultErrorMessage, "Error");
+        }
+
+        if(verificationRes.Succeeded && !verificationRes.Result.IsSuccess)
+        {
+            verificationLogs.Add(new VerificationLog {
+                ErrorCode = verificationRes.Result.ErrorInfo.Code,
+                Message = verificationRes.Result.ErrorInfo.Message,
+                QrCode = qr
+            });
+        }
+        else 
+        {
+            verificationLogs.Add(new VerificationLog {
+                ErrorCode = "success",
+                Message = "Valid ticket",
+                QrCode = qr
+            });
+        }
+
         validating = false;
         StateHasChanged();
     }
@@ -313,9 +251,39 @@
         }
     }
 
+    private string LogStyle(string errorCode)
+    {
+        string style = "d-flex align-items-center";
+
+        switch(errorCode)
+        {
+            case "invalid":
+                style += " log-invalid";
+                break;
+            case "duplicate":
+                style += " log-duplicate";
+                break;
+            case "success":
+                style += " log-valid";
+                break;
+            default:
+                style += " log-invalid";
+                break;
+        }
+
+        return style;
+    }
+
     record EventDetail 
     {
         public string Title {get; set;}
         public int Id {get; set;}
+    }
+
+    record VerificationLog 
+    {
+        public string QrCode {get; set;}
+        public string ErrorCode {get; set;}
+        public string Message {get; set;}
     }
 }

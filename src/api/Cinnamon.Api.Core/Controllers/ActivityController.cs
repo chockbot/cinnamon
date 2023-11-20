@@ -2708,7 +2708,7 @@ public class ActivityController : ControllerBase
             });
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
             }
 
             return new JsonResult(new OteVerificationResult

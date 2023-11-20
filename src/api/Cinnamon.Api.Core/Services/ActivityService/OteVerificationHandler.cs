@@ -42,32 +42,32 @@ public class OteVerificationHandler : IOteVerificationHandler
             });
             if(!oteFindRes.Succeeded || oteFindRes.Result is null)
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
             }
             var oteDetails = oteFindRes.Result;
 
             var profileRes = await getProfileHandler.ExecuteAsync(new ());
             if(!profileRes.Succeeded || profileRes.Result is null)
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
             }
             var profile = profileRes.Result;
 
             if(profile.Id != oteDetails.ProviderId)
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
             }
 
             var qrcodeRes = await oteTicketData.GetByCode(args.QrCode);
             if(!qrcodeRes.Succeeded || qrcodeRes.Result is null || !qrcodeRes.Result.IsSuccess)
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
             }
             var qrcode = qrcodeRes.Result.Result;
 
             if(qrcode.Status != "UNVERIFIED")
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("QR Code already used."), "QR Code already used.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("QR Code already used."), "QR Code already used.", "duplicate");
             }
 
             var updateQrRes = await oteTicketData.UpdateTicket(new Framework.ApiCommand.ApiData.OteTicket.Request.UpdateTicketArgs {
@@ -76,7 +76,7 @@ public class OteVerificationHandler : IOteVerificationHandler
             });
             if(!updateQrRes.Succeeded || updateQrRes.Result is null || !updateQrRes.Result.IsSuccess)
             {
-                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("An error occured. Please contact support."), "An error occured. Please contact support.");
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("An error occured. Please contact support."), "An error occured. Please contact support.", "error");
             }
 
             return AppResult<OteVerificationResult>.CreateSucceeded(new OteVerificationResult {Verified = true}, "QR Code Successfully validated.");
