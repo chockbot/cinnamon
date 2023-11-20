@@ -33,11 +33,17 @@
                 <li>Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks.</li>
             </ul>
             <div class="cover-photo-image-container-wrapper text-center mt-4">
-                <div class="text-start font-16 mb-2 d-flex align-items-center">
-                    <span class="field-number d-inline-block me-2 flex-shrink-0">6</span>
-                    <p class="color-grey-100 mb-0">
-                        Cover Photo
-                    </p>
+                <div class="text-start font-16 mb-2 d-flex" style="justify-content: space-between;">
+                    <div class="d-flex">
+                        <span class="field-number d-inline-block me-2 flex-shrink-0">6</span>
+                        <p class="color-grey-100 mb-0">
+                            Cover Photo
+                        </p>
+                    </div>
+                    <div class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
+                        <label>How to do this</label>
+                        <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
+                    </div>
                 </div>
                 <label for="cover-photo-upload" class="cursor-pointer w-100">
                     <InputFile id="cover-photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadFile" />
@@ -57,12 +63,19 @@
                 </label>
             </div>
             <div class="photo-upload-section supporting-images-container-wrapper text-center">
-                <div class="text-start font-16 mb-4 d-flex align-items-center">
-                    <span class="field-number d-inline-block me-2 flex-shrink-0">7</span>
-                    <p class="color-grey-100 mb-0">
-                        Supporting Phptos (Mimimum of 2 Photos. Maximum of 6 Photos)
-                    </p>
+                <div class="text-start font-16 mb-2 d-flex" style="justify-content: space-between;">
+                    <div class="d-flex">
+                        <span class="field-number d-inline-block me-2 flex-shrink-0">7</span>
+                        <p class="color-grey-100 mb-0">
+                            Supporting Photos (Mimimum of 2 Photos. Maximum of 6 Photos)
+                        </p>
+                    </div>
+                    <div class="how-to-guide" style="display:flex" @onclick="() => howToModalSupporting.ShowModal()">
+                        <label>How to do this</label>
+                        <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
+                    </div>
                 </div>
+
                 <label for="photo-upload" style="cursor: pointer;">
                     <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
                         Choose Photos
@@ -96,19 +109,21 @@
     </div>
     <ImageCropper @ref="imageCropper" />
 </div>
-
+<HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Cover Photo Guidelines" />
+<HowToModal @ref="howToModalSupporting" HtmlContent="@htmlSupporting" Title="Supporting Photo Guidelines" />
 @code 
 {
     [Parameter]
     public Models.ExperienceCreationModel? Model { get; set; }
     private string errorMessage = string.Empty;
-
     private ImageCropper? imageCropper;
     private IList<ImageItem> imageItems = new List<ImageItem>();
     private ImageItem coverPhotoItem = new() { ContainerId = "cover-photo-container", 
         Display = false, FileSize = 0, 
         ImageSrcId = "cover-photo-image-src", 
         InputDataId = "cover-photo-input-data", Order = 0};
+    private HowToModal howToModal { get; set; }
+    private HowToModal howToModalSupporting { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -289,4 +304,30 @@
         public string Selector {get; set;}
         public int Order {get; set;}
     }
+    public string htmlString = @"<div style=""text-align: justify"">
+                                     <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">High-Quality Image <br/></span>
+                                     <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Opt for crisp, high-resolution visuals to make a lasting impression.<br/><br/></span>
+                                     <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">Keep it Simple<br/></span>
+                                     <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Embrace minimalism to create an uncluttered and visually appealing cover.<br/><br/></span>
+                                     <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">Use Portrait Format<br/></span>
+                                     <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Opt for portrait-oriented photos to ensure optimal display on various devices.<br/><br/></span>
+                                     <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">Relevance<br/></span>
+                                     <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Choose imagery directly related to your offering to convey a clear and engaging story.</span>
+                                 </div>
+                                 <div style=""text-align: justify; color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word; margin-top: 1rem;"">Examples</div>
+                                 ";
+    public string htmlSupporting = @"<div style=""width: 746px; text-align: justify"">
+                                        <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">High-Quality Images<br/></span>
+                                        <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Prioritize clear, well-composed, and high-resolution visuals for a professional look.<br/></span>
+                                        <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word""><br/>Variety<br/></span>
+                                        <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Showcase diverse aspects of your content, offering a range of engaging images.<br/></span>
+                                        <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word""><br/>Use Landscape Format <br/></span>
+                                        <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Opt for landscape-oriented photos for versatility and seamless integration into your materials.<br/><br/></span>
+                                        <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">Use a range of original images<br/></span>
+                                        <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Use a selection of original images to enhance the authenticity and uniqueness of your content; avoid overuse of stock photos.<br/><br/></span>
+                                        <span style=""color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word"">Relevance <br/></span>
+                                        <span style=""color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word"">Ensure that the photos you use directly relate to your offering, enhancing the overall message and engagement.</span>
+                                     </div>
+                                     <div style=""text-align: justify; color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word; margin-top: 1rem;"">Examples</div>
+                                     ";
 }
