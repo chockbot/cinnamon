@@ -1,18 +1,31 @@
 @page "/maker/dashboard/events/{Handler}/verification"
-@implements IAsyncDisposable
-@inject IJSRuntime JS
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
+@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IJSRuntime JS;
+@inject NavigationManager NavigationManager;
+@inject INotificationService NotificationService;
+@implements IAsyncDisposable;
 
 <section class="wrapper-ote-ticket-verification py-5">
     <Container>
-        <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-3">The Juans Live at Cebu</h3>
+        @if(eventDetail is not null)
+        {
+            <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-3 text-capitalize">@eventDetail.Title</h3>
+        }
         <div class="scanner-log-container">
             <div class="scanner-container text-center">
                 <div id="video-container" class="video-container border-1-dashed border-color-black-100">
 
                 </div>
-                <Button Disabled="validating" Clicked="OnScanClick" class="text-capitalize bg-orange-100 color-white-100 hover-color-white mt-3">
-                    <span>@ScanButtonMessage</span>
-                </Button>
+                @if(eventDetail is not null)
+                {
+                    <Button Disabled="validating" Clicked="OnScanClick" class="text-capitalize bg-orange-100 color-white-100 hover-color-white mt-3">
+                        <span>@ScanButtonMessage</span>
+                    </Button>
+                }
             </div>
             <div class="log-container">
                 <Table class="w-100 border-radius-10 border-color-black-100 border-1-solid">
@@ -148,12 +161,52 @@
     private IJSObjectReference? scannerInstance;
     private bool validating = false;
     private ScanStatus scanStatus = ScanStatus.NotStarted;
+    private string token = string.Empty;
+    private EventDetail? eventDetail;
 
     enum ScanStatus {
         NotStarted = 0,
         Scanning = 1,
         Pause = 2,
         Resume = 3,
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        token =  user.FindFirstValue("Token");
+
+        var accountRes = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs {}, token);
+        if(!accountRes.Succeeded || accountRes.Result is null || !accountRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        var profile = accountRes.Result.Result;
+
+        var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {}, Handler);
+        if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        var ote = result.Result.Result;
+
+        if(ote.ProviderId != profile.Id)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;   
+        }
+
+        eventDetail = new EventDetail {
+            Id = ote.Id,
+            Title = ote.EventName
+        };
     }
 
     protected override void OnInitialized()
@@ -258,5 +311,11 @@
             
             return message;
         }
+    }
+
+    record EventDetail 
+    {
+        public string Title {get; set;}
+        public int Id {get; set;}
     }
 }
