@@ -236,6 +236,31 @@
             }
         </p>
     </div>
+    <Divider />
+
+    <div class="experience-provide">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            Class Policies
+        </h3>
+        <p>
+            @if (string.IsNullOrEmpty(Activity.ClassPolicies))
+            {
+                @("N/A")
+                ;
+            }
+            else if (Activity.ClassPolicies?.ToLower()?.Trim() == "<p><br></p>")
+            {
+                @("N/A")
+                ;
+            }
+            else
+            {
+                @((MarkupString)Activity.ClassPolicies)
+                ;
+            }
+        </p>
+    </div>
 </div>
 @code
 {

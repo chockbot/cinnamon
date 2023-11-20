@@ -7,6 +7,8 @@ public class ActivityDescription : BaseEntity
     public string SpecificsYouWillProvide {get; set;} = string.Empty;
     public string CustomerBringWithThem {get; set;} = string.Empty;
     public string? AdditionalRequirements {get; set;} = string.Empty;
+    public string? ClassPolicies { get; set; } = string.Empty;
+    public string? AdditionalData { get; set;} = string.Empty;  
     public string ActivityLevel {get; set;} = string.Empty;
     public string SkillLevel {get; set;} = string.Empty;
     public int MinimumAge {get; set;}
