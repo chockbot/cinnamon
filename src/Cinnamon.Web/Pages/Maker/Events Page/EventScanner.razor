@@ -1,0 +1,289 @@
+@page "/maker/dashboard/events/{Handler}/verification"
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
+@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IJSRuntime JS;
+@inject NavigationManager NavigationManager;
+@inject INotificationService NotificationService;
+@implements IAsyncDisposable;
+
+<section class="wrapper-ote-ticket-verification py-5">
+    <Container>
+        @if(eventDetail is not null)
+        {
+            <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-3 text-capitalize">@eventDetail.Title</h3>
+        }
+        <div class="scanner-log-container">
+            <div class="scanner-container text-center">
+                <div id="video-container" class="video-container border-1-dashed border-color-black-100">
+
+                </div>
+                @if(eventDetail is not null)
+                {
+                    <Button Disabled="validating" Clicked="OnScanClick" class="text-capitalize bg-orange-100 color-white-100 hover-color-white mt-3">
+                        <span>@ScanButtonMessage</span>
+                    </Button>
+                }
+            </div>
+            <div class="log-container">
+                <Table class="w-100 border-radius-10 border-color-black-100 border-1-solid">
+                    <TableHeader class="bg-black-100 color-white-100 font-16">
+                        <TableRow>
+                            <TableRowCell>
+                                Logs
+                            </TableRowCell>
+                            <TableHeaderCell>
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody class="font-16 m-font-14 log-body">
+                        @foreach (var item in verificationLogs)
+                        {
+                            <TableRow>
+                                <TableRowCell class="item-qr color-grey-100">
+                                    @item.QrCode
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <div class="item-message d-flex justify-content-end">
+                                        <label>
+                                            <span class="@LogStyle(item.ErrorCode)">
+                                                @item.Message
+                                            </span>
+                                        </label>
+                                    </div>
+                                </TableRowCell>
+                            </TableRow>    
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    </Container>
+</section>
+
+@code 
+{
+    [Parameter]
+    public string Handler {get; set;}
+
+    private DotNetObjectReference<EventScanner>? objRef;
+    private IJSObjectReference? scannerInstance;
+    private bool validating = false;
+    private ScanStatus scanStatus = ScanStatus.NotStarted;
+    private string token = string.Empty;
+    private EventDetail? eventDetail;
+    private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
+
+    enum ScanStatus {
+        NotStarted = 0,
+        Scanning = 1,
+        Pause = 2,
+        Resume = 3,
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        token =  user.FindFirstValue("Token");
+
+        var accountRes = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs {}, token);
+        if(!accountRes.Succeeded || accountRes.Result is null || !accountRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        var profile = accountRes.Result.Result;
+
+        var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {}, Handler);
+        if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
+        }
+        var ote = result.Result.Result;
+
+        if(ote.ProviderId != profile.Id)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            return;   
+        }
+
+        eventDetail = new EventDetail {
+            Id = ote.Id,
+            Title = ote.EventName
+        };
+    }
+
+    protected override void OnInitialized()
+    {
+        objRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            scannerInstance = await JS.InvokeAsync<IJSObjectReference>("MyLib.Pages.maker.oteVerification.createInstance", "video-container", objRef);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if(scannerInstance is not null)
+            {
+                await scannerInstance.DisposeAsync();
+            }
+            if(objRef is not null)
+            {
+                objRef.Dispose();
+            }
+        }
+        catch(Exception){}
+    }
+
+    private async Task StartScan()
+    {
+        if(scannerInstance is not null)
+        {
+            await scannerInstance.InvokeVoidAsync("startScan");
+            scanStatus = ScanStatus.Scanning;
+        }
+    }
+
+    private async Task StopScan()
+    {
+        if(scannerInstance is not null)
+        {
+            await scannerInstance.InvokeVoidAsync("stopScan");
+            scanStatus = ScanStatus.NotStarted;
+        }
+    }
+
+    private async Task ResumeScan()
+    {
+        if(scannerInstance is not null)
+        {
+            await scannerInstance.InvokeVoidAsync("resumeScan");
+            scanStatus = ScanStatus.Resume;
+        }
+    }
+
+    private async Task OnScanClick()
+    {
+        switch(scanStatus) {
+            case ScanStatus.Scanning:
+                await StopScan();
+                break;
+            case ScanStatus.Pause:
+                await ResumeScan();
+                break;
+            case ScanStatus.Resume:
+                await StopScan();
+                break;
+            default:
+                await StartScan();
+                break;
+        };
+    }
+
+    [JSInvokable]
+    public async Task VerifyQR(string qr)
+    {
+        scanStatus = ScanStatus.Pause;
+        validating = true;
+        StateHasChanged();
+
+        string defaultErrorMessage = "An error occured. Please contact support.";
+
+        var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
+            Handler = Handler,
+            QrCode = qr
+        }, token);
+        if(!verificationRes.Succeeded || verificationRes.Result is null)
+        {
+            NotificationService.Error(defaultErrorMessage, "Error");
+        }
+
+        if(verificationRes.Succeeded && !verificationRes.Result.IsSuccess)
+        {
+            verificationLogs.Add(new VerificationLog {
+                ErrorCode = verificationRes.Result.ErrorInfo.Code,
+                Message = verificationRes.Result.ErrorInfo.Message,
+                QrCode = qr
+            });
+        }
+        else 
+        {
+            verificationLogs.Add(new VerificationLog {
+                ErrorCode = "success",
+                Message = "Valid ticket",
+                QrCode = qr
+            });
+        }
+
+        validating = false;
+        StateHasChanged();
+    }
+
+    private string ScanButtonMessage 
+    {
+        get 
+        {
+            if(validating) return "validating QR";
+
+            var message = scanStatus switch {
+                ScanStatus.Scanning => "stop scan",
+                ScanStatus.Pause => "resume scan",
+                ScanStatus.Resume => "stop scan",
+                _ => "scan qr code"
+            };
+            
+            return message;
+        }
+    }
+
+    private string LogStyle(string errorCode)
+    {
+        string style = "d-flex align-items-center";
+
+        switch(errorCode)
+        {
+            case "invalid":
+                style += " log-invalid";
+                break;
+            case "duplicate":
+                style += " log-duplicate";
+                break;
+            case "success":
+                style += " log-valid";
+                break;
+            default:
+                style += " log-invalid";
+                break;
+        }
+
+        return style;
+    }
+
+    record EventDetail 
+    {
+        public string Title {get; set;}
+        public int Id {get; set;}
+    }
+
+    record VerificationLog 
+    {
+        public string QrCode {get; set;}
+        public string ErrorCode {get; set;}
+        public string Message {get; set;}
+    }
+}
