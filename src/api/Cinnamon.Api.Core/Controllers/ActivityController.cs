@@ -69,6 +69,7 @@ public class ActivityController : ControllerBase
     private readonly IMapper mapper;
     private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
     private readonly ICustomerOteHandler customerOteHandler;
+    private readonly IOteVerificationHandler oteVerificationHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -90,7 +91,7 @@ public class ActivityController : ControllerBase
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
-        ICustomerOteHandler customerOteHandler)
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler)
     {
         _logger = logger;
 
@@ -140,6 +141,7 @@ public class ActivityController : ControllerBase
         this.mapper = mapper;
         this.oteTicketDetailsHandler = oteTicketDetailsHandler;
         this.customerOteHandler = customerOteHandler;
+        this.oteVerificationHandler = oteVerificationHandler;
     }
 
     [Route("CreateActivity")]
@@ -2690,6 +2692,34 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("VerifyOTE")]
+    [HttpPost]
+    [ProducesResponseType(typeof(OteVerificationResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> VerifyOTE([FromBody] OteVerificationArgs args)
+    {
+        try
+        {
+            var result = await oteVerificationHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteVerificationArgs {
+                Handler = args.Handler,
+                QrCode = args.QrCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OteVerificationResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Verified
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

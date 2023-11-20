@@ -998,4 +998,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CustomerOteResult>.CreateFailed(ex, "An error occured when getting customer ote.");
         }
     }
+
+    public async Task<AppResult<OteVerificationResult>> VerifyOTE(OteVerificationArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/VerifyOTE")
+                .PostJsonAsync(args)
+                .ReceiveJson<OteVerificationResult>();
+
+            return AppResult<OteVerificationResult>.CreateSucceeded(result, "Successfully called OTE verification API");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<OteVerificationResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteVerificationResult>.CreateFailed(ex, "An error occured when calling OTE verification API");
+        }
+    }
 }
