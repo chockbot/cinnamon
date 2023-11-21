@@ -277,6 +277,18 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;div style=&quot;text-align: justify&quot;&gt;
+        ///    &lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;High-Quality Image &lt;br/&gt;&lt;/span&gt;
+        ///    &lt;span style=&quot;color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;Opt for crisp, high-resolution visuals to make a lasting impression.&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;
+        ///    &lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;Keep it Simple&lt;br/&gt;&lt;/ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CoverPhotoString {
+            get {
+                return ResourceManager.GetString("CoverPhotoString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Breakdown your experience by type, age group and time, this will be reflected in your experience details for customers to choose and book..
         /// </summary>
         internal static string createExperienceDescription {
@@ -756,6 +768,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;div style=&quot;text-align: justify&quot;&gt;&lt;span style=&quot;color: black; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;Class Policies and Reminders: &lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;color: #717171; font-size: 20px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;Students are expected to maintain a respectful and professional demeanor during lessons and adhere to a code of conduct. Regular attendance is vital, and timely notification is required for any rescheduling. A stable i [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string OptionalString {
+            get {
+                return ResourceManager.GetString("OptionalString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order summary.
         /// </summary>
         internal static string orderSummary {
@@ -770,6 +791,15 @@ namespace Cinnamon.Web.Resources {
         internal static string our {
             get {
                 return ResourceManager.GetString("our", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;div&gt;&lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;Title&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;color: #717171; font-size: 20px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;-Use clear and concise language to describe your service. Include relevant keywords that potential clients might search for.&lt;br/&gt;&lt;br/&gt;• The subject you are teaching&lt;br/&gt;• Your qualifications and teaching approach&lt;br/&gt;• What sets you apart, mention your expertise, fast  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string OverviewString {
+            get {
+                return ResourceManager.GetString("OverviewString", resourceCulture);
             }
         }
         
@@ -882,6 +912,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;div&gt;&lt;span style=&quot;color: #717171; font-size: 20px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;Here&apos;s a sample schedule for offering piano lessons. This schedule is based on providing lessons for different category needs of a student:&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;Sample Schedule:&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;color: #717171; font-size: 20px; font-family: Nunito; font-weight: 400; word-wrap: b [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ScheduleString {
+            get {
+                return ResourceManager.GetString("ScheduleString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         internal static string search {
@@ -977,6 +1016,18 @@ namespace Cinnamon.Web.Resources {
         internal static string streetAddress {
             get {
                 return ResourceManager.GetString("streetAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;div style=&quot;text-align: justify&quot;&gt;
+        ///    &lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;High-Quality Images&lt;br/&gt;&lt;/span&gt;
+        ///    &lt;span style=&quot;color: #717171; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;Prioritize clear, well-composed, and high-resolution visuals for a professional look.&lt;br/&gt;&lt;/span&gt;
+        ///    &lt;span style=&quot;color: #343D4C; font-size: 20px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;&lt;br/&gt;Vari [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SupportingPhotoString {
+            get {
+                return ResourceManager.GetString("SupportingPhotoString", resourceCulture);
             }
         }
         
