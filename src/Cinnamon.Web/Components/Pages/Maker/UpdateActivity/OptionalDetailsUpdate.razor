@@ -62,7 +62,10 @@
                 </table>
 
                 <small class="form-text text-muted sub-details">Add your class policies regarding about the rules and regulations of your class. Tackle your reminders or what not to do, discuss to them what will happen if there are conflicts in schedule example are absences, internet problem or confusion in session consumption.</small>
-
+                <div class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
+                    <label>How to do this</label>
+                    <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
+                </div>
                 <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
                     <div class="d-flex flex-column">
                         <RichTextEdit @ref="EditClassPolicies"
@@ -88,12 +91,16 @@
         </div>
     </div>
 </div>
-
+<HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Sample Policy" />
 @code {
     [Parameter]
     public Models.ExperienceUpdateModel Model { get; set; }
 
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
+    private HowToModal howToModal { get; set; }
+
+    public string htmlString = Resources.App.OptionalString;
 
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
