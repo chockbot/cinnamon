@@ -291,14 +291,15 @@
                 <div class="form-group">
                     <table class="field-heading-section">
                         <tr>
-                            <td>
+                            <td class="td-field-number">
                                 <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
                             </td>
-                            <td>
+                            <td class="td-field-title">
                                 <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
                             </td>
-                            <td>
-                                <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-3.svg" />
+                            <td class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
+                                <label>How to do this</label>
+                                <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
                             </td>
                         </tr>
                     </table>
@@ -515,7 +516,7 @@
         </div>
     </div>
 </div>
-
+<HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create a better schedule" />
 @code {
     [Parameter]
     public Models.ExperienceCreationModel Model { get; set; }
@@ -526,7 +527,11 @@
 
     IJSObjectReference module;
 
+    private HowToModal howToModal { get; set; }
+
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
+    public string htmlString = Resources.App.ScheduleString;
 
     protected override async Task OnInitializedAsync()
     {
