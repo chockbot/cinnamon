@@ -6,6 +6,12 @@ public class OteSchedule : BaseEntity
     public DateTime From {get; set;}
     public DateTime To {get; set;}
     public string Recurrences {get; set;}
+    public DateTime RecurrenceDateStart {get; set;}
+    public DateTime RecurrenceDateEnd {get; set;}
+    public int RepeatEvery {get; set;}
+    public string SelectedDays {get; set;}
+    public string ExtraOptions {get; set;}
+
     public virtual Activity Activity {get; set;}
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}
 }
