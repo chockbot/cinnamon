@@ -22,6 +22,5 @@ public class PopularActivitiesResult
         public string ImageSrc {get; set;}
         public int ExperienceCreationTypeId {get; set;}
         public string PinnedLocation { get; set; }
-        public int NumberOfTickets { get; set; }
     }
 }

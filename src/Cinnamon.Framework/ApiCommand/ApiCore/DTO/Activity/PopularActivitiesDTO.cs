@@ -23,6 +23,5 @@ public class PopularActivitiesDTO
         public string ImageSrc {get; set;}
         public int ExperienceCreationTypeId {get; set;}
         public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
-        public int NumberOfTickets { get; set; }
     }
 }

@@ -52,7 +52,6 @@ public class PopularActivitiesHandler : IPopularActivitiesHandler
                         StudentCount             = a.StudentCount,
                         Title                    = a.Title,
                         ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                        NumberOfTickets          = a.NumberOfTickets
                     };
                 })
             }, "Popular activities successfully get");

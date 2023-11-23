@@ -167,7 +167,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             var skipValue = skip ?? 0;
             var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 
-            string query = "with totalStundets as " +
+            string query = "with totalStudents as " +
                            "( " +
                                "select ac.\"Id\", Count(ac.\"Id\") \"StudentCount\" " +
                                "from public.\"Activities\" ac " +
@@ -177,10 +177,21 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                    "and ac.\"IsNew\" = false " +
                                "group by ac.\"Id\" " +
                            "), " +
+                           "withOteCount as" +
+                           "( " +
+                               "select ot.\"ActivityId\" \"Id\", Count(ot.\"ActivityId\") \"StudentCount\" "+
+                               "from public.\"OteTickets\" ot " +
+                               "join public.\"Activities\" ac " +
+                                   "on ot.\"ActivityId\" = ac.\"Id\" " +
+                           	"where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " +
+                               "group by ot.\"ActivityId\" " +
+                               "union "+
+                               "select * from totalStudents" +
+                           "), " +
                            "topActivities as " +
                            "( " +
                                "select * " +
-                               "from totalStundets ts " +
+                               "from withOteCount ts " +
                                "order by ts.\"StudentCount\" desc, ts.\"Id\" " +
                                "limit " + takeValue + " offset " + skipValue + " " +
                            "), " +
@@ -242,20 +253,20 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         dt.Load(dr);
 
                         listResult = dt.AsEnumerable().Select(item => new PopularActivityDTO {
-                            CityName = item["CityName"].ToString() ?? string.Empty,
-                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-                            Handler = item["Handler"].ToString() ?? string.Empty,
-                            Id = Convert.ToInt32(item["Id"]),
-                            ImageSrc = item["ImageLocation"].ToString() ?? string.Empty,
-                            IsNew = Convert.ToBoolean(item["IsNew"]),
-                            MakerId = Convert.ToInt32(item["CreatedBy"]),
-                            OngoingStudentCount = Convert.ToInt32(item["OngoingStudent"]),
-                            Price = item["Price"].ToString() ?? string.Empty,
-                            Rating = Convert.ToDecimal(item["Rating"]),
-                            RegionName = item["RegionName"].ToString() ?? string.Empty,
-                            ReviewCount = Convert.ToInt32(item["ReviewCount"]),
-                            StudentCount = Convert.ToInt32(item["StudentCount"]),
-                            Title = item["Title"].ToString() ?? string.Empty,
+                            CityName                 = item["CityName"].ToString() ?? string.Empty,
+                            ExperienceTypeId         = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler                  = item["Handler"].ToString() ?? string.Empty,
+                            Id                       = Convert.ToInt32(item["Id"]),
+                            ImageSrc                 = item["ImageLocation"].ToString() ?? string.Empty,
+                            IsNew                    = Convert.ToBoolean(item["IsNew"]),
+                            MakerId                  = Convert.ToInt32(item["CreatedBy"]),
+                            OngoingStudentCount      = Convert.ToInt32(item["OngoingStudent"]),
+                            Price                    = item["Price"].ToString() ?? string.Empty,
+                            Rating                   = Convert.ToDecimal(item["Rating"]),
+                            RegionName               = item["RegionName"].ToString() ?? string.Empty,
+                            ReviewCount              = Convert.ToInt32(item["ReviewCount"]),
+                            StudentCount             = Convert.ToInt32(item["StudentCount"]),
+                            Title                    = item["Title"].ToString() ?? string.Empty,
                             ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"])
                         }).ToList();
                     }

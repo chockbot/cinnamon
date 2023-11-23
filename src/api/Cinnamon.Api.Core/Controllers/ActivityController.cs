@@ -2400,7 +2400,6 @@ public class ActivityController : ControllerBase
                             Title = a.Title,
                             ExperienceCreationTypeId = a.ExperienceCreationTypeId,
                             PinnedLocation = a.PinnedLocation,
-                            NumberOfTickets = a.NumberOfTickets
                         };
                     })
                 }

@@ -422,18 +422,11 @@
                                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                                         <span class="new-experience-label">New Experience</span>
                                                                     }
-                                                                    else if(act.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents)
+                                                                    else if(act.ExperienceCreationTypeId == 3)
                                                                     {
-                                                                        @if (act.NumberOfTickets > 300)
-                                                                        {
-                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="number-of-reviews">300+ booked</span>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="number-of-reviews">@act.NumberOfTickets booked</span>
-                                                                        }
+                                                                        int numberOfTickets = RoundDownToNearestMultiple(act.StudentCount);
+                                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                        <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
                                                                     }
                                                                     </div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
@@ -620,16 +613,9 @@
                                                 }
                                                 else if (act.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents)
                                                 {
-                                                    if(act.NumberOfTickets > 300)
-                                                    {
-                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                        <span class="number-of-reviews">300+ booked</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                        <span class="number-of-reviews">@act.NumberOfTickets booked</span>
-                                                    }
+                                                int numberOfTickets = RoundDownToNearestMultiple(act.NumberOfTickets);
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
                                                 }
                                             </div>
                                             <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
@@ -977,7 +963,7 @@
         await GetFavorites();
 
     }
-        
+
     private async Task OnSkipMaker() 
     {
         if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
@@ -1088,7 +1074,7 @@
             {
                 var activityResult = ActivityListData.Result.Result.Select(r =>
                 {
-                return new Activity
+                    return new Activity
                     {
                         ActivityId              = r.ActivityId,
                         ExperienceTypeId        = r.ExperienceTypeId,
@@ -1224,7 +1210,6 @@
                         ExperienceCreationTypeId = a.ExperienceCreationTypeId,
                         PinnedLocation           = a.PinnedLocation,
                         ExperienceCreationType   = a.ExperienceCreationType,
-                        NumberOfTickets          = a.NumberOfTickets
                     };
                 }));
             }
@@ -1528,7 +1513,17 @@
         }
         return url;
     }
-
+    public int RoundDownToNearestMultiple(int number)
+    {
+        int roundingFactor = IdentifyRoundingFactor(number);
+        return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
+    }
+    public int IdentifyRoundingFactor(int number)
+    {
+        return (Math.Abs(number) >= 1000) ? 1000 :
+               (Math.Abs(number) >= 100)  ? 100 :
+                                            10;
+    }
     private class PopularActivitiy 
     {
         public int Id {get; set;}
@@ -1549,6 +1544,5 @@
         public bool IsFavorite {get; set;} = false;
         public int ExperienceCreationTypeId {get; set;}
         public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
-        public int NumberOfTickets { get; set; }
     }
 }
