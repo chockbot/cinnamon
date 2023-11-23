@@ -37,21 +37,22 @@ public class PopularActivitiesHandler : IPopularActivitiesHandler
             return AppResult<PopularActivitiesResult>.CreateSucceeded(new PopularActivitiesResult {
                 Activities = activities.Select(a => {
                     return new PopularActivitiesResult.Activity {
-                        CityName = a.CityName,
-                        ExperienceTypeId = a.ExperienceTypeId,
-                        Handler = a.Handler,
-                        Id = a.Id,
-                        ImageSrc = a.ImageSrc,
-                        IsNew = a.IsNew,
-                        MakerId = a.MakerId,
-                        OngoingStudentCount = a.OngoingStudentCount,
-                        Price = a.Price,
-                        Rating = a.Rating,
-                        RegionName = a.RegionName,
-                        ReviewCount = a.ReviewCount,
-                        StudentCount = a.StudentCount,
-                        Title = a.Title,
-                        ExperienceCreationTypeId = a.ExperienceCreationTypeId
+                        CityName                 = a.CityName,
+                        ExperienceTypeId         = a.ExperienceTypeId,
+                        Handler                  = a.Handler,
+                        Id                       = a.Id,
+                        ImageSrc                 = a.ImageSrc,
+                        IsNew                    = a.IsNew,
+                        MakerId                  = a.MakerId,
+                        OngoingStudentCount      = a.OngoingStudentCount,
+                        Price                    = a.Price,
+                        Rating                   = a.Rating,
+                        RegionName               = a.RegionName,
+                        ReviewCount              = a.ReviewCount,
+                        StudentCount             = a.StudentCount,
+                        Title                    = a.Title,
+                        ExperienceCreationTypeId = a.ExperienceCreationTypeId,
+                        NumberOfTickets          = a.NumberOfTickets
                     };
                 })
             }, "Popular activities successfully get");

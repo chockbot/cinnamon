@@ -59,6 +59,7 @@ public class GetAllActivitiesResult
         public bool IsDeactivated { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfReviews { get; set; }
+        public int NumberOfTickets { get; set; }
         public ExperienceCreationType ExperienceCreationType {get; set;}
 
         public class ActivitySchedule
