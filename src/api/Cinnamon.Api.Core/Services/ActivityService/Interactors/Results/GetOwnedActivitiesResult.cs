@@ -40,6 +40,7 @@ public class GetOwnedActivitiesResult
         public string BarangayName { get; set; }
         public int OngoingStudents { get; set; }
         public int CompletedStudents { get; set; }
+        public int NumberOfReviews { get; set; }
         public Enums.ActivityStatus Status { get; set; }
         public IEnumerable<string> SearchTags {get; set;}
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}

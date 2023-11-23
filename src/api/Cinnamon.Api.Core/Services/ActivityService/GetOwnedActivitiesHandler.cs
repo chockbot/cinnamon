@@ -44,15 +44,16 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
             int id = Convert.ToInt32(customerId);
 
             var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
-                CustomerId = id,
-                IncludeAddress = args.IncludeActivityAddress,
+                CustomerId         = id,
+                IncludeAddress     = args.IncludeActivityAddress,
                 IncludeDescription = args.IncludeActivityDescription,
-                IncludeSchedules = args.IncludeAtivitySchedules,
-                IncludeImages = args.IncludeActivityImages,
-                IncludeSearchTags = args.IncludeActivitySearchTags,
-                IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents,
+                IncludeSchedules   = args.IncludeAtivitySchedules,
+                IncludeImages      = args.IncludeActivityImages,
+                IncludeSearchTags  = args.IncludeActivitySearchTags,
+                IsActive           = args.IsActive,
+                IncludeCustomer    = args.IncludeCustomer,
+                IncludeStudents    = args.IncludeStudents,
+                IncludeReviews     = true
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -100,6 +101,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {

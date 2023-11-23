@@ -17,4 +17,5 @@ public class PopularActivityDTO
     public string RegionName {get; set;}
     public string ImageSrc {get; set;}
     public int ExperienceCreationTypeId {get; set;}
+    public int NumberOfTickets { get; set; }
 }

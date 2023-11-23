@@ -58,5 +58,6 @@ public class ActivityDTO
     public CustomerDTO Owner {get; set;}
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public int NumberOfTickets { get; set; }
     public virtual OteActivityDTO OteSchedule { get; set; }
 }
