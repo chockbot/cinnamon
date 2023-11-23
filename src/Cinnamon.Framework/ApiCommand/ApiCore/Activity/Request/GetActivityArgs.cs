@@ -11,5 +11,6 @@ public class GetActivityArgs
     public bool? IncludeActivityImages {get; set;}
     public bool? IsActive {get; set;}
     public bool? IncludeCustomer {get; set;}
-    public bool? IncludeStudents{ get; set; }
+    public bool? IncludeStudents { get; set; }
+    public bool? IncludeTickets { get; set; }
 }

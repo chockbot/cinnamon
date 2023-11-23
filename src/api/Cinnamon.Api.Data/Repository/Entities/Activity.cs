@@ -1,3 +1,4 @@
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cinnamon.Api.Data.Repository.Entities;
@@ -38,5 +39,6 @@ public class Activity : BaseEntity
     public virtual Customer Customer {get; set;}
     public virtual IList<Student> Students {get; set; }
     public virtual IList<Reviews> Reviews {get; set; }
+    public virtual IList<OteTicket> Tickets { get; set; }
     public virtual OteSchedule OteSchedule { get; set; }
 }

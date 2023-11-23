@@ -20,6 +20,7 @@ public class GetAllActivitiesArgs:IInteractor
     public int ExperienceCategoryId { get; set; }
     public string SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
+    public bool? IncludeTickets { get; set; }
     public bool? IsDeactivated { get; set; }
     public Enums.ActivityStatus? Status { get; set; }
     public bool? IsAdmin { get; set; }
