@@ -32,7 +32,7 @@
                     <TableHeader class="bg-black-100 color-white-100 font-16">
                         <TableRow>
                             <TableRowCell>
-                                Logs
+                                Seat Plan
                             </TableRowCell>
                             <TableHeaderCell>
                             </TableHeaderCell>
@@ -43,7 +43,7 @@
                         {
                             <TableRow>
                                 <TableRowCell class="item-qr color-grey-100">
-                                    @item.QrCode
+                                    @item.TicketSeat
                                 </TableRowCell>
                                 <TableRowCell>
                                     <div class="item-message d-flex justify-content-end">
@@ -219,7 +219,8 @@
                 ErrorCode = verificationRes.Result.ErrorInfo.Code,
                 Message = verificationRes.Result.ErrorInfo.Message,
                 QrCode = qr,
-                LogDate = DateTime.Now
+                LogDate = DateTime.Now,
+                TicketSeat = "Not Applicable"
             });
         }
         else 
@@ -228,7 +229,8 @@
                 ErrorCode = "success",
                 Message = "Valid ticket",
                 QrCode = qr,
-                LogDate = DateTime.Now
+                LogDate = DateTime.Now,
+                TicketSeat = verificationRes.Result.Result.TicketSeat
             });
         }
 
@@ -288,5 +290,6 @@
         public string ErrorCode {get; set;}
         public string Message {get; set;}
         public DateTime LogDate {get; set;}
+        public string TicketSeat {get; set;}
     }
 }
