@@ -2730,7 +2730,10 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OteVerificationResult
             {
                 IsSuccess = true,
-                Result = result.Result.Verified
+                Result = new CoreDto.Activity.OteVerificationDTO {
+                    TicketSeat = result.Result.TicketSeat,
+                    Verified = result.Result.Verified
+                }
             });
         }
         catch (Exception ex)

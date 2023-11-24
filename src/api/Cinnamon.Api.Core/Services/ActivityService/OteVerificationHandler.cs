@@ -79,7 +79,8 @@ public class OteVerificationHandler : IOteVerificationHandler
                 return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("An error occured. Please contact support."), "An error occured. Please contact support.", "error");
             }
 
-            return AppResult<OteVerificationResult>.CreateSucceeded(new OteVerificationResult {Verified = true}, "QR Code Successfully validated.");
+            return AppResult<OteVerificationResult>.CreateSucceeded(new OteVerificationResult 
+                {Verified = true, TicketSeat = qrcode.Title}, "QR Code Successfully validated.");
 
         }
         catch (Exception ex)
