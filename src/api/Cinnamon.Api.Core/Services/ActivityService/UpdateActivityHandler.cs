@@ -64,12 +64,13 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             const int maxWords = 80;
             var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
             var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+            var classPoliciesLength = WordsLenght(args.ClassPolicies ?? string.Empty);
 
-            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            if (customerBringLength > maxWords || specificProvideLength > maxWords || classPoliciesLength > maxWords)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(
-                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
-                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields.");
             }
 
             // check activity if existed
@@ -170,7 +171,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
-                Handler = handler
+                Handler = handler,
+                ClassPolicies = args.ClassPolicies == null ? args.ClassPolicies : htmlSanitizer.Sanitize(args.ClassPolicies ?? string.Empty)
             };
 
             if(args.SearchTags != null)
@@ -352,7 +354,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SubCategoryId = updated.SubCategoryId,
                 Title = updated.Title,
                 Handler = updated.Handler,
-                Status = updated.Status
+                Status = updated.Status,
+                ClassPolicies = updated.ClassPolicies
             }, "Successfully update activity details");
         }
         catch (Exception ex)

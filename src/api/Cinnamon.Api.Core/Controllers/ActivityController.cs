@@ -203,7 +203,8 @@ public class ActivityController : ControllerBase
                 Title = args.Title,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
                 Status = args.Status,
-                ExperienceCreationType = args.ExperienceCreationType
+                ExperienceCreationType = args.ExperienceCreationType,
+                ClassPolicies = args.ClassPolicies ?? string.Empty,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -258,7 +259,9 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-            }});
+                ClassPolicies = activity.ClassPlicies
+            }
+            });
         }
         catch (Exception ex)
         {
@@ -298,6 +301,7 @@ public class ActivityController : ControllerBase
                 SearchTags = args.SearchTags,
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                ClassPolicies = args.ClassPolicies,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 PinnedLocation = args.PinnedLocation,
@@ -374,6 +378,7 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 Status = activity.Status,
+                ClassPolicies = activity.ClassPolicies
             }});
         }
         catch (Exception ex)
@@ -1035,6 +1040,7 @@ public class ActivityController : ControllerBase
                             }).ToList()
                         };
                     }),
+                    ClassPolicies = activity.ClassPolicies,
                     AdditionalRequirements = activity.AdditionalRequirements,
                     Address1 = activity.Address1,
                     Address2 = activity.Address2,
@@ -1134,6 +1140,7 @@ public class ActivityController : ControllerBase
                             IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
+                    ClassPolicies = activity.ClassPolicies,
                     AdditionalRequirements = activity.AdditionalRequirements,
                     Address1 = activity.Address1,
                     Address2 = activity.Address2,
@@ -1248,6 +1255,7 @@ public class ActivityController : ControllerBase
                     BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
+                    ClassPolicies = activity.ClassPolicies,
                     Description = activity.Description,
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,
@@ -1365,6 +1373,7 @@ public class ActivityController : ControllerBase
                     BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
+                    ClassPolicies = activity.ClassPolicies,
                     Description = activity.Description,
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,

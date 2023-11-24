@@ -97,6 +97,14 @@ public class CreateActivityArgs
         set { _additionalRequirements = value; }
     }
 
+    private string _classPolicies;
+
+    public string ClassPolicies
+    {
+        get { return _classPolicies ?? string.Empty; }
+        set { _classPolicies = value; }
+    }
+
     [Required]
     public string ActivityLevel {get; set;}
     [Required]

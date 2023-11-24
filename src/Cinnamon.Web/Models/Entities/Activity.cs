@@ -149,6 +149,27 @@ public class Activity
         set { _customerBringWithThem = value; }
     }
 
+    private string _classPolicies;
+
+    public string ClassPolicies
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(_classPolicies))
+            {
+                string input = _classPolicies;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _classPolicies;
+        }
+        set { _classPolicies = value; }
+    }
+
     public string? AdditionalRequirements {get; set;}
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}

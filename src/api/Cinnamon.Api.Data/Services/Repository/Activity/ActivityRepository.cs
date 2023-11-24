@@ -31,7 +31,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType, string? classPolicies)
     {
         try
         {
@@ -100,6 +100,7 @@ public class ActivityRepository : IActivityRepository
                 MinimumAge = minimumAge,
                 SkillLevel = skillLevel,
                 SpecificsYouWillProvide = specificsYouWillProvide,
+                ClassPolicies = classPolicies,
             };
             var createdActivityDescription = await dataStore.ActivityDescription.Add(activityDescription);
             if (!createdActivityDescription.Succeeded)
@@ -229,7 +230,8 @@ public class ActivityRepository : IActivityRepository
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
                 Handler = handler,
-                IsComingSoon = createdActitivityRes.Result.IsComingSoon
+                IsComingSoon = createdActitivityRes.Result.IsComingSoon,
+                ClassPolicies = classPolicies,
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -711,6 +713,7 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.MinimumAge = description.MinimumAge;
                 activityDTO.SkillLevel = description.SkillLevel;
                 activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+                activityDTO.ClassPolicies = description.ClassPolicies;
             }
 
             // schedules
@@ -915,6 +918,7 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.MinimumAge = description.MinimumAge;
                 activityDTO.SkillLevel = description.SkillLevel;
                 activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+                activityDTO.ClassPolicies = description.ClassPolicies;
             }
 
             // schedules
@@ -1042,7 +1046,7 @@ public class ActivityRepository : IActivityRepository
         string? barangay, string? postalcode, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel,
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4,
         string? searchtag5, int? experienceCategoryId, int? subCategoryId, string pinnedLocation,
-        bool? isDeactivated, Enums.ActivityStatus? status, string? handler)
+        bool? isDeactivated, Enums.ActivityStatus? status, string? handler, string? classPolicies)
     {
         try
         {
@@ -1215,6 +1219,7 @@ public class ActivityRepository : IActivityRepository
             activityDescription.AdditionalRequirements = additionalRequirements ?? activityDescription.AdditionalRequirements;
             activityDescription.CanAdultsJoin = canAdultsJoin ?? activityDescription.CanAdultsJoin;
             activityDescription.CustomerBringWithThem = customerBringWithThem ?? activityDescription.CustomerBringWithThem;
+            activityDescription.ClassPolicies = classPolicies ?? activityDescription.ClassPolicies;
 
             var updatedActivityDescription = await dataStore.ActivityDescription.Update(activityDescription);
             if (!updatedActivityDescription.Succeeded)
@@ -1269,6 +1274,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 Handler = activity.Handler,
+                ClassPolicies = activityDescription.ClassPolicies
             }, "Successfully updated activity details");
 
         }

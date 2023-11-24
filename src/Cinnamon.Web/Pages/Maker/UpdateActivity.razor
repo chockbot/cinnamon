@@ -605,6 +605,7 @@
                         }).ToList()
                     };
                 }).ToList(),
+                ClassPolicies = activity.ClassPolicies,
                 AdditionalRequirements = activity.AdditionalRequirements,
                 Address1 = activity.Address1,
                 Address2 = activity.Address2,
@@ -833,6 +834,7 @@
                         StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 }),
+                ClassPolicies           = ReplaceEmptyValue(Model.Activity.ClassPolicies, NOTHING_PROVIDED),
                 AdditionalRequirements  = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
                 Address1                = ReplaceEmptyValue(Model.Activity.Address1, NOTHING_PROVIDED),
                 Address2                = ReplaceEmptyValue(Model.Activity.Address2, NOTHING_PROVIDED),
@@ -954,6 +956,7 @@
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),
+                ClassPolicies = Model.Activity.ClassPolicies,
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
                 Address1 = Model.Activity.Address1,
                 Address2 = Model.Activity.Address2,
@@ -1124,7 +1127,7 @@
                         isPricingAndScheduleComponentValid = true;
                     }
                 }
-               
+
             }
             else if (currentIndex == 4)
             {
@@ -1212,6 +1215,7 @@
         activity.ScheduleIndicator       = ReplaceTemporaryValues(activity.ScheduleIndicator);
         activity.SpecificsYouWillProvide = ReplaceTemporaryValues(activity.SpecificsYouWillProvide);
         activity.PinnedLocation          = ReplaceTemporaryValues(activity.PinnedLocation);
+        activity.ClassPolicies           = ReplaceTemporaryValues(activity.ClassPolicies);
 
         return activity;
     }
