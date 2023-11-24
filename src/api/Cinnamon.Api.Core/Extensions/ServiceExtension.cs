@@ -107,6 +107,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IBlockedAccountHandler, Services.AccountService.BlockedAccountHandler>();
         services.AddTransient<Services.AccountService.Handlers.IIsAccountBlockedHandler, Services.AccountService.IsAccountBlockedHandler>();
         services.AddTransient<Services.AccountService.Handlers.IExtraLoginHandler, Services.AccountService.ExtraLoginHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IChangeEmailHandler, Services.AccountService.ChangeEmailHandler>();  
 
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -159,6 +160,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteFindByHandler, Services.ActivityService.OteFindByHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteTicketDetailsHandler, Services.ActivityService.OteTicketDetailsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICustomerOteHandler, Services.ActivityService.CustomerOteHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteVerificationHandler, Services.ActivityService.OteVerificationHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

@@ -48,7 +48,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 				IsDeactivated = args.IsDeactivated,
 				Status = args.Status,
 				IsAdmin = args.IsAdmin,
-				IncludeReviews = args.IncludeReviews
+				IncludeReviews = args.IncludeReviews,
+				IncludeTickets = args.IncludeTickets
 			});
 			if (!result.Succeeded || result.Result == null)
 			{
@@ -137,7 +138,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 						OngoingStudents = e.OngoingStudents,
 						AverageRating = e.AverageRating,
 						NumberOfReviews = e.NumberOfReviews,
-						ExperienceCreationType = e.ExperienceCreationType
+						ExperienceCreationType = e.ExperienceCreationType,
+						NumberOfTickets = e.NumberOfTickets
 					};
 				}),
 				ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

@@ -13,7 +13,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
             _dataStore = dataStore;
         }
 
-        public async Task<AppResult<DescriptionDTO>> CreateDescription(int ActivityId, string Description, string SpecificsYouWillProvide, string CustomerBringWithThem, string? AdditionalRequirements, string ActivityLevel, string SkillLevel, int MinimumAge, bool CanAdultsJoin)
+        public async Task<AppResult<DescriptionDTO>> CreateDescription(int ActivityId, string Description, string SpecificsYouWillProvide, string CustomerBringWithThem, string? AdditionalRequirements, string ActivityLevel, string SkillLevel, int MinimumAge, bool CanAdultsJoin, string? classPolicies)
         {
             try
             {
@@ -32,7 +32,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     AdditionalRequirements = AdditionalRequirements,
                     ActivityLevel = ActivityLevel,
                     MinimumAge = MinimumAge,
-                    CanAdultsJoin = CanAdultsJoin
+                    CanAdultsJoin = CanAdultsJoin,
+                    ClassPolicies = classPolicies
                 });
 
                 return AppResult<DescriptionDTO>.CreateSucceeded(new DescriptionDTO()
@@ -46,7 +47,9 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     ActivityLevel = result.Result.ActivityLevel,
                     MinimumAge = result.Result.MinimumAge,
                     SkillLevel = result.Result.SkillLevel,
-                    CanAdultsJoin = result.Result.CanAdultsJoin
+                    CanAdultsJoin = result.Result.CanAdultsJoin,
+                    ClassPolicies = result.Result.ClassPolicies
+                    
                 },
                 checkActivity.Message);
             }
@@ -79,7 +82,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                         CanAdultsJoin = x.CanAdultsJoin,
                         ActivityLevel = x.ActivityLevel,
                         MinimumAge = x.MinimumAge,
-                        SkillLevel = x.SkillLevel
+                        SkillLevel = x.SkillLevel,
+                        ClassPolicies = x.ClassPolicies,
                     };
                 });
 
@@ -112,7 +116,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     ActivityLevel = result.Result.ActivityLevel,
                     MinimumAge = result.Result.MinimumAge,
                     SkillLevel = result.Result.SkillLevel,
-                    CanAdultsJoin = result.Result.CanAdultsJoin
+                    CanAdultsJoin = result.Result.CanAdultsJoin,
+                    ClassPolicies = result.Result.ClassPolicies,
                 },
                 result.Message);
             }
@@ -143,7 +148,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     ActivityLevel = result.Result.ActivityLevel,
                     MinimumAge = result.Result.MinimumAge,
                     SkillLevel = result.Result.SkillLevel,
-                    CanAdultsJoin = result.Result.CanAdultsJoin
+                    CanAdultsJoin = result.Result.CanAdultsJoin,
+                    ClassPolicies = result.Result.ClassPolicies,
                 },
                 "Successfully get description by activity id");
             }
@@ -153,7 +159,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
             }
         }
 
-        public async Task<AppResult<DescriptionDTO>> UpdateDescription(int DescriptionId, string Description, string SpecificsYouWillProvide, string CustomerBringWithThem, string? AdditionalRequirements, string ActivityLevel, string SkillLevel, int MinimumAge, bool CanAdultsJoin)
+        public async Task<AppResult<DescriptionDTO>> UpdateDescription(int DescriptionId, string Description, string SpecificsYouWillProvide, string CustomerBringWithThem, string? AdditionalRequirements, string ActivityLevel, string SkillLevel, int MinimumAge, bool CanAdultsJoin, string? classPolicies)
         {
             try
             {
@@ -174,7 +180,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     ActivityLevel = ActivityLevel,
                     MinimumAge = MinimumAge,
                     SkillLevel = SkillLevel,
-                    CanAdultsJoin = CanAdultsJoin
+                    CanAdultsJoin = CanAdultsJoin,
+                    ClassPolicies = classPolicies
                 });
                 
                 if(!result.Succeeded)
@@ -193,7 +200,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
                     ActivityLevel = result.Result.ActivityLevel,
                     MinimumAge = result.Result.MinimumAge,
                     SkillLevel = result.Result.SkillLevel,
-                    CanAdultsJoin = result.Result.CanAdultsJoin
+                    CanAdultsJoin = result.Result.CanAdultsJoin,
+                    ClassPolicies = result.Result.ClassPolicies 
                 }, 
                 "Successfully updated");
             }

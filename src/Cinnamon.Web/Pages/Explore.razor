@@ -14,6 +14,7 @@
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
@@ -273,10 +274,10 @@
                                 {
                                     <div class="swiper-slide category">
                                         <div>
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
-                                                <img src=@category.IconPath class="img-icon text-center">
-                                                <p class="card-title">@category.Category</p>
-                                            </a>
+                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id, category.Category))">
+                                            <img src=@category.IconPath class="img-icon text-center">
+                                            <p class="card-title">@category.Category</p>
+                                        </a>
                                         </div>
                                     </div>
                                 }
@@ -364,7 +365,7 @@
                                                                 {
                                                                     <CustomTooltip MarginLeft="-100">
                                                                         <TextContent>
-                                                                            <div class="rounded-pill ongoing-section">
+                                                                            <div class="ongoing-section">
                                                                                 <div class="active-badge" style="text-align:center">
                                                                                     <span class="pulse"></span>
                                                                                     <span class="active-tag-label">@act.OngoingStudentCount</span>
@@ -372,7 +373,7 @@
                                                                             </div>
                                                                         </TextContent>
                                                                         <TooltipContent>
-                                                                            <span class="color-grey-100">
+                                                                        <span class="ongoing-text">
                                                                                 Ongoing Enrollees
                                                                             </span>
                                                                         </TooltipContent>
@@ -419,7 +420,13 @@
                                                                         else if (act.IsNew)
                                                                         {
                                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="new-experience-label">New Experience</span>
+                                                                        <span class="new-experience-label">New Experience</span>
+                                                                        }
+                                                                        else if(act.ExperienceCreationTypeId == 3 && act.StudentCount != 0)
+                                                                        {
+                                                                            int numberOfTickets = RoundDownToNearestMultiple(act.StudentCount);
+                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                            <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
                                                                         }
                                                                     </div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
@@ -554,7 +561,7 @@
                                             {
                                                 <CustomTooltip MarginLeft="-100">
                                                     <TextContent>
-                                                        <div class="rounded-pill ongoing-section">
+                                                        <div class="ongoing-section">
                                                             <div class="active-badge" style="text-align:center">
                                                                 <span class="pulse"></span>
                                                                 <span class="active-tag-label">@act.OngoingStudents</span>
@@ -612,8 +619,11 @@
                                                     <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                     <span class="new-experience-label">New Experience</span>
                                                 }
-                                                else
+                                                else if (act.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents && act.NumberOfTickets != 0)
                                                 {
+                                                    int numberOfTickets = RoundDownToNearestMultiple(act.NumberOfTickets);
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
                                                 }
                                             </div>
                                             <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
@@ -705,6 +715,7 @@
     public string searchValue = string.Empty;
     public string filterId = string.Empty;
     public int cnt = 0;
+    public int cntCategories = 0;
     public int experienceCategoryId = 0;
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
@@ -964,7 +975,7 @@
         await GetFavorites();
 
     }
-        
+
     private async Task OnSkipMaker() 
     {
         if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
@@ -1074,85 +1085,86 @@
                 IsDeactivated = false,
                 Status = Framework.Enums.Enums.ActivityStatus.Submitted,
                 IncludeReviews = true,
+                IncludeTickets = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
             if (ActivityListData.Result.Result.Count() > 0)
             {
                 var activityResult = ActivityListData.Result.Result.Select(r =>
-                       {
-                           return new Activity
-                               {
-                                   ActivityId = r.ActivityId,
-                                   ExperienceTypeId = r.ExperienceTypeId,
-                                   ExperienceType = r.ExperienceType,
-                                   ExperienceCategoryId = r.ExperienceCategoryId,
-                                   SubCategoryId = r.SubCategoryId,
-                                   ExperienceCategory = r.ExperienceCategory,
-                                   SubCategory = r.SubCategory,
-                                   Title = r.Title,
-                                   Description = r.Description,
-                                   Price = r.Price,
-                                   ScheduleIndicator = r.ScheduleIndicator,
-                                   Remarks = r.Remarks,
-                                   IsPublished = r.IsPublished,
-                                   Address1 = r.Address1,
-                                   Address2 = r.Address2,
-                                   District = r.District,
-                                   City = r.City,
-                                   CityName = r.CityName,
-                                   Subdivision = r.Subdivision,
-                                   Region = r.Region,
-                                   RegionName = r.RegionName,
-                                   Barangay = r.Barangay,
-                                   BarangayName = r.BarangayName,
-                                   PostalCode = r.PostalCode,
-                                   PinnedLocation = r.PinnedLocation,
-                                   SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                                   CustomerBringWithThem = r.CustomerBringWithThem,
-                                   AdditionalRequirements = r.AdditionalRequirements,
-                                   ActivityLevel = r.ActivityLevel,
-                                   SkillLevel = r.SkillLevel,
-                                   MinimumAge = r.MinimumAge,
-                                   CanAdultsJoin = r.CanAdultsJoin,
-                                   CreatedBy = r.CreatedBy,
-                                   Handler = r.Handler,
-                                   IsNew = r.IsNew,
-                                   OngoingStudents = r.OngoingStudents,
-                                   CompletedStudents = r.CompletedStudents,
-                                   NumberOfReviews = r.NumberOfReviews,
-                                   AverageRating = r.AverageRating,
-                                   ExperienceCreationType = r.ExperienceCreationType,
-                                   ActivitySchedules = r.ActivitySchedules.Select(e =>
-            {
-                        return new ActivitySchedule
+                {
+                    return new Activity
+                    {
+                        ActivityId              = r.ActivityId,
+                        ExperienceTypeId        = r.ExperienceTypeId,
+                        ExperienceType          = r.ExperienceType,
+                        ExperienceCategoryId    = r.ExperienceCategoryId,
+                        SubCategoryId           = r.SubCategoryId,
+                        ExperienceCategory      = r.ExperienceCategory,
+                        SubCategory             = r.SubCategory,
+                        Title                   = r.Title,
+                        Description             = r.Description,
+                        Price                   = r.Price,
+                        ScheduleIndicator       = r.ScheduleIndicator,
+                        Remarks                 = r.Remarks,
+                        IsPublished             = r.IsPublished,
+                        Address1                = r.Address1,
+                        Address2                = r.Address2,
+                        District                = r.District,
+                        City                    = r.City,
+                        CityName                = r.CityName,
+                        Subdivision             = r.Subdivision,
+                        Region                  = r.Region,
+                        RegionName              = r.RegionName,
+                        Barangay                = r.Barangay,
+                        BarangayName            = r.BarangayName,
+                        PostalCode              = r.PostalCode,
+                        PinnedLocation          = r.PinnedLocation,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem   = r.CustomerBringWithThem,
+                        AdditionalRequirements  = r.AdditionalRequirements,
+                        ActivityLevel           = r.ActivityLevel,
+                        SkillLevel              = r.SkillLevel,
+                        MinimumAge              = r.MinimumAge,
+                        CanAdultsJoin           = r.CanAdultsJoin,
+                        CreatedBy               = r.CreatedBy,
+                        Handler                 = r.Handler,
+                        IsNew                   = r.IsNew,
+                        OngoingStudents         = r.OngoingStudents,
+                        CompletedStudents       = r.CompletedStudents,
+                        NumberOfReviews         = r.NumberOfReviews,
+                        AverageRating           = r.AverageRating,
+                        ExperienceCreationType  = r.ExperienceCreationType,
+                        NumberOfTickets         = r.NumberOfTickets,
+                        ActivitySchedules = r.ActivitySchedules.Select(e =>
                         {
-                            Id = e.Id,
-                            Name = e.Name,
-                            PerUnit1 = e.PerUnit1,
-                            PerUnit2 = e.PerUnit2,
-                            Price = e.Price,
-                            PriceUnit1 = e.PriceUnit1,
-                            PriceUnit2 = e.PriceUnit2,
-                            UnitPrice = e.UnitPrice
-                        };
-                    }).ToList(),
-                                   Images = r.Images.Select(i =>
-{
-        return new ActivityImage
-        {
-            Id = i.Id,
-            ImageSrc = i.ImageSrc,
-            Name = i.Name
-        };
-    }).ToList(),
-                                   Owner = new CustomerProfile
-                                   {
-                                       IsVerified = r.Owner.IsVerified
-                                   }
-                               };
-                       }).ToList();
-
+                             return new ActivitySchedule
+                             {
+                                 Id         = e.Id,
+                                 Name       = e.Name,
+                                 PerUnit1   = e.PerUnit1,
+                                 PerUnit2   = e.PerUnit2,
+                                 Price      = e.Price,
+                                 PriceUnit1 = e.PriceUnit1,
+                                 PriceUnit2 = e.PriceUnit2,
+                                 UnitPrice  = e.UnitPrice
+                             };
+                         }).ToList(),
+                        Images = r.Images.Select(i =>
+                        {
+                                return new ActivityImage
+                                {
+                                    Id       = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name     = i.Name
+                                };
+                            }).ToList(),
+                        Owner = new CustomerProfile
+                        {
+                            IsVerified = r.Owner.IsVerified
+                        }
+                    };
+                }).ToList();
                 if (isFromScroll)
                 {
                     activities.AddRange(activityResult);
@@ -1191,7 +1203,7 @@
 
         var activitiesRes = await activityApiHandler.PopularActivities(new Framework.ApiCommand.ApiCore.Activity.Request.PopularActivitiesArgs {
             CountPerPage = 20,
-            PageIndex = 0
+            PageIndex = 0,
         });
         if(activitiesRes.Succeeded && activitiesRes.Result is not null && activitiesRes.Result.IsSuccess)
         {
@@ -1200,27 +1212,27 @@
             {
                 popularActivities.AddRange(activities.Select(a => {
                     return new PopularActivitiy {
-                        CityName = a.CityName,
-                        ExperienceTypeId = a.ExperienceTypeId,
-                        Handler = a.Handler,
-                        Id = a.Id,
-                        ImageSrc = a.ImageSrc,
-                        IsNew = a.IsNew,
-                        MakerId = a.MakerId,
-                        OngoingStudentCount = a.OngoingStudentCount,
-                        Price = a.Price,
-                        Rating = a.Rating,
-                        RegionName = a.RegionName,
-                        ReviewCount = a.ReviewCount,
-                        StudentCount = a.StudentCount,
-                        Title = a.Title,
+                        CityName                 = a.CityName,
+                        ExperienceTypeId         = a.ExperienceTypeId,
+                        Handler                  = a.Handler,
+                        Id                       = a.Id,
+                        ImageSrc                 = a.ImageSrc,
+                        IsNew                    = a.IsNew,
+                        MakerId                  = a.MakerId,
+                        OngoingStudentCount      = a.OngoingStudentCount,
+                        Price                    = a.Price,
+                        Rating                   = a.Rating,
+                        RegionName               = a.RegionName,
+                        ReviewCount              = a.ReviewCount,
+                        StudentCount             = a.StudentCount,
+                        Title                    = a.Title,
                         ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                        PinnedLocation = a.PinnedLocation
+                        PinnedLocation           = a.PinnedLocation,
+                        ExperienceCreationType   = a.ExperienceCreationType,
                     };
                 }));
             }
         }
-
         showOverlayPopularActivities = false;
     }
 
@@ -1520,7 +1532,17 @@
         }
         return url;
     }
-
+    public int RoundDownToNearestMultiple(int number)
+    {
+        int roundingFactor = IdentifyRoundingFactor(number);
+        return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
+    }
+    public int IdentifyRoundingFactor(int number)
+    {
+        return (Math.Abs(number) >= 1000) ? 1000 :
+               (Math.Abs(number) >= 100)  ? 100 :
+                                            10;
+    }
     private class PopularActivitiy 
     {
         public int Id {get; set;}
@@ -1540,5 +1562,6 @@
         public string ImageSrc {get; set;} = string.Empty;
         public bool IsFavorite {get; set;} = false;
         public int ExperienceCreationTypeId {get; set;}
+        public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     }
 }

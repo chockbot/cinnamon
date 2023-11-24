@@ -25,4 +25,5 @@ public interface ICustomerRepository
     Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler);
     Task<AppResult<string>> GenerateResetPasswordToken(string email);
     Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword);
+    Task<AppResult<bool>> ChangeEmailAddress(string currentEmail, string newEmail);
 }

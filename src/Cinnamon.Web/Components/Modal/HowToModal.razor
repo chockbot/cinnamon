@@ -1,0 +1,82 @@
+﻿@namespace Cinnamon.Web.Components
+
+<Modal @ref="modalRef">
+    <ModalContent Class="header-modal" Size="ModalSize.Large" Style="border-radius:1rem;" Centered>
+        <ModalHeader>
+            <div class="col-11 d-flex modal-header-section">
+                <img src="images/experience-creation/light-bulb-icon.png" id="info-title" class="light-icon" alt="check-icon" />
+                <p class="modal-title text-center">@Title</p>
+            </div>
+            <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+        </ModalHeader>
+        <ModalBody>
+            <div class="col-12">
+                @htmlMarkup
+                @if(Title.Contains("Cover Photo"))
+                {
+                    <div class="mt-2 mb-2 example-photos">
+                        <div class="example-1">
+                            <img class="placeholder-image" src="images/experience-creation/placeholder-1.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/check-1.png" />
+                        </div>
+                        <div class="example-2">
+                            <img class="placeholder-image" src="images/experience-creation/placeholder-2.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/check-1.png" />
+                        </div>
+                        <div class="example-3">
+                            <img class="placeholder-image" src="images/experience-creation/placeholder-3.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/wrong-1.png" />
+                        </div>
+                        <div class="example-4">
+                            <img class="placeholder-image" src="images/experience-creation/placeholder-4.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/wrong-1.png" />
+                        </div>
+                    </div>
+                }
+                @if (Title.Contains("Supporting Photo"))
+                {
+                    <div class="mt-2 mb-2 supporting-photos">
+                        <div class="example-1">
+                            <img class="supporting-image" src="images/experience-creation/supporting-1.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/check-1.png" />
+                        </div>
+                        <div class="example-2">
+                            <img class="supporting-image" src="images/experience-creation/supporting-2.png" />
+                            <img style="width: 32px; height: 32px; display:block; margin-right:auto; margin-left:auto; margin-top:2px;" src="images/experience-creation/wrong-1.png" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter]
+    public string HtmlContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    private Modal modalRef;
+
+    private MarkupString htmlMarkup = new MarkupString();
+
+    public Task ShowModal()
+    {
+        htmlMarkup = new MarkupString(HtmlContent);
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}
+<style scoped>
+    .modal-header {
+        border-bottom: 0;
+        justify-content: end;
+    }
+</style>

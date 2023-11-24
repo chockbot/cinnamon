@@ -41,7 +41,8 @@ public class GetActivityHandler : IGetActivityHandler
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
                     IncludeCustomer = args.IncludeCustomer,
-                    IncludeStudents = args.IncludeStudents
+                    IncludeStudents = args.IncludeStudents,
+                    IncludeTickets = args.IncludeTickets
                 }
             );
 
@@ -93,6 +94,7 @@ public class GetActivityHandler : IGetActivityHandler
                 Status = activity.Status,
                 ExperienceCreationType = activity.ExperienceCreationType,
                 IsComingSoon = activity.IsComingSoon,
+                ClassPolicies = activity.ClassPolicies,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -145,7 +147,8 @@ public class GetActivityHandler : IGetActivityHandler
                     PhoneNumber = activity.Owner.PhoneNumber,
                 } : null,
                 OngoingStudents = activity.OngoingStudents,
-                CompletedStudents = activity.CompletedStudents
+                CompletedStudents = activity.CompletedStudents,
+                NumberOfTickets = activity.NumberOfTickets
             };
 
             return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");

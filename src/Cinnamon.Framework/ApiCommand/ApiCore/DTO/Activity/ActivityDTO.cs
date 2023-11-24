@@ -29,6 +29,7 @@ public class ActivityDTO
     public string SpecificsYouWillProvide {get; set;}
     public string CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
+    public string? ClassPolicies { get; set; }
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
@@ -39,6 +40,7 @@ public class ActivityDTO
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public int NumberOfTickets { get; set; }
     public bool IsComingSoon {get; set;}
     public Enums.Enums.ActivityStatus Status{ get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }

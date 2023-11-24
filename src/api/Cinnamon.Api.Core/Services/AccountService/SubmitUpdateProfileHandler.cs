@@ -72,14 +72,15 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
             }
 
             var result = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
-                About = args.About ?? profile.About,
-                FirstName = args.FirstName ?? profile.FirstName,
-                LastName = args.LastName ?? profile.LastName,
-                Birthdate = args.Birthdate ?? profile.Birthdate,
+                About       = args.About ?? profile.About,
+                FirstName   = args.FirstName ?? profile.FirstName,
+                LastName    = args.LastName ?? profile.LastName,
+                Email       = args.Email?? profile.Email,
+                Birthdate   = args.Birthdate ?? profile.Birthdate,
                 PhoneNumber = args.PhoneNumber ?? profile.PhoneNumber,
-                CustomerId = profile.Id,
-                IsVerified = args.VerifiedBadge ?? profile.IsVerified,
-                Handler = handler
+                CustomerId  = profile.Id,
+                IsVerified  = args.VerifiedBadge ?? profile.IsVerified,
+                Handler     = handler
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -93,12 +94,13 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
             }
 
             return AppResult<SubmitUpdateProfileResult>.CreateSucceeded(new SubmitUpdateProfileResult {
-                About = result.Result.Result.About,
-                Birthdate = result.Result.Result.Birthdate,
-                FirstName = result.Result.Result.FirstName,
-                LastName = result.Result.Result.LastName,
+                About       = result.Result.Result.About,
+                Birthdate   = result.Result.Result.Birthdate,
+                FirstName   = result.Result.Result.FirstName,
+                LastName    = result.Result.Result.LastName,
+                Email       = result.Result.Result.Email,
                 PhoneNumber = result.Result.Result.PhoneNumber,
-                Id = result.Result.Result.Id
+                Id          = result.Result.Result.Id
             }, "Successfully update profile details");
         }
         catch (Exception ex)

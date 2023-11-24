@@ -90,6 +90,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                 MarDetails = activity.MapDetails,
                 PinnedLocation = activity.PinnedLocation,
                 ExperienceCreationType = activity.ExperienceCreationType,
+                ClassPolicies = activity.ClassPolicies,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,

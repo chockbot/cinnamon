@@ -1,23 +1,24 @@
-﻿.customer-wrapper {
+﻿
+.customer-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    justify-items: center;
+    gap: 40PX;
+    justify-content: center;
 }
 
 .swiper-wrapper {
-    z-index: -1;
+    z-index: 1;
 }
 
 .ongoing-experience-wrapper {
     font-family: "Nunito";
-    /*overflow: hidden;*/
+    margin-top: 5rem;
 }
 
     .ongoing-experience-wrapper .title {
         font-size: 24px;
         font-weight: 700;
-        color: #343d4c;
+        color: #343D4C;
     }
 
 .card-experience-item {
@@ -49,26 +50,40 @@
     }
 
     .card-experience-item .new-badge {
-        background-color: #f8f8f8;
+        background-color: #F8F8F8;
         border-radius: 14px;
     }
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1000px) {
+
     .customer-wrapper {
         display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        gap: 30px;
+        grid-template-columns: repeat(2, 2fr);
+        gap: 10PX;
         justify-items: center;
+    }
+    .ongoing-experience-wrapper {
+        font-family: "Nunito";
+        margin-top: 2rem;
     }
 }
 
+
+
+
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) {
+
+    .ongoing-experience-wrapper {
+        font-family: "Nunito";
+        margin-top: 2rem;
+    }
+
     .customer-wrapper {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        gap: 30px;
+        gap: 30PX;
         justify-items: center;
     }
 }

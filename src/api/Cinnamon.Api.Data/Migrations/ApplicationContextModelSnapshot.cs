@@ -233,6 +233,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("AdditionalData")
+                        .HasColumnType("text");
+
                     b.Property<string>("AdditionalRequirements")
                         .HasColumnType("text");
 
@@ -244,6 +247,9 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ClassPolicies")
+                        .HasColumnType("text");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");

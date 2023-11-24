@@ -13,6 +13,7 @@ public class ActivityDTO
     public string SpecificsYouWillProvide { get; set; }
     public string CustomerBringWithThem { get; set; }
     public string? AdditionalRequirements { get; set; }
+    public string? ClassPolicies { get; set; }
     public string ActivityLevel { get; set; }
     public string SkillLevel { get; set; }
     public int MinimumAge { get; set; }
@@ -57,5 +58,6 @@ public class ActivityDTO
     public CustomerDTO Owner {get; set;}
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public int NumberOfTickets { get; set; }
     public virtual OteActivityDTO OteSchedule { get; set; }
 }
