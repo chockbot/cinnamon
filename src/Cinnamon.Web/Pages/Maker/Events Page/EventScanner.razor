@@ -39,7 +39,7 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody class="font-16 m-font-14 log-body">
-                        @foreach (var item in verificationLogs)
+                        @foreach (var item in verificationLogs.OrderByDescending(l => l.LogDate))
                         {
                             <TableRow>
                                 <TableRowCell class="item-qr color-grey-100">
@@ -218,7 +218,8 @@
             verificationLogs.Add(new VerificationLog {
                 ErrorCode = verificationRes.Result.ErrorInfo.Code,
                 Message = verificationRes.Result.ErrorInfo.Message,
-                QrCode = qr
+                QrCode = qr,
+                LogDate = DateTime.Now
             });
         }
         else 
@@ -226,7 +227,8 @@
             verificationLogs.Add(new VerificationLog {
                 ErrorCode = "success",
                 Message = "Valid ticket",
-                QrCode = qr
+                QrCode = qr,
+                LogDate = DateTime.Now
             });
         }
 
@@ -285,5 +287,6 @@
         public string QrCode {get; set;}
         public string ErrorCode {get; set;}
         public string Message {get; set;}
+        public DateTime LogDate {get; set;}
     }
 }
