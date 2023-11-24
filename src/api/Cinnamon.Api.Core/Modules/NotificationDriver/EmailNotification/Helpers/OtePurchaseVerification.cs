@@ -81,7 +81,7 @@ public class OtePurchaseVerification
                         font-weight: 900;
                     '
                     >
-                    Thankyou for your purchase!
+                    Thank you for your purchase!
                     </p>
                     <p
                     style='
