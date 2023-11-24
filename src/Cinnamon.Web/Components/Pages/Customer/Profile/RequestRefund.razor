@@ -8,7 +8,7 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject ITransactionApiHandler transactionApiHandler
 
-<article class="request-refund-wrapper">
+<article class="request-refund">
     @if (Profile.IsMaker == true)
     {
         <div class="request-refund-containers">
@@ -45,10 +45,10 @@
         </div>
         <div class="payout-information">
             <p class="payout-title">Payout Information</p>
-            <div class="details col-4 d-flex justify-content-start">
+            <div class="details col-lg-4 col-md-4 col-sm-12 col-12 d-flex justify-content-start">
                 @if (PayoutAccount == null)
                 {
-                    <span>No Data Found</span>
+                    <span class="font-16">No Data Found</span>
                     <span class="edit">
                         <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
                     </span>
@@ -152,7 +152,7 @@
                     <TableHeaderCell>Reference No</TableHeaderCell>
                     <TableHeaderCell>Experience Title</TableHeaderCell>
                     <TableHeaderCell>Status</TableHeaderCell>
-                    <TableHeaderCell class="text-end">Credits</TableHeaderCell>
+                    <TableHeaderCell class="credit-text">Credits</TableHeaderCell>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,7 +162,7 @@
                         <TableRowCell>@item.ReferenceNo</TableRowCell>
                         <TableRowCell>@item.ExperienceTitle</TableRowCell>
                         <TableRowCell>@GetStatus(item.Status)</TableRowCell>
-                        <TableRowCell class="text-end">@item.RefundAmountGiven.ToString("#,##0.00")</TableRowCell>
+                        <TableRowCell class="credit-text">@item.RefundAmountGiven.ToString("#,##0.00")</TableRowCell>
                     </TableRow>
                 }
             </TableBody>

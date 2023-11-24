@@ -22,5 +22,6 @@ public class PopularActivitiesDTO
         public string PinnedLocation { get; set; }
         public string ImageSrc {get; set;}
         public int ExperienceCreationTypeId {get; set;}
+        public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     }
 }

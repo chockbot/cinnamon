@@ -149,6 +149,27 @@ public class Activity
         set { _customerBringWithThem = value; }
     }
 
+    private string _classPolicies;
+
+    public string ClassPolicies
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(_classPolicies))
+            {
+                string input = _classPolicies;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _classPolicies;
+        }
+        set { _classPolicies = value; }
+    }
+
     public string? AdditionalRequirements {get; set;}
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}
@@ -180,6 +201,7 @@ public class Activity
     public bool IsDeactivated { get; set; }
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public int NumberOfTickets { get; set; }
     public bool IsComingSoon {get; set;}
 
     string MaskEmail(string input)

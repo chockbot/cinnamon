@@ -1,6 +1,5 @@
 using AutoMapper;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
-using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
@@ -9,9 +8,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -207,7 +205,8 @@ public class ActivityController : ControllerBase
                 Title = args.Title,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
                 Status = args.Status,
-                ExperienceCreationType = args.ExperienceCreationType
+                ExperienceCreationType = args.ExperienceCreationType,
+                ClassPolicies = args.ClassPolicies ?? string.Empty,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -262,7 +261,9 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-            }});
+                ClassPolicies = activity.ClassPlicies
+            }
+            });
         }
         catch (Exception ex)
         {
@@ -302,6 +303,7 @@ public class ActivityController : ControllerBase
                 SearchTags = args.SearchTags,
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                ClassPolicies = args.ClassPolicies,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 PinnedLocation = args.PinnedLocation,
@@ -378,6 +380,7 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 Status = activity.Status,
+                ClassPolicies = activity.ClassPolicies
             }});
         }
         catch (Exception ex)
@@ -726,6 +729,7 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
@@ -878,6 +882,7 @@ public class ActivityController : ControllerBase
                 Status = args.Status,
                 IsAdmin = args.IsAdmin,
                 IncludeReviews = args.IncludeReviews ?? false,
+                IncludeTickets = args.IncludeTickets ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -964,7 +969,8 @@ public class ActivityController : ControllerBase
                         IsDeactivated = a.IsDeactivated,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
-                        ExperienceCreationType = a.ExperienceCreationType
+                        ExperienceCreationType = a.ExperienceCreationType,
+                        NumberOfTickets = a.NumberOfTickets
                     };
                 }).AsQueryable()
             });
@@ -1036,6 +1042,7 @@ public class ActivityController : ControllerBase
                             }).ToList()
                         };
                     }),
+                    ClassPolicies = activity.ClassPolicies,
                     AdditionalRequirements = activity.AdditionalRequirements,
                     Address1 = activity.Address1,
                     Address2 = activity.Address2,
@@ -1135,6 +1142,7 @@ public class ActivityController : ControllerBase
                             IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
+                    ClassPolicies = activity.ClassPolicies,
                     AdditionalRequirements = activity.AdditionalRequirements,
                     Address1 = activity.Address1,
                     Address2 = activity.Address2,
@@ -1201,7 +1209,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeTickets = args.IncludeTickets ?? false
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1248,6 +1257,7 @@ public class ActivityController : ControllerBase
                     BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
+                    ClassPolicies = activity.ClassPolicies,
                     Description = activity.Description,
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,
@@ -1288,7 +1298,8 @@ public class ActivityController : ControllerBase
                         } : null,
                     OngoingStudents = activity.OngoingStudents,
                     CompletedStudents = activity.CompletedStudents,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+                    NumberOfTickets = activity.NumberOfTickets
                 }
             });
         }
@@ -1364,6 +1375,7 @@ public class ActivityController : ControllerBase
                     BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
+                    ClassPolicies = activity.ClassPolicies,
                     Description = activity.Description,
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,
@@ -1701,6 +1713,7 @@ public class ActivityController : ControllerBase
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
                 IncludeReviews = args.IncludeReviews ?? false,
+                IncludeTickets = args.IncludeTickets ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1709,80 +1722,82 @@ public class ActivityController : ControllerBase
 
             return new JsonResult(new GetAllActivitiesResult
             {
-                IsSuccess = true,
+                IsSuccess  = true,
                 Pagination = result.Result.Pagination,
-                ErrorInfo = result.Result.ErrorInfo,
+                ErrorInfo  = result.Result.ErrorInfo,
                 Result = result.Result.Activities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
-                        ActivityId = a.Id,
+                        ActivityId    = a.Id,
                         ActivityLevel = a.ActivityLevel,
                         ActivitySchedules = a.ActivitySchedules.Select(s => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
                             {
-                                DateTime = s.DateTime,
-                                Name = s.Name,
-                                PerUnit1 = s.PerUnit1,
-                                PerUnit2 = s.PerUnit2,
-                                Price = s.Price,
-                                PriceUnit1 = s.PriceUnit1,
-                                PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice,
-                                Order = s.Order,
+                                DateTime         = s.DateTime,
+                                Name             = s.Name,
+                                PerUnit1         = s.PerUnit1,
+                                PerUnit2         = s.PerUnit2,
+                                Price            = s.Price,
+                                PriceUnit1       = s.PriceUnit1,
+                                PriceUnit2       = s.PriceUnit2,
+                                UnitPrice        = s.UnitPrice,
+                                Order            = s.Order,
                                 IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
-                        Address1 = a.Address1,
-                        Address2 = a.Address2,
-                        CanAdultsJoin = a.CanAdultsJoin,
-                        City = a.City,
-                        Subdivision = a.Subdivision,
-                        Region = a.Region,
-                        Barangay = a.Barangay,
-                        CityName = a.CityName,
-                        BarangayName = a.BarangayName,
-                        RegionName = a.RegionName,
-                        PostalCode = a.PostalCode,
-                        CustomerBringWithThem = a.CustomerBringWithThem,
-                        Description = a.Description,
-                        District = a.District,
-                        ExperienceCategoryId = a.ExperienceCategoryId,
-                        ExperienceCategory = a.ExperienceCategory,
-                        SubCategory = a.SubCategory,
-                        ExperienceTypeId = a.ExperienceTypeId,
-                        ExperienceType = a.ExperienceType,
-                        CreatedBy = a.CreatedBy,
+                        Address1               = a.Address1,
+                        Address2               = a.Address2,
+                        CanAdultsJoin          = a.CanAdultsJoin,
+                        City                   = a.City,
+                        Subdivision            = a.Subdivision,
+                        Region                 = a.Region,
+                        Barangay               = a.Barangay,
+                        CityName               = a.CityName,
+                        BarangayName           = a.BarangayName,
+                        RegionName             = a.RegionName,
+                        PostalCode             = a.PostalCode,
+                        CustomerBringWithThem  = a.CustomerBringWithThem,
+                        Description            = a.Description,
+                        District               = a.District,
+                        ExperienceCategoryId   = a.ExperienceCategoryId,
+                        ExperienceCategory     = a.ExperienceCategory,
+                        SubCategory            = a.SubCategory,
+                        ExperienceTypeId       = a.ExperienceTypeId,
+                        ExperienceType         = a.ExperienceType,
+                        CreatedBy              = a.CreatedBy,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name,
-                                Order = i.Order
+                                Name     = i.Name,
+                                Order    = i.Order
                             };
                         }),
-                        IsPublished = a.IsPublished,
-                        MinimumAge = a.MinimumAge,
-                        Price = a.Price,
-                        Remarks = a.Remarks,
-                        ScheduleIndicator = a.ScheduleIndicator,
-                        SearchTags = a.SearchTags,
-                        SkillLevel = a.SkillLevel,
+                        IsPublished             = a.IsPublished,
+                        MinimumAge              = a.MinimumAge,
+                        Price                   = a.Price,
+                        Remarks                 = a.Remarks,
+                        ScheduleIndicator       = a.ScheduleIndicator,
+                        SearchTags              = a.SearchTags,
+                        SkillLevel              = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
-                        SubCategoryId = a.SubCategoryId,
-                        Title = a.Title,
-                        Handler = a.Handler,
+                        SubCategoryId           = a.SubCategoryId,
+                        Title                   = a.Title,
+                        Handler                 = a.Handler,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
-                            Handler = a.Owner.Handler,
-                            Id = a.Owner.Id,
+                            Handler    = a.Owner.Handler,
+                            Id         = a.Owner.Id,
                             IsVerified = a.Owner.IsVerified,
                         } : null,
-                        IsNew = a.IsNew,
-                        OngoingStudents = a.OngoingStudents,
-                        CompletedStudents = a.CompletedStudents,
-                        NumberOfReviews = a.NumberOfReviews,
-                        AverageRating = a.AverageRating
+                        IsNew                  = a.IsNew,
+                        OngoingStudents        = a.OngoingStudents,
+                        CompletedStudents      = a.CompletedStudents,
+                        NumberOfReviews        = a.NumberOfReviews,
+                        AverageRating          = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType,
+                        NumberOfTickets        = a.NumberOfTickets
                     };
                 }).AsQueryable()
             });
@@ -2398,7 +2413,7 @@ public class ActivityController : ControllerBase
                             StudentCount = a.StudentCount,
                             Title = a.Title,
                             ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                            PinnedLocation = a.PinnedLocation
+                            PinnedLocation = a.PinnedLocation,
                         };
                     })
                 }

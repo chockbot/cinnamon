@@ -343,16 +343,16 @@ public class AccountApiHandler : IAccountApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request("Account/UploadGovernmentIds")
-                .PostMultipartAsync(mp => 
+                .PostMultipartAsync(mp =>
                     {
-                        if(args.FrontImageId != null)
+                        if (args.FrontImageId != null)
                         {
-                            mp.AddFile("FrontImageId", args.FrontImageId.OpenReadStream(), 
+                            mp.AddFile("FrontImageId", args.FrontImageId.OpenReadStream(),
                                 args.FrontImageId.FileName, args.FrontImageId.ContentType);
                         }
-                        if(args.BackImageId != null)
+                        if (args.BackImageId != null)
                         {
-                            mp.AddFile("BackImageId", args.BackImageId.OpenReadStream(), 
+                            mp.AddFile("BackImageId", args.BackImageId.OpenReadStream(),
                                 args.BackImageId.FileName, args.BackImageId.ContentType);
                         }
                     })
@@ -369,7 +369,7 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UploadGovernmentIdsResult>.CreateFailed(ex, "An error occured when posting upload government ids api");
         }
     }
-   
+
     public async Task<AppResult<UploadProfilePictureResult>> UploadProfilePicture(UploadProfilePictureArgs args, string token)
     {
         try
@@ -436,7 +436,7 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetWaitListResult>.CreateFailed(ex, "An error occured when getting customer waitlist api");
         }
     }
-    
+
     public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email, string token)
     {
         try
@@ -843,6 +843,27 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<SecretLoginResult>.CreateFailed(ex, "An error occured when calling extra login api");
+        }
+    }
+
+    public async Task<AppResult<ChangEmailAddressResult>> ChangeEmailAddress(ChangeEmailArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/ChangeEmailAddress")
+                .PostJsonAsync(args)
+                .ReceiveJson<ChangEmailAddressResult>();
+
+            return AppResult<ChangEmailAddressResult>.CreateSucceeded(result, "Successfully called change email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ChangEmailAddressResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ChangEmailAddressResult>.CreateFailed(ex, "An error occured when calling change email api");
         }
     }
 }

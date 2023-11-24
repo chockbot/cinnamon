@@ -577,4 +577,30 @@ public class CustomerRepository : ICustomerRepository
         }
         return (IUserEmailStore<IdentityUser>)userStore;
     }
+    public async Task<AppResult<bool>> ChangeEmailAddress(string currentEmail, string newEmail)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(currentEmail);
+            if (user == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Can't find user account."), "Can't find user account.");
+            }
+
+            var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+
+            var result = await userManager.ChangeEmailAsync(user, newEmail, token);
+            if (!result.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("An error occurred when updating email"), "An error occurred when updating email");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully change email");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occurred when resetting email");
+        }
+    }
+
 }
