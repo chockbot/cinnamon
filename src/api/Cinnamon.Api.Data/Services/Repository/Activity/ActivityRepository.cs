@@ -389,7 +389,7 @@ public class ActivityRepository : IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
-        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false)
     {
         try
         {
@@ -405,6 +405,7 @@ public class ActivityRepository : IActivityRepository
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
             if (includeReviews) includes.Add(a => a.Reviews);
+            if (includeTickets) includes.Add(a => a.Tickets);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -579,7 +580,11 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.NumberOfReviews = numberOfRatee;
                     activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
                 }
-
+                if (includeTickets && a.Tickets != null)
+                {
+                    var tickets = a.Tickets;
+                    activityDTO.NumberOfTickets = tickets.Count;
+                }
                 return activityDTO;
             });
 
@@ -632,7 +637,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false)
     {
         try
         {
@@ -643,7 +648,8 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
-            if (includeStudents) includes.Add(a => a.Students);
+            if(includeStudents) includes.Add(a => a.Students);
+            if (includeTickets) includes.Add(a => a.Tickets);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -819,6 +825,12 @@ public class ActivityRepository : IActivityRepository
                                                               || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                                                               && a.ExpirationDateEnd != DateTime.MinValue);
                 activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+            }
+            //Tickets
+            if (includeTickets && activity.Tickets != null)
+            {
+                var tickets = activity.Tickets;
+                activityDTO.NumberOfTickets = tickets.Count;
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -1266,7 +1278,8 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, 
+        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false)
     {
         try
         {
@@ -1282,6 +1295,7 @@ public class ActivityRepository : IActivityRepository
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
             if (includeReviews) includes.Add(a => a.Reviews);
+            if (includeTickets) includes.Add(a => a.Tickets);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -1300,23 +1314,24 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id                   = a.Id,
-                    SubTitle             = a.Subtitle,
-                    Title                = a.Title,
-                    Description          = a.Description,
-                    Price                = a.Price,
-                    Remarks              = a.Remarks,
-                    IsPublished          = a.IsPublished,
-                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId        = a.SubCategoryId ?? 0,
-                    CreatedBy            = a.CreatedBy,
-                    ExperienceTypeId     = a.ExperienceTypeId,
-                    Handler              = a.Handler,
-                    ExperienceType       = a.ExperienceType?.Name,
-                    ExperienceCategory   = a.ExperienceCategory?.Category,
-                    SubCategory          = a.SubCategory?.SubCatergory,
-                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
-                    IsComingSoon         = a.IsComingSoon
+                    Id                     = a.Id,
+                    SubTitle               = a.Subtitle,
+                    Title                  = a.Title,
+                    Description            = a.Description,
+                    Price                  = a.Price,
+                    Remarks                = a.Remarks,
+                    IsPublished            = a.IsPublished,
+                    ExperienceCategoryId   = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId          = a.SubCategoryId ?? 0,
+                    CreatedBy              = a.CreatedBy,
+                    ExperienceTypeId       = a.ExperienceTypeId,
+                    Handler                = a.Handler,
+                    ExperienceType         = a.ExperienceType?.Name,
+                    ExperienceCategory     = a.ExperienceCategory?.Category,
+                    SubCategory            = a.SubCategory?.SubCatergory,
+                    IsNew                  = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
+                    IsComingSoon           = a.IsComingSoon
                 };
 
                 // address fields
@@ -1449,6 +1464,11 @@ public class ActivityRepository : IActivityRepository
                     int numberOfRatee = reviews.Count;
                     activityDTO.NumberOfReviews = numberOfRatee;
                     activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
+                }
+                if (includeTickets && a.Tickets != null)
+                {
+                    var tickets = a.Tickets;
+                    activityDTO.NumberOfTickets = tickets.Count;
                 }
 
                 return activityDTO;

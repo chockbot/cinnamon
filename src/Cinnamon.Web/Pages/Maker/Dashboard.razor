@@ -651,15 +651,27 @@
                     </div>
                     @if(cnt == 1)
                     {
-                        <p class="badge-text">Completed 10 students</p>
+                        <p class="badge-text">Completed 10 students.</p>
                     }
                     else if (cnt == 2)
                     {
-                        <p class="badge-text">Completed 25 & received 10 reviews</p>
+                        <p class="badge-text">Completed 25 students & received 10 reviews.</p>
                     }
                     else if (cnt == 3)
                     {
-                        <p class="badge-text">Completed 100 students & received 25 reviews</p>
+                        <p class="badge-text">Completed 100 students & received 25 reviews.</p>
+                    }
+                    else
+                    {
+                        @if(NoOfCompleted == 0)
+                        {
+                            <p class="badge-text">No completed students & reviews yet.</p> 
+                            
+                        }
+                        else
+                        {
+                            <p class="badge-text">Completed @NoOfCompleted students & received @NoOfReviews reviews.</p>
+                        }   
                     }
                 </div>
             </div>
@@ -727,7 +739,9 @@
 
     private int NoOfEnrollees = 0;
 
-    private int NoOfCompleted = 0;
+    private double NoOfCompleted = 0;
+
+    private int NoOfReviews = 0;
 
     private int TotalTicketSold = 0;
 
@@ -854,9 +868,9 @@
     {
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
             {
-                IncludeActivityImages = true,
-                IncludeStudents = true,
-                IncludeAtivitySchedules = true
+                IncludeActivityImages   = true,
+                IncludeStudents         = true,
+                IncludeAtivitySchedules = true,
             }, token);
 
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
@@ -866,34 +880,36 @@
                 // map only required fields
                 return new Activity
                     {
-                        ActivityId = a.ActivityId,
-                        IsPublished = a.IsPublished,
-                        Title = a.Title,
-                        Description = a.Description,
-                        ExperienceTypeId = a.ExperienceTypeId,
+                        ActivityId             = a.ActivityId,
+                        IsPublished            = a.IsPublished,
+                        Title                  = a.Title,
+                        Description            = a.Description,
+                        ExperienceTypeId       = a.ExperienceTypeId,
                         ExperienceCreationType = a.ExperienceCreationType,
-                        Handler = a.Handler,
-                        CityName = a.CityName,
+                        Handler                = a.Handler,
+                        CityName               = a.CityName,
                         Images = a.Images.Select(i =>
                         {
                             return new ActivityImage
                             {
-                                Id = i.Id,
+                                Id       = i.Id,
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name     = i.Name
                             };
                         }).ToList(),
-                        Status = a.Status,
-                        OngoingStudents = a.OngoingStudents,
-                        CompletedStudents = a.CompletedStudents
+                        Status            = a.Status,
+                        OngoingStudents   = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews   = a.NumberOfReviews
                     };
             }).ToList();
         }
-        GeneralActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).ToList();
-        OTEActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).ToList();
+        GeneralActivities    = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).ToList();
+        OTEActivities        = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).ToList();
         AppointmentActvities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment).ToList();
-        NoOfEnrollees = activities.Sum(a => a.OngoingStudents);
-        NoOfCompleted = activities.Sum(a => a.CompletedStudents);
+        NoOfEnrollees        = activities.Sum(a => a.OngoingStudents);
+        NoOfCompleted        = activities.Sum(a => a.CompletedStudents);
+        NoOfReviews          = activities.Sum(a => a.NumberOfReviews);
 
         //Get Total Ticket Sold
         var resultOTE = await dashboardApiHandler.GetOTEByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByProviderArgs
@@ -918,12 +934,12 @@
         if (NoOfCompleted >= 10)
         {
             cnt++;
-            if (NoOfCompleted >= 25)
+            if (NoOfCompleted >= 25 && NoOfReviews >= 10)
             {
                 cnt++;
                 badgeName1 = "Epic";
                 badgeName2 = "Legend";
-                if (NoOfCompleted >= 100)
+                if (NoOfCompleted >= 100 && NoOfReviews >= 10)
                 {
                     cnt++;
                     badgeName1 = "Epic";
@@ -977,7 +993,7 @@
 
     public double GetPercentage()
     {
-        return Math.Round(cnt / 3 * 100);
+        return Math.Round(NoOfCompleted / 125 * 100);
     }
 
 }

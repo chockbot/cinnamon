@@ -42,6 +42,7 @@ public class GetActivityResult
     public Enums.ActivityStatus Status { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public int NumberOfTickets { get; set; }
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public bool IsComingSoon {get; set;}
 

@@ -180,6 +180,7 @@ public class Activity
     public bool IsDeactivated { get; set; }
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public int NumberOfTickets { get; set; }
     public bool IsComingSoon {get; set;}
 
     string MaskEmail(string input)
