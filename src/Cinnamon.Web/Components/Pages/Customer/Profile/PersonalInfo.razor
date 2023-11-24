@@ -656,8 +656,12 @@
                     {
                         Model.CustomerProfile.Email = emailLocalstate;
                         errorMessage2               = string.Empty;
-                        isEditPhoneNumber           = false;
+                        isEditEmail                 = false;
                         await ModelChanged.InvokeAsync(Model);
+                    } 
+                    else
+                    {
+                        errorMessage2 = result?.Result?.ErrorInfo?.Message;
                     }
                 }
             }
