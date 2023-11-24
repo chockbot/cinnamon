@@ -39,7 +39,7 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody class="font-16 m-font-14 log-body">
-                        @foreach (var item in verificationLogs.OrderByDescending(l => l.LogDate))
+                        @foreach (var item in verificationLogs.OrderByDescending(l => l.LogDate).Take(20))
                         {
                             <TableRow>
                                 <TableRowCell class="item-qr color-grey-100">
