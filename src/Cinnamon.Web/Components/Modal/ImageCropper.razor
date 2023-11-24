@@ -14,8 +14,15 @@
                     <img class="mx-auto d-flex" style="max-width: 100%;" id="img-cropper-src" src="" alt="image-to-crop">
                 </div>
                 <div class="text-center mt-3">
-                    <Button class="bg-orange-100 color-white-100 font-16 hover-color-white" Clicked="ExecuteCropImage">
-                        Crop Image
+                    <Button class="bg-orange-100 color-white-100 font-16 hover-color-white" 
+                        Clicked="ExecuteCropImage" Loading="showLoader">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Cropping Image
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Crop Image
+                        </ChildContent>
                     </Button>
                 </div>
             </ModalBody>
@@ -36,17 +43,23 @@
     * FileInputSelector file index
     **/
 
+    [Parameter]
+    public bool HaveLoader {get; set;}
+
     private Modal? modalRef;
     private string modalTitle = "Crop Image";
     private bool isCompleted = false;
     private IJSObjectReference? cropperInstance;
     private ImageCropperResult cropperResult = new();
+    private bool showLoader = false;
 
     public async Task<ImageCropperResult> CropImage(ImageCropperOptions opts)
     {
         isCompleted = false;
         ResetCropperResult();
         modalTitle = opts.Title;
+
+        if(HaveLoader) showLoader = true;
 
         if(modalRef is not null)
         {
