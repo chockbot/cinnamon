@@ -307,4 +307,24 @@ public class CustomerController : ControllerBase
             return new JsonResult(new ResetPasswordResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("ChangeEmailAddress")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangeEmailAddressResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> ChangeEmailAddress([FromBody] ChangeEmailAddressArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.ChangeEmailAddress(args.CurrentEmail, args.NewEmail);
+            if (!result.Succeeded)
+            {
+                return new JsonResult(new ChangeEmailAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ChangeEmailAddressResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ChangeEmailAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

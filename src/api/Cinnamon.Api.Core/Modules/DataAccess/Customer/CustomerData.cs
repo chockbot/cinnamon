@@ -265,4 +265,25 @@ public class CustomerData : ICustomerData
             return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when resetting the password");
         }
     }
+
+    public async Task<AppResult<ChangeEmailAddressResult>> ChangeEmailAddress(ChangeEmailAddressArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/ChangeEmailAddress")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<ChangeEmailAddressResult>();
+
+            return AppResult<ChangeEmailAddressResult>.CreateSucceeded(result, "Successfully changed email address");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ChangeEmailAddressResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ChangeEmailAddressResult>.CreateFailed(ex, "An error occured when changing the email address");
+        }
+    }
 }

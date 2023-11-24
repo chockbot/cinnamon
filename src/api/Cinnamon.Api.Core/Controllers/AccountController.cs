@@ -57,6 +57,7 @@ public class AccountController : ControllerBase
     private readonly IVerifyUserNotificationHandler verifyUserNotificationHandler;
     private readonly IBlockedAccountHandler blockedAccountHandler;
     private readonly IExtraLoginHandler extraLoginHandler;
+    private readonly IChangeEmailHandler changeEmailHandler;
 
     #endregion
 
@@ -78,7 +79,7 @@ public class AccountController : ControllerBase
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
-        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler)
+        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -118,6 +119,7 @@ public class AccountController : ControllerBase
         this.verifyUserNotificationHandler = verifyUserNotificationHandler;
         this.blockedAccountHandler = blockedAccountHandler;
         this.extraLoginHandler = extraLoginHandler;
+        this.changeEmailHandler = changeEmailHandler;   
     }
 
     #endregion
@@ -601,12 +603,13 @@ public class AccountController : ControllerBase
         try
         {
             var result = await updateProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitUpdateProfileArgs {
-                About = args.About,
-                Birthdate = args.Datebirth,
-                FirstName = args.FirstName,
-                LastName = args.LastName,
+                About         = args.About,
+                Birthdate     = args.Datebirth,
+                FirstName     = args.FirstName,
+                LastName      = args.LastName,
+                Email         = args.Email,
                 VerifiedBadge = args.VerifiedBadge,
-                PhoneNumber = args.PhoneNumber
+                PhoneNumber   = args.PhoneNumber
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -616,10 +619,11 @@ public class AccountController : ControllerBase
 
             return new JsonResult(new UpdateProfileDetailsResult {
                 Result = new CustomerDTO {
-                    About = result.Result.About,
-                    Birthdate = result.Result.Birthdate,
-                    FirstName = result.Result.FirstName,
-                    LastName = result.Result.LastName,
+                    About       = result.Result.About,
+                    Birthdate   = result.Result.Birthdate,
+                    FirstName   = result.Result.FirstName,
+                    LastName    = result.Result.LastName,
+                    Email       = result.Result.Email,
                     PhoneNumber = result.Result.PhoneNumber
                 },
                 IsSuccess = true
@@ -1004,6 +1008,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ResetPasswordResult), StatusCodes.Status201Created)]
     [AllowAnonymous]
+
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordArgs args)
     {
         try
@@ -1030,6 +1035,38 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+    [Route("ChangeEmailAddress")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ChangEmailAddressResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> ChangeEmailAddress([FromBody] ChangeEmailArgs args)
+    {
+        try
+        {
+            var result = await changeEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.ChangeEmailArgs
+            {
+                CurrentEmail = args.CurrentEmail,
+                NewEmail = args.NewEmail,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ChangEmailAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+            var created = result.Result;
+
+            return new JsonResult(new ChangEmailAddressResult
+            {
+                Result = new Framework.ApiCommand.ApiCore.DTO.Customer.ChangeEmailDTO
+                {
+                    NewEmail = created.Email,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ChangEmailAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
