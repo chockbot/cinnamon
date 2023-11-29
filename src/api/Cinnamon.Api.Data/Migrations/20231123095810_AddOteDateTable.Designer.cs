@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231123095810_AddOteDateTable")]
+    partial class AddOteDateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,9 +235,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AdditionalData")
-                        .HasColumnType("text");
-
                     b.Property<string>("AdditionalRequirements")
                         .HasColumnType("text");
 
@@ -247,9 +246,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ClassPolicies")
-                        .HasColumnType("text");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
@@ -1442,27 +1438,10 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ExtraOptions")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("From")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("RecurrenceDateEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RecurrenceDateStart")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Recurrences")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("RepeatEvery")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SelectedDays")
                         .IsRequired()
                         .HasColumnType("text");
 

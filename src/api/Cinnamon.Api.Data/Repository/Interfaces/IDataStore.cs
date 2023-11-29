@@ -45,7 +45,8 @@ public interface IDataStore
     IOteSchedulePricing OteSchedulePricing {get;}
     IOteTicket OteTicket {get;}
     ITokenGenerated TokenGenerated {get;}
-
+    IOteDate OteDate {get;}
+    
     Task EnsureMigrate();
 
     Task SeedData();
