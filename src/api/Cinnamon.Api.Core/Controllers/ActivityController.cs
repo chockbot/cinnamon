@@ -2510,7 +2510,16 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+                    
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
