@@ -506,13 +506,13 @@
     private Modal? modalFeeBreakdown {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
     private IList<DayItem> dayItems = new List<DayItem> {
-        new DayItem { Day = "S", Value = "sunday"},
-        new DayItem { Day = "M", Value = "monday"},
-        new DayItem { Day = "T", Value = "tuesday", Selected = true},
-        new DayItem { Day = "W", Value = "wednesday", Selected = true},
-        new DayItem { Day = "T", Value = "thursday", Selected = true},
-        new DayItem { Day = "F", Value = "friday"},
-        new DayItem {Day = "S", Value = "saturday"}
+        new DayItem { Day = "S", Value = "SUN"},
+        new DayItem { Day = "M", Value = "MON"},
+        new DayItem { Day = "T", Value = "TUE", Selected = true},
+        new DayItem { Day = "W", Value = "WED", Selected = true},
+        new DayItem { Day = "T", Value = "THU", Selected = true},
+        new DayItem { Day = "F", Value = "FRI"},
+        new DayItem {Day = "S", Value = "SAT"}
     };
 
     private async Task NextClick()
@@ -629,11 +629,30 @@
 
     public ModelData GetData()
     {
+        bool isRecurrence = modelSchedule.Recurrences != "do-not-repeat";
+        bool isMonthly = modelSchedule.Recurrences == "monthly";
+
+        string weekString = modelSchedule.Recurrences switch{
+            "every-weekday" => "MON/TUE/WED/THU/FRI",
+            "weekly" => string.Join("/", dayItems.Where(i => i.Selected).Select(i => i.Value)),
+            _ => ""
+        };
+
         ModelData data = new ModelData 
         {
             DateFrom = modelSchedule.DateFrom,
             DateTo = modelSchedule.DateTo,
             Recurrences = modelSchedule.Recurrences,
+
+            DurationEnd = isRecurrence ? modelSchedule.DurationEnd : null,
+            DurationStart = isRecurrence ? modelSchedule.DurationStart : null,
+            DurationEvery = isRecurrence ? modelSchedule.DurationEvery : null,
+            MonthDay = isMonthly ? modelSchedule.MonthDay : null,
+            MonthRepeat = isMonthly ? modelSchedule.MonthRepeat : null,
+            MonthSelection = isMonthly ? modelSchedule.MonthSelection : null,
+            OnDayDate = isMonthly ? modelSchedule.OnDayDate : null,
+            WeekString = weekString,
+
             ItemPrices = modelPricingList.Pricings.Select(p => {
                 return new ModelData.ItemPrice {
                     AbsorbFees = p.AbsorbFees,
@@ -643,7 +662,7 @@
                     Id = p.Id,
                     Name = p.Name
                 };
-            }).ToList()
+            }).ToList(),
         };
         data.ItemPrices.Add(new ModelData.ItemPrice {
             AbsorbFees = modelPricing.AbsorbFees,
@@ -744,6 +763,15 @@
         public DateTime DateTo {get; set;}
         public string Recurrences {get; set;}
         public IList<ItemPrice> ItemPrices {get; set;}
+
+        public DateTime? DurationStart {get; set;}
+        public DateTime? DurationEnd {get; set;}
+        public int? DurationEvery {get; set;}
+        public int? MonthSelection {get; set;}
+        public string? MonthRepeat {get; set;}
+        public string? MonthDay {get; set;}
+        public int? OnDayDate {get; set;}
+        public string? WeekString {get; set;}
 
         public class ItemPrice 
         {

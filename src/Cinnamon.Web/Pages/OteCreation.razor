@@ -426,7 +426,15 @@
                     RegionName = location.RegionName,
                     ScheduleFrom = schedule.DateFrom,
                     ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon
+                    IsComingSoon = publishData.ComingSoon,
+                    DurationEnd = schedule.DurationEnd,
+                    DurationEvery = schedule.DurationEvery,
+                    DurationStart = schedule.DurationStart,
+                    MonthDay = schedule.MonthDay,
+                    MonthRepeat = schedule.MonthRepeat,
+                    MonthSelection = schedule.MonthSelection,
+                    OnDayDate = schedule.OnDayDate,
+                    WeekString = schedule.WeekString
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
