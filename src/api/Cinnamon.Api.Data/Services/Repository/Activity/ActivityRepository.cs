@@ -1616,7 +1616,9 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
+        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
+        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates)
     {
         try
         {
@@ -1651,13 +1653,18 @@ public class ActivityRepository : IActivityRepository
               Region = regionCode ?? string.Empty,
               RegionName = regionName ?? string.Empty,
               PinnedLocation = pinnedLocation ?? string.Empty,
-              PostalCode = postalCode ?? string.Empty,  
+              PostalCode = postalCode ?? string.Empty,
             };
 
             var schedule = new Entities.OteSchedule {
                 From = scheduleFrom.SetKindUtc(),
                 To = scheduleTo.SetKindUtc(),
-                Recurrences = recurrence
+                Recurrences = recurrence,
+                ExtraOptions = scheduleExtraOpt ?? String.Empty,
+                RecurrenceDateEnd = recurrenceDateEnd,
+                RecurrenceDateStart = recurrenceDateStart,
+                RepeatEvery = repeatEvery,
+                SelectedDays = selectedDays
             };
             schedule.OteSchedulePricing = pricingDTOs.Select(p => {
                 return new OteSchedulePricing {
