@@ -281,7 +281,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 .SetQueryParam("purchaseid", result.Result.Result.Id);
 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
-                Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
+                Amount = overallTotal - creditAmount,
                 AmountCurrency = "PHP",
                 CustomerId = id,
                 PaymentChannel = args.PaymentChannel ?? string.Empty,
