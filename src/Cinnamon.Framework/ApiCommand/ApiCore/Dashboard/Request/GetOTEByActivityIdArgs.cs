@@ -8,4 +8,5 @@ public class GetOTEByActivityIdArgs
     public int? CountPerPage { get; set; }
     [Required]
     public int ActivityId { get; set; }
+    public string? SearchValue { get; set; }
 }

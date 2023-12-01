@@ -18,7 +18,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId,string searchValue, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
     {
         try
         {
@@ -26,8 +26,11 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             int skipCount = skip.HasValue ? skip.Value : 0;
 
             var query = applicationContext.OteTickets.Where(t => t.ActivityId == activityId);
-
-            if(includeCustomer)
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                query = query.Where(t => EF.Functions.Like((t.Customer.FirstName +" "+ t.Customer.LastName).ToLower(), $"%{searchValue.ToLower()}%"));
+            }
+            if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
             }
