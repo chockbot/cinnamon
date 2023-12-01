@@ -115,8 +115,6 @@
 
     public string displayBadge = "d-flex";
 
-    public List<BadgeList> badges = new List<BadgeList>();
-
     public List<Favorite> favorites = new List<Favorite>();
 
     public string displayText = "d-flex";
@@ -131,7 +129,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchMakerBadges();
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -350,28 +347,6 @@
     private void NavigateToUploadId()
     {
         NavigationManager.NavigateTo("/uploadGovermentId/");
-    }
-
-    private async Task FetchMakerBadges()
-    {
-        //Get Badges
-        var badgeList = await dashboardApiHandler.GetAllBadge();
-        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
-        {
-            badges = badgeList.Result.Result.Select(b =>
-            {
-                return new BadgeList
-                    {
-                        Id = b.Id,
-                        Name = b.Name,
-                        Description = b.Description,
-                        NumberOfStudent = b.NumberOfStudent,
-                        NumberOfCompleted = b.NumberOfCompleted,
-                        NumberOfReviews = b.NumberOfReviews,
-                        ImgScr = b.ImgScr
-                    };
-            }).ToList();
-        }
     }
 }
 
