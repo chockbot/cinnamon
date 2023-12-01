@@ -414,13 +414,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         try
         {
             string query = "WITH MaxSlotsSum AS (\r\n" +
-                "SELECT \"OteScheduleId\", SUM(\"MaxSlots\") AS \"TotalMaxSlots\"\r\n" +
+                "SELECT \"OteScheduleId\", SUM(\"TicketSold\") AS \"TotalOteTickets\", SUM(\"MaxSlots\") AS \"TotalMaxSlots\" \r\n" +
                 "FROM public.\"OteSchedulePricings\"\r\n" +
                 "GROUP BY \"OteScheduleId\")\r\nSELECT a.\"Id\", a.\"ExperienceTypeId\", a.\"Title\", a.\"Description\", a.\"CreatedOn\",\r\n" +
                 "a.\"CreatedBy\", a.\"Handler\", a.\"Status\", a.\"ExperienceCreationTypeId\", d.\"CityName\",\r\n" +
-                "d.\"RegionName\", d.\"PinnedLocation\", b.\"From\", b.\"To\", ms.\"OteScheduleId\", ms.\"TotalMaxSlots\",\r\n" +
-                "(SELECT COUNT(*) FROM public.\"OteTickets\" as ote JOIN public.\"PurchaseOrders\" as po ON ote.\"PurchaseOrderId\" = po.\"Id\"\r\n" +
-                "WHERE ote.\"OteScheduleId\" = ms.\"OteScheduleId\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS \"TotalOteTickets\",\r\n" +
+                "d.\"RegionName\", d.\"PinnedLocation\", b.\"From\", b.\"To\", ms.\"OteScheduleId\", ms.\"TotalMaxSlots\",ms.\"TotalOteTickets\",\r\n" +
                 "(SELECT \"ImageLocation\" FROM public.\"ActivityImages\" WHERE \"ActivityId\" = a.\"Id\" ORDER BY \"Id\" LIMIT 1) AS \"EventImage\"\r\n" +
                 "FROM public.\"Activities\" as a\r\nJOIN public.\"OteSchedules\" as b ON a.\"Id\" = b.\"ActivityId\"\r\n" +
                 "JOIN MaxSlotsSum as ms ON ms.\"OteScheduleId\" = b.\"Id\"\r\nJOIN public.\"ActivityAddress\" as d ON d.\"ActivityId\" = a.\"Id\"\r\n" +
