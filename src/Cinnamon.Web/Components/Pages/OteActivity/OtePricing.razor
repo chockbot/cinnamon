@@ -634,8 +634,8 @@
         bool isMonthly = modelSchedule.Recurrences == "monthly";
 
         string weekString = modelSchedule.Recurrences switch{
-            "every-weekday" => "MON/TUE/WED/THU/FRI",
-            "weekly" => string.Join("/", dayItems.Where(i => i.Selected).Select(i => i.Value)),
+            "every-weekday" => "MON|TUE|WED|THU|FRI",
+            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
             _ => ""
         };
 

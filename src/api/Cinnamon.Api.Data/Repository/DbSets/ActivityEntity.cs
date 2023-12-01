@@ -278,16 +278,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             description.Activity = activity;
             address.Activity = activity;
             oteSchedule.Activity = activity;
-            var schedulePricing = oteSchedule.OteSchedulePricing.Select(p => {
-                p.OteSchedule = oteSchedule;
-                return p;
-            });
 
             this.applicationContext.Activities.Add(activity);
             this.applicationContext.ActivityAddress.Add(address);
             this.applicationContext.ActivityDescriptions.Add(description);
             this.applicationContext.OteSchedules.Add(oteSchedule);
-            this.applicationContext.OteSchedulePricings.AddRange(schedulePricing);
             await this.applicationContext.SaveChangesAsync();
 
             return AppResult<Activity>.CreateSucceeded(activity, "One time activity successfully created.");

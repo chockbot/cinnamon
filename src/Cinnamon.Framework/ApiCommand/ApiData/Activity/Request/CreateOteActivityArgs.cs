@@ -71,7 +71,6 @@ public class CreateOteActivityArgs
         [Required]
         public bool IsComingSoon {get; set;}
 
-        [Required]
         public string ExtraOptions {get; set;}
 
         [Required]
@@ -83,7 +82,6 @@ public class CreateOteActivityArgs
         [Required]
         public int RepeatEvery {get; set;}
 
-        [Required]
         public string SelectedDays {get; set;}
     }
 

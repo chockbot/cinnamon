@@ -179,7 +179,7 @@ public class OteCreateHandler : IOteCreateHandler
                     RecurrenceDateStart = args.Activity.DurationStart ?? args.Activity.ScheduleFrom,
                     RepeatEvery = args.Activity.DurationEvery ?? 0,
                     SelectedDays = args.Activity.WeekString ?? String.Empty,
-                    ExtraOptions = extraOptionsForMonthlyRecurring
+                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
@@ -258,7 +258,7 @@ public class OteCreateHandler : IOteCreateHandler
                     generatedDates.Add(item);
                     break;
                 case DayOfWeek.Sunday:
-                    recurringDate.AddDays(daysToSkip);
+                    recurringDate = recurringDate.AddDays(daysToSkip);
                     break;
             }
 

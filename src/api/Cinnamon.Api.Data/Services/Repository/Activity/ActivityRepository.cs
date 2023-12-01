@@ -1661,8 +1661,8 @@ public class ActivityRepository : IActivityRepository
                 To = scheduleTo.SetKindUtc(),
                 Recurrences = recurrence,
                 ExtraOptions = scheduleExtraOpt ?? String.Empty,
-                RecurrenceDateEnd = recurrenceDateEnd,
-                RecurrenceDateStart = recurrenceDateStart,
+                RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
+                RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
                 RepeatEvery = repeatEvery,
                 SelectedDays = selectedDays
             };
@@ -1673,15 +1673,16 @@ public class ActivityRepository : IActivityRepository
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    OteSchedule = schedule
                 };
             }).ToList();
 
             schedule.OteDates = oteDates.Select(d => {
                 return new OteDate {
-                    Date = d.Date,
-                    DateEnd = d.DateEnd,
-                    DateStart = d.DateStart,
+                    Date = d.Date.SetKindUtc(),
+                    DateEnd = d.DateEnd.SetKindUtc(),
+                    DateStart = d.DateStart.SetKindUtc(),
                     OteSchedulePricing = pricings
                 };
             }).ToList();
