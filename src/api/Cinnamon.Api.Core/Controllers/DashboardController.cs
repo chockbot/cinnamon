@@ -514,9 +514,10 @@ public class DashboardController : ControllerBase
         {
             var result = await getOTEByActivityIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetOTEByActivityIdArgs
             {
-                ActivityId = args.ActivityId,
+                SearchValue  = args.SearchValue ?? string.Empty,
+                ActivityId   = args.ActivityId,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex    = args.PageIndex
             });
             if (!result.Succeeded || result.Result == null)
             {
