@@ -405,11 +405,21 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var dates = args.Dates.Select(d => {
+                return new OteDateDTO {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart,
+                };
+            }).ToList();
+
             var result = await activityRepository.CreateOteActivity(activity.EventName, activity.Description, activity.ExperienceTypeId, 
                 activity.CustomerId, activity.StringPrice, activity.HouseNo, activity.CityNumber, activity.CityName,
                 activity.RegionCode, activity.RegionName, activity.BarangayCode, activity.BarangayName, activity.PostalCode,
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
-                activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon);
+                activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
+                args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
+                args.Activity.SelectedDays, dates);
             
             if(!result.Succeeded || result.Result is null)
             {
