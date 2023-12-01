@@ -8,4 +8,5 @@ public class OteDate : BaseEntity
     public DateTime DateEnd {get; set;}
     
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}
+    public virtual OteSchedule OteSchedule {get; set;}
 }
