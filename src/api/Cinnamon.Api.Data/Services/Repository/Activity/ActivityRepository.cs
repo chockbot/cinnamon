@@ -1666,13 +1666,23 @@ public class ActivityRepository : IActivityRepository
                 RepeatEvery = repeatEvery,
                 SelectedDays = selectedDays
             };
-            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
+
+            var pricings = pricingDTOs.Select(p => {
                 return new OteSchedulePricing {
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name
+                };
+            }).ToList();
+
+            schedule.OteDates = oteDates.Select(d => {
+                return new OteDate {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart,
+                    OteSchedulePricing = pricings
                 };
             }).ToList();
 
