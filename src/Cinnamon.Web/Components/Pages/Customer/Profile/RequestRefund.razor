@@ -291,13 +291,7 @@
     {
         try
         {
-            FetchRequestedRefunds();
-            FetchPayoutAccount();
-            FetchCinnamonCredits();
-            GetTotalEarnings();
-            GetGrossSale();
             Model.EnrolledExperiences = new List<RequestRefundModel.EnrolledExperience>();
-
             var refundableResult = await activityApiHandler.GetRefundableExperience(Token);
             if(refundableResult.Succeeded && refundableResult.Result != null && refundableResult.Result.IsSuccess)
             {
@@ -308,11 +302,17 @@
                     };
                 });
             }
+            await FetchRequestedRefunds();
+            await FetchPayoutAccount();
+            await FetchCinnamonCredits();
+            await GetTotalEarnings();
+            await GetGrossSale();
             receivables = grossSales.Sum(g => g.Total) - totalEarnings.Sum(t => t.Amount);
-            payouts.Add(new PayoutHistory { Id = 1, Date = Convert.ToDateTime("2023-09-11").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = true});
+
+            @*payouts.Add(new PayoutHistory { Id = 1, Date = Convert.ToDateTime("2023-09-11").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = true});
             payouts.Add(new PayoutHistory { Id = 2, Date = Convert.ToDateTime("2023-09-12").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
             payouts.Add(new PayoutHistory { Id = 3, Date = Convert.ToDateTime("2023-09-13").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
-            payouts.Add(new PayoutHistory { Id = 4, Date = Convert.ToDateTime("2023-09-14").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
+            payouts.Add(new PayoutHistory { Id = 4, Date = Convert.ToDateTime("2023-09-14").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });*@
         }
         catch (Exception ex)
         {
