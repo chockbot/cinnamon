@@ -109,7 +109,7 @@ public class OteCreateHandler : IOteCreateHandler
                         new ApplicationException("Invalid arguments for monthly recurring."), "Invalid arguments for monthly recurring.");
                 }
 
-                if(args.Activity.MonthSelection != 1 || args.Activity.MonthSelection != 2)
+                if(args.Activity.MonthSelection != 1 && args.Activity.MonthSelection != 2)
                 {
                     return AppResult<OteCreateResult>.CreateFailed(
                         new ApplicationException("Invalid arguments for monthly recurring."), "Invalid arguments for monthly recurring.");
@@ -346,9 +346,8 @@ public class OteCreateHandler : IOteCreateHandler
             {
                 recurringDate = recurringDate.AddDays(daysToSkip);
             }
-            else {
-                recurringDate = recurringDate.AddDays(1);
-            }
+
+            recurringDate = recurringDate.AddDays(1);
         }
 
         return generatedDates;
@@ -427,6 +426,7 @@ public class OteCreateHandler : IOteCreateHandler
                             DateStart = recurringDate.Date.Add(from),
                             DateEnd = recurringDate.AddDays(daysInterval).Date.Add(to)
                         });
+                        skipCounter = 0;
                         break;
                     }
 

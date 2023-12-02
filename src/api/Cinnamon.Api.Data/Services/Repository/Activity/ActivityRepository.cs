@@ -1667,23 +1667,21 @@ public class ActivityRepository : IActivityRepository
                 SelectedDays = selectedDays
             };
 
-            var pricings = pricingDTOs.Select(p => {
-                return new OteSchedulePricing {
-                    Description = p.Description,
-                    IsAbsorbFees = p.IsAbsorbFees,
-                    MaxSlots = p.MaxSlots,
-                    Price = p.Price,
-                    Name = p.Name,
-                    OteSchedule = schedule
-                };
-            }).ToList();
-
             schedule.OteDates = oteDates.Select(d => {
                 return new OteDate {
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
-                    OteSchedulePricing = pricings
+                    OteSchedulePricing = pricingDTOs.Select(p => {
+                        return new OteSchedulePricing {
+                            Description = p.Description,
+                            IsAbsorbFees = p.IsAbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Price = p.Price,
+                            Name = p.Name,
+                            OteSchedule = schedule
+                        };
+                    }).ToList()
                 };
             }).ToList();
 
