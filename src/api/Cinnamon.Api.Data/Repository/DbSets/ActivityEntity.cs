@@ -160,13 +160,20 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         return results;
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
-            var takeValue = take ?? int.MaxValue;
+            var takeValue = take ?? int.MaxValue; 
             var skipValue = skip ?? 0;
             var dateString = DateTime.Now.ToString("yyyy-MM-dd");
+
+            string categoryFilter = string.Empty;
+
+            if(categoryId is not null && categoryId > 0)
+            {
+                categoryFilter = " and ac.\"ExperienceCategoryId\" = @categoryId ";
+            }
 
             string query = "with totalStudents as " +
                            "( " +
@@ -175,7 +182,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "join public.\"Students\" st " +
                                    "on ac.\"Id\" = st.\"ActivityId\" " +
                                "where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " +
-                                   "and ac.\"IsNew\" = false " +
+                                   "and ac.\"IsNew\" = false " + categoryFilter +
                                "group by ac.\"Id\" " +
                            "), " +
                            "withOteCount as" +
@@ -184,7 +191,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "from public.\"OteTickets\" ot " +
                                "join public.\"Activities\" ac " +
                                    "on ot.\"ActivityId\" = ac.\"Id\" " +
-                           	"where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " +
+                           	"where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " + categoryFilter +
                                "group by ot.\"ActivityId\" " +
                                "union "+
                                "select * from totalStudents" +
@@ -243,6 +250,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             {
                 command.CommandText = query;
                 command.CommandType = System.Data.CommandType.Text;
+
+                if(categoryId is not null && categoryId > 0)
+                {
+                    command.Parameters.Add(new NpgsqlParameter("categoryId", categoryId));
+                }
 
                 applicationContext.Database.OpenConnection();
 

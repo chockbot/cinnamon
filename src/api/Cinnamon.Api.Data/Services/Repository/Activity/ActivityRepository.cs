@@ -1621,11 +1621,11 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
-            var result = await dataStore.Activity.PopularActivities(take, skip);
+            var result = await dataStore.Activity.PopularActivities(take, skip, categoryId);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
