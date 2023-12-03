@@ -164,7 +164,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            var takeValue = take ?? int.MaxValue;
+            var takeValue = take ?? int.MaxValue; 
             var skipValue = skip ?? 0;
             var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -172,7 +172,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
             if(categoryId is not null && categoryId > 0)
             {
-                categoryFilter = " and ac.ExperienceCategoryId = @categoryId ";
+                categoryFilter = " and ac.\"ExperienceCategoryId\" = @categoryId ";
             }
 
             string query = "with totalStudents as " +
