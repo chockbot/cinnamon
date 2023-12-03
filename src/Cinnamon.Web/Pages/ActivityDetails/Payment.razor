@@ -1208,6 +1208,7 @@
             else
             {
                 isLoading = false;
+                /*
                 var groupName = Guid.NewGuid().ToString();
                 var createChatRoomResult = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
                 {
@@ -1221,6 +1222,7 @@
                 {
                     await hubConnection.SendAsync("AddToGroupAfterPayment", $"{createChatRoomResult.Result.Result.GroupName}|{createChatRoomResult.Result.Result.ChatRoomId}|{Model.Customer.Id}|{Model.Customer.FirstName}|{Model.Customer.LastName}|{Model.Customer.ProfilePath}|{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group");
                 }
+                */
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
