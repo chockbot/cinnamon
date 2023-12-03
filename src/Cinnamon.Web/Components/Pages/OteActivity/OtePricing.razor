@@ -211,7 +211,8 @@
                                             </div>
                                             <div class="box-width ms-3">
                                                 <Select Disabled="modelSchedule.MonthSelection == 1" TValue="string" Size="Size.Medium" 
-                                                    class="box-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5">
+                                                    class="box-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5"
+                                                    @bind-SelectedValue="modelSchedule.MonthDay">
                                                     <SelectItem Value='@("sunday")'>Sunday</SelectItem>
                                                     <SelectItem Value='@("monday")'>Monday</SelectItem>
                                                     <SelectItem Value='@("tuesday")'>Tuesday</SelectItem>
@@ -633,8 +634,8 @@
         bool isMonthly = modelSchedule.Recurrences == "monthly";
 
         string weekString = modelSchedule.Recurrences switch{
-            "every-weekday" => "MON/TUE/WED/THU/FRI",
-            "weekly" => string.Join("/", dayItems.Where(i => i.Selected).Select(i => i.Value)),
+            "every-weekday" => "MON|TUE|WED|THU|FRI",
+            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
             _ => ""
         };
 
