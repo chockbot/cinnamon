@@ -2382,7 +2382,8 @@ public class ActivityController : ControllerBase
             var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs
             {
                 Skip = args.PageIndex,
-                Take = args.CountPerPage
+                Take = args.CountPerPage,
+                CategoryId = args.CategoryId
             });
             if (!result.Succeeded || result.Result == null)
             {
