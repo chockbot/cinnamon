@@ -2,6 +2,7 @@ using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
@@ -18,10 +19,12 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly ICreateChatRoomHandler createChatRoomHandler;
 
     public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData,
         IFinishTransactionHandler finishTransactionHandler, IGetActivityHandler getActivityHandler,
-        IOteFinishTransactionHandler oteFinishTransactionHandler, IJsonSerializationProvider jsonSerializationProvider)
+        IOteFinishTransactionHandler oteFinishTransactionHandler, IJsonSerializationProvider jsonSerializationProvider,
+        ICreateChatRoomHandler createChatRoomHandler)
     {
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
@@ -29,6 +32,7 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
         this.getActivityHandler = getActivityHandler;
         this.oteFinishTransactionHandler = oteFinishTransactionHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.createChatRoomHandler = createChatRoomHandler;
     }
 
     public AppResult<VerifyCallbackResult> Execute(VerifyCallbackArgs args)
@@ -68,7 +72,8 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
 
             // idenity what type of activity
             var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                ActivityId = purchaseOrder.ActivityId
+                ActivityId = purchaseOrder.ActivityId,
+                IncludeCustomer = true
             });
             if(!activityRes.Succeeded || activityRes.Result is null)
             {
@@ -121,6 +126,15 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                     {
                         return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
                     }
+
+                    var groupName = Guid.NewGuid().ToString();
+                    var createCharRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
+                        ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
+                        ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                        FromUserId = purchaseOrder.CustomerId,
+                        GroupName = groupName,
+                        ToUserId = activity.Owner?.Id ?? 0
+                    });
                 }
                 else if(activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
                 {
