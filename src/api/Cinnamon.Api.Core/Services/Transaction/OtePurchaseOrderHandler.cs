@@ -101,6 +101,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
             var oteActivity = oteHandlerRes.Result;
 
+            // filter tickets available only to ticket date
+            var defaultDatePricing = oteActivity.Pricings.FirstOrDefault(p => p.Id == args.Tickets.First().Id);
+            if(defaultDatePricing is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected one time event."), "Unable to identify selected one time event.");
+            }
+            var fileteredAvailableTickets = oteActivity.Pricings.Where(p => p.OteDateId == defaultDatePricing.OteDateId);
+
             var checkInclusivePaymentRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
                 CustomerId = oteActivity.ProviderId
             });
@@ -121,7 +129,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             // validate selected tickets
             foreach(var ticket in args.Tickets)
             {
-                var ticketPrice = oteActivity.Pricings.FirstOrDefault(t => t.Id == ticket.Id);
+                var ticketPrice = fileteredAvailableTickets.FirstOrDefault(t => t.Id == ticket.Id);
                 if(ticketPrice is null)
                 {
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected ticket."), "Unable to identify selected ticket.");
@@ -147,7 +155,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Name = ticketPrice.Name,
                         Price = ticketPrice.Price,
                         Code = qrcode,
-                        ImageData = GenerateQRCode(qrcode)
+                        ImageData = GenerateQRCode(qrcode),
+                        OteDateId = defaultDatePricing.OteDateId
                     });
                 }
             }
@@ -353,6 +362,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private class Ticket 
     {
         public int Id {get; set;}
+        public int OteDateId {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
         public string Code {get; set;}
