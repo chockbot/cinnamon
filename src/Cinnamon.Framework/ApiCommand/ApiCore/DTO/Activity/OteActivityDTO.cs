@@ -31,5 +31,6 @@ public class OteActivityDTO
     public string EventImage { get; set; }
     public IEnumerable<OtePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+    public IEnumerable<OteDateDTO> OteDates {get; set;}
     public bool IsComingSoon {get; set;}
 }

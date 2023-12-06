@@ -3,6 +3,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 public class OtePricingDTO 
 {
     public int Id {get; set;}
+    public int OteDateId {get; set;}
     public string Name {get; set;}
     public int OteScheduleId { get; set; }
     public decimal Price { get; set; }
