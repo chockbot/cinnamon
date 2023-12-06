@@ -375,7 +375,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             if(includeDescription) query = query.Include(a => a.ActivityDescription);
             if(includeProvider) query = query.Include(a => a.Customer);
             if(includeImages) query = query.Include(a => a.Images);
-            if(includeSchedule && includePricing) query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+            if(includeSchedule && includePricing) {
+                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
+                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+            }
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 
             var result = await query.FirstOrDefaultAsync();
