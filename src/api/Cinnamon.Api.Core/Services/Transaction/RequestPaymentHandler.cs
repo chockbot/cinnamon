@@ -85,7 +85,8 @@ public class RequestPaymentHandler : IRequestPaymentHandler
                 PaymentChannel = paymentChannel,
                 TransactionId = args.TransactionId,
                 CardDetails = cardInfo,
-                SuccessUrl = args.SuccessUrl
+                SuccessUrl = args.SuccessUrl,
+                FailedUrl = args.FailedUrl
             });
 
             if(!result.Succeeded || result.Result == null)
