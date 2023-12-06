@@ -28,7 +28,7 @@
                 <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop" class="left-order">
                     <section class="mt-5">
                         <h3 class="font-20 font-weight-700 color-black-100 mb-5 m-font-18">Ticket Availed</h3>
-                        @foreach (var item in activity.Pricings)
+                        @foreach (var item in AvailableTickets)
                         {
                             <Row @key="item" class="mb-4 align-items-center">
                                 <Column ColumnSize="ColumnSize.Is8">
@@ -497,6 +497,7 @@
     private Models.Forms.CardPaymentModel cardPaymentModel = new();
     private bool submitting = false;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
+    private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -558,13 +559,28 @@
             // load selected tickets if any
             if(!string.IsNullOrEmpty(Ticket))
             {
+                // filter ticket first
                 var selecteds = Ticket.Split(",").ToList();
+                if(selecteds.Count > 0)
+                {
+                    var ids = selecteds.First().Split("-");
+                    if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
+                    {
+                        var defaultDatePricing = activity.Pricings.FirstOrDefault(p => p.Id == v1);
+                        if(defaultDatePricing is not null)
+                        {
+                            AvailableTickets = activity.Pricings.Where(p => p.OteDateId == defaultDatePricing.OteDateId);
+                        }
+                    }
+                }
+
+                // add filtered tickets
                 foreach(var item in selecteds)
                 {
                     var ids = item.Split("-");
                     if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
                     {
-                        var sTicket = activity.Pricings.FirstOrDefault(t => t.Id == v1);
+                        var sTicket = AvailableTickets.FirstOrDefault(t => t.Id == v1);
                         if(sTicket is not null)
                         {
                             for(int i = 0; i < v2; i++)
@@ -579,7 +595,7 @@
                                     Price = sTicket.Price,
                                     TicketSold = sTicket.TicketSold
                                 };
-                                AddSelectedTicket(otePricing);
+                                await AddSelectedTicket(otePricing);
                             }
                         }
                     }
