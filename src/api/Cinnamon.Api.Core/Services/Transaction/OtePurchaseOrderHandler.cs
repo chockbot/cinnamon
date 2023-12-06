@@ -156,7 +156,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Price = ticketPrice.Price,
                         Code = qrcode,
                         ImageData = GenerateQRCode(qrcode),
-                        OteDateId = defaultDatePricing.OteDateId
+                        OteDateId = ticketPrice.OteDateId
                     });
                 }
             }

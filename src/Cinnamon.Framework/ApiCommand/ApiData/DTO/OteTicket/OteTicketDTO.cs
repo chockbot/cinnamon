@@ -15,6 +15,7 @@ public class OteTicketDTO
     public string QRCode {get; set;}
     public string QRImageData {get; set;}
     public string Status {get; set;}
+    public int OteDateId {get; set;}
 
     public CustomerDTO Customer {get; set;}
 }
