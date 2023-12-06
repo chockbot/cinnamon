@@ -118,13 +118,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         ActivityId = oteActivity.Id,
                         Amount = t.Price,
                         CustomerId = purchaseOrder.CustomerId,
-                        OteScheduleId = deserializedPayload.OteScheduleId,
+                        OteScheduleId = t.Id,
                         OteSchedulePricingId = t.Id,
                         PurchaseOrderId = purchaseOrder.Id,
                         QRCode = t.Code,
                         QRImageData = t.ImageData,
                         Status = "UNVERIFIED",
-                        Title = t.Name
+                        Title = t.Name,
+                        OteDateId = t.OteDateId
                     };
                 })
             });
@@ -254,6 +255,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private class Ticket 
     {
         public int Id {get; set;}
+        public int OteDateId {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
         public string Code {get; set;}

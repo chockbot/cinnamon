@@ -32,12 +32,14 @@ public class MappingProfile : Profile
             .ForMember(d => d.Pricings, o => o.MapFrom(s => s.OteSchedule.OteSchedulePricing))
             .ForMember(d => d.ProviderId, o => o.MapFrom(s => s.CreatedBy))
             .ForMember(d => d.Owner, o => o.MapFrom(s => s.Customer))
-            .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title));
+            .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title))
+            .ForMember(d => d.OteDates, o => o.MapFrom(s => s.OteSchedule.OteDates));
         
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
         CreateMap<OteSchedulePricingDTO, OteSchedulePricing>();
         CreateMap<ActivityImage, ActivityImageDTO>();
         CreateMap<Customer, CustomerDTO>();
+        CreateMap<OteDate, OteDateDTO>();
 
         CreateMap<OteTicket, OteTicketDTO>();
         CreateMap<OteTicketDTO, OteTicket>();

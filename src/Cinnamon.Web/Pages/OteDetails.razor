@@ -165,8 +165,9 @@
                     <section class="xp-ote-container mt-4 mb-5">
                         <h3 class="font-24 font-weight-700 color-black-100 m-font-20">Date & Time</h3>
                         <div class="flex-column flex-md-row select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
-                            <SelectCalendar CurrentDate="activity.ScheduleFrom" SelectedDates="new List<DateTime>{activity.ScheduleFrom}" ViewOnly StrikeOutNotSelected />
-                            <Button id="ote-btn-check-avail" class="mt-3 mt-md-0 font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
+                            <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates" 
+                                ViewOnly StrikeOutNotSelected OnSelectedDate="d => selectedDate = d" />
+                            <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="mt-3 mt-md-0 font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
                         </div>
                         <div class="mt-4 border-radius-10 border-1-solid border-color-grey-200 overflow-hidden">
                             <div class="p-3">
@@ -205,7 +206,7 @@
                                 </Row>
                             </div>
                             <div class="border-top-1-solid border-color-grey-200 p-3">
-                                @foreach (var item in activity.Pricings)
+                                @foreach (var item in AvailablePriceList)
                                 {
                                     <Row @key="item" class="align-items-center mb-4">
                                         <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" Padding="Padding.Is1.FromBottom">
@@ -483,6 +484,8 @@
     private string selectedImage = string.Empty;
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private TimeSpan Duration { get; set; }
+    private IEnumerable<OtePricing> AvailablePriceList {get; set;} = Enumerable.Empty<OtePricing>();
+    private DateTime selectedDate;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -577,14 +580,17 @@
             activity = mapper.Map<OteActivity>(act);
 
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
+            
+            selectedDate = SelectedDates.FirstOrDefault();
 
             Duration = (activity.ScheduleFrom - activity.ScheduleTo).Duration();
 
             // select first ticket id
-            if(activity.Pricings.Count() > 0)
+            /* if(activity.Pricings.Count() > 0)
             {
                 AddSelectedTicket(activity.Pricings.First());
-            }
+            } */
         }
         catch (System.Exception)
         {
@@ -835,6 +841,33 @@
 
             return true;
         }
+    }
+
+    private IList<DateTime> SelectedDates 
+    {
+        get 
+        {
+            IList<DateTime> dates = new List<DateTime>();
+            if(activity is not null)
+            {
+                dates = activity.OteDates.Select(d => d.Date).ToList();
+            }
+            return dates;
+        }
+    }
+
+    private Task ViewAvailableDates()
+    {
+        AvailablePriceList = Enumerable.Empty<OtePricing>();
+        if(activity is not null)
+        {
+            var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
+            if(oteDate is not null)
+            {
+                AvailablePriceList = activity.Pricings.Where(p => p.OteDateId == oteDate.Id);
+            }
+        }
+        return Task.CompletedTask;
     }
 
     private class TicketInfo
