@@ -14,6 +14,7 @@ public class RequestPaymentArgs : IInteractor
     public IEnumerable<MetaData> MetaDatas {get; set;}
     public CardDetails? CardInformation {get; set;}
     public string SuccessUrl {get; set;}
+    public string FailedUrl {get; set;}
 
     public class CardDetails 
     {

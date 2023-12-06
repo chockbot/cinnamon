@@ -292,9 +292,22 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     new ApplicationException("Unable to create purchase order transaction."), "Unable to create purchase order transaction.");
             }
 
+            string ticketQueryString = string.Empty;
+            foreach(var ticket in args.Tickets)
+            {
+
+                ticketQueryString += $"{ticket.Id}-{ticket.Count},";
+            }
+
             var successUrl = applicationConfig.FrontendUrl
                 .AppendPathSegment("purchase/order/ote")
                 .AppendPathSegment(result.Result.Result.Id);
+
+            var failedUrl = applicationConfig.FrontendUrl
+                .AppendPathSegment($"payment/ote/{oteActivity.Handler}")
+                .SetQueryParam("Ticket", ticketQueryString)
+                .SetQueryParam("Status","failed");
+
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
@@ -309,7 +322,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
                 } : null,
-                SuccessUrl = successUrl
+                SuccessUrl = successUrl,
+                FailedUrl = failedUrl
             });
             if(!requestPayment.Succeeded || requestPayment.Result == null)
             {
