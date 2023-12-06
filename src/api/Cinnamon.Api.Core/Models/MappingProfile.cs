@@ -13,12 +13,14 @@ public class MappingProfile : Profile
         CreateMap<DataDto.Activity.OteActivityDTO, ActivityResults.OteFindByHandlerResult>();
         CreateMap<DataDto.OteSchedule.OteSchedulePricingDTO, ActivityResults.OteFindByHandlerResult.OtePricing>();
         CreateMap<DataDto.ActivityImage.ActivityImageDTO, ActivityResults.OteFindByHandlerResult.Image>();
+        CreateMap<DataDto.OteSchedule.OteDateDTO, ActivityResults.OteFindByHandlerResult.OteDate>();
 
         CreateMap<ActivityResults.OteFindByHandlerResult, CoreDto.Activity.OteActivityDTO>();
         CreateMap<ActivityResults.OteFindByHandlerResult.OtePricing, CoreDto.Activity.OtePricingDTO>();
         CreateMap<ActivityResults.OteFindByHandlerResult.Image, CoreDto.Activity.ActivityDTO.ActivityImage>()
             .ForMember(d => d.ImageSrc, o => o.MapFrom(s => s.ImageLocation))
             .ForMember(d => d.Name, o => o.MapFrom(s => s.ImageName));
+        CreateMap<ActivityResults.OteFindByHandlerResult.OteDate, CoreDto.Activity.OteDateDTO>();
 
         CreateMap<ActivityResults.OteTicketDetailsResult, CoreDto.Activity.OteTicketDetailsDTO>();
         CreateMap<ActivityResults.OteTicketDetailsResult.Ticket, CoreDto.Activity.OteTicketDetailsDTO.TicketDetails>();

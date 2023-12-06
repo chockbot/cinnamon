@@ -33,4 +33,7 @@ public class CreateOteTicketArgs
 
     [Required]
     public string Status {get; set;}
+
+    [Required]
+    public int OteDateId {get; set;}
 }
