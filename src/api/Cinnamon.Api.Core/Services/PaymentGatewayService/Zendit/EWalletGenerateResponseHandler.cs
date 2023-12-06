@@ -76,7 +76,7 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
                         channel_properties = new RequestPaymentArgs.Channel_Properties {
                             success_return_url = args.SuccessUrl,
                             cancel_return_url = applicationConfig.FrontendUrl,
-                            failure_return_url = applicationConfig.FrontendUrl
+                            failure_return_url = args.FailedUrl
                         }
                     }
                 }

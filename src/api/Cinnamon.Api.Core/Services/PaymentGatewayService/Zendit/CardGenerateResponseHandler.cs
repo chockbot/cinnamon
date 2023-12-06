@@ -100,7 +100,7 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
                     channel_properties = new {
                         success_return_url = args.SuccessUrl,
                         cancel_return_url = applicationConfig.FrontendUrl,
-                        failure_return_url = applicationConfig.FrontendUrl
+                        failure_return_url = args.FailedUrl
                     },
                     card_information = new {
                         card_number = args.CardDetails.CardNumber,
