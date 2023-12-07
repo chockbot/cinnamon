@@ -13,6 +13,7 @@ public class GenerateResponseArgs : IInteractor
     // for card payment
     public CardInformation? CardDetails {get; set;}
     public string SuccessUrl {get; set;}
+    public string FailedUrl {get; set;}
 
     public class CardInformation 
     {
