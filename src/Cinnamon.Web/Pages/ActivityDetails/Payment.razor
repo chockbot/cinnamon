@@ -639,8 +639,12 @@
         </ModalHeader>
         <ModalBody class="text-center py-4">
             <img src="images/payment-failed-icon.png" class="mx-auto my-2" alt="error-icon">
-            <p class="my-4 color-grey-100 font-16">Something went wrong and your payment didn’t go through</p>
-            <Button Clicked="() => failedModal.Close(CloseReason.UserClosing)" class="rounded-pill bg-orange-100 color-white-100 hover-color-white px-4">Try Again</Button>
+            <p class="my-4 color-grey-100 font-16">
+                We're sorry, but there's an issue with your payment. 
+                Click the chat support button at the bottom right and we'll assist you promptly.
+            </p>
+            <Button Clicked="() => failedModal.Close(CloseReason.UserClosing)" class="rounded-pill bg-orange-100 color-white-100 hover-color-white px-5">Try Again</Button>
+            <p class="font-12 color-black-100 my-4">Email us here: <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a></p>
         </ModalBody>
     </ModalContent>
 </Modal>
