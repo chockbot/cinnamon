@@ -34,10 +34,10 @@ public class CreateActivityArgs : IInteractor
     public bool CanAdultsJoin {get; set;}
     public Enums.ActivityStatus Status { get; set; }
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
-
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
-    
+    public IEnumerable<AddOn> AddOns { get; set; }
+
 
     public class ActivitySchedule 
     {
@@ -68,5 +68,15 @@ public class CreateActivityArgs : IInteractor
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public bool IsEnabled { get; set; }
+    }
+
+    public class AddOn
+    {
+        public int ActivityId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string UnitPrice { get; set; }
+        public string Description { get; set; }
+        public int Order { get; set; }
     }
 }

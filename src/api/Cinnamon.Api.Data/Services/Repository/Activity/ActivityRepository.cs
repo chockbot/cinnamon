@@ -639,7 +639,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false, bool? includeAddOns = false)
     {
         try
         {
@@ -651,7 +651,8 @@ public class ActivityRepository : IActivityRepository
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
             if(includeStudents) includes.Add(a => a.Students);
-            if (includeTickets) includes.Add(a => a.Tickets);
+            if(includeTickets) includes.Add(a => a.Tickets);
+            if(includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -834,6 +835,23 @@ public class ActivityRepository : IActivityRepository
             {
                 var tickets = activity.Tickets;
                 activityDTO.NumberOfTickets = tickets.Count;
+            }
+            if (includeAddOns.HasValue && includeAddOns.Value && activity.AddOns != null)
+            {
+                var addOns = activity.AddOns;
+                activityDTO.AddOns = activity.AddOns.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiData.DTO.AddOns.AddOnsDTO
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }).ToList();
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");

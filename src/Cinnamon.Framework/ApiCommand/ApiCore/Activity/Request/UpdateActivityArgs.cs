@@ -39,8 +39,22 @@ public class UpdateActivityArgs
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<UpdatedSchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int>? DeletedScheduleIds {get; set;}
-    
+    public IEnumerable<UpdatedAddOn> AddOns { get; set; }
+    public IEnumerable<int>? DeletedAddOnIds { get; set; }
 
+    public class UpdatedAddOn
+    {
+        [Required]
+        public int Id { get; set; }
+        [Required]
+        public int ActivityId { get; set; }
+        public string? Name { get; set; }
+        public string? DateTime { get; set; }
+        public decimal? Price { get; set; }
+        public string? UnitPrice { get; set; }
+        public string? Description { get; set; }
+        public int Order { get; set; }
+    }
     public class UpdatedSchedule 
     {
         [Required]

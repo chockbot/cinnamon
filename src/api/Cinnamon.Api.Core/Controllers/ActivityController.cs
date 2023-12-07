@@ -179,6 +179,17 @@ public class ActivityController : ControllerBase
                         }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime>()
                     };
                 }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivitySchedule>(),
+                AddOns = args.AddOns is not null ? args.AddOns.Select(s => {
+                    return new Services.ActivityService.Interactors.CreateActivityArgs.AddOn
+                    {
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.AddOn>(),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
                 Address1 = args.Address1 ?? string.Empty,
                 Address2 = args.Address2 ?? string.Empty,
@@ -343,7 +354,20 @@ public class ActivityController : ControllerBase
                             }) : Enumerable.Empty<Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime>()
                         };
                     }) : null,
-                DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
+                DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>(),
+                AddOns = args.AddOns != null ? args.AddOns.Select(a => {
+                    return new Services.ActivityService.Interactors.UpdateActivityArgs.AddOn
+                    {
+                        Id          = a.Id,
+                        ActivityId  = a.ActivityId,
+                        Name        = a.Name,
+                        Description = a.Description,
+                        Price       = a.Price,
+                        UnitPrice   = a.UnitPrice,
+                        Order       = a.Order
+                    };
+                }) : null,
+                DeletedAddOnsIds = args.DeletedAddOnIds != null ? args.DeletedAddOnIds : Enumerable.Empty<int>()
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -1210,7 +1234,8 @@ public class ActivityController : ControllerBase
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
                 IncludeStudents = args.IncludeStudents,
-                IncludeTickets = args.IncludeTickets ?? false
+                IncludeTickets = args.IncludeTickets ?? false,
+                IncludeAddOns = args.IncludeAddOns ?? false
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1238,7 +1263,7 @@ public class ActivityController : ControllerBase
                             Order = s.Order,
                             IsActiveSchedule = s.IsActiveSchedule,
                             IsSetSession = s.IsSetSession,
-                            SessionName  = s.SessionName,
+                            SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
@@ -1285,23 +1310,36 @@ public class ActivityController : ControllerBase
                     PinnedLocation = activity.PinnedLocation,
                     ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
-                            Handler = activity.Owner.Handler,
-                            Id  = activity.Owner.Id,
-                            ImageSrc = activity.Owner.ImageSrc,
-                            FirstName = activity.Owner.FirstName,
-                            LastName = activity.Owner.LastName,
-                            IsVerified = activity.Owner.IsVerified,
-                            IsOG = activity.Owner.IsOG,
-                            IsOfficial = activity.Owner.IsOfficial,
-                            Email = activity.Owner.Email,
-                            PhoneNumber = activity.Owner.PhoneNumber
-                        } : null,
+                        Handler = activity.Owner.Handler,
+                        Id = activity.Owner.Id,
+                        ImageSrc = activity.Owner.ImageSrc,
+                        FirstName = activity.Owner.FirstName,
+                        LastName = activity.Owner.LastName,
+                        IsVerified = activity.Owner.IsVerified,
+                        IsOG = activity.Owner.IsOG,
+                        IsOfficial = activity.Owner.IsOfficial,
+                        Email = activity.Owner.Email,
+                        PhoneNumber = activity.Owner.PhoneNumber
+                    } : null,
+                    AddOns = activity.AddOns.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn
+                        {
+                            Id          = s.Id,
+                            ActivityId  = s.ActivityId,
+                            Name        = s.Name,
+                            Price       = s.Price,
+                            UnitPrice   = s.UnitPrice,
+                            Description = s.Description,
+                            Order       = s.Order
+                        };
+                    }),
                     OngoingStudents = activity.OngoingStudents,
                     CompletedStudents = activity.CompletedStudents,
                     IsComingSoon = activity.IsComingSoon,
                     NumberOfTickets = activity.NumberOfTickets
                 }
-            });
+            }); 
         }
         catch (Exception ex)
         {

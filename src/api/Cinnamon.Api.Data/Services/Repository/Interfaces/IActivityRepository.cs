@@ -10,7 +10,7 @@ public interface IActivityRepository
 {
     Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false, bool includeTickets = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false, bool includeTickets = false, bool? includeAddOns = false);
     
     Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
