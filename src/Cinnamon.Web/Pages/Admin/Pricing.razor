@@ -58,6 +58,9 @@
                     <TableHeaderCell class="text-center">
                        Is Manual Payment
                     </TableHeaderCell>
+                    <TableHeaderCell class="text-center">
+                       Inclusive Pricing
+                    </TableHeaderCell>
                     <TableHeaderCell>
                         Action
                     </TableHeaderCell>
@@ -76,6 +79,9 @@
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
                             <Switch TValue="bool" @bind-Checked="item.Pricing.IsManualPayment"></Switch>
+                        </TableRowCell>
+                        <TableRowCell class="name-body text-center">
+                            <Switch TValue="bool" @bind-Checked="item.Pricing.InclusivePricing"></Switch>
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
                             <Button Clicked="() => SubmitCustomerPricing(item)" Size="Size.Small" Type="ButtonType.Button" 
