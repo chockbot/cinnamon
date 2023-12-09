@@ -53,13 +53,9 @@ public class OwnerPricingInclusiveHandler : IOwnerPricingInclusiveHandler
             {
                 return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(new OwnerPricingInclusiveResult {IsInclusivePricing = false}, "Request successfuly identified");
             }
+            var customerInfo = customerPricingRes.Result.Result;
 
-            if(customerPricingRes.Result.Result.Rate <= 0)
-            {
-                return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(new OwnerPricingInclusiveResult {IsInclusivePricing = false}, "Request successfuly identified");
-            }
-
-            return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(new OwnerPricingInclusiveResult {IsInclusivePricing = true}, "Request successfuly identified");
+            return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(new OwnerPricingInclusiveResult {IsInclusivePricing = customerInfo.InclusivePricing}, "Request successfuly identified");
         }
         catch (Exception ex)
         {

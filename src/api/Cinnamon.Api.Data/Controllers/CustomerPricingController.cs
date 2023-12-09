@@ -114,7 +114,7 @@ public class CustomerPricingController : ControllerBase
     {
         try
         {
-            var result = await customerPricingRepository.Create(args.CustomerId, args.Email, args.Rate, args.IsManualPayment);
+            var result = await customerPricingRepository.Create(args.CustomerId, args.Email, args.Rate, args.IsManualPayment, args.InclusivePricing);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -136,8 +136,8 @@ public class CustomerPricingController : ControllerBase
     {
         try
         {
-            var result = await customerPricingRepository.Update(args.Id, args.Rate.HasValue ? args.Rate.Value : 0, 
-                args.IsManualPayment.HasValue ? args.IsManualPayment.Value : false);
+            var result = await customerPricingRepository.Update(args.Id, args.Rate ?? 0, 
+                args.IsManualPayment ?? false, args.InclusivePricing ?? false);
 
             if (!result.Succeeded || result.Result == null)
             {
