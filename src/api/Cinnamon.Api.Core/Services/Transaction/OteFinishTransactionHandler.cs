@@ -118,7 +118,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         ActivityId = oteActivity.Id,
                         Amount = t.Price,
                         CustomerId = purchaseOrder.CustomerId,
-                        OteScheduleId = t.Id,
+                        OteScheduleId = deserializedPayload.OteScheduleId,
                         OteSchedulePricingId = t.Id,
                         PurchaseOrderId = purchaseOrder.Id,
                         QRCode = t.Code,
