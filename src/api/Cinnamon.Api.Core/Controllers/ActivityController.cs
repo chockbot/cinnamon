@@ -1021,7 +1021,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeAddOns = args.IncludeAddOns
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1064,6 +1065,18 @@ public class ActivityController : ControllerBase
                                 StartTime = act.StartTime,
                                 IsEnabled = act.IsEnabled
                             }).ToList()
+                        };
+                    }),
+                    AddOns = activity.AddOns.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn {
+                            Id          = s.Id,
+                            ActivityId  = s.ActivityId,
+                            Name        = s.Name,
+                            Price       = s.Price,
+                            UnitPrice   = s.UnitPrice,
+                            Description = s.Description,
+                            Order       = s.Order
                         };
                     }),
                     ClassPolicies = activity.ClassPolicies,
@@ -1364,7 +1377,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeAddOns = args.IncludeAddOns
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1398,6 +1412,18 @@ public class ActivityController : ControllerBase
                             PriceType = s.PriceType,
                             ScheduleType = s.ScheduleType,
                             SchedulingUrl = s.SchedulingUrl
+                        };
+                    }),
+                    AddOns = activity.AddOns.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn
+                        {
+                            Id = s.Id,
+                            ActivityId = s.ActivityId,
+                            Name = s.Name,
+                            Price = s.Price,
+                            UnitPrice = s.UnitPrice,
+                            Description = s.Description,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,

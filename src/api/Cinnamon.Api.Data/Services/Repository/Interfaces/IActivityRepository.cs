@@ -14,7 +14,7 @@ public interface IActivityRepository
     
     Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false, bool? includeAddOns = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip,
         int experienceCategoryId, string searchValue, bool? isDeactivated, Enums.ActivityStatus? status,

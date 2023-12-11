@@ -380,8 +380,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                         {
                             return new Framework.ApiCommand.ApiData.AddOns.Request.UpdateAddOnsArgs.UpdateAddOn
                             {
-                                Id          = s.Id,
-                                ActivityId  = s.ActivityId,
+                                ActivityId = args.ActivityId,
+                                Id          = s.Id,  
                                 Name        = s.Name,
                                 Price       = s.Price,
                                 UnitPrice   = s.UnitPrice,

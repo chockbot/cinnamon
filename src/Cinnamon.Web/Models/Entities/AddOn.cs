@@ -29,9 +29,9 @@ public class AddOn
     public string UnitPrice { get; set; } = "PHP";
     public string Description { get; set; }
     public int Order { get; set; }
-
+    public int TempId { get; set; }
     public bool IsNew { get; set; }
-
+    public bool IsSelected { get; set; } = false;
     string MaskEmail(string input)
     {
         string pattern = @"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|((?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\""\.,<>?«»“”‘’]))\b)";

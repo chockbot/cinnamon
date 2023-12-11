@@ -520,6 +520,21 @@
                                     </button>
                                 </div>
                             }
+                            <br/>
+                            @if(activity.AddOns.Count != 0)
+                            {
+                                <label class="fw-bold mb-3 detail-label">@(activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</label>
+                                <div class="schedule-detail w-100 rounded-5">
+                                    <div class="add-ons">
+                                        @foreach (var addOn in activity.AddOns.OrderBy(a => a.Order).ToList())
+                                        {
+                                            <button class="addon-button" type="button" @onclick="() => SelectAddOns(addOn)" style='@($"background: {(addOn.IsSelected ? "#FFA942" : "#F3F6FCDE")}")'>
+                                                <p class="activity-title">@addOn.Name</p>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
                         </div>
                     }
 
@@ -719,6 +734,14 @@
                                         <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                     </Column>
                                 </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <p class="m-0">Add-Ons</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <p class="text-end m-0">₱ @AddOnsTotal.ToString("#,##0.00")</p>
+                                        </Column>
+                                    </Row>
                                 @if(!IsInclusivePricing)
                                 {
                                     <Row class="color-grey-100 font-16 mt-2">
@@ -874,6 +897,14 @@
                                 <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                             </Column>
                         </Row>
+                        <Row class="color-grey-100 font-16 mt-2">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Add-ons</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @AddOnsTotal.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
                         @if(!IsInclusivePricing)
                         {
                             <Row class="color-grey-100 font-16 mt-2">
@@ -978,7 +1009,7 @@
     public string IsSelected = "Select";
 
     private int SelectedScheduleId { get; set; } = 0;
-    //private int selectedScheduleId { get; set; } = 0;
+    private List<int> SelectedAddOnId { get; set; } = new List<int>();
     private int EnrolleeCount { get; set; } = 1;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
@@ -1028,7 +1059,8 @@
                     IncludeActivityImages = true,
                     IncludeAtivitySchedules = true,
                     IncludeCustomer = true,
-                    IncludeStudents = true
+                    IncludeStudents = true,
+                    IncludeAddOns = true
                 }) :
                 await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                     {
@@ -1037,7 +1069,8 @@
                         IncludeActivityImages = true,
                         IncludeAtivitySchedules = true,
                         IncludeCustomer = true,
-                        IncludeStudents = true
+                        IncludeStudents = true,
+                        IncludeAddOns = true
                     });
 
             if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -1105,6 +1138,16 @@
                                 SessionName = e.SessionName,
                                 HasExpiration = e.HasExpiration,
                                 StartDate = e.StartDate,
+                            };
+                        }).ToList(),
+                        AddOns = result.AddOns.Select(s =>{
+                            return new AddOn{
+                                Id         = s.Id,  
+                                ActivityId = s.ActivityId,
+                                Name       = s.Name,
+                                Price      = s.Price,
+                                UnitPrice  = s.UnitPrice,
+                                Order      = s.Order
                             };
                         }).ToList(),
                         Images = result.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).Select(i =>
@@ -1380,6 +1423,21 @@
         }
     }
 
+    private decimal AddOnsTotal
+    {
+        get
+        {
+            var selectedAddOns = activity.AddOns.Where(addOn => addOn.IsSelected).ToList();
+
+            if (selectedAddOns == null || selectedAddOns.Count == 0)
+            {
+                return 0;
+            }
+
+            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price);
+            return totalAddOnPrice;
+        }
+    }
 
     private decimal ServiceFee
     {
@@ -1404,7 +1462,7 @@
     {
         get
         {
-            return PriceSubTotal + ServiceFee + HandlingFee;
+            return PriceSubTotal + AddOnsTotal + ServiceFee + HandlingFee;
         }
     }
 
@@ -1459,6 +1517,18 @@
         }
 
         activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
+    }
+    private async Task SelectAddOns(AddOn addOn)
+    {
+        addOn.IsSelected = !addOn.IsSelected;
+        if (addOn.IsSelected)
+        {
+            activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = true;
+        }
+        else
+        {
+            activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = false;
+        }
     }
 
     private Task NavigateToGallery()
