@@ -3,8 +3,6 @@ using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.AddOns;
-using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
-using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers
@@ -46,6 +44,32 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("GetAddOnByActivityId")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetAddOnResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAddOnByActivityId(int activityId)
+        {
+            try
+            {
+                if (activityId <= 0)
+                {
+                    return NotFound();
+                }
+
+                var result = await _addOnsRepository.GetByActivityId(activityId);
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetAllAddOnResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                return new JsonResult(new GetAllAddOnResult { Result = result.Result, IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetAllAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 

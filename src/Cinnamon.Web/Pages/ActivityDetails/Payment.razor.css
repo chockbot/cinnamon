@@ -29,7 +29,21 @@ input {
   font-size: 1.3rem;
   margin-left: 3px;
 }
-
+.add-ons {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+.addon-button {
+    width: auto;
+    height: 45px;
+    border-radius: 30px;
+    color: #343D4C;
+    background-color: #F3F6FCDE;
+    line-height: 2.5;
+    border: none;
+}
 .payment-container label {
   font-size: 0.8rem;
 }
@@ -235,5 +249,11 @@ input {
   }
     .total-price{
         -webkit-user-select: none;
+    }
+    .add-ons {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 20px;
     }
 }

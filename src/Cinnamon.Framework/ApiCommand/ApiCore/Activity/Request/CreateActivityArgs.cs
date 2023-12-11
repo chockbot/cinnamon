@@ -118,7 +118,7 @@ public class CreateActivityArgs
     [Required]
     public IEnumerable<Schedule> ActivitySchedules {get; set;}
 
-    public IEnumerable<AddOn> AddOns { get; set;}
+    public IEnumerable<CreateAddOn> AddOns { get; set;}
 
     public Enums.Enums.ActivityStatus Status { get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
@@ -175,7 +175,7 @@ public class CreateActivityArgs
         public bool IsEnabled { get; set; }
     }
 
-    public class AddOn
+    public class CreateAddOn
     {
         [Required]
         public int ActivityId { get; set; }

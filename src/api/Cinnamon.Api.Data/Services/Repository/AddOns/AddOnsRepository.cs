@@ -174,6 +174,7 @@ public class AddOnsRepository: IAddOnsRepository
             return AppResult<IEnumerable<AddOnsDTO>>.CreateFailed(ex.InnerException, ex.Message);
         }
     }
+    
     public async Task<AppResult<AddOnsDTO>> GetByIdAsync(int id)
     {
         try
@@ -199,6 +200,39 @@ public class AddOnsRepository: IAddOnsRepository
         catch (Exception ex)
         {
             return AppResult<AddOnsDTO>.CreateFailed(ex, ex.Message);
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<AddOnsDTO>>> GetByActivityId(int ActivityId)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.AddOns, object>>>();
+            var result = await _dataStore.AddOns.FindAsync(s => s.ActivityId == ActivityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<AddOnsDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var AddOns = result.Result.Select(a =>
+            {
+                return new AddOnsDTO
+                {
+                    Id = a.Id,
+                    ActivityId = a.ActivityId,
+                    Name = a.Name,
+                    Price = a.Price,
+                    UnitPrice = a.UnitPrice,
+                    Description = a.Description,
+                    Order = a.Order
+                };
+            });
+
+            return AppResult<IEnumerable<AddOnsDTO>>.CreateSucceeded(AddOns, "Success");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<AddOnsDTO>>.CreateFailed(ex.InnerException, ex.Message);
         }
     }
 

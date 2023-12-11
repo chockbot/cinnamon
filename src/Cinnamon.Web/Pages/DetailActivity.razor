@@ -971,6 +971,7 @@
                      CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity" />
 
     <ModalLogin @ref="signinModal" ReturnUrl="@signInReturnUrl" />
+
 }
 @code {
     IJSObjectReference module;
@@ -1009,7 +1010,7 @@
     public string IsSelected = "Select";
 
     private int SelectedScheduleId { get; set; } = 0;
-    private List<int> SelectedAddOnId { get; set; } = new List<int>();
+    private string SelectedAddOnIds { get; set; }
     private int EnrolleeCount { get; set; } = 1;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
@@ -1472,7 +1473,13 @@
         {
             if(isAuthenticated)
             {
-                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
+               List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.IsSelected == true).ToList();
+               List<int> selectedIds = selectedAddOns.Select(a => a.Id).ToList();
+               
+               // Converting the list of IDs to a comma-separated string
+                SelectedAddOnIds = string.Join("&", selectedIds);
+
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{SelectedAddOnIds}/?enrollees={EnrolleeCount}");
             }
             else
             {

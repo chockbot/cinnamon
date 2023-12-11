@@ -636,7 +636,7 @@
                }),
                 AddOns = Model.Activity.AddOns.Select(a =>
                 {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.AddOn
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.CreateAddOn
                     {
                         Name = a.Name ?? "N/A",
                         Price = a.Price,
@@ -736,7 +736,7 @@
                         };
                     }),
                     AddOns = Model.Activity.AddOns.Select(a => {
-                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.AddOn
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.CreateAddOn
                         {
                             Name        = a.Name ?? "N/A",
                             Price       = a.Price,

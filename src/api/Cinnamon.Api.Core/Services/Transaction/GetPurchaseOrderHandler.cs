@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -69,48 +69,65 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
             int enroleeCount = 0;
             string paymentMethod = string.Empty;
 
-            if(deserializedPayload != null)
+            if (deserializedPayload != null)
             {
                 enroleeCount = deserializedPayload.Students.Count();
                 paymentMethod = deserializedPayload.PaymentChannel;
             }
 
             return AppResult<GetPurchaseOrderResult>.CreateSucceeded(new GetPurchaseOrderResult {
-                ActivityId = purchaseOrder.ActivityId,
-                ConvinienceFee = purchaseOrder.ConvinienceFee,
-                Coupon = purchaseOrder.Coupon,
-                CouponAmount = purchaseOrder.CouponAmount,
-                CustomerId = purchaseOrder.CustomerId,
-                Id = purchaseOrder.Id,
-                OverallTotal = purchaseOrder.OverallTotal,
-                ScheduleId = purchaseOrder.ScheduleId,
-                Total = purchaseOrder.Total,
-                EnrolleeCount = enroleeCount,
-                PaymentMethod = paymentMethod,
-                ServiceFee = deserializedPayload != null ? deserializedPayload.Fees.ServiceFee : 0,
+                ActivityId         = purchaseOrder.ActivityId,
+                ConvinienceFee     = purchaseOrder.ConvinienceFee,
+                Coupon             = purchaseOrder.Coupon,
+                CouponAmount       = purchaseOrder.CouponAmount,
+                CustomerId         = purchaseOrder.CustomerId,
+                Id                 = purchaseOrder.Id,
+                OverallTotal       = purchaseOrder.OverallTotal,
+                ScheduleId         = purchaseOrder.ScheduleId,
+                Total              = purchaseOrder.Total,
+                EnrolleeCount      = enroleeCount,
+                PaymentMethod      = paymentMethod,
+                ServiceFee         = deserializedPayload != null ? deserializedPayload.Fees.ServiceFee : 0,
                 PaymentProviderFee = deserializedPayload != null ? deserializedPayload.Fees.PaymentProviderFee : 0,
-                AppliedCredits = purchaseOrder.CreditAmount,
-                IsInclusivePayment = deserializedPayload?.IsInclusivePayment ?? false
-            }, "Successfully get purhase order details");
+                AppliedCredits     = purchaseOrder.CreditAmount,
+                IsInclusivePayment = deserializedPayload?.IsInclusivePayment ?? false,
+                AddOnsAmount       = purchaseOrder.AddOnsAmount,
+                AddOnsDetails      = deserializedPayload != null ? deserializedPayload.AddOnsDetails.Select(s =>
+                {
+                    return new GetPurchaseOrderResult.AddOnDetail
+                    {
+                        AddOnId      = s.AddOnId,
+                        AddOnName    = s.AddOnName
+                    };
+                }) : Enumerable.Empty<GetPurchaseOrderResult.AddOnDetail>(),
+            }, "Successfully get purchase order details");
         }
         catch (Exception ex)
         {
-            return AppResult<GetPurchaseOrderResult>.CreateFailed(ex, "An error occured in PurchaseOrderHandler");
+            return AppResult<GetPurchaseOrderResult>.CreateFailed(ex, "An error occurred in PurchaseOrderHandler");
         }
     }
 
     class Payload 
     {
         public IEnumerable<Student> Students {get; set;}
+        public IEnumerable<AddOn> AddOnsDetails { get; set; }
         public Fees Fees {get; set;}
         public string PaymentChannel {get; set;}
         public bool IsInclusivePayment {get; set;}
+
     }
 
     class Student 
     {
         public int Id {get; set;}
         public string Name {get; set;}
+    }
+
+    class AddOn
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
     }
 
     class Fees {

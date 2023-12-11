@@ -118,13 +118,14 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 return AppResult<PurchaseOrderResult>.CreateFailed(
                     new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid customer id provided");
             }
-
-            decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
+            decimal subTotal           = activitySchedule.Price * args.NumberOfHeads;
+            decimal addOnsTotal        = args.AddOnsAmount;
             decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * 0; //.05m;
-            decimal discount = 0;
-            decimal serviceFee = IsInclusivePayment ? 0 : 39; //50;
-            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
-            decimal creditAmount = 0;
+            decimal discount           = 0;
+            decimal serviceFee         = IsInclusivePayment ? 0 : 39; //50;
+            decimal overallTotal       = subTotal + addOnsTotal + paymentProviderFee + serviceFee;
+            decimal creditAmount       = 0;
+          
 
             decimal perUnitDisburseAmount = activitySchedule.Price;
             decimal totalDisburseAmount = subTotal;
@@ -222,29 +223,38 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     ServiceFee = serviceFee
                 },
                 IsInclusivePayment,
-                SelectedPeriod = args.SelectedPeriod
+                SelectedPeriod = args.SelectedPeriod,
+                AddOnsDetails = args.AddOnsDetails.Select(a =>
+                {
+                    return new
+                    {
+                        AddOnId = a.AddOnId,
+                        AddOnName = a.AddOnName
+                    };
+                })
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
             var result = await purchaseOrderData.CreatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.CreatePurchaseOrderArgs {
-                ActivityId = args.ActivityId,
+                ActivityId     = args.ActivityId,
                 ConvinienceFee = paymentProviderFee + serviceFee,
-                Coupon = args.CouponCode ?? string.Empty,
-                CouponAmount = discount,
-                CustomerId = id,
-                OverallTotal = overallTotal,
-                ScheduleId = args.ScheduleId,
-                Total = subTotal,
+                Coupon         = args.CouponCode ?? string.Empty,
+                CouponAmount   = discount,
+                CustomerId     = id,
+                OverallTotal   = overallTotal,
+                ScheduleId     = args.ScheduleId,
+                Total          = subTotal,
                 // if overall total is 0 due to applied credits,
-                // then status should be 1 no need to send transation to payment gateway
-                Status = overallTotal == 0 ? (int)TransactionStatus.Success : (int)TransactionStatus.Pending,
-                Payload = serializedPayload,
-                CreditAmount = creditAmount,
-                UnitCount = args.Students.Count(),
-                UnitPrice = activitySchedule.Price,
-                IsInclusivePayment = IsInclusivePayment,
+                // then status should be 1 no need to send transaction to payment gateway
+                Status                = overallTotal == 0 ? (int)TransactionStatus.Success : (int)TransactionStatus.Pending,
+                Payload               = serializedPayload,
+                CreditAmount          = creditAmount,
+                UnitCount             = args.Students.Count(),
+                UnitPrice             = activitySchedule.Price,
+                IsInclusivePayment    = IsInclusivePayment,
                 PerUnitDisburseAmount = perUnitDisburseAmount,
-                TotalDisburseAmount = totalDisburseAmount
+                TotalDisburseAmount   = totalDisburseAmount,
+                AddOnsAmount          = args.AddOnsAmount,
             });
 
             if(!result.Succeeded || result.Result == null)
