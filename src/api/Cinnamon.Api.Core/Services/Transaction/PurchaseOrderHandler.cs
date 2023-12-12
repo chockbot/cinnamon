@@ -1,15 +1,13 @@
-using System.Security.Claims;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
-using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
+using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -272,7 +270,6 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             {
                 var finishTransaction = await finishTransactionHandler.ExecuteAsync(new FinishTransactionArgs {
                     TransactionId = result.Result.Result.Id,
-                    AddOnsAmount = args.AddOnsAmount
                 });
                 if(!finishTransaction.Succeeded || finishTransaction.Result == null)
                 {
