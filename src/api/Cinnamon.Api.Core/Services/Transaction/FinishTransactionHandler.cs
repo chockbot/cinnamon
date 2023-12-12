@@ -146,7 +146,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 IsInclusivePayment = deserializedPayload.IsInclusivePayment,
                 DiscountAmount     = purchaseOrder.CouponAmount ?? 0,
                 AddOnsAmount       = purchaseOrder.AddOnsAmount,
-                AddOnsDetails      = deserializedPayload.AddOnsDetail.Select(a =>
+                AddOnsDetails      = deserializedPayload.AddOnsDetails.Select(a =>
                 {
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.AddOnDetails {
                         AddOnName = a.AddOnName,
@@ -197,7 +197,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     class PayloadData 
     {
         public IEnumerable<Student> Students {get; set;}
-        public IEnumerable<AddOnDetails> AddOnsDetail { get; set;}
+        public IEnumerable<AddOnDetails> AddOnsDetails { get; set;}
         public Fees Fees {get; set;}
         public string PaymentMethod {get; set;}
         public string PaymentChannel {get; set;}
