@@ -9,15 +9,13 @@ public class MakerEnrolledNotificationHelper
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
         string payerEmail, decimal providerFee, decimal appliedCredits, bool inclusivePricing,
-        decimal discountAmount, decimal addOnsAmount, IEnumerable<AddOnDetails> addOnsDetails)
+        decimal discountAmount, decimal addOnsAmount)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
-        string addOnsString = string.Empty;
-        string withString = string.Empty;
 
-        foreach (var item in students)
+        foreach(var item in students)
         {
             if(string.IsNullOrEmpty(enrolleesString))
             {
@@ -28,18 +26,7 @@ public class MakerEnrolledNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
-        foreach (var item in addOnsDetails)
-        {
-            if (string.IsNullOrEmpty(addOnsString))
-            {
-                addOnsString += item.AddOnName;
-            }
-            else
-            {
-                addOnsString += $", {item.AddOnName}";
-            }
-        }
-        withString = (addOnsDetails.Count() != 0) ? "With " : string.Empty;
+
         string providerFeeHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
 
@@ -171,10 +158,7 @@ public class MakerEnrolledNotificationHelper
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
                     <div class='purchased-details' style='padding: 2rem 2rem'>
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
-                            <b style='text-transform: capitalize'>{experienceName}</b>
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                            <span style='color: #343d4c; text-transform: capitalize'>{withString}{addOnsString}</span>
+                        <b style='text-transform: capitalize'>{experienceName}</b>
                         </p>
                         <table style='width: 100%'>
                         <tbody>
