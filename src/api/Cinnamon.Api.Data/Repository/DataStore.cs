@@ -101,6 +101,8 @@ public class DataStore : IDataStore
 
     public IOteDate OteDate => new OteDateEntity(applicationContext);
 
+    public IAddOns AddOns => new AddOnsEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

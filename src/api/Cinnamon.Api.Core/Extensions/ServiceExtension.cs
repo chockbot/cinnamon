@@ -58,6 +58,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceCreationTypeData, Modules.DataAccess.ExperienceCreationType.ExperienceCreationTypeData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteTicketData, Modules.DataAccess.OteTicket.OteTicketData>();
         services.AddTransient<Modules.DataAccess.Handlers.ITokenGeneratedData, Modules.DataAccess.TokenGenerated.TokenGeneratedData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();

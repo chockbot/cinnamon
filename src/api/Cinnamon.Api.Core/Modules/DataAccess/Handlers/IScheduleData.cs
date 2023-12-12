@@ -1,6 +1,4 @@
-﻿using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
-using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
-using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
+﻿using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Response;
 using Cinnamon.Framework.Common;
 

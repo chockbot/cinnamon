@@ -9,7 +9,7 @@ public class MakerEnrolledNotificationHelper
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
         string payerEmail, decimal providerFee, decimal appliedCredits, bool inclusivePricing,
-        decimal discountAmount)
+        decimal discountAmount, decimal addOnsAmount)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string chatUrl = host.AppendPathSegment("Messages");
@@ -204,6 +204,20 @@ public class MakerEnrolledNotificationHelper
                                 </p>
                             </td>
                             </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Add-ons: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{addOnsAmount.ToString("#,##0.00")}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
                             {providerFeeHtmlString}
                             {serviceFeeHtmlString}
                             <tr>
@@ -244,7 +258,7 @@ public class MakerEnrolledNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {GetTotalPurchase(amount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, addOnsAmount,serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -285,9 +299,9 @@ public class MakerEnrolledNotificationHelper
         return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
     }
 
-    private decimal GetTotalPurchase(decimal amount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
+    private decimal GetTotalPurchase(decimal amount,decimal addOnsAmount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
     {
-        var result = amount + serviceFee + providerFee - discountAmount - appliedCredits;
+        var result = amount + addOnsAmount +serviceFee + providerFee - discountAmount - appliedCredits;
         result = result < 0 ? 0 : result;
         return result;
     }

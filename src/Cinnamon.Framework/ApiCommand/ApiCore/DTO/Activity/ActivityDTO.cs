@@ -48,7 +48,7 @@ public class ActivityDTO
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<ActivityDescription> Descriptions {get; set;}
-
+    public IEnumerable<AddOn> AddOns { get; set; }
     public IEnumerable<ActivityAddress> Addresses { get; set;}
     public CustomerOwner? Owner {get; set;}
     public bool IsNew { get; set; }
@@ -137,6 +137,16 @@ public class ActivityDTO
         public string EndTime { get; set; }
         public bool IsAvailable { get; set; }
         public bool IsEnabled { get; set; }
+    }
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string UnitPrice { get; set; }
+        public string Description { get; set; }
+        public int Order { get; set; }
     }
 
 }

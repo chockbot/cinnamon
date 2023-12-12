@@ -11,10 +11,10 @@
         <li>Fill in required field</li>
     </ul>
 </div>
-
-
+<div class="col-lg-12 d-flex justify-content-start col-12 d-flex justify-content-start">
+    <label for="title" class="pricing-title">Pricing & Schedule</label>
+</div>
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
-
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
         {
@@ -45,10 +45,6 @@
                             <div class="form-group">
                                 <div class="form-check form-switch">
                                     <div class="row">
-                                        <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                            <label for="title" class="pricing-title">Pricing & Schedule</label>
-                                        </div>
-                                        <hr>
                                        <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
                                            <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
@@ -268,18 +264,13 @@
             </div>
         }
     </div>
-
     <div class="pricing-schedule">
-        <div class="row">
+        <div class="row mt-2">
             @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
             {
                 <div class="form-group">
                     <div class="form-check form-switch">
                         <div class="row">
-                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                <label for="title" class="pricing-title">Pricing & Schedule</label>
-                            </div>
-                            <hr>
                             <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
                                 <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
@@ -516,6 +507,77 @@
         </div>
     </div>
 </div>
+<br />
+<div class="col-lg-12 d-flex justify-content-start col-12 d-flex justify-content-start">
+    <label for="title" class="pricing-title">
+        Add-ons
+    </label>
+</div>
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="accordion" id="activitySchedules">
+        @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew))
+        {
+            var accordionId = $"panel-section{addOnModels.Id}";
+            var accordionHeaderId = $"header-section{addOnModels.Id}";
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="@accordionHeaderId">
+                    <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
+                        <span class="accordion-title">
+                            @if (string.IsNullOrEmpty(addOnModels.Name))
+                            {
+                                <span>N/A</span>
+                            }
+                            else
+                            {
+                                <span>@addOnModels.Name</span>
+                            }
+                        </span>
+                        <div class="ms-auto">
+                            <span class="span-price">P @Math.Truncate(addOnModels.Price)</span>
+                        </div>
+                    </div>
+                </h2>
+                <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                                <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                                <input class="form-control @RequiredCheck(addOnModels.Name)" id="schedule-name" required @bind="addOnModels.Name" />
+                            </div>
+                            <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <input class="form-control unit-input @RequiredCheck(addOnModels.Price)" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="pricing-schedule">
+        <div class="row">
+            @foreach (var addOnsModel in Model.Activity.AddOns.Where(a => a.IsNew))
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                        <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                        <input class="form-control @RequiredCheck(addOnsModel.Name)" id="schedule-name" required @bind="addOnsModel.Name" />
+                    </div>
+                    <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                        <label for="title" class="form-control-label label-top-margin">Price</label>
+                        <input class="form-control unit-input @RequiredCheck(addOnsModel.Price)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create a better schedule" />
 @code {
     [Parameter]
@@ -536,6 +598,7 @@
     protected override async Task OnInitializedAsync()
     {
         AddSchedule();
+        CreateAddOns();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -559,6 +622,7 @@
         }
         return "";
     }
+
     private string RequiredCheck(DateTime? value)
     {
         if (Model.HasError && !value.HasValue)
@@ -629,10 +693,12 @@
         }
         return true;
     }
+
     private void CheckboxChanged(int val, ActivitySchedule schedule)
     {
         schedule.HasExpiration = val;
     }
+
     private void AddSchedule()
     {
         module.InvokeVoidAsync("scrollToPricingandSchedule");
@@ -657,5 +723,28 @@
         }
 
         Model.Activity.ActivitySchedules.Add(new ActivitySchedule { Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1, Order = order + 1, IsNew = true });
+    }
+    private void CreateAddOns()
+    {
+        foreach (var item in Model.Activity.AddOns)
+        {
+            item.IsNew = false;
+        }
+
+        var maxIdItem = Model.Activity.AddOns.MaxBy(x => x.Id);
+        var MaxOrder = Model.Activity.AddOns.MaxBy(s => s.Order);
+        var maxId = 0;
+        int order = 0;
+
+        if (maxIdItem != null)
+        {
+            maxId = maxIdItem.Id;
+        }
+        if (MaxOrder != null)
+        {
+            order = maxIdItem.Order;
+        }
+
+        Model.Activity.AddOns.Add(new AddOn { Id = maxId + 1, Order = order + 1, IsNew = true });
     }
 }

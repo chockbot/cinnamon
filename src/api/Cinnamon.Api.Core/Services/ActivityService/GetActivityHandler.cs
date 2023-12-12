@@ -42,7 +42,8 @@ public class GetActivityHandler : IGetActivityHandler
                     CustomerId = args.CustomerId,
                     IncludeCustomer = args.IncludeCustomer,
                     IncludeStudents = args.IncludeStudents,
-                    IncludeTickets = args.IncludeTickets
+                    IncludeTickets = args.IncludeTickets,
+                    IncludeAddOns = args.IncludeAddOns,
                 }
             );
 
@@ -146,6 +147,18 @@ public class GetActivityHandler : IGetActivityHandler
                     IsOfficial = activity.Owner.IsOfficial,
                     PhoneNumber = activity.Owner.PhoneNumber,
                 } : null,
+                AddOns = activity.AddOns != null ? activity.AddOns.Select(s => {
+                    return new GetActivityResult.AddOn
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }) : Enumerable.Empty<GetActivityResult.AddOn>(),
                 OngoingStudents = activity.OngoingStudents,
                 CompletedStudents = activity.CompletedStudents,
                 NumberOfTickets = activity.NumberOfTickets

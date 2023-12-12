@@ -47,6 +47,8 @@ public interface IDataStore
     ITokenGenerated TokenGenerated {get;}
     IOteDate OteDate {get;}
     
+    IAddOns AddOns { get; }
+
     Task EnsureMigrate();
 
     Task SeedData();
