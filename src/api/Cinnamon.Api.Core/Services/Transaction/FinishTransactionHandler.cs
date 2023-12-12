@@ -179,7 +179,14 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 AppliedCredits     = purchaseOrder.CreditAmount,
                 IsInclusivePayment = deserializedPayload.IsInclusivePayment,
                 DiscountAmount     = purchaseOrder.CouponAmount ?? 0,
-                AddOnsAmount       = purchaseOrder.AddOnsAmount
+                AddOnsAmount       = purchaseOrder.AddOnsAmount,
+                AddOnsDetails      = deserializedPayload.AddOnsDetails.Select(a =>
+                {
+                    return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.AddOnDetails
+                    {
+                        AddOnName = a.AddOnName,
+                    };
+                })
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
