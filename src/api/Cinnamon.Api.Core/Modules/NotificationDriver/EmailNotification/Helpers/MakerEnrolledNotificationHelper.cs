@@ -258,7 +258,7 @@ public class MakerEnrolledNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {GetTotalPurchase(amount, addOnsAmount,serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, addOnsAmount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -301,7 +301,7 @@ public class MakerEnrolledNotificationHelper
 
     private decimal GetTotalPurchase(decimal amount,decimal addOnsAmount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
     {
-        var result = amount + addOnsAmount +serviceFee + providerFee - discountAmount - appliedCredits;
+        var result = amount + addOnsAmount + serviceFee + providerFee - discountAmount - appliedCredits;
         result = result < 0 ? 0 : result;
         return result;
     }
