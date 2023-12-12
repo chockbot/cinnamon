@@ -63,7 +63,15 @@ public class TransactionController : ControllerBase
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
                 } : null,
                 IsCreditsApplied = args.IsCreditsApplied,
-                SelectedPeriod = args.SelectedPeriod ?? string.Empty
+                SelectedPeriod = args.SelectedPeriod ?? string.Empty,
+                AddOnsAmount = args.AddOns,
+                AddOnsDetails = args.AddOnsDetails.Select(s =>
+                {
+                    return new Services.TransactionService.Interactors.PurchaseOrderArgs.AddOn {
+                        AddOnId = s.AddOnId,
+                        AddOnName = s.Name,
+                    };
+                })
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -110,21 +118,30 @@ public class TransactionController : ControllerBase
                 IsSuccess = true, 
                 Result = new PurchaseOrderDTO 
                 {
-                    Id = purchseOrder.Id,
-                    ActivityId = purchseOrder.ActivityId,
-                    ConvinienceFee = purchseOrder.ConvinienceFee,
-                    Coupon = purchseOrder.Coupon,
-                    CouponAmount = purchseOrder.CouponAmount,
-                    CustomerId = purchseOrder.CustomerId,
-                    OverallTotal = purchseOrder.OverallTotal,
-                    ScheduleId = purchseOrder.ScheduleId,
-                    Total = purchseOrder.Total,
-                    EnrolleeCount = purchseOrder.EnrolleeCount,
-                    PaymentMethod = purchseOrder.PaymentMethod,
-                    ServiceFee = purchseOrder.ServiceFee,
+                    Id                 = purchseOrder.Id,
+                    ActivityId         = purchseOrder.ActivityId,
+                    ConvinienceFee     = purchseOrder.ConvinienceFee,
+                    Coupon             = purchseOrder.Coupon,
+                    CouponAmount       = purchseOrder.CouponAmount,
+                    CustomerId         = purchseOrder.CustomerId,
+                    OverallTotal       = purchseOrder.OverallTotal,
+                    ScheduleId         = purchseOrder.ScheduleId,
+                    Total              = purchseOrder.Total,
+                    EnrolleeCount      = purchseOrder.EnrolleeCount,
+                    PaymentMethod      = purchseOrder.PaymentMethod,
+                    ServiceFee         = purchseOrder.ServiceFee,
                     PaymentProviderFee = purchseOrder.PaymentProviderFee,
-                    AppliedCredit = purchseOrder.AppliedCredits,
-                    IsInclusivePayment = purchseOrder.IsInclusivePayment
+                    AppliedCredit      = purchseOrder.AppliedCredits,
+                    IsInclusivePayment = purchseOrder.IsInclusivePayment,
+                    AddOnsAmount       = purchseOrder.AddOnsAmount,
+                    AddOnsDetails      = purchseOrder.AddOnsDetails.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO.AddOnDetail
+                        {
+                            Id = s.AddOnId,
+                            Name = s.AddOnName
+                        };
+                    }).ToList(),
                 }
             });
         }

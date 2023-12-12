@@ -1,20 +1,27 @@
 namespace Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 
-public class GetPurchaseOrderResult 
+public class GetPurchaseOrderResult
 {
-    public int Id {get; set;}
-    public int ActivityId {get; set;}
-    public int ScheduleId {get; set;}
-    public int CustomerId {get; set;}
-    public decimal Total {get; set;}
-    public decimal ConvinienceFee {get; set;}
-    public string? Coupon {get; set;}
-    public decimal? CouponAmount {get; set;}
-    public decimal OverallTotal {get; set;}
-    public int EnrolleeCount {get; set;}
-    public string PaymentMethod {get; set;}
-    public decimal ServiceFee {get; set;}
-    public decimal PaymentProviderFee {get; set;}
-    public decimal AppliedCredits {get; set;}
-    public bool IsInclusivePayment {get; set;}
+    public int Id { get; set; }
+    public int ActivityId { get; set; }
+    public int ScheduleId { get; set; }
+    public int CustomerId { get; set; }
+    public decimal Total { get; set; }
+    public decimal ConvinienceFee { get; set; }
+    public string? Coupon { get; set; }
+    public decimal? CouponAmount { get; set; }
+    public decimal OverallTotal { get; set; }
+    public int EnrolleeCount { get; set; }
+    public string PaymentMethod { get; set; }
+    public decimal ServiceFee { get; set; }
+    public decimal PaymentProviderFee { get; set; }
+    public decimal AppliedCredits { get; set; }
+    public bool IsInclusivePayment { get; set; }
+    public decimal AddOnsAmount { get; set; }
+    public IEnumerable<AddOnDetail> AddOnsDetails { get; set; }
+    public class AddOnDetail
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
+    }
 }

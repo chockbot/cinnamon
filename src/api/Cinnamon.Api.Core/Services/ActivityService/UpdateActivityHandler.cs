@@ -16,12 +16,13 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     private readonly ISubCategoryData subCategoryData;
     private readonly IExperienceTypeData experienceTypeData;
     private readonly IScheduleData scheduleData;
+    private readonly IAddOnsData addOnsData;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly IGenerateActivityHandler generateActivityHandler;
 
     public UpdateActivityHandler(IActivityData activityData, IExperienceCategoryData categoryData,
         ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData, IScheduleData scheduleData,
-        IHttpContextAccessor httpContext, IGenerateActivityHandler generateActivityHandler)
+        IHttpContextAccessor httpContext, IGenerateActivityHandler generateActivityHandler, IAddOnsData addOnsData)
     {
         this.activityData = activityData;
         this.categoryData = categoryData;
@@ -30,10 +31,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
         this.scheduleData = scheduleData;
         this.httpContext = httpContext;
         this.generateActivityHandler = generateActivityHandler;
-
-        this.htmlSanitizer = new 
+        this.addOnsData = addOnsData;
+        this.htmlSanitizer = new
             HtmlSanitizer(
-                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
+                allowedTags: new string[] { "p", "strong", "em", "ul", "ol", "li", "br" });
     }
 
     public AppResult<UpdateActivityResult> Execute(UpdateActivityArgs args)
@@ -74,8 +75,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             }
 
             // check activity if existed
-            var activity = args.IsAdmin.GetValueOrDefault() ? await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true }) : 
-                                                            await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true, CustomerId = id });
+            var activity = args.IsAdmin.GetValueOrDefault() ? await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true, IncludeAddOns= true }) : 
+                                                            await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true, CustomerId = id, IncludeAddOns = true });
             if(!activity.Succeeded || activity.Result == null)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(activity.Message), activity.Message);
@@ -192,7 +193,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             if(updatedActivity.Succeeded && !updatedActivity.Result.IsSuccess)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(
-                    new ApplicationException(updatedActivity.Result.ErrorInfo?.Message), "An error occured in UpdateActivityHandler");
+                    new ApplicationException(updatedActivity.Result.ErrorInfo?.Message), "An error occurred in UpdateActivityHandler");
             }
             var updated = updatedActivity.Result.Result;
 
@@ -327,40 +328,138 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 }
             }
 
+            // update add-ons
+            if (args.AddOns is not null)
+            {
+                int order = 0;
+                var orderedAddOns = args.AddOns.OrderBy(a => a.Order).Select(a =>
+                {
+                    order += 1;
+                    a.Order = order;
+                    return a;
+                }).ToList();
+
+                var associatedAddOnsIds = activity.Result.Result.AddOns.Select(s => s.Id);
+                var newAddOns = orderedAddOns.Where(s => s.Id == 0);
+                var updatedAddOns = orderedAddOns.Where(s => associatedAddOnsIds.Contains(s.Id));
+
+                if (newAddOns.Count() > 0)
+                {
+                    // create new Add-Ons
+                    var createdAddOns = await addOnsData.CreateManyAddOns(new Framework.ApiCommand.ApiData.AddOns.Request.CreateAddOnsArgs
+                    {
+                        ActivityId = args.ActivityId,
+                        AddOns = newAddOns.Select(s =>
+                        {
+                            return new Framework.ApiCommand.ApiData.AddOns.Request.CreateAddOnsArgs.AddOn
+                            {
+                                Name = s.Name ?? string.Empty,
+                                Price = s.Price ?? 1,
+                                UnitPrice = s.UnitPrice ?? string.Empty,
+                                Description = s.Description ?? string.Empty,
+                                Order = s.Order
+                            };
+                        })
+                    });
+                    if (!createdAddOns.Succeeded || createdAddOns.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(createdAddOns.Message), createdAddOns.Message);
+                    }
+                    if (createdAddOns.Succeeded && !createdAddOns.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(createdAddOns.Result.ErrorInfo?.Message), "An error occurred in UpdateActivityHandler");
+                    }
+                }
+
+                if (updatedAddOns.Count() > 0)
+                {
+                    var updatedAddOnsRes = await addOnsData.UpdateManyAddOns(new Framework.ApiCommand.ApiData.AddOns.Request.UpdateAddOnsArgs
+                    {
+                        AddOns = updatedAddOns.Select(s =>
+                        {
+                            return new Framework.ApiCommand.ApiData.AddOns.Request.UpdateAddOnsArgs.UpdateAddOn
+                            {
+                                ActivityId = args.ActivityId,
+                                Id          = s.Id,  
+                                Name        = s.Name,
+                                Price       = s.Price,
+                                UnitPrice   = s.UnitPrice,
+                                Description = s.Description,
+                                Order       = s.Order
+                            };
+                        })
+                    });
+                    if (!updatedAddOnsRes.Succeeded || updatedAddOnsRes.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(updatedAddOnsRes.Message), updatedAddOnsRes.Message);
+                    }
+                    if (updatedAddOnsRes.Succeeded && !updatedAddOnsRes.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(updatedAddOnsRes.Result.ErrorInfo?.Message), "An error occurred in UpdateActivityHandler");
+                    }
+                }
+            }
+
+            //delete add-ons
+            if (args.DeletedAddOnsIds != null && args.DeletedAddOnsIds.Count() > 0) 
+            {
+                var associatedIds = activity.Result.Result.AddOns.Select(s => s.Id);
+                var idsMustDelete = args.DeletedAddOnsIds.Where(i => i > 0 && associatedIds.Contains(i));
+
+                if (idsMustDelete.Count() > 0)
+                {
+                    var deletedAddOns = await addOnsData.DeleteManyAddOns(new Framework.ApiCommand.ApiData.AddOns.Request.DeleteAddOnsArgs
+                    {
+                        AddOnsId = idsMustDelete
+                    });
+                    if (!deletedAddOns.Succeeded || deletedAddOns.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(deletedAddOns.Message), deletedAddOns.Message);
+                    }
+                    if (deletedAddOns.Succeeded && !deletedAddOns.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(deletedAddOns.Result.ErrorInfo?.Message), "An error occurred in UpdateActivityHandler");
+                    }
+                }
+            }
+
             return AppResult<UpdateActivityResult>.CreateSucceeded(new UpdateActivityResult {
-                ActivityId = updated.Id,
-                ActivityLevel = updated.ActivityLevel,
-                AdditionalRequirements = updated.AdditionalRequirements,
-                Address1 = updated.Address1,
-                Address2 = updated.Address2,
-                CanAdultsJoin = updated.CanAdultsJoin,
-                City = updated.City,
-                Subdivision = updated.Subdivision,
-                Region= updated.Region,
-                Barangay= updated.Barangay,
-                PostalCode= updated.PostalCode,
-                CustomerBringWithThem = updated.CustomerBringWithThem,
-                Description = updated.Description,
-                District = updated.District,
-                ExperienceCategoryId = updated.ExperienceCategoryId,
-                ExperienceTypeId = updated.ExperienceTypeId,
-                IsPublished = updated.IsPublished,
-                MinimumAge = updated.MinimumAge,
-                Price = updated.Price,
-                Remarks = updated.Remarks,
-                SearchTags = updated.SearchTags,
-                SkillLevel = updated.SkillLevel,
+                ActivityId              = updated.Id,
+                ActivityLevel           = updated.ActivityLevel,
+                AdditionalRequirements  = updated.AdditionalRequirements,
+                Address1                = updated.Address1,
+                Address2                = updated.Address2,
+                CanAdultsJoin           = updated.CanAdultsJoin,
+                City                    = updated.City,
+                Subdivision             = updated.Subdivision,
+                Region                  = updated.Region,
+                Barangay                = updated.Barangay,
+                PostalCode              = updated.PostalCode,
+                CustomerBringWithThem   = updated.CustomerBringWithThem,
+                Description             = updated.Description,
+                District                = updated.District,
+                ExperienceCategoryId    = updated.ExperienceCategoryId,
+                ExperienceTypeId        = updated.ExperienceTypeId,
+                IsPublished             = updated.IsPublished,
+                MinimumAge              = updated.MinimumAge,
+                Price                   = updated.Price,
+                Remarks                 = updated.Remarks,
+                SearchTags              = updated.SearchTags,
+                SkillLevel              = updated.SkillLevel,
                 SpecificsYouWillProvide = updated.SpecificsYouWillProvide,
-                SubCategoryId = updated.SubCategoryId,
-                Title = updated.Title,
-                Handler = updated.Handler,
-                Status = updated.Status,
-                ClassPolicies = updated.ClassPolicies
+                SubCategoryId           = updated.SubCategoryId,
+                Title                   = updated.Title,
+                Handler                 = updated.Handler,
+                Status                  = updated.Status,
+                ClassPolicies           = updated.ClassPolicies
             }, "Successfully update activity details");
         }
         catch (Exception ex)
         {
-            return AppResult<UpdateActivityResult>.CreateFailed(ex, "An error occured in UpdateActivityHandler");
+            return AppResult<UpdateActivityResult>.CreateFailed(ex, "An error occurred in UpdateActivityHandler");
         }
     }
 

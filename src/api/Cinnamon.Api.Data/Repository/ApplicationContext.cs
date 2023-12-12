@@ -306,6 +306,10 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<TokenGenerated>()
             .HasIndex("Guid","Token");
+
+        //AddOns
+        modelBuilder.Entity<AddOns>().HasIndex(o => o.Id);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

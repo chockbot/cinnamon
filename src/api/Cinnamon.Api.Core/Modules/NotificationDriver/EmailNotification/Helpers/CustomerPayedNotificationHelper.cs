@@ -9,11 +9,13 @@ public class CustomerPayedNotificationHelper
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
         string makerEmail, string coachNumber, decimal providerFee, decimal appliedCredits, bool isInclusivePayment,
-        decimal discountAmount)
+        decimal discountAmount, decimal addOnsAmount, IEnumerable<AddOnDetails> addOnDetails)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
+        string addOnsDetails = string.Empty;
+        string withstring = string.Empty;
 
         foreach(var item in members)
         {
@@ -26,7 +28,18 @@ public class CustomerPayedNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
-
+        foreach(var item in addOnDetails)
+        {
+            if (string.IsNullOrEmpty(addOnsDetails))
+            {
+                addOnsDetails += item.AddOnName;
+            }
+            else
+            {
+                addOnsDetails += $", {item.AddOnName}";
+            }
+        }
+        withstring = (addOnDetails.Count() != 0) ? "With " : string.Empty;
         string paymentProviderHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
         
@@ -158,7 +171,10 @@ public class CustomerPayedNotificationHelper
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
                     <div class='purchased-details' style='padding: 2rem 2rem'>
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
-                        <b style='text-transform: capitalize'>{experienceName}</b>
+                            <b style='text-transform: capitalize'>{experienceName}</b>
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                            <span style='color: #343d4c; text-transform: capitalize>{withstring}{addOnsDetails}</span>
                         </p>
                         <table style='width: 100%'>
                         <tbody>
@@ -219,18 +235,32 @@ public class CustomerPayedNotificationHelper
                             </td>
                             </tr>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Amount: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{amount.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Amount: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: uppercase'
+                                        >{amount.ToString("#,##0.00")}</span
+                                    >
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Add-ons: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: uppercase'
+                                        >{addOnsAmount.ToString("#,##0.00")}</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
                             {paymentProviderHtmlString}
                             {serviceFeeHtmlString}
@@ -272,7 +302,7 @@ public class CustomerPayedNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {GetTotalPurchase(amount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, addOnsAmount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -302,14 +332,15 @@ public class CustomerPayedNotificationHelper
             ";
     }
 
+
     private string GetCreditString(decimal appliedCredits)
     {
         return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
     }
 
-    private decimal GetTotalPurchase(decimal amount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
+    private decimal GetTotalPurchase(decimal amount,decimal addOnsFee, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
     {
-        var result = amount + serviceFee + providerFee - discountAmount - appliedCredits;
+        var result = amount + addOnsFee + serviceFee + providerFee - discountAmount - appliedCredits;
         result = result < 0 ? 0 : result;
         return result;
     }
