@@ -47,10 +47,7 @@
                         <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
                         @if(Model.PurchaseOrder.AddOnDetails.Count!=0)
                         {
-                            foreach (var addOn in Model.PurchaseOrder.AddOnDetails)
-                            {
-                                <p class="text-capitalize mb-0 mt-2">With @addOn.Name</p>
-                            }
+                            <p class="text-capitalize mb-0 mt-2">@withstring@addOnsDetails</p>
                         }
                         <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
                         <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
@@ -178,6 +175,9 @@
 
     private bool IsInclusivePayment {get; set;}
 
+    private string addOnsDetails { get; set; } = string.Empty;
+
+    private string withstring { get; set; } = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -280,6 +280,18 @@
         };
 
         IsInclusivePayment = purchaseOrder.IsInclusivePayment;
+        foreach (var item in Model.PurchaseOrder.AddOnDetails)
+        {
+            if (string.IsNullOrEmpty(addOnsDetails))
+            {
+                addOnsDetails += item.Name;
+            }
+            else
+            {
+                addOnsDetails += $", {item.Name}";
+            }
+        }
+        withstring = (Model.PurchaseOrder.AddOnDetails.Count() != 0) ? "With " : string.Empty;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

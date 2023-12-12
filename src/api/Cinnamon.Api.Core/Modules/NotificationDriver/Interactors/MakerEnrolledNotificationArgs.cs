@@ -19,6 +19,7 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public decimal AppliedCredits {get; set;}
     public bool IsInclusivePayment {get; set;}
     public decimal DiscountAmount {get; set;}
+    public decimal AddOnsAmount { get; set; }
 
     public class IncludedStudents
     {

@@ -271,7 +271,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             if(overallTotal == 0)
             {
                 var finishTransaction = await finishTransactionHandler.ExecuteAsync(new FinishTransactionArgs {
-                    TransactionId = result.Result.Result.Id
+                    TransactionId = result.Result.Result.Id,
+                    AddOnsAmount = args.AddOnsAmount
                 });
                 if(!finishTransaction.Succeeded || finishTransaction.Result == null)
                 {
