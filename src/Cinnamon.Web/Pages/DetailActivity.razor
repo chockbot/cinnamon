@@ -1473,13 +1473,18 @@
         {
             if(isAuthenticated)
             {
-               List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.IsSelected == true).ToList();
-               List<int> selectedIds = selectedAddOns.Select(a => a.Id).ToList();
-               
-               // Converting the list of IDs to a comma-separated string
+                List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.IsSelected == true).ToList();
+                List<int> selectedIds = selectedAddOns.Select(a => a.Id).ToList();
+                // Converting the list of IDs to a comma-separated string
                 SelectedAddOnIds = string.Join("&", selectedIds);
-
-                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{SelectedAddOnIds}/?enrollees={EnrolleeCount}");
+                if (selectedIds.Count() != 0)
+                {
+                     NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{SelectedAddOnIds}/?enrollees={EnrolleeCount}");
+                }
+                else
+                {
+                    NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
+                }
             }
             else
             {
