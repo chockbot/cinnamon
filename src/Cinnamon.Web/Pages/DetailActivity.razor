@@ -734,7 +734,9 @@
                                         <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                     </Column>
                                 </Row>
-                                <Row class="color-grey-100 font-16 mt-2">
+                                @if (activity.AddOns.Count != 0)
+                                {
+                                    <Row class="color-grey-100 font-16 mt-2">
                                         <Column ColumnSize="ColumnSize.Is7">
                                             <p class="m-0">Add-Ons</p>
                                         </Column>
@@ -742,6 +744,7 @@
                                             <p class="text-end m-0">₱ @AddOnsTotal.ToString("#,##0.00")</p>
                                         </Column>
                                     </Row>
+                                }
                                 @if(!IsInclusivePricing)
                                 {
                                     <Row class="color-grey-100 font-16 mt-2">
@@ -897,14 +900,17 @@
                                 <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                             </Column>
                         </Row>
-                        <Row class="color-grey-100 font-16 mt-2">
-                            <Column ColumnSize="ColumnSize.Is7">
-                                <p class="m-0">Add-ons</p>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is5">
-                                <p class="text-end m-0">₱ @AddOnsTotal.ToString("#,##0.00")</p>
-                            </Column>
-                        </Row>
+                        @if(activity.AddOns.Count != 0)
+                        {
+                            <Row class="color-grey-100 font-16 mt-2">
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <p class="m-0">Add-ons</p>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <p class="text-end m-0">₱ @AddOnsTotal.ToString("#,##0.00")</p>
+                                </Column>
+                            </Row>
+                        }
                         @if(!IsInclusivePricing)
                         {
                             <Row class="color-grey-100 font-16 mt-2">

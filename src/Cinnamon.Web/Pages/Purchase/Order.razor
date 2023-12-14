@@ -86,14 +86,17 @@
                                         <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <p class="text-capitalize mb-0 mt-2">Add-ons: </p>
-                                    </td>
-                                    <td class="text-end">
-                                        <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.AddOnsAmount.ToString("#,##0.00")</p>
-                                    </td>
-                                </tr>
+                                @if (Model.PurchaseOrder.AddOnDetails.Count != 0)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="text-capitalize mb-0 mt-2">Add-ons: </p>
+                                        </td>
+                                        <td class="text-end">
+                                            <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.AddOnsAmount.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                }
                                 @if(!IsInclusivePayment)
                                 {
                                     <tr>

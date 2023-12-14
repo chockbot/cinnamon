@@ -372,6 +372,8 @@
                                                 ₱ @(GetTotalPerHeadPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
+                                        @if (Model.Activity.AddOns.Count != 0)
+                                        {
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
                                                 Add-Ons
@@ -380,6 +382,7 @@
                                                 ₱ @(GetAddOnsTotal.ToString("#,##0.00"))
                                             </div>
                                         </div>
+                                        }
                                         @if(!IsInclusivePricing)
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
@@ -447,7 +450,7 @@
                                             </div>
                                             <div>
                                                 <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
-                                                    @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                                    @(GetAppliedCoupon > 0 ? "-" : "") ₱ @(GetAppliedCoupon.ToString("#,##0.00"))
                                                 </span>
                                             </div>
                                         </div>
