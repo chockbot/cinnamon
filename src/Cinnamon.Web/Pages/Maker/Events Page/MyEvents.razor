@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Framework.Enums
 @using Cinnamon.Web.Models.Ote
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
@@ -20,9 +21,90 @@
 <SeoMeta Title="Events" Subject="Dashboard" Url="/maker/dashboard/events" />
 
 
-<div class="maker-events-wrapper">
+<div class="maker-events-wrapper pb-5">
     <div class="header">
         <p class="title">My Events</p>
+    </div>
+
+    <p class="font-20 color-black-100 font-weight-700">Today</p>
+    <div class="events-section">
+        <div class="event-wrapper">
+            @if (isLoading == true)
+            {
+                for (int x = 0; x < 2; x++)
+                {
+                    <div class="event-details-content">
+                        <div class="event-content d-flex">
+                            <img class="event-image skeleton" />
+                            <div class="event-details">
+                                <p class="event-title skeleton">Title</p>
+                                <p class="event-schedule skeleton">30 March 2023 | 10:00 AM</p>
+                                <p class="event-location skeleton">Philippine Arena</p>
+                                <button class="view-details skeleton">View Details</button>
+                            </div>
+                        </div>
+                        <div class="ticket-details">
+                            <p class="ticket-slots skeleton">Slots: 60</p>
+                            <p class="ticket-sold skeleton">Sold: 20</p>
+                            <p class="ticket-available skeleton">Available: 40</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @foreach (var item in oteActivities.Where(e => e.ScheduleFrom.Date == DateTime.Now.Date))
+                {
+                    <div @key="item" class="event-details-content">
+                        <div class="event-content d-flex">
+                            <img class="event-image" src="@item.EventImage" />
+                            <div class="event-details">
+                                <p class="event-title">@item.EventName</p>
+                                <p class="event-schedule">@item.ScheduleFrom.ToString("dd MMMM yyyy") | @item.ScheduleFrom.ToString("hh:mm tt")</p>
+                                @if(item.ExperienceTypeId == 2)
+                                {
+                                    <p class="event-location">
+                                        Online
+                                    </p>
+                                }
+                                else 
+                                {
+                                    @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                                    {
+                                        <p class="event-location">
+                                            @item.PinnedLocation
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="event-location">
+                                            @item.CityName, @item.RegionName
+                                        </p>
+                                    }
+                                }
+                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <p class="font-20 color-black-100 font-weight-700 mt-5">Upcoming</p>
+    <div class="mb-4 d-flex">
+        <span class="d-inline-flex align-items-center cursor-pointer prevent-select me-3" @onclick="() => thisWeek = !thisWeek">
+            <img class="me-1" src='@(thisWeek ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+            <span class="font-16 color-black-100">
+                This Week
+            </span>
+        </span>
+        <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => thisWeek = !thisWeek">
+            <img class="me-1" src='@(!thisWeek ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+            <span class="font-16 color-black-100">
+                This Month
+            </span>
+        </span>
     </div>
     <div class="events-section">
         <div class="event-wrapper">
@@ -50,39 +132,43 @@
             }
             else
             {
-                @foreach (var item in oteActivities)
+                @foreach (var item in FilteredWeekMonthOte)
                 {
-                    <div class="event-details-content">
+                    <div @key="item" class="event-details-content">
                         <div class="event-content d-flex">
                             <img class="event-image" src="@item.EventImage" />
                             <div class="event-details">
                                 <p class="event-title">@item.EventName</p>
                                 <p class="event-schedule">@item.ScheduleFrom.ToString("dd MMMM yyyy") | @item.ScheduleFrom.ToString("hh:mm tt")</p>
-                                @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                                @if(item.ExperienceTypeId == 2)
                                 {
                                     <p class="event-location">
-                                        @item.PinnedLocation
+                                        Online
                                     </p>
                                 }
-                                else
+                                else 
                                 {
-                                    <p class="event-location">
-                                        @item.CityName, @item.RegionName
-                                    </p>
+                                    @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                                    {
+                                        <p class="event-location">
+                                            @item.PinnedLocation
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="event-location">
+                                            @item.CityName, @item.RegionName
+                                        </p>
+                                    }
                                 }
-                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(@item.Handler))">View Details</button>
+                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
                             </div>
-                        </div>
-                        <div class="ticket-details">
-                            <p class="ticket-slots">Slots: @item.Slots</p>
-                            <p class="ticket-sold">Sold: @item.Sold</p>
-                            <p class="ticket-available">Available: @item.Available</p>
                         </div>
                     </div>
                 }
             }
         </div>
-    </div>    
+    </div> 
 </div>
 @code {
     private List<Activity> activities = new List<Activity>();
@@ -91,6 +177,7 @@
     public CustomerProfile profile = new CustomerProfile();
     private string Token = string.Empty;
     private bool isLoading = true;
+    private bool thisWeek = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,40 +186,27 @@
             isLoading = true;
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             Token = user.FindFirstValue("Token");
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
-            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-            {
-                // an error occured
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
-            var customer = result.Result.Result;
-            profile.Id = customer.Id;
+
             //Get OTE Details
-            var resultOTE = await dashboardApiHandler.GetOTEByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByProviderArgs
-            {
-                Id = profile.Id
-            }, Token);
+            var resultOTE = await activityApiHandler.GetOtePerDay(Token);
             if (resultOTE.Succeeded && resultOTE.Result != null && resultOTE.Result.IsSuccess)
             {
                 oteActivities = resultOTE.Result.Result.Select(a =>
                 {
                     return new OteActivity
                     {
-                        Id               = a.Id,
+                        Id               = a.ActivityId,
                         ExperienceTypeId = a.ExperienceTypeId,
-                        EventName        = a.EventName,
+                        EventName        = a.Title,
                         Description      = a.Description,
                         Handler          = a.Handler,
                         CityName         = a.CityName,
                         RegionName       = a.RegionName,
                         PinnedLocation   = a.PinnedLocation,
                         EventImage       = a.EventImage,
-                        ScheduleFrom     = a.ScheduleFrom,
-                        ScheduleTo       = a.ScheduleTo,
-                        Slots            = a.Slots,
-                        Sold             = a.Sold,
-                        Available        = a.Available
+                        ScheduleFrom     = a.DateStart,
+                        ScheduleTo       = a.DateEnd,
+                        OteDateId        = a.DateId
                     };
                 }).ToList();
             }
@@ -143,8 +217,32 @@
             throw ex;
         }
     }
-    private void NavigateToEventDetails(string handler)
+
+    private void NavigateToEventDetails(string handler, int selectedId)
     {
-        NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}");
+        NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}/?date={selectedId}");
+    }
+
+    private IEnumerable<OteActivity> FilteredWeekMonthOte
+    {
+        get 
+        {
+            var result = Enumerable.Empty<OteActivity>();
+            
+            var week = DateTime.Now.Date.AddDays(7);
+            if(thisWeek)
+            {
+                result = oteActivities.Where(e => e.ScheduleFrom.Date >= DateTime.Now.Date && e.ScheduleFrom.Date <= week);
+            }
+            else 
+            {
+                var firstDayOfMonth = DateTime.Now.Date.FirstDayOfMonth();
+                var lastDayOfMonth = DateTime.Now.Date.LastDayOfMonth();
+
+                result = oteActivities.Where(e => e.ScheduleFrom.Date >= firstDayOfMonth && e.ScheduleTo.Date <= lastDayOfMonth);
+            }
+
+            return result;
+        }
     }
 }
