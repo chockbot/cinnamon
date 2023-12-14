@@ -544,4 +544,77 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(ex, "An error occured when trying to get customer ote");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId)
+    {
+        try
+        {
+            string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
+
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ad.\"PinnedLocation\", " +
+                               "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", " +
+                               "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
+                               "( " +
+                                   "SELECT \"ImageLocation\" " +
+                                   "FROM public.\"ActivityImages\" " +
+                                   "WHERE \"ActivityId\" = ac.\"Id\" " +
+                                   "ORDER BY \"Id\" LIMIT 1 " +
+                               ") \"EventImage\" " +
+                           "from public.\"Activities\" ac " +
+                           "join public.\"ActivityAddress\" ad " +
+                               "on ac.\"Id\" = ad.\"ActivityId\" " +
+                           "join public.\"OteSchedules\" os " +
+                               "on ac.\"Id\" = os.\"ActivityId\" " +
+                           "join public.\"OteDates\" od " +
+                               "on os.\"Id\" = od.\"OteScheduleId\" " +
+                           "where ac.\"ExperienceCreationTypeId\" = 3 " + customerIdQuery +
+                           "order by od.\"Date\" ";
+
+            IList<OteActivityPerDateDTO> listResult = new List<OteActivityPerDateDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if(providerId is not null)
+                {
+                    var customerParameter = new NpgsqlParameter("providerId", providerId);
+                    command.Parameters.Add(customerParameter);
+                }
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new OteActivityPerDateDTO {
+                            ActivityId = Convert.ToInt32(item["Id"]),
+                            CityName = item["CityName"].ToString() ?? string.Empty,
+                            Date = Convert.ToDateTime(item["Date"]),
+                            DateEnd = Convert.ToDateTime(item["DateEnd"]),
+                            DateId = Convert.ToInt32(item["DateId"]),
+                            DateStart = Convert.ToDateTime(item["DateStart"]),
+                            Description = item["Description"].ToString() ?? string.Empty,
+                            EventImage = item["EventImage"].ToString() ?? string.Empty,
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+                            RegionName = item["RegionName"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateSucceeded(listResult, "Successfully get customer ote per date");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting ote per date");
+        }
+    }
 }

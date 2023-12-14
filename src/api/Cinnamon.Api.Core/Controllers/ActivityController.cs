@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -68,6 +69,7 @@ public class ActivityController : ControllerBase
     private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
     private readonly ICustomerOteHandler customerOteHandler;
     private readonly IOteVerificationHandler oteVerificationHandler;
+    private readonly IGetOtePerDayHandler getOtePerDayHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -90,7 +92,7 @@ public class ActivityController : ControllerBase
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler,
         IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper, 
         IOteTicketDetailsHandler oteTicketDetailsHandler, ICustomerOteHandler customerOteHandler, 
-        IOteVerificationHandler oteVerificationHandler)
+        IOteVerificationHandler oteVerificationHandler, IGetOtePerDayHandler getOtePerDayHandler)
     {
         _logger = logger;
 
@@ -141,6 +143,7 @@ public class ActivityController : ControllerBase
         this.oteTicketDetailsHandler = oteTicketDetailsHandler;
         this.customerOteHandler = customerOteHandler;
         this.oteVerificationHandler = oteVerificationHandler;
+        this.getOtePerDayHandler = getOtePerDayHandler;
     }
 
     [Route("CreateActivity")]
@@ -2813,6 +2816,47 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOtePerDay")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OtePerDayResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOtePerDay()
+    {
+        try
+        {
+            var result = await getOtePerDayHandler.ExecuteAsync(new ());
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OtePerDayResult
+            {
+                IsSuccess = true,
+                Result = result.Result.OtePerDays.Select(e => {
+                    return new CoreDto.Activity.OtePerDayDTO {
+                        ActivityId = e.ActivityId,
+                        CityName = e.CityName,
+                        Date = e.Date,
+                        DateEnd = e.DateEnd,
+                        DateId = e.DateId,
+                        DateStart = e.DateStart,
+                        Description = e.Description,
+                        EventImage = e.EventImage,
+                        ExperienceTypeId = e.ExperienceTypeId,
+                        Handler = e.Handler,
+                        PinnedLocation = e.PinnedLocation,
+                        RegionName = e.RegionName,
+                        Title = e.Title
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
