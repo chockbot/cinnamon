@@ -1920,4 +1920,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(ex, "An error occured when getting customet ote.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId)
+    {
+        try
+        {
+            var result = await dataStore.Activity.OtePerDate(providerId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateSucceeded(result.Result, "Successfully find customers ote per date");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting customer ote.");
+        }
+    }
 }
