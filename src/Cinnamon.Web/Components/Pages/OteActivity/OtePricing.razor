@@ -1,6 +1,7 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Framework.ValidationAttributes;
+@using Cinnamon.Framework.Extensions.String;
 @inject INotificationService NotificationService;
 @inject IJSRuntime JS;
 @implements IOteComponent;
@@ -138,7 +139,7 @@
                                 <FieldBody>
                                     <div class="d-flex">
                                         <NumericPicker ElementId="durationCount" class="text-center me-3 border-radius-10 m-border-radius-5" 
-                                            style="width: 90px;" Min="0" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
+                                            style="width: 90px;" Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
                                             TValue="int" @bind-Value="modelSchedule.DurationEvery">
                                         </NumericPicker>
                                         <Button Disabled class="bg-grey-200 px-4">
@@ -168,7 +169,7 @@
                         <div class="d-flex justify-content-center mt-4">
                             @foreach (var item in dayItems)
                             {
-                                <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => item.Selected = !item.Selected">@item.Day</span>   
+                                <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
                             }
                         </div>
                     }
@@ -185,7 +186,7 @@
                                                     <Radio class="checkbox-round cursor-pointer" ElementId="type-on-day" TValue="int" Value="1">On day</Radio>
                                                 </label>
                                                 <NumericPicker Disabled="modelSchedule.MonthSelection == 2" class="text-center ms-3 border-radius-10 m-border-radius-5" 
-                                                    style="width: 90px;" Min="0" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
+                                                    style="width: 90px;" Min="1" Max="31" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
                                                     TValue="int" @bind-Value="modelSchedule.OnDayDate">
                                                 </NumericPicker>
                                             </div>
@@ -229,6 +230,9 @@
                         </div>
                     }
                 }
+                <div class="text-center color-grey-100 mt-4">
+                    <p class="m-0 font-20">@ScheduleMessageInfo</p>
+                </div>
             </div>
         </Validations>
     </div>
@@ -507,13 +511,13 @@
     private Modal? modalFeeBreakdown {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
     private IList<DayItem> dayItems = new List<DayItem> {
-        new DayItem { Day = "S", Value = "SUN"},
-        new DayItem { Day = "M", Value = "MON"},
-        new DayItem { Day = "T", Value = "TUE", Selected = true},
-        new DayItem { Day = "W", Value = "WED", Selected = true},
-        new DayItem { Day = "T", Value = "THU", Selected = true},
-        new DayItem { Day = "F", Value = "FRI"},
-        new DayItem {Day = "S", Value = "SAT"}
+        new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
+        new DayItem { Day = "M", Value = "MON", DayString = "Monday"},
+        new DayItem { Day = "T", Value = "TUE", DayString = "Tuesday", Selected = true},
+        new DayItem { Day = "W", Value = "WED", DayString = "Wednesday", Selected = true},
+        new DayItem { Day = "T", Value = "THU", DayString = "Thursday", Selected = true},
+        new DayItem { Day = "F", Value = "FRI", DayString = "Friday"},
+        new DayItem {Day = "S", Value = "SAT", DayString = "Saturday"}
     };
 
     private async Task NextClick()
@@ -758,6 +762,91 @@
         return Task.CompletedTask;
     }
 
+    private string ScheduleMessageInfo 
+    {
+        get 
+        {
+            string durationStart = modelSchedule.DurationStart.ToString("MM/dd/yyyy");
+            string durationEnd = modelSchedule.DurationEnd.ToString("MM/dd/yyyy");
+
+            if(modelSchedule.Recurrences == "do-not-repeat")
+            {
+                return "Repeat only once.";
+            }
+
+            if(modelSchedule.Recurrences == "every-weekday")
+            {
+                if(modelSchedule.DurationEvery == 1)
+                {
+                    return $"Occurs every Monday through Friday until {durationEnd}.";
+                }
+
+                return $@"Occurs every {modelSchedule.DurationEvery} weeks on Monday, Tuesday, Wednesday, 
+                    Thursday and Friday starting {durationStart} until {durationEnd}";
+            }
+
+            if(modelSchedule.Recurrences == "daily")
+            {
+                if(modelSchedule.DurationEvery == 1)
+                {
+                    return $"Occurs every day starting {durationStart} until {durationEnd}";
+                }
+
+                return $"Occurs every {modelSchedule.DurationEvery} days starting {durationStart} until {durationEnd}";
+            }
+
+            if(modelSchedule.Recurrences == "weekly")
+            {
+                var days = dayItems.Where(d => d.Selected).Select(d => d.DayString);
+                string selectedDaysString = DayStrings(days);
+
+                if(modelSchedule.DurationEvery == 1)
+                {
+                    return $"Occurs every {selectedDaysString} starting {durationStart} until {durationEnd}";
+                }
+                
+                return $"Occurs every {modelSchedule.DurationEvery} weeks on {selectedDaysString} starting {durationStart} until {durationEnd}";
+            }
+
+            if(modelSchedule.Recurrences == "monthly")
+            {
+                string everyMonthString = modelSchedule.DurationEvery > 1 ? $"{modelSchedule.DurationEvery} months" : "month";
+
+                if(modelSchedule.MonthSelection == 1)
+                {
+                    return $"Occurs every {everyMonthString} on day {modelSchedule.OnDayDate} starting {durationStart} until {durationEnd}";
+                }
+
+                return $"Occurs every {everyMonthString} on the {modelSchedule.MonthRepeat} {modelSchedule.MonthDay.Capitalize()} starting {durationStart} until {durationEnd}";
+            }
+
+            return string.Empty;
+        }
+    }
+
+    private string DayStrings(IEnumerable<string> strings)
+    {
+        string dayString = string.Empty;
+        if(strings.Count() > 1)
+        {
+            dayString = string.Join(", ", strings.Take(strings.Count() -1));
+            dayString += " and " + strings.Last();
+        }
+        else 
+        {
+            dayString = strings.FirstOrDefault();
+        }
+
+        return dayString;
+    }
+
+    private Task OnWeeklyDaySelected(DayItem item)
+    {
+        if(dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
+        item.Selected = !item.Selected;
+        return Task.CompletedTask;
+    }
+
     public class ModelData
     {
         public DateTime DateFrom {get; set;}
@@ -929,6 +1018,7 @@
     {
         public string Day {get; set;}
         public string Value {get; set;}
+        public string DayString {get; set;}
         public bool Selected {get; set;}
     }
 }
