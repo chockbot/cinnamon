@@ -151,7 +151,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 CanAdultsJoin = args.CanAdultsJoin,
                 City = args.City,
                 Subdivision = args.Subdivision,
-                Region = args.Region,
+                Region = args.Region ?? string.Empty,
                 Barangay = args.Barangay,
                 PostalCode = args.PostalCode,
                 CustomerBringWithThem = args.CustomerBringWithThem == null ? args.CustomerBringWithThem : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),

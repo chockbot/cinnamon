@@ -504,7 +504,7 @@
         AppResult<GetAllCitiesResult> cities = new AppResult<GetAllCitiesResult>{};
         AppResult<GetAllBarangaysResult> barangays = new AppResult<GetAllBarangaysResult>();
 
-        if (activity.ExperienceTypeId == 1)
+        if (activity.ExperienceTypeId == 1 && !string.IsNullOrEmpty(activity.Region))
         {
             if (activity.Status == ActivityStatus.Submitted)
             {
@@ -956,35 +956,35 @@
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),
-                ClassPolicies = Model.Activity.ClassPolicies,
-                AdditionalRequirements = Model.Activity.AdditionalRequirements,
-                Address1 = Model.Activity.Address1,
-                Address2 = Model.Activity.Address2,
-                CanAdultsJoin = Model.Activity.CanAdultsJoin,
-                City = Model.Activity.City,
-                Subdivision = Model.Activity.Subdivision,
-                Region = Model.Activity.Region,
-                Barangay = Model.Activity.Barangay,
-                PostalCode = Model.Activity.PostalCode,
-                CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
-                Description = Model.Activity.Description,
-                District = Model.Activity.District,
-                ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
-                ExperienceTypeId = Model.Activity.ExperienceTypeId,
-                IsPublished = Model.Activity.IsPublished,
-                MinimumAge = Model.Activity.MinimumAge,
-                Price = Model.Activity.Price,
-                Remarks = Model.Activity.Remarks,
-                ScheduleIndicator = Model.Activity.ScheduleIndicator,
-                SearchTags = Model.Activity.SearchTags,
-                SkillLevel = Model.Activity.SkillLevel,
+                ClassPolicies           = Model.Activity.ClassPolicies,
+                AdditionalRequirements  = Model.Activity.AdditionalRequirements,
+                CanAdultsJoin           = Model.Activity.CanAdultsJoin,
+                Address1                = Model.Activity.Address1,
+                Address2                = Model.Activity.Address2,
+                Subdivision             = Model.Activity.Subdivision,
+                City                    = Model.Activity.City,
+                Region                  = Model.Activity.Region ?? string.Empty,
+                Barangay                = Model.Activity.Barangay,
+                PostalCode              = Model.Activity.PostalCode,
+                CustomerBringWithThem   = Model.Activity.CustomerBringWithThem,
+                Description             = Model.Activity.Description,
+                District                = Model.Activity.District,
+                ExperienceCategoryId    = Model.Activity.ExperienceCategoryId,
+                ExperienceTypeId        = Model.Activity.ExperienceTypeId,
+                IsPublished             = Model.Activity.IsPublished,
+                MinimumAge              = Model.Activity.MinimumAge,
+                Price                   = Model.Activity.Price,
+                Remarks                 = Model.Activity.Remarks,
+                ScheduleIndicator       = Model.Activity.ScheduleIndicator,
+                SearchTags              = Model.Activity.SearchTags,
+                SkillLevel              = Model.Activity.SkillLevel,
                 SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
-                SubCategoryId = Model.Activity.SubCategoryId,
-                Title = Model.Activity.Title,
-                ActivityId = Model.Activity.ActivityId,
-                DeletedScheduleIds = Model.DeletedScheduleIds,
-                PinnedLocation = Model.Activity.PinnedLocation,
-                Status = Enums.ActivityStatus.Submitted
+                SubCategoryId           = Model.Activity.SubCategoryId,
+                Title                   = Model.Activity.Title,
+                ActivityId              = Model.Activity.ActivityId,
+                DeletedScheduleIds      = Model.DeletedScheduleIds,
+                PinnedLocation          = Model.Activity.PinnedLocation,
+                Status                  = Enums.ActivityStatus.Submitted
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
