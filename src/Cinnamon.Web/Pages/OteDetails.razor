@@ -7,6 +7,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Components;
 @using Cinnamon.Web.Components.Common;
+@using Humanizer;
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
 @inject IAccountApiHandler accountApiHandler;
@@ -178,7 +179,7 @@
                                             <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
                                             <label class="ote-schedule me-1">Duration:</label>
                                             <label class="font-16 color-black-100">
-                                                  @String.Format("{0}Hour{1}", Duration.Hours, Duration.Hours == 1 ? "" : "s")
+                                                  @EventDurationString
                                             </label>
                                         </div>
                                     </Column>
@@ -584,7 +585,7 @@
             
             selectedDate = SelectedDates.FirstOrDefault();
 
-            Duration = (activity.ScheduleFrom - activity.ScheduleTo).Duration();
+            ViewAvailableDates();
 
             // select first ticket id
             /* if(activity.Pricings.Count() > 0)
@@ -865,9 +866,18 @@
             if(oteDate is not null)
             {
                 AvailablePriceList = activity.Pricings.Where(p => p.OteDateId == oteDate.Id);
+                Duration = (oteDate.DateEnd - oteDate.DateStart);
             }
         }
         return Task.CompletedTask;
+    }
+
+    private string EventDurationString 
+    {
+        get 
+        {
+            return TimeSpan.FromDays(Duration.TotalDays).Humanize();
+        }
     }
 
     private class TicketInfo
