@@ -505,7 +505,7 @@
         AppResult<GetAllCitiesResult> cities = new AppResult<GetAllCitiesResult>{};
         AppResult<GetAllBarangaysResult> barangays = new AppResult<GetAllBarangaysResult>();
 
-        if (activity.ExperienceTypeId == 1)
+        if (activity.ExperienceTypeId == 1 && !string.IsNullOrEmpty(activity.Region))
         {
             if (activity.Status == ActivityStatus.Submitted)
             {
