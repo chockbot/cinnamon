@@ -2,13 +2,13 @@
 
 <div class="calendar-wrapper">
     <div class="calendar-header d-flex align-items-center justify-content-between">
-        <div>
-            <img @onclick="PrevMonthClick" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
-        </div>
+        <Button Clicked="PrevMonthClick">
+            <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
+        </Button>
         <div class="text-center font-20 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM")</div>
-        <div>
-            <img @onclick="NextMonthClick" style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
-        </div>
+        <Button Clicked="NextMonthClick">
+            <img style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
+        </Button>
     </div>
     <div class="calendar-grid-container">
         <div class="grid-item header">sun</div>
