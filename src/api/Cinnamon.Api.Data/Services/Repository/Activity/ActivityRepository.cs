@@ -112,7 +112,7 @@ public class ActivityRepository : IActivityRepository
             var cityResult = new AppResult<City>();
             var barangayResult = new AppResult<Barangay>();
 
-            if (experienceTypeId == 1)
+            if (experienceTypeId == 1 && !string.IsNullOrEmpty(region))
             {
                 if (status == ActivityStatus.Submitted)
                 {
@@ -1161,7 +1161,7 @@ public class ActivityRepository : IActivityRepository
             var cityResult = new AppResult<City>();
             var barangayResult = new AppResult<Barangay>();
 
-            if (experienceTypeId == 1)
+            if (experienceTypeId == 1 && !string.IsNullOrEmpty(region))
             {
                 if (status == ActivityStatus.Submitted)
                 {
@@ -1220,7 +1220,12 @@ public class ActivityRepository : IActivityRepository
                     activityAddress.RegionName = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
                     activityAddress.BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
                 }
-               
+            }
+            else
+            {
+                activityAddress.CityName     = string.Empty;
+                activityAddress.RegionName   = string.Empty;
+                activityAddress.BarangayName = string.Empty;
             }
 
             activityAddress.Address1       = address1 ?? activityAddress.Address1;
