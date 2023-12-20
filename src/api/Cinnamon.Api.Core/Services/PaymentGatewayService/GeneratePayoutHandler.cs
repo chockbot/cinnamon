@@ -208,7 +208,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
             int totalOteTransaction = oteTransactions.Result.Result.Count();
             for(int i = 0; i < totalOteTransaction; i++)
             {
-                var transaction = inclusiveTransactions.Result.Result.ElementAt(i);
+                var transaction = oteTransactions.Result.Result.ElementAt(i);
                 if(transaction != null)
                 {
                     // get maker payout account and cache in memory
