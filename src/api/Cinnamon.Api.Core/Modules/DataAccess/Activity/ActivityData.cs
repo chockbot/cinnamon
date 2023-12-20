@@ -4,6 +4,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;
@@ -397,6 +399,48 @@ public class ActivityData: IActivityData
 		catch (Exception ex)
 		{
 			return AppResult<CustomerOteResult>.CreateFailed(ex, "An error occured when getting customer ote.");
+		}
+	}
+
+	public async Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("AddOn/DeleteManyAddOns")
+							.PostJsonAsync(args)
+							.ReceiveJson<DeleteAddOnsResult>();
+
+			return AppResult<DeleteAddOnsResult>.CreateSucceeded(result, "Successfully deleted add-ons");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<DeleteAddOnsResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DeleteAddOnsResult>.CreateFailed(ex, "An error occurred when deleting add-ons");
+		}
+	}
+
+	public async Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("AddOn/DeleteAddOn")
+							.PostJsonAsync(args)
+							.ReceiveJson<DeleteAddOnResult>();
+
+			return AppResult<DeleteAddOnResult>.CreateSucceeded(result, "Successfully deleted add-on");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<DeleteAddOnResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when deleting add-on");
 		}
 	}
 }
