@@ -221,35 +221,12 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                         }
                         cachedPayoutAccounts.Add(transaction.MakerId, accountRes.Result.Result);
                     }
+                    var account = cachedPayoutAccounts[transaction.MakerId];
 
-                    // get customer pricing and cached in memory
-                    if(!cachedCustomerPricing.ContainsKey(transaction.MakerId))
-                    {
-                        var customerPricingRes = await customerPricingData.GetCustomerPricingByCustomerId(transaction.MakerId);
-                        if(!customerPricingRes.Succeeded || customerPricingRes.Result == null || !customerPricingRes.Result.IsSuccess)
-                        {
-                            continue;
-                        }
-                        var cp = customerPricingRes.Result.Result;
-                        cachedCustomerPricing.Add(transaction.MakerId, 
-                            new CustomerPricing { IsManualPayment = cp.IsManualPayment, MakerId = cp.Id, Rate = cp.Rate });
-                    }
-                    var customerPricing = cachedCustomerPricing[transaction.MakerId];
-
-                    // skip manual disbursement
-                    if(!customerPricing.IsManualPayment)
-                    {
-                        // decimal amountToDeduct = 0;
-                        // var percentage = customerPricing.Rate / 100;
-                        // amountToDeduct = percentage * transaction.UnitPrice;
-
-                        // var totalAmount = transaction.UnitPrice - amountToDeduct;
-                        var account = cachedPayoutAccounts[transaction.MakerId];
-                        var amountToDisburse = transaction.TotalDisburseAmount;
+                    var amountToDisburse = transaction.TotalDisburseAmount;
                         
-                        generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
-                            account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
-                    }
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
+                        account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                 }
             }
 
