@@ -518,7 +518,7 @@
 </div>
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="accordion" id="activitySchedules">
-        @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew))
+        @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted))
         {
             var accordionId = $"panel-section{addOnModels.Id}";
             var accordionHeaderId = $"header-section{addOnModels.Id}";
@@ -544,12 +544,17 @@
                 <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
                     <div class="accordion-body">
                         <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(addOnModels)">
+                                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                </Button>
+                            </div>
                             <div class="col-12 col-lg-8 col-md-7 col-sm-12">
-                                <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                                <label for="title" class="form-control-label">Add Item/Service</label>
                                 <input class="form-control @RequiredCheck(addOnModels.Name)" id="schedule-name" required @bind="addOnModels.Name" />
                             </div>
                             <div class="col-12 col-lg-4 col-md-5 col-sm-12">
-                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <label for="title" class="form-control-label">Price</label>
                                 <input class="form-control unit-input @RequiredCheck(addOnModels.Price)" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
                             </div>
                         </div>
@@ -571,10 +576,13 @@
                         <label for="title" class="form-control-label label-top-margin">Price</label>
                         <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
                     </div>
+                    <div class="col-12 justify-content-start">
+                        <p class="example-add-on">Example: Uniform fee  - 1500</p>
+                    </div>
                 </div>
             }
             <div class="form-group">
-                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
+                <button id="btnAddOns" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
             </div>
         </div>
     </div>
@@ -597,6 +605,10 @@
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
 
     public string htmlString = Resources.App.ScheduleString;
+
+    public AddOn addOnToDelete = new AddOn();
+
+    private ConfirmDialog confirmDialogRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -737,7 +749,7 @@
     }
     private void CreateAddOns()
     {
-        foreach (var item in Model.Activity.AddOns)
+        foreach (var item in Model.Activity.AddOns.Where(a => !a.IsDeleted))
         {
             item.IsNew = false;
         }
@@ -756,6 +768,11 @@
             order = maxIdItem.Order;
         }
 
-        Model.Activity.AddOns.Add(new AddOn { Id = maxId + 1, Order = order + 1, IsNew = true });
+        Model.Activity.AddOns.Add(new AddOn { Id = maxId + 1, Order = order + 1, IsNew = true, IsDeleted = false});
+    }
+    private async Task DeleteClick(AddOn addOn)
+    {
+        Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsDeleted = true;
+        Model.Activity.AddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
     }
 }
