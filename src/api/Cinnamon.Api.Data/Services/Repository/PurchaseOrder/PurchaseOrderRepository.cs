@@ -4,6 +4,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 using System.Linq.Expressions;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 
 namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 
@@ -464,4 +465,22 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting purchase order");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetAllOteNeedToDisburse()
+	{
+		try
+		{
+			var result = await dataStore.PurchaseOrder.GetAllOteNeedToDisburse();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all ote's need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting ote's to disburse");
+		}
+	}
 }

@@ -244,4 +244,36 @@ public class PurchaseOrderController : ControllerBase
             return new JsonResult(new GetGrossSalesByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetOteNeedToDisburse")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteNeedToDisburseResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteNeedToDisburse()
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.GetAllOteNeedToDisburse();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOteNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetOteNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetOteNeedToDisburseResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
