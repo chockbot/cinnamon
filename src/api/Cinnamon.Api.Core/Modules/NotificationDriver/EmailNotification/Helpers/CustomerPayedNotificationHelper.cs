@@ -37,11 +37,11 @@ public class CustomerPayedNotificationHelper
             {
                 if (string.IsNullOrEmpty(addOnsString))
                 {
-                    addOnsString += item.AddOnName;
+                    addOnsString += $"{item.AddOnName}({item.AddOnCount})";
                 }
                 else
                 {
-                    addOnsString += $", {item.AddOnName}";
+                    addOnsString += $", {item.AddOnName}({item.AddOnCount})";
                 }
             }
         }

@@ -231,7 +231,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     return new
                     {
                         AddOnId = a.AddOnId,
-                        AddOnName = a.AddOnName
+                        AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount,
                     };
                 })
             };

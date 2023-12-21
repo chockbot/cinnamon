@@ -23,5 +23,6 @@ public class GetPurchaseOrderResult
     {
         public int AddOnId { get; set; }
         public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

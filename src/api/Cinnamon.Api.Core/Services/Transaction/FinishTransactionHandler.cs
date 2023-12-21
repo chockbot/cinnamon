@@ -150,6 +150,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 {
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.AddOnDetails {
                         AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
+
                     };
                 })
             });
@@ -185,6 +187,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.AddOnDetails
                     {
                         AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
                     };
                 })
             });
@@ -226,5 +229,6 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     {
         public int AddOnId { get; set; }
         public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

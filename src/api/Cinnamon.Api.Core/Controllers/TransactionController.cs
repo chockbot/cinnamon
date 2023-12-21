@@ -70,6 +70,7 @@ public class TransactionController : ControllerBase
                     return new Services.TransactionService.Interactors.PurchaseOrderArgs.AddOn {
                         AddOnId = s.AddOnId,
                         AddOnName = s.Name,
+                        AddOnCount = s.AddOnCount
                     };
                 })
             });
@@ -138,8 +139,9 @@ public class TransactionController : ControllerBase
                     {
                         return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO.AddOnDetail
                         {
-                            Id = s.AddOnId,
-                            Name = s.AddOnName
+                            Id         = s.AddOnId,
+                            Name       = s.AddOnName,
+                            AddOnCount = s.AddOnCount
                         };
                     }).ToList(),
                 }
