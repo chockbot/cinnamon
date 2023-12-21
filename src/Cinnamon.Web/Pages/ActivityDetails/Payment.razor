@@ -1241,8 +1241,6 @@
         try
         {
             var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
-            decimal addOnsTotal = Model.Activity.AddOns.Where(a => a.IsSelected == true).Sum(a => a.Price);
-
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
@@ -1271,7 +1269,7 @@
                     } : null,
                     IsCreditsApplied = Model.IsCreditApplied,
                     SelectedPeriod   = confirmationData.SelectedPeriod,
-                    AddOns           = addOnsTotal,
+                    AddOns = GetAddOnsTotal,
                     AddOnsDetails    = Model.Activity.AddOns.Where(a => a.AddOnCount != 0).Select(s => {
                         return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.AddOnsDetail
                         {
