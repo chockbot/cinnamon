@@ -1,4 +1,5 @@
 .user-flow-1 {
+  display: block;
   margin-bottom: 3rem;
 }
 
@@ -9,17 +10,34 @@ button:focus {
 .btn-close {
   margin-right: 0.5rem;
 }
+.user-flow-mobile{
+    display: none;
+}
 @media screen and (min-width: 768px) and (max-width: 1023px) {
-  .img-flow {
+    .img-flow {
     width: 100%;
     height: 100%;
     cursor: zoom-in;
+  }
+  .user-flow-mobile {
+      display: none;
+  }
+  .user-flow-1 {
+      display: block;
+      margin-bottom: 3rem;
   }
 }
 @media screen and (max-width: 767px) and (orientation: portrait) {
-  .img-flow {
-    width: 100%;
-    height: 100%;
-    cursor: zoom-in;
-  }
+    .user-flow-mobile {
+        display: block;
+        margin-bottom: 2rem;
+    }
+    .user-flow-1 {
+        display: none;
+    }
+    .img-flow {
+        width: 100%;
+        height: 100%;
+        cursor: zoom-in;
+    }
 }

@@ -16,9 +16,9 @@
                         <p class="mb-5 font-20 font-weight-700 color-black-100">
                             What’s gonna happen
                             <br>
-                            when availed the
+                            when someone
                             <br>
-                            ticket events?
+                            enrolls?
                         </p>
                         <div class="publish-read-more">
                             <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button" Clicked="userFlowModal.ShowModal">
@@ -32,7 +32,7 @@
                         <p class="mb-5 font-20 font-weight-700 color-black-100">
                             How will I get paid
                             <br>
-                            from this event?
+                            from my activity?
                         </p>
                         <div class="publish-read-more">
                             <Button class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button" Clicked="moneyFlowsModal.ShowModal">
@@ -47,7 +47,7 @@
                 <input type="hidden" value="@Activity.IsPublishedDescription" id="activity-is-published" />
                 <button class="check-button" type="button" @onclick=TogglePublishActivity>
                     <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span>Active</span>
+                    <span>Activate your activity now</span>
                 </button>
             </div>
             <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
@@ -80,8 +80,8 @@
         </div>
     </div>
 </section>
-<UserFlowModal @ref=userFlowModal Image="user-flow-1.webp"/>
-<UserFlowModal @ref=moneyFlowsModal Image="money-flows-1.webp"/>
+<UserFlowModal @ref=userFlowModal Image="user-flow-1.webp" MobileImage="user-flow-mobile.png"/>
+<UserFlowModal @ref=moneyFlowsModal Image="money-flows-1.webp" MobileImage="money-flow-mobile.png"/>
 
 @code
 {
