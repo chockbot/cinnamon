@@ -1,6 +1,7 @@
 ﻿@page "/Payment/{ActivityId:int}/{ScheduleId:int}"
 @page "/Payment/{ActivityId:int}/{ScheduleId:int}/{AddOnsPayLoad}"
 @layout LandingMainLayout
+@using Newtonsoft.Json;
 @using System.Security.Claims
 @using Cinnamon.Web.Enums;
 @using Cinnamon.Web.Models;
@@ -129,19 +130,27 @@
                             <br />
                             @if (Model.Activity.AddOns.Count != 0)
                             {
-                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
-                                <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
-                                    <div class="add-ons">
-                                        @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
-                                        {
-                                            <button class="addon-button" type="button" @onclick="() => SelectAddOns(addOn)" style='@($"background: {(addOn.IsSelected ? "#FFA942" : "#F3F6FCDE")}")'>
-                                                <p class="activity-title">@addOn.Name</p>
-                                            </button>
-                                        }
+                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-3">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
+                                @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
+                                {
+                                    <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
+                                        <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
+                                            <div class="w-100 p-2">@addOn.Name</div>
+                                            <div @onclick = "() =>SubtractAddOns(addOn)"
+                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                -
+                                            </div>
+                                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                                @addOn.AddOnCount
+                                            </div>
+                                            <div @onclick="() =>AddAddOns(addOn)"
+                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                +
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             }
-
                         </div>
                         <Divider class="my-4" />
                         <div>
@@ -724,12 +733,24 @@
 
         await FetchSelectedAcivityAndSchedule();
 
+        //Deserialized AddOn Payload
         if (AddOnsPayLoad != null)
         {
-            selectedIds = AddOnsPayLoad.Split('&').Select(int.Parse).ToList();
-        }
-        await GetSelectedAddOns(selectedIds);
+            var deserializedPayload = JsonConvert.DeserializeObject<PayLoadData>(AddOnsPayLoad);
+            foreach (var item in deserializedPayload.AddOnsDetails)
+            {
+                // Find the corresponding AddOn in Model.Activity.AddOns based on AddOnId
+                var matchingAddOn = Model.Activity.AddOns
+                    .Where(a => a.Id == item.AddOnId)
+                    .FirstOrDefault();
 
+                // Update the AddOnCount if a matching AddOn is found
+                if (matchingAddOn != null)
+                {
+                    matchingAddOn.AddOnCount = item.AddOnCount;
+                }
+            }
+        }
         await FetchMakerBadges();
 
         // payment options
@@ -1251,11 +1272,12 @@
                     IsCreditsApplied = Model.IsCreditApplied,
                     SelectedPeriod   = confirmationData.SelectedPeriod,
                     AddOns           = addOnsTotal,
-                    AddOnsDetails    = Model.Activity.AddOns.Where(a => a.IsSelected).Select(s => {
+                    AddOnsDetails    = Model.Activity.AddOns.Where(a => a.AddOnCount != 0).Select(s => {
                         return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.AddOnsDetail
                         {
-                            AddOnId = s.Id,
-                            Name = s.Name
+                            AddOnId    = s.Id,
+                            Name       = s.Name,
+                            AddOnCount = s.AddOnCount
                         };
                     })
                 }, Model.Token);
@@ -1335,14 +1357,14 @@
     {
         get
         {
-            var selectedAddOns = Model.Activity.AddOns.Where(addOn => addOn.IsSelected).ToList();
+            var selectedAddOns = Model.Activity.AddOns.Where(addOn => addOn.AddOnCount != 0).ToList();
 
             if (selectedAddOns == null || selectedAddOns.Count == 0)
             {
                 return 0;
             }
 
-            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price);
+            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price * addOn.AddOnCount);
             return totalAddOnPrice;
         }
     }
@@ -1649,26 +1671,25 @@
             return;
         }
     }
-
-    private async Task SelectAddOns(AddOn addOn)
+    private Task AddAddOns(AddOn addOn)
     {
-        addOn.IsSelected = !addOn.IsSelected;
-        if (addOn.IsSelected)
+        foreach (var existingAddOn in Model.Activity.AddOns.Where(a => a.Id == addOn.Id))
         {
-            Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = true;
+            existingAddOn.AddOnCount++;
         }
-        else
-        {
-            Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = false;
-        }
+        return Task.CompletedTask;
     }
 
-    private async Task GetSelectedAddOns(List<int> addOnsIds)
+    private Task SubtractAddOns(AddOn addOn)
     {
-        foreach(var id in addOnsIds)
+        foreach (var existingAddOn in Model.Activity.AddOns.Where(a => a.Id == addOn.Id))
         {
-            Model.Activity.AddOns.Where(a => a.Id == id).FirstOrDefault().IsSelected = true;
+            if (existingAddOn.AddOnCount > 0)
+                existingAddOn.AddOnCount--;
+            else
+                existingAddOn.AddOnCount = 0;
         }
+        return Task.CompletedTask;
     }
 
     private Task NavigateBack()
@@ -1710,5 +1731,14 @@
 
         public string SelectedPeriod { get; set; }
         public bool IsSubmitting { get; set; }
+    }
+    class PayLoadData
+    {
+        public IEnumerable<AddOnDetails> AddOnsDetails { get; set; }
+    }
+    class AddOnDetails
+    {
+        public int AddOnId { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

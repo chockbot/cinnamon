@@ -44,4 +44,6 @@ public class AddOn
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
     public bool IsDeleted { get; set; } = false;
+
+    public int AddOnCount { get; set; } = 0;
 }

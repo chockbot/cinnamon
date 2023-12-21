@@ -181,6 +181,7 @@
     private string addOnsDetails { get; set; } = string.Empty;
 
     private string withstring { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -263,8 +264,9 @@
                 {
                     return new Models.Entities.PurchaseOrder.AddOnDetail
                     {
-                        Id = s.Id,
-                        Name = s.Name
+                        Id    = s.Id,
+                        Name  = s.Name,
+                        Count = s.AddOnCount
                     };
                 }).ToList()
             },

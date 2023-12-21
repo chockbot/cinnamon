@@ -29,5 +29,6 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public class AddOnDetails
     {
         public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 }
