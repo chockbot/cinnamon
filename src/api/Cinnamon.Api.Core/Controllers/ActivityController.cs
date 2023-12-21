@@ -69,6 +69,8 @@ public class ActivityController : ControllerBase
     private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
     private readonly ICustomerOteHandler customerOteHandler;
     private readonly IOteVerificationHandler oteVerificationHandler;
+    private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
+    private readonly IDeleteAddOnHandler deleteAddOnHandler;
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -89,10 +91,10 @@ public class ActivityController : ControllerBase
         IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
         IRecommendedActivitiesHandler recommendedActivitiesHandler, IGetExperienceCreationTypeHandler getExperienceCreationTypeHandler,
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
-        IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler,
-        IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper, 
-        IOteTicketDetailsHandler oteTicketDetailsHandler, ICustomerOteHandler customerOteHandler, 
-        IOteVerificationHandler oteVerificationHandler, IGetOtePerDayHandler getOtePerDayHandler)
+        IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
+        IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, 
+        IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler,IGetOtePerDayHandler getOtePerDayHandler)
     {
         _logger = logger;
 
@@ -143,6 +145,8 @@ public class ActivityController : ControllerBase
         this.oteTicketDetailsHandler = oteTicketDetailsHandler;
         this.customerOteHandler = customerOteHandler;
         this.oteVerificationHandler = oteVerificationHandler;
+        this.deleteAddOnsHandler = deleteAddOnsHandler;
+        this.deleteAddOnHandler = deleteAddOnHandler;
         this.getOtePerDayHandler = getOtePerDayHandler;
     }
 
@@ -2857,6 +2861,65 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("DeleteAddOns")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteAddOnsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAddOnsById([FromBody] DeleteAddOnsArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteAddOnsHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteAddOnsArgs
+            {
+               AddOnIds = args.AddOnsIds
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteAddOnsResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteAddOnsResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteAddOnsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteAddOn")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteAddOnResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAddOnById([FromBody] DeleteAddOnArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteAddOnHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteAddOnArgs
+            {
+                AddOnId = args.AddOnId
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteAddOnResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

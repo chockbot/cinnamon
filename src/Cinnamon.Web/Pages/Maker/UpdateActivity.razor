@@ -1239,8 +1239,7 @@
         var result = new List<Models.Entities.AddOn>();
         if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
         {
-            bool isSingle = addOns.Count == 1;
-            foreach (var addOn in addOns)
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
             {
                 if (!(string.IsNullOrEmpty(addOn.Name) ||
                     addOn.Price <= 0 ||
@@ -1252,12 +1251,11 @@
         }
         else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
         {
-            foreach (var addOn in addOns)
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
             {
                 result.Add(addOn);
             }
         }
-
         return result;
     }
 

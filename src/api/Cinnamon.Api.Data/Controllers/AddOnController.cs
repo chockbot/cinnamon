@@ -226,5 +226,25 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new DeleteAddOnsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+        [Route("DeleteAddOn")]
+        [HttpPost]
+        [ProducesResponseType(typeof(DeleteAddOnResult), StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> DeleteAddOn([FromBody] DeleteAddOnArgs args)
+        {
+            try
+            {
+                var result = await _addOnsRepository.DeleteAddOn(args.AddOnId);
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new DeleteAddOnResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
     }
 }
