@@ -8,7 +8,7 @@
 
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
-        <li>Fill in required field</li>
+        <li>@ErrorMessage</li>
     </ul>
 </div>
 <div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
@@ -2157,11 +2157,11 @@
                                     </div>
                                     <div class="col-12 col-lg-8 col-md-7 col-sm-12">
                                         <label for="title" class="form-control-label">Add Item/Service</label>
-                                        <input class="form-control @RequiredCheck(addOnModels.Name)" id="schedule-name" required @bind="addOnModels.Name" />
+                                        <input class="form-control @RequiredCheck(addOnModels)" id="schedule-name" required @bind="addOnModels.Name" />
                                     </div>
                                     <div class="col-12 col-lg-4 col-md-5 col-sm-12">
                                         <label for="title" class="form-control-label">Price</label>
-                                        <input class="form-control unit-input @RequiredCheck(addOnModels.Price)" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
+                                        <input class="form-control unit-input @RequiredCheck(addOnModels)" type="number" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
                                     </div>
                                 </div>
                             </div>
@@ -2180,7 +2180,7 @@
                             </div>
                             <div class="col-12 col-lg-4 col-md-5 col-sm-12">
                                 <label for="title" class="form-control-label label-top-margin">Price</label>
-                                <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
+                            <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" type="number" placeholder="Price" required @bind="addOnsModel.Price" />
                             </div>
                             <div class="col-12 justify-content-start">
                                 <p class="example-add-on">Example: Uniform fee  - 1500</p>
@@ -2229,11 +2229,11 @@
                                 </div>
                                 <div class="col-12 col-lg-8 col-md-7 col-sm-12">
                                     <label for="title" class="form-control-label">Add Item/Service</label>
-                                    <input class="form-control @RequiredCheck(addOnModels.Name)" id="schedule-name" required @bind="addOnModels.Name" />
+                                    <input class="form-control @RequiredCheck(addOnModels)" id="schedule-name" required @bind="addOnModels.Name" />
                                 </div>
                                 <div class="col-12 col-lg-4 col-md-5 col-sm-12">
                                     <label for="title" class="form-control-label">Price</label>
-                                    <input class="form-control unit-input @RequiredCheck(addOnModels.Price)" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
+                                    <input class="form-control unit-input @RequiredCheck(addOnModels)" id="price-input" type="number" placeholder="Price" required @bind="addOnModels.Price" />
                                 </div>
                             </div>
                         </div>
@@ -2252,7 +2252,7 @@
                         </div>
                         <div class="col-12 col-lg-4 col-md-5 col-sm-12">
                             <label for="title" class="form-control-label label-top-margin">Price</label>
-                            <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
+                            <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" type="number" placeholder="Price" required @bind="addOnsModel.Price" />
                         </div>
                         <div class="col-12 justify-content-start">
                             <p class="example-add-on">Example: Uniform fee  - 1500</p>
@@ -2299,6 +2299,8 @@
     public AddOn addOnToDelete = new AddOn();
 
     private ConfirmDialog confirmDialogRef { get; set; }
+
+    private string ErrorMessage { get; set; } = "Fill in required field";
 
     DateTime? selectedDate = null;
 
@@ -2392,6 +2394,10 @@
         {
             return "invalid";
         }
+        if (!IsPositiveNumeric(addOn.Price))
+        {
+            return "invalid";
+        }
         return "";
     }
 
@@ -2444,14 +2450,32 @@
         {
             if (!addOn.IsNew)
             {
-                if ((string.IsNullOrEmpty(addOn.Name) ||
-                addOn.Price <= 0 ||
-                string.IsNullOrEmpty(addOn.UnitPrice))) return false;
+                if (string.IsNullOrEmpty(addOn.Name) || addOn.Price == 0 || string.IsNullOrEmpty(addOn.UnitPrice))
+                {
+                    ErrorMessage = "Fill in required field";
+                    return false;
+                }
+                
+                if (!IsPositiveNumeric(addOn.Price))
+                {
+                    ErrorMessage = "Invalid Input. Please enter a positive number only.";
+                    return false;
+                }
             }
             else
             {
                 if ((addOn.Name == null && addOn.Price != 0) || (addOn.Name != null && addOn.Price == 0))
-                return false;
+                {
+                    ErrorMessage = "Fill in required field";
+                    return false;
+                }
+
+                if (!IsPositiveNumeric(addOn.Price))
+                {
+                    ErrorMessage = "Invalid Input. Please enter a positive number only.";
+                    return false;
+                }
+
             }
         }
         return true;
@@ -2546,5 +2570,9 @@
                  existingAddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
             }
         }
+    }
+    private bool IsPositiveNumeric(decimal value)
+    {
+        return value >= -1;
     }
 }
