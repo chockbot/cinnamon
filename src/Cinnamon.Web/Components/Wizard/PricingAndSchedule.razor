@@ -730,8 +730,8 @@
             }
             else
             {
-                if ((!string.IsNullOrEmpty(addOn.Name) ||
-                addOn.Price != 0)) return false;
+                if ((addOn.Name == null && addOn.Price != 0) || (addOn.Name != null && addOn.Price == 0))
+                return false;
             }
         }
         return true;
