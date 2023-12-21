@@ -77,7 +77,7 @@ export function scrollToRequiredField(container) {
   setTimeout(function () {
     var fieldId = $(`${container} .invalid`).first().attr("id");
     var field = document.getElementById(fieldId);
-    var top = field.offsetTop - 120;
+    var top = field.offsetTop - 420;
     window.scrollTo(0, top);
   }, 200);
 }
