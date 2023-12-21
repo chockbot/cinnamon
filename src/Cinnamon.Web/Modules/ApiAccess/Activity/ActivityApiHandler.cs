@@ -1042,4 +1042,50 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OtePerDayResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
         }
     }
+
+    public async Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteAddOns")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteAddOnsResult>();
+
+            return AppResult<DeleteAddOnsResult>.CreateSucceeded(result, "Successfully called delete add-on api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteAddOnsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteAddOnsResult>.CreateFailed(ex, "An error occurred when calling delete add-on api");
+        }
+    }
+
+    public async Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteAddOn")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteAddOnResult>();
+
+            return AppResult<DeleteAddOnResult>.CreateSucceeded(result, "Successfully called delete add-on api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteAddOnResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when calling delete add-on api");
+        }
+    }
 }

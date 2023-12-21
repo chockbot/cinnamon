@@ -1,5 +1,5 @@
 ﻿namespace Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
 
-public class DeleteAddOnsResult : AbstractModel<bool>
+public class DeleteAddOnResult : AbstractModel<bool>
 {
 }

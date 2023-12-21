@@ -11,7 +11,7 @@
         <li>Fill in required field</li>
     </ul>
 </div>
-<div class="col-lg-12 d-flex justify-content-start col-sm-12 d-flex justify-content-center col-12 d-flex justify-content-start">
+<div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
     <label for="title" class="pricing-title">Pricing & Schedule</label>
 </div>
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
@@ -508,14 +508,17 @@
     </div>
 </div>
 <br />
-<div class="col-lg-12 d-flex justify-content-start col-sm-12 d-flex justify-content-center col-12 d-flex justify-content-start">
+<div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
     <label for="title" class="pricing-title">
         Add-ons
+    </label>
+    <label for="sub-title" class="addons-sub-title">
+        Elevate learning with carefully chosen extras whether materials or services designed to enhance the educational journey. These additions provide valuable support and resources, customizing your instructional experience for optimal learning."
     </label>
 </div>
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="accordion" id="activitySchedules">
-        @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew))
+        @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted))
         {
             var accordionId = $"panel-section{addOnModels.Id}";
             var accordionHeaderId = $"header-section{addOnModels.Id}";
@@ -541,12 +544,17 @@
                 <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
                     <div class="accordion-body">
                         <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(addOnModels)">
+                                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                </Button>
+                            </div>
                             <div class="col-12 col-lg-8 col-md-7 col-sm-12">
-                                <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                                <label for="title" class="form-control-label">Add Item/Service</label>
                                 <input class="form-control @RequiredCheck(addOnModels.Name)" id="schedule-name" required @bind="addOnModels.Name" />
                             </div>
                             <div class="col-12 col-lg-4 col-md-5 col-sm-12">
-                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <label for="title" class="form-control-label">Price</label>
                                 <input class="form-control unit-input @RequiredCheck(addOnModels.Price)" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
                             </div>
                         </div>
@@ -562,16 +570,19 @@
                 <div class="row">
                     <div class="col-12 col-lg-8 col-md-7 col-sm-12">
                         <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
-                        <input class="form-control @RequiredCheck(addOnsModel.Name)" id="schedule-name" required @bind="addOnsModel.Name" />
+                        <input class="form-control @RequiredCheck(addOnsModel)" id="schedule-name" required @bind="addOnsModel.Name" />
                     </div>
                     <div class="col-12 col-lg-4 col-md-5 col-sm-12">
                         <label for="title" class="form-control-label label-top-margin">Price</label>
-                        <input class="form-control unit-input @RequiredCheck(addOnsModel.Price)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
+                        <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" placeholder="Price" required @bind="addOnsModel.Price" />
+                    </div>
+                    <div class="col-12 justify-content-start">
+                        <p class="example-add-on">Example: Uniform fee  - 1500</p>
                     </div>
                 </div>
             }
             <div class="form-group">
-                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
+                <button id="btnAddOns" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
             </div>
         </div>
     </div>
@@ -594,6 +605,10 @@
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
 
     public string htmlString = Resources.App.ScheduleString;
+
+    public AddOn addOnToDelete = new AddOn();
+
+    private ConfirmDialog confirmDialogRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -631,6 +646,14 @@
         }
         return "";
     }
+    private string RequiredCheck(AddOn addOn)
+    {
+        if (addOn.Name != null && addOn.Price == 0 || addOn.Name == null && addOn.Price != 0)
+        {
+            return "invalid";
+        }
+        return "";
+    }
 
     private string RequiredCheck(int? value)
     {
@@ -653,7 +676,7 @@
 
     public bool IsAllFieldsValidated()
     {
-        if (!IsAllSchedulesValid()) return false;
+        if (!IsAllSchedulesValid() || !IsAddOnsValid()) return false;
         return true;
     }
 
@@ -694,6 +717,26 @@
         return true;
     }
 
+    private bool IsAddOnsValid()
+    {
+        Model.Activity.AddOns = Model.Activity.AddOns.Where(a => !a.IsDeleted).ToList();
+        foreach (var addOn in Model.Activity.AddOns)
+        {
+            if (!addOn.IsNew)
+            {
+                if ((string.IsNullOrEmpty(addOn.Name) ||
+                addOn.Price <= 0 ||
+                string.IsNullOrEmpty(addOn.UnitPrice))) return false;
+            }
+            else
+            {
+                if ((addOn.Name == null && addOn.Price != 0) || (addOn.Name != null && addOn.Price == 0))
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void CheckboxChanged(int val, ActivitySchedule schedule)
     {
         schedule.HasExpiration = val;
@@ -726,7 +769,7 @@
     }
     private void CreateAddOns()
     {
-        foreach (var item in Model.Activity.AddOns)
+        foreach (var item in Model.Activity.AddOns.Where(a => !a.IsDeleted))
         {
             item.IsNew = false;
         }
@@ -745,6 +788,11 @@
             order = maxIdItem.Order;
         }
 
-        Model.Activity.AddOns.Add(new AddOn { Id = maxId + 1, Order = order + 1, IsNew = true });
+        Model.Activity.AddOns.Add(new AddOn { Id = maxId + 1, Order = order + 1, IsNew = true, IsDeleted = false});
+    }
+    private void DeleteClick(AddOn addOn)
+    {
+        Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsDeleted = true;
+        Model.Activity.AddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
     }
 }

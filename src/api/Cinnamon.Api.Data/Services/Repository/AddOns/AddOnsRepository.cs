@@ -1,7 +1,6 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.AddOns;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
 using System.Linq.Expressions;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
@@ -327,6 +326,30 @@ public class AddOnsRepository: IAddOnsRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<AddOnsDTO>>.CreateFailed(ex, "An error occurred in updating add-ons");
+        }
+    }
+    public async Task<AppResult<bool>> DeleteAddOn(int addonId)
+    {
+        try
+        {
+            var addon = await _dataStore.AddOns.GetByIdAsync(addonId);
+            if (addon.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No add-on to delete"), "No add-on to delete");
+            }
+
+            var result = await _dataStore.AddOns.Remove(addon.Result);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted add-ons");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured in deleting many add-ons");
         }
     }
 }

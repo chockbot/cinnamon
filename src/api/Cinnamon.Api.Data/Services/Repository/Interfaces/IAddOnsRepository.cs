@@ -14,4 +14,5 @@ public interface IAddOnsRepository
     Task<AppResult<IEnumerable<AddOnsDTO>>> CreateAddOns(int ActivityId, IEnumerable<AddOnsDTO> addons);
     Task<AppResult<IEnumerable<AddOnsDTO>>> UpdateAddOns(IEnumerable<AddOnsDTO> addons);
     Task<AppResult<bool>> DeleteManyAddOns(IEnumerable<int> addonIds);
+    Task<AppResult<bool>> DeleteAddOn(int addOnId);
 }
