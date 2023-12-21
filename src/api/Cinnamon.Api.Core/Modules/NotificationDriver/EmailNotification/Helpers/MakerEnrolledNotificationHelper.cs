@@ -15,7 +15,7 @@ public class MakerEnrolledNotificationHelper
         string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
         string addOnsString = string.Empty;
-        string withString = string.Empty;
+        string addOnTitle = string.Empty; 
 
         foreach (var item in students)
         {
@@ -28,18 +28,27 @@ public class MakerEnrolledNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
-        foreach (var item in addOnsDetails)
+        if (addOnsDetails.Count() != 0)
         {
-            if (string.IsNullOrEmpty(addOnsString))
+            addOnTitle = "Add-ons: ";
+            foreach (var item in addOnsDetails)
             {
-                addOnsString += item.AddOnName;
-            }
-            else
-            {
-                addOnsString += $", {item.AddOnName}";
+                if (string.IsNullOrEmpty(addOnsString))
+                {
+                    addOnsString += item.AddOnName;
+                }
+                else
+                {
+                    addOnsString += $", {item.AddOnName}";
+                }
             }
         }
-        withString = (addOnsDetails.Count() != 0) ? "With " : string.Empty;
+        else
+        {
+            addOnTitle = string.Empty;
+            addOnsString = string.Empty;
+        }
+        
         string providerFeeHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
 
@@ -173,24 +182,33 @@ public class MakerEnrolledNotificationHelper
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
                             <b style='text-transform: capitalize'>{experienceName}</b>
                         </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                            <span style='color: #343d4c; text-transform: capitalize'>{withString}{addOnsString}</span>
-                        </p>
                         <table style='width: 100%'>
                         <tbody>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Enrollees: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: capitalize'
-                                    >{enrolleesString} ({students.Count()})</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>{addOnTitle}</span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: capitalize'>{addOnsString}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Enrollees: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: capitalize'
+                                        >{enrolleesString} ({students.Count()})</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
                             <tr>
                             <td style='width: 50%'>
