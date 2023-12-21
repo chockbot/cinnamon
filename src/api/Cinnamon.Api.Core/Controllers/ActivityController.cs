@@ -93,11 +93,8 @@ public class ActivityController : ControllerBase
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
-        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler)
-        IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler,
-        IOteUpdateHandler oteUpdateHandler, IOteFindByHandler oteFindByHandler, IMapper mapper, 
-        IOteTicketDetailsHandler oteTicketDetailsHandler, ICustomerOteHandler customerOteHandler, 
-        IOteVerificationHandler oteVerificationHandler, IGetOtePerDayHandler getOtePerDayHandler)
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, 
+        IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler,IGetOtePerDayHandler getOtePerDayHandler)
     {
         _logger = logger;
 
