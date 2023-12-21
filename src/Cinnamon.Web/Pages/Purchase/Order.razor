@@ -263,8 +263,9 @@
                 {
                     return new Models.Entities.PurchaseOrder.AddOnDetail
                     {
-                        Id = s.Id,
-                        Name = s.Name
+                        Id    = s.Id,
+                        Name  = s.Name,
+                        Count = s.AddOnCount
                     };
                 }).ToList()
             },
@@ -287,11 +288,11 @@
         {
             if (string.IsNullOrEmpty(addOnsDetails))
             {
-                addOnsDetails += item.Name;
+                addOnsDetails += $"{item.Name} ({item.Count})";
             }
             else
             {
-                addOnsDetails += $", {item.Name}";
+                addOnsDetails += $", {item.Name} ({item.Count})";
             }
         }
     }

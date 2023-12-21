@@ -24,5 +24,6 @@ public class PurchaseOrderDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

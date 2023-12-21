@@ -97,7 +97,8 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
                     return new GetPurchaseOrderResult.AddOnDetail
                     {
                         AddOnId      = s.AddOnId,
-                        AddOnName    = s.AddOnName
+                        AddOnName    = s.AddOnName,
+                        AddOnCount   = s.AddOnCount
                     };
                 }) : Enumerable.Empty<GetPurchaseOrderResult.AddOnDetail>(),
             }, "Successfully get purchase order details");
@@ -128,6 +129,7 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
     {
         public int AddOnId { get; set; }
         public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 
     class Fees {
