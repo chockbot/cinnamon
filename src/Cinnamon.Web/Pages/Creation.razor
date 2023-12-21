@@ -1159,7 +1159,7 @@
         if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
         {
             bool isSingle = addOns.Count == 1;
-            foreach (var addOn in addOns)
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
             {
                 if (!(string.IsNullOrEmpty(addOn.Name) ||
                     addOn.Price <= 0 ||
@@ -1213,7 +1213,7 @@
         bool isSingle = addOns.Count == 1;
         bool isValid = false;
 
-        foreach (var addOn in addOns)
+        foreach (var addOn in addOns.Where(a => !a.IsDeleted))
         {
             if  (string.IsNullOrEmpty(addOn.Name) ||
                 addOn.Price <= 0 ||
