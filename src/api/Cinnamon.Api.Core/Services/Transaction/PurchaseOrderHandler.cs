@@ -195,6 +195,10 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 perUnitDisburseAmount -= amountToDeduct;
                 totalDisburseAmount -= (amountToDeduct * args.NumberOfHeads);
             }
+
+            //disbursement for addons
+            perUnitDisburseAmount += args.AddOnsAmount;
+            totalDisburseAmount += args.AddOnsAmount;
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
             {
