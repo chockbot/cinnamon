@@ -45,15 +45,16 @@
                     <Divider class="m-0" />
                     <div class="ps-4">
                         <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
-                        @if(Model.PurchaseOrder.AddOnDetails.Count!=0)
-                        {
-                            <p class="text-capitalize mb-0 mt-2">@withstring@addOnsDetails</p>
-                        }
                         <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
                         <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
-                        <p class="text-capitalize mt-2 mb-3">
+                        <p class="text-capitalize mt-2 mb-2">
                             @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
                         </p>
+                        @if (Model.PurchaseOrder.AddOnDetails.Count != 0)
+                        {
+                            <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Add-ons</p>
+                            <p class="text-capitalize mb-0 mt-2 mb-2">@addOnsDetails</p>
+                        }
                     </div>
                     <Divider class="m-0" />
                     <div class="px-4">
@@ -180,8 +181,6 @@
 
     private string addOnsDetails { get; set; } = string.Empty;
 
-    private string withstring { get; set; } = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -296,7 +295,6 @@
                 addOnsDetails += $", {item.Name}";
             }
         }
-        withstring = (Model.PurchaseOrder.AddOnDetails.Count() != 0) ? "With " : string.Empty;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
