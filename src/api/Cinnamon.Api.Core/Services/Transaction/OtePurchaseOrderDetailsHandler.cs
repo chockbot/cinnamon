@@ -122,6 +122,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 TotalPurchase = purchaseOrder.OverallTotal,
                 SubTotal = purchaseOrder.Total,
+                Discount = purchaseOrder.CouponAmount,
                 Tickets = tickets.Select(t => {
                     return new OtePurchaseOrderDetailsResult.Ticket {
                         Code = t.QRCode,

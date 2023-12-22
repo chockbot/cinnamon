@@ -1,5 +1,6 @@
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
@@ -19,4 +20,5 @@ public interface IPurchaseOrderRepository
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> UpdatePurchaseOrdersStatus(IEnumerable<int> ids, int status);
     Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetGrossSalesByProvider(int? id, DateTime? dateFrom);
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetAllOteNeedToDisburse();
 }

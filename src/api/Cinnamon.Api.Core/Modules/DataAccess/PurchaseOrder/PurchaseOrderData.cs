@@ -183,5 +183,25 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
                 return AppResult<GetGrossSalesByProviderResult>.CreateFailed(ex, "An error occured when getting gross sales");
             }
         }
+
+        public async Task<AppResult<GetOteNeedToDisburseResult>> GetOteNeedToDisburse()
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/GetOteNeedToDisburse")
+                                .GetJsonAsync<GetOteNeedToDisburseResult>();
+
+                return AppResult<GetOteNeedToDisburseResult>.CreateSucceeded(result, "Successfully getting get ote need to disburse");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetOteNeedToDisburseResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetOteNeedToDisburseResult>.CreateFailed(ex, "An error occured when getting ote need to disburse");
+            }
+        }
     }
 }
