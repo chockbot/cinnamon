@@ -669,6 +669,23 @@
     </Modal>
 }
 
+<Modal @ref="failedModal">
+    <ModalContent Centered class="border-radius-20">
+        <ModalHeader class="justify-content-center border-bottom-1-solid border-color-grey-200">
+            <p class="modal-title font-20 color-black-100 font-weight-700">Payment Unsuccesful</p>
+        </ModalHeader>
+        <ModalBody class="text-center py-4">
+            <img src="images/payment-failed-icon.png" class="mx-auto my-2" alt="error-icon">
+            <p class="my-4 color-grey-100 font-16">
+                We're sorry, but there's an issue with your payment. 
+                Click the chat support button at the bottom right and we'll assist you promptly.
+            </p>
+            <Button Clicked="() => failedModal.Close(CloseReason.UserClosing)" class="rounded-pill bg-orange-100 color-white-100 hover-color-white px-5">Try Again</Button>
+            <p class="font-12 color-black-100 my-4">Email us here: <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a></p>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
 @code
 {
     [Parameter]
@@ -676,6 +693,10 @@
 
     [Parameter]
     public int ScheduleId { get; set; }
+    
+    [Parameter, SupplyParameterFromQuery]
+    public string Status {get; set;}
+
 
     [Parameter]
     public string AddOnsPayLoad { get; set; }
@@ -723,6 +744,8 @@
     private int enrolleeCount = 0;
 
     private bool isShowImportantMessage = false;
+
+    private Modal? failedModal;
 
     private List<int> selectedIds = new List<int>();
 
@@ -779,6 +802,11 @@
         {
             await Task.Delay(1000);
             await PopulateEnrollee();
+
+            if(!string.IsNullOrEmpty(Status) && Status.ToLower() == "failed" && failedModal is not null)
+            {
+                await failedModal.Show();   
+            }
         }
     }
 

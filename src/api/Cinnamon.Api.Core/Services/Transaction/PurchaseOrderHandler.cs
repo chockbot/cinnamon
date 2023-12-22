@@ -289,6 +289,10 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 .AppendPathSegment("purchase/order")
                 .SetQueryParam("purchaseid", result.Result.Result.Id);
 
+            var failedUrl = applicationConfig.FrontendUrl
+                .AppendPathSegment($"payment/{args.ActivityId}/{args.ScheduleId}")
+                .SetQueryParam("Status", "failed");
+
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
                 AmountCurrency = "PHP",
@@ -302,7 +306,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
                 } : null,
-                SuccessUrl = successUrl
+                SuccessUrl = successUrl,
+                FailedUrl = failedUrl
             });
 
             if(!requestPayment.Succeeded || requestPayment.Result == null)
