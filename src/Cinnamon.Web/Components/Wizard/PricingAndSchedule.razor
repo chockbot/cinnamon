@@ -648,15 +648,21 @@
         }
         return "";
     }
+
     private string RequiredCheck(AddOn addOn)
     {
-        if (addOn.Name != null && addOn.Price == 0 || addOn.Name == null && addOn.Price != 0)
+        if (!addOn.IsNew)
         {
-            return "invalid";
+            if (string.IsNullOrEmpty(addOn.Name) || addOn.Price == 0 || string.IsNullOrEmpty(addOn.UnitPrice))
+                return "invalid";
+            if (!IsPositiveNumeric(addOn.Price))
+                return "invalid";
         }
-        if (!IsPositiveNumeric(addOn.Price))
+        else
         {
-            return "invalid";
+            if ((string.IsNullOrEmpty(addOn.Name) && addOn.Price != 0) || (!string.IsNullOrEmpty(addOn.Name) && addOn.Price == 0))
+                return "invalid";
+            if (!IsPositiveNumeric(addOn.Price)) return "invalid";
         }
         return "";
     }
@@ -744,7 +750,7 @@
             }
             else
             {
-                if ((addOn.Name == null && addOn.Price != 0) || (addOn.Name != null && addOn.Price == 0))
+                if ((string.IsNullOrEmpty(addOn.Name) && addOn.Price != 0) || (!string.IsNullOrEmpty(addOn.Name) && addOn.Price == 0))
                 {
                     ErrorMessage = "Fill in required field";
                     return false;
