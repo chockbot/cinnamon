@@ -46,7 +46,7 @@
                         {
                             <TableRow>
                                 <TableRowCell class="item-qr color-grey-100">
-                                    @(item.TicketNumber > 0 ? item.TicketNumber : "")
+                                    @(item.TicketNumber > 0 ? FormattedId(item.TicketNumber) : "N/A")
                                 </TableRowCell>
                                 <TableRowCell class="item-qr color-grey-100">
                                     @item.TicketSeat
@@ -283,6 +283,14 @@
         }
 
         return style;
+    }
+
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
     }
 
     record EventDetail 
