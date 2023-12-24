@@ -32,6 +32,9 @@
                     <TableHeader class="bg-black-100 color-white-100 font-16">
                         <TableRow>
                             <TableRowCell>
+                                #
+                            </TableRowCell>
+                            <TableRowCell>
                                 Seat Plan
                             </TableRowCell>
                             <TableHeaderCell>
@@ -42,6 +45,9 @@
                         @foreach (var item in verificationLogs.OrderByDescending(l => l.LogDate).Take(20))
                         {
                             <TableRow>
+                                <TableRowCell class="item-qr color-grey-100">
+                                    @(item.TicketNumber > 0 ? item.TicketNumber : "")
+                                </TableRowCell>
                                 <TableRowCell class="item-qr color-grey-100">
                                     @item.TicketSeat
                                 </TableRowCell>
@@ -54,7 +60,7 @@
                                         </label>
                                     </div>
                                 </TableRowCell>
-                            </TableRow>    
+                            </TableRow>
                         }
                     </TableBody>
                 </Table>
@@ -230,7 +236,8 @@
                 Message = "Valid ticket",
                 QrCode = qr,
                 LogDate = DateTime.Now,
-                TicketSeat = verificationRes.Result.Result.TicketSeat
+                TicketSeat = verificationRes.Result.Result.TicketSeat,
+                TicketNumber = verificationRes.Result.Result.Id
             });
         }
 
@@ -291,5 +298,6 @@
         public string Message {get; set;}
         public DateTime LogDate {get; set;}
         public string TicketSeat {get; set;}
+        public int TicketNumber {get; set;}
     }
 }
