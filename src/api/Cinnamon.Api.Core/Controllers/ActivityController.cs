@@ -2731,7 +2731,8 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = new CoreDto.Activity.OteVerificationDTO {
                     TicketSeat = result.Result.TicketSeat,
-                    Verified = result.Result.Verified
+                    Verified = result.Result.Verified,
+                    Id = result.Result.Id
                 }
             });
         }
