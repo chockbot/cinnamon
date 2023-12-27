@@ -1486,9 +1486,7 @@
 
     private async Task ProceedToPayment()
     {
-        if (SelectedScheduleId > 0)
-        {
-            if(isAuthenticated)
+        if(isAuthenticated)
             {
                 List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.AddOnCount != 0 ).ToList();
                 var payloadData = new
@@ -1512,16 +1510,11 @@
                     NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
                 }
             }
-            else
+        else
             {
                 signInReturnUrl = $"/Explore/{Identifier}/?enrollees={EnrolleeCount}&sid={SelectedScheduleId}";
                 await signinModal.Show();
             }
-        }
-        else
-        {
-            isShowErrorMessage = true;
-        }
     }
 
     private string GetSelectedActivityName
