@@ -67,7 +67,26 @@ public class CustomerPayedNotificationHelper
                 </td>
             </tr>
         " : "";
-
+        // Check if add-ons is not null
+        string addonHtmlString = addOnsDetails.Count() != 0 ? $@"<td style='text-align: right; width: 50%'>
+                                                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                    <span style='color: #343d4c; text-transform: capitalize'>{addOnsString}</span>
+                                                                    </p>
+                                                                 </td>" : "";
+        string addOnTotalHtmlString = addOnsDetails.Count() != 0 ? $@"<tr>
+                                                                        <td style='width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #717171'>Add-Ons: </span>
+                                                                            </p>
+                                                                        </td>
+                                                                        <td style='text-align: right; width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #343d4c; text-transform: uppercase'
+                                                                                >{addOnsAmount.ToString("#,##0.00")}</span
+                                                                            >
+                                                                            </p>
+                                                                        </td>
+                                                                       </tr>" : "";
         string paymentProviderHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
 
@@ -209,11 +228,7 @@ public class CustomerPayedNotificationHelper
                                     <span style='color: #717171'>{addOnTitle} </span>
                                     </p>
                                 </td>
-                                <td style='text-align: right; width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #343d4c; text-transform: capitalize'>{addOnsString}</span>
-                                    </p>
-                                </td>
+                                {addonHtmlString}
                             </tr>
                             <tr>
                                 <td style='width: 50%'>
@@ -272,20 +287,7 @@ public class CustomerPayedNotificationHelper
                                 </td>
                             </tr>
                             {amountHtmlString}
-                            <tr>
-                                <td style='width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #717171'>Add-Ons: </span>
-                                    </p>
-                                </td>
-                                <td style='text-align: right; width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #343d4c; text-transform: uppercase'
-                                        >{addOnsAmount.ToString("#,##0.00")}</span
-                                    >
-                                    </p>
-                                </td>
-                            </tr>
+                            {addOnTotalHtmlString}
                             {paymentProviderHtmlString}
                             {serviceFeeHtmlString}
                             <tr>
