@@ -44,12 +44,16 @@
                     </div>
                     <Divider class="m-0" />
                     <div class="ps-4">
-                        <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
-                        <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
-                        <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
-                        <p class="text-capitalize mt-2 mb-2">
-                            @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
-                        </p>
+                        @if(Model.PurchaseOrder.ScheduleId != 0)
+                        {
+                            <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
+                            <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
+                            <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
+                            <p class="text-capitalize mt-2 mb-2">
+                                @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
+                            </p>
+                        }
+                        
                         @if (Model.PurchaseOrder.AddOnDetails.Count != 0)
                         {
                             <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Add-ons</p>
@@ -79,14 +83,18 @@
                                         </p>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <p class="text-capitalize mb-0 mt-2">Amount: </p>
-                                    </td>
-                                    <td class="text-end">
-                                        <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
-                                    </td>
-                                </tr>
+                                @if(Model.PurchaseOrder.ScheduleId != 0)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="text-capitalize mb-0 mt-2">Amount: </p>
+                                        </td>
+                                        <td class="text-end">
+                                            <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                }
+                                
                                 @if (Model.PurchaseOrder.AddOnDetails.Count != 0)
                                 {
                                     <tr>
@@ -98,6 +106,7 @@
                                         </td>
                                     </tr>
                                 }
+
                                 @if(!IsInclusivePayment)
                                 {
                                     <tr>
@@ -109,6 +118,7 @@
                                         </td>
                                     </tr>
                                 }
+
                                 @if(!IsInclusivePayment)
                                 {
                                     <tr>
@@ -120,6 +130,7 @@
                                         </td>
                                     </tr>
                                 }
+
                                 @if(Model.PurchaseOrder.CouponAmount.HasValue)
                                 {
                                     <tr>
@@ -133,6 +144,7 @@
                                         </td>
                                     </tr>
                                 }
+
                                 <tr>
                                     <td>
                                         <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
@@ -231,12 +243,8 @@
         var activity = activityRes.Result.Result;
 
         var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
-        if(schedule == null)
-        {
-            // can't find schedule associated to activity
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+          
+        
 
         Model = new PurchaseOrderModel {
             PurchaseOrder = new Models.Entities.PurchaseOrder {
@@ -270,15 +278,15 @@
                 }).ToList()
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
-                DateTime   = schedule.DateTime,
-                Id         = schedule.Id,
-                Name       = schedule.Name,
-                PerUnit1   = schedule.PerUnit1,
-                PerUnit2   = schedule.PerUnit2,
-                Price      = schedule.Price,
-                PriceUnit1 = schedule.PriceUnit1,
-                PriceUnit2 = schedule.PriceUnit2,
-                UnitPrice  = schedule.UnitPrice
+                DateTime   = schedule != null ? schedule.DateTime : string.Empty,
+                Id         = schedule != null ? schedule.Id : 0,
+                Name       = schedule != null ? schedule.Name : string.Empty,
+                PerUnit1   = schedule != null ? schedule.PerUnit1 : 0,
+                PerUnit2   = schedule != null ? schedule.PerUnit2 : 0,
+                Price      = schedule != null ? schedule.Price : 0,
+                PriceUnit1 = schedule != null ? schedule.PriceUnit1 : string.Empty,
+                PriceUnit2 = schedule != null ? schedule.PriceUnit2 : string.Empty,
+                UnitPrice  = schedule != null ? schedule.UnitPrice  : string.Empty
             },
             Token = token
         };

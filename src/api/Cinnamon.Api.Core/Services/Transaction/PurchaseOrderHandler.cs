@@ -86,10 +86,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             // check activity schedule
             var activitySchedule = activityRes.Result.ActivitySchedules.FirstOrDefault(s => s.Id == args.ScheduleId);
-            if(activitySchedule == null)
-            {
-                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("Invalid schedule id provided"), "Invalid schedule id provided");
-            }
+            
 
             // check if inclusive payment
             var checkInclusiveRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
@@ -116,7 +113,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 return AppResult<PurchaseOrderResult>.CreateFailed(
                     new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid customer id provided");
             }
-            decimal subTotal           = activitySchedule.Price * args.NumberOfHeads;
+            decimal subTotal           = activitySchedule != null ? activitySchedule.Price : 0 * args.NumberOfHeads;
             decimal addOnsTotal        = args.AddOnsAmount;
             decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * 0; //.05m;
             decimal discount           = 0;
@@ -125,7 +122,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             decimal creditAmount       = 0;
           
 
-            decimal perUnitDisburseAmount = activitySchedule.Price;
+            decimal perUnitDisburseAmount = activitySchedule != null ? activitySchedule.Price : 0;
             decimal totalDisburseAmount = subTotal;
 
             // validate coupon
@@ -253,7 +250,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Payload               = serializedPayload,
                 CreditAmount          = creditAmount,
                 UnitCount             = args.Students.Count(),
-                UnitPrice             = activitySchedule.Price,
+                UnitPrice             = activitySchedule != null ? activitySchedule.Price : 0,
                 IsInclusivePayment    = IsInclusivePayment,
                 PerUnitDisburseAmount = perUnitDisburseAmount,
                 TotalDisburseAmount   = totalDisburseAmount,
