@@ -113,7 +113,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 return AppResult<PurchaseOrderResult>.CreateFailed(
                     new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid customer id provided");
             }
-            decimal subTotal           = activitySchedule != null ? activitySchedule.Price : 0 * args.NumberOfHeads;
+            decimal subTotal           = (activitySchedule != null ? activitySchedule.Price : 0) * args.NumberOfHeads;
             decimal addOnsTotal        = args.AddOnsAmount;
             decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * 0; //.05m;
             decimal discount           = 0;
