@@ -17,6 +17,7 @@ public class MakerEnrolledNotificationHelper
         string addOnsString = string.Empty;
         string addOnTitle = string.Empty; 
 
+        //Members
         foreach (var item in students)
         {
             if(string.IsNullOrEmpty(enrolleesString))
@@ -28,6 +29,8 @@ public class MakerEnrolledNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
+
+        //Add-ons
         if (addOnsDetails.Count() != 0)
         {
             addOnTitle = "Add-ons: ";
@@ -48,7 +51,23 @@ public class MakerEnrolledNotificationHelper
             addOnTitle = string.Empty;
             addOnsString = string.Empty;
         }
-        
+
+        // Check if amount is greater than 0 before including the related information
+        string amountHtmlString = amount > 0 ? $@"
+            <tr>
+                <td style='width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #717171'>Amount: </span>
+                    </p>
+                </td>
+                <td style='text-align: right; width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #343d4c; text-transform: uppercase'>{amount.ToString("#,##0.00")}</span>
+                    </p>
+                </td>
+            </tr>
+        " : "";
+
         string providerFeeHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
 
@@ -211,46 +230,33 @@ public class MakerEnrolledNotificationHelper
                                 </td>
                             </tr>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Payment Reference Number: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{referenceNumber}</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Payment Reference Number: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: uppercase'
+                                        >{referenceNumber}</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
+                            {amountHtmlString}
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Amount: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{amount.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Add-ons: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{addOnsAmount.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Add-ons: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: uppercase'
+                                        >{addOnsAmount.ToString("#,##0.00")}</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
                             {providerFeeHtmlString}
                             {serviceFeeHtmlString}
