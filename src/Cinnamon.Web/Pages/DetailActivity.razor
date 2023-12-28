@@ -791,7 +791,7 @@
                                     </Button>
                                     @if (isShowErrorMessage)
                                     {
-                                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule or add-ons.</p>
                                     }
                                 </div>
                             </div>
@@ -972,7 +972,7 @@
                     </div>
                     @if(isShowErrorMessage)
                     {
-                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule or add-ons.</p>
                     }
                 </div>
             </div>
@@ -1486,35 +1486,44 @@
 
     private async Task ProceedToPayment()
     {
-        if(isAuthenticated)
+        List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.AddOnCount != 0).ToList();
+        if (selectedAddOns.Count() != 0 || SelectedScheduleId > 0)
+        {
+            if(isAuthenticated)
             {
-                List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.AddOnCount != 0 ).ToList();
-                var payloadData = new
+            
+            var payloadData = new
+            {
+                AddOnsDetails = selectedAddOns.Select(a =>
                 {
-                    AddOnsDetails = selectedAddOns.Select(a =>
+                    return new
                     {
-                        return new
-                        {
-                            AddOnId = a.Id,
-                            AddOnCount = a.AddOnCount
-                        };
-                    })
-                };
-                var serializedPayload = JsonConvert.SerializeObject(payloadData);
-                if (selectedAddOns.Count() != 0)
-                {
-                    NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{serializedPayload}/?enrollees={EnrolleeCount}");
-                }
-                else
-                {
-                    NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
-                }
+                        AddOnId = a.Id,
+                        AddOnCount = a.AddOnCount
+                    };
+                })
+            };
+            var serializedPayload = JsonConvert.SerializeObject(payloadData);
+            if (selectedAddOns.Count() != 0)
+            {
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{serializedPayload}/?enrollees={EnrolleeCount}");
             }
-        else
+            else
+            {
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
+            }
+            }
+            else
             {
                 signInReturnUrl = $"/Explore/{Identifier}/?enrollees={EnrolleeCount}&sid={SelectedScheduleId}";
                 await signinModal.Show();
             }
+        }
+        else
+        {
+            isShowErrorMessage = true;
+        }
+        
     }
 
     private string GetSelectedActivityName

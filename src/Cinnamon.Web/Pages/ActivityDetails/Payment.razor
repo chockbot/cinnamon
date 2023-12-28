@@ -161,7 +161,7 @@
                         {
                              <div>
                                 <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
-                                <p class="nothing-text text-center p-3">Nothing Selected</p>
+                                <p class="nothing-text text-center">Nothing Selected</p>
                                 <br />
                                 @if (Model.Activity.AddOns.Count != 0)
                                 {
@@ -1024,21 +1024,21 @@
                 {
                     return new ActivitySchedule
                     {
-                        Id = e.Id,
-                        Name = e.Name,
-                        DateTime = e.DateTime,
-                        PerUnit1 = e.PerUnit1,
-                        PerUnit2 = e.PerUnit2,
-                        Price = e.Price,
-                        PriceUnit1 = e.PriceUnit1,
-                        PriceUnit2 = e.PriceUnit2,
-                        UnitPrice = e.UnitPrice,
-                        Order = e.Order,
+                        Id               = e.Id,
+                        Name             = e.Name,
+                        DateTime         = e.DateTime,
+                        PerUnit1         = e.PerUnit1,
+                        PerUnit2         = e.PerUnit2,
+                        Price            = e.Price,
+                        PriceUnit1       = e.PriceUnit1,
+                        PriceUnit2       = e.PriceUnit2,
+                        UnitPrice        = e.UnitPrice,
+                        Order            = e.Order,
                         IsActiveSchedule = e.IsActiveSchedule,
-                        IsSetSession = e.IsSetSession,
-                        SessionName = e.SessionName,
-                        HasExpiration = e.HasExpiration,
-                        StartDate = e.StartDate
+                        IsSetSession     = e.IsSetSession,
+                        SessionName      = e.SessionName,
+                        HasExpiration    = e.HasExpiration,
+                        StartDate        = e.StartDate
                     };
                 }).ToList(),
                 AddOns = result.AddOns.Select(s =>
@@ -1076,6 +1076,7 @@
                     IsOfficial = result.Owner.IsOfficial
                 } : null
             };
+
         Model.Activity = activity;
 
         var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(Model.Activity.Owner.Id);
