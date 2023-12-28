@@ -252,4 +252,57 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
             return AppResult<IEnumerable<PurchaseOrder>>.CreateFailed(ex, "An error occured when trying to gross sales by date range");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse()
+    {
+        try
+        {
+            string query = "select po.\"Id\" as \"TransactionId\", po.\"ActivityId\", po.\"ScheduleId\", po.\"Status\", " +
+                               "po.\"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", po.\"AddOnsAmount\" as \"PerUnitDisburseAmount\", " +
+                               "po.\"AddOnsAmount\" as \"TotalDisburseAmount\", '' as \"Name\", 0 as \"StudentId\", " +
+                               "0 as \"UnitCount\", 0 as \"UnitPrice\" " +
+                           "from public.\"PurchaseOrders\" po " +
+                           "join public.\"Activities\" ac " +
+                               "on po.\"ActivityId\" = ac.\"Id\" " +
+                           "where po.\"Status\" = 1 and po.\"AddOnsAmount\" > 0";
+            
+            IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
+			
+			using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+				
+				using(var dr = await command.ExecuteReaderAsync())
+				{
+					if(dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+
+						listResult                = dt.AsEnumerable().Select(item => new DisburseStudentDTO {
+							Name                  = item["Name"].ToString() ?? string.Empty,
+							StudentId             = Convert.ToInt32(item["StudentId"]),
+							TransactionId         = Convert.ToInt32(item["TransactionId"]),
+							UnitCount             = Convert.ToInt32(item["UnitCount"]),
+							UnitPrice             = Convert.ToDecimal(item["UnitPrice"]),
+							ActivityId            = Convert.ToInt32(item["ActivityId"]),
+							MakerId               = Convert.ToInt32(item["MakerId"]),
+							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
+							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
+						}).ToList();
+					}
+				}
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(listResult, "Successfully get students need to disburse");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when trying to get addons need to disburse");
+        }
+    }
 }
