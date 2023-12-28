@@ -16,5 +16,6 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers
         Task<AppResult<UpdatePurchaseOrdersStatusResult>> UpdatePurchaseOrdersStatus(UpdatePurchaseOrdersStatusArgs args);
         Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args);
         Task<AppResult<GetGrossSalesByProviderResult>> GetGrossSalesByProvider(GetGrossSalesByProviderArgs args);
+        Task<AppResult<GetAllAddonsNeedToDisburseResult>> AddOnsNeedToDisburse();
     }
 }
