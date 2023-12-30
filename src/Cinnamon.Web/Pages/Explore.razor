@@ -438,7 +438,7 @@
                                                                             <h4 class="card-title1 mb-0">@act.Title</h4>
                                                                             @if (@act.ExperienceTypeId == 1)
                                                                             {
-                                                                                var address = !string.IsNullOrEmpty(act.CityName) ? act.CityName + ", "+ act.RegionName: act.PinnedLocation;
+                                                                            var address = string.IsNullOrEmpty(act.PinnedLocation) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
                                                                                 <p class="card-title2 mb-0 in-person">@address</p>
                                                                             }
                                                                             else
@@ -635,7 +635,7 @@
                                                     <h4 class="card-title1 mb-0">@act.Title</h4>
                                                     @if (@act.ExperienceTypeId == 1)
                                                     {
-                                                        var address = !string.IsNullOrEmpty(act.City) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
+                                                    var address = string.IsNullOrEmpty(act.PinnedLocation) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
                                                         <p class="card-title2 mb-0 in-person">@address</p>
                                                     }
                                                     else
