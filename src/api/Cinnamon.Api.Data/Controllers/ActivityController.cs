@@ -365,7 +365,7 @@ public class ActivityController : ControllerBase
     {
         try
         {
-            var result = await activityRepository.PopularActivities(args.CountPerPage, args.PageIndex);
+            var result = await activityRepository.PopularActivities(args.CountPerPage, args.PageIndex, args.CategoryId);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

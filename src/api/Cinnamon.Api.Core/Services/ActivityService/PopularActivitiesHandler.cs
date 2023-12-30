@@ -26,7 +26,8 @@ public class PopularActivitiesHandler : IPopularActivitiesHandler
         {
             var result = await activityData.PopularActivities(new Framework.ApiCommand.ApiData.Activity.Request.PopularActivitiesArgs {
                 CountPerPage = args.Take,
-                PageIndex = args.Skip
+                PageIndex = args.Skip,
+                CategoryId = args.CategoryId
             });
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {

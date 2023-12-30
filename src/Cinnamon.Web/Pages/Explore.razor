@@ -765,7 +765,7 @@
         
         if (string.IsNullOrEmpty(landingSearch))
         {
-            await FetchPopularActivities();
+            await FetchPopularActivities(null);
             await FetchActivities(false);
         }
         else
@@ -1197,13 +1197,16 @@
         }
     }
 
-    private async Task FetchPopularActivities()
+    private async Task FetchPopularActivities(int? categoryId)
     {
         showOverlayPopularActivities = true;
+
+        popularActivities.Clear();
 
         var activitiesRes = await activityApiHandler.PopularActivities(new Framework.ApiCommand.ApiCore.Activity.Request.PopularActivitiesArgs {
             CountPerPage = 20,
             PageIndex = 0,
+            CategoryId = categoryId
         });
         if(activitiesRes.Succeeded && activitiesRes.Result is not null && activitiesRes.Result.IsSuccess)
         {
@@ -1251,6 +1254,7 @@
         itemsPerPage = 20;
 
         await FetchActivities(false);
+        await FetchPopularActivities(id);
     }
 
     public async Task Clear()
