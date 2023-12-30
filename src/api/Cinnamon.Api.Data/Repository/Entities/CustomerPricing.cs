@@ -6,6 +6,7 @@ public class CustomerPricing : BaseEntity
     public string Email {get; set;}
     public decimal Rate {get; set;}
     public bool IsManualPayment {get; set;}
+    public bool InclusivePricing {get; set;}
 
     public virtual Customer Customer {get; set;}
 }

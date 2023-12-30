@@ -58,6 +58,9 @@
                     <TableHeaderCell class="text-center">
                        Is Manual Payment
                     </TableHeaderCell>
+                    <TableHeaderCell class="text-center">
+                       Inclusive Pricing
+                    </TableHeaderCell>
                     <TableHeaderCell>
                         Action
                     </TableHeaderCell>
@@ -76,6 +79,9 @@
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
                             <Switch TValue="bool" @bind-Checked="item.Pricing.IsManualPayment"></Switch>
+                        </TableRowCell>
+                        <TableRowCell class="name-body text-center">
+                            <Switch TValue="bool" @bind-Checked="item.Pricing.InclusivePricing"></Switch>
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
                             <Button Clicked="() => SubmitCustomerPricing(item)" Size="Size.Small" Type="ButtonType.Button" 
@@ -156,7 +162,8 @@
                 IsOfficialDate = r.IsOfficialDate,
                 Pricing = new CustomerProfile.CustomerPricing {
                     Rate = r.CustomerPricing != null ? r.CustomerPricing.Rate : 0,
-                    IsManualPayment = r.CustomerPricing != null ? r.CustomerPricing.IsManualPayment : false
+                    IsManualPayment = r.CustomerPricing != null ? r.CustomerPricing.IsManualPayment : false,
+                    InclusivePricing = r.CustomerPricing != null ? r.CustomerPricing.InclusivePricing : false
                 }
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
@@ -205,7 +212,8 @@
             var result = await adminApiHandler.CustomerPricing(new Framework.ApiCommand.ApiCore.AdminUser.Request.UpdateCustomerPricingArgs {
                 CustomerId = item.Id,
                 Rate = item.Pricing.Rate,
-                IsManualPayment = item.Pricing.IsManualPayment
+                IsManualPayment = item.Pricing.IsManualPayment,
+                InclusivePricing = item.Pricing.InclusivePricing
             }, token);
 
             item.Pricing.IsSubmitting = false;
