@@ -26,12 +26,12 @@
             </div>
             <Row>
                 <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop" class="left-order">
-                    <section class="mt-5">
+                    <section class="mt-5 item-pricings">
                         <h3 class="font-20 font-weight-700 color-black-100 mb-5 m-font-18">Ticket Availed</h3>
                         @foreach (var item in activity.Pricings)
                         {
                             <Row @key="item" class="mb-4 align-items-center">
-                                <Column ColumnSize="ColumnSize.Is8">
+                                <Column ColumnSize="ColumnSize.Is8" class="item-pricings-details">
                                     <p class="font-20 font-weight-700 color-black-100 mb-2">@item.Name</p>
                                     <p class="font-20 font-weight-700 color-green-100 mb-0 d-flex align-items-center">
                                         <span>₱ @item.Price.ToString("#,###")</span>
@@ -50,7 +50,7 @@
                                         }
                                     </p>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is4">
+                                <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
                                     <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                         <span @onclick="() => RemoveSelectedTicket(item)" class="p-1 border-right-1-solid counter-item prevent-select cursor-pointer">
                                             <span class="item-action">-</span>
