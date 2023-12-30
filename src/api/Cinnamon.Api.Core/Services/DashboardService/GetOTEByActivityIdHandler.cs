@@ -31,6 +31,7 @@ public class GetOTEByActivityIdHandler : IGetOTEByActivityIdHandler
         {
             var result = await oteTicketData.GetByActivityId(args.ActivityId, new Framework.ApiCommand.ApiData.OteTicket.Request.GetByActivityIdArgs
             {
+                SearchValue          = args.SearchValue ?? string.Empty,
                 CountPerPage         = args.CountPerPage,
                 PageIndex            = args.PageIndex,
                 IncludeCustomer      = true,

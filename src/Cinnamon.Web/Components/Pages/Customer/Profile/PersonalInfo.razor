@@ -485,6 +485,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FetchMakerBadges();
         var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Model.Token);
         if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
         {

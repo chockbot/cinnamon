@@ -49,11 +49,11 @@ public class OteTicketRepository : IOteTicketRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageAsResult = false)
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId,string searchValue, int? count, int? skip, bool includeCustomer = false, bool includeImageAsResult = false)
     {
         try
         {
-            var result = await dataStore.OteTicket.GetByActivityId(activityId, count, skip, includeCustomer, includeImageAsResult);
+            var result = await dataStore.OteTicket.GetByActivityId(activityId, searchValue, count, skip, includeCustomer, includeImageAsResult);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
