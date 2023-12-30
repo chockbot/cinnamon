@@ -100,7 +100,7 @@
             </label>
             @{
                 var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(Model.Activity.PinnedLocation) ? Model.Activity.PinnedLocation : "''");
-                <iframe id="mapframe" width="731" height="373" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal"></iframe>
+                <iframe id="mapframe" height="373" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal w-100"></iframe>
             }
 
             <div class="row">
@@ -250,15 +250,22 @@
 
     public bool IsAllFieldsValidated()
     {
-        if (Model.Activity.ExperienceTypeId == 1)
+        if (!string.IsNullOrEmpty(Model.Activity.PinnedLocation))
         {
-            if (string.IsNullOrEmpty(Model.Activity.Address1) ||
-                string.IsNullOrEmpty(Model.Activity.Region) ||
-                string.IsNullOrEmpty(Model.Activity.Barangay) ||
-                string.IsNullOrEmpty(Model.Activity.City)) return false;
+            return true;
         }
+        else
+        {
+            if (Model.Activity.ExperienceTypeId == 1)
+            {
+                if (string.IsNullOrEmpty(Model.Activity.Address1) ||
+                    string.IsNullOrEmpty(Model.Activity.Region) ||
+                    string.IsNullOrEmpty(Model.Activity.Barangay) ||
+                    string.IsNullOrEmpty(Model.Activity.City)) return false;
+            }
 
-        return true;
+            return true;
+        }
     }
 
     private string RequiredMin(string text, int min)

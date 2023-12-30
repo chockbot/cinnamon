@@ -99,6 +99,8 @@ public class DataStore : IDataStore
 
     public ITokenGenerated TokenGenerated => new TokenGenratedEntity(applicationContext);
 
+    public IAddOns AddOns => new AddOnsEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

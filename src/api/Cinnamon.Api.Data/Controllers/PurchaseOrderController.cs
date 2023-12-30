@@ -99,7 +99,7 @@ public class PurchaseOrderController : ControllerBase
             var result = await purchaseOrderRepository.Create(args.ActivityId, args.ScheduleId, args.CustomerId,
                 args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, 
                 args.Status, args.Payload ?? string.Empty, args.CreditAmount, args.UnitPrice, args.UnitCount, args.IsInclusivePayment,
-                args.PerUnitDisburseAmount, args.TotalDisburseAmount);
+                args.PerUnitDisburseAmount, args.TotalDisburseAmount, args.AddOnsAmount);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -274,6 +274,38 @@ public class PurchaseOrderController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOteNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("AddOnsNeedToDisburse")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllAddonsNeedToDisburseResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddOnsNeedToDisburse()
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.AddOnsNeedToDisburse();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllAddonsNeedToDisburseResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

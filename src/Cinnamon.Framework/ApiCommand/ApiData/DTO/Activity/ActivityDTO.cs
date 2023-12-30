@@ -1,6 +1,7 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivitySchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.AddOns;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 
@@ -25,8 +26,8 @@ public class ActivityDTO
     public string District { get; set; }
     public string City { get; set; }
     public string Subdivision { get; set; }
-    public string Region { get; set; }
-    public string Barangay { get; set; }
+    public string Region { get; set; } = string.Empty;
+    public string Barangay { get; set; } = string.Empty;
     public string CityName { get; set; } = string.Empty;
     public string RegionName { get; set; } = string.Empty;
     public string BarangayName { get; set; } = string.Empty;
@@ -53,6 +54,7 @@ public class ActivityDTO
     public bool IsComingSoon {get; set;}
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
+    public IList<AddOnsDTO> AddOns { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
 
     public CustomerDTO Owner {get; set;}

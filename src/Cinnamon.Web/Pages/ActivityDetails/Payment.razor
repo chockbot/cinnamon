@@ -1,5 +1,7 @@
 ﻿@page "/Payment/{ActivityId:int}/{ScheduleId:int}"
+@page "/Payment/{ActivityId:int}/{ScheduleId:int}/{AddOnsPayLoad}"
 @layout LandingMainLayout
+@using Newtonsoft.Json;
 @using System.Security.Claims
 @using Cinnamon.Web.Enums;
 @using Cinnamon.Web.Models;
@@ -62,70 +64,130 @@
                                 @onclick="()=>AddChildrenModal.Open()">Add</button>
                         </div>
                         <Divider class="my-4" />
-                        <div>
-                            <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
-                            <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
-                                <div class="d-flex justify-content-between font-18 m-font-16 font-weight-700 color-black-100 bg-white-200 p-2 
+                        @if (ScheduleId != 0)
+                        {
+                            <div>
+                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                                <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
+                                    <div class="d-flex justify-content-between font-18 m-font-16 font-weight-700 color-black-100 bg-white-200 p-2
                                     border-bottom-1-solid border-color-grey-200">
-                                    <p class="m-0 text-capitalize">@Model.SelectedSchedule.Name</p>
-                                    <p class="m-0 m-margin-left-10">₱ @Model.SelectedSchedule.Price.ToString("#,##0.00")</p>
-                                </div>
-                                <div class="p-3">
-                                    <Row class="mt-3" VerticalGutter="10">
-                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                            <div class="d-flex w-100 align-items-start">
-                                                <label>
-                                                    <img src="images/payment/price-tag-icon.png" alt="price-tag">
-                                                </label>
-                                                <div class="ms-2">
-                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Price Details:</p>
-                                                    <p class="mb-0 font-16 color-grey-100">₱ @Model.SelectedSchedule.Price.ToString("#,##0") / @Model.SelectedSchedule.PerUnit1 
-                                                        @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                                        <p class="m-0 text-capitalize">@Model.SelectedSchedule.Name</p>
+                                        <p class="m-0 m-margin-left-10">₱ @Model.SelectedSchedule.Price.ToString("#,##0.00")</p>
+                                    </div>
+                                    <div class="p-3">
+                                        <Row class="mt-3" VerticalGutter="10">
+                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                                <div class="d-flex w-100 align-items-start">
+                                                    <label>
+                                                        <img src="images/payment/price-tag-icon.png" alt="price-tag">
+                                                    </label>
+                                                    <div class="ms-2">
+                                                        <p class="mb-0 font-14 font-weight-700 color-black-100">Price Details:</p>
+                                                        <p class="mb-0 font-16 color-grey-100">
+                                                            ₱ @Model.SelectedSchedule.Price.ToString("#,##0") / @Model.SelectedSchedule.PerUnit1
+                                                            @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </Column>
+                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                                <div class="d-flex w-100 align-items-start">
+                                                    <label>
+                                                        <img src="images/payment/expired-icon.png" alt="expiration">
+                                                    </label>
+                                                    <div class="ms-2">
+                                                        <p class="mb-0 font-14 font-weight-700 color-black-100">Expiration:</p>
+                                                        @if (Model.SelectedSchedule.IsSetSession)
+                                                        {
+                                                            <p class="mb-0 font-16 color-grey-100">Consume in - @Model.SelectedSchedule.SessionName</p>
+                                                            <p class="text-danger font-12 mb-0">@expiringMessage</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="mb-0 font-16 color-grey-100">N/A</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </Column>
+                                        </Row>
+                                        <div class="d-flex m-d-block mt-3 m-margin-top-10 align-items-center justify-content-between">
+                                            <div class="m-width-100">
+                                                <div class="d-flex w-100 align-items-start">
+                                                    <label>
+                                                        <img src="images/payment/calendar-schedule-icon.png" alt="calendar">
+                                                    </label>
+                                                    <div class="ms-2">
+                                                        <p class="mb-0 font-14 font-weight-700 color-black-100">Schedule:</p>
+                                                        <p class="mb-0 font-16 color-grey-100">@Model.SelectedSchedule.DateTime</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                            <div class="d-flex w-100 align-items-start">
-                                                <label>
-                                                    <img src="images/payment/expired-icon.png" alt="expiration">
-                                                </label>
-                                                <div class="ms-2">
-                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Expiration:</p>
-                                                    @if(Model.SelectedSchedule.IsSetSession)
-                                                    {
-                                                        <p class="mb-0 font-16 color-grey-100">Consume in - @Model.SelectedSchedule.SessionName</p>
-                                                        <p class="text-danger font-12 mb-0">@expiringMessage</p>
-                                                    }
-                                                    else 
-                                                    {
-                                                        <p class="mb-0 font-16 color-grey-100">N/A</p>
-                                                    }
-                                                </div>
+                                            <div class="m-text-center m-width-100 m-margin-botton-0 m-margin-top-10" style="margin-bottom: -20px;">
+                                                <Button Type="ButtonType.Button" Clicked="OnClickChange"
+                                                        class="border-radius-10 bg-orange-100 color-white-100 py-1 px-4 m-0 font-16 font-weight-700 hover-color-white">
+                                                    Change
+                                                </Button>
                                             </div>
-                                        </Column>
-                                    </Row>
-                                    <div class="d-flex m-d-block mt-3 m-margin-top-10 align-items-center justify-content-between">
-                                        <div class="m-width-100">
-                                            <div class="d-flex w-100 align-items-start">
-                                                <label>
-                                                    <img src="images/payment/calendar-schedule-icon.png" alt="calendar">
-                                                </label>
-                                                <div class="ms-2">
-                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Schedule:</p>
-                                                    <p class="mb-0 font-16 color-grey-100">@Model.SelectedSchedule.DateTime</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="m-text-center m-width-100 m-margin-botton-0 m-margin-top-10" style="margin-bottom: -20px;">
-                                            <Button Type="ButtonType.Button" Clicked="OnClickChange" 
-                                                class="border-radius-10 bg-orange-100 color-white-100 py-1 px-4 m-0 font-16 font-weight-700 hover-color-white">
-                                                Change
-                                            </Button>
                                         </div>
                                     </div>
                                 </div>
+                                <br />
+                                @if (Model.Activity.AddOns.Count != 0)
+                                {
+                                    <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-3">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
+                                    @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
+                                    {
+                                        <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
+                                            <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
+                                                <div class="w-100 p-2">@addOn.Name</div>
+                                                <div @onclick="() =>SubtractAddOns(addOn)"
+                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                    -
+                                                </div>
+                                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                                    @addOn.AddOnCount
+                                                </div>
+                                                <div @onclick="() =>AddAddOns(addOn)"
+                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                    +
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                             <div>
+                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                                <p class="nothing-text text-center">Nothing Selected</p>
+                                <br />
+                                @if (Model.Activity.AddOns.Count != 0)
+                                {
+                                    <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-3">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
+                                    @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
+                                    {
+                                        <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
+                                            <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
+                                                <div class="w-100 p-2">@addOn.Name</div>
+                                                <div @onclick="() =>SubtractAddOns(addOn)"
+                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                    -
+                                                </div>
+                                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                                    @addOn.AddOnCount
+                                                </div>
+                                                <div @onclick="() =>AddAddOns(addOn)"
+                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                    +
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
                         <Divider class="my-4" />
                         <div>
                             <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Important Information</h5>
@@ -330,31 +392,63 @@
                         <div class="booking-total-container sticky-top mb-3" style="top:80px;">
                             <Card>
                                 <CardBody>
-                                    <div class="d-flex" style="font-size:1.125rem">
-                                        <div class="activity-img">
-                                            <img src="@GetActivityFirstImage" alt="Activity Image">
-                                        </div>
-                                        <div class="activity-details">
-                                            <span class="fw-bold activity-title">@Model.Activity.Title</span>
-                                            <div class="activity-schedule">
-                                                @Model.SelectedSchedule.Name
+                                    @if(ScheduleId != 0)
+                                    {
+                                        <div class="d-flex" style="font-size:1.125rem">
+                                            <div class="activity-img">
+                                                <img src="@GetActivityFirstImage" alt="Activity Image">
                                             </div>
-                                            <div class="activity-schedule">
-                                                @Model.SelectedSchedule.DateTime
+                                            <div class="activity-details">
+                                                <span class="fw-bold activity-title">@Model.Activity.Title</span>
+                                                <div class="activity-schedule">
+                                                    @Model.SelectedSchedule.Name
+                                                </div>
+                                                <div class="activity-schedule">
+                                                    @Model.SelectedSchedule.DateTime
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <Divider />
+                                        <Divider />
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex" style="font-size:1.125rem">
+                                            <div class="activity-img">
+                                                <img src="@GetActivityFirstImage" alt="Activity Image">
+                                            </div>
+                                            <div class="activity-details">
+                                                <span class="fw-bold activity-title">@Model.Activity.Title</span>
+                                            </div>
+                                        </div>
+                                        <Divider />
+                                    }
                                     <div class="price-details">
                                         <span class="fw-bold price-title">Price Details</span>
+
+                                        @if(ScheduleId != 0)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount Enrollee
+                                                </div>
+                                                <div>
+                                                    ₱ @(GetTotalPerHeadPrice.ToString("#,##0.00"))
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (Model.Activity.AddOns.Count != 0)
+                                        {
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
-                                                @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount Enrollee
+                                                Add-Ons
                                             </div>
                                             <div>
-                                                PHP @(GetTotalPerHeadPrice.ToString("#,##0.00"))
+                                                ₱ @(GetAddOnsTotal.ToString("#,##0.00"))
                                             </div>
                                         </div>
+                                        }
+
                                         @if(!IsInclusivePricing)
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
@@ -362,10 +456,11 @@
                                                     Service Fee - <span class="text-decoration-line-through">15%</span>
                                                 </div>
                                                 <div>
-                                                    PHP @(GetConvinienceFee.ToString("#,##0.00"))
+                                                    ₱ @(GetConvinienceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
+
                                         @if(!IsInclusivePricing)
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head service-fee">
@@ -384,10 +479,11 @@
                                                     <span class="ms-1">Handling Fee</span>
                                                 </div>
                                                 <div>
-                                                    PHP @(GetServiceFee.ToString("#,##0.00"))
+                                                    ₱ @(GetServiceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
+
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div class="d-flex position-relative">
                                                 <div class="position-relative" style="width: 150px;">
@@ -422,10 +518,11 @@
                                             </div>
                                             <div>
                                                 <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
-                                                    @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                                    @(GetAppliedCoupon > 0 ? "-" : "") ₱ @(GetAppliedCoupon.ToString("#,##0.00"))
                                                 </span>
                                             </div>
                                         </div>
+
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div class="apply-credits" @onclick="() => Model.IsCreditApplied = !Model.IsCreditApplied">
                                                 @if (!Model.IsCreditApplied)
@@ -438,7 +535,7 @@
                                                 }
                                             </div>
                                             <div>
-                                                PHP @(GetTotalCredit.ToString("#,##0.00"))
+                                                ₱ @(GetTotalCredit.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                         <Divider />
@@ -447,7 +544,7 @@
                                                 TOTAL PAYMENT
                                             </div>
                                             <div>
-                                            PHP @(GetTotalPrice.ToString("#,##0.00"))
+                                                ₱ @(GetTotalPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                     </div>
@@ -650,15 +747,19 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public int ActivityId { get; set; }
 
     [Parameter]
     public int ScheduleId { get; set; }
-    
+
     [Parameter, SupplyParameterFromQuery]
     public string Status {get; set;}
+
+
+    [Parameter]
+    public string AddOnsPayLoad { get; set; }
 
     private PurchaseModel Model { get; set; }
 
@@ -706,11 +807,34 @@
 
     private Modal? failedModal;
 
+    private List<int> selectedIds = new List<int>();
+
     protected override async Task OnInitializedAsync()
     {
+
         await FetchAccountDetails();
 
         await FetchSelectedAcivityAndSchedule();
+
+
+        //Deserialized AddOn Payload
+        if (AddOnsPayLoad != null)
+        {
+            var deserializedPayload = JsonConvert.DeserializeObject<PayLoadData>(AddOnsPayLoad);
+            foreach (var item in deserializedPayload.AddOnsDetails)
+            {
+                // Find the corresponding AddOn in Model.Activity.AddOns based on AddOnId
+                var matchingAddOn = Model.Activity.AddOns
+                    .Where(a => a.Id == item.AddOnId)
+                    .FirstOrDefault();
+
+                // Update the AddOnCount if a matching AddOn is found
+                if (matchingAddOn != null)
+                {
+                    matchingAddOn.AddOnCount = item.AddOnCount;
+                }
+            }
+        }
 
         await FetchMakerBadges();
 
@@ -730,8 +854,11 @@
 
     protected override void OnParametersSet()
     {
-        SelectedScheduleChanged();
-        int.TryParse(Enrollees, out enrolleeCount);
+        if(ScheduleId != 0)
+        {
+            SelectedScheduleChanged();
+            int.TryParse(Enrollees, out enrolleeCount);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -846,10 +973,11 @@
             {
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
-                IncludeAtivitySchedules = true,
+                IncludeAtivitySchedules = ScheduleId != 0 ? true : false,
                 IsActive = true,
                 IncludeCustomer = true,
-                IncludeActivityImages = true
+                IncludeActivityImages = true,
+                IncludeAddOns = true
             });
         if ((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -896,21 +1024,33 @@
                 {
                     return new ActivitySchedule
                     {
-                        Id = e.Id,
-                        Name = e.Name,
-                        DateTime = e.DateTime,
-                        PerUnit1 = e.PerUnit1,
-                        PerUnit2 = e.PerUnit2,
-                        Price = e.Price,
-                        PriceUnit1 = e.PriceUnit1,
-                        PriceUnit2 = e.PriceUnit2,
-                        UnitPrice = e.UnitPrice,
-                        Order = e.Order,
+                        Id               = e.Id,
+                        Name             = e.Name,
+                        DateTime         = e.DateTime,
+                        PerUnit1         = e.PerUnit1,
+                        PerUnit2         = e.PerUnit2,
+                        Price            = e.Price,
+                        PriceUnit1       = e.PriceUnit1,
+                        PriceUnit2       = e.PriceUnit2,
+                        UnitPrice        = e.UnitPrice,
+                        Order            = e.Order,
                         IsActiveSchedule = e.IsActiveSchedule,
-                        IsSetSession = e.IsSetSession,
-                        SessionName = e.SessionName,
-                        HasExpiration = e.HasExpiration,
-                        StartDate = e.StartDate
+                        IsSetSession     = e.IsSetSession,
+                        SessionName      = e.SessionName,
+                        HasExpiration    = e.HasExpiration,
+                        StartDate        = e.StartDate
+                    };
+                }).ToList(),
+                AddOns = result.AddOns.Select(s =>
+                {
+                    return new AddOn
+                    {
+                        Id = s.Id,
+                        ActivityId = s.ActivityId,
+                        Name = s.Name,
+                        Price = s.Price,
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 }).ToList(),
                 Images = result.Images.Select(i =>
@@ -936,6 +1076,7 @@
                     IsOfficial = result.Owner.IsOfficial
                 } : null
             };
+
         Model.Activity = activity;
 
         var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(Model.Activity.Owner.Id);
@@ -995,6 +1136,7 @@
     }
 
     private string expiringMessage = string.Empty;
+
     private void SelectedScheduleChanged()
     {
         var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -1034,7 +1176,7 @@
             DateTime periodStart = datePeriod.PeriodStart;
             // to set the last time of the day
             DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-            
+
             DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
             DateTime now = DateTime.Now;
 
@@ -1050,9 +1192,9 @@
 
             if(Model.SelectedSchedule.HasExpiration == 1)
             {
-                
+
                 expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName.ToLower()} (calendar days), and is valid until the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}. Next period is available for purchase at checkout.";
-                
+
             }
             else if(Model.SelectedSchedule.HasExpiration == 2)
             {
@@ -1146,8 +1288,11 @@
     }
 
     private string payErrorMessage = string.Empty;
+
     private bool isShowPayErrorMessage = false;
+
     private bool isLoading = false;
+
     private string payButtonStyle = "font-weight:700;";
 
     private async Task OnPayConfirmedClicked()
@@ -1156,11 +1301,13 @@
         {
             return;
         }
-
-        if(Model.SelectedSchedule.HasExpiration == 1)
+        if (ScheduleId != 0)
         {
-            await ConfirmationModal.Show();
-            return;
+            if (Model.SelectedSchedule.HasExpiration == 1)
+            {
+                await ConfirmationModal.Show();
+                return;
+            }
         }
 
         await SubmitTransaction();
@@ -1190,35 +1337,43 @@
         try
         {
             var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
-
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
                 {
-                    ActivityId = Model.Activity.ActivityId,
-                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
+                    ActivityId    = Model.Activity.ActivityId,
+                    CouponCode    = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
                     NumberOfHeads = SelectedAttendeesCount,
-                    ScheduleId = Model.SelectedSchedule.Id,
-                    Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
+                    ScheduleId    = Model.SelectedSchedule != null ? Model.SelectedSchedule.Id : 0,
+                    Students      = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
                     {
                         return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee
                         {
                             FamilyMemberId = s.Id,
-                            Name = s.Name
+                            Name           = s.Name
                         };
                     }),
-                    PaymentChannel = selectedPaymentMethod.Code,
-                    PaymentMethod = selectedPaymentMethod.PaymentMethod,
+                    PaymentChannel  = selectedPaymentMethod.Code,
+                    PaymentMethod   = selectedPaymentMethod.PaymentMethod,
                     CardInformation = selectedPaymentMethod.Code == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.CardDetails
                     {
-                        AccountHolder = CardPaymentModel.CardHolder ?? string.Empty,
-                        CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
-                        CVV = CardPaymentModel.CVV ?? string.Empty,
+                        AccountHolder   = CardPaymentModel.CardHolder ?? string.Empty,
+                        CardNumber      = CardPaymentModel.CardNumber ?? string.Empty,
+                        CVV             = CardPaymentModel.CVV ?? string.Empty,
                         ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
                     } : null,
                     IsCreditsApplied = Model.IsCreditApplied,
-                    SelectedPeriod = confirmationData.SelectedPeriod
+                    SelectedPeriod = string.IsNullOrEmpty(confirmationData.SelectedPeriod) ? string.Empty : confirmationData.SelectedPeriod,
+                    AddOns = GetAddOnsTotal,
+                    AddOnsDetails    = Model.Activity.AddOns.Where(a => a.AddOnCount != 0).Select(s => {
+                        return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.AddOnsDetail
+                        {
+                            AddOnId    = s.Id,
+                            Name       = s.Name,
+                            AddOnCount = s.AddOnCount
+                        };
+                    })
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1235,19 +1390,6 @@
             else
             {
                 isLoading = false;
-                var groupName = Guid.NewGuid().ToString();
-                var createChatRoomResult = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
-                {
-                    FromUserId = Model.Customer.Id,
-                    ToUserId = Model.Activity.CreatedBy,
-                    ChatType = Framework.Enums.Enums.ChatType.GroupChat,
-                    GroupName = groupName,
-                    ChatName = $"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group"
-                }, Model.Token);
-                if (createChatRoomResult.Succeeded && createChatRoomResult.Result.IsSuccess)
-                {
-                    await hubConnection.SendAsync("AddToGroupAfterPayment", $"{createChatRoomResult.Result.Result.GroupName}|{createChatRoomResult.Result.Result.ChatRoomId}|{Model.Customer.Id}|{Model.Customer.FirstName}|{Model.Customer.LastName}|{Model.Customer.ProfilePath}|{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group");
-                }
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -1283,12 +1425,28 @@
         {
             decimal result = 0;
 
-            if (SelectedAttendeesCount > 0)
+            if (SelectedAttendeesCount > 0 && ScheduleId != 0)
             {
                 result = Model.SelectedSchedule.Price * SelectedAttendeesCount;
             }
 
             return result;
+        }
+    }
+
+    private decimal GetAddOnsTotal
+    {
+        get
+        {
+            var selectedAddOns = Model.Activity.AddOns.Where(addOn => addOn.AddOnCount != 0).ToList();
+
+            if (selectedAddOns == null || selectedAddOns.Count == 0)
+            {
+                return 0;
+            }
+
+            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price * addOn.AddOnCount);
+            return totalAddOnPrice;
         }
     }
 
@@ -1312,12 +1470,10 @@
         get
         {
             decimal result = 0;
-
-            if(SelectedAttendeesCount > 0 && !IsInclusivePricing)
+            if (SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
                 result = 39;
             }
-
             return result;
         }
     }
@@ -1364,7 +1520,7 @@
 
             if ((Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
             {
-                decimal overallTotal = (GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
+                decimal overallTotal = (GetTotalPerHeadPrice + GetAddOnsTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
 
                 decimal creditsBalance = Model.Customer.TotalCredits;
                 result = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
@@ -1379,14 +1535,12 @@
         get
         {
             decimal result = 0;
-
             if (SelectedAttendeesCount > 0)
             {
                 decimal discount = 0;
-                result = ((GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = ((GetTotalPerHeadPrice + GetAddOnsTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
                 result = result < 0 ? 0 : result;
             }
-
             return result;
         }
     }
@@ -1450,7 +1604,8 @@
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
             decimal paymentProviderFee = subTotal * .05m;
             decimal serviceFee = 50;
-            decimal total = subTotal + paymentProviderFee + serviceFee;
+            decimal addOns = GetAddOnsTotal;
+            decimal total = subTotal + addOns + paymentProviderFee + serviceFee;
 
             var validateRes = await activityApiHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs {
                 ActivityId = ActivityId,
@@ -1593,6 +1748,26 @@
             return;
         }
     }
+    private Task AddAddOns(AddOn addOn)
+    {
+        foreach (var existingAddOn in Model.Activity.AddOns.Where(a => a.Id == addOn.Id))
+        {
+            existingAddOn.AddOnCount++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task SubtractAddOns(AddOn addOn)
+    {
+        foreach (var existingAddOn in Model.Activity.AddOns.Where(a => a.Id == addOn.Id))
+        {
+            if (existingAddOn.AddOnCount > 0)
+                existingAddOn.AddOnCount--;
+            else
+                existingAddOn.AddOnCount = 0;
+        }
+        return Task.CompletedTask;
+    }
 
     private Task NavigateBack()
     {
@@ -1633,5 +1808,14 @@
 
         public string SelectedPeriod { get; set; }
         public bool IsSubmitting { get; set; }
+    }
+    class PayLoadData
+    {
+        public IEnumerable<AddOnDetails> AddOnsDetails { get; set; }
+    }
+    class AddOnDetails
+    {
+        public int AddOnId { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

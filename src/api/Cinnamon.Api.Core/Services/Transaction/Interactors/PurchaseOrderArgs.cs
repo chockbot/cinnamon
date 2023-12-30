@@ -11,14 +11,23 @@ public class PurchaseOrderArgs : IInteractor
     public string PaymentMethod {get; set;}
     public string? PaymentChannel {get; set;}
     public IEnumerable<Enrollee> Students {get; set;}
+    public IEnumerable<AddOn> AddOnsDetails { get; set; }
     public CardDetails? CardInformation {get; set;}
     public bool IsCreditsApplied {get; set;}
     public string SelectedPeriod { get; set; }
+    public decimal AddOnsAmount { get; set; }
 
     public class Enrollee
     {
         public int FamilyMemberId {get; set;}
         public string Name {get; set;}
+    }
+
+    public class AddOn
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 
     public class CardDetails 

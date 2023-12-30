@@ -203,5 +203,25 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
                 return AppResult<GetOteNeedToDisburseResult>.CreateFailed(ex, "An error occured when getting ote need to disburse");
             }
         }
+
+        public async Task<AppResult<GetAllAddonsNeedToDisburseResult>> AddOnsNeedToDisburse()
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/AddOnsNeedToDisburse")
+                                .GetJsonAsync<GetAllAddonsNeedToDisburseResult>();
+
+                return AppResult<GetAllAddonsNeedToDisburseResult>.CreateSucceeded(result, "Successfully getting get addons need to disburse");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetAllAddonsNeedToDisburseResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllAddonsNeedToDisburseResult>.CreateFailed(ex, "An error occured when getting addons need to disburse");
+            }
+        }
     }
 }

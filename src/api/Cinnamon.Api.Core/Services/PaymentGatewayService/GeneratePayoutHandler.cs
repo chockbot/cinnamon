@@ -230,6 +230,36 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                 }
             }
 
+            // for addons disbursement
+            var addonsTransactions = await purchaseOrderData.AddOnsNeedToDisburse();
+            if(!addonsTransactions.Succeeded || addonsTransactions.Result == null || !addonsTransactions.Result.IsSuccess)
+            {
+                return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(addonsTransactions.Result?.ErrorInfo?.Message), addonsTransactions.Message);
+            }
+            // skip data have errors
+            int totalAddonTransactions = addonsTransactions.Result.Result.Count();
+            for(int i = 0; i < totalAddonTransactions; i++)
+            {
+                var transaction = addonsTransactions.Result.Result.ElementAt(i);
+                if(transaction != null)
+                {
+                    // get maker payout account and cache in memory
+                    if(!cachedPayoutAccounts.ContainsKey(transaction.MakerId))
+                    {
+                        var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
+                        if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
+                        {
+                            continue;
+                        }
+                        cachedPayoutAccounts.Add(transaction.MakerId, accountRes.Result.Result);
+                    }
+
+                    var account = cachedPayoutAccounts[transaction.MakerId];
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, transaction.TotalDisburseAmount, transaction.TransactionId, 
+                            account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
+                }
+            }
+
             // generate payout log and send disbursement to xendit
             foreach(var summary in generatePayoutHelper.GetCustomerPayoutSummaries)
             {

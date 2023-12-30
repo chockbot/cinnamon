@@ -5,6 +5,21 @@ input:focus {
     outline: none !important;
     box-shadow: none !important;
 }
+.example-add-on {
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 400;
+    color: #717171;
+}
+.addons-sub-title {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    margin-left: 4%;
+    margin-bottom: 1rem;
+    text-align:left;
+}
 .field-heading-section {
     width: 100%;
 }
@@ -36,7 +51,8 @@ input:focus {
     font-family: Nunito;
     font-size: 24px;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
+    margin-left: 4%;
 }
 .expiration-title {
     font-family: Nunito;
@@ -57,19 +73,24 @@ input:focus {
     font-weight: 600;
     font-size: 20px;
     line-height: 27px;
-    color: #000000;
+    color: #343D4C;
 }
-
-.pricing-schedule-section {
+add-ons-section {
     padding: 0px 30px;
     background: #FFFFFF;
     border-radius: 10px;
+    height: 100px;
+}
+.pricing-schedule-section {
+    padding: 0px 30px;
+    background: #FFFFFF;
 }
 
 .pricing-schedule {
     padding: 10px 30px;
     background: #F3F6FC;
-    border-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 #schedule-name, #schedule-time, #price-input, #unit2-input {
@@ -196,6 +217,19 @@ input:focus {
     margin-right: auto;
     display: block;
 }
+#btnAddOns {
+    width: 250px;
+    height: 60px;
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    color: #FFFFFF;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
 
 #activitySchedules {
     margin-bottom: 20px;
@@ -207,7 +241,7 @@ input:focus {
     font-weight: 600;
     font-size: 20px;
     line-height: 27px;
-    color: #000000;
+    color: #343D4C;
     background: #F3F6FC;
 }
 
@@ -255,11 +289,18 @@ input:focus {
 .right-margin {
     margin-right: 5px;
 }
+@media screen and (max-width: 767px) {
+    .pricing-title {
+        font-family: Nunito;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+    }
+}
 
 @media (min-width: 0px) and (max-width: 575.98px) {
     .pricing-schedule {
         background: #FFFFFF;
-        border-radius: 10px;
         border: 1px solid #D9D9D9;
         padding: 10px 15px;
     }
@@ -268,23 +309,30 @@ input:focus {
         padding: 0px 24px;
     }
 
-    #btnAddSchedule{
+    #btnAddSchedule {
         width: 100%;
     }
+
+    #btnAddOns {
+        width: 100%;
+    }
+
 
     .accordion-title {
         width: 200px;
     }
+
     .activity-expiration .form-check-input {
         margin-left: 5px;
     }
-    .td-field-number{
-        width:0;
+
+    .td-field-number {
+        width: 0;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-    
+
 }
 @media (min-width: 768px) and (max-width: 991.98px) {
 }

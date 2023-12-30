@@ -191,6 +191,7 @@ public class Activity
     public int ActivityStatus { get { return (int)Status; } }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
+    public IList<AddOn> AddOns { get; set;} = new List<AddOn>();
     public IList<ActivityImage> Images {get; set;}
     public CustomerProfile? Owner {get; set;}
     public bool IsNew { get; set; }

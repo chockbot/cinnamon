@@ -17,4 +17,13 @@ public class PurchaseOrderDTO
     public decimal PaymentProviderFee {get; set;}
     public decimal AppliedCredit {get; set;}
     public bool IsInclusivePayment {get; set;}
+    public decimal AddOnsAmount { get; set; }
+    public IEnumerable<AddOnDetail> AddOnsDetails { get; set; }
+
+    public class AddOnDetail
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int AddOnCount { get; set; }
+    }
 }

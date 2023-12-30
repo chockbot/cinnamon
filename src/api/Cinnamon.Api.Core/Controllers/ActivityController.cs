@@ -68,6 +68,8 @@ public class ActivityController : ControllerBase
     private readonly IOteTicketDetailsHandler oteTicketDetailsHandler;
     private readonly ICustomerOteHandler customerOteHandler;
     private readonly IOteVerificationHandler oteVerificationHandler;
+    private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
+    private readonly IDeleteAddOnHandler deleteAddOnHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -89,7 +91,7 @@ public class ActivityController : ControllerBase
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
-        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler)
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler)
     {
         _logger = logger;
 
@@ -140,6 +142,8 @@ public class ActivityController : ControllerBase
         this.oteTicketDetailsHandler = oteTicketDetailsHandler;
         this.customerOteHandler = customerOteHandler;
         this.oteVerificationHandler = oteVerificationHandler;
+        this.deleteAddOnsHandler = deleteAddOnsHandler;
+        this.deleteAddOnHandler = deleteAddOnHandler;
     }
 
     [Route("CreateActivity")]
@@ -179,6 +183,17 @@ public class ActivityController : ControllerBase
                         }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime>()
                     };
                 }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.ActivitySchedule>(),
+                AddOns = args.AddOns is not null ? args.AddOns.Select(s => {
+                    return new Services.ActivityService.Interactors.CreateActivityArgs.AddOn
+                    {
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }) : Enumerable.Empty<Services.ActivityService.Interactors.CreateActivityArgs.AddOn>(),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
                 Address1 = args.Address1 ?? string.Empty,
                 Address2 = args.Address2 ?? string.Empty,
@@ -279,37 +294,37 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await updateActivityHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateActivityArgs {
-                ActivityId = args.ActivityId,
-                ActivityLevel = args.ActivityLevel,
-                AdditionalRequirements = args.AdditionalRequirements,
-                Address1 = args.Address1,
-                Address2 = args.Address2,
-                CanAdultsJoin = args.CanAdultsJoin,
-                City = args.City,
-                Subdivision = args.Subdivision,
-                Region = args.Region,
-                Barangay = args.Barangay,
-                PostalCode = args.PostalCode,
-                CustomerBringWithThem = args.CustomerBringWithThem,
-                Description = args.Description,
-                District = args.District,
-                ExperienceCategoryId = args.ExperienceCategoryId,
-                ExperienceTypeId = args.ExperienceTypeId,
-                IsPublished = args.IsPublished,
-                MinimumAge = args.MinimumAge,
-                Price = args.Price,
-                Remarks = args.Remarks,
-                ScheduleIndicator = args.ScheduleIndicator,
-                SearchTags = args.SearchTags,
-                SkillLevel = args.SkillLevel,
+                ActivityId              = args.ActivityId,
+                ActivityLevel           = args.ActivityLevel,
+                AdditionalRequirements  = args.AdditionalRequirements,
+                Address1                = args.Address1,
+                Address2                = args.Address2,
+                CanAdultsJoin           = args.CanAdultsJoin,
+                City                    = args.City,
+                Subdivision             = args.Subdivision,
+                Region                  = args.Region ?? string.Empty,
+                Barangay                = args.Barangay,
+                PostalCode              = args.PostalCode,
+                CustomerBringWithThem   = args.CustomerBringWithThem,
+                Description             = args.Description,
+                District                = args.District,
+                ExperienceCategoryId    = args.ExperienceCategoryId,
+                ExperienceTypeId        = args.ExperienceTypeId,
+                IsPublished             = args.IsPublished,
+                MinimumAge              = args.MinimumAge,
+                Price                   = args.Price,
+                Remarks                 = args.Remarks,
+                ScheduleIndicator       = args.ScheduleIndicator,
+                SearchTags              = args.SearchTags,
+                SkillLevel              = args.SkillLevel,
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
-                ClassPolicies = args.ClassPolicies,
-                SubCategoryId = args.SubCategoryId,
-                Title = args.Title,
-                PinnedLocation = args.PinnedLocation,
-                IsDeactivated = args.IsDeactivated,
-                IsAdmin = args.IsAdmin,
-                Status = args.Status,
+                ClassPolicies           = args.ClassPolicies,
+                SubCategoryId           = args.SubCategoryId,
+                Title                   = args.Title,
+                PinnedLocation          = args.PinnedLocation,
+                IsDeactivated           = args.IsDeactivated,
+                IsAdmin                 = args.IsAdmin,
+                Status                  = args.Status,
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
@@ -343,7 +358,20 @@ public class ActivityController : ControllerBase
                             }) : Enumerable.Empty<Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime>()
                         };
                     }) : null,
-                DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
+                DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>(),
+                AddOns = args.AddOns != null ? args.AddOns.Select(a => {
+                    return new Services.ActivityService.Interactors.UpdateActivityArgs.AddOn
+                    {
+                        Id          = a.Id,
+                        ActivityId  = a.ActivityId,
+                        Name        = a.Name,
+                        Description = a.Description,
+                        Price       = a.Price,
+                        UnitPrice   = a.UnitPrice,
+                        Order       = a.Order
+                    };
+                }) : null,
+                DeletedAddOnsIds = args.DeletedAddOnIds != null ? args.DeletedAddOnIds : Enumerable.Empty<int>()
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -352,35 +380,35 @@ public class ActivityController : ControllerBase
             var activity = result.Result;
 
             return new JsonResult(new UpdateActivityResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
-                ActivityId = activity.ActivityId,
-                ActivityLevel = activity.ActivityLevel,
-                AdditionalRequirements = activity.AdditionalRequirements,
-                Address1 = activity.Address1,
-                Address2 = activity.Address2,
-                CanAdultsJoin = activity.CanAdultsJoin,
-                City = activity.City,
-                Subdivision = activity.Subdivision,
-                Region = activity.Region,
-                Barangay = activity.Barangay,
-                PostalCode =activity.PostalCode,
-                CustomerBringWithThem = activity.CustomerBringWithThem,
-                Description = activity.Description,
-                District = activity.District,
-                ExperienceCategoryId = activity.ExperienceCategoryId,
-                ExperienceTypeId = activity.ExperienceTypeId,
-                IsPublished = activity.IsPublished,
-                MinimumAge = activity.MinimumAge,
-                Price = activity.Price,
-                Remarks = activity.Remarks,
-                ScheduleIndicator = activity.ScheduleIndicator,
-                SearchTags = activity.SearchTags,
-                SkillLevel = activity.SkillLevel,
+                ActivityId              = activity.ActivityId,
+                ActivityLevel           = activity.ActivityLevel,
+                AdditionalRequirements  = activity.AdditionalRequirements,
+                Address1                = activity.Address1,
+                Address2                = activity.Address2,
+                CanAdultsJoin           = activity.CanAdultsJoin,
+                City                    = activity.City,
+                Subdivision             = activity.Subdivision,
+                Region                  = activity.Region,
+                Barangay                = activity.Barangay,
+                PostalCode              = activity.PostalCode,
+                CustomerBringWithThem   = activity.CustomerBringWithThem,
+                Description             = activity.Description,
+                District                = activity.District,
+                ExperienceCategoryId    = activity.ExperienceCategoryId,
+                ExperienceTypeId        = activity.ExperienceTypeId,
+                IsPublished             = activity.IsPublished,
+                MinimumAge              = activity.MinimumAge,
+                Price                   = activity.Price,
+                Remarks                 = activity.Remarks,
+                ScheduleIndicator       = activity.ScheduleIndicator,
+                SearchTags              = activity.SearchTags,
+                SkillLevel              = activity.SkillLevel,
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
-                SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title,
-                Handler = activity.Handler,
-                Status = activity.Status,
-                ClassPolicies = activity.ClassPolicies
+                SubCategoryId           = activity.SubCategoryId,
+                Title                   = activity.Title,
+                Handler                 = activity.Handler,
+                Status                  = activity.Status,
+                ClassPolicies           = activity.ClassPolicies
             }});
         }
         catch (Exception ex)
@@ -997,7 +1025,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeAddOns = args.IncludeAddOns
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1040,6 +1069,18 @@ public class ActivityController : ControllerBase
                                 StartTime = act.StartTime,
                                 IsEnabled = act.IsEnabled
                             }).ToList()
+                        };
+                    }),
+                    AddOns = activity.AddOns.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn {
+                            Id          = s.Id,
+                            ActivityId  = s.ActivityId,
+                            Name        = s.Name,
+                            Price       = s.Price,
+                            UnitPrice   = s.UnitPrice,
+                            Description = s.Description,
+                            Order       = s.Order
                         };
                     }),
                     ClassPolicies = activity.ClassPolicies,
@@ -1210,7 +1251,8 @@ public class ActivityController : ControllerBase
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
                 IncludeStudents = args.IncludeStudents,
-                IncludeTickets = args.IncludeTickets ?? false
+                IncludeTickets = args.IncludeTickets ?? false,
+                IncludeAddOns = args.IncludeAddOns ?? false
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1238,7 +1280,7 @@ public class ActivityController : ControllerBase
                             Order = s.Order,
                             IsActiveSchedule = s.IsActiveSchedule,
                             IsSetSession = s.IsSetSession,
-                            SessionName  = s.SessionName,
+                            SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
@@ -1285,23 +1327,36 @@ public class ActivityController : ControllerBase
                     PinnedLocation = activity.PinnedLocation,
                     ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
-                            Handler = activity.Owner.Handler,
-                            Id  = activity.Owner.Id,
-                            ImageSrc = activity.Owner.ImageSrc,
-                            FirstName = activity.Owner.FirstName,
-                            LastName = activity.Owner.LastName,
-                            IsVerified = activity.Owner.IsVerified,
-                            IsOG = activity.Owner.IsOG,
-                            IsOfficial = activity.Owner.IsOfficial,
-                            Email = activity.Owner.Email,
-                            PhoneNumber = activity.Owner.PhoneNumber
-                        } : null,
+                        Handler = activity.Owner.Handler,
+                        Id = activity.Owner.Id,
+                        ImageSrc = activity.Owner.ImageSrc,
+                        FirstName = activity.Owner.FirstName,
+                        LastName = activity.Owner.LastName,
+                        IsVerified = activity.Owner.IsVerified,
+                        IsOG = activity.Owner.IsOG,
+                        IsOfficial = activity.Owner.IsOfficial,
+                        Email = activity.Owner.Email,
+                        PhoneNumber = activity.Owner.PhoneNumber
+                    } : null,
+                    AddOns = activity.AddOns.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn
+                        {
+                            Id          = s.Id,
+                            ActivityId  = s.ActivityId,
+                            Name        = s.Name,
+                            Price       = s.Price,
+                            UnitPrice   = s.UnitPrice,
+                            Description = s.Description,
+                            Order       = s.Order
+                        };
+                    }),
                     OngoingStudents = activity.OngoingStudents,
                     CompletedStudents = activity.CompletedStudents,
                     IsComingSoon = activity.IsComingSoon,
                     NumberOfTickets = activity.NumberOfTickets
                 }
-            });
+            }); 
         }
         catch (Exception ex)
         {
@@ -1326,7 +1381,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeAddOns = args.IncludeAddOns
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -1360,6 +1416,18 @@ public class ActivityController : ControllerBase
                             PriceType = s.PriceType,
                             ScheduleType = s.ScheduleType,
                             SchedulingUrl = s.SchedulingUrl
+                        };
+                    }),
+                    AddOns = activity.AddOns.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn
+                        {
+                            Id = s.Id,
+                            ActivityId = s.ActivityId,
+                            Name = s.Name,
+                            Price = s.Price,
+                            UnitPrice = s.UnitPrice,
+                            Description = s.Description,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -2382,7 +2450,8 @@ public class ActivityController : ControllerBase
             var result = await popularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.PopularActivitiesArgs
             {
                 Skip = args.PageIndex,
-                Take = args.CountPerPage
+                Take = args.CountPerPage,
+                CategoryId = args.CategoryId
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -2731,13 +2800,73 @@ public class ActivityController : ControllerBase
                 IsSuccess = true,
                 Result = new CoreDto.Activity.OteVerificationDTO {
                     TicketSeat = result.Result.TicketSeat,
-                    Verified = result.Result.Verified
+                    Verified = result.Result.Verified,
+                    Id = result.Result.Id
                 }
             });
         }
         catch (Exception ex)
         {
             return new JsonResult(new OteVerificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("DeleteAddOns")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteAddOnsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAddOnsById([FromBody] DeleteAddOnsArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteAddOnsHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteAddOnsArgs
+            {
+               AddOnIds = args.AddOnsIds
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteAddOnsResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteAddOnsResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteAddOnsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteAddOn")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteAddOnResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAddOnById([FromBody] DeleteAddOnArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteAddOnHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteAddOnArgs
+            {
+                AddOnId = args.AddOnId
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteAddOnResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

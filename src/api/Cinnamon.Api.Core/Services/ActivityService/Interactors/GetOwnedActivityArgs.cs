@@ -13,4 +13,5 @@ public class GetOwnedActivityArgs : IInteractor
     public bool? IsActive {get; set;}
     public bool? IncludeCustomer {get; set;}
     public bool? IncludeStudents { get; set; }
+    public bool? IncludeAddOns { get; set; }
 }

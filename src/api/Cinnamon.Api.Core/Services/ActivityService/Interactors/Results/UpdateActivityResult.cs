@@ -37,7 +37,8 @@ public class UpdateActivityResult
     public Enums.ActivityStatus Status { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
-    
+    public IEnumerable<AddOn> AddOns { get; set; }
+
 
     public class ActivitySchedule 
     {
@@ -55,5 +56,15 @@ public class UpdateActivityResult
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime StartDate { get; set; }
+    }
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string UnitPrice { get; set; }
+        public string Description { get; set; }
+        public int Order { get; set; }
     }
 }

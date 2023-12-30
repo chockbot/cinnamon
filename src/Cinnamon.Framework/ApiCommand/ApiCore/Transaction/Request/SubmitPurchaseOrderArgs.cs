@@ -17,10 +17,14 @@ public class SubmitPurchaseOrderArgs
     public string? PaymentChannel {get; set;}
     [Required]
     public IEnumerable<Enrollee> Students {get; set;}
+    [Required]
+    public IEnumerable<AddOnsDetail> AddOnsDetails { get; set; }
     public CardDetails? CardInformation {get; set;}
     [Required]
     public bool IsCreditsApplied {get; set;}
     public string? SelectedPeriod { get; set; }
+
+    public decimal AddOns { get; set; }
 
     public class Enrollee 
     {
@@ -29,7 +33,16 @@ public class SubmitPurchaseOrderArgs
         [Required]
         public string Name {get; set;}
     }
+    public class AddOnsDetail
+    {
+        [Required]
+        public int AddOnId { get; set; }
+        [Required]
+        public string Name { get; set; }
 
+        [Required]
+        public int AddOnCount { get; set; }
+    }
     public class CardDetails 
     {
         [CreditCard(ErrorMessage = "Provide valid card number")]

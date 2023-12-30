@@ -1315,7 +1315,8 @@ public class AccountController : ControllerBase
                         IsOfficialDate   = c.IsOFDate,
                         CustomerPricing = new CustomerPricingDTO {
                             Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
-                            IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false
+                            IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
+                            InclusivePricing = c.CustomerPricing != null ? c.CustomerPricing.InclusivePricing : false
                         },
                         IsAccountBan     = c.IsAccountBan
                     };

@@ -86,23 +86,28 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
+            //Check if user selected schedule 
+            if (purchaseOrder.ScheduleId != 0)
             {
-                ActivityId = purchaseOrder.ActivityId,
-                CustomerId = purchaseOrder.CustomerId,
-                PurchaseOrderId = purchaseOrder.Id,
-                ScheduleId = purchaseOrder.ScheduleId,
-                Students = deserializedPayload.Students.Select(s => {
-                    return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
-                        FamilyMemberId = s.Id,
-                        Name = s.Name
-                    };
-                }),
-                SelectedPeriod = deserializedPayload.SelectedPeriod
-            });
-            if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
-            {
-                return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs
+                {
+                    ActivityId = purchaseOrder.ActivityId,
+                    CustomerId = purchaseOrder.CustomerId,
+                    PurchaseOrderId = purchaseOrder.Id,
+                    ScheduleId = purchaseOrder.ScheduleId,
+                    Students = deserializedPayload.Students.Select(s => {
+                        return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student
+                        {
+                            FamilyMemberId = s.Id,
+                            Name = s.Name
+                        };
+                    }),
+                    SelectedPeriod = deserializedPayload.SelectedPeriod,
+                });
+                if (!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
+                {
+                    return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                }
             }
 
             // if there is credit applied in purchase order then subract in balance credit
@@ -124,27 +129,36 @@ public class FinishTransactionHandler : IFinishTransactionHandler
 
             // send email notification for customer
             var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
-                Amount = purchaseOrder.Total,
-                CoachName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
-                CoachNumber = activity.Owner.PhoneNumber,
-                CustomerName = $"{customer.FirstName} {customer.LastName}",
-                Email = customer.Email,
+                Amount         = purchaseOrder.Total,
+                CoachName      = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
+                CoachNumber    = activity.Owner.PhoneNumber,
+                CustomerName   = $"{customer.FirstName} {customer.LastName}",
+                Email          = customer.Email,
                 ExperienceName = activity.Title,
-                PayerName = $"{customer.FirstName} {customer.LastName}",
-                PurchaseDate = DateTime.Now,
-                Members = deserializedPayload.Students.Select(s => {
+                PayerName      = $"{customer.FirstName} {customer.LastName}",
+                PurchaseDate   = DateTime.Now,
+                Members        = deserializedPayload.Students.Select(s => {
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
                         Name = s.Name,
                     };
                 }),
-                PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
-                ReferenceNumber = referenceId,
-                MakerEmail = $"{activity.Owner?.Email}",
-                ServiceFee = deserializedPayload.Fees.ServiceFee,
+                PaymentMethod      = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
+                ReferenceNumber    = referenceId,
+                MakerEmail         = $"{activity.Owner?.Email}",
+                ServiceFee         = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
-                AppliedCredits = purchaseOrder.CreditAmount,
+                AppliedCredits     = purchaseOrder.CreditAmount,
                 IsInclusivePayment = deserializedPayload.IsInclusivePayment,
-                DiscountAmount = purchaseOrder.CouponAmount ?? 0
+                DiscountAmount     = purchaseOrder.CouponAmount ?? 0,
+                AddOnsAmount       = purchaseOrder.AddOnsAmount,
+                AddOnsDetails      = deserializedPayload.AddOnsDetails.Select(a =>
+                {
+                    return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.AddOnDetails {
+                        AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
+
+                    };
+                })
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -153,25 +167,34 @@ public class FinishTransactionHandler : IFinishTransactionHandler
 
             // send mail notification for maker
             var makerNotification = await makerEnrolledNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs {
-                Amount = purchaseOrder.Total,
-                Email = $"{activity.Owner?.Email}",
+                Amount         = purchaseOrder.Total,
+                Email          = $"{activity.Owner?.Email}",
                 ExperienceName = activity.Title,
-                MakerName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
-                PayerName = $"{customer.FirstName} {customer.LastName}",
-                PurchaseDate = DateTime.Now,
-                Students = deserializedPayload.Students.Select(s => {
+                MakerName      = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
+                PayerName      = $"{customer.FirstName} {customer.LastName}",
+                PurchaseDate   = DateTime.Now,
+                Students       = deserializedPayload.Students.Select(s => {
                     return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
                         Name = s.Name
                     };
                 }),
-                PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
-                ReferenceNumber = referenceId,
-                PayerEmail = customer.Email,
-                ServiceFee = deserializedPayload.Fees.ServiceFee,
+                PaymentMethod      = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
+                ReferenceNumber    = referenceId,
+                PayerEmail         = customer.Email,
+                ServiceFee         = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
-                AppliedCredits = purchaseOrder.CreditAmount,
+                AppliedCredits     = purchaseOrder.CreditAmount,
                 IsInclusivePayment = deserializedPayload.IsInclusivePayment,
-                DiscountAmount = purchaseOrder.CouponAmount ?? 0
+                DiscountAmount     = purchaseOrder.CouponAmount ?? 0,
+                AddOnsAmount       = purchaseOrder.AddOnsAmount,
+                AddOnsDetails      = deserializedPayload.AddOnsDetails.Select(a =>
+                {
+                    return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.AddOnDetails
+                    {
+                        AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
+                    };
+                })
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
@@ -189,6 +212,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     class PayloadData 
     {
         public IEnumerable<Student> Students {get; set;}
+        public IEnumerable<AddOnDetails> AddOnsDetails { get; set;}
         public Fees Fees {get; set;}
         public string PaymentMethod {get; set;}
         public string PaymentChannel {get; set;}
@@ -205,5 +229,11 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     class Fees {
         public decimal PaymentProviderFee {get; set;}
         public decimal ServiceFee {get; set;}
+    }
+    class AddOnDetails
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 }

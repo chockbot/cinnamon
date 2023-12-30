@@ -80,7 +80,7 @@ public class OteVerificationHandler : IOteVerificationHandler
             }
 
             return AppResult<OteVerificationResult>.CreateSucceeded(new OteVerificationResult 
-                {Verified = true, TicketSeat = qrcode.Title}, "QR Code Successfully validated.");
+                {Verified = true, TicketSeat = qrcode.Title, Id = qrcode.Id}, "QR Code Successfully validated.");
 
         }
         catch (Exception ex)

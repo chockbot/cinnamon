@@ -42,6 +42,7 @@ public class GetActivityByHandlerResult
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
+    public IEnumerable<AddOn> AddOns { get; set; }
     public IEnumerable<ActivityImage> Images {get; set;}
     public CustomerOwner? Owner {get; set;}
     public int CompletedStudents { get; set; }
@@ -82,5 +83,15 @@ public class GetActivityByHandlerResult
     {
         public int Id {get; set;}
         public string Handler {get; set;}
+    }
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string UnitPrice { get; set; }
+        public string Description { get; set; }
+        public int Order { get; set; }
     }
 }

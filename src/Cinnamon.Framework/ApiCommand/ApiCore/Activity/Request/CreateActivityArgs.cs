@@ -118,6 +118,8 @@ public class CreateActivityArgs
     [Required]
     public IEnumerable<Schedule> ActivitySchedules {get; set;}
 
+    public IEnumerable<CreateAddOn> AddOns { get; set;}
+
     public Enums.Enums.ActivityStatus Status { get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
 
@@ -171,5 +173,21 @@ public class CreateActivityArgs
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public bool IsEnabled { get; set; }
+    }
+
+    public class CreateAddOn
+    {
+        [Required]
+        public int ActivityId { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public decimal Price { get; set; }
+        [Required]
+        public string UnitPrice { get; set; } = "PHP";
+
+        public string Description { get; set; }
+
+        public int Order { get; set; }
     }
 }

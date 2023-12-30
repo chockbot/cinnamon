@@ -58,6 +58,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceCreationTypeData, Modules.DataAccess.ExperienceCreationType.ExperienceCreationTypeData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteTicketData, Modules.DataAccess.OteTicket.OteTicketData>();
         services.AddTransient<Modules.DataAccess.Handlers.ITokenGeneratedData, Modules.DataAccess.TokenGenerated.TokenGeneratedData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -161,6 +162,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteTicketDetailsHandler, Services.ActivityService.OteTicketDetailsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICustomerOteHandler, Services.ActivityService.CustomerOteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteVerificationHandler, Services.ActivityService.OteVerificationHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnsHandler, Services.ActivityService.DeleteAddOnsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnHandler, Services.ActivityService.DeleteAddOnHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

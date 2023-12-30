@@ -18,7 +18,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId,string searchValue, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
     {
         try
         {
@@ -26,8 +26,11 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             int skipCount = skip.HasValue ? skip.Value : 0;
 
             var query = applicationContext.OteTickets.Where(t => t.ActivityId == activityId);
-
-            if(includeCustomer)
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                query = query.Where(t => EF.Functions.Like((t.Customer.FirstName +" "+ t.Customer.LastName).ToLower(), $"%{searchValue.ToLower()}%"));
+            }
+            if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
             }
@@ -99,9 +102,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
     {
         try
         {
-            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", \r\n" +
-                "(SELECT COUNT(*) FROM public.\"OteTickets\" as ote JOIN public.\"PurchaseOrders\" as po ON ote.\"PurchaseOrderId\" = po.\"Id\"\r\n" +
-                "WHERE ote.\"OteSchedulePricingId\" = b.\"Id\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS Sold\r\n" +
+            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", b.\"TicketSold\" \r\n" +
                 "FROM public.\"OteSchedules\" AS a\r\n" +
                 "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
                 "WHERE a.\"ActivityId\" = " + activityId + ";";
@@ -123,16 +124,16 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                         //Get Activity
                         listResult = dt.AsEnumerable().Select(item => new OteScheduleDTO
                         {
-                            ActivityId  = Convert.ToInt32(item["ActivityId"]),
-                            From        = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-                            To          = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-                            Recurrences = item["Recurrences"].ToString() ?? string.Empty, 
+                            ActivityId            = Convert.ToInt32(item["ActivityId"]),
+                            From                  = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+                            To                    = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+                            Recurrences           = item["Recurrences"].ToString() ?? string.Empty, 
                             OteSchedulePricingDTO = new OteSchedulePricingDTO()
                             {
                                 Name        = item["Name"].ToString() ?? string.Empty,
                                 Description = item["Description"].ToString() ?? string.Empty,
                                 MaxSlots    = Convert.ToInt32(item["MaxSlots"]),
-                                Sold        = Convert.ToInt32(item["Sold"])
+                                Sold        = Convert.ToInt32(item["TicketSold"])
                             }
                         }).ToList();
                     }

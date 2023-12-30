@@ -78,7 +78,8 @@ namespace Cinnamon.Api.Core.Controllers
                 var result = await updateCustomerPricingHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateCustomerPricingArgs {
                     CustomerId = args.CustomerId,
                     Rate = args.Rate,
-                    IsManualPayment = args.IsManualPayment
+                    IsManualPayment = args.IsManualPayment,
+                    InclusivePricing = args.InclusivePricing
                 });
                 if (!result.Succeeded || result.Result == null)
                 {
