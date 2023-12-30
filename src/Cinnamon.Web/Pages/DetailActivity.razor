@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components.Pages;
+@using Newtonsoft.Json;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
@@ -524,16 +525,25 @@
                             @if(activity.AddOns.Count != 0)
                             {
                                 <label class="fw-bold mb-3 detail-label">@(activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</label>
-                                <div class="schedule-detail w-100 rounded-5">
-                                    <div class="add-ons">
-                                        @foreach (var addOn in activity.AddOns.OrderBy(a => a.Order).ToList())
-                                        {
-                                            <button class="addon-button" type="button" @onclick="() => SelectAddOns(addOn)" style='@($"background: {(addOn.IsSelected ? "#FFA942" : "#F3F6FCDE")}")'>
-                                                <p class="activity-title">@addOn.Name</p>
-                                            </button>
-                                        }
+                                @foreach (var addOn in activity.AddOns.OrderBy(a => a.Order).ToList())
+                                {
+                                    <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
+                                        <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
+                                            <div class="w-100 p-2">@addOn.Name</div>
+                                            <div @onclick = "() =>SubtractAddOns(addOn)"
+                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                -
+                                            </div>
+                                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                                @addOn.AddOnCount
+                                            </div>
+                                            <div @onclick="() =>AddAddOns(addOn)"
+                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                +
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             }
                         </div>
                     }
@@ -657,7 +667,7 @@
                             {
                                 @if (activity.ExperienceTypeId == 1)
                                 {
-                                    var address = !string.IsNullOrEmpty(activity.PinnedLocation) || activity.PinnedLocation != "N/A" ? activity.PinnedLocation : activity.Address1 + "+" + activity.Subdivision + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
+                                    var address = !string.IsNullOrEmpty(activity.PinnedLocation) || activity.PinnedLocation != "N/A" ? activity.PinnedLocation : activity.Address1 + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
                                     var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
                                     <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
                                     <span class="mt-3">
@@ -781,7 +791,7 @@
                                     </Button>
                                     @if (isShowErrorMessage)
                                     {
-                                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule or add-ons.</p>
                                     }
                                 </div>
                             </div>
@@ -962,7 +972,7 @@
                     </div>
                     @if(isShowErrorMessage)
                     {
-                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule or add-ons.</p>
                     }
                 </div>
             </div>
@@ -987,21 +997,22 @@
     [Parameter]
     public string Identifier { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
-    public Profile CustomerModel = new Profile();
-    public DetailActivityModel Model = new DetailActivityModel();
-    public Activity activity = new Activity();
-    public List<Activity> activities = new List<Activity>();
-    public List<Activity> MakerActivity = new List<Activity>();
-    public CustomerProfile customerDetail = new CustomerProfile();
+    public Profile CustomerModel                  = new Profile();
+    public DetailActivityModel Model              = new DetailActivityModel();
+    public Activity activity                      = new Activity();
+    public List<Activity> activities              = new List<Activity>();
+    public List<Activity> MakerActivity           = new List<Activity>();
+    public CustomerProfile customerDetail         = new CustomerProfile();
     public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
-    public CustomerProfile reviweeProfile = new CustomerProfile();
-    public List<ExperienceType> experienceTypes = new List<ExperienceType>();
-    public ExperienceType experience = new ExperienceType();
-    public List<Students> enrolledStudents = new List<Students>();
-    public List<BadgeList> badges = new List<BadgeList>();
-    public List<Reviews> activityReviews = new List<Reviews>();
-    public List<Reviews> top3Reviews = new List<Reviews>();
-    private IAnimation selectedAnimation = Animations.FadeIn;
+    public CustomerProfile reviweeProfile         = new CustomerProfile();
+    public List<ExperienceType> experienceTypes   = new List<ExperienceType>();
+    public ExperienceType experience              = new ExperienceType();
+    public List<Students> enrolledStudents        = new List<Students>();
+    public List<BadgeList> badges                 = new List<BadgeList>();
+    public List<Reviews> activityReviews          = new List<Reviews>();
+    public List<Reviews> top3Reviews              = new List<Reviews>();
+    private IAnimation selectedAnimation          = Animations.FadeIn;
+    public List<AddOn> selectedAddOn              = new List<AddOn>();
     private DetailsSchedulesModal DetailsModalSched { get; set; }
     public int SelectedValue { get; set; } = 0;
     public double AverageRating { get; set; } = 0;
@@ -1434,14 +1445,14 @@
     {
         get
         {
-            var selectedAddOns = activity.AddOns.Where(addOn => addOn.IsSelected).ToList();
+            var selectedAddOns = activity.AddOns.Where(addOn => addOn.AddOnCount != 0).ToList();
 
             if (selectedAddOns == null || selectedAddOns.Count == 0)
             {
                 return 0;
             }
 
-            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price);
+            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => (addOn.Price * addOn.AddOnCount));
             return totalAddOnPrice;
         }
     }
@@ -1475,22 +1486,32 @@
 
     private async Task ProceedToPayment()
     {
-        if (SelectedScheduleId > 0)
+        List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.AddOnCount != 0).ToList();
+        if (selectedAddOns.Count() != 0 || SelectedScheduleId > 0)
         {
             if(isAuthenticated)
             {
-                List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.IsSelected == true).ToList();
-                List<int> selectedIds = selectedAddOns.Select(a => a.Id).ToList();
-                // Converting the list of IDs to a comma-separated string
-                SelectedAddOnIds = string.Join("&", selectedIds);
-                if (selectedIds.Count() != 0)
+            
+            var payloadData = new
+            {
+                AddOnsDetails = selectedAddOns.Select(a =>
                 {
-                     NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{SelectedAddOnIds}/?enrollees={EnrolleeCount}");
-                }
-                else
-                {
-                    NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
-                }
+                    return new
+                    {
+                        AddOnId = a.Id,
+                        AddOnCount = a.AddOnCount
+                    };
+                })
+            };
+            var serializedPayload = JsonConvert.SerializeObject(payloadData);
+            if (selectedAddOns.Count() != 0)
+            {
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/{serializedPayload}/?enrollees={EnrolleeCount}");
+            }
+            else
+            {
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
+            }
             }
             else
             {
@@ -1502,6 +1523,7 @@
         {
             isShowErrorMessage = true;
         }
+        
     }
 
     private string GetSelectedActivityName
@@ -1536,17 +1558,26 @@
 
         activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
     }
-    private async Task SelectAddOns(AddOn addOn)
+
+    private Task AddAddOns(AddOn addOn)
     {
-        addOn.IsSelected = !addOn.IsSelected;
-        if (addOn.IsSelected)
+        foreach (var existingAddOn in activity.AddOns.Where(a => a.Id == addOn.Id))
         {
-            activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = true;
+            existingAddOn.AddOnCount++;
         }
-        else
+        return Task.CompletedTask;
+    }
+
+    private Task SubtractAddOns(AddOn addOn)
+    {
+        foreach (var existingAddOn in activity.AddOns.Where(a => a.Id == addOn.Id))
         {
-            activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = false;
+            if (existingAddOn.AddOnCount > 0)
+                existingAddOn.AddOnCount--;
+            else
+                existingAddOn.AddOnCount = 0;
         }
+        return Task.CompletedTask;
     }
 
     private Task NavigateToGallery()

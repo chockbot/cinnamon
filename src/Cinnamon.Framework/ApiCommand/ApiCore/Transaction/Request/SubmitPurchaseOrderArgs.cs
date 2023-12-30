@@ -39,6 +39,9 @@ public class SubmitPurchaseOrderArgs
         public int AddOnId { get; set; }
         [Required]
         public string Name { get; set; }
+
+        [Required]
+        public int AddOnCount { get; set; }
     }
     public class CardDetails 
     {

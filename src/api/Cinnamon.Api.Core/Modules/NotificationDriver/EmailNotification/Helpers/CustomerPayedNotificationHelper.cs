@@ -17,8 +17,9 @@ public class CustomerPayedNotificationHelper
         string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
         string addOnsString = string.Empty;
-        string withString = string.Empty;
+        string addOnTitle = string.Empty;
 
+        //Members
         foreach (var item in members)
         {
             if (string.IsNullOrEmpty(enrolleesString))
@@ -30,18 +31,62 @@ public class CustomerPayedNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
-        foreach (var item in addOnsDetails)
+        //Add-ons
+        if (addOnsDetails.Count() != 0)
         {
-            if (string.IsNullOrEmpty(addOnsString))
+            addOnTitle = "Add-ons: ";
+            foreach (var item in addOnsDetails)
             {
-                addOnsString += item.AddOnName;
-            }
-            else
-            {
-                addOnsString += $", {item.AddOnName}";
+                if (string.IsNullOrEmpty(addOnsString))
+                {
+                    addOnsString += $"{item.AddOnName}({item.AddOnCount})";
+                }
+                else
+                {
+                    addOnsString += $", {item.AddOnName}({item.AddOnCount})";
+                }
             }
         }
-        withString = (addOnsDetails.Count() != 0) ? "With " : string.Empty;
+        else
+        {
+            addOnTitle   = string.Empty;
+            addOnsString = string.Empty;
+        }
+        // Check if amount is greater than 0 before including the related information
+        string amountHtmlString = amount > 0 ? $@"
+            <tr>
+                <td style='width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #717171'>Amount: </span>
+                    </p>
+                </td>
+                <td style='text-align: right; width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #343d4c; text-transform: uppercase'>{amount.ToString("#,##0.00")}</span>
+                    </p>
+                </td>
+            </tr>
+        " : "";
+        // Check if add-ons is not null
+        string addonHtmlString = addOnsDetails.Count() != 0 ? $@"<td style='text-align: right; width: 50%'>
+                                                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                    <span style='color: #343d4c; text-transform: capitalize'>{addOnsString}</span>
+                                                                    </p>
+                                                                 </td>" : "";
+        string addOnTotalHtmlString = addOnsDetails.Count() != 0 ? $@"<tr>
+                                                                        <td style='width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #717171'>Add-Ons: </span>
+                                                                            </p>
+                                                                        </td>
+                                                                        <td style='text-align: right; width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #343d4c; text-transform: uppercase'
+                                                                                >{addOnsAmount.ToString("#,##0.00")}</span
+                                                                            >
+                                                                            </p>
+                                                                        </td>
+                                                                       </tr>" : "";
         string paymentProviderHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
 
@@ -175,11 +220,16 @@ public class CustomerPayedNotificationHelper
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
                             <b style='text-transform: capitalize'>{experienceName}</b>
                         </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                            <span style='color: #343d4c; text-transform: capitalize'>{withString}{addOnsString}</span>
-                        </p>
                         <table style='width: 100%'>
                         <tbody>
+                            <tr>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>{addOnTitle} </span>
+                                    </p>
+                                </td>
+                                {addonHtmlString}
+                            </tr>
                             <tr>
                                 <td style='width: 50%'>
                                     <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
@@ -236,34 +286,8 @@ public class CustomerPayedNotificationHelper
                                     </p>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style='width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #717171'>Amount: </span>
-                                    </p>
-                                </td>
-                                <td style='text-align: right; width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #343d4c; text-transform: uppercase'
-                                        >{amount.ToString("#,##0.00")}</span
-                                    >
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style='width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #717171'>Add-Ons: </span>
-                                    </p>
-                                </td>
-                                <td style='text-align: right; width: 50%'>
-                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                    <span style='color: #343d4c; text-transform: uppercase'
-                                        >{addOnsAmount.ToString("#,##0.00")}</span
-                                    >
-                                    </p>
-                                </td>
-                            </tr>
+                            {amountHtmlString}
+                            {addOnTotalHtmlString}
                             {paymentProviderHtmlString}
                             {serviceFeeHtmlString}
                             <tr>

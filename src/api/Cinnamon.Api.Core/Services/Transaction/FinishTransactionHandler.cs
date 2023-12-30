@@ -86,23 +86,28 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
-            var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
+            //Check if user selected schedule 
+            if (purchaseOrder.ScheduleId != 0)
             {
-                ActivityId = purchaseOrder.ActivityId,
-                CustomerId = purchaseOrder.CustomerId,
-                PurchaseOrderId = purchaseOrder.Id,
-                ScheduleId = purchaseOrder.ScheduleId,
-                Students = deserializedPayload.Students.Select(s => {
-                    return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
-                        FamilyMemberId = s.Id,
-                        Name = s.Name
-                    };
-                }),
-                SelectedPeriod = deserializedPayload.SelectedPeriod,
-            });
-            if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
-            {
-                return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs
+                {
+                    ActivityId = purchaseOrder.ActivityId,
+                    CustomerId = purchaseOrder.CustomerId,
+                    PurchaseOrderId = purchaseOrder.Id,
+                    ScheduleId = purchaseOrder.ScheduleId,
+                    Students = deserializedPayload.Students.Select(s => {
+                        return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student
+                        {
+                            FamilyMemberId = s.Id,
+                            Name = s.Name
+                        };
+                    }),
+                    SelectedPeriod = deserializedPayload.SelectedPeriod,
+                });
+                if (!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
+                {
+                    return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                }
             }
 
             // if there is credit applied in purchase order then subract in balance credit
@@ -132,7 +137,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 ExperienceName = activity.Title,
                 PayerName      = $"{customer.FirstName} {customer.LastName}",
                 PurchaseDate   = DateTime.Now,
-                Members = deserializedPayload.Students.Select(s => {
+                Members        = deserializedPayload.Students.Select(s => {
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
                         Name = s.Name,
                     };
@@ -150,6 +155,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 {
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.AddOnDetails {
                         AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
+
                     };
                 })
             });
@@ -185,6 +192,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.AddOnDetails
                     {
                         AddOnName = a.AddOnName,
+                        AddOnCount = a.AddOnCount
                     };
                 })
             });
@@ -226,5 +234,6 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     {
         public int AddOnId { get; set; }
         public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
     }
 }
