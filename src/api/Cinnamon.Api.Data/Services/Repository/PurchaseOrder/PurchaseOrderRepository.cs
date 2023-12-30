@@ -488,4 +488,22 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting ote's to disburse");
 		}
 	}
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse()
+	{
+		try
+		{
+			var result = await dataStore.PurchaseOrder.AddOnsNeedToDisburse();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all addons need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting addons to disburse");
+		}
+	}
 }

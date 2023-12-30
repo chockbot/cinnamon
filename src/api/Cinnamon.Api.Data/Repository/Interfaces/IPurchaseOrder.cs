@@ -12,4 +12,5 @@ public interface IPurchaseOrder : IGenericEntity<PurchaseOrder>
     Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransaction(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);
     Task<AppResult<IEnumerable<PurchaseOrder>>> GetGrossSalesByProvider(int? Id, DateTime? dateFrom);
     Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetAllOteNeedToDisburse();
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse();
 }

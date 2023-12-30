@@ -276,4 +276,36 @@ public class PurchaseOrderController : ControllerBase
             return new JsonResult(new GetOteNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("AddOnsNeedToDisburse")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllAddonsNeedToDisburseResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddOnsNeedToDisburse()
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.AddOnsNeedToDisburse();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllAddonsNeedToDisburseResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllAddonsNeedToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

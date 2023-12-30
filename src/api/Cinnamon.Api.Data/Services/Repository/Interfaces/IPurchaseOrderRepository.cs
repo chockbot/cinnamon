@@ -21,4 +21,5 @@ public interface IPurchaseOrderRepository
     Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetGrossSalesByProvider(int? id, DateTime? dateFrom);
     Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetAllOteNeedToDisburse();
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse();
 }
