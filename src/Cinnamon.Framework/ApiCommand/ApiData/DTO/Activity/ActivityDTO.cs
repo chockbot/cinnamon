@@ -1,6 +1,7 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivitySchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.AddOns;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 
@@ -53,6 +54,7 @@ public class ActivityDTO
     public bool IsComingSoon {get; set;}
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
+    public IList<AddOnsDTO> AddOns { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
 
     public CustomerDTO Owner {get; set;}

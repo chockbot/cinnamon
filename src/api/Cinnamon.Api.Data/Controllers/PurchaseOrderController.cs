@@ -99,7 +99,7 @@ public class PurchaseOrderController : ControllerBase
             var result = await purchaseOrderRepository.Create(args.ActivityId, args.ScheduleId, args.CustomerId,
                 args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, 
                 args.Status, args.Payload ?? string.Empty, args.CreditAmount, args.UnitPrice, args.UnitCount, args.IsInclusivePayment,
-                args.PerUnitDisburseAmount, args.TotalDisburseAmount);
+                args.PerUnitDisburseAmount, args.TotalDisburseAmount, args.AddOnsAmount);
 
             if (!result.Succeeded || result.Result == null)
             {

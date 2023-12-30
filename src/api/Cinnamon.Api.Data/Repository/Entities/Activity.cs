@@ -40,5 +40,6 @@ public class Activity : BaseEntity
     public virtual IList<Student> Students {get; set; }
     public virtual IList<Reviews> Reviews {get; set; }
     public virtual IList<OteTicket> Tickets { get; set; }
+    public virtual IList<AddOns> AddOns { get; set; }
     public virtual OteSchedule OteSchedule { get; set; }
 }

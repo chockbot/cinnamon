@@ -14,6 +14,7 @@ public class CustomerPayedNotificationArgs : IInteractor
     public decimal Amount {get; set;}
     public decimal ServiceFee {get; set;}
     public IEnumerable<IncludedMembers> Members {get; set;}
+    public IEnumerable<AddOnDetails> AddOnsDetails { get; set; }
     public string PaymentMethod {get; set;}
     public string ReferenceNumber {get; set;}
     public string MakerEmail {get; set;}
@@ -21,9 +22,15 @@ public class CustomerPayedNotificationArgs : IInteractor
     public decimal AppliedCredits {get; set;}
     public bool IsInclusivePayment {get; set;}
     public decimal DiscountAmount {get; set;}
+    public decimal AddOnsAmount { get; set; }
 
     public class IncludedMembers 
     {
         public string Name {get; set;}
+    }
+    public class AddOnDetails
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
     }
 }

@@ -8,10 +8,12 @@
 
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
-        <li>Fill in required field</li>
+        <li>@ErrorMessage</li>
     </ul>
 </div>
-
+<div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
+    <label for="title" class="pricing-title">Pricing & Schedule</label>
+</div>
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
     @if (Model.Activity.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
     {
@@ -451,10 +453,6 @@
                         <div class="form-group">
                             <div class="form-check form-switch">
                                 <div class="row">
-                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                        <label for="title" class="pricing-title">Pricing & Schedule</label>
-                                    </div>
-                                    <hr>
                                     <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
                                         <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
@@ -852,7 +850,7 @@
                             }
                         }
                     }
-                    <div class="form-group">
+                    <div class="form-group text-center">
                         <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
                     </div>
                 </div>
@@ -868,10 +866,6 @@
                         <div class="form-group">
                             <div class="form-check form-switch">
                                 <div class="row">
-                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                        <label for="title" class="pricing-title">Pricing & Schedule</label>
-                                    </div>
-                                     <hr>
                                     <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
                                         <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
@@ -1269,7 +1263,7 @@
                             }
                         }
                     }
-                    <div class="form-group">
+                    <div class="form-group text-center">
                         <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
                     </div>
                 </div>
@@ -1713,10 +1707,6 @@
                     <div class="form-group">
                         <div class="form-check form-switch">
                             <div class="row">
-                                <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                    <label for="title" class="pricing-title">Pricing & Schedule</label>
-                                </div>
-                                <hr>
                                <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
                                    <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
@@ -2114,13 +2104,177 @@
                         }
                     }
                 }
-                <div class="form-group">
+                <div class="form-group text-center">
                     <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
                 </div>
             </div>
         </div>
     }
 </div>
+<br />
+<div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
+    <label for="title" class="pricing-title mb-3">
+        Add-ons
+    </label>
+    <label for="sub-title" class="addons-sub-title">
+        Elevate learning with carefully chosen extras whether materials or services designed to enhance the educational journey. These additions provide valuable support and resources, customizing your instructional experience for optimal learning.
+    </label>
+</div>
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+    @if (Model.Activity.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+    {
+        <div class="accordion" id="existingAddOns">
+                @foreach (var addOnModels in existingAddOns)
+                {
+                    var accordionId = $"panel-section{addOnModels.Id}";
+                    var accordionHeaderId = $"header-section{addOnModels.Id}";
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@accordionHeaderId">
+                            <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
+                                <span class="accordion-title">
+                                    @if (string.IsNullOrEmpty(addOnModels.Name))
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@addOnModels.Name</span>
+                                    }
+                                </span>
+                                <div class="ms-auto">
+                                    <span class="span-price">P @Math.Truncate(addOnModels.Price)</span>
+                                </div>
+                            </div>
+                        </h2>
+                        <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(addOnModels)">
+                                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                        </Button>
+                                    </div>
+                                    <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                                        <label for="title" class="form-control-label">Add Item/Service</label>
+                                        <input class="form-control @RequiredCheck(addOnModels)" id="schedule-name" required @bind="addOnModels.Name" />
+                                    </div>
+                                    <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                                        <label for="title" class="form-control-label">Price</label>
+                                        <input class="form-control unit-input @RequiredCheck(addOnModels)" type="number" id="price-input" placeholder="Price" required @bind="addOnModels.Price" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        <div class="pricing-schedule">
+                <div class="row">
+                    @foreach (var addOnsModel in newAddOns)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                                <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                                <input class="form-control @RequiredCheck(addOnsModel)" id="schedule-name" required @bind="addOnsModel.Name" />
+                            </div>
+                            <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                            <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" type="number" placeholder="Price" required @bind="addOnsModel.Price" />
+                            </div>
+                            <div class="col-12 justify-content-start">
+                                <p class="example-add-on">Example: Uniform fee  - 1500</p>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group text-center">
+                    <button id="btnAddOns" type="button" class="btn btn-primary border-0" @onclick=CreateAddOn>Add More</button>
+                    </div>
+                </div>
+            </div>
+    }
+    else
+    {
+        <div class="accordion" id="existingAddOns">
+            @foreach (var addOnModels in existingAddOns)
+            {
+                var accordionId = $"panel-section{addOnModels.Id}";
+                var accordionHeaderId = $"header-section{addOnModels.Id}";
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@accordionHeaderId">
+                        <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
+                            <span class="accordion-title">
+                                @if (string.IsNullOrEmpty(addOnModels.Name))
+                                {
+                                    <span>N/A</span>
+                                }
+                                else
+                                {
+                                    <span>@addOnModels.Name</span>
+                                }
+                            </span>
+                            <div class="ms-auto">
+                                <span class="span-price">P @Math.Truncate(addOnModels.Price)</span>
+                            </div>
+                        </div>
+                    </h2>
+                    <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-12 d-flex justify-content-end">
+                                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(addOnModels)">
+                                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                    </Button>
+                                </div>
+                                <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                                    <label for="title" class="form-control-label">Add Item/Service</label>
+                                    <input class="form-control @RequiredCheck(addOnModels)" id="schedule-name" required @bind="addOnModels.Name" />
+                                </div>
+                                <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                                    <label for="title" class="form-control-label">Price</label>
+                                    <input class="form-control unit-input @RequiredCheck(addOnModels)" id="price-input" type="number" placeholder="Price" required @bind="addOnModels.Price" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="pricing-schedule">
+            <div class="row">
+                @foreach (var addOnsModel in newAddOns)
+                {
+                    <div class="row">
+                        <div class="col-12 col-lg-8 col-md-7 col-sm-12">
+                            <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                            <input class="form-control @RequiredCheck(addOnsModel)" id="schedule-name" required @bind="addOnsModel.Name" />
+                        </div>
+                        <div class="col-12 col-lg-4 col-md-5 col-sm-12">
+                            <label for="title" class="form-control-label label-top-margin">Price</label>
+                            <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" type="number" placeholder="Price" required @bind="addOnsModel.Price" />
+                        </div>
+                        <div class="col-12 justify-content-start">
+                            <p class="example-add-on">Example: Uniform fee  - 1500</p>
+                        </div>
+                    </div>
+                }
+                <div class="form-group text-center">
+                    <button id="btnAddOns" type="button" class="btn btn-primary border-0" @onclick=CreateAddOn>Add More</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action!</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this add-on?</p>
+    </BodyContent>
+</ConfirmDialog>
 <HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create a better schedule" />
 
 @code {
@@ -2136,7 +2290,17 @@
 
     List<ActivitySchedule> existingSchedules = new List<ActivitySchedule>();
 
+    List<AddOn> existingAddOns = new List<AddOn>();
+
     List<ActivitySchedule> newSchedules = new List<ActivitySchedule>();
+
+    List<AddOn> newAddOns = new List<AddOn>();
+
+    public AddOn addOnToDelete = new AddOn();
+
+    private ConfirmDialog confirmDialogRef { get; set; }
+
+    private string ErrorMessage { get; set; } = "Fill in required field";
 
     DateTime? selectedDate = null;
 
@@ -2145,6 +2309,11 @@
     protected override async Task OnInitializedAsync()
     {
         foreach (var item in Model.Activity.ActivitySchedules)
+        {
+            item.Price = Math.Truncate(item.Price);
+        }
+
+        foreach (var item in Model.Activity.AddOns)
         {
             item.Price = Math.Truncate(item.Price);
         }
@@ -2167,6 +2336,7 @@
         }
 
         SetSchedules();
+        SetAddOns();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -2191,7 +2361,6 @@
         }
         return "";
     }
-
     private string RequiredCheck(DateTime? value)
     {
         if (Model.ExperienceHasError && !value.HasValue)
@@ -2219,10 +2388,23 @@
 
         return "";
     }
+    private string RequiredCheck(AddOn addOn)
+    {
+        if (addOn.Name != null && addOn.Price == 0 || addOn.Name == null && addOn.Price != 0)
+        {
+            return "invalid";
+        }
+        if (!IsPositiveNumeric(addOn.Price))
+        {
+            return "invalid";
+        }
+        return "";
+    }
 
     public bool IsAllFieldsValidated()
     {
         if (!IsAllSchedulesValid()) return false;
+        if (!ISAddOnsValid()) return false;
         return true;
     }
 
@@ -2260,6 +2442,45 @@
         }
         return true;
     }
+
+    private bool ISAddOnsValid()
+    {
+        Model.Activity.AddOns = Model.Activity.AddOns.Where(a => !a.IsDeleted).ToList();
+        foreach (var addOn in Model.Activity.AddOns)
+        {
+            if (!addOn.IsNew)
+            {
+                if (string.IsNullOrEmpty(addOn.Name) || addOn.Price == 0 || string.IsNullOrEmpty(addOn.UnitPrice))
+                {
+                    ErrorMessage = "Fill in required field";
+                    return false;
+                }
+                
+                if (!IsPositiveNumeric(addOn.Price))
+                {
+                    ErrorMessage = "Invalid Input. Please enter a positive number only.";
+                    return false;
+                }
+            }
+            else
+            {
+                if ((addOn.Name == null && addOn.Price != 0) || (addOn.Name != null && addOn.Price == 0))
+                {
+                    ErrorMessage = "Fill in required field";
+                    return false;
+                }
+
+                if (!IsPositiveNumeric(addOn.Price))
+                {
+                    ErrorMessage = "Invalid Input. Please enter a positive number only.";
+                    return false;
+                }
+
+            }
+        }
+        return true;
+    }
+
     private void CheckboxChanged(int val, ActivitySchedule schedule)
     {
         schedule.HasExpiration = val;
@@ -2281,6 +2502,20 @@
         SetSchedules();
     }
 
+    private void CreateAddOn()
+    {
+        foreach (var item in Model.Activity.AddOns)
+        {
+            item.IsNew = false;
+        }
+
+        int maxId = Model.Activity.AddOns.Count == 0 ? 1 : Model.Activity.AddOns.Max(s => s.TempId) + 1;
+        int order = Model.Activity.AddOns.Count == 0 ? 1 : Model.Activity.AddOns.Max(s => s.Order) + 1;
+        Model.Activity.AddOns.Add(new Models.Entities.AddOn { TempId = maxId, Order = order, IsNew = true});
+
+        SetAddOns();
+    }
+
     private void SetSchedules()
     {
         if (Model.Activity.ActivitySchedules.Count(a => a.IsNew) > 0)
@@ -2293,5 +2528,51 @@
             existingSchedules = Model.Activity.ActivitySchedules.Where(a => !a.IsNew).Skip(0).Take(Model.Activity.ActivitySchedules.Count(a => !a.IsNew) - 1).ToList();
             newSchedules = Model.Activity.ActivitySchedules.Where(a => !a.IsNew).Skip(Model.Activity.ActivitySchedules.Count(a => !a.IsNew) - 1).Take(1).ToList();
         }
+    }
+
+    private void SetAddOns()
+    {
+        if (Model.Activity.AddOns.Count(a => a.IsNew) > 0)
+        {
+            existingAddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
+            newAddOns      = Model.Activity.AddOns.Where(a => a.IsNew).OrderBy(a => a.Order).ToList();
+        }
+        else
+        {
+            existingAddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).Skip(0).Take(Model.Activity.AddOns.Count(a => !a.IsNew)).OrderBy(a => a.Order).ToList();
+            newAddOns = Model.Activity.AddOns.Where(a => a.IsNew).OrderBy(a => a.Order).ToList();
+        }
+    }
+    private async Task DeleteClick(AddOn addOn)
+    {
+        addOnToDelete = addOn;
+        await confirmDialogRef.Open();
+    }
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            if(addOnToDelete.Id != 0)
+            {
+                existingAddOns.Where(a => a.Id == addOnToDelete.Id).FirstOrDefault().IsDeleted = true;
+                var deleteAddOn = await activityApiHandler.DeleteAddOn(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteAddOnArgs
+                    {
+                        AddOnId = addOnToDelete.Id
+                    }, Model.Token);
+                if(deleteAddOn.Result != null && deleteAddOn.Result.IsSuccess)
+                {
+                    existingAddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                }
+            }
+            else
+            {
+                 existingAddOns.Where(a => a.TempId == addOnToDelete.TempId).FirstOrDefault().IsDeleted = true;
+                 existingAddOns = Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
+            }
+        }
+    }
+    private bool IsPositiveNumeric(decimal value)
+    {
+        return value >= -1;
     }
 }

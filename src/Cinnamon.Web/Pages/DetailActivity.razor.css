@@ -15,20 +15,36 @@ a {
 .schedule-detail hr {
   margin: 0rem;
 }
-
-.sub-details {
-  font-family: Nunito;
-  font-size: 12px;
-  font-weight: 400;
-  padding: 0px 10px 0px 10px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 10; /*number of lines to show */
-  line-clamp: 10;
-  -webkit-box-orient: vertical;
-  color: #d13636;
-  margin-left: 2rem;
+.add-ons {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
 }
+.addon-button .activity-title {
+    padding-top: 12px;
+}
+.addon-button {
+    width: auto;
+    height: auto;
+    border-radius: 30px;
+    color: #343D4C;
+    background-color: #F3F6FCDE;
+    border: none;
+}
+    .sub-details {
+        font-family: Nunito;
+        font-size: 12px;
+        font-weight: 400;
+        padding: 0px 10px 0px 10px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 10; /*number of lines to show */
+        line-clamp: 10;
+        -webkit-box-orient: vertical;
+        color: #d13636;
+        margin-left: 2rem;
+    }
 
 .schedule-detail {
   border: 2px solid #d9d9d9;
@@ -1021,6 +1037,12 @@ hr {
 }
 
 @media screen and (max-width: 767px) {
+    .add-ons {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 20px;
+    }
   .S-details {
     padding-right: 10px;
   }
@@ -1437,6 +1459,12 @@ hr {
 }
 
 @media screen and (min-width: 768px) and (max-width: 991.98px) {
+    .add-ons {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        padding: 10px;
+    }
   .schedule-mobile {
     display: none;
   }

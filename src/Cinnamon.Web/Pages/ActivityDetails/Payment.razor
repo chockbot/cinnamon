@@ -1,4 +1,5 @@
 ﻿@page "/Payment/{ActivityId:int}/{ScheduleId:int}"
+@page "/Payment/{ActivityId:int}/{ScheduleId:int}/{AddOnsPayLoad}"
 @layout LandingMainLayout
 @using System.Security.Claims
 @using Cinnamon.Web.Enums;
@@ -125,6 +126,22 @@
                                     </div>
                                 </div>
                             </div>
+                            <br />
+                            @if (Model.Activity.AddOns.Count != 0)
+                            {
+                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
+                                <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
+                                    <div class="add-ons">
+                                        @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
+                                        {
+                                            <button class="addon-button" type="button" @onclick="() => SelectAddOns(addOn)" style='@($"background: {(addOn.IsSelected ? "#FFA942" : "#F3F6FCDE")}")'>
+                                                <p class="activity-title">@addOn.Name</p>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
                         </div>
                         <Divider class="my-4" />
                         <div>
@@ -352,9 +369,20 @@
                                                 @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount Enrollee
                                             </div>
                                             <div>
-                                                PHP @(GetTotalPerHeadPrice.ToString("#,##0.00"))
+                                                ₱ @(GetTotalPerHeadPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
+                                        @if (Model.Activity.AddOns.Count != 0)
+                                        {
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                Add-Ons
+                                            </div>
+                                            <div>
+                                                ₱ @(GetAddOnsTotal.ToString("#,##0.00"))
+                                            </div>
+                                        </div>
+                                        }
                                         @if(!IsInclusivePricing)
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
@@ -362,7 +390,7 @@
                                                     Service Fee - <span class="text-decoration-line-through">15%</span>
                                                 </div>
                                                 <div>
-                                                    PHP @(GetConvinienceFee.ToString("#,##0.00"))
+                                                    ₱ @(GetConvinienceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
@@ -384,7 +412,7 @@
                                                     <span class="ms-1">Handling Fee</span>
                                                 </div>
                                                 <div>
-                                                    PHP @(GetServiceFee.ToString("#,##0.00"))
+                                                    ₱ @(GetServiceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
@@ -422,7 +450,7 @@
                                             </div>
                                             <div>
                                                 <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
-                                                    @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                                    @(GetAppliedCoupon > 0 ? "-" : "") ₱ @(GetAppliedCoupon.ToString("#,##0.00"))
                                                 </span>
                                             </div>
                                         </div>
@@ -438,7 +466,7 @@
                                                 }
                                             </div>
                                             <div>
-                                                PHP @(GetTotalCredit.ToString("#,##0.00"))
+                                                ₱ @(GetTotalCredit.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                         <Divider />
@@ -447,7 +475,7 @@
                                                 TOTAL PAYMENT
                                             </div>
                                             <div>
-                                            PHP @(GetTotalPrice.ToString("#,##0.00"))
+                                                ₱ @(GetTotalPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                     </div>
@@ -660,6 +688,10 @@
     [Parameter, SupplyParameterFromQuery]
     public string Status {get; set;}
 
+
+    [Parameter]
+    public string AddOnsPayLoad { get; set; }
+
     private PurchaseModel Model { get; set; }
 
     private SchedulesModal ModalSched { get; set; }
@@ -704,13 +736,22 @@
 
     private bool isShowImportantMessage = false;
 
+    private List<int> selectedIds = new List<int>();
+
     private Modal? failedModal;
 
     protected override async Task OnInitializedAsync()
     {
+
         await FetchAccountDetails();
 
         await FetchSelectedAcivityAndSchedule();
+
+        if (AddOnsPayLoad != null)
+        {
+            selectedIds = AddOnsPayLoad.Split('&').Select(int.Parse).ToList();
+        }
+        await GetSelectedAddOns(selectedIds);
 
         await FetchMakerBadges();
 
@@ -849,7 +890,8 @@
                 IncludeAtivitySchedules = true,
                 IsActive = true,
                 IncludeCustomer = true,
-                IncludeActivityImages = true
+                IncludeActivityImages = true,
+                IncludeAddOns = true
             });
         if ((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -911,6 +953,18 @@
                         SessionName = e.SessionName,
                         HasExpiration = e.HasExpiration,
                         StartDate = e.StartDate
+                    };
+                }).ToList(),
+                AddOns = result.AddOns.Select(s =>
+                {
+                    return new AddOn
+                    {
+                        Id = s.Id,
+                        ActivityId = s.ActivityId,
+                        Name = s.Name,
+                        Price = s.Price,
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 }).ToList(),
                 Images = result.Images.Select(i =>
@@ -995,6 +1049,7 @@
     }
 
     private string expiringMessage = string.Empty;
+
     private void SelectedScheduleChanged()
     {
         var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -1034,7 +1089,7 @@
             DateTime periodStart = datePeriod.PeriodStart;
             // to set the last time of the day
             DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-            
+
             DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
             DateTime now = DateTime.Now;
 
@@ -1050,9 +1105,9 @@
 
             if(Model.SelectedSchedule.HasExpiration == 1)
             {
-                
+
                 expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName.ToLower()} (calendar days), and is valid until the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}. Next period is available for purchase at checkout.";
-                
+
             }
             else if(Model.SelectedSchedule.HasExpiration == 2)
             {
@@ -1146,8 +1201,11 @@
     }
 
     private string payErrorMessage = string.Empty;
+
     private bool isShowPayErrorMessage = false;
+
     private bool isLoading = false;
+
     private string payButtonStyle = "font-weight:700;";
 
     private async Task OnPayConfirmedClicked()
@@ -1190,35 +1248,44 @@
         try
         {
             var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
+            decimal addOnsTotal = Model.Activity.AddOns.Where(a => a.IsSelected == true).Sum(a => a.Price);
 
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
                 {
-                    ActivityId = Model.Activity.ActivityId,
-                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
+                    ActivityId    = Model.Activity.ActivityId,
+                    CouponCode    = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
                     NumberOfHeads = SelectedAttendeesCount,
-                    ScheduleId = Model.SelectedSchedule.Id,
-                    Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
+                    ScheduleId    = Model.SelectedSchedule.Id,
+                    Students      = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
                     {
                         return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee
                         {
                             FamilyMemberId = s.Id,
-                            Name = s.Name
+                            Name           = s.Name
                         };
                     }),
-                    PaymentChannel = selectedPaymentMethod.Code,
-                    PaymentMethod = selectedPaymentMethod.PaymentMethod,
+                    PaymentChannel  = selectedPaymentMethod.Code,
+                    PaymentMethod   = selectedPaymentMethod.PaymentMethod,
                     CardInformation = selectedPaymentMethod.Code == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.CardDetails
                     {
-                        AccountHolder = CardPaymentModel.CardHolder ?? string.Empty,
-                        CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
-                        CVV = CardPaymentModel.CVV ?? string.Empty,
+                        AccountHolder   = CardPaymentModel.CardHolder ?? string.Empty,
+                        CardNumber      = CardPaymentModel.CardNumber ?? string.Empty,
+                        CVV             = CardPaymentModel.CVV ?? string.Empty,
                         ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
                     } : null,
                     IsCreditsApplied = Model.IsCreditApplied,
-                    SelectedPeriod = confirmationData.SelectedPeriod
+                    SelectedPeriod   = confirmationData.SelectedPeriod,
+                    AddOns           = addOnsTotal,
+                    AddOnsDetails    = Model.Activity.AddOns.Where(a => a.IsSelected).Select(s => {
+                        return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.AddOnsDetail
+                        {
+                            AddOnId = s.Id,
+                            Name = s.Name
+                        };
+                    })
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1289,6 +1356,22 @@
             }
 
             return result;
+        }
+    }
+
+    private decimal GetAddOnsTotal
+    {
+        get
+        {
+            var selectedAddOns = Model.Activity.AddOns.Where(addOn => addOn.IsSelected).ToList();
+
+            if (selectedAddOns == null || selectedAddOns.Count == 0)
+            {
+                return 0;
+            }
+
+            decimal totalAddOnPrice = selectedAddOns.Sum(addOn => addOn.Price);
+            return totalAddOnPrice;
         }
     }
 
@@ -1364,7 +1447,7 @@
 
             if ((Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
             {
-                decimal overallTotal = (GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
+                decimal overallTotal = (GetTotalPerHeadPrice + GetAddOnsTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
 
                 decimal creditsBalance = Model.Customer.TotalCredits;
                 result = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
@@ -1380,10 +1463,10 @@
         {
             decimal result = 0;
 
-            if (SelectedAttendeesCount > 0)
+            if (SelectedAttendeesCount > 0 || selectedIds.Count != 0)
             {
                 decimal discount = 0;
-                result = ((GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = ((GetTotalPerHeadPrice + GetAddOnsTotal + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
                 result = result < 0 ? 0 : result;
             }
 
@@ -1450,7 +1533,8 @@
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
             decimal paymentProviderFee = subTotal * .05m;
             decimal serviceFee = 50;
-            decimal total = subTotal + paymentProviderFee + serviceFee;
+            decimal addOns = GetAddOnsTotal;
+            decimal total = subTotal + addOns + paymentProviderFee + serviceFee;
 
             var validateRes = await activityApiHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs {
                 ActivityId = ActivityId,
@@ -1591,6 +1675,27 @@
             isShowImportantMessage = true;
             StateHasChanged();
             return;
+        }
+    }
+
+    private async Task SelectAddOns(AddOn addOn)
+    {
+        addOn.IsSelected = !addOn.IsSelected;
+        if (addOn.IsSelected)
+        {
+            Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = true;
+        }
+        else
+        {
+            Model.Activity.AddOns.Where(a => a.Id == addOn.Id).FirstOrDefault().IsSelected = false;
+        }
+    }
+
+    private async Task GetSelectedAddOns(List<int> addOnsIds)
+    {
+        foreach(var id in addOnsIds)
+        {
+            Model.Activity.AddOns.Where(a => a.Id == id).FirstOrDefault().IsSelected = true;
         }
     }
 

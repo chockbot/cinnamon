@@ -50,6 +50,7 @@ public class GetActivityResult
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+    public IEnumerable<AddOn> AddOns { get; set; }
     public CustomerOwner? Owner {get; set;}
 
 
@@ -108,5 +109,14 @@ public class GetActivityResult
         public bool IsAvailable { get; set; }
         public bool IsEnabled { get; set; }
     }
-
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string UnitPrice { get; set; }
+        public string Description { get; set; }
+        public int Order { get; set; }
+    }
 }

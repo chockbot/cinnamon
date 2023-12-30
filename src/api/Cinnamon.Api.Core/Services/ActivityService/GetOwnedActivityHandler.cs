@@ -52,7 +52,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IncludeAddOns = args.IncludeAddOns
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -129,6 +130,18 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         }).ToList()
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivitySchedule>(),
+                AddOns = activity.AddOns != null ? activity.AddOns.Select(s => {
+                    return new GetOwnedActivityResult.AddOn
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }) : Enumerable.Empty< GetOwnedActivityResult.AddOn>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
                     return new GetOwnedActivityResult.ActivityImage {
                         Id = i.Id,

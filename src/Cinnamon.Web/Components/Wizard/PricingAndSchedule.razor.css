@@ -5,6 +5,19 @@ input:focus {
     outline: none !important;
     box-shadow: none !important;
 }
+.example-add-on {
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 400;
+    color: #717171;
+}
+.addons-sub-title {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    margin-left: 4%;
+}
 .field-heading-section {
     width: 100%;
 }
@@ -36,7 +49,8 @@ input:focus {
     font-family: Nunito;
     font-size: 24px;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
+    margin-left: 4%;
 }
 .expiration-title {
     font-family: Nunito;
@@ -65,7 +79,12 @@ input:focus {
     background: #FFFFFF;
     border-radius: 10px;
 }
-
+add-ons-section {
+    padding: 0px 30px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    height: 100px;
+}
 .pricing-schedule {
     padding: 10px 30px;
     background: #F3F6FC;
@@ -196,6 +215,19 @@ input:focus {
     margin-right: auto;
     display: block;
 }
+#btnAddOns {
+    width: 250px;
+    height: 60px;
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    color: #FFFFFF;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
 
 #activitySchedules {
     margin-bottom: 20px;
@@ -255,6 +287,15 @@ input:focus {
 .right-margin {
     margin-right: 5px;
 }
+@media screen and (max-width: 767px) {
+    .pricing-title {
+        font-family: Nunito;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+        margin-left: 0%;
+    }
+}
 
 @media (min-width: 0px) and (max-width: 575.98px) {
     .pricing-schedule {
@@ -268,23 +309,30 @@ input:focus {
         padding: 0px 24px;
     }
 
-    #btnAddSchedule{
+    #btnAddSchedule {
         width: 100%;
     }
+
+    #btnAddOns {
+        width: 100%;
+    }
+
 
     .accordion-title {
         width: 200px;
     }
+
     .activity-expiration .form-check-input {
         margin-left: 5px;
     }
-    .td-field-number{
-        width:0;
+
+    .td-field-number {
+        width: 0;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-    
+
 }
 @media (min-width: 768px) and (max-width: 991.98px) {
 }

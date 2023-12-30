@@ -456,6 +456,7 @@
             IncludeActivityImages = true,
             IncludeActivitySearchTags = true,
             IncludeAtivitySchedules = true,
+            IncludeAddOns = true
         });
         if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -603,6 +604,17 @@
                             StartTime = act.StartTime,
                             IsEnabled = act.IsEnabled
                         }).ToList()
+                    };
+                }).ToList(),
+                AddOns = activity.AddOns.Select(s => {
+                    return new Models.Entities.AddOn
+                    {
+                        Id          = s.Id,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
                     };
                 }).ToList(),
                 ClassPolicies = activity.ClassPolicies,
@@ -809,6 +821,7 @@
         isLoading = true;
 
         Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
+        Model.Activity.AddOns = ValidateAddOns(Model.Activity.AddOns);
 
         var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
             {
@@ -832,6 +845,18 @@
                         SessionName = s.SessionName ?? "N/A",
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
+                    };
+                }),
+                AddOns = Model.Activity.AddOns.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedAddOn
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
                     };
                 }),
                 ClassPolicies           = ReplaceEmptyValue(Model.Activity.ClassPolicies, NOTHING_PROVIDED),
@@ -861,6 +886,7 @@
                 Title                   = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
                 ActivityId              = Model.Activity.ActivityId,
                 DeletedScheduleIds      = Model.DeletedScheduleIds,
+                DeletedAddOnIds         = Model.DeletedAddOnsIds,
                 PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status                  = Enums.ActivityStatus.InProgress,
             }, Model.Token);
@@ -894,6 +920,7 @@
             StateHasChanged();
 
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
+            Model.Activity.AddOns = GetAddOns(Model.Activity.AddOns);
 
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
             Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
@@ -956,6 +983,18 @@
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),
+                AddOns = Model.Activity.AddOns.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedAddOn
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }),
                 ClassPolicies = Model.Activity.ClassPolicies,
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
                 Address1 = Model.Activity.Address1,
@@ -983,6 +1022,7 @@
                 Title = Model.Activity.Title,
                 ActivityId = Model.Activity.ActivityId,
                 DeletedScheduleIds = Model.DeletedScheduleIds,
+                DeletedAddOnIds = Model.DeletedAddOnsIds,
                 PinnedLocation = Model.Activity.PinnedLocation,
                 Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
@@ -1194,10 +1234,35 @@
         return result;
     }
 
+    private IList<Models.Entities.AddOn> GetAddOns(IList<Models.Entities.AddOn> addOns)
+    {
+        var result = new List<Models.Entities.AddOn>();
+        if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+        {
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
+            {
+                if (!(string.IsNullOrEmpty(addOn.Name) ||
+                    addOn.Price <= 0 ||
+                    string.IsNullOrEmpty(addOn.UnitPrice)))
+                {
+                    result.Add(addOn);
+                }
+            }
+        }
+        else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
+            {
+                result.Add(addOn);
+            }
+        }
+        return result;
+    }
+
     private Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO ReplaceActivityTemporaryValues(Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO activity)
     {
-        activity.ActivitySchedules = ReplaceTemporarySchedules(activity.ActivitySchedules.ToList());
-
+        activity.ActivitySchedules       = ReplaceTemporarySchedules(activity.ActivitySchedules.ToList());
+        activity.AddOns                  = ReplaceTemporaryAddOns(activity.AddOns.ToList());
         activity.Title                   = ReplaceTemporaryValues(activity.Title);
         activity.Description             = ReplaceTemporaryValues(activity.Description);
         activity.AdditionalRequirements  = ReplaceTemporaryValues(activity.AdditionalRequirements);
@@ -1251,6 +1316,29 @@
         return activitySchedules;
     }
 
+    private IList<Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn> ReplaceTemporaryAddOns(IList<Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn> addOns)
+    {
+        bool isSingle = addOns.Count == 1;
+        bool isValid = false;
+
+        foreach (var addOn in addOns)
+        {
+            if ((string.IsNullOrEmpty(addOn.Name) ||
+                addOn.Price <= 0 ||
+                string.IsNullOrEmpty(addOn.UnitPrice)))
+                isValid = false;
+
+            if (!isValid)
+            {
+                addOn.Name = ReplaceTemporaryValues(addOn.Name);
+                addOn.UnitPrice = ReplaceTemporaryValues(addOn.UnitPrice);
+            }
+
+        }
+
+        return addOns;
+    }
+    
     private string ReplaceTemporaryValues(string value)
     {
         return value == NOTHING_PROVIDED ? null : value;
@@ -1299,5 +1387,35 @@
         }
 
         return listSchedule;
+    }
+
+    private IList<Models.Entities.AddOn> ValidateAddOns(IList<Models.Entities.AddOn> addOns)
+    {
+        var newAddOns = GetAddOns(addOns.Where(a => a.Id == 0).ToList());
+        var listAddOn = new List<Models.Entities.AddOn>();
+        listAddOn.AddRange(addOns.Where(a => a.Id != 0).ToList());
+
+        foreach (var item in newAddOns)
+        {
+            listAddOn.Add(item);
+        }
+
+        bool isSingle = listAddOn.Count == 1;
+        bool isValid = false;
+
+        foreach (var addOn in listAddOn)
+        {
+            if ((string.IsNullOrEmpty(addOn.Name) ||
+                addOn.Price <= 0 ||
+                string.IsNullOrEmpty(addOn.UnitPrice)))
+                isValid = false;
+
+            if (!isValid)
+            {
+                addOn.Name = ReplaceEmptyValue(addOn.Name, NOTHING_PROVIDED);
+                addOn.UnitPrice = ReplaceEmptyValue(addOn.UnitPrice, NOTHING_PROVIDED);
+            }
+        }
+        return listAddOn;
     }
 }

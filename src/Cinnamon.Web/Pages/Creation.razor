@@ -559,6 +559,7 @@
         isLoading = true;
 
         Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
+        Model.Activity.AddOns = ValidateAddOns(Model.Activity.AddOns);
 
         var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
             {
@@ -633,6 +634,17 @@
                        //ActivityScheduleTimes = s.ScheduleTimes != null ? scheduleTimes : new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>()
                    };
                }),
+                AddOns = Model.Activity.AddOns.Select(a =>
+                {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.CreateAddOn
+                    {
+                        Name = a.Name ?? "N/A",
+                        Price = a.Price,
+                        UnitPrice = a.UnitPrice,
+                        Order = a.Order,
+                        Description = a.Description ?? "N/A"
+                    };
+                }),
             }, Model.Token);
 
         if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -663,6 +675,7 @@
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
+            Model.Activity.AddOns = GetAddOns(Model.Activity.AddOns);
 
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
 
@@ -720,6 +733,16 @@
                             PriceType             = s.PriceType,
                             SchedulingUrl         = Model.Activity.SchedulingUrl ?? "#",
                             ActivityScheduleTimes = scheduleTimes
+                        };
+                    }),
+                    AddOns = Model.Activity.AddOns.Select(a => {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.CreateAddOn
+                        {
+                            Name        = a.Name ?? "N/A",
+                            Price       = a.Price,
+                            UnitPrice   = a.UnitPrice,
+                            Order       = a.Order,
+                            Description = a.Description ?? "N/A"
                         };
                     }),
                     AdditionalRequirements  = Model.Activity.AdditionalRequirements,
@@ -816,7 +839,7 @@
                     };
 
                     isLocationComponentValid = true;
-                    
+
                     if ((index - currentIndex) > 1)
                     {
                         for (int i = currentIndex + 1; i < index; i++)
@@ -859,7 +882,7 @@
                     }
 
                     isPricingAndScheduleComponentValid = true;
-                    
+
                     if ((index - currentIndex) > 1)
                     {
                         for (int i = currentIndex + 1; i < index; i++)
@@ -895,7 +918,7 @@
                     };
 
                     isGalleryComponentValid = true;
-                    
+
                     if ((index - currentIndex) > 1)
                     {
                         for (int i = currentIndex + 1; i < index; i++)
@@ -1129,6 +1152,26 @@
         return result;
     }
 
+    private IList<Models.Entities.AddOn> GetAddOns(IList<Models.Entities.AddOn> addOns)
+    {
+        var result = new List<Models.Entities.AddOn>();
+
+        if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+        {
+            bool isSingle = addOns.Count == 1;
+            foreach (var addOn in addOns.Where(a => !a.IsDeleted))
+            {
+                if (!(string.IsNullOrEmpty(addOn.Name) ||
+                    addOn.Price <= 0 ||
+                    string.IsNullOrEmpty(addOn.UnitPrice)))
+                {
+                    result.Add(addOn);
+                }
+            }
+        }
+        return result;
+    }
+
     private string ReplaceEmptyValue(string value, string replacement)
     {
         return string.IsNullOrEmpty(value) ? replacement : value;
@@ -1163,6 +1206,28 @@
         }
 
         return activitySchedules;
+    }
+
+    private IList<Models.Entities.AddOn> ValidateAddOns(IList<Models.Entities.AddOn> addOns)
+    {
+        bool isSingle = addOns.Count == 1;
+        bool isValid = false;
+
+        foreach (var addOn in addOns.Where(a => !a.IsDeleted))
+        {
+            if  (string.IsNullOrEmpty(addOn.Name) ||
+                addOn.Price <= 0 ||
+                string.IsNullOrEmpty(addOn.UnitPrice))
+                isValid = false;
+
+            if (!isValid)
+            {
+                addOn.Name = ReplaceEmptyValue(addOn.Name, NOTHING_PROVIDED);
+                addOn.UnitPrice = ReplaceEmptyValue(addOn.UnitPrice, NOTHING_PROVIDED);
+            }
+
+        }
+        return addOns;
     }
 
     private bool ValidateFormFields(int index)

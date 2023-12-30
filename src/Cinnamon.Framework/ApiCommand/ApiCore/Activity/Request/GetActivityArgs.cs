@@ -13,4 +13,5 @@ public class GetActivityArgs
     public bool? IncludeCustomer {get; set;}
     public bool? IncludeStudents { get; set; }
     public bool? IncludeTickets { get; set; }
+    public bool? IncludeAddOns{ get; set; }
 }

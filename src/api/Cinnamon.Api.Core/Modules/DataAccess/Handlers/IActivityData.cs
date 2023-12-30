@@ -2,6 +2,8 @@
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
 using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
@@ -25,4 +27,6 @@ public interface IActivityData
     Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args);
     Task<AppResult<GetOTEByProvideResult>> GetOTEByProvider(GetOTEByProvideArgs args);
     Task<AppResult<CustomerOteResult>> CustomerOte(int customerId);
+    Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args);
+    Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args);
 }
