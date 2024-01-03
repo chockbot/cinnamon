@@ -271,7 +271,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, 
+        ActivityAddress address, OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups,
+        IList<OteDate> oteDates)
     {
         try
         {
@@ -283,6 +285,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.ActivityAddress.Add(address);
             this.applicationContext.ActivityDescriptions.Add(description);
             this.applicationContext.OteSchedules.Add(oteSchedule);
+            this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
+            this.applicationContext.OteDates.AddRange(oteDates);
+            
             await this.applicationContext.SaveChangesAsync();
 
             return AppResult<Activity>.CreateSucceeded(activity, "One time activity successfully created.");
