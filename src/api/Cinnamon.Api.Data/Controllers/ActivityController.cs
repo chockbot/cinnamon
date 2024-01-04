@@ -575,4 +575,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("OtePerDate")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OtePerDateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OtePerDate([FromQuery] OtePerDateArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.OtePerDate(args.ProviderId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OtePerDateResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

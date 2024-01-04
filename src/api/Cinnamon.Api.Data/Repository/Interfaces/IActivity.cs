@@ -22,4 +22,5 @@ public interface IActivity : IGenericEntity<Activity>
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
+    Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
 }

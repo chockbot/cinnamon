@@ -186,7 +186,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetOTEByProviderHandler, Services.DashboardService.GetOTEByProviderHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetOTEByActivityIdHandler, Services.DashboardService.GetOTEByActivityIdHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetTicketDetailsHandler, Services.DashboardService.GetTicketDetailsHandler>();    
-        services.AddTransient<Services.DashboardService.Handlers.IUpdateOTETicketHandler, Services.DashboardService.UpdateOTETicketHandler>();  
+        services.AddTransient<Services.DashboardService.Handlers.IUpdateOTETicketHandler, Services.DashboardService.UpdateOTETicketHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetOtePerDayHandler, Services.DashboardService.GetOtePerDayHandler>();
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();

@@ -54,4 +54,5 @@ public interface IActivityApiHandler
     Task<AppResult<OteActivityResult>> FindOteByHandler(OteActivityArgs args, string handler);
     Task<AppResult<OteTicketDetailsResult>> TicketDetails(string guid, string token);
     Task<AppResult<CustomerOteResult>> CustomerOte(string token);
+    Task<AppResult<OtePerDayResult>> GetOtePerDay(string token);
 }
