@@ -6,7 +6,7 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 
 public interface IOteTicket : IGenericEntity<OteTicket> 
 {
-    Task<AppResult<IEnumerable<OteTicket>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false);
-    Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId);
+    Task<AppResult<IEnumerable<OteTicket>>> GetByActivityId(int activityId, int dateId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false);
+    Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId, int dateId);
     Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageData = false);
 }

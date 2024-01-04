@@ -24,8 +24,7 @@
 
 @if (activity != null)
 {
-    
-        <div class="event-details-wrapper">
+    <div class="event-details-wrapper">
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
@@ -227,6 +226,8 @@
 @code {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
+    [Parameter, SupplyParameterFromQuery]
+    public string? Date {get; set;}
 
     LoadingIndicator loadingIndicator;
     IJSObjectReference module;
@@ -246,6 +247,7 @@
     public int TotalSold           = 0;
     public int TotalAvailable      = 0;
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private int dateId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -266,6 +268,12 @@
         }
         var act = result.Result.Result;
         activity = mapper.Map<OteActivity>(act);
+        
+        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
+        {
+            dateId = parsedDate;
+        }
+
         //Get Ticket List
         await GetTicketList();
         //Get Customer List
@@ -283,7 +291,8 @@
     {
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
             {
-                ActivityId = activity.Id
+                ActivityId = activity.Id,
+                DateId = dateId
             }, Token);
         if (ticketResult.Succeeded && ticketResult.Result != null && ticketResult.Result.IsSuccess)
         {
@@ -307,13 +316,15 @@
         TotalSold      = ticketList.Sum(s => s.OtePricing.Sold);
         TotalAvailable = ticketList.Sum(v => v.OtePricing.Available);
     }
+
     private async Task GetCustomerList(int pageIndex)
     {
         var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
             {
                 ActivityId = activity.Id,
                 CountPerPage = 10,
-                PageIndex = pageIndex
+                PageIndex = pageIndex,
+                DateId = dateId
             }, Token);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {

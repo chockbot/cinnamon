@@ -18,14 +18,15 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, 
+        int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
     {
         try
         {
             int limitCount = count.HasValue ? count.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.OteTickets.Where(t => t.ActivityId == activityId);
+            var query = applicationContext.OteTickets.Where(t => t.ActivityId == activityId && t.OteDateId == dateId);
 
             if(includeCustomer)
             {
@@ -95,7 +96,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         }
     }
 
-    public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId)
+    public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId, int dateId)
     {
         try
         {
@@ -104,7 +105,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                 "WHERE ote.\"OteSchedulePricingId\" = b.\"Id\" AND (po.\"Status\" = 1 OR po.\"Status\" = 5)) AS Sold\r\n" +
                 "FROM public.\"OteSchedules\" AS a\r\n" +
                 "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
-                "WHERE a.\"ActivityId\" = " + activityId + ";";
+                "WHERE a.\"ActivityId\" = " + activityId + " and b.\"OteDateId\" = " + dateId + ";";
 
             IList<OteScheduleDTO> listResult = new List<OteScheduleDTO>();
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())

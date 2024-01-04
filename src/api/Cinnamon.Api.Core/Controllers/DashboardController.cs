@@ -516,7 +516,8 @@ public class DashboardController : ControllerBase
             {
                 ActivityId = args.ActivityId,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex = args.PageIndex,
+                DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -561,7 +562,8 @@ public class DashboardController : ControllerBase
         {
             var result = await getTicketDetailsHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetTicketDetailsArgs
             {
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null)
             {
