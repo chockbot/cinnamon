@@ -27,6 +27,7 @@ public class OteFindByHandlerResult
     public IEnumerable<Image> Images {get; set;}
     public bool IsComingSoon {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}
+    public OteSchedule Schedule {get; set;}
 
     public class OtePricing 
     {
@@ -57,5 +58,18 @@ public class OteFindByHandlerResult
         public DateTime Date {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+    }
+
+    public class OteSchedule
+    {
+        public int ActivityId { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+        public string Recurrences { get; set; }
+        public DateTime RecurrenceDateStart {get; set;}
+        public DateTime RecurrenceDateEnd {get; set;}
+        public int RepeatEvery {get; set;}
+        public string SelectedDays {get; set;}
+        public string ExtraOptions {get; set;}
     }
 }
