@@ -80,7 +80,7 @@
                         </FieldLabel>
                         <FieldBody>
                             <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
-                                SelectedValueChanged="RecurrenceChanged">
+                                SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
                                 <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
                                 <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
                                 <SelectItem Value='@("daily")'>Daily</SelectItem>
@@ -686,7 +686,22 @@
         modelSchedule.DateTo = data.DateTo;
         modelSchedule.TimeFrom = data.DateFrom.TimeOfDay;
         modelSchedule.TimeTo = data.DateTo.TimeOfDay;
-        modelSchedule.Recurrences = data.Recurrences;
+        modelSchedule.DurationEnd = data.DurationEnd ?? DateTime.Now;
+        modelSchedule.DurationStart = data.DurationStart ?? DateTime.Now;
+        modelSchedule.DurationEvery = data.DurationEvery ?? 1;
+        modelSchedule.MonthDay = data.MonthDay;
+        modelSchedule.MonthRepeat = data.MonthRepeat;
+        modelSchedule.MonthSelection = data.MonthSelection ?? 1;
+        modelSchedule.OnDayDate = data.OnDayDate ?? 1;
+
+        RecurrenceChanged(data.Recurrences);
+
+        // set selected days
+        var days = data.WeekString.Split("|");
+        foreach(var item in dayItems)
+        {
+            item.Selected = days.Contains(item.Value);
+        }
 
         data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
 
@@ -714,7 +729,7 @@
             modelPricing.Name = last.Name;
         }
 
-        StateHasChanged();
+        //StateHasChanged();
     }
 
     private async Task ViewDetails(Pricing ticketPricing)
