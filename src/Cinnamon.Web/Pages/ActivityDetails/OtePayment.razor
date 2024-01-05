@@ -496,7 +496,7 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     [Parameter, SupplyParameterFromQuery]
@@ -664,7 +664,14 @@
             string result = string.Empty;
             if(activity.ExperienceTypeId == 1)
             {
-                result = $"{activity.HouseNo}, {activity.BarangayName}, {activity.CityName}, {activity.RegionName}";
+                if (!string.IsNullOrEmpty(activity.PinnedLocation))
+                {
+                    result = activity.PinnedLocation;
+                }
+                else
+                {
+                    result = $"{activity.HouseNo}, {activity.BarangayName}, {activity.CityName}, {activity.RegionName}";
+                }
             }
             else 
             {
