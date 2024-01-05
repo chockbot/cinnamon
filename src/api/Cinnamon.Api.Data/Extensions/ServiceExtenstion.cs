@@ -75,6 +75,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IExperienceCreationTypeRepository, Services.Repository.ExperienceCreationType.ExperienceCreationTypeRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOteTicketRepository, Services.Repository.OteTicket.OteTicketRepository>();
         services.AddTransient<Services.Repository.Interfaces.ITokenGeneratedRepository, Services.Repository.TokenGenerated.TokenGeneratedRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOteDateRepository, Services.Repository.OteDate.OteDateRepository>();
 
         return services;
     }
