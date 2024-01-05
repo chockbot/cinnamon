@@ -438,7 +438,7 @@
                                                                             <h4 class="card-title1 mb-0">@act.Title</h4>
                                                                             @if (@act.ExperienceTypeId == 1)
                                                                             {
-                                                                                var address = !string.IsNullOrEmpty(act.CityName) ? act.CityName + ", "+ act.RegionName: act.PinnedLocation;
+                                                                            var address = string.IsNullOrEmpty(act.PinnedLocation) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
                                                                                 <p class="card-title2 mb-0 in-person">@address</p>
                                                                             }
                                                                             else
@@ -635,7 +635,7 @@
                                                     <h4 class="card-title1 mb-0">@act.Title</h4>
                                                     @if (@act.ExperienceTypeId == 1)
                                                     {
-                                                        var address = !string.IsNullOrEmpty(act.CityName) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
+                                                    var address = string.IsNullOrEmpty(act.PinnedLocation) ? act.CityName + ", " + act.RegionName : act.PinnedLocation;
                                                         <p class="card-title2 mb-0 in-person">@address</p>
                                                     }
                                                     else
@@ -765,7 +765,7 @@
         
         if (string.IsNullOrEmpty(landingSearch))
         {
-            await FetchPopularActivities();
+            await FetchPopularActivities(null);
             await FetchActivities(false);
         }
         else
@@ -1197,13 +1197,16 @@
         }
     }
 
-    private async Task FetchPopularActivities()
+    private async Task FetchPopularActivities(int? categoryId)
     {
         showOverlayPopularActivities = true;
+
+        popularActivities.Clear();
 
         var activitiesRes = await activityApiHandler.PopularActivities(new Framework.ApiCommand.ApiCore.Activity.Request.PopularActivitiesArgs {
             CountPerPage = 20,
             PageIndex = 0,
+            CategoryId = categoryId
         });
         if(activitiesRes.Succeeded && activitiesRes.Result is not null && activitiesRes.Result.IsSuccess)
         {
@@ -1251,6 +1254,7 @@
         itemsPerPage = 20;
 
         await FetchActivities(false);
+        await FetchPopularActivities(id);
     }
 
     public async Task Clear()
@@ -1559,6 +1563,7 @@
         public string CityName {get; set;} = string.Empty;
         public string PinnedLocation { get; set; } = string.Empty;
         public string RegionName {get; set;} = string.Empty;
+        public string Region {get; set;} = string.Empty;
         public string ImageSrc {get; set;} = string.Empty;
         public bool IsFavorite {get; set;} = false;
         public int ExperienceCreationTypeId {get; set;}

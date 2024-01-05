@@ -39,7 +39,8 @@ public class UpdateActivityArgs : IInteractor
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int> DeletedScheduleIds {get; set;}
-    
+    public IEnumerable<AddOn>? AddOns { get; set; }
+    public IEnumerable<int> DeletedAddOnsIds { get; set; }
 
     public class ActivitySchedule 
     {
@@ -61,7 +62,6 @@ public class UpdateActivityArgs : IInteractor
         public Enums.ScheduleType ScheduleType { get; set; }
         public Enums.PriceType PriceType { get; set; }
         public string SchedulingUrl { get; set; }
-
         public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
 
@@ -74,5 +74,16 @@ public class UpdateActivityArgs : IInteractor
         public string EndTime { get; set; }
         public Enums.ModelStatus ModelStatus { get; set; }
         public bool IsEnabled { get; set; }
+    }
+
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string? Name { get; set; }
+        public decimal? Price { get; set; }
+        public string? UnitPrice { get; set; }
+        public string? Description { get; set; }
+        public int Order { get; set; }
     }
 }

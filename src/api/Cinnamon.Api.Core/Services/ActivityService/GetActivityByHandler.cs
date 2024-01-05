@@ -41,7 +41,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
                     IncludeCustomer = args.IncludeCustomer,
-                    IncludeStudents = args.IncludeStudents
+                    IncludeStudents = args.IncludeStudents,
+                    IncludeAddOns = args.IncludeAddOns
                 }
             );
 
@@ -113,6 +114,18 @@ public class GetActivityByHandler : IGetActivityByHandler
                         SchedulingUrl = s.SchedulingUrl
                     };
                 }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
+                AddOns = activity.AddOns != null ? activity.AddOns.Select(s => {
+                    return new GetActivityByHandlerResult.AddOn
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }) : Enumerable.Empty<GetActivityByHandlerResult.AddOn>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
                     return new GetActivityByHandlerResult.ActivityImage {
                         Id = i.Id,

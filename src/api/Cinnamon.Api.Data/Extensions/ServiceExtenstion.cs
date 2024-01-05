@@ -1,8 +1,6 @@
-﻿using Cinnamon.Api.Data.Repository.DbSets;
+﻿using Cinnamon.Api.Data.Repository;
+using Cinnamon.Api.Data.Repository.DbSets;
 using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Repository;
-using Cinnamon.Api.Data.Services.Repository.ActivityAddress;
-using Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Extensions;
 
@@ -37,6 +35,7 @@ public static class ServiceExtenstion
         services.AddTransient<IFavorite, FavoriteEntity>();
         services.AddTransient<IChatConnection, ChatConnectionEntity>();
         services.AddTransient<IExperienceCreationType, ExperienceCreationTypeEntity>();
+        services.AddTransient<IAddOns, AddOnsEntity>(); ;
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -75,7 +74,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IExperienceCreationTypeRepository, Services.Repository.ExperienceCreationType.ExperienceCreationTypeRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOteTicketRepository, Services.Repository.OteTicket.OteTicketRepository>();
         services.AddTransient<Services.Repository.Interfaces.ITokenGeneratedRepository, Services.Repository.TokenGenerated.TokenGeneratedRepository>();
-
+        services.AddTransient<Services.Repository.Interfaces.IAddOnsRepository, Services.Repository.AddOns.AddOnsRepository>();
         return services;
     }
 }

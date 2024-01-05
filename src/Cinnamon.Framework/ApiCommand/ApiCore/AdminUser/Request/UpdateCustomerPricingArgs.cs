@@ -13,4 +13,7 @@ public class UpdateCustomerPricingArgs
 
     [Required]
     public bool IsManualPayment {get; set;}
+
+    [Required]
+    public bool InclusivePricing {get; set;}
 }

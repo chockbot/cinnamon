@@ -4,6 +4,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 using System.Linq.Expressions;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 
 namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 
@@ -19,7 +20,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
     public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
         decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, 
         int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount, bool isInclusivePayment,
-        decimal perUnitDisburseAmount, decimal totalDisburseAmount)
+        decimal perUnitDisburseAmount, decimal totalDisburseAmount, decimal addOnsAmount)
     {
         try
         {
@@ -52,22 +53,23 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             }
 
             var purchaseOrder = new Entities.PurchaseOrder {
-                ActivityId = activityId,
-                ConvinienceFee = convinienceFee,
-                Coupon = coupon,
-                CouponAmount = couponAmount,
-                CustomerId = customerId,
-                OverallTotal = overallTotal,
-                ScheduleId = scheduleId,
-                Total = total,
-                Status = status,
-                Payload = payload,
-                CreditAmount = creditAmount,
-                UnitCount = unitCount,
-                UnitPrice = unitPrice,
-                IsInclusivePayment = isInclusivePayment,
+                ActivityId            = activityId,
+                ConvinienceFee        = convinienceFee,
+                Coupon                = coupon,
+                CouponAmount          = couponAmount,
+                CustomerId            = customerId,
+                OverallTotal          = overallTotal,
+                ScheduleId            = scheduleId,
+                Total                 = total,
+                Status                = status,
+                Payload               = payload,
+                CreditAmount          = creditAmount,
+                UnitCount             = unitCount,
+                UnitPrice             = unitPrice,
+                IsInclusivePayment    = isInclusivePayment,
                 PerUnitDisburseAmount = perUnitDisburseAmount,
-                TotalDisburseAmount = totalDisburseAmount
+                TotalDisburseAmount   = totalDisburseAmount,
+                AddOnsAmount          = addOnsAmount
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -89,21 +91,22 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             }
 
             return AppResult<PurchaseOrderDTO>.CreateSucceeded(new PurchaseOrderDTO {
-                Id = createdPurchaseOrder.Result.Id,
-                ActivityId = activityId,
-                ConvinienceFee = convinienceFee,
-                Coupon = coupon,
-                CouponAmount = couponAmount,
-                CustomerId = customerId,
-                OverallTotal = overallTotal,
-                ScheduleId = scheduleId,
-                Total = total,
-                Status = status,
-                Payload = payload,
-                CreditAmount = creditAmount,
-                UnitCount = unitCount,
-                UnitPrice = unitPrice,
-                IsInclusivePayment = isInclusivePayment
+                Id                 = createdPurchaseOrder.Result.Id,
+                ActivityId         = activityId,
+                ConvinienceFee     = convinienceFee,
+                Coupon             = coupon,
+                CouponAmount       = couponAmount,
+                CustomerId         = customerId,
+                OverallTotal       = overallTotal,
+                ScheduleId         = scheduleId,
+                Total              = total,
+                Status             = status,
+                Payload            = payload,
+                CreditAmount       = creditAmount,
+                UnitCount          = unitCount,
+                UnitPrice          = unitPrice,
+                IsInclusivePayment = isInclusivePayment,
+                AddOnsAmount       = addOnsAmount
             }, "Successfully created purchase order");
         }
         catch (Exception ex)
@@ -150,7 +153,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     IsInclusivePayment = p.IsInclusivePayment,
                     PerUnitDisburseAmount = p.PerUnitDisburseAmount,
                     TotalDisburseAmount = p.TotalDisburseAmount,
-                    PGPayload = p.PGPayload
+                    PGPayload = p.PGPayload,
+                    AddOnsAmount = p.AddOnsAmount
                 };
 
                 // include activity details
@@ -213,7 +217,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     IsInclusivePayment = p.IsInclusivePayment,
                     PerUnitDisburseAmount = p.PerUnitDisburseAmount,
                     TotalDisburseAmount = p.TotalDisburseAmount,
-                    PGPayload = p.PGPayload
+                    PGPayload = p.PGPayload,
+                    AddOnsAmount = p.AddOnsAmount
                 };
             });
 
@@ -254,7 +259,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 PerUnitDisburseAmount = result.Result.PerUnitDisburseAmount,
                 TotalDisburseAmount = result.Result.TotalDisburseAmount,
                 PurchaseDate = result.Result.CreatedOn,
-                PGPayload = result.Result.PGPayload
+                PGPayload = result.Result.PGPayload,
+                AddOnsAmount = result.Result.AddOnsAmount,
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -464,4 +470,40 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting purchase order");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetAllOteNeedToDisburse()
+	{
+		try
+		{
+			var result = await dataStore.PurchaseOrder.GetAllOteNeedToDisburse();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all ote's need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting ote's to disburse");
+		}
+	}
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse()
+	{
+		try
+		{
+			var result = await dataStore.PurchaseOrder.AddOnsNeedToDisburse();
+			if(!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all addons need to disburse");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting addons to disburse");
+		}
+	}
 }

@@ -21,7 +21,7 @@ public class PurchaseOrderDTO
     public decimal PerUnitDisburseAmount {get; set;}
     public decimal TotalDisburseAmount {get; set;}
     public string? PGPayload {get; set;}
-
+    public decimal AddOnsAmount { get; set;}
     public AssociatedActivity Activity {get; set;}
     public AssociatedSchedule Schedule {get; set;}
 

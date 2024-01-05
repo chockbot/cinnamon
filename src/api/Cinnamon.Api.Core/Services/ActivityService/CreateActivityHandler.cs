@@ -16,15 +16,17 @@ public class CreateActivityHandler : ICreateActivityHandler
     private readonly ICustomerData customerData;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly IGenerateActivityHandler generateActivityHandler;
+    private readonly IAddOnsData addOnsData;
 
     public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, 
-        IScheduleData scheduleData, ICustomerData customerData, IGenerateActivityHandler generateActivityHandler)
+        IScheduleData scheduleData, ICustomerData customerData, IGenerateActivityHandler generateActivityHandler, IAddOnsData addOnsData)
     {
         this.httpContext = httpContext;
         this.activityData = activityData;
         this.scheduleData = scheduleData;
         this.customerData = customerData;
         this.generateActivityHandler = generateActivityHandler;
+        this.addOnsData = addOnsData;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -39,7 +41,7 @@ public class CreateActivityHandler : ICreateActivityHandler
         }
         catch (Exception ex)
         {
-            return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occured in CreateActivityHandler");
+            return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occurred in CreateActivityHandler");
         }
     }
 
@@ -123,7 +125,7 @@ public class CreateActivityHandler : ICreateActivityHandler
 
             if(activityRes.Succeeded && !activityRes.Result.IsSuccess)
             {
-                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(activityRes.Result.ErrorInfo?.Message), "An error occured in CreateActivityHandler");
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(activityRes.Result.ErrorInfo?.Message), "An error occurred in CreateActivityHandler");
             }
             var activity = activityRes.Result.Result;
 
@@ -169,7 +171,39 @@ public class CreateActivityHandler : ICreateActivityHandler
 
             if(createdSchedules.Succeeded && !createdSchedules.Result.IsSuccess)
             {
-                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(createdSchedules.Result.ErrorInfo?.Message), "An error occured in CreateActivityHandler");
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(createdSchedules.Result.ErrorInfo?.Message), "An error occurred in CreateActivityHandler");
+            }
+
+            //create add-ons
+            if (args.AddOns.Count() != 0)
+            {
+                int addOnsOrder = 0;
+                var createdAddOns = await addOnsData.CreateManyAddOns(new Framework.ApiCommand.ApiData.AddOns.Request.CreateAddOnsArgs
+                {
+                    ActivityId = activity.Id,
+                    AddOns = args.AddOns is not null ? args.AddOns.OrderBy(a => a.Order).Select(s =>
+                    {
+                        addOnsOrder += 1;
+                        return new Framework.ApiCommand.ApiData.AddOns.Request.CreateAddOnsArgs.AddOn
+                        {
+                            Name        = s.Name,
+                            Price       = s.Price,
+                            UnitPrice   = s.UnitPrice,
+                            Description = s.Description,
+                            Order       = addOnsOrder
+                        };
+                    }) : Enumerable.Empty<Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request.CreateAddOnsArgs.AddOn>()
+                });
+
+                if (!createdAddOns.Succeeded || createdAddOns.Result == null)
+                {
+                    return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(createdAddOns.Message), createdAddOns.Message);
+                }
+
+                if (createdAddOns.Succeeded && !createdAddOns.Result.IsSuccess)
+                {
+                    return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(createdSchedules.Result.ErrorInfo?.Message), "An error occurred in CreateActivityHandler");
+                }
             }
 
             // update customer to maker status
@@ -181,7 +215,7 @@ public class CreateActivityHandler : ICreateActivityHandler
 
             if(customer.Succeeded && !customer.Result.IsSuccess)
             {
-                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(customer.Result.ErrorInfo?.Message), "An error occured in CreateActivityHandler");
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(customer.Result.ErrorInfo?.Message), "An error occurred in CreateActivityHandler");
             }
 
             if(!customer.Result.Result.IsMaker)
@@ -194,7 +228,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 if((!updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
                 {
                     return AppResult<CreateActivityResult>.CreateFailed(
-                        new ApplicationException("An error occured when trying to update customer to maker"), "An error occured when trying to update customer to maker");
+                        new ApplicationException("An error occured when trying to update customer to maker"), "An error occurred when trying to update customer to maker");
                 }
             }
 
@@ -249,7 +283,7 @@ public class CreateActivityHandler : ICreateActivityHandler
         }
         catch (Exception ex)
         {
-            return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occured in CreateActivityHandler");
+            return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occurred in CreateActivityHandler");
         }
     }
 

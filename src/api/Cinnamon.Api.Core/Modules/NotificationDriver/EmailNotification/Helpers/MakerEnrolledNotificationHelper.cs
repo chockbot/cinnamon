@@ -9,13 +9,16 @@ public class MakerEnrolledNotificationHelper
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
         string payerEmail, decimal providerFee, decimal appliedCredits, bool inclusivePricing,
-        decimal discountAmount)
+        decimal discountAmount, decimal addOnsAmount, IEnumerable<AddOnDetails> addOnsDetails)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
+        string addOnsString = string.Empty;
+        string addOnTitle = string.Empty; 
 
-        foreach(var item in students)
+        //Members
+        foreach (var item in students)
         {
             if(string.IsNullOrEmpty(enrolleesString))
             {
@@ -26,6 +29,65 @@ public class MakerEnrolledNotificationHelper
                 enrolleesString += $", {item.Name}";
             }
         }
+
+        //Add-ons
+        if (addOnsDetails.Count() != 0)
+        {
+            addOnTitle = "Add-ons: ";
+            foreach (var item in addOnsDetails)
+            {
+                if (string.IsNullOrEmpty(addOnsString))
+                {
+                    addOnsString += $"{item.AddOnName}({item.AddOnCount})";
+                }
+                else
+                {
+                    addOnsString += $", {item.AddOnName}({item.AddOnCount})";
+                }
+            }
+        }
+        else
+        {
+            addOnTitle = string.Empty;
+            addOnsString = string.Empty;
+        }
+
+        // Check if amount is greater than 0 before including the related information
+        string amountHtmlString = amount > 0 ? $@"
+            <tr>
+                <td style='width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #717171'>Amount: </span>
+                    </p>
+                </td>
+                <td style='text-align: right; width: 50%'>
+                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                    <span style='color: #343d4c; text-transform: uppercase'>{amount.ToString("#,##0.00")}</span>
+                    </p>
+                </td>
+            </tr>
+        " : "";
+
+        // Check if add-ons is not null
+        string addonHtmlString = addOnsDetails.Count() != 0 ? $@"<td style='text-align: right; width: 50%'>
+                                                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                    <span style='color: #343d4c; text-transform: capitalize'>{addOnsString}</span>
+                                                                    </p>
+                                                                 </td>" : "";
+        string addOnTotalHtmlString = addOnsDetails.Count() != 0 ? $@"<tr>
+                                                                        <td style='width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #717171'>Add-Ons: </span>
+                                                                            </p>
+                                                                        </td>
+                                                                        <td style='text-align: right; width: 50%'>
+                                                                            <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                                                            <span style='color: #343d4c; text-transform: uppercase'
+                                                                                >{addOnsAmount.ToString("#,##0.00")}</span
+                                                                            >
+                                                                            </p>
+                                                                        </td>
+                                                                       </tr>" : "";
 
         string providerFeeHtmlString = string.Empty;
         string serviceFeeHtmlString = string.Empty;
@@ -158,52 +220,48 @@ public class MakerEnrolledNotificationHelper
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
                     <div class='purchased-details' style='padding: 2rem 2rem'>
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
-                        <b style='text-transform: capitalize'>{experienceName}</b>
+                            <b style='text-transform: capitalize'>{experienceName}</b>
                         </p>
                         <table style='width: 100%'>
                         <tbody>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Enrollees: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: capitalize'
-                                    >{enrolleesString} ({students.Count()})</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>{addOnTitle}</span>
+                                    </p>
+                                </td>
+                                {addonHtmlString}
                             </tr>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Payment Reference Number: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{referenceNumber}</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Enrollees: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: capitalize'
+                                        >{enrolleesString} ({students.Count()})</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
                             <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Amount: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{amount.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
+                                <td style='width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #717171'>Payment Reference Number: </span>
+                                    </p>
+                                </td>
+                                <td style='text-align: right; width: 50%'>
+                                    <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                    <span style='color: #343d4c; text-transform: uppercase'
+                                        >{referenceNumber}</span
+                                    >
+                                    </p>
+                                </td>
                             </tr>
+                            {amountHtmlString}
+                            {addOnTotalHtmlString}
                             {providerFeeHtmlString}
                             {serviceFeeHtmlString}
                             <tr>
@@ -244,7 +302,7 @@ public class MakerEnrolledNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {GetTotalPurchase(amount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, addOnsAmount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -285,9 +343,9 @@ public class MakerEnrolledNotificationHelper
         return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
     }
 
-    private decimal GetTotalPurchase(decimal amount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
+    private decimal GetTotalPurchase(decimal amount,decimal addOnsAmount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
     {
-        var result = amount + serviceFee + providerFee - discountAmount - appliedCredits;
+        var result = amount + addOnsAmount + serviceFee + providerFee - discountAmount - appliedCredits;
         result = result < 0 ? 0 : result;
         return result;
     }

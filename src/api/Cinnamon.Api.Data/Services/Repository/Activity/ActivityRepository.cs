@@ -112,7 +112,7 @@ public class ActivityRepository : IActivityRepository
             var cityResult = new AppResult<City>();
             var barangayResult = new AppResult<Barangay>();
 
-            if (experienceTypeId == 1)
+            if (experienceTypeId == 1 && !string.IsNullOrEmpty(region))
             {
                 if (status == ActivityStatus.Submitted)
                 {
@@ -639,7 +639,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false, bool? includeAddOns = false)
     {
         try
         {
@@ -651,7 +651,8 @@ public class ActivityRepository : IActivityRepository
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
             if(includeStudents) includes.Add(a => a.Students);
-            if (includeTickets) includes.Add(a => a.Tickets);
+            if(includeTickets) includes.Add(a => a.Tickets);
+            if(includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -835,6 +836,23 @@ public class ActivityRepository : IActivityRepository
                 var tickets = activity.Tickets;
                 activityDTO.NumberOfTickets = tickets.Count;
             }
+            if (includeAddOns.HasValue && includeAddOns.Value && activity.AddOns != null)
+            {
+                var addOns = activity.AddOns;
+                activityDTO.AddOns = activity.AddOns.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiData.DTO.AddOns.AddOnsDTO
+                    {
+                        Id          = s.Id,
+                        ActivityId  = s.ActivityId,
+                        Name        = s.Name,
+                        Price       = s.Price,
+                        UnitPrice   = s.UnitPrice,
+                        Description = s.Description,
+                        Order       = s.Order
+                    };
+                }).ToList();
+            }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
@@ -846,7 +864,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false, bool? includeAddOns = false)
     {
         try
         {
@@ -858,6 +876,7 @@ public class ActivityRepository : IActivityRepository
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
             if (includeStudents) includes.Add(a => a.Students);
+            if (includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -1032,6 +1051,23 @@ public class ActivityRepository : IActivityRepository
                                                               && a.ExpirationDateEnd != DateTime.MinValue);
                 activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
             }
+            if (includeAddOns.HasValue && includeAddOns.Value && activity.AddOns != null)
+            {
+                var addOns = activity.AddOns;
+                activityDTO.AddOns = activity.AddOns.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiData.DTO.AddOns.AddOnsDTO
+                    {
+                        Id = s.Id,
+                        ActivityId = s.ActivityId,
+                        Name = s.Name,
+                        Price = s.Price,
+                        UnitPrice = s.UnitPrice,
+                        Description = s.Description,
+                        Order = s.Order
+                    };
+                }).ToList();
+            }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
@@ -1125,7 +1161,7 @@ public class ActivityRepository : IActivityRepository
             var cityResult = new AppResult<City>();
             var barangayResult = new AppResult<Barangay>();
 
-            if (experienceTypeId == 1)
+            if (experienceTypeId == 1 && !string.IsNullOrEmpty(region))
             {
                 if (status == ActivityStatus.Submitted)
                 {
@@ -1184,7 +1220,12 @@ public class ActivityRepository : IActivityRepository
                     activityAddress.RegionName = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
                     activityAddress.BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
                 }
-               
+            }
+            else
+            {
+                activityAddress.CityName     = string.Empty;
+                activityAddress.RegionName   = string.Empty;
+                activityAddress.BarangayName = string.Empty;
             }
 
             activityAddress.Address1       = address1 ?? activityAddress.Address1;
@@ -1621,11 +1662,11 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip)
+    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
-            var result = await dataStore.Activity.PopularActivities(take, skip);
+            var result = await dataStore.Activity.PopularActivities(take, skip, categoryId);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

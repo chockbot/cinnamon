@@ -39,7 +39,7 @@
                         <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                         <TableHeader>
                             <TableRow>
-                                <TableHeaderCell>
+                                <TableHeaderCell class="th-ticket" TextAlignment="TextAlignment.Start">
                                     Ticket
                                 </TableHeaderCell>
                                 <TableHeaderCell>
@@ -48,7 +48,7 @@
                                 <TableHeaderCell>
                                     Sold
                                 </TableHeaderCell>
-                                <TableHeaderCell>
+                                <TableHeaderCell class="th-available">
                                     Available
                                 </TableHeaderCell>
 
@@ -58,7 +58,7 @@
                             @foreach (var item in ticketList)
                                 {
                                     <TableRow>
-                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Center">@item.OtePricing.Name</TableRowCell>
+                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Start">@item.OtePricing.Name</TableRowCell>
                                         <TableRowCell class="tr-slots" TextAlignment="TextAlignment.Center">@item.OtePricing.MaxSlots</TableRowCell>
                                         <TableRowCell class="tr-sold" TextAlignment="TextAlignment.Center">@item.OtePricing.Sold</TableRowCell>
                                         <TableRowCell class="tr-available" TextAlignment="TextAlignment.Center">@item.OtePricing.Available</TableRowCell>
@@ -125,6 +125,20 @@
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
                         <p class="back-text">Customer List</p>
                     </div>
+                </div>
+                <div class="col-12 customer-filter">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
+                        <div class="filter-content d-flex">
+                             <p class="filter-text">Show</p>
+                             <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                                 <SelectItem Value="10">10</SelectItem>
+                                 <SelectItem Value="25">25</SelectItem>
+                                 <SelectItem Value="50">50</SelectItem>
+                                 <SelectItem Value="100">100</SelectItem>
+                             </Select>
+                             <p class="filter-text">entries</p>
+                        </div>
+                    </div>
                     <div class="col-lg-6 col-md-12 justify-content-md-end col-sm-12 col-12 justify-content-end search-box">
                         <button class="btn-export" @onclick="ExportToExcel">
                             Download Excel File
@@ -138,7 +152,7 @@
                         <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                         <TableHeader>
                             <TableRow>
-                                <TableHeaderCell class="th-name">
+                                <TableHeaderCell class="th-id">
                                     Id
                                 </TableHeaderCell>
                                 <TableHeaderCell class="th-name">
@@ -197,29 +211,34 @@
                                 }
                             </TableBody>
                         </Table>
-                        <Pagination Class="pagination-section" Style="margin-top: 20px;">
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                                <PaginationLink>
-                                    <span aria-hidden="true">«</span>
-                                </PaginationLink>
-                            </PaginationItem>
-                            @{
-                                for (var i = 1; i <= Pagination.TotalPages; i++)
-                                {
-                                    var pageNumberAsString = i.ToString();
-                                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                            @pageNumberAsString
-                                        </PaginationLink>
-                                    </PaginationItem>
+                            <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                                    <PaginationLink>
+                                        <span aria-hidden="true">«</span>
+                                    </PaginationLink>
+                                </PaginationItem>
+
+                                @{
+                                    int pagesToShow = 7;
+                                    int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                                    int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                                    for (var i = startPage; i <= endPage; i++)
+                                    {
+                                        var pageNumberAsString = i.ToString();
+                                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                                @pageNumberAsString
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    }
                                 }
-                            }
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                                <PaginationLink>
-                                    <span aria-hidden="true">»</span>
-                                </PaginationLink>
-                            </PaginationItem>
-                        </Pagination>
+                                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                                    <PaginationLink>
+                                        <span aria-hidden="true">»</span>
+                                    </PaginationLink>
+                                </PaginationItem>
+                            </Pagination>
                     </div>
                 </div>
             </div>
@@ -248,6 +267,11 @@
     public int TotalSlots          = 0;
     public int TotalSold           = 0;
     public int TotalAvailable      = 0;
+    public int counterPage         = 10;
+    public string SearchValue      = string.Empty;
+    public int selectedFilter;
+
+
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
 
     protected override async Task OnInitializedAsync()
@@ -310,13 +334,15 @@
         TotalSold      = ticketList.Sum(s => s.OtePricing.Sold);
         TotalAvailable = ticketList.Sum(v => v.OtePricing.Available);
     }
+
     private async Task GetCustomerList(int pageIndex)
     {
         var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
             {
-                ActivityId = activity.Id,
-                CountPerPage = 10,
-                PageIndex = pageIndex
+                SearchValue  = SearchValue,
+                ActivityId   = activity.Id,
+                CountPerPage = counterPage,
+                PageIndex    = pageIndex
             }, Token);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
@@ -374,7 +400,7 @@
     private async Task Next()
     {
         var currentPageAsInt = int.Parse(currentPage);
-        if (currentPageAsInt < pageItems)
+        if (currentPageAsInt < Pagination.TotalPages)
         {
             currentPage = (currentPageAsInt + 1).ToString();
             await GetCustomerList(int.Parse(currentPage));
@@ -449,10 +475,6 @@
 
     }
 
-    private void TextSearchChanged(string search)
-    {
-        FilteredCustomer = oteCustomer.FindAll(s => s.Customer.FirstName.ToLower().Contains(search.ToLower())).OrderBy(e => e.Customer.FirstName).ToList();
-    }
     public async Task UpdateTicketStatus(OteTicket ticket)
     {
         ticket.Status = ticket.Status == "VERIFIED" ? "UNVERIFIED" : "VERIFIED";
@@ -471,5 +493,20 @@
         var template = "000000";
         var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
         return referenceId;
+    }
+    private async Task OnFilterValueChanged(int entries)
+    {
+        counterPage = entries;
+        await loadingIndicator.Show();
+        await GetCustomerList(1);
+        await loadingIndicator.Hide();
+    }
+    private async void TextSearchChanged(string search)
+    {
+        SearchValue = search;
+        await loadingIndicator.Show();
+        await GetCustomerList(1);
+        FilteredCustomer = oteCustomer.FindAll(s => s.Customer.FirstName.ToLower().Contains(search.ToLower()) || s.Customer.LastName.ToLower().Contains(search.ToLower())).OrderBy(e => e.Customer.FirstName).ToList();
+        await loadingIndicator.Hide();
     }
 }

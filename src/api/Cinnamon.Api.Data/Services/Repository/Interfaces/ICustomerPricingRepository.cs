@@ -9,6 +9,6 @@ public interface ICustomerPricingRepository
     Task<AppResult<CustomerPricingDTO>> GetByCustomerIdAsync(int id);
     Task<AppResult<IEnumerable<CustomerPricingDTO>>> GetAllAsync(int? count, int? skip);
     Task<AppResult<IEnumerable<CustomerPricingDTO>>> GetAllAsync();
-    Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate, bool isManualPayment);
-    Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate, bool isManualPayment);
+    Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate, bool isManualPayment, bool inclusivePricing);
+    Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate, bool isManualPayment, bool inclusivePricing);
 }

@@ -16,7 +16,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         this.dataStore = dataStore;
     }
     
-    public async Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate, bool isManualPayment)
+    public async Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate, bool isManualPayment, bool inclusivePricing)
     {
         try
         {
@@ -24,7 +24,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 CustomerId = customerId,
                 Email = email,
                 Rate = rate,
-                IsManualPayment = isManualPayment
+                IsManualPayment = isManualPayment,
+                InclusivePricing = inclusivePricing
             };
 
             var result = await dataStore.CustomerPricing.Add(entity);
@@ -49,7 +50,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 Id = created.Id,
                 LastName = created.Customer.LastName,
                 Rate = created.Rate,
-                IsManualPayment = created.IsManualPayment
+                IsManualPayment = created.IsManualPayment,
+                InclusivePricing = created.InclusivePricing
             }, "Successfully created customer pricing");
         }
         catch (Exception ex)
@@ -75,7 +77,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                     LastName = c.Customer.LastName,
                     Id = c.Id,
                     Rate = c.Rate,
-                    IsManualPayment = c.IsManualPayment
+                    IsManualPayment = c.IsManualPayment,
+                    InclusivePricing = c.InclusivePricing
                 };
             });
 
@@ -104,7 +107,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                     LastName = c.Customer?.LastName ?? string.Empty,
                     Id = c.Id,
                     Rate = c.Rate,
-                    IsManualPayment = c.IsManualPayment
+                    IsManualPayment = c.IsManualPayment,
+                    InclusivePricing = c.InclusivePricing
                 };
             });
 
@@ -136,7 +140,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 Id = customerPricing.Id,
                 LastName = customerPricing.Customer.LastName,
                 Rate = customerPricing.Rate,
-                IsManualPayment = customerPricing.IsManualPayment
+                IsManualPayment = customerPricing.IsManualPayment,
+                InclusivePricing = customerPricing.InclusivePricing
             }, "Successfully get customer pricing by customer id");
         }
         catch (Exception ex)
@@ -165,7 +170,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 Id = customerPricing.Id,
                 LastName = customerPricing.Customer.LastName,
                 Rate = customerPricing.Rate,
-                IsManualPayment = customerPricing.IsManualPayment
+                IsManualPayment = customerPricing.IsManualPayment,
+                InclusivePricing = customerPricing.InclusivePricing
             }, "Successfully get customer pricing by id");
         }
         catch (Exception ex)
@@ -174,7 +180,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         }
     }
 
-    public async Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate, bool isManualPayment)
+    public async Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate, bool isManualPayment, bool inclusivePricing)
     {
         try
         {
@@ -185,6 +191,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
             }
             result.Result.Rate = rate;
             result.Result.IsManualPayment = isManualPayment;
+            result.Result.InclusivePricing = inclusivePricing;
 
             var updatedRes = await dataStore.CustomerPricing.Update(result.Result);
             if(!updatedRes.Succeeded || updatedRes.Result == null)

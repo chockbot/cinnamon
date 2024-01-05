@@ -6,12 +6,15 @@
            <p class="col-11 modal-title text-center"></p>
            <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody Padding="Padding.Is0">
            <div class="container">
                 <div class="col-12 justify-content-center user-flow-1">
                     <img class="img-flow" src="/images/experience-creation/@Image" />
                 </div>
-           </div>
+            </div>
+            <div class="col-12 justify-content-center user-flow-mobile">
+                <img class="img-flow" src="/images/experience-creation/@MobileImage" />
+            </div>
         </ModalBody>
     </ModalContent>
 </Modal>
@@ -20,6 +23,9 @@
 @code {
     [Parameter]
     public string Image { get; set; }
+
+    [Parameter]
+    public string MobileImage { get; set; }
 
     private Modal modalRef;
 

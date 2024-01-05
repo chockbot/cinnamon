@@ -20,4 +20,13 @@ public class PurchaseOrder
     public string ExperienceByContactEmail {get; set;}
     public string ExperienceByContactNo {get; set;}
     public decimal AppliedCreditAmount {get; set;}
+    public decimal AddOnsAmount { get; set; }
+    public IList<AddOnDetail> AddOnDetails { get; set;}
+
+    public class AddOnDetail
+    {
+        public int Id { get; set;}  
+        public string Name { get; set;}
+        public int Count { get; set; }
+    }
 }

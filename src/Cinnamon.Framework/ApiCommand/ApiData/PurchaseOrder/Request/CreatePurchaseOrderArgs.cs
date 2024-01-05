@@ -34,4 +34,6 @@ public class CreatePurchaseOrderArgs
     public decimal PerUnitDisburseAmount {get; set;}
     [Required]
     public decimal TotalDisburseAmount {get; set;}
+    [Required]
+    public decimal AddOnsAmount { get; set; }
 }
