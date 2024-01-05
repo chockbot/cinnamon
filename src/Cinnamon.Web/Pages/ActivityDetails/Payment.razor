@@ -67,7 +67,12 @@
                         @if (ScheduleId != 0)
                         {
                             <div>
-                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                                <div class="d-flex selected-schedule">
+                                    <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                                    <Button Type="ButtonType.Button" Clicked="OnClickChange" class="change-button">
+                                       Change
+                                    </Button>
+                                </div>
                                 <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
                                     <div class="d-flex justify-content-between font-18 m-font-16 font-weight-700 color-black-100 bg-white-200 p-2
                                     border-bottom-1-solid border-color-grey-200">
@@ -122,12 +127,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="m-text-center m-width-100 m-margin-botton-0 m-margin-top-10" style="margin-bottom: -20px;">
-                                                <Button Type="ButtonType.Button" Clicked="OnClickChange"
-                                                        class="border-radius-10 bg-orange-100 color-white-100 py-1 px-4 m-0 font-16 font-weight-700 hover-color-white">
-                                                    Change
-                                                </Button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -159,11 +158,15 @@
                         }
                         else
                         {
-                             <div>
-                                <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
-                                <p class="nothing-text text-center">Nothing Selected</p>
-                                <br />
-                                @if (Model.Activity.AddOns.Count != 0)
+                            <div class="d-flex selected-schedule">
+                                 <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                                 <Button Type="ButtonType.Button" Clicked="OnClickChange" class="change-button">
+                                    Change
+                                 </Button>
+                            </div>
+                            <p class="nothing-text text-center">Nothing Selected</p>
+                            <br />
+                            @if (Model.Activity.AddOns.Count != 0)
                                 {
                                     <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-3">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
                                     @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
@@ -186,7 +189,6 @@
                                         </div>
                                     }
                                 }
-                            </div>
                         }
                         <Divider class="my-4" />
                         <div>
@@ -973,7 +975,7 @@
             {
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
-                IncludeAtivitySchedules = ScheduleId != 0 ? true : false,
+                IncludeAtivitySchedules = true,
                 IsActive = true,
                 IncludeCustomer = true,
                 IncludeActivityImages = true,
