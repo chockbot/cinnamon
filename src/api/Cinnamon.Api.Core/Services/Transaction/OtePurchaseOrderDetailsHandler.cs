@@ -19,10 +19,11 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IOteDateData oteDateData;
 
     public OtePurchaseOrderDetailsHandler(IPurchaseOrderData purchaseOrderData, IGetActivityHandler getActivityHandler,
         IOteFindByHandler oteFindByHandler, IJsonSerializationProvider jsonSerializationProvider, IGetProfileHandler getProfileHandler,
-        ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig, IOteDateData oteDateData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.getActivityHandler = getActivityHandler;
@@ -30,6 +31,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.getProfileHandler = getProfileHandler;
         this.applicationConfig = applicationConfig;
+        this.oteDateData = oteDateData;
     }
 
     public AppResult<OtePurchaseOrderDetailsResult> Execute(OtePurchaseOrderDetailsArgs args)
@@ -60,6 +62,19 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
             {
                 throw new Exception("An error occured. Please contact support.");
             }
+
+            // get first ticket for ote date reference
+            var firstTicket = deserializedPayload.Tickets.FirstOrDefault();
+            if(firstTicket is null)
+            {
+                throw new Exception("An error occured. Please contact support.");
+            }
+            var oteDateRes = await oteDateData.GetOteDate(firstTicket.OteDateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
+            {
+                return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(oteDateRes.Message), oteDateRes.Message);
+            }
+            var oteDate = oteDateRes.Result.Result;
 
             var customerRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
             if(!customerRes.Succeeded || customerRes.Result is null)
@@ -104,7 +119,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
 
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
             var result = new OtePurchaseOrderDetailsResult {
-                EventDate = oteActivity.ScheduleFrom,
+                EventDate = oteDate.DateStart,
                 EventLocation = location,
                 EventName = oteActivity.EventName,
                 HandlingFee = deserializedPayload.Fees.PaymentProviderFee,
@@ -152,6 +167,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
+        public int OteDateId {get; set;}
     }
 
     class Fees {
