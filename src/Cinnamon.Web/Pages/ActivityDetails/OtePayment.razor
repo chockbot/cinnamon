@@ -21,7 +21,7 @@
     <div class="xp-ote-payment-wrapper pb-5">
         <Container>
             <div class="d-flex align-items-center mt-3">
-                <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" />
+                <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack" />
                 <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize m-font-18">Confirm experience</h4>
             </div>
             <Row>
@@ -1016,6 +1016,11 @@
             return true;
         }
     }
+    private Task NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/explore/ote/{activity.Handler}");
+        return Task.CompletedTask;
+    }
 
     private class CouponDetails 
     {
@@ -1037,4 +1042,4 @@
         public int Count {get; set;}
         public decimal Price {get; set;}
     }
-}1Checked12class2        __builder.AddAttribute(__seq3, "Value", (object)__arg3);
+}
