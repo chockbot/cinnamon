@@ -1679,7 +1679,7 @@ public class ActivityRepository : IActivityRepository
             }).ToList();
 
             var dates = oteDates.Select(d => {
-                return new OteDate {
+                return new Entities.OteDate {
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
