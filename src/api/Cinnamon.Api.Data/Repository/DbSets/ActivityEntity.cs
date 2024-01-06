@@ -380,19 +380,22 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         OteSchedule = result.OteSchedule
                     };
                 });
-                foreach(var oteDate in result.OteSchedule.OteDates)
+                
+                foreach(var item in newPricingGroups)
                 {
-                    foreach(var priceGroup in newPricingGroups)
+                    result.OteSchedule.OteSchedulePricingGroups.Add(item);
+
+                    foreach(var oteDate in result.OteSchedule.OteDates)
                     {
                         oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
-                            Description = priceGroup.Description,
-                            IsAbsorbFees = priceGroup.IsAbsorbFees,
-                            MaxSlots = priceGroup.MaxSlots,
-                            Name = priceGroup.Name,
-                            Price = priceGroup.Price,
-                            TicketSold = priceGroup.TicketSold,
+                            Description = item.Description,
+                            IsAbsorbFees = item.IsAbsorbFees,
+                            MaxSlots = item.MaxSlots,
+                            Name = item.Name,
+                            Price = item.Price,
+                            TicketSold = item.TicketSold,
                             OteSchedule = result.OteSchedule,
-                            OteSchedulePricingGroup = priceGroup,
+                            OteSchedulePricingGroup = item,
                         });
                     }
                 }
