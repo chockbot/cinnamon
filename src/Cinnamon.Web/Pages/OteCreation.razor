@@ -596,7 +596,7 @@
             MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
             OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
             WeekString = ote.OteSchedule.SelectedDays,
-            ItemPrices = ote.Pricings.Select(p => {
+            ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
