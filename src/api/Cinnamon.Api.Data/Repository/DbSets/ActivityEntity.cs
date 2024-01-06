@@ -383,6 +383,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             if(includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricingGroups);
             }
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 

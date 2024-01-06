@@ -38,6 +38,7 @@ public class MappingProfile : Profile
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
         CreateMap<OteSchedulePricingDTO, OteSchedulePricing>();
         CreateMap<OteSchedule, OteScheduleDTO>();
+        CreateMap<OteSchedulePricingGroup, OtePricingGroupDTO>();
         CreateMap<ActivityImage, ActivityImageDTO>();
         CreateMap<Customer, CustomerDTO>();
         CreateMap<OteDate, OteDateDTO>();
