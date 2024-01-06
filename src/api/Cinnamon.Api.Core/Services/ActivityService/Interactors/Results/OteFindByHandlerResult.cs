@@ -71,5 +71,17 @@ public class OteFindByHandlerResult
         public int RepeatEvery {get; set;}
         public string SelectedDays {get; set;}
         public string ExtraOptions {get; set;}
+        public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
+    }
+
+    public class OtePricingGroupDTO
+    {
+        public int OteScheduleId {get; set;}
+        public decimal Price {get; set;}
+        public int MaxSlots {get; set;}
+        public string Description {get; set;}
+        public bool IsAbsorbFees {get; set;}
+        public string Name {get; set;}
+        public int TicketSold {get; set;}
     }
 }

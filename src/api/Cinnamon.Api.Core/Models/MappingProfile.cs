@@ -16,6 +16,7 @@ public class MappingProfile : Profile
         CreateMap<DataDto.ActivityImage.ActivityImageDTO, ActivityResults.OteFindByHandlerResult.Image>();
         CreateMap<DataDto.OteSchedule.OteDateDTO, ActivityResults.OteFindByHandlerResult.OteDate>();
         CreateMap<DataDto.OteSchedule.OteScheduleDTO, ActivityResults.OteFindByHandlerResult.OteSchedule>();
+        CreateMap<DataDto.OteSchedule.OtePricingGroupDTO, ActivityResults.OteFindByHandlerResult.OtePricingGroupDTO>();
 
         CreateMap<ActivityResults.OteFindByHandlerResult, CoreDto.Activity.OteActivityDTO>()
             .ForMember(d => d.OteSchedule, o => o.MapFrom(s => s.Schedule));
@@ -25,6 +26,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.Name, o => o.MapFrom(s => s.ImageName));
         CreateMap<ActivityResults.OteFindByHandlerResult.OteDate, CoreDto.Activity.OteDateDTO>();
         CreateMap<ActivityResults.OteFindByHandlerResult.OteSchedule, CoreDto.Activity.OteScheduleDTO>();
+        CreateMap<ActivityResults.OteFindByHandlerResult.OtePricingGroupDTO, CoreDto.Activity.OtePricingGroupDTO>();
 
         CreateMap<ActivityResults.OteTicketDetailsResult, CoreDto.Activity.OteTicketDetailsDTO>();
         CreateMap<ActivityResults.OteTicketDetailsResult.Ticket, CoreDto.Activity.OteTicketDetailsDTO.TicketDetails>();
