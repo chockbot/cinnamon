@@ -338,9 +338,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 result.Address.PinnedLocation = address.PinnedLocation;
                 result.Address.PostalCode = address.PostalCode;
 
-                result.OteSchedule.From = oteSchedule.From;
-                result.OteSchedule.To = oteSchedule.To;
-                result.OteSchedule.Recurrences = oteSchedule.Recurrences;
+                // disable update for ote schedule
+                // result.OteSchedule.From = oteSchedule.From;
+                // result.OteSchedule.To = oteSchedule.To;
+                // result.OteSchedule.Recurrences = oteSchedule.Recurrences;
 
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
                 foreach(var price in updatedPricingList)

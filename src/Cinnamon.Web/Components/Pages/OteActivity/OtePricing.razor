@@ -247,7 +247,7 @@
                             <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")' 
                                 class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")' 
                                 type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
-                                @($"{modelSchedule.DateFrom.ToString("MMM dd, yyyy")} | {modelSchedule.DateFrom.ToString("hh:mm tt")} | {item.Price.ToString("#,##0.00")}")
+                                @item.Name
                             </button>
                         </h2>
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
