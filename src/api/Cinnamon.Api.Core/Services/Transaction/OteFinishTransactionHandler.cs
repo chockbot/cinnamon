@@ -25,12 +25,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly ApplicationConfig applicationConfig;
     private readonly IActivityData activityData;
+    private readonly IOteDateData oteDateData;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
-        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData)
+        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
+        IOteDateData oteDateData)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -43,6 +45,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.tokenGeneratedData = tokenGeneratedData;
         this.applicationConfig = applicationConfig;
         this.activityData = activityData;
+        this.oteDateData = oteDateData;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -110,6 +113,19 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             {
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
+
+            // get first ticket for ote date reference
+            var firstTicket = deserializedPayload.Tickets.FirstOrDefault();
+            if(firstTicket is null)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+            var oteDateRes = await oteDateData.GetOteDate(firstTicket.OteDateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+            var oteDate = oteDateRes.Result.Result;
 
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
@@ -206,7 +222,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             var notifyEmailRes = await oteCustomerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs {
                 Email = customer.Email,
                 CustomerName = customer.FirstName,
-                EventDate = oteActivity.ScheduleFrom,
+                EventDate = oteDate.DateStart,
                 EventLocation = $"{oteActivity.HouseNo} {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}",
                 EventName = oteActivity.EventName,
                 HandlingFee = deserializedPayload.Fees.ServiceFee,

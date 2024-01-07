@@ -15,4 +15,5 @@ public class OteSchedule : BaseEntity
     public virtual Activity Activity {get; set;}
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}
     public virtual IList<OteDate> OteDates {get; set;}
+    public virtual IList<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
 }
