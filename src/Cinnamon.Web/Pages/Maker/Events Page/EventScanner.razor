@@ -44,7 +44,7 @@
                     <TableBody class="font-16 m-font-14 log-body">
                         @foreach (var item in verificationLogs.OrderByDescending(l => l.LogDate).Take(20))
                         {
-                            <TableRow>
+                            <TableRow VerticalAlignment="VerticalAlignment.Middle">
                                 <TableRowCell class="item-qr color-grey-100">
                                     @(item.TicketNumber > 0 ? FormattedId(item.TicketNumber) : "N/A")
                                 </TableRowCell>
