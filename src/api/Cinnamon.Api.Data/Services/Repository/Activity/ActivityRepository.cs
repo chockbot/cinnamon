@@ -1734,25 +1734,38 @@ public class ActivityRepository : IActivityRepository
                 SelectedDays = selectedDays
             };
 
-            schedule.OteDates = oteDates.Select(d => {
-                return new OteDate {
+            var pricingsGroup = pricingDTOs.Select(p => {
+                return new OteSchedulePricingGroup {
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Name = p.Name,
+                    OteSchedule = schedule
+                };
+            }).ToList();
+
+            var dates = oteDates.Select(d => {
+                return new Entities.OteDate {
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
-                    OteSchedulePricing = pricingDTOs.Select(p => {
+                    OteSchedulePricing = pricingsGroup.Select(p => {
                         return new OteSchedulePricing {
                             Description = p.Description,
                             IsAbsorbFees = p.IsAbsorbFees,
                             MaxSlots = p.MaxSlots,
                             Price = p.Price,
                             Name = p.Name,
-                            OteSchedule = schedule
+                            OteSchedule = schedule,
+                            OteSchedulePricingGroup = p
                         };
-                    }).ToList()
+                    }).ToList(),
+                    OteSchedule = schedule
                 };
             }).ToList();
 
-            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule);
+            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule, pricingsGroup, dates);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);

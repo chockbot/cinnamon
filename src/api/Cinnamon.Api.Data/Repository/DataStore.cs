@@ -100,6 +100,7 @@ public class DataStore : IDataStore
     public ITokenGenerated TokenGenerated => new TokenGenratedEntity(applicationContext);
 
     public IOteDate OteDate => new OteDateEntity(applicationContext);
+    public IOteSchedulePricingGroup OteSchedulePricingGroup => new OteSchedulePricingGroupsEntity(applicationContext);
 
     public IAddOns AddOns => new AddOnsEntity(applicationContext);
 

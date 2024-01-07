@@ -294,7 +294,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, 
+        ActivityAddress address, OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups,
+        IList<OteDate> oteDates)
     {
         try
         {
@@ -306,6 +308,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.ActivityAddress.Add(address);
             this.applicationContext.ActivityDescriptions.Add(description);
             this.applicationContext.OteSchedules.Add(oteSchedule);
+            this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
+            this.applicationContext.OteDates.AddRange(oteDates);
+            
             await this.applicationContext.SaveChangesAsync();
 
             return AppResult<Activity>.CreateSucceeded(activity, "One time activity successfully created.");
@@ -320,66 +325,109 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            var activityResult = await applicationContext.Activities
-                    .Where(a => a.Id == activity.Id)
-                    .Include(a => a.ActivityDescription)
-                    .Include(a => a.Address)
-                    .Include(a => a.OteSchedule)
-                    .ThenInclude(p => p.OteSchedulePricing)
-                    .FirstOrDefaultAsync();
+            var activityResult = applicationContext.Activities
+                    .Where(a => a.Id == activity.Id);
             
-            if(activityResult is not null)
+            activityResult = activityResult.Include(a => a.ActivityDescription);
+            activityResult = activityResult.Include(a => a.Address);
+            activityResult = activityResult.Include(a => a.OteSchedule);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
+
+            var result = await activityResult.FirstOrDefaultAsync();
+            
+            if(result is not null)
             {
-                activityResult.Description = activity.Description;
-                activityResult.Title = activity.Title;
-                activityResult.ExperienceTypeId = activity.ExperienceTypeId;
-                activityResult.Price = activity.Price;
-                activityResult.IsPublished = activity.IsPublished;
-                activityResult.ExperienceCategoryId = activity.ExperienceCategoryId;
-                activityResult.Handler = activity.Handler;
-                activityResult.IsPublished = activity.IsPublished;
-                activityResult.IsComingSoon = activity.IsComingSoon;
+                result.Description = activity.Description;
+                result.Title = activity.Title;
+                result.ExperienceTypeId = activity.ExperienceTypeId;
+                result.Price = activity.Price;
+                result.IsPublished = activity.IsPublished;
+                result.ExperienceCategoryId = activity.ExperienceCategoryId;
+                result.Handler = activity.Handler;
+                result.IsPublished = activity.IsPublished;
+                result.IsComingSoon = activity.IsComingSoon;
 
-                activityResult.ActivityDescription.Description = description.Description;
+                result.ActivityDescription.Description = description.Description;
 
-                activityResult.Address.Address1 = address.Address1;
-                activityResult.Address.City = address.City;
-                activityResult.Address.CityName = address.CityName;
-                activityResult.Address.Barangay = address.Barangay;
-                activityResult.Address.BarangayName = address.BarangayName;
-                activityResult.Address.Region = address.Region;
-                activityResult.Address.RegionName = address.RegionName;
-                activityResult.Address.PinnedLocation = address.PinnedLocation;
-                activityResult.Address.PostalCode = address.PostalCode;
+                result.Address.Address1 = address.Address1;
+                result.Address.City = address.City;
+                result.Address.CityName = address.CityName;
+                result.Address.Barangay = address.Barangay;
+                result.Address.BarangayName = address.BarangayName;
+                result.Address.Region = address.Region;
+                result.Address.RegionName = address.RegionName;
+                result.Address.PinnedLocation = address.PinnedLocation;
+                result.Address.PostalCode = address.PostalCode;
 
-                activityResult.OteSchedule.From = oteSchedule.From;
-                activityResult.OteSchedule.To = oteSchedule.To;
-                activityResult.OteSchedule.Recurrences = oteSchedule.Recurrences;
+                // disable update for ote schedule
+                // result.OteSchedule.From = oteSchedule.From;
+                // result.OteSchedule.To = oteSchedule.To;
+                // result.OteSchedule.Recurrences = oteSchedule.Recurrences;
 
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
-                foreach(var item in activityResult.OteSchedule.OteSchedulePricing)
+                foreach(var price in updatedPricingList)
                 {
-                    var local = updatedPricingList.FirstOrDefault(p => p.Id == item.Id);
-                    if(local is not null)
+                    var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
+                    if(priceGroup is not null)
                     {
-                        item.Description = local.Description;
-                        item.IsAbsorbFees = local.IsAbsorbFees;
-                        item.MaxSlots = local.MaxSlots;
-                        item.Price = local.Price;
-                        item.Name = local.Name;
+                        priceGroup.Description = price.Description;
+                        priceGroup.IsAbsorbFees = price.IsAbsorbFees;
+                        priceGroup.MaxSlots = price.MaxSlots;
+                        priceGroup.Price = price.Price;
+                        priceGroup.Name = price.Name;
+
+                        var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
+                        if(priceList is not null)
+                        {
+                            foreach(var ticketPrice in priceList)
+                            {
+                                ticketPrice.Description = price.Description;
+                                ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
+                                ticketPrice.MaxSlots = price.MaxSlots;
+                                ticketPrice.Price = price.Price;
+                                ticketPrice.Name = price.Name;
+                            }
+                        }
                     }
                 }
 
                 var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
-                foreach(var item in newPricingList)
+                var newPricingGroups = newPricingList.Select(p => {
+                    return new OteSchedulePricingGroup {
+                        Description = p.Description,
+                        IsAbsorbFees = p.IsAbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Name = p.Name,
+                        Price = p.Price,
+                        OteSchedule = result.OteSchedule
+                    };
+                });
+                
+                foreach(var item in newPricingGroups)
                 {
-                    activityResult.OteSchedule.OteSchedulePricing.Add(item);
+                    result.OteSchedule.OteSchedulePricingGroups.Add(item);
+
+                    foreach(var oteDate in result.OteSchedule.OteDates)
+                    {
+                        oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
+                            Description = item.Description,
+                            IsAbsorbFees = item.IsAbsorbFees,
+                            MaxSlots = item.MaxSlots,
+                            Name = item.Name,
+                            Price = item.Price,
+                            TicketSold = item.TicketSold,
+                            OteSchedule = result.OteSchedule,
+                            OteSchedulePricingGroup = item,
+                        });
+                    }
                 }
 
                 await applicationContext.SaveChangesAsync();
             }
 
-            return AppResult<Activity>.CreateSucceeded(activityResult, "One time event successfully updated.");
+            return AppResult<Activity>.CreateSucceeded(result, "One time event successfully updated.");
         }
         catch (Exception ex)
         {
@@ -401,6 +449,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             if(includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
+                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricingGroups);
             }
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 
