@@ -71,7 +71,7 @@ public class CreateOteActivityArgs
         [Required]
         public bool IsComingSoon {get; set;}
 
-        public string ExtraOptions {get; set;}
+        public string? ExtraOptions {get; set;} = string.Empty;
 
         [Required]
         public DateTime RecurrenceDateStart {get; set;}
@@ -82,7 +82,7 @@ public class CreateOteActivityArgs
         [Required]
         public int RepeatEvery {get; set;}
 
-        public string SelectedDays {get; set;}
+        public string SelectedDays {get; set;} = string.Empty;
     }
 
     public class OtePricing 
