@@ -104,7 +104,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 .AppendPathSegment(deserializedPayload.Guid)
                 .AppendPathSegment(deserializedPayload.Token);
 
-            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
+            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : string.IsNullOrEmpty(oteActivity.PinnedLocation) ? $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}" : oteActivity.PinnedLocation;
             
             var ticketsRes = await oteTicketData.GetByPurchaseOrderId(purchaseOrder.Id, new());
             if(!ticketsRes.Succeeded || ticketsRes.Result is null || !ticketsRes.Result.IsSuccess)

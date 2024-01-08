@@ -112,6 +112,7 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                         Region = e.Region,
                         Barangay= e.Barangay,
                         PostalCode = e.PostalCode,
+                        PinnedLocation = e.PinnedLocation,
                         SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
