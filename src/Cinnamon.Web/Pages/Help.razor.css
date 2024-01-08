@@ -1,471 +1,493 @@
 ﻿.footer {
-    height: 128px;
-    width: 100%;
-    margin-top: 60px;
-    margin-bottom: 60px;
-    background-color: white;
-    position: relative;
+  height: 128px;
+  width: 100%;
+  margin-top: 60px;
+  margin-bottom: 60px;
+  background-color: white;
+  position: relative;
 }
 
 .footer-content {
-    text-align: left;
-    position: absolute;
-    width: 100%;
-    top: 10%;
+  text-align: left;
+  position: absolute;
+  width: 100%;
+  top: 10%;
 }
 
 .footer-appname {
-    font-family: 'Backline';
-    font-size: 2vw;
+  font-family: "Backline";
+  font-size: 2vw;
 }
 
 .footer-text {
-    font-family: 'Inter';
-    font-size: 1vw;
+  font-family: "Inter";
+  font-size: 1vw;
 }
 .faq-style {
-    font-family: 'Nunito';
+  font-family: "Nunito";
 }
 .policy-style {
-    font-family: 'Nunito';
-    font-size: 18px;
+  font-family: "Nunito";
+  font-size: 18px;
 }
 .terms-style {
-    font-family: 'Nunito';
-    font-size: 18px;
+  font-family: "Nunito";
+  font-size: 18px;
 }
 .question {
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 33px;
-    color: #343D4C;
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 33px;
+  color: #343d4c;
 }
 .answer {
-    font-family: 'Nunito';
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 27px;
+  color: #717171;
+  text-align: justify;
+}
+
+.heading-secondary {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 55px;
+  color: #ffa942;
+  margin-bottom: 20px;
+}
+.heading {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 33px;
+  color: #343d4c;
+}
+
+.justify {
+  text-align: justify;
+}
+
+.alpha-list-upper {
+  list-style-type: upper-alpha;
+}
+
+.alpha-list-lower {
+  list-style-type: lower-alpha;
+}
+
+.tbl-bordered,
+.tbl-bordered tr td {
+  border: 1px solid #000000;
+}
+
+li + li {
+  margin-top: 15px;
+}
+
+.alpha-list-parentheses {
+  list-style-type: none;
+}
+
+.alpha-list-parentheses li {
+  counter-increment: alpha-step-counter;
+}
+
+.alpha-list-parentheses li:before {
+  content: "(" counter(alpha-step-counter, lower-alpha) ") ";
+}
+
+.numbered-list-parentheses {
+  list-style-type: none;
+}
+
+.numbered-list-parentheses li {
+  counter-increment: numbered-step-counter;
+}
+
+.numbered-list-parentheses li:before {
+  content: "(" counter(numbered-step-counter) ") ";
+}
+.terms-caption {
+  font-family: Nunito;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 33px;
+  letter-spacing: 0em;
+  text-align: justify;
+}
+
+.list-disc {
+  list-style-type: disc;
+}
+
+@media (min-width: 0px) and (max-width: 575.98px) {
+  .heading {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 44px;
+    color: #343d4c;
+    margin-bottom: 46px;
+    margin-top: 64px;
+  }
+  .app-name {
+    font-family: "Backline";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 85px;
+    color: #ffa942;
+  }
+
+  .app-name-section {
+    margin-bottom: 30px;
+  }
+
+  .btn-caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    text-align: center;
+    color: #343d4c;
+  }
+
+  .btn-section,
+  .btn-carousel-section {
+    padding: 0px 0px 20px 0px;
+  }
+
+  .caption {
+    font-family: "Nunito";
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
     line-height: 27px;
     color: #717171;
-    text-align: justify;
+  }
+
+  .carousel-control-next,
+    .carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+  }
+
+  .swiper-slide.faq[style] {
+    width: 325px !important;
+    margin-right: 15px !important;
+  }
+
+  .swiper-slide.terms[style] {
+    width: 240px !important;
+    margin-right: 15px !important;
+  }
+
+  .swiper-slide.policy[style] {
+    width: 185px !important;
+    margin-right: 15px !important;
+  }
 }
 
-.heading-secondary {
-    font-family: 'Nunito';
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .heading {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 44px;
+    color: #343d4c;
+    margin-bottom: 46px;
+    margin-top: 64px;
+  }
+  .app-name {
+    font-family: "Backline";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 85px;
+    color: #ffa942;
+  }
+
+  .app-name-section {
+    margin-bottom: 30px;
+  }
+
+  .btn-caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    text-align: center;
+    color: #343d4c;
+  }
+
+  .btn-section,
+  .btn-carousel-section {
+    padding: 0px 0px 20px 0px;
+  }
+
+  .caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 27px;
+    color: #717171;
+  }
+
+  .carousel-control-next,
+    .carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+  }
+
+  .swiper-slide.faq[style] {
+    width: 325px !important;
+    margin-right: 15px !important;
+  }
+
+  .swiper-slide.terms[style] {
+    width: 240px !important;
+    margin-right: 15px !important;
+  }
+
+  .swiper-slide.policy[style] {
+    width: 185px !important;
+    margin-right: 15px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .heading {
+    font-family: "Nunito";
     font-style: normal;
     font-weight: 700;
     font-size: 40px;
     line-height: 55px;
-    color: #FFA942;
-    margin-bottom: 20px;
-}
-.heading {
-    font-family: 'Nunito';
+    color: #343d4c;
+    margin-bottom: 46px;
+    margin-top: 64px;
+  }
+
+  .app-name {
+    font-family: "Backline";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 85px;
+    color: #ffa942;
+  }
+
+  .app-name-section {
+    margin-bottom: 30px;
+  }
+
+  .btn-caption {
+    font-family: "Nunito";
     font-style: normal;
     font-weight: 700;
-    font-size: 24px;
-    line-height: 33px;
-    color: #343D4C;
-}
+    font-size: 20px;
+    line-height: 27px;
+    text-align: center;
+    color: #343d4c;
+  }
 
-.justify {
-    text-align: justify;
-}
+  .btn-section,
+  .btn-carousel-section {
+    padding-bottom: 20px;
+  }
 
-.alpha-list-upper {
-    list-style-type: upper-alpha;
-}
+  .caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 27px;
+    color: #717171;
+  }
 
-.alpha-list-lower {
-    list-style-type: lower-alpha;
-}
-
-.tbl-bordered, .tbl-bordered tr td {
-    border: 1px solid #000000
-}
-
-li + li {
-    margin-top: 15px;
-}
-
-.alpha-list-parentheses {
-    list-style-type: none;
-}
-
-    .alpha-list-parentheses li {
-        counter-increment: alpha-step-counter;
-    }
-
-        .alpha-list-parentheses li:before {
-            content: "(" counter(alpha-step-counter, lower-alpha) ") ";
-        }
-
-.numbered-list-parentheses {
-    list-style-type: none;
-}
-
-    .numbered-list-parentheses li {
-        counter-increment: numbered-step-counter;
-    }
-
-        .numbered-list-parentheses li:before {
-            content: "(" counter(numbered-step-counter) ") ";
-        }
-.terms-caption {
-    font-family: Nunito;
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 33px;
-    letter-spacing: 0em;
-    text-align: justify;
-}
-
-.list-disc {
-    list-style-type: disc;
-}
-
-
-@media (min-width: 0px) and (max-width: 575.98px) {
-    .heading {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 32px;
-        line-height: 44px;
-        color: #343D4C;
-        margin-bottom: 46px;
-        margin-top: 64px;
-    }
-    .app-name {
-        font-family: 'Backline';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 48px;
-        line-height: 85px;
-        color: #FFA942;
-    }
-
-    .app-name-section {
-        margin-bottom: 30px
-    }
-
-    .btn-caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 27px;
-        text-align: center;
-        color: #343D4C;
-    }
-
-    .btn-section, .btn-carousel-section {
-        padding: 0px 0px 20px 0px;
-    }
-
-    .caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 27px;
-        color: #717171;
-    }
-
-    .carousel-control-next,
+  .carousel-control-next,
     .carousel-control-prev /*, .carousel-indicators */ {
-        filter: invert(100%);
-    }
+    filter: invert(100%);
+  }
 
-    .swiper-slide.faq[style] {
-        width: 325px !important;
-        margin-right: 15px !important;
-    }
+  .swiper-slide.faq[style] {
+    width: 325px !important;
+    margin-right: 15px !important;
+  }
 
-    .swiper-slide.terms[style] {
-        width: 240px !important;
-        margin-right: 15px !important;
-    }
+  .swiper-slide.terms[style] {
+    width: 240px !important;
+    margin-right: 15px !important;
+  }
 
-    .swiper-slide.policy[style] {
-        width: 185px !important;
-        margin-right: 15px !important
-    }
-}
-
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .heading {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 32px;
-        line-height: 44px;
-        color: #343D4C;
-        margin-bottom: 46px;
-        margin-top: 64px;
-    }
-    .app-name {
-        font-family: 'Backline';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 48px;
-        line-height: 85px;
-        color: #FFA942;
-    }
-
-    .app-name-section {
-        margin-bottom: 30px
-    }
-
-    .btn-caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 27px;
-        text-align: center;
-        color: #343D4C;
-    }
-
-    .btn-section, .btn-carousel-section {
-        padding: 0px 0px 20px 0px;
-    }
-
-    .caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 27px;
-        color: #717171;
-    }
-
-    .carousel-control-next,
-    .carousel-control-prev /*, .carousel-indicators */ {
-        filter: invert(100%);
-    }
-
-    .swiper-slide.faq[style] {
-        width: 325px !important;
-        margin-right: 15px !important;
-    }
-
-    .swiper-slide.terms[style] {
-        width: 240px !important;
-        margin-right: 15px !important;
-    }
-
-    .swiper-slide.policy[style] {
-        width: 185px !important;
-        margin-right: 15px !important
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .heading {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 40px;
-        line-height: 55px;
-        color: #343D4C;
-        margin-bottom: 46px;
-        margin-top: 64px;
-    }
-
-    .app-name {
-        font-family: 'Backline';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 48px;
-        line-height: 85px;
-        color: #FFA942;
-    }
-
-    .app-name-section {
-        margin-bottom: 30px
-    }
-
-    .btn-caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 27px;
-        text-align: center;
-        color: #343D4C;
-    }
-
-    .btn-section, .btn-carousel-section {
-        padding-bottom: 20px;
-    }
-
-    .caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 27px;
-        color: #717171;
-    }
-
-    .carousel-control-next,
-    .carousel-control-prev /*, .carousel-indicators */ {
-        filter: invert(100%);
-    }
-
-    .swiper-slide.faq[style] {
-        width: 325px !important;
-        margin-right: 15px !important;
-    }
-
-    .swiper-slide.terms[style] {
-        width: 240px !important;
-        margin-right: 15px !important;
-    }
-
-    .swiper-slide.policy[style] {
-        width: 185px !important;
-        margin-right: 15px !important
-    }
+  .swiper-slide.policy[style] {
+    width: 185px !important;
+    margin-right: 15px !important;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-    .heading {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 40px;
-        line-height: 55px;
-        color: #343D4C;
-        margin-bottom: 50px;
-        margin-top: 20px;
-    }
+  .heading {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 55px;
+    color: #343d4c;
+    margin-bottom: 50px;
+    margin-top: 20px;
+  }
 
-    .app-name {
-        font-family: 'Backline';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 48px;
-        line-height: 85px;
-        color: #FFA942;
-    }
+  .app-name {
+    font-family: "Backline";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 85px;
+    color: #ffa942;
+  }
 
-    .app-name-section {
-        margin-bottom: 30px
-    }
+  .app-name-section {
+    margin-bottom: 30px;
+  }
 
-    .btn-caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 27px;
-        text-align: center;
-        color: #343D4C;
-    }
+  .btn-caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    text-align: center;
+    color: #343d4c;
+  }
 
-    .btn-section, .btn-carousel-section {
-        padding-bottom: 20px;
-    }
+  .btn-section,
+  .btn-carousel-section {
+    padding-bottom: 20px;
+  }
 
-    .caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 27px;
-        color: #717171;
-    }
+  .caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 27px;
+    color: #717171;
+  }
 
-    .carousel-control-next,
+  .carousel-control-next,
     .carousel-control-prev /*, .carousel-indicators */ {
-        filter: invert(100%);
-    }
+    filter: invert(100%);
+  }
 
-    .swiper-slide.faq {
-        width: 325px;
-        margin-right: 17px
-    }
+  .swiper-slide.faq {
+    width: 325px;
+    margin-right: 17px;
+  }
 
-    .swiper-slide.terms {
-        width: 240px;
-        margin-right: 17px
-    }
+  .swiper-slide.terms {
+    width: 240px;
+    margin-right: 17px;
+  }
 
-    .swiper-slide.policy {
-        width: 185px;
-        margin-right: 17px
-    }
+  .swiper-slide.policy {
+    width: 185px;
+    margin-right: 17px;
+  }
 }
 
 @media (min-width: 1200px) {
-    .heading {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 40px;
-        line-height: 55px;
-        color: #343D4C;
-        margin-bottom: 50px;
-        margin-top: 20px;
-    }
+  .heading {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 55px;
+    color: #343d4c;
+    margin-bottom: 50px;
+    margin-top: 20px;
+  }
 
-    .app-name {
-        font-family: 'Backline';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 48px;
-        line-height: 85px;
-        color: #FFA942;
-    }
+  .app-name {
+    font-family: "Backline";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 85px;
+    color: #ffa942;
+  }
 
-    .app-name-section {
-        margin-bottom: 30px
-    }
+  .app-name-section {
+    margin-bottom: 30px;
+  }
 
-    .btn-caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 27px;
-        text-align: center;
-        color: #343D4C;
-    }
+  .btn-caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+    text-align: center;
+    color: #343d4c;
+  }
 
-    .btn-section, .btn-carousel-section {
-        padding-bottom: 20px;
-    }
+  .btn-section,
+  .btn-carousel-section {
+    padding-bottom: 20px;
+  }
 
-    .caption {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 20px;
-        line-height: 27px;
-        color: #717171;
-    }
+  .caption {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 27px;
+    color: #717171;
+  }
 
-    .carousel-control-next,
+  .carousel-control-next,
     .carousel-control-prev /*, .carousel-indicators */ {
-        filter: invert(100%);
-    }
+    filter: invert(100%);
+  }
 
-    .swiper-slide.faq {
-        width: 325px;
-        margin-right: 17px
-    }
+  .swiper-slide.faq {
+    width: 325px;
+    margin-right: 17px;
+  }
 
-    .swiper-slide.terms {
-        width: 240px;
-        margin-right: 17px
-    }
+  .swiper-slide.terms {
+    width: 240px;
+    margin-right: 17px;
+  }
 
-    .swiper-slide.policy {
-        width: 185px;
-        margin-right: 17px
-    }
+  .swiper-slide.policy {
+    width: 185px;
+    margin-right: 17px;
+  }
+}
+
+.ote-seller ol {
+  counter-reset: item;
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.ote-seller li {
+  display: block;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.ote-seller li::before {
+  content: counters(item, ".") ". ";
+  counter-increment: item;
 }
