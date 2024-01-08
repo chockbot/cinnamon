@@ -5,13 +5,14 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-@if (activities.Count != 0)
-{
-    <article class="ongoing-experience-wrapper">
-        <h3 class="title">Favorite Experiences</h3>
-        <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
-            <div class="swiper-wrapper maker-wrapper">
-                @foreach (var item in Favorites)
+
+<article class="ongoing-experience-wrapper">
+    <h3 class="title">Favorite Experiences</h3>
+    <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
+        <div class="swiper-wrapper maker-wrapper">
+        @if (activities.Count != 0)
+        {
+            @foreach (var item in Favorites)
                 {
                     var ActivityData = activities.Where(a => a.ActivityId == item.ActivityId).FirstOrDefault();
                     @if (ActivityData != null)
@@ -20,50 +21,51 @@
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate"    
 
+
                                 Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card">
                                     <a class="button" href="/explore/@ActivityData.ActivityId" style="text-decoration:none;">
                                         <img src="@ActivityData.Images.ElementAt(0).ImageSrc" class="image-header card-img">
                                     </a>
-                                        @if (Favorites != null)
+                                    @if (Favorites != null)
+                                        {
+                                            ActivityData.IsFavorite = Favorites.Any(a => a.ActivityId == ActivityData.ActivityId);
+                                            if (ActivityData.IsFavorite != false)
                                             {
-                                                ActivityData.IsFavorite = Favorites.Any(a => a.ActivityId == ActivityData.ActivityId);
-                                                if (ActivityData.IsFavorite != false)
-                                                {
-                                                    <div class="card-img-overlay favorite-section">
-                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(ActivityData)">
-                                                            <img src='@(ActivityData.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                        </button>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="card-img-overlay favorite-section">
-                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(ActivityData)">
-                                                            <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                        </button>
-                                                    </div>
-                                                }
+                                                <div class="card-img-overlay favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(ActivityData)">
+                                                        <img src='@(ActivityData.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                    </button>
+                                                </div>
                                             }
                                             else
                                             {
                                                 <div class="card-img-overlay favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(ActivityData)">
                                                         <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
                                                     </button>
                                                 </div>
                                             }
-                                            <div class="card-img-overlay">
-                                                @if (ActivityData.OngoingStudents > 0)
-                                                {
-                                                    <div class="rounded-pill ongoing-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@ActivityData.OngoingStudents</span>
-                                                        </div>
-                                                    </div>
-                                                }
+                                        }
+                                        else
+                                        {
+                                            <div class="card-img-overlay favorite-section">
+                                                <button type="button" class="favorite-icon-button border-0">
+                                                    <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                </button>
                                             </div>
+                                        }
+                                        <div class="card-img-overlay">
+                                            @if (ActivityData.OngoingStudents > 0)
+                                            {
+                                                <div class="rounded-pill ongoing-section">
+                                                    <div class="active-badge" style="text-align:center">
+                                                        <span class="pulse"></span>
+                                                        <span class="active-tag-label">@ActivityData.OngoingStudents</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                         <div class="card-container">
                                             <div class="row text-start star-pulse-section">
                                                 <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
@@ -95,7 +97,9 @@
                                                         else
                                                         {
                                                             <p class="card-title2 mb-0 online">
-                                                                @(ActivityData.ExperienceTypeId == 1 ? "In-Person" : "Online")
+                                                                @(
+                                                    ActivityData.ExperienceTypeId == 1 ? "In-Person" : "Online"
+                                                    )
                                                             </p>
                                                         }
                                                     </div>
@@ -113,10 +117,10 @@
                         </div>
                     }
                 }
-            </div>
-        </Div>
-    </article>
-}
+        }
+        </div>
+    </Div>
+</article>
 @code
 {
     [Parameter]

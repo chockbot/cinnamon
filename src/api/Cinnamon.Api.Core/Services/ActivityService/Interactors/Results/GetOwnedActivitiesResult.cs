@@ -38,6 +38,7 @@ public class GetOwnedActivitiesResult
         public string CityName { get; set; }
         public string RegionName { get; set; }
         public string BarangayName { get; set; }
+        public string PinnedLocation { get; set; }
         public int OngoingStudents { get; set; }
         public int CompletedStudents { get; set; }
         public int NumberOfReviews { get; set; }
