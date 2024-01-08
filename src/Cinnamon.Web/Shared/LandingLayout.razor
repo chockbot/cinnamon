@@ -9,23 +9,15 @@
 <div class="page app-name-section">
     <main>
         <div class="top-row px-4 d-flex">
-            <div class="app-name col-lg-3 col-md-2 col-sm-8 col-8">
+            <div class="app-name col-lg-8 col-md-6 col-sm-8 col-8">
                 <a href="/explore" class="app-name">@Resources.App.appName</a>
             </div>
-            <div class="login-button col-lg-9 col-md-10 justify-content-end text-center">
+            <div class="login-button col-lg-4 col-md-6">
+                <p class="cinnamon-link" @onclick="NavigateToAbout">About</p>
+                <p class="cinnamon-link" @onclick="NavigateToBlogs">Blogs</p>
+                <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
                 <button class="btn-login" @onclick="() => signinModal.Show()" style="display:@isDisplay">
                     Login | Signup
-                </button>
-                <button class="btn-help" @onclick="() => NavigateToHelp()">
-                    <img src="images/help-icon.png" class="img-icon-login">
-                </button>
-            </div>
-            <div class="login-icon-sm col-sm-4 justify-content-sm-end col-4 justify-content-end text-center">
-                <a class="btn-login-mobile" @onclick="() => signinModal.Show()" style="display:@isDisplay">
-                    <img src="images/LoginLogo.png" class="img-icon-login">
-                </a>
-                <button class="btn-help" @onclick="() => NavigateToHelp()">
-                    <img src="images/help-icon.png" class="img-icon-login">
                 </button>
             </div>
         </div>
@@ -53,8 +45,16 @@
             isDisplay = "none";
         }
     }
-        private void NavigateToHelp()
+    private void NavigateToHelp()
     {
         navigationManager.NavigateTo("/help");
+    }
+    private void NavigateToAbout()
+    {
+        navigationManager.NavigateTo("https://cinnamon.ph/blog/cinnamon/");
+    }
+    private void NavigateToBlogs()
+    {
+        navigationManager.NavigateTo("https://cinnamon.ph/blog/");
     }
 }
