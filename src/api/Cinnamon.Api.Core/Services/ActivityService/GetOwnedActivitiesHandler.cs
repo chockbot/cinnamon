@@ -81,6 +81,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         RegionName= a.RegionName,
                         Barangay = a.Barangay,
                         BarangayName= a.BarangayName,
+                        PinnedLocation = a.PinnedLocation,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
