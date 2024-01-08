@@ -194,7 +194,8 @@
                                             <label class="ote-schedule me-1">Location:</label>
                                             @if(activity.ExperienceTypeId == 1)
                                             {
-                                                <label class="font-16 color-black-100">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</label>
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="font-16 color-black-100">@address</label>
                                             }
                                             else 
                                             {
