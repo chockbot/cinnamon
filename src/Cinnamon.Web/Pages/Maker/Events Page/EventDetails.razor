@@ -426,6 +426,7 @@
         var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
             {
                 ActivityId = activity.Id,
+                DateId = dateId
             }, Token);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
