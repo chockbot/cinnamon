@@ -9,12 +9,18 @@
 <section class="ote-pricing-wrapper">
     <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
         <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                <span>
-                    schedule
-                </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
-            </h3>
+            <div class="d-flex justify-content-between">
+                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                    <span>
+                        schedule
+                    </span>
+                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
+                </h3>
+                <label @onclick="ViewGuide" class="cursor-pointer">
+                    <span class="font-14 font-weight-700 color-green-100 text-decoration-underline">How to do this</span>
+                    <img src="images/ote/green-how-do-this.png" alt="icon">
+                </label>
+            </div>
             <p class="font-16 color-grey-100 text-justify">
                 Create your event schedule by selecting your preferred sessions and activities from the provided options.
             </p>
@@ -489,6 +495,102 @@
             </ModalBody>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalScheduleGuid">
+        <ModalContent Size="ModalSize.Large" class="border-radius-20">
+            <ModalHeader class="justify-content-center pb-0">
+                <div class="d-flex justify-content-center align-items-center m-margin-top-75">
+                    <img src="images/ote/light-bulb.png" class="me-3 m-d-none" alt="icon">
+                    <p class="font-32 font-weight-700 color-black-100 mb-0 m-font-24">Create a better schedule</p>
+                </div>
+                <button type="button" style="top: 28px; right: 20px;" class="btn-close position-absolute" @onclick="CloseGuide" />
+            </ModalHeader>
+            <ModalBody class="color-grey-100 font-18 m-font-16">
+                <p>
+                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event, 
+                    ensuring clarity and engagement for all participants.</p>
+                <ol class="ps-4">
+                    <li class="color-black-100 font-weight-700 mb-3">Do Not Repeat:
+                        <ul class="color-grey-100 font-weight-400">
+                            <li>
+                                Purpose: Clearly outline the unique nature of the one-time event.
+                            </li>
+                            <li>
+                                Guidelines:
+                                <ul>
+                                    <li>Clearly state that the event is a one-time occurrence.</li>
+                                    <li>Emphasize the exclusivity and limited opportunity to attend.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Daily:
+                        <ul class="color-grey-100 font-weight-400">
+                            <li>
+                                Purpose: For events that require daily participation or engagement.
+                            </li>
+                            <li>
+                                Guidelines:
+                                <ul>
+                                    <li>
+                                        Clearly define the specific date range for the daily event.
+                                    </li>
+                                    <li>
+                                        Outline the daily schedule, including start and end times.
+                                    </li>
+                                    <li>
+                                        Ensure that each day offers fresh content or activities to keep participants engaged.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Weekly:
+                        <ul class="color-grey-100 font-weight-400">
+                            <li>
+                                Purpose: Suitable for events that span a week or have a recurring theme.
+                            </li>
+                            <li>
+                                Guidelines:
+                                <ul>
+                                    <li>
+                                        Specify the days of the week the event will take place.
+                                    </li>
+                                    <li>
+                                        Highlight any thematic variations or focuses for each day.
+                                    </li>
+                                    <li>
+                                        Ensure a balance of content and activities across the week.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Monthly:
+                        <ul class="color-grey-100 font-weight-400">
+                            <li>
+                                Purpose: Ideal for events with a longer duration or that occur once a month.
+                            </li>
+                            <li>
+                                Guidelines:
+                                <ul>
+                                    <li>
+                                        Clearly define the specific date(s) within the month for the event.
+                                    </li>
+                                    <li>
+                                        Plan a diverse range of activities or topics to cover each month.
+                                    </li>
+                                    <li>
+                                        Communicate any changes in the schedule due to holidays or special occasions.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </section>
 
 @code 
@@ -509,6 +611,7 @@
     private Validation? dateToValidation;
     private bool showErrors = false;
     private Modal? modalFeeBreakdown {get; set;}
+    private Modal? modalScheduleGuid {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
     private IList<DayItem> dayItems = new List<DayItem> {
         new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
@@ -860,6 +963,16 @@
         if(dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
         item.Selected = !item.Selected;
         return Task.CompletedTask;
+    }
+
+    private async Task ViewGuide()
+    {
+        await modalScheduleGuid.Show();
+    }
+
+    private async Task CloseGuide()
+    {
+        await modalScheduleGuid.Close(CloseReason.UserClosing);
     }
 
     public class ModelData
