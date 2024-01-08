@@ -167,9 +167,6 @@
                                 <TableHeaderCell>
                                     Amount
                                 </TableHeaderCell>
-                                <TableHeaderCell>
-                                    QR Code
-                                </TableHeaderCell>
                                 <TableHeaderCell class="th-status">
                                     Status
                                 </TableHeaderCell>
@@ -194,9 +191,6 @@
                                         </TableRowCell>
                                         <TableRowCell class="tr-amount">
                                             <span>@item.Amount</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-qr">
-                                            <span>@item.QRCode</span>
                                         </TableRowCell>
                                         <TableRowCell class="tr-button">
                                             <div class="btn-status">
@@ -446,14 +440,13 @@
             int startRow = 3;
             foreach (var item in ExportCustomer)
             {
-                worksheet.Cell(1, 7).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
                 worksheet.Cell(startRow, 1).Value = item.Id;
                 worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
                 worksheet.Cell(startRow, 3).Value = item.Customer.Email;
                 worksheet.Cell(startRow, 4).Value = item.Title;
                 worksheet.Cell(startRow, 5).Value = item.Amount;
-                worksheet.Cell(startRow, 6).Value = item.QRCode;
-                worksheet.Cell(startRow, 7).Value = item.Status;
+                worksheet.Cell(startRow, 6).Value = item.Status;
                 startRow++;
             }
             using (var memoryStream = new MemoryStream())
