@@ -1929,6 +1929,141 @@ input::-ms-clear {
   }
 }
 
+/* for admin dashboard user list */
+.admin-dashboard-users-wrapper .table-list .form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .admin-dashboard-users-wrapper .table-list table {
+    border: 0;
+    width: 100% !important;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 2rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td {
+    height: 50px;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:last-child {
+    border-bottom: 0;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child::before {
+    content: "Email:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(2) {
+    padding: 0 !important;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    label
+    p {
+    padding: 1rem !important;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(4) {
+    text-align: left !important;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)::before {
+    content: "Has Verification Request: ";
+    font-weight: 700;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(5) {
+    text-align: left !important;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5)::before {
+    content: "ID Uploaded: ";
+    font-weight: 700;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5)
+    .btn {
+    border-radius: 30px !important;
+    padding: 5px 15px !important;
+    margin-left: 10px;
+    margin-top: -5px;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(6) {
+    text-align: left !important;
+    display: flex;
+    align-items: center;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(6)::before {
+    content: "Approve/Reject: ";
+    font-weight: 700;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(6)
+    .form-switch {
+    font-size: 28px;
+    margin-left: 10px;
+  }
+  .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(7) {
+    text-align: left !important;
+    display: flex;
+    align-items: center;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(7)::before {
+    content: "Ban Account: ";
+    font-weight: 700;
+  }
+  .admin-dashboard-users-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(7)
+    .form-switch {
+    font-size: 28px;
+    margin-left: 10px;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -2305,6 +2440,10 @@ input::-ms-clear {
 
   .m-d-flex {
     display: flex !important;
+  }
+
+  .m-flex-direction-column {
+    flex-direction: column;
   }
 
   .m-padding-x-0 {
