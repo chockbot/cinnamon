@@ -1601,7 +1601,7 @@
         {
             Coupon.IsValidating = true;
 
-            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
+            decimal subTotal = (ScheduleId != 0) ? Model.SelectedSchedule.Price * SelectedAttendeesCount : 0;
             decimal paymentProviderFee = subTotal * .05m;
             decimal serviceFee = 50;
             decimal addOns = GetAddOnsTotal;
