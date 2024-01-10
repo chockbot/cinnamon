@@ -2299,6 +2299,92 @@ input::-ms-clear {
   }
 }
 
+/* for admin dashboard badges list */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .admin-dashboard-badges-wrapper .table-list table {
+    border: 0;
+    width: 100% !important;
+    display: block;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody {
+    display: block;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 2rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr td {
+    height: 50px;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr td:last-child {
+    border-bottom: 0;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+  }
+  .admin-dashboard-badges-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child::before {
+    content: "Email:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr td:nth-child(2) {
+    text-align: left;
+    display: flex;
+    align-items: center;
+  }
+  .admin-dashboard-badges-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+    content: "OG Badge:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-badges-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    .form-switch {
+    font-size: 28px;
+    margin-left: 10px;
+  }
+  .admin-dashboard-badges-wrapper .table-list table tbody tr td:nth-child(3) {
+    text-align: left;
+    display: flex;
+    align-items: center;
+  }
+  .admin-dashboard-badges-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3)::before {
+    content: "Official Partner Badge:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-badges-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3)
+    .form-switch {
+    font-size: 28px;
+    margin-left: 10px;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
