@@ -92,7 +92,8 @@
                                                         <h4 class="card-title1 mb-0">@ActivityData.Title</h4>
                                                         @if (ActivityData.ExperienceTypeId == 1)
                                                         {
-                                                            <p class="card-title2 mb-0 in-person">@ActivityData.CityName, @ActivityData.RegionName</p>
+                                                            string address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
+                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         }
                                                         else
                                                         {
@@ -227,6 +228,7 @@
                         RegionName = result.RegionName,
                         CreatedBy = result.CreatedBy,
                         MapDetails = result.MapDetails,
+                        PinnedLocation = result.PinnedLocation,
                         OngoingStudents = result.OngoingStudents,
                         CompletedStudents = result.CompletedStudents,
                         AverageRating = result.AverageRating,

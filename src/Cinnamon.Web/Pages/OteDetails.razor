@@ -197,7 +197,7 @@
                                             @if(activity.ExperienceTypeId == 1)
                                             {
                                                 string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                                <label class="font-16 color-black-100">@address</label>
+                                                <label class="font-16 color-black-100 text-capitalize">@address</label>
                                             }
                                             else 
                                             {
@@ -266,7 +266,7 @@
                         @if(activity.ExperienceTypeId == 1)
                         {
                             string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">@address</p>
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16 text-capitalize">@address</p>
                             <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else 
