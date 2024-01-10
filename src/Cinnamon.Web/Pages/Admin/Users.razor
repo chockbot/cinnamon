@@ -12,108 +12,126 @@
 <PageTitle>Admin - Manage Users | CinnamonPH</PageTitle>
 <SeoMeta Title="Admin - Manage Users" Subject="Admin - Manage Users" Url="/admin/users" />
 
-<div class="top-row">
-    <div class="dropdown">
-        <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-            <div class="menu">
-                <img src="images/menu.png">
-            </div>
-        </button>
-        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-            @if (AuthState != null)
-            {
-                @if (AuthState.Identity.IsAuthenticated)
+<section class="admin-dashboard-users-wrapper">
+    <div class="top-row m-d-none">
+        <div class="dropdown">
+            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+                <div class="menu">
+                    <img src="images/menu.png">
+                </div>
+            </button>
+            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+                @if (AuthState != null)
                 {
-                    <li class="dropdown-item">
-                        <Button Border="Border.Is0" Clicked="Logout">
-                            Logout
-                        </Button>
-                    </li>
+                    @if (AuthState.Identity.IsAuthenticated)
+                    {
+                        <li class="dropdown-item">
+                            <Button Border="Border.Is0" Clicked="Logout">
+                                Logout
+                            </Button>
+                        </li>
+                    }
                 }
-            }
-        </ul>
+            </ul>
+        </div>
     </div>
-</div>
-<div class="header">
-    <div class="col-lg-8">
-        <p class="title">User Verification Board</p>
-    </div>
-    <div class="col-lg-4" style="text-align: right">
-        <div class="search-section"></div>
-        <input class="form-check-input" type="radio" data-id="" name="verification-status" id="with-pending" @onchange='@(()=>CheckboxChanged(true))'> Has Verification Request
-        <input class="form-check-input" type="radio" data-id="" name="verification-status" id="without-pending" @onchange='@(()=>CheckboxChanged(false))'> No Verification Request
-    </div>
-</div>
-<div class="users-section">
-    <div class="table-list">
-        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-            <TableHeader>
-                <TableRow>
-                    <TableHeaderCell>
-                        Email
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        First Name
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        Last Name
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        Has Verification Request
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        ID Uploaded
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        Approve/Reject
-                    </TableHeaderCell>
-                    <TableHeaderCell>
-                        Ban Account
-                    </TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                @foreach (var item in customers)
-                {
-                    <TableRow>
-                        <TableRowCell class="name-body">@item.Email</TableRowCell>
-                        <TableRowCell class="name-body">@item.FirstName</TableRowCell>
-                        <TableRowCell class="name-body">@item.LastName</TableRowCell>
-                        <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.HasVerificationRequest</TableRowCell>
-                        <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
-                            <button type="button" class="btn btn-primary border-0" @onclick="(() => viewImageModal.ShowModal(item.BackIdImagePath, item.FrontIdImagePath))">Show ID</button>
-                        </TableRowCell>
-                        <TableRowCell class="name-body">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
-                            </div>
-                        </TableRowCell>
-                        <TableRowCell class="name-body">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" checked="@item.IsAccountBan" @onchange="((e) => OnBlockedChanged(e, item))">
-                            </div>
-                        </TableRowCell>
-                    </TableRow>
-                }
-            </TableBody>
-        </Table>
-        <Pagination Class="pagination-section" Style="margin-top: 50px">
-            @{
-                for (var i = 1; i <= Pagination.TotalPages; i++)
-                {
-                    var pageNumberAsString = i.ToString();
-                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
-                            @pageNumberAsString
-                        </PaginationLink>
-                    </PaginationItem>
-                }
-            }
-        </Pagination>
-        <ViewImageModal @ref="viewImageModal"></ViewImageModal>
-    </div>
-</div>
 
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-baseline mt-5">
+        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">User Verification Board</p>
+        <label class="text-md-end mt-2 mt-md-0">
+            <label class="me-3 cursor-pointer">
+                <input class="form-check-input cursor-pointer" type="radio" data-id="" name="verification-status" id="with-pending" 
+                    @onchange='@(()=>CheckboxChanged(true))'>
+                <span class="m-font-12">Has Verification Request</span>
+            </label>
+            <label class="cursor-pointer">
+                <input class="form-check-input cursor-pointer" type="radio" data-id="" name="verification-status" id="without-pending" 
+                    @onchange='@(()=>CheckboxChanged(false))'>
+                    <span class="m-font-12">No Verification Request</span>
+            </label>
+        </label>
+    </div>
+
+    <div class="users-section mx-0">
+        <div class="table-list">
+            <div class="overflow-auto">
+                <Table Hoverable class="border-1-solid mb-0 font-20 m-font-12" VerticalAlignment="VerticalAlignment.Middle">
+                    <TableHeader class="bg-black-100 m-d-none" VerticalAlignment="VerticalAlignment.Middle">
+                        <TableRow class="color-white-100">
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                Email
+                            </TableHeaderCell>
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                First Name
+                            </TableHeaderCell>
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                Last Name
+                            </TableHeaderCell>
+                            <TableHeaderCell class="color-white-100 text-center p-3">
+                                Has Verification Request
+                            </TableHeaderCell>
+                            <TableHeaderCell class="color-white-100 text-center p-3">
+                                ID Uploaded
+                            </TableHeaderCell>
+                            <TableHeaderCell class="color-white-100 text-center p-3">
+                                Approve/Reject
+                            </TableHeaderCell>
+                            <TableHeaderCell class="color-white-100 text-center p-3">
+                                Ban Account
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in customers)
+                        {
+                            <TableRow>
+                                <TableRowCell class="text-start p-3">@item.Email</TableRowCell>
+                                <TableRowCell class="text-capitalize text-start p-3">
+                                    <label class="d-flex">
+                                        <p class="m-0 w-50">@item.FirstName</p>
+                                        <p class="m-0 w-50 d-block d-md-none border-left-1-solid">@item.LastName</p>
+                                    </label>
+                                </TableRowCell>
+                                <TableRowCell class="text-capitalize text-start p-3 m-d-none">@item.LastName</TableRowCell>
+                                <TableRowCell class="p-3 text-center">@item.HasVerificationRequest</TableRowCell>
+                                <TableRowCell class="p-3 text-center">
+                                    <button type="button" class="btn btn-primary border-0 m-font-12" 
+                                        @onclick="(() => viewImageModal.ShowModal(item.BackIdImagePath, item.FrontIdImagePath))">Show ID</button>
+                                </TableRowCell>
+                                <TableRowCell class="p-3 text-center">
+                                    <span class="form-switch d-inline">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" 
+                                            @onchange="((e) => HandleCheckedChanged(e, item))">
+                                    </span>
+                                </TableRowCell>
+                                <TableRowCell class="p-3 text-center">
+                                    <span class="form-switch d-inline">
+                                        <input class="form-check-input" type="checkbox" checked="@item.IsAccountBan" 
+                                            @onchange="((e) => OnBlockedChanged(e, item))">
+                                    </span>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+            <Pagination Class="pagination-section" Style="margin-top: 50px">
+                @{
+                    for (var i = 1; i <= Pagination.TotalPages; i++)
+                    {
+                        var pageNumberAsString = i.ToString();
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
+                    }
+                }
+            </Pagination>
+            <ViewImageModal @ref="viewImageModal"></ViewImageModal>
+        </div>
+    </div>
+</section>
 
 @code {
     public bool clickButton { get; set; }
