@@ -23,8 +23,8 @@
 
 
                                 Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                <div class="card">
-                                    <a class="button" href="/explore/@ActivityData.ActivityId" style="text-decoration:none;">
+                                    <div class="card">
+                                    <a class="button" href="@DetailsUrl(ActivityData.Handler, (int)ActivityData.ExperienceCreationType)" style="text-decoration:none;">
                                         <img src="@ActivityData.Images.ElementAt(0).ImageSrc" class="image-header card-img">
                                     </a>
                                     @if (Favorites != null)
@@ -92,7 +92,7 @@
                                                         <h4 class="card-title1 mb-0">@ActivityData.Title</h4>
                                                         @if (ActivityData.ExperienceTypeId == 1)
                                                         {
-                                                            string address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
+                                                            string address = string.IsNullOrEmpty(ActivityData.PinnedLocation) ? $"{ActivityData.CityName + ", " + ActivityData.RegionName}" : ActivityData.PinnedLocation;
                                                             <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         }
                                                         else
@@ -141,20 +141,7 @@
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         Token = user.FindFirstValue("Token");
-
         await GetFavorites();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await GetActivity();
-        }
-        else
-        {
-            await GetActivity();
-            await GetFavorites();
-        }
     }
     private string GetImage()
     {
@@ -194,7 +181,7 @@
                         };
                 }).ToList();
             }
-           
+            await GetActivity();
         }
     }
 
@@ -233,6 +220,8 @@
                         CompletedStudents = result.CompletedStudents,
                         AverageRating = result.AverageRating,
                         NumberOfReviews = result.NumberOfReviews,
+                        Handler = result.Handler,
+                        ExperienceCreationType = result.ExperienceCreationType,
                         ActivitySchedules = result.ActivitySchedules.Select(e => {
                         return new ActivitySchedule
                         {
@@ -256,10 +245,11 @@
                             };
                         }).ToList()
                     };
-                activities.Add(Activity);
             }
+            activities.Add(Activity);
         }
     }
+
     private async Task AddToFavorites(Activity activity)
     {
         activity.IsFavorite = !activity.IsFavorite;
@@ -293,5 +283,18 @@
             }, Token);
         await GetFavorites();
 
+    }
+    private string DetailsUrl(string handler, int xpCreationType)
+    {
+        string url = string.Empty;
+        if (xpCreationType == 3)
+        {
+            url = $"explore/ote/{handler}";
+        }
+        else if (xpCreationType == 1)
+        {
+            url = $"explore/{handler}";
+        }
+        return url;
     }
 }

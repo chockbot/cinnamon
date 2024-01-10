@@ -117,7 +117,7 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
             var oteDate = oteDateRes.Result.Result;
 
             var imageSrc = oteActivity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).First().ImageLocation;
-            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
+            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : string.IsNullOrEmpty(oteActivity.PinnedLocation) ? $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}" : oteActivity.PinnedLocation;
             var result = new OteTicketDetailsResult {
                 EventDate = oteDate.DateStart,
                 EventLocation = location,
