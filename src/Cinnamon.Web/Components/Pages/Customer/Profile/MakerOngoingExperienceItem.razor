@@ -46,7 +46,7 @@
                                 @if (@Activity.ExperienceTypeId == 1)
                                 {
                                     string address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
-                                    <p class="card-title2 mb-0 in-person">@address</p>
+                                    <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                 }
                                 else
                                 {
