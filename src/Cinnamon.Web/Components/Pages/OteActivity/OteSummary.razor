@@ -22,10 +22,11 @@
             <Divider />
             @if(Summary.LocationData.ExperienceType == 1)
             {
+                string address = string.IsNullOrEmpty(Summary.LocationData.PinnedLocation) ? $"{Summary.LocationData.BarangayName + ", " + Summary.LocationData.CityName + ", " + Summary.LocationData.RegionName}" : Summary.LocationData.PinnedLocation;
                 <div>
                     <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">venue</h3>
                     <p class="font-20 color-black-100 mb-0">
-                        @Summary.LocationData.BarangayName, @Summary.LocationData.CityName @Summary.LocationData.RegionName
+                        @address
                     </p>
                     <Divider />
                 </div>
