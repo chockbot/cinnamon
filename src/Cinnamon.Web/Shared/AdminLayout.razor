@@ -7,7 +7,7 @@
 
 <Layout Sider class="dashboard-layout">
     <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
-    <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
+    <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar" class="min-vh-100">
         <LayoutSiderContent>
             @if (Model.IsAuthenticated)
             {
@@ -62,6 +62,16 @@
     <Layout>
         <LayoutContent>
             <Container Fluid>
+                <div class="mt-5 d-block d-md-none">
+                    <a href="/explore" class="text-white text-decoration-none">
+                        <span class="app-name-mobile">Cinnamon</span>
+                    </a>
+                    <div class="mt-1">
+                        <label for='toggle' class='hamburger me-3'>
+                            <img src="images/Dashboard Icon/hamburger.png" class="toggle-icon">
+                        </label>
+                    </div>
+                </div>
                 <div class="render-body px-0 px-md-3 overflow-hidden">
                     @Body
                 </div>
