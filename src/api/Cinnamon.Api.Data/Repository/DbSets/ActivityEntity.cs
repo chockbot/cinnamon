@@ -228,7 +228,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                            "withCoverPhoto as " +
                            "( " +
                                "select aw.*, ac.\"Title\", ac.\"CreatedBy\", ac.\"IsNew\", ac.\"Handler\", " +
-                                   "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", " +
+                                   "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", " +
                                    "Row_Number() over (partition by ac.\"Id\" order by ai.\"Order\", ai.\"Id\") \"RowCnt\", " +
                                    "ai.\"ImageLocation\", ac.\"ExperienceCreationTypeId\" " +
                                "from withOngoingStudent aw " +
@@ -280,7 +280,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             ReviewCount              = Convert.ToInt32(item["ReviewCount"]),
                             StudentCount             = Convert.ToInt32(item["StudentCount"]),
                             Title                    = item["Title"].ToString() ?? string.Empty,
-                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"])
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
+                            PinnedLocation           = item["PinnedLocation"].ToString() ?? string.Empty,
                         }).ToList();
                     }
                 }
