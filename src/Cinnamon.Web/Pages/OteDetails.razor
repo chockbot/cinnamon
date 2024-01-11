@@ -194,7 +194,8 @@
                                             <label class="ote-schedule me-1">Location:</label>
                                             @if(activity.ExperienceTypeId == 1)
                                             {
-                                                <label class="font-16 color-black-100">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</label>
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="font-16 color-black-100 text-capitalize">@address</label>
                                             }
                                             else 
                                             {
@@ -262,7 +263,8 @@
                         <p class="font-24 font-weight-700 color-black-100 m-font-20 mb-1 mb-md-3">Venue</p>
                         @if(activity.ExperienceTypeId == 1)
                         {
-                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">@activity.HouseNo, @activity.BarangayName, @activity.CityName, @activity.RegionName</p>
+                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16 text-capitalize">@address</p>
                             <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else 
