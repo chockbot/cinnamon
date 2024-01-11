@@ -1,15 +1,23 @@
-﻿.btn-login {
-    border: 2px solid #FFA9423B;
+﻿button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.btn-login {
+    border: 2px solid #FFA942;
     width: 195px;
     height: 51px;
     border-radius: 40px;
-    float: right;
     color: #FFA942;
     font-family: Nunito;
     font-size: 20px;
     font-weight: 700;
     background-color: transparent;
+    margin-top: 0.5rem;
 }
+    .btn-login:hover {
+        color: #FFFFFF;
+        background-color: #FFA942;
+    }
 .btn-help {
     background-color: transparent;
     border-radius: 40px;
@@ -24,9 +32,21 @@
         display: block;
         text-align: center;
     }
+.cinnamon-link {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 700;
+    color: #343D4C; 
+    margin-top: 1.2rem;
+    cursor: pointer;
+}
+    .cinnamon-link:hover {
+        color: #FFA942;
+    }
 .login-button {
     display: flex;
-    gap:10px;
+    justify-content: space-between;
+    padding-right: 20px;
 }
 .login-icon-sm {
     display: none;
@@ -104,6 +124,14 @@ main {
     .login-button {
         display: none;
     }
+    .dropdown-mobile {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+    .burger-menu img {
+        margin-right: 0;
+        width: 25px;
+    }
     .menu {
         display: none;
     }
@@ -140,9 +168,17 @@ main {
         width: 135px;
         height: 40px;
         font-family: Nunito;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
-        margin-top: 0.3rem;
+        margin-top: 0.6rem;
+    }
+    .cinnamon-link {
+        font-family: Nunito;
+        font-size: 14px;
+        font-weight: 700;
+        color: #343D4C;
+        margin-top: 1.2rem;
+        cursor: pointer;
     }
     .login-icon-sm {
         display: none;
