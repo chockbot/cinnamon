@@ -76,6 +76,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteSchedulePricing> OteSchedulePricings {get; set;}
     public DbSet<OteTicket> OteTickets {get; set;}
     public DbSet<TokenGenerated> TokenGenerateds {get; set;}
+    public DbSet<OteDate> OteDates {get; set;}
+    public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
 
     #endregion
 
@@ -296,6 +298,8 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex("ActivityId","QRCode","Status");
         modelBuilder.Entity<OteTicket>()
             .HasIndex(t => t.PurchaseOrderId);
+        modelBuilder.Entity<OteTicket>()
+            .HasIndex(t => t.OteDateId);
 
 
         modelBuilder.Entity<TokenGenerated>()

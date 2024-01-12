@@ -409,11 +409,21 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var dates = args.Dates.Select(d => {
+                return new OteDateDTO {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart,
+                };
+            }).ToList();
+
             var result = await activityRepository.CreateOteActivity(activity.EventName, activity.Description, activity.ExperienceTypeId, 
                 activity.CustomerId, activity.StringPrice, activity.HouseNo, activity.CityNumber, activity.CityName,
                 activity.RegionCode, activity.RegionName, activity.BarangayCode, activity.BarangayName, activity.PostalCode,
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
-                activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon);
+                activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
+                args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
+                args.Activity.SelectedDays, dates);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -567,6 +577,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CustomerOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OtePerDate")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OtePerDateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OtePerDate([FromQuery] OtePerDateArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.OtePerDate(args.ProviderId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OtePerDateResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

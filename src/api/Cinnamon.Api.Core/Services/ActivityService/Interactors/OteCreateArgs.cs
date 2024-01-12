@@ -44,6 +44,19 @@ public class OteCreateArgs : IInteractor
 
         public string Recurrence {get; set;}
         public bool IsComingSoon {get; set;}
+
+        public DateTime? DurationStart {get; set;}
+        public DateTime? DurationEnd {get; set;}
+        public int? DurationEvery {get; set;}
+
+        // week option field
+        public string? WeekString {get; set;}
+
+        // month option fields
+        public int? MonthSelection {get; set;}
+        public string? MonthRepeat {get; set;}
+        public string? MonthDay {get; set;}
+        public int? OnDayDate {get; set;}
     }
 
     public class OtePricing 
