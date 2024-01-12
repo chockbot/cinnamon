@@ -27,6 +27,10 @@
                     <img src="/images/Dashboard Icon/privacy.png" />
                     <span class="btn-caption">Privacy Policy</span>
                 </button>
+				<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToEventTOC">
+                    <img src="/images/Dashboard Icon/event-toc.png" alt="icon" />
+                    <span class="btn-caption">Event Policies</span>
+                </button>
             </div>
             <div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
                 <div class="schedule-swiper">
@@ -48,6 +52,12 @@
                             <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
                                 <img src="/images/Dashboard Icon/privacy.png" />
                                 <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+						<div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToEventTOC">
+                                <img src="/images/Dashboard Icon/event-toc.png" />
+                                <span class="btn-caption">Event Policies</span>
                             </button>
                         </div>
                     </div>
@@ -73,6 +83,12 @@
                             <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
                                 <img src="/images/Dashboard Icon/privacy.png" />
                                 <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+						<div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToEventTOC">
+                                <img src="/images/Dashboard Icon/event-toc.png" />
+                                <span class="btn-caption">Event Policies</span>
                             </button>
                         </div>
                     </div>
@@ -1004,16 +1020,265 @@
 					</div>
 				</div>
             }
+			@if (isEventToCDisplayed)
+            {
+				<div class="container p-5">
+					<p class="heading-secondary text-center">Transaction Agreement</p>
+					<div class="policy-style">
+
+						<p class="justify font-24 font-weight-700 color-grey-100 mt-5">
+							Last updated July 25, 2022
+						</p>
+
+						<p class="justify font-20 color-black-100">
+							Terms of Use These Terms of Use ("Agreement") establish a legally binding agreement between 
+							Cinnamon PH ("Company," "we," "us," or "our") and users ("Buyers") of our website and related 
+							services (collectively, the "Services"). By accessing or utilizing the services, you affirm 
+							your consent to be bound by the terms and conditions outlined in this agreement. 
+							Should you disagree with these terms, kindly refrain from using the services.
+						</p>
+
+						<div class="d-flex justify-content-center my-5">
+							<Button Clicked="() => eventTab = EventTab.Buyer" class="@BtnClass(EventTab.Buyer)">
+								Buyer
+							</Button>
+							<Button Clicked="() => eventTab = EventTab.Seller" class="@BtnClass(EventTab.Seller)">
+								Seller
+							</Button>
+						</div>
+						
+						@if(eventTab == EventTab.Buyer)
+						{
+							<div class="ote-buyer justify">
+								<ol type="A" style="margin-left: 0; padding-left: 23px;">
+									<li class="font-24 font-weight-700 mb-5">Booking a Ticket
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li class="mb-4">
+												All tickets sold through the website are subject to Clause D (“Ticket Terms and Conditions”). 
+												By purchasing a ticket through the website, it is deemed that you have read and agree with the 
+												Terms and Conditions.
+											</li>
+											<li class="mb-4">
+												Booking a ticket When booking a ticket through the website, you will be required to complete an 
+												online booking form (the “Booking Form”). When submitting the booking form, you declare that: 
+												(a) You have provided complete, correct, accurate, and verified information; (b) You have the legal 
+												capacity to enter into contracts and are not otherwise incapacitated or disqualified from 
+												fulfilling any contractual obligation; (c) if you are booking on behalf of a group or an institution, 
+												that you are authorized to bind all members of that group or institution; (d) You consent to the Terms 
+												and Conditions of this platform, and: (e) You are authorized to pay for the ticket(s) in cash or if you 
+												are the credit card holder, e-wallet owner, or bank account holder whose account will be used for the payment of 
+												this transaction.
+											</li>
+											<li class="mb-4">
+												Date of Admission. Except otherwise expressly stated in the ticket, a ticket is valid only on the date 
+												purchased or on the actual day(s) of the event. All tickets are non-transferable, non-exchangeable, 
+												non-refundable, revocable, and void if altered. The ticket must be used by the same person during its 
+												period of validity and is not valid for special events or attractions that require a separate admission fee.
+											</li>
+											<li class="mb-4">
+												Promotions. When booking a ticket through the website, you must indicate that you are purchasing the 
+												ticket through a promotion offered by the website. Every promotion has its own set of qualifiers, 
+												privileges, and duration. Any qualifier, privilege, and/or discount linked to the aforesaid promotion 
+												shall be subject to the terms and conditions of the promotion.
+											</li>
+											<li>
+												Payment. Payment for the booking may be made through any of the following modes of payment: credit or 
+												debit card, e-wallet, bank-to-bank transfer, or other acceptable options available on the website.
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Changes to Your Booking 
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li class="mb-4">
+												Notice of Changes. You agree to notify Cinnamon PH of any changes to any data submitted in the booking form. 
+												If, for any reason, you need to make changes to the data in the booking, please notify us at least one (1) 
+												day prior to the date of the visit. 
+											</li>
+											<li>
+												Changes in Date. Changes in date after a confirmed booking has been made are subject to Clauses D.1.Ticket 
+												Terms and Conditions; and Clause E.Ticket Refunds, Re-Bookings, and Cancellations.
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Confirmation of Your Booking 
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li class="mb-4">
+												E-Ticket. Upon the completion of the online booking process, Cinnamon PH, within a reasonable time, 
+												will send a confirmation email containing an e-ticket to the email address you provided in your 
+												booking form. Should you not receive the e-ticket within twenty-four (24) hours, please notify us 
+												by sending us an email at support@cinnamon.ph. For reference purposes, please retain the confirmation 
+												email with the e-ticket. You have the responsibility to ensure the confidentiality of the e-ticket 
+												and the confirmation email.
+											</li>
+											<li class="mb-4">
+												Presentation of a Valid Identification Document. For purposes of redeeming a ticket, the holder of 
+												an e-ticket must present a valid identification document. 
+											</li>
+											<li class="mb-4">
+												Claimant Other than You. Establishments may refuse the redemption of a ticket if the claimant is 
+												not you or the person you have designated in your booking form. 
+											</li>
+											<li>
+												Promotional Tickets. A ticket purchased through a promotional offer may require the presentation of 
+												additional documentary requirements as a qualifier and as specified by the terms and conditions of the promotion. 
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Ticket Terms and Conditions
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li>
+												Ticket. One (1) voucher is valid for one (1) person only. If you cannot attend on the date you have pre-booked, 
+												and unless otherwise allowed by the organizer, you may transfer your ticket to another party. 
+												Kindly email us at support@cinnamon.ph to facilitate the transfer on the platform. 
+												Opening times and prices are subject to change without notice. 
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Ticket Refunds, Rebookings and Cancellations 
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li class="mb-4">
+												Unless otherwise stated by the organizer, all ticket sales are final. You may not cancel or refund your ticket. 
+												You will be deemed to have confirmed your booking upon the transmission by Cinnamon PH of the e-ticket to 
+												the email address indicated in your booking form. Failure of a guest to redeem or use a ticket forfeits any 
+												payment made in consideration for it and shall not entitle the guest to a rebook or replacement. 
+											</li>
+											<li class="mb-4">
+												On Cinnamon, event organizers are granted the authority to establish their own refund policies. As a consequence, 
+												the refund policy may differ for each event. Prior to purchasing tickets, it is crucial to review and comprehend 
+												the refund policy established by the event organizer for the specific occasion in which you are interested.
+											</li>
+											<li>
+												Cinnamon customarily processes refunds for ticket purchasers in the event that an event organizer cancels 
+												the occasion. In instances where the refund procedure for a canceled event is subject to variation, 
+												it is prudent to consult the specifics provided by Cinnamon or the event host.
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Data Protection and Privacy 
+										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
+											<li class="mb-4">
+												Securing Your Data. Information such as transaction details and customer data is securely stored in Cinnamon 
+												PH’s content management system, which is protected by encryption and the SSL security protocol accessible 
+												only through a customer-created login ID and password. You have the responsibility to ensure the 
+												confidentiality of your login ID and password. 
+											</li>
+											<li>
+												Security, Integrity, and Confidentiality. In order to carry out your booking and purchase, Cinnamon PH may collect, 
+												use, store, disclose, and process your personal information. Cinnamon PH’s Privacy Policy. The security, 
+												integrity, and confidentiality of your information are extremely important to us. We have implemented technical, 
+												administrative, and physical security measures that are designed to protect guest information from unauthorized access, 
+												disclosure, use, and modification. We regularly review our security procedures to consider appropriate new 
+												technology and methods. We will retain your personal information for the length of time needed to fulfill the 
+												purposes outlined in this privacy policy, unless a longer retention period is required or permitted by law. 
+											</li>
+										</ol>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Changes
+										<p class="font-20 font-weight-400 mt-4" style="margin-left: -25px;">
+											From time to time, we may change this privacy policy to accommodate new technologies, industry practices, 
+											regulatory requirements, or for other purposes. We will provide notice to you if these changes are material and, 
+											where required by applicable law, we will obtain your consent. Notice may be sent by email to you at the last email 
+											address you provided us, by posting notice of such changes on our sites and applications, or by other means 
+											consistent with applicable law.
+										</p>
+									</li>
+									<li class="font-24 font-weight-700 mb-5">Contact Us.
+										<p class="font-20 font-weight-400 mt-4" style="margin-left: -25px;">
+											If you have any questions about these terms, please contact us at support@cinnamon.ph
+										</p>
+									</li>
+								</ol>
+							</div>
+						}
+
+						@if(eventTab == EventTab.Seller)
+						{
+							<div class="ote-seller justify">
+								<ol style="margin-left: -8px; padding-left: 0;">
+									<li>
+										Acceptance of Terms By using Cinnamon's ticket-selling services, you agree to comply with and be bound by these Terms. 
+										If you do not agree with any part of these Terms, please do not use our services. 
+									</li>
+									<li>
+										Eligibility You must be at least 18 years old and capable of forming a legally binding agreement to use Cinnamon's 
+										ticket-selling services. By using our platform, you represent and warrant that you meet these eligibility requirements. 
+									</li>
+									<li>
+										Ticket Listing and Sales 
+										<ol style="margin-left: 0px; padding-left: 0;">
+											<li>
+												Accurate Information: You are responsible for providing accurate and up-to-date information 
+												about the tickets you list for sale on Cinnamon. 
+											</li>
+											<li>
+												Authorization: You must have the legal right and authorization to sell the tickets you list on Cinnamon. 
+												Any misrepresentation may result in the suspension or termination of your account. 
+											</li>
+											<li>
+												Pricing: You have control over the pricing of your tickets, but it must comply with local laws and regulations. 
+												Cinnamon reserves the right to limit or suspend your account if pricing practices are deemed unfair or in violation of applicable laws. 
+											</li>
+										</ol>
+									</li>
+									<li>
+										Payments and Fees 
+										<ol style="margin-left: 0px; padding-left: 0;">
+											<li>
+												Payment Processing: Cinnamon will process payments on your behalf for tickets sold. 
+												You agree to the payment terms specified in the Cinnamon Seller Agreement.
+											</li>
+											<li>
+												Fees: Cinnamon may charge fees for the use of its ticket-selling services. 
+												You agree to pay any applicable fees, and Cinnamon reserves the right to change fee structures with notice.
+											</li>
+										</ol>
+									</li>
+									<li>
+										Compliance with Laws You agree to comply with all applicable laws and regulations related to the sale of tickets, 
+										including but not limited to consumer protection laws and anti-fraud regulations.
+									</li>
+									<li>
+										Customer Service You are responsible for addressing any issues or disputes related to the tickets you sell on Cinnamon. 
+										Cinnamon may provide customer support assistance, but ultimate responsibility lies with the seller. 
+									</li>
+									<li>
+										Termination Cinnamon reserves the right to terminate or suspend your account at its discretion, 
+										with or without cause. Termination may result from a violation of these Terms or for any other reason. 
+									</li>
+									<li>
+										Changes to Terms Cinnamon may update or modify these Terms at any time. Sellers will be notified of changes, 
+										and continued use of the platform after such notification constitutes acceptance of the modified Terms. 
+									</li>
+									<li>
+										Governing Law These Terms are governed by and construed in accordance with the laws of the Philippines. 
+										Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in the Philippines. 
+										Thank you for using Cinnamon's ticket-selling services!
+									</li>
+								</ol>
+							</div>
+						}
+
+					</div>
+				</div>
+            }
         </div>
         <Contact></Contact>
         <Footer></Footer>
     </div>
 </div>
 
-@code {
+@code 
+{
     private bool isFaqDisplayed = false;
     private bool isTermsDisplayed = false;
     private bool isPrivacyDisplayed = false;
+	private bool isEventToCDisplayed = false;
+
+	enum EventTab {
+		Buyer = 0,
+		Seller = 1
+	}
+	private EventTab eventTab = EventTab.Buyer;
 
     [Parameter]
     public string Section { get; set; }
@@ -1063,6 +1328,7 @@
         isFaqDisplayed = true;
         isTermsDisplayed = false;
         isPrivacyDisplayed = false;
+		isEventToCDisplayed = false;
     }
 
     private void NavigateToTerms()
@@ -1071,6 +1337,7 @@
         isFaqDisplayed = false;
         isTermsDisplayed = true;
         isPrivacyDisplayed = false;
+		isEventToCDisplayed = false;
     }
 
     private void NavigateToPrivacy()
@@ -1079,5 +1346,27 @@
         isFaqDisplayed = false;
         isTermsDisplayed = false;
         isPrivacyDisplayed = true;
+		isEventToCDisplayed = false;
     }
+
+	private void NavigateToEventTOC()
+    {
+        Title = "Transaction Agreement";
+        isFaqDisplayed = false;
+        isTermsDisplayed = false;
+        isPrivacyDisplayed = false;
+		isEventToCDisplayed = true;
+    }
+
+	private string BtnClass(EventTab tab)
+	{
+		string resultClass = "color-white-100 hover-color-white me-2 ";
+
+		if(eventTab == tab)
+		{
+			return	resultClass += "bg-orange-100";
+		}
+
+		return resultClass += "bg-grey-200";
+	}
 }
