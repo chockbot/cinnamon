@@ -4,6 +4,7 @@ export function countWords({
   isPrevent,
   labelSelector,
   labelFormat,
+  continueCount,
 }) {
   const textInput = document.querySelector(inputSelector);
   const wordCount = document.querySelector(labelSelector);
@@ -12,7 +13,9 @@ export function countWords({
     const words = $(textInput).val().split(/\s+/);
     const wordsTrimmed = words.filter((w) => w !== "");
     const wordsTrimmedCount =
-      wordsTrimmed.length > maxWords ? maxWords : wordsTrimmed.length;
+      wordsTrimmed.length > maxWords && !continueCount
+        ? maxWords
+        : wordsTrimmed.length;
     let labelValue;
     if (labelFormat) {
       labelValue = labelFormat.split("###").join(wordsTrimmedCount);
