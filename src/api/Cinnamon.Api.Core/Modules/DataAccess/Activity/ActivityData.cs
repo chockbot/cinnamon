@@ -443,4 +443,26 @@ public class ActivityData: IActivityData
 			return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when deleting add-on");
 		}
 	}
+
+	public async Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"Activity/OtePerDate")
+							.SetQueryParams(args)
+							.GetJsonAsync<OtePerDateResult>();
+
+			return AppResult<OtePerDateResult>.CreateSucceeded(result, "Successfully get customer ote per day.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<OtePerDateResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<OtePerDateResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
+		}
+	}
 }

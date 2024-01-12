@@ -9,6 +9,10 @@ public class OteSchedulePricing : BaseEntity
     public bool IsAbsorbFees {get; set;}
     public string Name {get; set;}
     public int TicketSold {get; set;}
+    public int? OteDateId {get; set;}
+    public int? OteSchedulePricingGroupId {get; set;}
 
     public virtual OteSchedule OteSchedule {get; set;}
+    public virtual OteDate? OteDate  {get; set;}
+    public virtual OteSchedulePricingGroup? OteSchedulePricingGroup {get; set;}
 }

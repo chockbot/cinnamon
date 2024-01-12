@@ -9,4 +9,6 @@ public class GetOTEByActivityIdArgs
     [Required]
     public int ActivityId { get; set; }
     public string? SearchValue { get; set; }
+    [Required]
+    public int DateId {get; set;}
 }

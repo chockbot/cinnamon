@@ -46,7 +46,8 @@ public interface IDataStore
     IOteTicket OteTicket {get;}
     ITokenGenerated TokenGenerated {get;}
     IAddOns AddOns { get; }
-
+    IOteDate OteDate {get;}
+    
     Task EnsureMigrate();
 
     Task SeedData();

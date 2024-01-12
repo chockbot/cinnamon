@@ -11,6 +11,9 @@ public class CreateOteActivityArgs
     [Required]
     public IList<OtePricing> Pricings {get; set;}
 
+    [Required]
+    public IList<OteDate> Dates {get; set;}
+
     public class OteActivity 
     {
         [Required]
@@ -67,6 +70,19 @@ public class CreateOteActivityArgs
 
         [Required]
         public bool IsComingSoon {get; set;}
+
+        public string? ExtraOptions {get; set;} = string.Empty;
+
+        [Required]
+        public DateTime RecurrenceDateStart {get; set;}
+
+        [Required]
+        public DateTime RecurrenceDateEnd {get; set;}
+
+        [Required]
+        public int RepeatEvery {get; set;}
+
+        public string SelectedDays {get; set;} = string.Empty;
     }
 
     public class OtePricing 
@@ -86,5 +102,17 @@ public class CreateOteActivityArgs
 
         [Required]
         public decimal Price {get; set;}
+    }
+
+    public class OteDate 
+    {
+        [Required]
+        public DateTime Date {get; set;}
+
+        [Required]
+        public DateTime DateStart {get; set;}
+
+        [Required]
+        public DateTime DateEnd {get; set;}
     }
 }

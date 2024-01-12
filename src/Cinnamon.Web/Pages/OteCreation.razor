@@ -132,11 +132,6 @@
                 throw new ApplicationException("Invalid request");
             }
             accountId = accountRes.Result.Result.Id;
-
-            if(!string.IsNullOrEmpty(Handler))
-            {
-                LoadComponentState();
-            }
         }
         catch (System.Exception)
         {
@@ -150,6 +145,17 @@
         {
             LoadComponents();
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            if(!string.IsNullOrEmpty(Handler))
+            {
+                await LoadComponentState();
+            }
+        }   
     }
 
     private double GetPerentCompletion
@@ -426,7 +432,15 @@
                     RegionName = location.RegionName,
                     ScheduleFrom = schedule.DateFrom,
                     ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon
+                    IsComingSoon = publishData.ComingSoon,
+                    DurationEnd = schedule.DurationEnd,
+                    DurationEvery = schedule.DurationEvery,
+                    DurationStart = schedule.DurationStart,
+                    MonthDay = schedule.MonthDay,
+                    MonthRepeat = schedule.MonthRepeat,
+                    MonthSelection = schedule.MonthSelection,
+                    OnDayDate = schedule.OnDayDate,
+                    WeekString = schedule.WeekString
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
@@ -550,14 +564,13 @@
         var ote = oteRes.Result.Result;
 
         oteId = ote.Id;
-
-        oteEvent.SetState(new OteEvent.ModelData {
+        oteEvent?.SetState(new OteEvent.ModelData {
             Category = ote.CategoryId,
             Description = ote.Description,
             Name = ote.EventName
         });
 
-        oteLocation.SetState(new OteLocation.ModelData {
+        await oteLocation?.SetState(new OteLocation.ModelData {
             BarangayCode = ote.BarangayCode,
             BarangayName = ote.BarangayName,
             CityCode = ote.CityNumber,
@@ -570,11 +583,20 @@
             RegionName = ote.RegionName
         });
 
-        otePricing.SetState(new OtePricing.ModelData {
+        var options = ote.OteSchedule.ExtraOptions.Split("|");
+        otePricing?.SetState(new OtePricing.ModelData {
             DateFrom = ote.ScheduleFrom,
             DateTo = ote.ScheduleTo,
             Recurrences = ote.Recurrences,
-            ItemPrices = ote.Pricings.Select(p => {
+            DurationEnd = ote.OteSchedule.RecurrenceDateEnd,
+            DurationEvery = ote.OteSchedule.RepeatEvery,
+            DurationStart = ote.OteSchedule.RecurrenceDateStart,
+            MonthDay = options.Length >= 4 ? options[3] : "sunday",
+            MonthRepeat = options.Length >= 3 ? options[2] : "first",
+            MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
+            OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
+            WeekString = ote.OteSchedule.SelectedDays,
+            ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
@@ -586,7 +608,7 @@
             }).ToList()
         });
 
-        oteGallery.SetState(ote.Images.Select(i => {
+        oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
                 Id = i.Id,
                 ImageSrc = i.ImageSrc,
@@ -594,7 +616,7 @@
             };
         }).ToList());
 
-        otePublish.SetState(new OtePublish.ModelData {
+        otePublish?.SetState(new OtePublish.ModelData {
             AcceptTerms = true,
             ComingSoon = ote.IsComingSoon,
             IsPublish = ote.IsPublished
