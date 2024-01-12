@@ -9,12 +9,18 @@
 <section class="ote-pricing-wrapper">
     <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
         <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                <span>
-                    schedule
-                </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
-            </h3>
+            <div class="d-flex justify-content-between">
+                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                    <span>
+                        schedule
+                    </span>
+                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
+                </h3>
+                <label @onclick="ViewGuide" class="cursor-pointer">
+                    <span class="font-14 font-weight-700 color-green-100 text-decoration-underline">How to do this</span>
+                    <img src="images/ote/green-how-do-this.png" alt="icon">
+                </label>
+            </div>
             <p class="font-16 color-grey-100 text-justify">
                 Create your event schedule by selecting your preferred sessions and activities from the provided options.
             </p>
@@ -489,6 +495,67 @@
             </ModalBody>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalScheduleGuid">
+        <ModalContent Size="ModalSize.Large" class="border-radius-20">
+            <ModalHeader class="justify-content-center pb-0">
+                <div class="d-flex justify-content-center align-items-center m-margin-top-75">
+                    <img src="images/ote/light-bulb.png" class="me-3 m-d-none" alt="icon">
+                    <p class="font-32 font-weight-700 color-black-100 mb-0 m-font-24">Create a better schedule</p>
+                </div>
+                <button type="button" style="top: 28px; right: 20px;" class="btn-close position-absolute" @onclick="CloseGuide" />
+            </ModalHeader>
+            <ModalBody class="color-grey-100 font-18 m-font-16">
+                <p>
+                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event, 
+                        ensuring clarity and engagement for all participants.</p>
+                <ol class="ps-4">
+                    <li class="color-black-100 font-weight-700 mb-3">Do Not Repeat:
+                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
+                            <p>-Indicates that a particular event or activity should not occur again after its initial instance.</p>
+                            <p class="mb-0">Sample:</p>
+                            <p class="mb-0">"Special Anniversary Dinner on January 15, 2024, at 7:00 PM."</p>
+                        </div>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Daily:
+                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
+                            <p>-Daily recurrences involve events or activities that happen regularly and repeat on a daily basis.</p>
+                            <p class="mb-0">Sample:</p>
+                            <p class="mb-0">Event: Daily Morning Yoga Sessions</p>
+                            <p class="mb-0">Start Date: March 1, 2024</p>
+                            <p class="mb-0">End Date: March 15, 2024</p>
+                            <p class="mb-0">From: 7:00 AM</p>
+                            <p class="mb-0">To: 8:00 AM</p>
+                            <p class="mb-0">Recurring Daily: Monday to Friday</p>
+                        </div>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Weekly:
+                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
+                            <p>-Weekly recurrences refer to events or activities that occur regularly and repeat every seven days.</p>
+                            <p class="mb-0">Sample:</p>
+                            <p class="mb-0">Event: Weekly Photography Class</p>
+                            <p class="mb-0">Start Date: April 1, 2024</p>
+                            <p class="mb-0">End Date: June 30, 2024</p>
+                            <p class="mb-0">From: 6:00 PM</p>
+                            <p class="mb-0">To: 8:00 PM</p>
+                            <p class="mb-0">Recurring Weekly: Every Saturday</p>
+                        </div>
+                    </li>
+                    <li class="color-black-100 font-weight-700 mb-3">Monthly:
+                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
+                            <p>-Monthly recurrences denote events or activities that regularly repeat every calendar month.</p>
+                            <p class="mb-0">Sample: Event: Monthly Book Club Meeting</p>
+                            <p class="mb-0">Start Date: July 1, 2024</p>
+                            <p class="mb-0">End Date: December 31, 2024</p>
+                            <p class="mb-0">From: 4:00 PM</p>
+                            <p class="mb-0">To: 6:00 PM</p>
+                            <p class="mb-0">Recurring Monthly: First Sunday of Each Month</p>
+                        </div>
+                    </li>
+                </ol>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </section>
 
 @code 
@@ -509,6 +576,7 @@
     private Validation? dateToValidation;
     private bool showErrors = false;
     private Modal? modalFeeBreakdown {get; set;}
+    private Modal? modalScheduleGuid {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
     private IList<DayItem> dayItems = new List<DayItem> {
         new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
@@ -860,6 +928,16 @@
         if(dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
         item.Selected = !item.Selected;
         return Task.CompletedTask;
+    }
+
+    private async Task ViewGuide()
+    {
+        await modalScheduleGuid.Show();
+    }
+
+    private async Task CloseGuide()
+    {
+        await modalScheduleGuid.Close(CloseReason.UserClosing);
     }
 
     public class ModelData
