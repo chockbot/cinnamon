@@ -9,8 +9,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
-using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -93,8 +93,8 @@ public class ActivityController : ControllerBase
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
-        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, 
-        IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler,IGetOtePerDayHandler getOtePerDayHandler)
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
+        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler)
     {
         _logger = logger;
 
@@ -2827,47 +2827,6 @@ public class ActivityController : ControllerBase
         }
     }
 
-    [Route("GetOtePerDay")]
-    [HttpGet]
-    [ProducesResponseType(typeof(OtePerDayResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetOtePerDay()
-    {
-        try
-        {
-            var result = await getOtePerDayHandler.ExecuteAsync(new ());
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new OtePerDayResult
-            {
-                IsSuccess = true,
-                Result = result.Result.OtePerDays.Select(e => {
-                    return new CoreDto.Activity.OtePerDayDTO {
-                        ActivityId = e.ActivityId,
-                        CityName = e.CityName,
-                        Date = e.Date,
-                        DateEnd = e.DateEnd,
-                        DateId = e.DateId,
-                        DateStart = e.DateStart,
-                        Description = e.Description,
-                        EventImage = e.EventImage,
-                        ExperienceTypeId = e.ExperienceTypeId,
-                        Handler = e.Handler,
-                        PinnedLocation = e.PinnedLocation,
-                        RegionName = e.RegionName,
-                        Title = e.Title
-                    };
-                })
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [Route("DeleteAddOns")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteAddOnsResult), StatusCodes.Status200OK)]
@@ -2924,6 +2883,47 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOtePerDay")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OtePerDayResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOtePerDay()
+    {
+        try
+        {
+            var result = await getOtePerDayHandler.ExecuteAsync(new ());
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OtePerDayResult
+            {
+                IsSuccess = true,
+                Result = result.Result.OtePerDays.Select(e => {
+                    return new CoreDto.Activity.OtePerDayDTO {
+                        ActivityId = e.ActivityId,
+                        CityName = e.CityName,
+                        Date = e.Date,
+                        DateEnd = e.DateEnd,
+                        DateId = e.DateId,
+                        DateStart = e.DateStart,
+                        Description = e.Description,
+                        EventImage = e.EventImage,
+                        ExperienceTypeId = e.ExperienceTypeId,
+                        Handler = e.Handler,
+                        PinnedLocation = e.PinnedLocation,
+                        RegionName = e.RegionName,
+                        Title = e.Title
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

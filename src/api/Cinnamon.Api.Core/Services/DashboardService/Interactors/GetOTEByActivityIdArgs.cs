@@ -5,7 +5,7 @@ public class GetOTEByActivityIdArgs : IInteractor
 {
     public int ActivityId { get; set; } 
     public string? SearchValue { get; set; }
+    public int DateId {get; set;}
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
-    public int DateId {get; set;}
 }
