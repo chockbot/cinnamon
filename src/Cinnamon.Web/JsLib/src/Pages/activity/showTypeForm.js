@@ -1,4 +1,5 @@
 ﻿import { createWidget } from '@typeform/embed'
+import '@typeform/embed/build/css/widget.css'
 
 export function showTypeForm() {
     // Replace 'cgzRQKWI' with your actual Typeform ID
@@ -9,7 +10,6 @@ export function showTypeForm() {
         mode: 'popup',
         autoOpen: true,
         autoClose: 0,
-        refresh: true,
     });
 }
 
