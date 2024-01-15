@@ -18,8 +18,8 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, 
-        int? count, int? skip, bool includeCustomer = false, bool includeImageData = false)
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, int? count, int? skip, 
+        bool includeCustomer = false, bool includeImageData = false)
     {
         try
         {

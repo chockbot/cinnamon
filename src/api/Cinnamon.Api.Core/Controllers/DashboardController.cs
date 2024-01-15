@@ -517,7 +517,7 @@ public class DashboardController : ControllerBase
                 SearchValue  = args.SearchValue ?? string.Empty,
                 ActivityId   = args.ActivityId,
                 CountPerPage = args.CountPerPage,
-                PageIndex    = args.PageIndex,
+                PageIndex = args.PageIndex,
                 DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null)
