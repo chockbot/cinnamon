@@ -9,6 +9,7 @@ import moveImage from "./moveImage";
 import carouselSwipe from "./carouselSwipe";
 import explore from "./explore";
 import activityDetails from "./activityDetails";
+import { showTypeForm } from "./showTypeForm";
 
 export default {
   creation,
@@ -22,4 +23,5 @@ export default {
   carouselSwipe,
   explore,
   activityDetails,
+  showTypeForm
 };
