@@ -515,6 +515,7 @@ public class DashboardController : ControllerBase
             var result = await getOTEByActivityIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetOTEByActivityIdArgs
             {
                 SearchValue  = args.SearchValue ?? string.Empty,
+                SearchBy     = args.SearchBy ?? 0,
                 ActivityId   = args.ActivityId,
                 CountPerPage = args.CountPerPage,
                 PageIndex    = args.PageIndex

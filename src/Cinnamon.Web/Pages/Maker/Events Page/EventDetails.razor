@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <div class="col-12 customer-filter">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
+                    <div class="col-lg-8 col-md-6 col-sm-12 col-12 justify-content-start">
                         <div class="filter-content d-flex">
                              <p class="filter-text">Show</p>
                              <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
@@ -139,12 +139,20 @@
                              <p class="filter-text">entries</p>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 justify-content-md-end col-sm-12 col-12 justify-content-end search-box">
+                    <div class="col-lg-4 col-md-12 col-sm-12 col-12 search-box">
+                        <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                                <SelectItem Value="0">Search By</SelectItem>
+                                <SelectItem Value="1">Id</SelectItem>
+                                <SelectItem Value="2">Name</SelectItem>
+                                <SelectItem Value="3">Email</SelectItem>
+                            </Select>
+                            @if(IsDisplay)
+                            {
+                                <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                            }
                         <button class="btn-export" @onclick="ExportToExcel">
-                            Download Excel File
                             <img class="excel-icon" src="images/xls-icon.png" />
                         </button>
-                        <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
                     </div>
                 </div>
                 <div class="ticket-table">
@@ -269,7 +277,10 @@
     public int TotalAvailable      = 0;
     public int counterPage         = 10;
     public string SearchValue      = string.Empty;
+    public int SearchBy = 0;
     public int selectedFilter;
+    public bool IsDisplay = false;
+
 
 
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
@@ -340,6 +351,7 @@
         var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
             {
                 SearchValue  = SearchValue,
+                SearchBy     = SearchBy,
                 ActivityId   = activity.Id,
                 CountPerPage = counterPage,
                 PageIndex    = pageIndex
@@ -501,12 +513,36 @@
         await GetCustomerList(1);
         await loadingIndicator.Hide();
     }
+    private async Task OnFilterByValueChange(int searchBy)
+    {
+        switch (searchBy)
+        {
+            case 0:
+                SearchBy = 0;
+                IsDisplay = false;
+                break;
+            case 1:
+                SearchBy = 1;
+                IsDisplay = true;
+                break;
+            case 2:
+                SearchBy = 2;
+                IsDisplay = true;
+                break;
+            case 3:
+                SearchBy = 3;
+                IsDisplay = true;
+                break;
+            default:
+                break;
+        }
+    }
     private async void TextSearchChanged(string search)
     {
         SearchValue = search;
         await loadingIndicator.Show();
         await GetCustomerList(1);
-        FilteredCustomer = oteCustomer.FindAll(s => s.Customer.FirstName.ToLower().Contains(search.ToLower()) || s.Customer.LastName.ToLower().Contains(search.ToLower())).OrderBy(e => e.Customer.FirstName).ToList();
+        FilteredCustomer = oteCustomer.OrderBy(a => a.Id).ToList();
         await loadingIndicator.Hide();
     }
 }

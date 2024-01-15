@@ -43,7 +43,7 @@
     font-family: Nunito;
     font-size: 16px;
     font-weight: 400;
-    line-height: 40px;
+    margin-top: 0.8rem;
 }
 
 ::deep .dropdown-select {
@@ -53,6 +53,18 @@
     color: #717171;
     margin-bottom: 10px;
     font-size: 16px;
+}
+::deep .dropdown-select-search {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-family: Nunito;
+    background-color: #F3F6FC;
+    color: #717171;
+    border: 1px solid #ced4da;
+    padding: .375rem .75rem;
+    border-radius: .25rem;
+    height: 40px;
+    width: 30%;
 }
 .event-details-wrapper {
     margin-right: 20px;
@@ -242,13 +254,15 @@
     display: flex;
 }
 ::deep .search-bar {
-    width: 40%;
+    width: 65%;
     height: 40px;
     background-color: #F3F6FC;
     color: #717171;
 }
 .search-box{
     display: flex;
+    gap: 5px;
+    justify-content: end;
 }
 .btn-status {
     display: flex;
@@ -406,6 +420,7 @@
 
     .search-box {
         margin-top: 1rem;
+        display: flex;
     }
     /*Customer Table styling*/
     ::deep .table-list .b-table.table {
@@ -640,12 +655,11 @@
         color: #717171;
     }
     .btn-export{
-        width: 100%;
         margin-bottom: 0.5rem;
     }
     .search-box {
         margin-top: 1rem;
-        display: block;
+        display: flex ;
     }
     /*Customer Table styling*/
     ::deep .table-list .b-table.table {
