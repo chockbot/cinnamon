@@ -692,6 +692,7 @@
                                 </span>
                             }
                         </div>
+                        @*Class Policies*@
                         @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && !activity.CustomerBringWithThem.Contains("NOTHING"))
                         {
                             <hr />
@@ -708,6 +709,78 @@
                                 <p>@((MarkupString)activity.ClassPolicies)</p>
                             </div>
                         }
+                        @*Contact Me*@
+                        <hr />
+                        <div class="bring-text" style="overflow-wrap:break-word;">
+                            <label class="fw-bold mb-3 detail-label">Experience by</label>
+                            <Row class="mx-0">
+                                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" class="m-bg-white-200">
+                                    <div class="d-flex">
+                                        <div class="maker-pic">
+                                            <img class="rounded-2 rounded-circle mb-3" src="@customerDetail.ProfilePath" />
+                                        </div>
+                                        <div class="mb-2 ms-3 maker-profile-details">
+                                            <span class="text-capitalize maker-name">@customerDetail.FirstName @customerDetail.LastName</span>
+                                            <span class="xp-by">Joined 2022</span>
+                                        </div>
+                                    </div>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="m-bg-white-200">
+                                    <div class="provider-details d-flex">
+                                        <div class="review-section">
+                                            <img src="images/star-tag-small.png" class="star-icon">
+                                            <span class="details-text">@activityReviews.Count Reviews</span>
+                                        </div>
+                                        @if (customerDetail.IsVerified == 2)
+                                        {
+                                            <div class="verified-section">
+                                                <img src="images/verified-badge.png" class="verified-icon">
+                                                <span class="details-text">Verified Profile</span>
+                                            </div>
+                                        }
+                                        <div class="student-section">
+                                            <img src="images/student-icon.png"  class="student-icon">
+                                            <span class="details-text">@TotalStudents Students</span>
+                                        </div>
+                                    </div>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop" class="m-bg-white-200">
+                                    <div>
+                                        @if (!string.IsNullOrEmpty(customerDetail.About))
+                                        {
+                                            <p class="provider-about-me mt-3">
+                                                @if (showFullAbout)
+                                                {
+                                                    @customerDetail.About
+                                                }
+                                                else
+                                                {
+                                                    if (customerDetail.About.Split(' ').Length <= 40)
+                                                    {
+                                                        @customerDetail.About
+                                                    }
+                                                    else
+                                                    {
+                                                        @string.Join(" ", customerDetail.About.Split(' ').Take(40))
+                                                        <span>...</span> <!-- Display the first 40 words -->
+                                                    }
+                                                }
+                                            </p>
+                                            @if (!showFullAbout && customerDetail.About.Split(' ').Length > 40)
+                                            {
+                                                <span @onclick="ToggleAboutText" class="read-more">Read More</span>
+                                            }
+                                            else if (showFullAbout)
+                                            {
+                                                <span @onclick="ToggleAboutText" class="read-less">Read Less</span>
+                                            }
+                                        }
+
+                                </div>
+                                    <button id="contact-me" class="contact-me" type="button" @onclick="ShowTypeform">Message Me</button>
+                                </Column>
+                            </Row>
+                        </div>
                     }
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
@@ -872,7 +945,6 @@
                     <span class="not-happy">
                         Not happy with the experience? <br /> <a href="https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform" target="_blank">Contact us</a> and we'll solve the problem for you.
                     </span>
-                    <button class="contact-me" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100" data-tf-iframe-props="title=Contact Me Form" data-tf-auto-close="1000" data-tf-transitive-search-params data-tf-medium="snippet">Message me</button>
                 </div>
             </Div>
         </Div>
@@ -1044,6 +1116,7 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "Sid")]
     public string? SidQuery { get; set; }
+    public bool showFullAbout = false;
 
     protected override void OnParametersSet()
     {
@@ -1227,7 +1300,8 @@
                         ProfilePath = args.ProfileImg,
                         IsVerified = args.IsVerified,
                         IsOG = args.IsOG,
-                        IsOfficial = args.IsOfficial
+                        IsOfficial = args.IsOfficial,
+                        About = args.About
                     };
             }
             Model = new DetailActivityModel
@@ -1484,6 +1558,14 @@
         }
     }
 
+    private int TotalStudents
+    {
+        get
+        {
+            return activity.OngoingStudents + activity.CompletedStudents;
+        }
+    }
+
     private async Task ProceedToPayment()
     {
         List<AddOn> selectedAddOns = activity.AddOns.Where(a => a.AddOnCount != 0).ToList();
@@ -1584,5 +1666,14 @@
     {
         NavigationManager.NavigateTo($"/explore/{Identifier}/gallery");
         return Task.CompletedTask;
+    }
+    private void ToggleAboutText()
+    {
+        showFullAbout = !showFullAbout;
+    }
+    private async Task ShowTypeform()
+    {
+        // Execute JavaScript to show the Typeform
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.showTypeForm");
     }
 }
