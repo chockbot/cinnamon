@@ -17,6 +17,7 @@
 @inject IActivityApiHandler activityApiHandler;
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler;
+@inject INotificationService NotificationService;
 @using Cinnamon.Framework.Enums;
 
 <PageTitle>Update Experience | CinnamonPH</PageTitle>
@@ -1038,6 +1039,10 @@
             // upload image without checking if there is error so that can't re update another activity
             bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
+
+            await NotificationService.Success("Success! You updated an activity", "Success!");
+
+            await Task.Delay(1000); 
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
 
