@@ -30,7 +30,6 @@
          Url='@($"/explore/{Identifier}")'
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
-
 @if (Model.Customer != null)
 {
     @if(activity is not null && activity.Images.Count > 0)
@@ -873,6 +872,7 @@
                     <span class="not-happy">
                         Not happy with the experience? <br /> <a href="https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform" target="_blank">Contact us</a> and we'll solve the problem for you.
                     </span>
+                    <button class="contact-me" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100" data-tf-iframe-props="title=Contact Me Form" data-tf-auto-close="1000" data-tf-transitive-search-params data-tf-medium="snippet">Message me</button>
                 </div>
             </Div>
         </Div>
