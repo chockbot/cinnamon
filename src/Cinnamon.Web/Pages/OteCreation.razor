@@ -465,6 +465,10 @@
                 var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
             }
 
+            await NotificationService.Success("Success! You created an activity", "Success");
+
+            await Task.Delay(1000);
+
             await JS.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
             NavigationManager.NavigateTo("/maker/dashboard");
         }
@@ -531,6 +535,10 @@
             {
                 var uploadRes = await oteGallery.UploadImages(oteId);
             }
+
+            await NotificationService.Success("Success! You updated an activity", "Success");
+
+            await Task.Delay(1000);
 
             NavigationManager.NavigateTo("/maker/dashboard");
         }
