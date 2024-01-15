@@ -764,6 +764,12 @@
 
     private async Task ProceedToPayment()
     {
+        if(selectedTickets.Count <= 0)
+        {
+            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            return;
+        }
+
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
