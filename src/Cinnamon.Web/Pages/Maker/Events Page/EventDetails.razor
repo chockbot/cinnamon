@@ -329,7 +329,7 @@
             }, Token);
         if (ticketResult.Succeeded && ticketResult.Result != null && ticketResult.Result.IsSuccess)
         {
-            ticketList = ticketResult.Result.Result.Select(s => new OteSchedule
+            ticketList = ticketResult.Result.Result.Select(s => new OteSchedule 
             {
                 ActivityId  = s.ActivityId,
                 From        = s.From,
@@ -456,7 +456,7 @@
                         LastName  = e.Customer.LastName,
                         Email     = e.Customer.Email
                     }
-                }).ToList();
+                }).OrderBy(a => a.Id).ToList();
         }
         using (var workbook = new XLWorkbook("wwwroot/Template/CustomerList.xlsx"))
         {
