@@ -26,11 +26,14 @@ public class OteFindByHandlerResult
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<Image> Images {get; set;}
     public bool IsComingSoon {get; set;}
+    public IEnumerable<OteDate> OteDates {get; set;}
+    public OteSchedule Schedule {get; set;}
 
     public class OtePricing 
     {
         public int Id {get; set;}
         public int OteScheduleId { get; set; }
+        public int OteDateId {get; set;}
         public decimal Price { get; set; }
         public int MaxSlots { get; set; }
         public string Description { get; set; }
@@ -46,5 +49,40 @@ public class OteFindByHandlerResult
         public int ActivityId {get; set;}
         public string ImageName { get; set; }
         public string ImageLocation { get; set; }
+    }
+
+    public class OteDate 
+    {
+        public int Id {get; set;}
+        public int OteScheduleId {get; set;}
+        public DateTime Date {get; set;}
+        public DateTime DateStart {get; set;}
+        public DateTime DateEnd {get; set;}
+    }
+
+    public class OteSchedule
+    {
+        public int ActivityId { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+        public string Recurrences { get; set; }
+        public DateTime RecurrenceDateStart {get; set;}
+        public DateTime RecurrenceDateEnd {get; set;}
+        public int RepeatEvery {get; set;}
+        public string SelectedDays {get; set;}
+        public string ExtraOptions {get; set;}
+        public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
+    }
+
+    public class OtePricingGroupDTO
+    {
+        public int Id {get; set;}
+        public int OteScheduleId {get; set;}
+        public decimal Price {get; set;}
+        public int MaxSlots {get; set;}
+        public string Description {get; set;}
+        public bool IsAbsorbFees {get; set;}
+        public string Name {get; set;}
+        public int TicketSold {get; set;}
     }
 }

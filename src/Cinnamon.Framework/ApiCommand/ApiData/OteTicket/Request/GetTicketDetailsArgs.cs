@@ -3,4 +3,5 @@
 public class GetTicketDetailsArgs
 {
     public int ActivityId { get; set; }
+    public int DateId {get; set;}
 }

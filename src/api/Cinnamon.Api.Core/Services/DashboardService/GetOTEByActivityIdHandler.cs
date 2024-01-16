@@ -35,7 +35,8 @@ public class GetOTEByActivityIdHandler : IGetOTEByActivityIdHandler
                 CountPerPage         = args.CountPerPage,
                 PageIndex            = args.PageIndex,
                 IncludeCustomer      = true,
-                IncludeImageAsResult = false
+                IncludeImageAsResult = false,
+                DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null)
             {

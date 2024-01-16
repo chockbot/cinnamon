@@ -1067,4 +1067,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when calling delete add-on api");
         }
     }
+
+    public async Task<AppResult<OtePerDayResult>> GetOtePerDay(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOtePerDay")
+                .GetJsonAsync<OtePerDayResult>();
+
+            return AppResult<OtePerDayResult>.CreateSucceeded(result, "Successfully getting customer ote per day.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OtePerDayResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OtePerDayResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
+        }
+    }
 }

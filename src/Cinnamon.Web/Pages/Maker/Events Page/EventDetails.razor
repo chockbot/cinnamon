@@ -24,8 +24,7 @@
 
 @if (activity != null)
 {
-    
-        <div class="event-details-wrapper">
+    <div class="event-details-wrapper">
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
@@ -167,9 +166,6 @@
                                 <TableHeaderCell>
                                     Amount
                                 </TableHeaderCell>
-                                <TableHeaderCell>
-                                    QR Code
-                                </TableHeaderCell>
                                 <TableHeaderCell class="th-status">
                                     Status
                                 </TableHeaderCell>
@@ -194,9 +190,6 @@
                                         </TableRowCell>
                                         <TableRowCell class="tr-amount">
                                             <span>@item.Amount</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-qr">
-                                            <span>@item.QRCode</span>
                                         </TableRowCell>
                                         <TableRowCell class="tr-button">
                                             <div class="btn-status">
@@ -250,6 +243,9 @@
 @code {
     [Parameter]
     public string Handler { get; set; } = string.Empty;
+    [Parameter, SupplyParameterFromQuery]
+    public string? Date {get; set;}
+
     LoadingIndicator loadingIndicator;
     IJSObjectReference module;
     public List<OteTicket> oteCustomer = new List<OteTicket>();
@@ -273,6 +269,7 @@
 
 
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private int dateId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -293,6 +290,12 @@
         }
         var act = result.Result.Result;
         activity = mapper.Map<OteActivity>(act);
+        
+        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
+        {
+            dateId = parsedDate;
+        }
+
         //Get Ticket List
         await GetTicketList();
         //Get Customer List
@@ -310,7 +313,8 @@
     {
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
             {
-                ActivityId = activity.Id
+                ActivityId = activity.Id,
+                DateId = dateId
             }, Token);
         if (ticketResult.Succeeded && ticketResult.Result != null && ticketResult.Result.IsSuccess)
         {
@@ -342,7 +346,8 @@
                 SearchValue  = SearchValue,
                 ActivityId   = activity.Id,
                 CountPerPage = counterPage,
-                PageIndex    = pageIndex
+                PageIndex    = pageIndex,
+                DateId = dateId
             }, Token);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
@@ -446,14 +451,13 @@
             int startRow = 3;
             foreach (var item in ExportCustomer)
             {
-                worksheet.Cell(1, 7).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
                 worksheet.Cell(startRow, 1).Value = item.Id;
                 worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
                 worksheet.Cell(startRow, 3).Value = item.Customer.Email;
                 worksheet.Cell(startRow, 4).Value = item.Title;
                 worksheet.Cell(startRow, 5).Value = item.Amount;
-                worksheet.Cell(startRow, 6).Value = item.QRCode;
-                worksheet.Cell(startRow, 7).Value = item.Status;
+                worksheet.Cell(startRow, 6).Value = item.Status;
                 startRow++;
             }
             using (var memoryStream = new MemoryStream())

@@ -1683,7 +1683,9 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
+        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
+        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates)
     {
         try
         {
@@ -1718,25 +1720,52 @@ public class ActivityRepository : IActivityRepository
               Region = regionCode ?? string.Empty,
               RegionName = regionName ?? string.Empty,
               PinnedLocation = pinnedLocation ?? string.Empty,
-              PostalCode = postalCode ?? string.Empty,  
+              PostalCode = postalCode ?? string.Empty,
             };
 
             var schedule = new Entities.OteSchedule {
                 From = scheduleFrom.SetKindUtc(),
                 To = scheduleTo.SetKindUtc(),
-                Recurrences = recurrence
+                Recurrences = recurrence,
+                ExtraOptions = scheduleExtraOpt ?? String.Empty,
+                RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
+                RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
+                RepeatEvery = repeatEvery,
+                SelectedDays = selectedDays
             };
-            schedule.OteSchedulePricing = pricingDTOs.Select(p => {
-                return new OteSchedulePricing {
+
+            var pricingsGroup = pricingDTOs.Select(p => {
+                return new OteSchedulePricingGroup {
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    OteSchedule = schedule
                 };
             }).ToList();
 
-            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule);
+            var dates = oteDates.Select(d => {
+                return new Entities.OteDate {
+                    Date = d.Date.SetKindUtc(),
+                    DateEnd = d.DateEnd.SetKindUtc(),
+                    DateStart = d.DateStart.SetKindUtc(),
+                    OteSchedulePricing = pricingsGroup.Select(p => {
+                        return new OteSchedulePricing {
+                            Description = p.Description,
+                            IsAbsorbFees = p.IsAbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Price = p.Price,
+                            Name = p.Name,
+                            OteSchedule = schedule,
+                            OteSchedulePricingGroup = p
+                        };
+                    }).ToList(),
+                    OteSchedule = schedule
+                };
+            }).ToList();
+
+            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule, pricingsGroup, dates);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
@@ -1969,6 +1998,24 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteOngoingDTO>>.CreateFailed(ex, "An error occured when getting customet ote.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId)
+    {
+        try
+        {
+            var result = await dataStore.Activity.OtePerDate(providerId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateSucceeded(result.Result, "Successfully find customers ote per date");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting customer ote.");
         }
     }
 }

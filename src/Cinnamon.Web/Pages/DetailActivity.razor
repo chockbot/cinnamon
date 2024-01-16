@@ -30,6 +30,16 @@
          Url='@($"/explore/{Identifier}")'
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
+
+<div>
+    <h1>This is Typeform section</h1>
+    <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100" 
+        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet" 
+        style="all:unset;font-family:Helvetica,Arial,sans-serif;display:inline-block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background-color:#0445AF;color:#fff;font-size:20px;border-radius:25px;padding:0 33px;font-weight:bold;height:50px;cursor:pointer;line-height:50px;text-align:center;margin:0;text-decoration:none;">
+        Message Me
+    </button>
+</div>
+
 @if (Model.Customer != null)
 {
     @if(activity is not null && activity.Images.Count > 0)
@@ -669,7 +679,7 @@
                                     string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.Address1 + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName}" : activity.PinnedLocation;
                                     var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
                                     <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
-                                    <span class="mt-3">
+                                    <span class="mt-3 text-capitalize">
                                         @(string.IsNullOrEmpty(activity.PinnedLocation) ? activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName : activity.PinnedLocation)
                                     </span>
                                 }
@@ -835,16 +845,16 @@
                                 @if(!IsInclusivePricing)
                                 {
                                     <Row class="color-grey-100 font-16 mt-2">
-                                        <Column ColumnSize="ColumnSize.Is7">
-                                            <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                        <Column ColumnSize="ColumnSize.Is4">
+                                            <p class="m-0">Service fee</p>
                                         </Column>
-                                        <Column ColumnSize="ColumnSize.Is5">
-                                            <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0.00")</p>
+                                        <Column ColumnSize="ColumnSize.Is8" TextAlignment="TextAlignment.End">
+                                            <p class="text-end m-0">Depends on payment method</p>
                                         </Column>
                                     </Row>
                                     <Row class="color-grey-100 font-16 mt-2">
                                         <Column ColumnSize="ColumnSize.Is7">
-                                            <p class="m-0">Handling  fee</p>
+                                            <p class="m-0">Handling fee</p>
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is5">
                                             <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
@@ -1001,16 +1011,16 @@
                         @if(!IsInclusivePricing)
                         {
                             <Row class="color-grey-100 font-16 mt-2">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <p class="m-0">Service fee</p>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0.00")</p>
+                                <Column ColumnSize="ColumnSize.Is8" TextAlignment="TextAlignment.End">
+                                    <p class="text-end m-0">Depends on payment method</p>
                                 </Column>
                             </Row>
                             <Row class="color-grey-100 font-16 mt-2">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Handling  fee</p>
+                                    <p class="m-0">Handling fee</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
@@ -1400,6 +1410,8 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.showTypeForm");
         }

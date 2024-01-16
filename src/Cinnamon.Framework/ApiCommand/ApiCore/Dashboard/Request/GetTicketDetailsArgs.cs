@@ -6,4 +6,6 @@ public class GetTicketDetailsArgs
 {
     [Required]
     public int ActivityId { get; set; }
+    [Required]
+    public int DateId {get; set;}
 }
