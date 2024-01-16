@@ -31,6 +31,15 @@
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
+<div>
+    <h1>This is Typeform section</h1>
+    <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100" 
+        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet" 
+        style="all:unset;font-family:Helvetica,Arial,sans-serif;display:inline-block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background-color:#0445AF;color:#fff;font-size:20px;border-radius:25px;padding:0 33px;font-weight:bold;height:50px;cursor:pointer;line-height:50px;text-align:center;margin:0;text-decoration:none;">
+        Message Me
+    </button>
+</div>
+
 @if (Model.Customer != null)
 {
     @if(activity is not null && activity.Images.Count > 0)
@@ -1321,6 +1330,8 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
         }
         else
