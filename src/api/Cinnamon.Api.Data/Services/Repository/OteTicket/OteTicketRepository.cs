@@ -49,12 +49,12 @@ public class OteTicketRepository : IOteTicketRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int dateId, string searchValue, int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<OteTicketDTO>>> GetByActivityId(int activityId, int dateId, string searchValue,int searchBy, int? count, int? skip, 
         bool includeCustomer = false, bool includeImageAsResult = false)
     {
         try
         {
-            var result = await dataStore.OteTicket.GetByActivityId(activityId, dateId, searchValue, count, skip, includeCustomer, includeImageAsResult);
+            var result = await dataStore.OteTicket.GetByActivityId(activityId, dateId, searchValue,searchBy ,count, skip, includeCustomer, includeImageAsResult);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<OteTicketDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -93,14 +93,14 @@ public class OteTicketRepository : IOteTicketRepository
         try
         {
             var ticketRes = await dataStore.OteTicket.FindFirstAsync(t => t.Id == ticket.Id);
-            if(!ticketRes.Succeeded || ticketRes.Result is null)
+            if (!ticketRes.Succeeded || ticketRes.Result is null)
             {
                 return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(ticketRes.Message), ticketRes.Message);
             }
             ticketRes.Result.Status = ticket.Status;
 
             var updatedRes = await dataStore.OteTicket.Update(ticketRes.Result);
-            if(!updatedRes.Succeeded || updatedRes.Result is null)
+            if (!updatedRes.Succeeded || updatedRes.Result is null)
             {
                 return AppResult<OteTicketDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
             }

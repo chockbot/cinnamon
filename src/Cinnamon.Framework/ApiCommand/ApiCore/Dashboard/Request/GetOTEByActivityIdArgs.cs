@@ -11,4 +11,5 @@ public class GetOTEByActivityIdArgs
     public string? SearchValue { get; set; }
     [Required]
     public int DateId {get; set;}
+    public int? SearchBy { get; set; }
 }

@@ -8,6 +8,7 @@ public class GetByActivityIdArgs
     public string? SearchValue { get; set; }
     [Required]
     public int DateId {get; set;}
+    public int? SearchBy { get; set; }
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
     public bool? IncludeCustomer {get; set;}
