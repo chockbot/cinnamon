@@ -31,15 +31,6 @@
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
-<div>
-    <h1>This is Typeform section</h1>
-    <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100" 
-        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet" 
-        style="all:unset;font-family:Helvetica,Arial,sans-serif;display:inline-block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background-color:#0445AF;color:#fff;font-size:20px;border-radius:25px;padding:0 33px;font-weight:bold;height:50px;cursor:pointer;line-height:50px;text-align:center;margin:0;text-decoration:none;">
-        Message Me
-    </button>
-</div>
-
 @if (Model.Customer != null)
 {
     @if(activity is not null && activity.Images.Count > 0)
@@ -366,7 +357,7 @@
                         <p class="fw-bold mb-3 detail-label">About</p>
                         @if (String.IsNullOrEmpty(activity.Description))
                         {
-                            <label class="fw-bold mb-3 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
+                            <label class="fw-bold mb-3 detail-label m-font-16" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
                             <p>
                                 @activity.Description
                             </p>
@@ -538,7 +529,7 @@
                                 {
                                     <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
                                         <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
-                                            <div class="w-100 p-2">@addOn.Name</div>
+                                            <div class="w-100 p-2 m-font-16">@addOn.Name</div>
                                             <div @onclick = "() =>SubtractAddOns(addOn)"
                                                  class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
                                                 -
@@ -660,7 +651,7 @@
                             }
                             <p class="fw-bold mb-3 detail-label">Important Information</p>
                             <p class="important-question">What will happen after I purchase?</p>
-                            <ol class="important-answer">
+                            <ol class="important-answer m-font-16">
                                 <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
                                 <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
                                 <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
@@ -724,19 +715,19 @@
                         <div class="bring-text" style="overflow-wrap:break-word;">
                             <label class="fw-bold mb-3 detail-label">Experience by</label>
                             <Row class="mx-0">
-                                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" class="m-bg-white-200">
+                                <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop">
                                     <div class="d-flex">
                                         <div class="maker-pic">
                                             <img class="rounded-2 rounded-circle mb-3" src="@customerDetail.ProfilePath" />
                                         </div>
                                         <div class="mb-2 ms-3 maker-profile-details">
-                                            <span class="text-capitalize maker-name">@customerDetail.FirstName @customerDetail.LastName</span>
-                                            <span class="xp-by">Joined 2022</span>
+                                            <span class="text-capitalize maker-name m-font-16">@customerDetail.FirstName @customerDetail.LastName</span>
+                                            <span class="xp-by m-font-16">Joined @customerDetail.DateJoined.Year</span>
                                         </div>
                                     </div>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="m-bg-white-200">
-                                    <div class="provider-details d-flex">
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <div class="provider-details">
                                         <div class="review-section">
                                             <img src="images/star-tag-small.png" class="star-icon">
                                             <span class="details-text">@activityReviews.Count Reviews</span>
@@ -754,11 +745,11 @@
                                         </div>
                                     </div>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop" class="m-bg-white-200">
+                                <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop">
                                     <div>
                                         @if (!string.IsNullOrEmpty(customerDetail.About))
                                         {
-                                            <p class="provider-about-me mt-3">
+                                            <p class="provider-about-me mt-3 m-font-16">
                                                 @if (showFullAbout)
                                                 {
                                                     @customerDetail.About
@@ -788,10 +779,10 @@
 
                                 </div>
                                 <div>
-                                    <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100"
-                                            data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet">
-                                        Message Me
-                                    </button>
+                                        <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100"
+                                        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet">
+                                            Message Me
+                                        </button>
                                 </div>
                                 </Column>
                             </Row>
@@ -1316,7 +1307,8 @@
                         IsVerified = args.IsVerified,
                         IsOG = args.IsOG,
                         IsOfficial = args.IsOfficial,
-                        About = args.About
+                        About = args.About,
+                        DateJoined = args.DateJoined
                     };
             }
             Model = new DetailActivityModel
@@ -1410,10 +1402,8 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
-
+            await Task.Delay(3000);
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.showTypeForm");
         }
         else
         {
