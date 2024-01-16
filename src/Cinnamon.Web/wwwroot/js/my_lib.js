@@ -829,17 +829,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
-/***/ "./node_modules/axios/lib/adapters/index.js":
-/*!**************************************************!*\
-  !*** ./node_modules/axios/lib/adapters/index.js ***!
-  \**************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ \"./node_modules/axios/lib/utils.js\");\n/* harmony import */ var _http_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./xhr.js */ \"./node_modules/axios/lib/adapters/xhr.js\");\n\n\n\n\nconst adapters = {\n  http: _http_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  xhr: _http_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]\n}\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  getAdapter: (nameOrAdapter) => {\n    if(_utils_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"].isString(nameOrAdapter)){\n      const adapter = adapters[nameOrAdapter];\n\n      if (!nameOrAdapter) {\n        throw Error(\n          _utils_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"].hasOwnProp(nameOrAdapter) ?\n            `Adapter '${nameOrAdapter}' is not available in the build` :\n            `Can not resolve adapter '${nameOrAdapter}'`\n        );\n      }\n\n      return adapter\n    }\n\n    if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"].isFunction(nameOrAdapter)) {\n      throw new TypeError('adapter is not a function');\n    }\n\n    return nameOrAdapter;\n  },\n  adapters\n});\n\n\n//# sourceURL=webpack://MyLib/./node_modules/axios/lib/adapters/index.js?");
-
-/***/ }),
-
 /***/ "./node_modules/axios/lib/adapters/xhr.js":
 /*!************************************************!*\
   !*** ./node_modules/axios/lib/adapters/xhr.js ***!
@@ -1294,7 +1283,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
+/******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
@@ -1357,11 +1346,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/nonce */
-/******/ 	(() => {
-/******/ 		__webpack_require__.nc = undefined;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
