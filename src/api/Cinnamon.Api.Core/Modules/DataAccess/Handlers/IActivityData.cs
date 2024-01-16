@@ -29,4 +29,5 @@ public interface IActivityData
     Task<AppResult<CustomerOteResult>> CustomerOte(int customerId);
     Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args);
     Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args);
+    Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args);
 }

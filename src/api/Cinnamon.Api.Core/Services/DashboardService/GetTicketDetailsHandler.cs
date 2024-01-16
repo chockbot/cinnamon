@@ -32,7 +32,8 @@ public class GetTicketDetailsHandler : IGetTicketDetailsHandler
         {
             var result = await oteTicketData.GetTicketDetails(new Framework.ApiCommand.ApiData.OteTicket.Request.GetTicketDetailsArgs
             {
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {

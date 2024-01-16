@@ -53,6 +53,7 @@ public class PopularActivitiesHandler : IPopularActivitiesHandler
                         StudentCount             = a.StudentCount,
                         Title                    = a.Title,
                         ExperienceCreationTypeId = a.ExperienceCreationTypeId,
+                        PinnedLocation           = a.PinnedLocation
                     };
                 })
             }, "Popular activities successfully get");

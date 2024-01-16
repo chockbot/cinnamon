@@ -15,10 +15,11 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IOteDateData oteDateData;
 
     public OteTicketDetailsHandler(ITokenGeneratedData tokenGeneratedData, IPurchaseOrderData purchaseOrderData,
         IOteTicketData oteTicketData, IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
-        IJsonSerializationProvider jsonSerializationProvider)
+        IJsonSerializationProvider jsonSerializationProvider, IOteDateData oteDateData)
     {
         this.tokenGeneratedData = tokenGeneratedData;
         this.purchaseOrderData = purchaseOrderData;
@@ -26,6 +27,7 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.oteDateData = oteDateData;
     }
     
     public AppResult<OteTicketDetailsResult> Execute(OteTicketDetailsArgs args)
@@ -101,10 +103,23 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
             }
             var tickets = ticketsRes.Result.Result;
 
+            // get first ticket for ote date reference
+            var firstTicket = tickets.FirstOrDefault();
+            if(firstTicket is null)
+            {
+                return AppResult<OteTicketDetailsResult>.CreateFailed(new ApplicationException("An error occured. Please contact support."), "An error occured. Please contact support.");
+            }
+            var oteDateRes = await oteDateData.GetOteDate(firstTicket.OteDateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
+            {
+                return AppResult<OteTicketDetailsResult>.CreateFailed(new ApplicationException(oteDateRes.Error?.Description), oteDateRes.Message);
+            }
+            var oteDate = oteDateRes.Result.Result;
+
             var imageSrc = oteActivity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).First().ImageLocation;
-            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}";
+            var location = oteActivity.ExperienceTypeId == 2 ? "Online" : string.IsNullOrEmpty(oteActivity.PinnedLocation) ? $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}" : oteActivity.PinnedLocation;
             var result = new OteTicketDetailsResult {
-                EventDate = oteActivity.ScheduleFrom,
+                EventDate = oteDate.DateStart,
                 EventLocation = location,
                 EventName = oteActivity.EventName,
                 ImageSrc = imageSrc,

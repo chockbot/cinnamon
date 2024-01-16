@@ -240,12 +240,15 @@
 
     private async Task SelectedRegionChanged(string code)
     {
-        var region = regions[code];
-        if(region is not null)
+        if(regions.ContainsKey(code))
         {
-            model.Region.Code = region.Code;
-            model.Region.Name = region.Name;
-            await LoadCities();
+            var region = regions[code];
+            if(region is not null)
+            {
+                model.Region.Code = region.Code;
+                model.Region.Name = region.Name;
+                await LoadCities();
+            }
         }
     }
 
@@ -286,14 +289,17 @@
 
     private async Task SelectedCityChanged(string code)
     {
-        var city = cities[code];
-        if(city is not null)
+        if(cities.ContainsKey(code))
         {
-            model.City.Code = city.Code;
-            model.City.Name = city.Name;
-            model.City.IsCity = city.IsCity;
-            model.City.IsMunicipality = city.IsMunicipality;
-            await LoadBarangays();
+            var city = cities[code];
+            if(city is not null)
+            {
+                model.City.Code = city.Code;
+                model.City.Name = city.Name;
+                model.City.IsCity = city.IsCity;
+                model.City.IsMunicipality = city.IsMunicipality;
+                await LoadBarangays();
+            }
         }
     }
 
@@ -367,11 +373,14 @@
 
     private Task SelectedBarangayChanged(string code)
     {
-        var barangay = barangays[code];
-        if(barangay is not null)
+        if(barangays.ContainsKey(code))
         {
-            model.Barangay.Code = barangay.Code;
-            model.Barangay.Name = barangay.Name;
+            var barangay = barangays[code];
+            if(barangay is not null)
+            {
+                model.Barangay.Code = barangay.Code;
+                model.Barangay.Name = barangay.Name;
+            }
         }
         return Task.CompletedTask;
     }

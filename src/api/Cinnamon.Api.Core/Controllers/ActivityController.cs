@@ -9,6 +9,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 
 namespace Cinnamon.Api.Core.Controllers;
@@ -70,6 +71,7 @@ public class ActivityController : ControllerBase
     private readonly IOteVerificationHandler oteVerificationHandler;
     private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
     private readonly IDeleteAddOnHandler deleteAddOnHandler;
+    private readonly IGetOtePerDayHandler getOtePerDayHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -91,7 +93,8 @@ public class ActivityController : ControllerBase
         IGetActivityScheduleTimesHandler getActivityScheduleTimesHandler, ICreateOngoingActivityScheduleHandler createOngoingActivityScheduleHandler,
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
-        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, IDeleteAddOnHandler deleteAddOnHandler)
+        ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
+        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler)
     {
         _logger = logger;
 
@@ -144,6 +147,7 @@ public class ActivityController : ControllerBase
         this.oteVerificationHandler = oteVerificationHandler;
         this.deleteAddOnsHandler = deleteAddOnsHandler;
         this.deleteAddOnHandler = deleteAddOnHandler;
+        this.getOtePerDayHandler = getOtePerDayHandler;
     }
 
     [Route("CreateActivity")]
@@ -626,6 +630,7 @@ public class ActivityController : ControllerBase
                         AdditionalRequirements = a.AdditionalRequirements,
                         Address1 = a.Address1,
                         Address2 = a.Address2,
+                        PinnedLocation = a.PinnedLocation,
                         CanAdultsJoin = a.CanAdultsJoin,
                         City = a.City,
                         CustomerBringWithThem = a.CustomerBringWithThem,
@@ -730,6 +735,7 @@ public class ActivityController : ControllerBase
                         RegionName= a.RegionName,
                         Barangay= a.Barangay,
                         BarangayName = a.BarangayName,
+                        PinnedLocation = a.PinnedLocation,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -834,6 +840,7 @@ public class ActivityController : ControllerBase
                         CityName = a.CityName,
                         Region = a.Region,
                         RegionName = a.RegionName,
+                        PinnedLocation = a.PinnedLocation,
                         Barangay = a.Barangay,
                         BarangayName = a.BarangayName,
                         CustomerBringWithThem = a.CustomerBringWithThem,
@@ -2467,22 +2474,22 @@ public class ActivityController : ControllerBase
                     {
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity
                         {
-                            CityName = a.CityName,
-                            ExperienceTypeId = a.ExperienceTypeId,
-                            Handler = a.Handler,
-                            Id = a.Id,
-                            ImageSrc = a.ImageSrc,
-                            IsNew = a.IsNew,
-                            MakerId = a.MakerId,
-                            OngoingStudentCount = a.OngoingStudentCount,
-                            Price = a.Price,
-                            Rating = a.Rating,
-                            RegionName = a.RegionName,
-                            ReviewCount = a.ReviewCount,
-                            StudentCount = a.StudentCount,
-                            Title = a.Title,
+                            CityName                 = a.CityName,
+                            ExperienceTypeId         = a.ExperienceTypeId,
+                            Handler                  = a.Handler,
+                            Id                       = a.Id,
+                            ImageSrc                 = a.ImageSrc,
+                            IsNew                    = a.IsNew,
+                            MakerId                  = a.MakerId,
+                            OngoingStudentCount      = a.OngoingStudentCount,
+                            Price                    = a.Price,
+                            Rating                   = a.Rating,
+                            RegionName               = a.RegionName,
+                            ReviewCount              = a.ReviewCount,
+                            StudentCount             = a.StudentCount,
+                            Title                    = a.Title,
                             ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                            PinnedLocation = a.PinnedLocation,
+                            PinnedLocation           = a.PinnedLocation,
                         };
                     })
                 }
@@ -2596,7 +2603,16 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+                    
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2867,6 +2883,47 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteAddOnResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetOtePerDay")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OtePerDayResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOtePerDay()
+    {
+        try
+        {
+            var result = await getOtePerDayHandler.ExecuteAsync(new ());
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OtePerDayResult
+            {
+                IsSuccess = true,
+                Result = result.Result.OtePerDays.Select(e => {
+                    return new CoreDto.Activity.OtePerDayDTO {
+                        ActivityId = e.ActivityId,
+                        CityName = e.CityName,
+                        Date = e.Date,
+                        DateEnd = e.DateEnd,
+                        DateId = e.DateId,
+                        DateStart = e.DateStart,
+                        Description = e.Description,
+                        EventImage = e.EventImage,
+                        ExperienceTypeId = e.ExperienceTypeId,
+                        Handler = e.Handler,
+                        PinnedLocation = e.PinnedLocation,
+                        RegionName = e.RegionName,
+                        Title = e.Title
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
