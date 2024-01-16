@@ -9,7 +9,7 @@ using System;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
-public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket 
+public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
 {
     private readonly ApplicationContext applicationContext;
 
@@ -19,7 +19,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, int searchBy ,int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, int searchBy, int? count, int? skip,
         bool includeCustomer = false, bool includeImageData = false)
     {
         try
@@ -45,16 +45,17 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                     default:
                         break;
                 }
-                
+
             }
             if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
             }
 
-            if(!includeImageData)
+            if (!includeImageData)
             {
-                query = query.Select(t => new OteTicket {
+                query = query.Select(t => new OteTicket
+                {
                     ActivityId = t.ActivityId,
                     Amount = t.Amount,
                     CustomerId = t.CustomerId,
@@ -84,14 +85,15 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         {
             var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
 
-            if(includeCustomer)
+            if (includeCustomer)
             {
                 query = query.Include(t => t.Customer);
             }
 
-            if(!includeImageData)
+            if (!includeImageData)
             {
-                query = query.Select(t => new OteTicket {
+                query = query.Select(t => new OteTicket
+                {
                     ActivityId = t.ActivityId,
                     Amount = t.Amount,
                     CustomerId = t.CustomerId,
@@ -141,16 +143,16 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                         //Get Activity
                         listResult = dt.AsEnumerable().Select(item => new OteScheduleDTO
                         {
-                            ActivityId            = Convert.ToInt32(item["ActivityId"]),
-                            From                  = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-                            To                    = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-                            Recurrences           = item["Recurrences"].ToString() ?? string.Empty, 
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+                            To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+                            Recurrences = item["Recurrences"].ToString() ?? string.Empty,
                             OteSchedulePricingDTO = new OteSchedulePricingDTO()
                             {
-                                Name        = item["Name"].ToString() ?? string.Empty,
+                                Name = item["Name"].ToString() ?? string.Empty,
                                 Description = item["Description"].ToString() ?? string.Empty,
-                                MaxSlots    = Convert.ToInt32(item["MaxSlots"]),
-                                Sold        = Convert.ToInt32(item["TicketSold"])
+                                MaxSlots = Convert.ToInt32(item["MaxSlots"]),
+                                Sold = Convert.ToInt32(item["TicketSold"])
                             }
                         }).ToList();
                     }
@@ -161,43 +163,6 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(ex, "An error occured when trying to get ticket details");
-        }
-    }
-
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageData = false)
-    {
-        try
-        {
-            var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
-
-            if(includeCustomer)
-            {
-                query = query.Include(t => t.Customer);
-            }
-
-            if(!includeImageData)
-            {
-                query = query.Select(t => new OteTicket {
-                    ActivityId = t.ActivityId,
-                    Amount = t.Amount,
-                    CustomerId = t.CustomerId,
-                    Id = t.Id,
-                    OteScheduleId = t.OteScheduleId,
-                    OteSchedulePricingId = t.OteSchedulePricingId,
-                    PurchaseOrderId = t.PurchaseOrderId,
-                    QRCode = t.QRCode,
-                    Status = t.Status,
-                    Title = t.Title,
-                    Customer = t.Customer
-                });
-            }
-
-            var result = await query.ToListAsync();
-            return AppResult<IEnumerable<Entities.OteTicket>>.CreateSucceeded(result, "Successfully get tickets by activity id.");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<Entities.OteTicket>>.CreateFailed(ex, "An error occured when getting tickets.");
         }
     }
 }
