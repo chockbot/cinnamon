@@ -25,7 +25,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
     <link href="_content/Blazorise.LoadingIndicator/blazorise.loadingindicator.css" rel="stylesheet" />
     <link href="_content/Blazorise.Snackbar/blazorise.snackbar.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//embed.typeform.com/next/css/popup.css" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
     @if(config?.Environment?.ToLower() != "production")
     {
@@ -65,7 +64,9 @@
         /></noscript>
         <!-- End Meta Pixel Code -->
     }
-    <script src="https://embed.typeform.com/embed.js"></script>
+    
+    <link rel="stylesheet" href="//embed.typeform.com/next/css/popup.css" />
+    <script src="https://embed.typeform.com/next/embed.js"></script>
 </head>
 <body>
     @RenderBody()
@@ -110,7 +111,6 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <script src="https://embed.typeform.com/embed.js"></script>
     @RenderSection("Scripts", false)
     @if (!Context.Request.Path.StartsWithSegments("/admin"))
     {
