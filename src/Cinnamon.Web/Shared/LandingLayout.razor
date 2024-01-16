@@ -16,15 +16,15 @@
                 @if(isLogin)
                 {
                     <p class="cinnamon-link" @onclick="NavigateToExplore">Explore</p>
-                    <p class="cinnamon-link" @onclick="NavigateToAbout">About</p>
-                    <p class="cinnamon-link" @onclick="NavigateToBlogs">Blogs</p>
-                    <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/" target="_blank">About</a>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/" target="_blank">Blogs</a>
+                    <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
                 }
                 else
                 {
-                    <p class="cinnamon-link" @onclick="NavigateToAbout">About</p>
-                    <p class="cinnamon-link" @onclick="NavigateToBlogs">Blogs</p>
-                    <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/" target="_blank">About</a>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/" target="_blank">Blogs</a>
+                    <p class="cinnamon-link" @onclick="NavigateToHelp" target="_blank">Help</p>
                     <button class="btn-login" @onclick="() => signinModal.Show()">
                         Login | Signup
                     </button>
@@ -104,11 +104,11 @@
     }
     private void NavigateToAbout()
     {
-        navigationManager.NavigateTo("https://cinnamon.ph/blog/cinnamon/");
+        navigationManager.NavigateTo("https://cinnamon.ph/blog/cinnamon/", forceLoad: true);
     }
     private void NavigateToBlogs()
     {
-        navigationManager.NavigateTo("https://cinnamon.ph/blog/");
+        navigationManager.NavigateTo("https://cinnamon.ph/blog/", forceLoad: true);
     }
     private void NavigateToExplore()
     {
