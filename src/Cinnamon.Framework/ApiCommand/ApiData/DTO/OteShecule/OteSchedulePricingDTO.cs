@@ -11,6 +11,5 @@ public class OteSchedulePricingDTO
     public bool IsAbsorbFees { get; set; }
     public int Sold { get; set; }
     public int Available { get; set; }
-    public int TicketSold {get; set;}
     public int OteDateId {get; set;}
 }

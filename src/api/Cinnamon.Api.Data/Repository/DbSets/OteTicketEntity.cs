@@ -5,6 +5,7 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using System;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -18,7 +19,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByActivityId(int activityId, int dateId, string searchValue, int searchBy ,int? count, int? skip, 
         bool includeCustomer = false, bool includeImageData = false)
     {
         try
@@ -29,7 +30,22 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             var query = applicationContext.OteTickets.Where(t => t.ActivityId == activityId && t.OteDateId == dateId);
             if (!string.IsNullOrEmpty(searchValue))
             {
-                query = query.Where(t => EF.Functions.Like((t.Customer.FirstName +" "+ t.Customer.LastName).ToLower(), $"%{searchValue.ToLower()}%"));
+                switch (searchBy)
+                {
+                    case 1:
+                        int ticketId = int.Parse(searchValue);
+                        query = query.Where(t => t.Id == ticketId);
+                        break;
+                    case 2:
+                        query = query.Where(t => EF.Functions.Like((t.Customer.FirstName + " " + t.Customer.LastName).ToLower(), $"%{searchValue.ToLower()}%"));
+                        break;
+                    case 3:
+                        query = query.Where(t => EF.Functions.Like((t.Customer.Email).ToLower(), $"%{searchValue.ToLower()}%"));
+                        break;
+                    default:
+                        break;
+                }
+                
             }
             if (includeCustomer)
             {
@@ -61,6 +77,44 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
             return AppResult<IEnumerable<Entities.OteTicket>>.CreateFailed(ex, "An error occured when getting tickets.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<Entities.OteTicket>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageData = false)
+    {
+        try
+        {
+            var query = applicationContext.OteTickets.Where(t => t.PurchaseOrderId == purchaseOrderId);
+
+            if(includeCustomer)
+            {
+                query = query.Include(t => t.Customer);
+            }
+
+            if(!includeImageData)
+            {
+                query = query.Select(t => new OteTicket {
+                    ActivityId = t.ActivityId,
+                    Amount = t.Amount,
+                    CustomerId = t.CustomerId,
+                    Id = t.Id,
+                    OteScheduleId = t.OteScheduleId,
+                    OteSchedulePricingId = t.OteSchedulePricingId,
+                    PurchaseOrderId = t.PurchaseOrderId,
+                    QRCode = t.QRCode,
+                    Status = t.Status,
+                    Title = t.Title,
+                    Customer = t.Customer
+                });
+            }
+
+            var result = await query.ToListAsync();
+            return AppResult<IEnumerable<Entities.OteTicket>>.CreateSucceeded(result, "Successfully get tickets by activity id.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<Entities.OteTicket>>.CreateFailed(ex, "An error occured when getting tickets.");
+        }
+    }
+
     public async Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId, int dateId)
     {
         try

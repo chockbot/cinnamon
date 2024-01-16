@@ -52,7 +52,7 @@ public class OteTicketController : ControllerBase
     {
         try
         {
-            var result = await oteTicketRepository.GetByActivityId(activityId, args.DateId, args.SearchValue ?? string.Empty, 
+            var result = await oteTicketRepository.GetByActivityId(activityId, args.DateId, args.SearchValue ?? string.Empty, args.SearchBy ?? 0,
                 args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
             
             if(!result.Succeeded || result.Result is null)
@@ -61,7 +61,7 @@ public class OteTicketController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = await oteTicketRepository.GetByActivityId(activityId, args.DateId, args.SearchValue ?? string.Empty, 
+            var all = await oteTicketRepository.GetByActivityId(activityId, args.DateId, args.SearchValue ?? string.Empty, args.SearchBy ?? 0,
                 null , null, args.IncludeCustomer ?? false, args.IncludeImageAsResult ?? false);
             if (!all.Succeeded || all.Result == null)
             {
