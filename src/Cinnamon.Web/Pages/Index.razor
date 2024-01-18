@@ -49,13 +49,15 @@
 
 <div class="wrapper search_section">
     <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
-    <div class="search_bar">
-        <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
-        <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" placeholder="Search for an activity.." @oninput="OnChageInput">
-        <button class="explore_button" @onclick="() =>SearchToExplorePage()">
-            @buttonLabel
-        </button>
-    </div>
+    <form class="search-bar" @onsubmit=SearchToExplorePage>
+        <div class="search_bar">
+            <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
+            <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" placeholder="Search for an activity.." @oninput="OnChageInput" @bind-value="searchValue">
+            <button class="explore_button" @onclick="() =>SearchToExplorePage()">
+                @buttonLabel
+            </button>
+        </div>
+    </form>
     <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
 </div>
 

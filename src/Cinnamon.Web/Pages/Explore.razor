@@ -759,10 +759,7 @@
     {
         LoadRedirectUrls();
         showOverlayPopularActivities = true;
-
-        await LoadSigninUser();
-        await GetFavorites();
-
+        //Search in Landing Page
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities(null);
@@ -773,7 +770,8 @@
             searchValue = landingSearch;
             await Search();
         }
-
+        await LoadSigninUser();
+        await GetFavorites();
         showOverlayPopularActivities = false;
 
         // get experience categories
@@ -1245,6 +1243,7 @@
         pageIndex = 1;
         itemsPerPage = 20;
         await FetchActivities(false);
+        await FetchPopularActivities(null);
     }
 
     public async Task Filter(int id, string type)
