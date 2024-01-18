@@ -170,7 +170,7 @@
                         <h3 class="font-24 font-weight-700 color-black-100 m-font-20">Date & Time</h3>
                         <div class="flex-column flex-md-row select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates" 
-                                ViewOnly StrikeOutNotSelected OnSelectedDate="d => selectedDate = d" />
+                                ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
                             <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="mt-3 mt-md-0 font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
                         </div>
                         <div class="mt-4 border-radius-10 border-1-solid border-color-grey-200 overflow-hidden">
@@ -961,6 +961,12 @@
             }
         }
         return Task.CompletedTask;
+    }
+
+    private async Task OnSelectedDateChanged(DateTime date)
+    {
+        selectedDate = date;
+        await ViewAvailableDates();
     }
 
     private string EventDurationString 
