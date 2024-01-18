@@ -40,7 +40,7 @@ public class OteFindByHandler : IOteFindByHandler
                 IncludeDescription = args.IncludeDescription,
                 IncludePricing = args.IncludePricing,
                 IncludeSchedule = args.IncludeSchedule,
-                IncludeImages = args.IncludeImages
+                IncludeImages = args.IncludeImages,
             }, args.Handler);
             if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
             {
