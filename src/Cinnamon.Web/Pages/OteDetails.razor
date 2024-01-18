@@ -970,7 +970,7 @@
     {
         get 
         {
-            return TimeSpan.FromDays(Duration.TotalDays).Humanize();
+            return TimeSpan.FromDays(Duration.TotalDays).Humanize(2, countEmptyUnits: true, collectionSeparator: " and ");
         }
     }
 
