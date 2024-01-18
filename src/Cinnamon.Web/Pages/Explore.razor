@@ -358,7 +358,7 @@
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card activities-card">
                                                             <div class="card-img img-fluid position-relative">
-                                                                <a class="button" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId, act.StudentCount)" style="text-decoration:none;" target="_blank">
+                                                                <a class="button" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" style="text-decoration:none;" target="_blank">
                                                                     <img src="@act.ImageSrc" alt="banner image" class="img-zoom-effect" />
                                                                 </a>
                                                                 @if (act.OngoingStudentCount > 0)
@@ -554,7 +554,7 @@
                                     @if (act.Images.Count > 0)
                                     {
                                         <div class="card-img img-fluid position-relative">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationType, act.NumberOfTickets)" target="_blank">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationType)" target="_blank">
                                                 <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                             </a>
                                             @if (act.OngoingStudents > 0)
@@ -1525,12 +1525,11 @@
 
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
-    private string DetailsUrl(string handler, int xpCreationType, int ticket) 
+    private string DetailsUrl(string handler, int xpCreationType) 
     {
         string url = string.Empty;
-        string ticketCount = ticket.ToString();
         if(xpCreationType == 3) {
-            url = $"explore/ote/{handler}/{ticketCount}";
+            url = $"explore/ote/{handler}";
         }
         else if (xpCreationType == 1){
             url = $"explore/{handler}";
