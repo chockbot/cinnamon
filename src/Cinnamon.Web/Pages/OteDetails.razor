@@ -1,4 +1,4 @@
-@page "/explore/ote/{Handler}/{TicketCount}"
+@page "/explore/ote/{Handler}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using AutoMapper;
@@ -301,7 +301,7 @@
                                 <div class="provider-details d-flex">
                                 <div class="review-section">
                                     <img src="images/star-tag-small.png" class="star-icon">
-                                    <span class="details-text">@TicketCount booked</span>
+                                    <span class="details-text">@activity.Sold booked</span>
                                 </div>
                                 @if (provider.IsVerified == 2)
                                 {
@@ -543,10 +543,6 @@
 {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
-
-    [Parameter]
-    public string TicketCount { get; set; } = string.Empty;
-
     private OteActivity? activity;
     private CustomerProfile? provider;
     private IJSObjectReference jsClipboard;
@@ -662,7 +658,8 @@
 
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
             activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
-            
+            activity.Sold     = activity.Pricings.Sum(a => a.TicketSold);
+
             selectedDate = SelectedDates.FirstOrDefault();
 
             ViewAvailableDates();
