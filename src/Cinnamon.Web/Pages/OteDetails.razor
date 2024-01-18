@@ -158,7 +158,9 @@
 
                 <section id="ote-description">
                     <h3 class="font-24 font-weight-700 color-black-100 mb-0 m-font-20">About </h3>
-                    <p class="text-justify font-18 color-grey-100 mt-2 mt-md-4 m-font-16">@activity.Description</p>
+                    <p class="text-justify font-18 color-grey-100 mt-2 mt-md-4 m-font-16">
+                        @((MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                    </p>
                 </section>
 
                 @if(!activity.IsComingSoon)
