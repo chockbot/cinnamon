@@ -5,6 +5,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.Extensions.DateTimeExtension;
+using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -14,6 +15,7 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IGenerateActivityHandler generateActivityHandler;
     private readonly ICustomerData customerData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IGenerateActivityHandler generateActivityHandler, ICustomerData customerData)
@@ -22,6 +24,10 @@ public class OteCreateHandler : IOteCreateHandler
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.customerData = customerData;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<OteCreateResult> Execute(OteCreateArgs args)
@@ -159,7 +165,7 @@ public class OteCreateHandler : IOteCreateHandler
                     CityName                 = activity.CityName ?? string.Empty,
                     CityNumber               = activity.CityNumber ?? string.Empty,
                     CustomerId               = currentUser.Result.Id,
-                    Description              = activity.Description,
+                    Description              = htmlSanitizer.Sanitize(activity.Description),
                     EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
                     ExperienceTypeId         = activity.ExperienceTypeId,

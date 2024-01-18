@@ -64,7 +64,7 @@ public class PaymentVerifyCallback
         [Required]
         public string id { get; set; }
         public object? items { get; set; }
-        public int? amount { get; set; }
+        public decimal? amount { get; set; }
         [Required]
         public string status { get; set; }
         public string? country { get; set; }
