@@ -93,7 +93,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 PostalCode              = args.PostalCode,
                 CustomerBringWithThem   = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 CustomerId              = id,
-                Description             = args.Description,
+                Description             = htmlSanitizer.Sanitize(args.Description),
                 District                = args.District,
                 ExperienceCategoryId    = args.ExperienceCategoryId,
                 ExperienceTypeId        = args.ExperienceTypeId,

@@ -156,7 +156,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Barangay = args.Barangay,
                 PostalCode = args.PostalCode,
                 CustomerBringWithThem = args.CustomerBringWithThem == null ? args.CustomerBringWithThem : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
-                Description = args.Description,
+                Description = args.Description is not null ? htmlSanitizer.Sanitize(args.Description) : args.Description,
                 District = args.District,
                 ExperienceCategoryId = args.ExperienceCategoryId,
                 ExperienceTypeId = args.ExperienceTypeId,
