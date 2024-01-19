@@ -440,7 +440,9 @@
                     MonthRepeat = schedule.MonthRepeat,
                     MonthSelection = schedule.MonthSelection,
                     OnDayDate = schedule.OnDayDate,
-                    WeekString = schedule.WeekString
+                    WeekString = schedule.WeekString,
+                    EventDurationCount = schedule.EventDurationCount,
+                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {

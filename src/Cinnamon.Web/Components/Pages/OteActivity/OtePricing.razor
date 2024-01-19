@@ -752,6 +752,8 @@
             MonthSelection = isMonthly ? modelSchedule.MonthSelection : null,
             OnDayDate = isMonthly ? modelSchedule.OnDayDate : null,
             WeekString = weekString,
+            EventDurationCount = modelSchedule.EventDurationCount,
+            EventDurationTimeUnit = modelSchedule.EventDurationTimeUnit,
 
             ItemPrices = modelPricingList.Pricings.Select(p => {
                 return new ModelData.ItemPrice {
@@ -788,6 +790,9 @@
         modelSchedule.MonthRepeat = data.MonthRepeat;
         modelSchedule.MonthSelection = data.MonthSelection ?? 1;
         modelSchedule.OnDayDate = data.OnDayDate ?? 1;
+        modelSchedule.EventDurationCount = data.EventDurationCount;
+        modelSchedule.EventDurationTimeUnit = data.EventDurationTimeUnit;
+        modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
 
         RecurrenceChanged(data.Recurrences);
 
@@ -982,6 +987,8 @@
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
         public string? WeekString {get; set;}
+        public int EventDurationCount {get; set;}
+        public string EventDurationTimeUnit {get; set;}
 
         public class ItemPrice 
         {
