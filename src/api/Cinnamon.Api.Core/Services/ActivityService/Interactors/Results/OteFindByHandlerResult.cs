@@ -71,6 +71,8 @@ public class OteFindByHandlerResult
         public int RepeatEvery {get; set;}
         public string SelectedDays {get; set;}
         public string ExtraOptions {get; set;}
+        public int EventDurationCount {get; set;}
+        public string EventDurationTimeUnit {get; set;}
         public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
     }
 
