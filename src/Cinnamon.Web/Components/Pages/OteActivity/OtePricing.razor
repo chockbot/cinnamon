@@ -34,17 +34,19 @@
                                 Event Duration
                             </label>
                             <Row HorizontalGutter="15">
-                                <Column ColumnSize="ColumnSize.Is4">
-                                    <Field>
-                                        <FieldBody>
-                                            <NumericPicker class="text-center border-radius-10 m-border-radius-5 px-2 m-font-16" 
-                                                Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0"
-                                                TValue="int" @bind-Value="modelSchedule.EventDurationCount" >
-                                            </NumericPicker>
-                                        </FieldBody>
-                                    </Field>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Validation>
+                                        <Field>
+                                            <FieldBody>
+                                                <NumericPicker class="text-center border-radius-10 m-border-radius-5 px-2 m-font-16" 
+                                                    Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0"
+                                                    TValue="int" @bind-Value="modelSchedule.EventDurationCount" >
+                                                </NumericPicker>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is8">
+                                <Column ColumnSize="ColumnSize.Is6">
                                     <Field>
                                         <FieldBody>
                                             <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
@@ -60,14 +62,16 @@
                             </Row>
                         </div>
                         <div class="box-width">
-                            <Field>
-                                <FieldLabel class="text-capitalize font-20 color-black-100 m-font-18">
-                                    Start Time
-                                </FieldLabel>
-                                <FieldBody>
-                                    <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.EventDurationTimeStart" />
-                                </FieldBody>
-                            </Field>
+                            <Validation>
+                                <Field>
+                                    <FieldLabel class="text-capitalize font-20 color-black-100 m-font-18">
+                                        Start Time
+                                    </FieldLabel>
+                                    <FieldBody>
+                                        <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.EventDurationTimeStart" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
                         </div>
                     </div>
                 </div>
