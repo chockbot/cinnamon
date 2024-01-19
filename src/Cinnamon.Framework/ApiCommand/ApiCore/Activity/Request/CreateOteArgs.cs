@@ -71,6 +71,12 @@ public class CreateOteArgs
         public string? MonthRepeat {get; set;}
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
+
+        [Range(1, int.MaxValue)]
+        public int EventDurationCount {get; set;}
+
+        [Required]
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 

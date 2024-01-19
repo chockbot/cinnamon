@@ -57,6 +57,9 @@ public class OteCreateArgs : IInteractor
         public string? MonthRepeat {get; set;}
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
+
+        public int EventDurationCount {get; set;}
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 

@@ -2613,6 +2613,9 @@ public class ActivityController : ControllerBase
                     MonthSelection = activity.MonthSelection,
                     OnDayDate = activity.OnDayDate,
                     WeekString = activity.WeekString,
+
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {

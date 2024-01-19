@@ -62,6 +62,13 @@ public class OteCreateHandler : IOteCreateHandler
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(generateHandlerRes.Message), generateHandlerRes.Message);
             }
 
+            // validate accepted event duration unit time
+            string[] timeUnits = {"hrs", "days", "weeks", "months"};
+            if(!timeUnits.Any(t => t == args.Activity.EventDurationTimeUnit))
+            {
+                return AppResult<OteCreateResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
+            }
+
             // validate and check dateStart and dateEnd for recurreing schedules
             if(args.Activity.Recurrence.ToLower() != "do-not-repeat")
             {
@@ -179,7 +186,9 @@ public class OteCreateHandler : IOteCreateHandler
                     RecurrenceDateStart = args.Activity.DurationStart ?? args.Activity.ScheduleFrom,
                     RepeatEvery = args.Activity.DurationEvery ?? 0,
                     SelectedDays = args.Activity.WeekString ?? String.Empty,
-                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty
+                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty,
+                    EventDurationCount = args.Activity.EventDurationCount,
+                    EventDurationTimeUnit = args.Activity.EventDurationTimeUnit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
