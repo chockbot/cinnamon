@@ -83,6 +83,12 @@ public class CreateOteActivityArgs
         public int RepeatEvery {get; set;}
 
         public string SelectedDays {get; set;} = string.Empty;
+
+        [Required]
+        public int EventDurationCount {get; set;}
+
+        [Required]
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 

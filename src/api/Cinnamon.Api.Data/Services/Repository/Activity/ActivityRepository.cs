@@ -1685,7 +1685,7 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates)
+        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit)
     {
         try
         {
@@ -1731,7 +1731,9 @@ public class ActivityRepository : IActivityRepository
                 RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
                 RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
                 RepeatEvery = repeatEvery,
-                SelectedDays = selectedDays
+                SelectedDays = selectedDays,
+                EventDurationCount = eventDurationCount,
+                EventDurationTimeUnit = eventDurationTimeUnit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
