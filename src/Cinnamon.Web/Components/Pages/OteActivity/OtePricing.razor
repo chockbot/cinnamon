@@ -285,6 +285,29 @@
                     Add date override
                 </Button>
             </div>
+            <Divider class="m-0" />
+            <div>
+                <Table FullWidth>
+                    <TableBody>
+                        @foreach (var item in dateOverrides)
+                        {
+                            <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
+                                <TableRowCell>
+                                    <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
+                                </TableRowCell>
+                                <TableHeaderCell>
+                                    <Button Clicked="() => dateOverrides.Remove(item.Key)">
+                                        <img src="/images/ote/delete-icon.png" alt="delete">
+                                    </Button>
+                                </TableHeaderCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     </div>
     <Divider class="d-none m-d-block" />
@@ -619,14 +642,14 @@
                         <Field>
                             <FieldBody>
                                 <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                                            Size="Size.Medium" TValue="TimeSpan" />
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeStart" />
                             </FieldBody>
                         </Field>
                         <span class="mx-2">-</span>
                         <Field>
                             <FieldBody>
                                 <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                                            Size="Size.Medium" TValue="TimeSpan" />
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeEnd" />
                             </FieldBody>
                         </Field>
                     </div>
@@ -636,7 +659,7 @@
                 <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
                     cancel
                 </Button>
-                <Button class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
+                <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
                     apply
                 </Button>
             </ModalFooter>
@@ -1077,8 +1100,37 @@
                 onDayDate, monthRepeat, monthDay),
             _ => GenerateNoRepeat(modelSchedule.DateFrom, modelSchedule.DateTo)
         };
-
         return Task.CompletedTask;
+    }
+
+    private async Task SetOverrideDates()
+    {
+        if(calendar is null) return;
+
+        var dates = calendar.GetClickedDates;
+        foreach(var date in dates)
+        {
+            if(dateOverrides.ContainsKey(date.Date))
+            {
+                dateOverrides[date.Date].TimeStart = modelSchedule.TimeStart;
+                dateOverrides[date.Date].TimeStart = modelSchedule.TimeEnd;
+            }
+            else 
+            {
+                dateOverrides.Add(date.Date, new DateOverride {
+                    Date = date.Date,
+                    TimeEnd = modelSchedule.TimeEnd,
+                    TimeStart = modelSchedule.TimeStart
+                });
+            }
+        }
+        
+        await CloseCalendar();
+    }
+
+    private string TimeToString(TimeSpan time)
+    {
+        return DateTime.Today.Add(time).ToString("hh:mmtt");
     }
 
     public class ModelData
@@ -1189,6 +1241,10 @@
         public int EventDurationCount {get; set;} = 1;
         public string EventDurationTimeUnit {get; set;} = "hrs";
         public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
+
+        // for date override
+        public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeEnd {get; set;} = DateTime.Now.TimeOfDay;
     }
 
     public class Pricing 

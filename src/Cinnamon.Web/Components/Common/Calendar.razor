@@ -144,6 +144,8 @@ should have Available dates, Selected Dates, *@
         await StoreClicked(item);
     }
 
+    public IEnumerable<DateTime> GetClickedDates => clickedItems.Select(d => d.Key);
+
     private Task StoreClicked(CalendarItem item)
     {
         if(StoreClickedItems)
