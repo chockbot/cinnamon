@@ -47,6 +47,8 @@
     public EventCallback<DateTime> OnSelectedDate {get; set;}
     [Parameter]
     public bool StrikeOutNotSelected {get; set;}
+    [Parameter]
+    public bool UnHighlightLoadedDates {get; set;}
 
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
     private DateTime activeDate;
@@ -97,6 +99,9 @@
         if(strikeOut)
         {
             result += $" strike-out";
+        }
+        if(selected && UnHighlightLoadedDates){
+            result += " unhighlight";
         }
         return result;
     }
