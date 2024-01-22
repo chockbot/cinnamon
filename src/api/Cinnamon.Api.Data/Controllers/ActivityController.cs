@@ -417,13 +417,13 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
-            var dateOverrides = args.DateOverrides.Select(d => {
+            var dateOverrides = args.DateOverrides is not null ? args.DateOverrides.Select(d => {
                 return new OteDateOverrideDTO {
                     Date = d.Date,
                     DateEnd = d.DateEnd,
                     DateStart = d.DateStart
                 };
-            }).ToList();
+            }).ToList() : null;
 
             var result = await activityRepository.CreateOteActivity(activity.EventName, activity.Description, activity.ExperienceTypeId, 
                 activity.CustomerId, activity.StringPrice, activity.HouseNo, activity.CityNumber, activity.CityName,

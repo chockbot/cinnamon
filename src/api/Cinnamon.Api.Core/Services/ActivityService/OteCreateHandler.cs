@@ -155,6 +155,22 @@ public class OteCreateHandler : IOteCreateHandler
                 _ => GenerateNoRepeat(args.Activity.ScheduleFrom, args.Activity.ScheduleTo)
             };
 
+            // override dates
+            if(args.DateOverrides is not null)
+            {
+                var dictionaryDates = args.DateOverrides.ToDictionary(d => d.Date.Date);
+
+                foreach(var item in dateItems)
+                {
+                    if(dictionaryDates.ContainsKey(item.Date.Date))
+                    {
+                        var date = dictionaryDates[item.Date.Date];
+                        item.DateStart = item.DateStart.Date.Add(date.TimeStart);
+                        item.DateEnd = item.DateStart.Date.Add(date.TimeEnd);
+                    }
+                }
+            }
+
             var sortedPrice = args.Pricings.OrderBy(p => p.Price).ToList();
             var stringPrice = sortedPrice.Count > 1 ? string.Format("PHP {0} - {1}", sortedPrice.First().Price, sortedPrice.Last().Price) :
                 string.Format("PHP {0}", sortedPrice.First().Price);
@@ -205,7 +221,15 @@ public class OteCreateHandler : IOteCreateHandler
                         DateEnd = d.DateEnd,
                         DateStart = d.DateStart
                     };
-                }).ToList()
+                }).ToList(),
+                DateOverrides = args.DateOverrides is not null ? 
+                    args.DateOverrides.Select(d => {
+                        return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OteDateOverride {
+                            Date = d.Date,
+                            DateEnd = d.Date.Date.Add(d.TimeEnd),
+                            DateStart = d.Date.Date.Add(d.TimeStart)
+                        };
+                    }).ToList() : null
             });
             if(!createOteRes.Succeeded || createOteRes.Result is null || !createOteRes.Result.IsSuccess)
             {

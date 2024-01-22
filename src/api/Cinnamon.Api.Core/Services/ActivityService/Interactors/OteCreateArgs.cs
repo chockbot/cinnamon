@@ -8,6 +8,8 @@ public class OteCreateArgs : IInteractor
 
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    public IEnumerable<DateOverride>? DateOverrides {get; set;}
+
     public class OteActivity 
     {
         public string EventName {get; set;}

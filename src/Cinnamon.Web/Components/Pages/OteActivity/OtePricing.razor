@@ -851,6 +851,13 @@
                     Name = p.Name
                 };
             }).ToList(),
+            DateOverrides = dateOverrides.Select(s => {
+                return new ModelData.DateOverride {
+                    Date = s.Key,
+                    TimeEnd = s.Value.TimeEnd,
+                    TimeStart = s.Value.TimeStart
+                };
+            }).ToList()
         };
         data.ItemPrices.Add(new ModelData.ItemPrice {
             AbsorbFees = modelPricing.AbsorbFees,
@@ -1113,7 +1120,7 @@
             if(dateOverrides.ContainsKey(date.Date))
             {
                 dateOverrides[date.Date].TimeStart = modelSchedule.TimeStart;
-                dateOverrides[date.Date].TimeStart = modelSchedule.TimeEnd;
+                dateOverrides[date.Date].TimeEnd = modelSchedule.TimeEnd;
             }
             else 
             {
@@ -1139,6 +1146,7 @@
         public DateTime DateTo {get; set;}
         public string Recurrences {get; set;}
         public IList<ItemPrice> ItemPrices {get; set;}
+        public IList<DateOverride> DateOverrides {get; set;}
 
         public DateTime? DurationStart {get; set;}
         public DateTime? DurationEnd {get; set;}
@@ -1159,6 +1167,13 @@
             public bool AbsorbFees {get; set;}
             public string Description {get; set;}
             public string Name {get; set;}
+        }
+
+        public class DateOverride 
+        {
+            public DateTime Date {get; set;}
+            public TimeSpan TimeStart {get; set;}
+            public TimeSpan TimeEnd {get; set;}
         }
     }
 

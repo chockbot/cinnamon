@@ -14,8 +14,7 @@ public class CreateOteActivityArgs
     [Required]
     public IList<OteDate> Dates {get; set;}
     
-    [Required]
-    public IList<OteDateOverride> DateOverrides {get; set;}
+    public IList<OteDateOverride>? DateOverrides {get; set;}
 
     public class OteActivity 
     {
