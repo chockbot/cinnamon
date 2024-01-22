@@ -70,7 +70,8 @@
                                         Start Time
                                     </FieldLabel>
                                     <FieldBody>
-                                        <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.EventDurationTimeStart" />
+                                        <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.EventDurationTimeStart" />
                                     </FieldBody>
                                 </Field>
                             </Validation>
@@ -611,6 +612,34 @@
                     SelectedDates="generatedDates.Select(g => g.Date)"
                     CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
             </ModalBody>
+            <ModalFooter class="d-block">
+                <div>
+                    <h3 class="font-20 text-center color-black-100">What hours are you will be unavailable?</h3>
+                    <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
+                        <Field>
+                            <FieldBody>
+                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" />
+                            </FieldBody>
+                        </Field>
+                        <span class="mx-2">-</span>
+                        <Field>
+                            <FieldBody>
+                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" />
+                            </FieldBody>
+                        </Field>
+                    </div>
+                </div>
+            </ModalFooter>
+            <ModalFooter class="justify-content-center pt-4">
+                <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
+                    cancel
+                </Button>
+                <Button class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
+                    apply
+                </Button>
+            </ModalFooter>
         </ModalContent>
     </Modal>
 </section>
@@ -647,6 +676,7 @@
     private IEnumerable<DateItem> generatedDates = Enumerable.Empty<DateItem>();
     private Modal? modalCalendar {get; set;}
     private Calendar? calendar {get; set;}
+    private Dictionary<DateTime, DateOverride> dateOverrides = new();
 
     private async Task NextClick()
     {
@@ -1014,6 +1044,11 @@
         StateHasChanged();
     }
 
+    private async Task CloseCalendar()
+    {
+        await modalCalendar?.Close(CloseReason.UserClosing);
+    }
+
     private Task GenerateEventDates()
     {
         var every = modelSchedule.DurationEvery;
@@ -1231,6 +1266,13 @@
         public string Value {get; set;}
         public string DayString {get; set;}
         public bool Selected {get; set;}
+    }
+
+    private record DateOverride 
+    {
+        public DateTime Date {get; set;}
+        public TimeSpan TimeStart {get; set;}
+        public TimeSpan TimeEnd {get; set;}
     }
 
     // <!--- Date generation. Refactor this Code
