@@ -57,6 +57,9 @@ public class OteCreateArgs : IInteractor
         public string? MonthRepeat {get; set;}
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
+
+        public int EventDurationCount {get; set;}
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 
@@ -70,5 +73,12 @@ public class OteCreateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+    }
+
+    public class DateOverride 
+    {
+        public DateTime Date {get; set;}
+        public TimeSpan TimeStart {get; set;}
+        public TimeSpan TimeEnd {get; set;}
     }
 }

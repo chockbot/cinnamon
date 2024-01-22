@@ -1685,7 +1685,8 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates)
+        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
+        IList<OteDateOverrideDTO> dateOverrides)
     {
         try
         {
@@ -1731,7 +1732,9 @@ public class ActivityRepository : IActivityRepository
                 RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
                 RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
                 RepeatEvery = repeatEvery,
-                SelectedDays = selectedDays
+                SelectedDays = selectedDays,
+                EventDurationCount = eventDurationCount,
+                EventDurationTimeUnit = eventDurationTimeUnit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1765,7 +1768,24 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
-            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, schedule, pricingsGroup, dates);
+            // create date overrides
+            List<Entities.OteDateOverride> overrides = new();
+            foreach(var item in dateOverrides)
+            {
+                var oteDate = dates.FirstOrDefault(d => d.Date.Date == item.Date.Date);
+                if(oteDate is not null)
+                {
+                    overrides.Add(new OteDateOverride {
+                        Date = item.Date,
+                        DateStart = item.DateStart,
+                        DateEnd = item.DateEnd,
+                        OteDate = oteDate
+                    });
+                }
+            }
+
+            var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, 
+                schedule, pricingsGroup, dates, overrides);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);

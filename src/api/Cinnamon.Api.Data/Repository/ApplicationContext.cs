@@ -78,6 +78,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<TokenGenerated> TokenGenerateds {get; set;}
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
+    public DbSet<OteDateOverride> OteDateOverrides {get; set;}
 
     #endregion
 
