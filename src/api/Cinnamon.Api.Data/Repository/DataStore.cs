@@ -103,6 +103,7 @@ public class DataStore : IDataStore
 
     public IOteDate OteDate => new OteDateEntity(applicationContext);
     public IOteSchedulePricingGroup OteSchedulePricingGroup => new OteSchedulePricingGroupsEntity(applicationContext);
+    public IOteDateOverride OteDateOverride => new OteDateOverrideEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {
