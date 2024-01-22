@@ -16,7 +16,8 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count);
     Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId);
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
-        OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, IList<OteDate> oteDates);
+        OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 
+        IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides);
     Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule);
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);

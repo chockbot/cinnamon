@@ -13,6 +13,9 @@ public class CreateOteActivityArgs
 
     [Required]
     public IList<OteDate> Dates {get; set;}
+    
+    [Required]
+    public IList<OteDateOverride> DateOverrides {get; set;}
 
     public class OteActivity 
     {
@@ -111,6 +114,18 @@ public class CreateOteActivityArgs
     }
 
     public class OteDate 
+    {
+        [Required]
+        public DateTime Date {get; set;}
+
+        [Required]
+        public DateTime DateStart {get; set;}
+
+        [Required]
+        public DateTime DateEnd {get; set;}
+    }
+
+    public class OteDateOverride 
     {
         [Required]
         public DateTime Date {get; set;}

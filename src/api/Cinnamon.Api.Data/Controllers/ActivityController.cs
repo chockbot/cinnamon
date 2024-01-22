@@ -417,13 +417,22 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var dateOverrides = args.DateOverrides.Select(d => {
+                return new OteDateOverrideDTO {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart
+                };
+            }).ToList();
+
             var result = await activityRepository.CreateOteActivity(activity.EventName, activity.Description, activity.ExperienceTypeId, 
                 activity.CustomerId, activity.StringPrice, activity.HouseNo, activity.CityNumber, activity.CityName,
                 activity.RegionCode, activity.RegionName, activity.BarangayCode, activity.BarangayName, activity.PostalCode,
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
-                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit);
+                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
+                dateOverrides);
             
             if(!result.Succeeded || result.Result is null)
             {
