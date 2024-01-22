@@ -1686,7 +1686,7 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO> dateOverrides)
+        IList<OteDateOverrideDTO>? dateOverrides)
     {
         try
         {
@@ -1770,17 +1770,20 @@ public class ActivityRepository : IActivityRepository
 
             // create date overrides
             List<Entities.OteDateOverride> overrides = new();
-            foreach(var item in dateOverrides)
+            if(dateOverrides is not null)
             {
-                var oteDate = dates.FirstOrDefault(d => d.Date.Date == item.Date.Date);
-                if(oteDate is not null)
+                foreach(var item in dateOverrides)
                 {
-                    overrides.Add(new OteDateOverride {
-                        Date = item.Date,
-                        DateStart = item.DateStart,
-                        DateEnd = item.DateEnd,
-                        OteDate = oteDate
-                    });
+                    var oteDate = dates.FirstOrDefault(d => d.Date.Date == item.Date.Date);
+                    if(oteDate is not null)
+                    {
+                        overrides.Add(new OteDateOverride {
+                            Date = item.Date.SetKindUtc(),
+                            DateStart = item.DateStart.SetKindUtc(),
+                            DateEnd = item.DateEnd.SetKindUtc(),
+                            OteDate = oteDate
+                        });
+                    }
                 }
             }
 

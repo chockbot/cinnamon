@@ -452,6 +452,13 @@
                         Price = p.Price,
                         Name = p.Name
                     };
+                }),
+                DateOverrides = schedule.DateOverrides.Select(d => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    };
                 })
             }, token);
 

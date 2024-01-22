@@ -10,6 +10,8 @@ public class CreateOteArgs
     [Required]
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    public IEnumerable<DateOverride>? DateOverrides {get; set;}
+
     public class OteActivity 
     {
         [Required]
@@ -97,4 +99,15 @@ public class CreateOteArgs
         public decimal Price {get; set;}
     }
 
+    public class DateOverride 
+    {
+        [Required]
+        public DateTime Date {get; set;}
+
+        [Required]
+        public TimeSpan TimeStart {get; set;}
+
+        [Required]
+        public TimeSpan TimeEnd {get; set;}
+    }
 }

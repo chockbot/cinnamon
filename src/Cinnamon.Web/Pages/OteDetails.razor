@@ -190,7 +190,7 @@
                                         <div class="d-flex align-items-center">
                                             <img class="me-2" src="images/ote/clock.png" alt="clock">
                                             <label class="ote-schedule me-1">Time Start:</label>
-                                            <label class="font-16 color-black-100">@activity.ScheduleFrom.ToString("hh:mm tt")</label>
+                                            <label class="font-16 color-black-100">@selectedDateStart.ToString("hh:mm tt")</label>
                                         </div>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12">
@@ -565,6 +565,7 @@
     private DateTime selectedDate;
     public string ProfileHandler { get; set; }
     public bool showFullAbout = false;
+    private DateTime selectedDateStart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -953,6 +954,7 @@
             var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
             if(oteDate is not null)
             {
+                selectedDateStart = oteDate.DateStart;
                 AvailablePriceList = activity.Pricings.Where(p => p.OteDateId == oteDate.Id);
                 Duration = (oteDate.DateEnd - oteDate.DateStart);
             }
