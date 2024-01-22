@@ -1,6 +1,9 @@
+@* Need to refactor this component
+should have Available dates, Selected Dates, *@
+
 @namespace Cinnamon.Web.Components.Common
 
-<div class="calendar-wrapper">
+<div class="@WrapperClass">
     <div class="calendar-header d-flex align-items-center justify-content-between">
         <Button Clicked="PrevMonthClick">
             <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
@@ -23,7 +26,7 @@
             <div class="grid-item" @key="item">
                 @if(!item.Empty)
                 {
-                    <span class="@DayClass(item.Selected, item.StrikeOut)" @onclick="() => OnDayClick(item)">
+                    <span class="@DayClass(item.Selected, item.StrikeOut, item.Date)" @onclick="() => OnDayClick(item)">
                         @NumberString(item.Date.Day)
                     </span>
                 }
@@ -49,9 +52,14 @@
     public bool StrikeOutNotSelected {get; set;}
     [Parameter]
     public bool UnHighlightLoadedDates {get; set;}
+    [Parameter]
+    public bool Flat {get; set;}
+    [Parameter]
+    public bool StoreClickedItems {get; set;}
 
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
     private DateTime activeDate;
+    private Dictionary<DateTime,CalendarItem> clickedItems = new();
 
     protected override void OnInitialized()
     {
@@ -89,7 +97,7 @@
         }
     }
 
-    private string DayClass(bool selected, bool strikeOut = false)
+    private string DayClass(bool selected, bool strikeOut = false, DateTime? date = null)
     {
         string result = "day prevent-select";
         if(selected)
@@ -103,7 +111,24 @@
         if(selected && UnHighlightLoadedDates){
             result += " unhighlight";
         }
+        if(date.HasValue)
+        {
+            if(clickedItems.ContainsKey(date.Value.Date))
+            {
+                result += " clicked rounded-circle";
+            }
+        }
         return result;
+    }
+
+    private string WrapperClass
+    {
+        get
+        {
+            string result = "calendar-wrapper";
+            if(Flat) result += " flat";
+            return result;
+        }
     }
 
     private async Task OnDayClick(CalendarItem item)
@@ -114,8 +139,25 @@
         }
         if(OnSelectedDate.HasDelegate)
         {
-            await OnSelectedDate.InvokeAsync(item.Date); 
+            await OnSelectedDate.InvokeAsync(item.Date);
         }
+        await StoreClicked(item);
+    }
+
+    private Task StoreClicked(CalendarItem item)
+    {
+        if(StoreClickedItems)
+        {
+            if(!clickedItems.ContainsKey(item.Date.Date))
+            {
+                clickedItems.Add(item.Date.Date, item);
+            }
+            else
+            {
+                clickedItems.Remove(item.Date.Date);
+            }
+        }
+        return Task.CompletedTask;
     }
 
     private string NumberString(int number)
@@ -141,6 +183,17 @@
             activeDate = activeDate.AddMonths(-1);
             LoadCalendarItems();
         }
+        return Task.CompletedTask;
+    }
+
+    public Task LoadDates(IEnumerable<DateTime> dates, DateTime? currentDate = null)
+    {
+        SelectedDates = dates;
+        if(currentDate.HasValue)
+        {
+            activeDate = currentDate.Value;
+        }
+        LoadCalendarItems();
         return Task.CompletedTask;
     }
 
