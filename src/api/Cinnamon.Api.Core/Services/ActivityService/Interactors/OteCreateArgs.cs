@@ -74,4 +74,11 @@ public class OteCreateArgs : IInteractor
 
         public decimal Price {get; set;}
     }
+
+    public class DateOverride 
+    {
+        public DateTime Date {get; set;}
+        public TimeSpan TimeStart {get; set;}
+        public TimeSpan TimeEnd {get; set;}
+    }
 }

@@ -159,6 +159,8 @@ public class OteCreateHandler : IOteCreateHandler
             var stringPrice = sortedPrice.Count > 1 ? string.Format("PHP {0} - {1}", sortedPrice.First().Price, sortedPrice.Last().Price) :
                 string.Format("PHP {0}", sortedPrice.First().Price);
 
+            throw new Exception("An error occured when getting dates.");
+
             var createOteRes = await activityData.CreateOteActivity(new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs {
                 Activity = new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OteActivity {
                     BarangayCode             = activity.BarangayCode ?? string.Empty,
