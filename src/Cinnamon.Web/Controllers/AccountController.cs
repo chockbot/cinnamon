@@ -415,16 +415,22 @@ public class AccountController : Controller
                 if (result.Result.Result.IsNew)
                 {
                     //New
-                    bool isNewUser = result.Result.Result.IsNew;
                     await HttpContext.SignOutAsync();
-                    return Redirect($"/facebook-login/?IsNewUser={isNewUser}");
+                    return Redirect($"/facebook-login/?IsNewUser={result.Result.Result.IsNew}&");
                 }
                 else
                 {
                     //Existing
                     bool isNewUser = result.Result.Result.IsNew;
-                    await HttpContext.SignOutAsync();
-                    return Redirect($"/facebook-login/?IsNewUser={isNewUser}&CurrentEmail={result.Result.Result.Email}");
+                    var loginClaims = new List<Claim>
+                    {
+                        new Claim("Email", result.Result.Result.Email),
+                        new Claim("Token", result.Result.Result.GeneratedToken),
+                    };
+                    var loginClaimsIdentity = new ClaimsIdentity(loginClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var loginAuthProperties = new AuthenticationProperties { IsPersistent = true };
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(loginClaimsIdentity), loginAuthProperties);
+                    return Redirect($"/facebook-login/?IsNewUser={result.Result.Result.IsNew}&CurrentEmail={result.Result.Result.Email}&");
                 }
             }
             else

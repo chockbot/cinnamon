@@ -694,6 +694,9 @@
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
 <ReviewModal @ref=ReviewModalRef/>
+<ModalFBUpdate @ref="fbUpdateModal"></ModalFBUpdate>
+<UpdatePasswordModal @ref=updatePasswordModal New=@NewEmail Current=@CurrentEmail Token=@CustomerModel.Token
+                     Birthdate=@Birthday />
 
 @code
 {
@@ -702,6 +705,8 @@
     private WelcomeModal WelcomeModalRef { get; set; }
     private ReviewModal ReviewModalRef { get; set; }
     private ModalLogin signinModal;
+    private ModalFBUpdate fbUpdateModal;
+    private UpdatePasswordModal updatePasswordModal;
 
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
@@ -754,11 +759,15 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool IsNewUser { get; set; }
+    public bool? IsNewUser { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? CurrentEmail { get; set; }
+    public string? CurrentEmail { get; set; } = string.Empty;
+
+    public string NewEmail { get; set; } = string.Empty;
+
+    public DateTime Birthday { get; set; } = DateTime.Now;
 
     private string redirectUrl {get; set;} = string.Empty;
 
@@ -822,6 +831,93 @@
             };
 
         NavigationManager.LocationChanged += LocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+            await LoadWelcomeDialog();
+        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await InitializeSwiper();
+        await InitializeCarouselSwipe();
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        //Check if login via FB
+        if (uri.AbsolutePath.Contains("facebook-login"))
+        {
+            if (IsNewUser == true)
+            {
+                isLoginFB = true;
+                await signinModal.Show();
+            }
+            else
+            {
+                await fbUpdateModal.Show();
+            }
+        }
+        else
+        {
+            var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+            var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+            try
+            {
+                if (userSuccess && tokenSuccess)
+                {
+                    var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
+                        {
+                            Token = token,
+                            UserId = userId
+                        });
+                    if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
+                    {
+                        // invalid guid
+                        return;
+                    }
+
+                    // try to register again to check if already have account details
+                    var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
+                        {
+                            Email = verifyRes.Result.Result.Email,
+                            ValidationRoute = AppConfig.BaseUrl + "/explore"
+                        });
+                    if (!checkRegistered.Succeeded || checkRegistered.Result == null)
+                    {
+                        // error
+                        return;
+                    }
+
+                    if (checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
+                    {
+                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
+                        {
+                            if (!string.IsNullOrEmpty(CustomerModel.CustomerProfile.Email))
+                            {
+                                CurrentEmail = CustomerModel.CustomerProfile.Email;
+                                NewEmail     = verifyRes.Result.Result.Email;
+                                Birthday     = CustomerModel.CustomerProfile.Birthdate;
+                                await updatePasswordModal.Show();
+                            }
+                            else
+                            {
+                                 modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
+                            }
+                        }
+                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
+                        {
+                            await modalPassword.OpenModal(verifyRes.Result.Result.Email);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.Message.ToString();
+            }
+        }
+
     }
 
     private async Task SendChatStatus()
@@ -993,80 +1089,6 @@
         {
             var customerId = CustomerModel.CustomerProfile.Id;
             await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie", $"wel_dia_{customerId}", "1");
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-       
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-            await LoadWelcomeDialog();
-        }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
-        await InitializeSwiper();
-        await InitializeCarouselSwipe();
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        //Check if login via FB
-        if (uri.AbsolutePath.Contains("facebook-login"))
-        {
-            if (IsNewUser == true)
-            {
-                isLoginFB = true;
-                await this.signinModal.Show();
-            }
-            else
-            {
-                // Modal Update Email
-            }
-        }
-        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
-        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
-        try
-        {
-            if (userSuccess && tokenSuccess)
-            {
-                var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
-                    {
-                        Token = token,
-                        UserId = userId
-                    });
-                if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
-                {
-                    // invalid guid
-                    return;
-                }
-
-                // try to register again to check if already have account details
-                var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
-                    {
-                        Email = verifyRes.Result.Result.Email,
-                        ValidationRoute = AppConfig.BaseUrl + "/explore"
-                    });
-                if (!checkRegistered.Succeeded || checkRegistered.Result == null)
-                {
-                    // error
-                    return;
-                }
-
-                if (checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
-                {
-                    if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
-                    {
-                        modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
-                    }
-                    if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
-                    {
-                        await modalPassword.OpenModal(verifyRes.Result.Result.Email);
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.Message.ToString();
         }
     }
 
