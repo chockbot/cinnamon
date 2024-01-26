@@ -2,6 +2,8 @@
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Framework.ValidationAttributes;
 @using Cinnamon.Framework.Extensions.String;
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
 @inject INotificationService NotificationService;
 @inject IJSRuntime JS;
 @implements IOteComponent;
@@ -22,20 +24,94 @@
                 </label>
             </div>
             <p class="font-16 color-grey-100 text-justify">
-                Create your event schedule by selecting your preferred sessions and activities from the provided options.
+                Effortlessly organize your agenda by creating schedules with customizable event durations and recurring options for seamless planning.
             </p>
         </div>
         <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="modelSchedule">
             <div class="data-form">
-                <div id="ote-pricing-from-date" class="mb-2">
-                    <label for="" class="text-capitalize font-20 color-black-100 m-font-18">from</label>
-                    <div class="d-flex">
-                        <div id="date-from" class="me-3 box-width date-left">
-                            <Validation @ref="dateFromValidation">
-                                <Field class="mb-3">
+                <div class="event-time">
+                    <div class="d-flex mb-3 flex-column flex-md-row">
+                        <div class="box-width me-3 m-width-100 mb-3 mb-md-0">
+                            <label for="" class="text-capitalize font-20 color-black-100 m-font-18">
+                                Event Duration
+                            </label>
+                            <Row HorizontalGutter="15">
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Validation>
+                                        <Field>
+                                            <FieldBody>
+                                                <NumericPicker class="text-center border-radius-10 m-border-radius-5 px-2 m-font-16" 
+                                                    Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0"
+                                                    TValue="int" @bind-Value="modelSchedule.EventDurationCount" >
+                                                </NumericPicker>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Field>
+                                        <FieldBody>
+                                            <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
+                                                @bind-SelectedValue="modelSchedule.EventDurationTimeUnit">
+                                                <SelectItem Value='@("hrs")'>hrs</SelectItem>
+                                                <SelectItem Value='@("days")'>days</SelectItem>
+                                                <SelectItem Value='@("weeks")'>weeks</SelectItem>
+                                                <SelectItem Value='@("months")'>months</SelectItem>
+                                            </Select>
+                                        </FieldBody>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </div>
+                        <div class="box-width">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel class="text-capitalize font-20 color-black-100 m-font-18">
+                                        Start Time
+                                    </FieldLabel>
+                                    <FieldBody>
+                                        <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.EventDurationTimeStart" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </div>
+                    </div>
+                </div>
+
+                <Divider class="my-4" />
+
+                <div class="event-recurrence d-flex flex-column flex-md-row mb-0 mb-md-3">
+                    <div class="box-width me-3 m-width-100 mb-3 mb-md-0">
+                        <Field>
+                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                recurrences
+                            </FieldLabel>
+                            <FieldBody>
+                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
+                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
+                                    <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
+                                    <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
+                                    <SelectItem Value='@("daily")'>Daily</SelectItem>
+                                    <SelectItem Value='@("weekly")'>Weekly</SelectItem>
+                                    <SelectItem Value='@("monthly")'>Monthly</SelectItem>
+                                </Select>
+                                <div class="invalid-feedback">The recurrences field is mandatory.</div>
+                            </FieldBody>
+                        </Field>
+                    </div>
+
+                    @if(modelSchedule.Recurrences == "do-not-repeat")
+                    {
+                        <div class="box-width">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                        start date
+                                    </FieldLabel>
                                     <FieldBody>
                                         <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="modelSchedule.DateFrom">
+                                            TValue="DateTime" @bind-Date="modelSchedule.DurationStart">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -44,59 +120,9 @@
                                 </Field>
                             </Validation>
                         </div>
-                        <div id="time-from" class="date-right">
-                            <Field class="mb-3">
-                                <FieldBody>
-                                    <TimeEdit class='@TimeFromClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeFrom" />
-                                </FieldBody>
-                            </Field>
-                        </div>
-                    </div>
+                    }
                 </div>
-                <div id="ote-pricing-to-date" class="mb-2">
-                    <label for="" class="text-capitalize font-20 color-black-100 m-font-18">to</label>
-                    <div class="d-flex">
-                        <div id="date-to" class="me-3 box-width date-left">
-                            <Validation @ref="dateToValidation">
-                                <Field class="mb-3">
-                                    <FieldBody>
-                                        <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="modelSchedule.DateTo">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </DateEdit>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </div>
-                        <div id="time-to" class="date-right">
-                            <Field class="mb-3">
-                                <FieldBody>
-                                    <TimeEdit class='@TimeToClass' Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeTo" />
-                                </FieldBody>
-                            </Field>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-width">
-                    <Field class="mb-3">
-                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                            recurrences
-                        </FieldLabel>
-                        <FieldBody>
-                            <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
-                                SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
-                                <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
-                                <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
-                                <SelectItem Value='@("daily")'>Daily</SelectItem>
-                                <SelectItem Value='@("weekly")'>Weekly</SelectItem>
-                                <SelectItem Value='@("monthly")'>Monthly</SelectItem>
-                            </Select>
-                            <div class="invalid-feedback">The recurrences field is mandatory.</div>
-                        </FieldBody>
-                    </Field>
-                </div>
+
                 @if(modelSchedule.Recurrences != "do-not-repeat")
                 {
                     <div class="d-flex">
@@ -136,49 +162,53 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <Validation>
-                            <Field>
-                                <FieldLabel For="durationCount" class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                    repeat every
-                                </FieldLabel>
-                                <FieldBody>
-                                    <div class="d-flex">
-                                        <NumericPicker ElementId="durationCount" class="text-center me-3 border-radius-10 m-border-radius-5" 
-                                            style="width: 90px;" Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
-                                            TValue="int" @bind-Value="modelSchedule.DurationEvery">
-                                        </NumericPicker>
-                                        <Button Disabled class="bg-grey-200 px-4">
-                                            @modelSchedule.RepeatEvery
-                                        </Button>
-                                    </div>
-                                </FieldBody>
-                            </Field>
-                        </Validation>
-                    </div>
-
-                    @if(modelSchedule.Recurrences == "every-weekday")
-                    {
-                        <div class="d-flex justify-content-center mt-4">
-                            <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                            <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">M</span>
-                            <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                            <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">W</span>
-                            <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                            <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">F</span>
-                            <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                        </div>
-                    }
-
-                    @if(modelSchedule.Recurrences == "weekly")
-                    {
-                        <div class="d-flex justify-content-center mt-4">
-                            @foreach (var item in dayItems)
+                    <div class="weekly-repeat-every mt-4">
+                        <label for="durationCount" class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                            repeat every
+                        </label>
+                        <div class="repeat-every-flex d-flex align-items-baseline align-items-md-center flex-column flex-md-row">
+                            <div class="box-width me-3 mb-3 mb-md-0">
+                                <Validation>
+                                    <Field>
+                                        <FieldBody>
+                                            <div class="d-flex">
+                                                <NumericPicker ElementId="durationCount" 
+                                                    class="text-center me-3 border-radius-10 m-border-radius-5 m-font-16" 
+                                                    style="width: 90px;" Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
+                                                    TValue="int" @bind-Value="modelSchedule.DurationEvery">
+                                                </NumericPicker>
+                                                <Button Disabled class="bg-grey-200 px-4 w-100">
+                                                    @modelSchedule.RepeatEvery
+                                                </Button>
+                                            </div>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            </div>
+                            @if(modelSchedule.Recurrences == "every-weekday")
                             {
-                                <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
+                                <div class="d-flex justify-content-center m-width-100">
+                                    <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
+                                    <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">M</span>
+                                    <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
+                                    <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">W</span>
+                                    <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
+                                    <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">F</span>
+                                    <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
+                                </div>
+                            }
+
+                            @if(modelSchedule.Recurrences == "weekly")
+                            {
+                                <div class="d-flex justify-content-center m-width-100">
+                                    @foreach (var item in dayItems)
+                                    {
+                                        <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
+                                    }
+                                </div>
                             }
                         </div>
-                    }
+                    </div>
 
                     @if(modelSchedule.Recurrences == "monthly")
                     {
@@ -237,10 +267,48 @@
                     }
                 }
                 <div class="text-center color-grey-100 mt-4">
-                    <p class="m-0 font-20">@ScheduleMessageInfo</p>
+                    <p class="m-0 font-20 m-font-18">@ScheduleMessageInfo</p>
                 </div>
             </div>
         </Validations>
+    </div>
+    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <div>
+            <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                Add date overrides
+            </h3>
+            <p class="font-16 color-grey-100 text-justify">
+                Customize recurrence patterns with override dates, providing flexible scheduling control for specific instances.
+            </p>
+            <div class="text-center">
+                <Button Clicked="ViewCalendar" class="bg-transparent rounded-pill border-color-orange-100 px-5 my-4 color-orange-100 hover-color-primary">
+                    Add date override
+                </Button>
+            </div>
+            <Divider class="m-0" />
+            <div>
+                <Table FullWidth>
+                    <TableBody>
+                        @foreach (var item in dateOverrides)
+                        {
+                            <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
+                                <TableRowCell>
+                                    <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
+                                </TableRowCell>
+                                <TableHeaderCell>
+                                    <Button Clicked="() => dateOverrides.Remove(item.Key)">
+                                        <img src="/images/ote/delete-icon.png" alt="delete">
+                                    </Button>
+                                </TableHeaderCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
     </div>
     <Divider class="d-none m-d-block" />
     <div class="my-3 border-radius-10">
@@ -556,6 +624,47 @@
             </ModalBody>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalCalendar">
+        <ModalContent>
+            <ModalHeader class="justify-content-center">
+                <p class="m-0 color-black-100">Select the date(s) you want to assign specific hours</p>
+            </ModalHeader>
+            <ModalBody>
+                <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat 
+                    SelectedDates="generatedDates.Select(g => g.Date)"
+                    CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
+            </ModalBody>
+            <ModalFooter class="d-block">
+                <div>
+                    <h3 class="font-20 text-center color-black-100">What hours are you will be unavailable?</h3>
+                    <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
+                        <Field>
+                            <FieldBody>
+                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeStart" />
+                            </FieldBody>
+                        </Field>
+                        <span class="mx-2">-</span>
+                        <Field>
+                            <FieldBody>
+                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                                            Size="Size.Medium" TValue="TimeSpan" @bind-Time="modelSchedule.TimeEnd" />
+                            </FieldBody>
+                        </Field>
+                    </div>
+                </div>
+            </ModalFooter>
+            <ModalFooter class="justify-content-center pt-4">
+                <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
+                    cancel
+                </Button>
+                <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
+                    apply
+                </Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
 </section>
 
 @code 
@@ -587,6 +696,10 @@
         new DayItem { Day = "F", Value = "FRI", DayString = "Friday"},
         new DayItem {Day = "S", Value = "SAT", DayString = "Saturday"}
     };
+    private IEnumerable<DateItem> generatedDates = Enumerable.Empty<DateItem>();
+    private Modal? modalCalendar {get; set;}
+    private Calendar? calendar {get; set;}
+    private Dictionary<DateTime, DateOverride> dateOverrides = new();
 
     private async Task NextClick()
     {
@@ -676,7 +789,7 @@
     {
         get
         {
-            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(modelSchedule.Recurrences))
@@ -725,6 +838,8 @@
             MonthSelection = isMonthly ? modelSchedule.MonthSelection : null,
             OnDayDate = isMonthly ? modelSchedule.OnDayDate : null,
             WeekString = weekString,
+            EventDurationCount = modelSchedule.EventDurationCount,
+            EventDurationTimeUnit = modelSchedule.EventDurationTimeUnit,
 
             ItemPrices = modelPricingList.Pricings.Select(p => {
                 return new ModelData.ItemPrice {
@@ -736,6 +851,13 @@
                     Name = p.Name
                 };
             }).ToList(),
+            DateOverrides = dateOverrides.Select(s => {
+                return new ModelData.DateOverride {
+                    Date = s.Key,
+                    TimeEnd = s.Value.TimeEnd,
+                    TimeStart = s.Value.TimeStart
+                };
+            }).ToList()
         };
         data.ItemPrices.Add(new ModelData.ItemPrice {
             AbsorbFees = modelPricing.AbsorbFees,
@@ -761,6 +883,9 @@
         modelSchedule.MonthRepeat = data.MonthRepeat;
         modelSchedule.MonthSelection = data.MonthSelection ?? 1;
         modelSchedule.OnDayDate = data.OnDayDate ?? 1;
+        modelSchedule.EventDurationCount = data.EventDurationCount;
+        modelSchedule.EventDurationTimeUnit = data.EventDurationTimeUnit;
+        modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
 
         RecurrenceChanged(data.Recurrences);
 
@@ -940,12 +1065,88 @@
         await modalScheduleGuid.Close(CloseReason.UserClosing);
     }
 
+    private async Task ViewCalendar()
+    {
+        await GenerateEventDates();
+        var dates = generatedDates.Select(g => g.Date);
+        await calendar?.LoadDates(dates, dates.FirstOrDefault());
+        await modalCalendar?.Show();
+        StateHasChanged();
+    }
+
+    private async Task CloseCalendar()
+    {
+        await modalCalendar?.Close(CloseReason.UserClosing);
+    }
+
+    private Task GenerateEventDates()
+    {
+        var every = modelSchedule.DurationEvery;
+        var dateStart = modelSchedule.DurationStart;
+        var dateEnd = modelSchedule.DurationEnd;
+        
+        var timeStart = modelSchedule.EventDurationTimeStart;
+        var timeDuration = modelSchedule.DateTo - modelSchedule.DateFrom;
+
+        string weekString = modelSchedule.Recurrences switch{
+            "every-weekday" => "MON|TUE|WED|THU|FRI",
+            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
+            _ => ""
+        };
+
+        var monthSelection = modelSchedule.MonthSelection;
+        var onDayDate = modelSchedule.OnDayDate;
+        var monthRepeat = modelSchedule.MonthRepeat;
+        var monthDay = modelSchedule.MonthDay;
+
+        generatedDates = modelSchedule.Recurrences switch {
+            "every-weekday" => GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+            "daily" => GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+            "weekly" => GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
+            "monthly" => GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
+                onDayDate, monthRepeat, monthDay),
+            _ => GenerateNoRepeat(modelSchedule.DateFrom, modelSchedule.DateTo)
+        };
+        return Task.CompletedTask;
+    }
+
+    private async Task SetOverrideDates()
+    {
+        if(calendar is null) return;
+
+        var dates = calendar.GetClickedDates;
+        foreach(var date in dates)
+        {
+            if(dateOverrides.ContainsKey(date.Date))
+            {
+                dateOverrides[date.Date].TimeStart = modelSchedule.TimeStart;
+                dateOverrides[date.Date].TimeEnd = modelSchedule.TimeEnd;
+            }
+            else 
+            {
+                dateOverrides.Add(date.Date, new DateOverride {
+                    Date = date.Date,
+                    TimeEnd = modelSchedule.TimeEnd,
+                    TimeStart = modelSchedule.TimeStart
+                });
+            }
+        }
+        
+        await CloseCalendar();
+    }
+
+    private string TimeToString(TimeSpan time)
+    {
+        return DateTime.Today.Add(time).ToString("hh:mmtt");
+    }
+
     public class ModelData
     {
         public DateTime DateFrom {get; set;}
         public DateTime DateTo {get; set;}
         public string Recurrences {get; set;}
         public IList<ItemPrice> ItemPrices {get; set;}
+        public IList<DateOverride> DateOverrides {get; set;}
 
         public DateTime? DurationStart {get; set;}
         public DateTime? DurationEnd {get; set;}
@@ -955,6 +1156,8 @@
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
         public string? WeekString {get; set;}
+        public int EventDurationCount {get; set;}
+        public string EventDurationTimeUnit {get; set;}
 
         public class ItemPrice 
         {
@@ -964,6 +1167,13 @@
             public bool AbsorbFees {get; set;}
             public string Description {get; set;}
             public string Name {get; set;}
+        }
+
+        public class DateOverride 
+        {
+            public DateTime Date {get; set;}
+            public TimeSpan TimeStart {get; set;}
+            public TimeSpan TimeEnd {get; set;}
         }
     }
 
@@ -981,7 +1191,7 @@
         {
             get
             {
-                dateFrom = dateFrom.Date + TimeFrom;
+                dateFrom = DurationStart.Date + EventDurationTimeStart;
                 return dateFrom;
             }
             set
@@ -999,9 +1209,15 @@
         [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
         public DateTime DateTo
         {
-            get 
+            get
             {
-                dateTo = dateTo.Date + TimeTo;
+                dateTo = EventDurationTimeUnit switch {
+                    "hrs" => DateFrom.AddHours(EventDurationCount),
+                    "days" => DateFrom.AddDays(EventDurationCount),
+                    "weeks" => DateFrom.AddDays(7 * EventDurationCount),
+                    "months" => DateFrom.AddMonths(EventDurationCount),
+                    _ => DateFrom
+                };
                 return dateTo;
             }
             set 
@@ -1036,6 +1252,14 @@
         [Range(1, 31)]
         public int OnDayDate {get; set;} = 1;
 
+        [Range(1, int.MaxValue)]
+        public int EventDurationCount {get; set;} = 1;
+        public string EventDurationTimeUnit {get; set;} = "hrs";
+        public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
+
+        // for date override
+        public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeEnd {get; set;} = DateTime.Now.TimeOfDay;
     }
 
     public class Pricing 
@@ -1114,4 +1338,250 @@
         public string DayString {get; set;}
         public bool Selected {get; set;}
     }
+
+    private record DateOverride 
+    {
+        public DateTime Date {get; set;}
+        public TimeSpan TimeStart {get; set;}
+        public TimeSpan TimeEnd {get; set;}
+    }
+
+    // <!--- Date generation. Refactor this Code
+    private IEnumerable<DateItem> GenerateWeekday(int repeat, DateTime start, DateTime end, 
+        TimeSpan timeDuration, TimeSpan timeStart)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int daysToSkip = (repeat - 1) * 7;
+
+        DateTime recurringDate = start;
+        while(recurringDate <= end)
+        {
+            var item = new DateItem {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        };
+
+            switch(recurringDate.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Tuesday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Wednesday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Thursday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Friday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Sunday:
+                    recurringDate = recurringDate.AddDays(daysToSkip);
+                    break;
+            }
+
+            recurringDate = recurringDate.AddDays(1);
+        }
+
+        return generatedDates;
+    }
+
+    private IEnumerable<DateItem> GenerateDaily(int repeat, DateTime start, DateTime end, 
+        TimeSpan timeDuration, TimeSpan timeStart)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int daysToSkip = repeat;
+
+        DateTime recurringDate = start;
+        while(recurringDate <= end)
+        {
+            var item = new DateItem {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        };
+            
+
+            generatedDates.Add(item);
+
+            recurringDate = recurringDate.AddDays(daysToSkip);
+        }
+
+        return generatedDates;
+    }
+
+    private IDictionary<DayOfWeek, string> ToDictionaryDayWeek(string selectedDays)
+    {
+        IDictionary<DayOfWeek, string> result = new Dictionary<DayOfWeek, string>();
+        var days = selectedDays.Split("|");
+
+        foreach(var day in days)
+        {
+            DayOfWeek dw = day switch {
+                "MON" => DayOfWeek.Monday,
+                "TUE" => DayOfWeek.Tuesday,
+                "WED" => DayOfWeek.Wednesday,
+                "THU" => DayOfWeek.Thursday,
+                "FRI" => DayOfWeek.Friday,
+                "SAT" => DayOfWeek.Saturday,
+                _ => DayOfWeek.Sunday
+            };
+
+            if(!result.ContainsKey(dw))
+            {
+                result.Add(dw, day);
+            }
+        }
+
+        return result;
+    }
+
+    private IEnumerable<DateItem> GenerateWeekly(int repeat, DateTime start, DateTime end, 
+        TimeSpan timeDuration, TimeSpan timeStart, string selectedDays)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int daysToSkip = (repeat - 1) * 7;
+        
+        var dayWeeks = ToDictionaryDayWeek(selectedDays);
+
+        DateTime recurringDate = start;
+        while(recurringDate <= end)
+        {
+            var item = new DateItem {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        };
+
+            if(dayWeeks.ContainsKey(recurringDate.DayOfWeek))
+            {
+                generatedDates.Add(item);
+            }
+
+            if(recurringDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                recurringDate = recurringDate.AddDays(daysToSkip);
+            }
+
+            recurringDate = recurringDate.AddDays(1);
+        }
+
+        return generatedDates;
+    }
+
+    private IEnumerable<DateItem> GenerateMonthly(int repeat, DateTime start, DateTime end, 
+        TimeSpan timeDuration, TimeSpan timeStart, int monthSelection, int onTheDay, 
+        string monthRepeat, string monthDay)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int monthsToSkip = repeat;
+
+        DateTime recurringDate = start.FirstDayOfMonth();
+        DateTime recurringDateEnd = end.LastDayOfMonth();
+
+        if(monthSelection == 1)
+        {
+            while(recurringDate <= recurringDateEnd)
+            {
+                if(onTheDay > recurringDate.LastDayOfMonth().Day)
+                {
+                    generatedDates.Add(new DateItem {
+                        Date = recurringDate.Date,
+                        DateStart = recurringDate.LastDayOfMonth().Date.Add(timeStart),
+                        DateEnd = recurringDate.LastDayOfMonth().Date.Add(timeStart).Add(timeDuration)
+                    });
+                }
+                else {
+                    var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
+                    generatedDates.Add(new DateItem {
+                        Date = recurringDate.Date,
+                        DateStart = dateStart.Date.Add(timeStart),
+                        DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
+                    });
+                }
+                recurringDate = recurringDate.AddMonths(monthsToSkip);
+            }
+        }
+
+        if(monthSelection == 2)
+        {
+            DayOfWeek dw = monthDay switch {
+                "monday" => DayOfWeek.Monday,
+                "tuesday" => DayOfWeek.Tuesday,
+                "wednesday" => DayOfWeek.Wednesday,
+                "thursday" => DayOfWeek.Thursday,
+                "friday" => DayOfWeek.Friday,
+                "saturday" => DayOfWeek.Saturday,
+                _ => DayOfWeek.Sunday
+            };
+
+            int weeksToSkip = monthRepeat switch {
+                "first" => 1,
+                "second" => 2,
+                "third" => 3,
+                "fourth" => 4,
+                _ => 5
+            };
+
+            int skipCounter = 0;
+
+            while(recurringDate <= recurringDateEnd)
+            {
+                do
+                {
+                    if(recurringDate.DayOfWeek == dw)
+                    {
+                        skipCounter++;
+                    }
+
+                    if(skipCounter == weeksToSkip)
+                    {
+                        generatedDates.Add(new DateItem {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        });
+                        skipCounter = 0;
+                        break;
+                    }
+
+                    recurringDate = recurringDate.AddDays(1);
+                }
+                while (skipCounter != weeksToSkip);
+
+                recurringDate = recurringDate.FirstDayOfMonth().AddMonths(monthsToSkip);
+            }
+        }
+
+        return generatedDates;
+    }
+
+    private IEnumerable<DateItem> GenerateNoRepeat(DateTime scheduleFrom, DateTime scheduleTo)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        generatedDates.Add(new DateItem {
+            Date = scheduleFrom.Date,
+            DateStart = scheduleFrom,
+            DateEnd = scheduleTo
+        });
+
+        return generatedDates;
+    }
+
+    private record DateItem 
+    {
+        public DateTime Date {get; set;}
+        public DateTime DateStart {get; set;}
+        public DateTime DateEnd {get; set;}
+    }
+    // ---!> until here. Date generation. Refactor this Code
 }

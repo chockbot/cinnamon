@@ -10,6 +10,8 @@ public class CreateOteArgs
     [Required]
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    public IEnumerable<DateOverride>? DateOverrides {get; set;}
+
     public class OteActivity 
     {
         [Required]
@@ -71,6 +73,12 @@ public class CreateOteArgs
         public string? MonthRepeat {get; set;}
         public string? MonthDay {get; set;}
         public int? OnDayDate {get; set;}
+
+        [Range(1, int.MaxValue)]
+        public int EventDurationCount {get; set;}
+
+        [Required]
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 
@@ -91,4 +99,15 @@ public class CreateOteArgs
         public decimal Price {get; set;}
     }
 
+    public class DateOverride 
+    {
+        [Required]
+        public DateTime Date {get; set;}
+
+        [Required]
+        public TimeSpan TimeStart {get; set;}
+
+        [Required]
+        public TimeSpan TimeEnd {get; set;}
+    }
 }
