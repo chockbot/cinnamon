@@ -1,6 +1,7 @@
 ﻿@page "/explore"
 @page "/explore/experiences/{landingSearch}"
 @page "/confirm-email"
+@page "/facebook-login"
 @layout EmptyLayout
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.AspNetCore.WebUtilities;
@@ -688,7 +689,7 @@
 
 <div id="observerTarget"></div>
 
-<ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" />
+<ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" IsFBLogin=isLoginFB />
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
@@ -751,9 +752,19 @@
     [SupplyParameterFromQuery(Name = "redirect")]
     public string? QueryRedirect {get; set;}
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool IsNewUser { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? CurrentEmail { get; set; }
+
     private string redirectUrl {get; set;} = string.Empty;
 
     private IAnimation selectedAnimation = Animations.FadeIn;
+
+    public bool isLoginFB { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -987,34 +998,32 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+       
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await LoadWelcomeDialog();
         }
-
-        /**
-        if(CustomerModel.CustomerProfile is null)
-        {
-            if(!string.IsNullOrEmpty(QueryRedirect))
-            {
-                redirectUrl = redirectUrls.ContainsKey(QueryRedirect.ToLower()) ? redirectUrls[QueryRedirect.ToLower()] : string.Empty;
-                if(!string.IsNullOrEmpty(QueryAuth) && QueryAuth.ToLower() == "true")
-                {
-                    await signinModal.Show();
-                }
-            }
-        }
-        **/
-
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
         await InitializeSwiper();
         await InitializeCarouselSwipe();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        //Check if login via FB
+        if (uri.AbsolutePath.Contains("facebook-login"))
+        {
+            if (IsNewUser == true)
+            {
+                isLoginFB = true;
+                await this.signinModal.Show();
+            }
+            else
+            {
+                // Modal Update Email
+            }
+        }
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
         var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
-
         try
         {
             if (userSuccess && tokenSuccess)
@@ -1518,6 +1527,7 @@
     }
 
     private IDictionary<string, string> redirectUrls = new Dictionary<string,string>();
+
     private void LoadRedirectUrls()
     {
         redirectUrls.Add("messages","/Messages");
