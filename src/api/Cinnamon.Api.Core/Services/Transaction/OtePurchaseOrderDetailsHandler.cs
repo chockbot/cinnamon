@@ -65,6 +65,19 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 throw new Exception("An error occured. Please contact support.");
             }
 
+            // get first ticket for ote date reference
+            var firstTicket = deserializedPayload.Tickets.FirstOrDefault();
+            if(firstTicket is null)
+            {
+                throw new Exception("An error occured. Please contact support.");
+            }
+            var oteDateRes = await oteDateData.GetOteDate(firstTicket.OteDateId);
+            if(!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
+            {
+                return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(oteDateRes.Message), oteDateRes.Message);
+            }
+            var oteDate = oteDateRes.Result.Result;
+
             var customerRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
             if(!customerRes.Succeeded || customerRes.Result is null)
             {
