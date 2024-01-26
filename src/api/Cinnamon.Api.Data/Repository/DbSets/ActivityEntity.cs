@@ -297,7 +297,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
     public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, 
         ActivityAddress address, OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups,
-        IList<OteDate> oteDates)
+        IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides)
     {
         try
         {
@@ -311,6 +311,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.OteSchedules.Add(oteSchedule);
             this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
             this.applicationContext.OteDates.AddRange(oteDates);
+            this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
             
             await this.applicationContext.SaveChangesAsync();
 

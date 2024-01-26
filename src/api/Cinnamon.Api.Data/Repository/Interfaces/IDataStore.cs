@@ -47,6 +47,7 @@ public interface IDataStore
     ITokenGenerated TokenGenerated {get;}
     IAddOns AddOns { get; }
     IOteDate OteDate {get;}
+    IOteDateOverride OteDateOverride {get;}
     
     Task EnsureMigrate();
 

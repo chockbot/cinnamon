@@ -13,6 +13,8 @@ public class CreateOteActivityArgs
 
     [Required]
     public IList<OteDate> Dates {get; set;}
+    
+    public IList<OteDateOverride>? DateOverrides {get; set;}
 
     public class OteActivity 
     {
@@ -83,6 +85,12 @@ public class CreateOteActivityArgs
         public int RepeatEvery {get; set;}
 
         public string SelectedDays {get; set;} = string.Empty;
+
+        [Required]
+        public int EventDurationCount {get; set;}
+
+        [Required]
+        public string EventDurationTimeUnit {get; set;}
     }
 
     public class OtePricing 
@@ -105,6 +113,18 @@ public class CreateOteActivityArgs
     }
 
     public class OteDate 
+    {
+        [Required]
+        public DateTime Date {get; set;}
+
+        [Required]
+        public DateTime DateStart {get; set;}
+
+        [Required]
+        public DateTime DateEnd {get; set;}
+    }
+
+    public class OteDateOverride 
     {
         [Required]
         public DateTime Date {get; set;}

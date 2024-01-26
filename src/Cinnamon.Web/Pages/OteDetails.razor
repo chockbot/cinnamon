@@ -159,7 +159,9 @@
 
                 <section id="ote-description">
                     <h3 class="font-24 font-weight-700 color-black-100 mb-0 m-font-20">About </h3>
-                    <p class="text-justify font-18 color-grey-100 mt-2 mt-md-4 m-font-16">@activity.Description</p>
+                    <p class="text-justify font-18 color-grey-100 mt-2 mt-md-4 m-font-16">
+                        @((MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                    </p>
                 </section>
 
                 @if(!activity.IsComingSoon)
@@ -168,7 +170,7 @@
                         <h3 class="font-24 font-weight-700 color-black-100 m-font-20">Date & Time</h3>
                         <div class="flex-column flex-md-row select-calendar-container p-4 bg-black-100 position-relative mt-4 border-radius-20 d-flex justify-content-between" style="z-index: 99;">
                             <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates" 
-                                ViewOnly StrikeOutNotSelected OnSelectedDate="d => selectedDate = d" />
+                                ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
                             <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="mt-3 mt-md-0 font-16 font-weight-700 color-white-100 bg-green-100 hover-color-white border-radius-20">Check Availability</Button>
                         </div>
                         <div class="mt-4 border-radius-10 border-1-solid border-color-grey-200 overflow-hidden">
@@ -188,7 +190,7 @@
                                         <div class="d-flex align-items-center">
                                             <img class="me-2" src="images/ote/clock.png" alt="clock">
                                             <label class="ote-schedule me-1">Time Start:</label>
-                                            <label class="font-16 color-black-100">@activity.ScheduleFrom.ToString("hh:mm tt")</label>
+                                            <label class="font-16 color-black-100">@selectedDateStart.ToString("hh:mm tt")</label>
                                         </div>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12">
@@ -563,6 +565,7 @@
     private DateTime selectedDate;
     public string ProfileHandler { get; set; }
     public bool showFullAbout = false;
+    private DateTime selectedDateStart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -842,6 +845,12 @@
 
     private async Task ProceedToPayment()
     {
+        if(selectedTickets.Count <= 0)
+        {
+            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            return;
+        }
+
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
@@ -945,6 +954,7 @@
             var oteDate = activity.OteDates.FirstOrDefault(d => d.Date.Date == selectedDate.Date);
             if(oteDate is not null)
             {
+                selectedDateStart = oteDate.DateStart;
                 AvailablePriceList = activity.Pricings.Where(p => p.OteDateId == oteDate.Id);
                 Duration = (oteDate.DateEnd - oteDate.DateStart);
             }
@@ -952,11 +962,17 @@
         return Task.CompletedTask;
     }
 
+    private async Task OnSelectedDateChanged(DateTime date)
+    {
+        selectedDate = date;
+        await ViewAvailableDates();
+    }
+
     private string EventDurationString 
     {
         get 
         {
-            return TimeSpan.FromDays(Duration.TotalDays).Humanize();
+            return TimeSpan.FromDays(Duration.TotalDays).Humanize(2, countEmptyUnits: true, collectionSeparator: " and ");
         }
     }
 

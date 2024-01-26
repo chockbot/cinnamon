@@ -2613,6 +2613,9 @@ public class ActivityController : ControllerBase
                     MonthSelection = activity.MonthSelection,
                     OnDayDate = activity.OnDayDate,
                     WeekString = activity.WeekString,
+
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2622,7 +2625,13 @@ public class ActivityController : ControllerBase
                         Price = p.Price,
                         Name = p.Name
                     };
-                })
+                }),
+                DateOverrides = args.DateOverrides is not null ? 
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteCreateArgs.DateOverride {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    }) : null
             });
 
             if (!result.Succeeded || result.Result == null)

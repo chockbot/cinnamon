@@ -12,6 +12,7 @@
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler;
+@inject INotificationService NotificationService;
 @attribute [Authorize]
 
 <PageTitle>Create an Experience | CinnamonPH</PageTitle>
@@ -788,6 +789,10 @@
             // upload image without checking if there is an error so that can't re update another activity
             bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
+
+            await NotificationService.Success("Success! You created an activity", "Success!");
+
+            await Task.Delay(1000);            
 
             navigationManager.NavigateTo("/maker/dashboard");
 

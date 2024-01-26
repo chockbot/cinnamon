@@ -5,6 +5,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.Extensions.DateTimeExtension;
+using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -14,6 +15,7 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IGenerateActivityHandler generateActivityHandler;
     private readonly ICustomerData customerData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IGenerateActivityHandler generateActivityHandler, ICustomerData customerData)
@@ -22,6 +24,10 @@ public class OteCreateHandler : IOteCreateHandler
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.customerData = customerData;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<OteCreateResult> Execute(OteCreateArgs args)
@@ -60,6 +66,13 @@ public class OteCreateHandler : IOteCreateHandler
             if(!generateHandlerRes.Succeeded || generateHandlerRes.Result is null)
             {
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(generateHandlerRes.Message), generateHandlerRes.Message);
+            }
+
+            // validate accepted event duration unit time
+            string[] timeUnits = {"hrs", "days", "weeks", "months"};
+            if(!timeUnits.Any(t => t == args.Activity.EventDurationTimeUnit))
+            {
+                return AppResult<OteCreateResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
             }
 
             // validate and check dateStart and dateEnd for recurreing schedules
@@ -132,21 +145,37 @@ public class OteCreateHandler : IOteCreateHandler
                 extraOptionsForMonthlyRecurring = $"{args.Activity.MonthSelection}|{args.Activity.OnDayDate}|{args.Activity.MonthRepeat}|{args.Activity.MonthDay}";
             }
 
-            int interval = (int)(args.Activity.ScheduleTo - args.Activity.ScheduleFrom).TotalDays;
             var every = args.Activity.DurationEvery ?? 0;
             var dateStart = args.Activity.DurationStart ?? DateTime.Now;
             var dateEnd = args.Activity.DurationEnd ?? DateTime.Now;
-            var timeFrom = args.Activity.ScheduleFrom.TimeOfDay;
-            var timeTo = args.Activity.ScheduleTo.TimeOfDay;
+
+            var timeStart = args.Activity.ScheduleFrom.TimeOfDay;
+            var timeDuration = args.Activity.ScheduleTo - args.Activity.ScheduleFrom;
 
             var dateItems = args.Activity.Recurrence switch {
-                "every-weekday" => GenerateWeekday(every, dateStart, dateEnd, timeFrom, timeTo, interval),
-                "daily" => GenerateDaily(every, dateStart, dateEnd, timeFrom, timeTo, interval),
-                "weekly" => GenerateWeekly(every, dateStart, dateEnd, timeFrom, timeTo, interval, args.Activity.WeekString ?? string.Empty),
-                "monthly" => GenerateMonthly(every, dateStart, dateEnd, timeFrom, timeTo, interval, args.Activity.MonthSelection ?? 0, 
+                "every-weekday" => GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+                "daily" => GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+                "weekly" => GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, args.Activity.WeekString ?? string.Empty),
+                "monthly" => GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, args.Activity.MonthSelection ?? 0, 
                 args.Activity.OnDayDate ?? 1, args.Activity.MonthRepeat ?? string.Empty, args.Activity.MonthDay ?? string.Empty),
                 _ => GenerateNoRepeat(args.Activity.ScheduleFrom, args.Activity.ScheduleTo)
             };
+
+            // override dates
+            if(args.DateOverrides is not null)
+            {
+                var dictionaryDates = args.DateOverrides.ToDictionary(d => d.Date.Date);
+
+                foreach(var item in dateItems)
+                {
+                    if(dictionaryDates.ContainsKey(item.Date.Date))
+                    {
+                        var date = dictionaryDates[item.Date.Date];
+                        item.DateStart = item.DateStart.Date.Add(date.TimeStart);
+                        item.DateEnd = item.DateStart.Date.Add(date.TimeEnd);
+                    }
+                }
+            }
 
             var sortedPrice = args.Pricings.OrderBy(p => p.Price).ToList();
             var stringPrice = sortedPrice.Count > 1 ? string.Format("PHP {0} - {1}", sortedPrice.First().Price, sortedPrice.Last().Price) :
@@ -159,7 +188,7 @@ public class OteCreateHandler : IOteCreateHandler
                     CityName                 = activity.CityName ?? string.Empty,
                     CityNumber               = activity.CityNumber ?? string.Empty,
                     CustomerId               = currentUser.Result.Id,
-                    Description              = activity.Description,
+                    Description              = htmlSanitizer.Sanitize(activity.Description),
                     EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
                     ExperienceTypeId         = activity.ExperienceTypeId,
@@ -179,7 +208,9 @@ public class OteCreateHandler : IOteCreateHandler
                     RecurrenceDateStart = args.Activity.DurationStart ?? args.Activity.ScheduleFrom,
                     RepeatEvery = args.Activity.DurationEvery ?? 0,
                     SelectedDays = args.Activity.WeekString ?? String.Empty,
-                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty
+                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty,
+                    EventDurationCount = args.Activity.EventDurationCount,
+                    EventDurationTimeUnit = args.Activity.EventDurationTimeUnit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
@@ -196,7 +227,15 @@ public class OteCreateHandler : IOteCreateHandler
                         DateEnd = d.DateEnd,
                         DateStart = d.DateStart
                     };
-                }).ToList()
+                }).ToList(),
+                DateOverrides = args.DateOverrides is not null ? 
+                    args.DateOverrides.Select(d => {
+                        return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OteDateOverride {
+                            Date = d.Date,
+                            DateEnd = d.Date.Date.Add(d.TimeEnd),
+                            DateStart = d.Date.Date.Add(d.TimeStart)
+                        };
+                    }).ToList() : null
             });
             if(!createOteRes.Succeeded || createOteRes.Result is null || !createOteRes.Result.IsSuccess)
             {
@@ -225,7 +264,7 @@ public class OteCreateHandler : IOteCreateHandler
     }
 
     private IEnumerable<DateItem> GenerateWeekday(int repeat, DateTime start, DateTime end, 
-        TimeSpan from, TimeSpan to, int daysInterval)
+        TimeSpan timeDuration, TimeSpan timeStart)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
 
@@ -236,8 +275,8 @@ public class OteCreateHandler : IOteCreateHandler
         {
             var item = new DateItem {
                             Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(from),
-                            DateEnd = recurringDate.AddDays(daysInterval).Date.Add(to)
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         };
 
             switch(recurringDate.DayOfWeek)
@@ -269,7 +308,7 @@ public class OteCreateHandler : IOteCreateHandler
     }
 
     private IEnumerable<DateItem> GenerateDaily(int repeat, DateTime start, DateTime end, 
-        TimeSpan from, TimeSpan to, int daysInterval)
+        TimeSpan timeDuration, TimeSpan timeStart)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
 
@@ -280,8 +319,8 @@ public class OteCreateHandler : IOteCreateHandler
         {
             var item = new DateItem {
                             Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(from),
-                            DateEnd = recurringDate.AddDays(daysInterval).Date.Add(to)
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         };
             
 
@@ -320,7 +359,7 @@ public class OteCreateHandler : IOteCreateHandler
     }
 
     private IEnumerable<DateItem> GenerateWeekly(int repeat, DateTime start, DateTime end, 
-        TimeSpan from, TimeSpan to, int daysInterval, string selectedDays)
+        TimeSpan timeDuration, TimeSpan timeStart, string selectedDays)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
 
@@ -333,8 +372,8 @@ public class OteCreateHandler : IOteCreateHandler
         {
             var item = new DateItem {
                             Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(from),
-                            DateEnd = recurringDate.AddDays(daysInterval).Date.Add(to)
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         };
 
             if(dayWeeks.ContainsKey(recurringDate.DayOfWeek))
@@ -354,7 +393,7 @@ public class OteCreateHandler : IOteCreateHandler
     }
 
     private IEnumerable<DateItem> GenerateMonthly(int repeat, DateTime start, DateTime end, 
-        TimeSpan from, TimeSpan to, int daysInterval, int monthSelection, int onTheDay, 
+        TimeSpan timeDuration, TimeSpan timeStart, int monthSelection, int onTheDay, 
         string monthRepeat, string monthDay)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
@@ -372,16 +411,16 @@ public class OteCreateHandler : IOteCreateHandler
                 {
                     generatedDates.Add(new DateItem {
                         Date = recurringDate.Date,
-                        DateStart = recurringDate.LastDayOfMonth().Date.Add(from),
-                        DateEnd = recurringDate.LastDayOfMonth().AddDays(daysInterval).Date.Add(to)
+                        DateStart = recurringDate.LastDayOfMonth().Date.Add(timeStart),
+                        DateEnd = recurringDate.LastDayOfMonth().Date.Add(timeStart).Add(timeDuration)
                     });
                 }
                 else {
                     var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
                     generatedDates.Add(new DateItem {
                         Date = recurringDate.Date,
-                        DateStart = dateStart.Date.Add(from),
-                        DateEnd = dateStart.AddDays(daysInterval).Add(to)
+                        DateStart = dateStart.Date.Add(timeStart),
+                        DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
                     });
                 }
                 recurringDate = recurringDate.AddMonths(monthsToSkip);
@@ -423,8 +462,8 @@ public class OteCreateHandler : IOteCreateHandler
                     {
                         generatedDates.Add(new DateItem {
                             Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(from),
-                            DateEnd = recurringDate.AddDays(daysInterval).Date.Add(to)
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         });
                         skipCounter = 0;
                         break;

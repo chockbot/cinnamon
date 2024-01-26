@@ -9,7 +9,7 @@
             <div>
                 <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">@Summary.EventData.Name</h3>
                 <p class="font-20 color-black-100 mb-0">
-                    @Summary.EventData.Description
+                    @((MarkupString)Summary.EventData.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
                 </p>
             </div>
             <Divider />

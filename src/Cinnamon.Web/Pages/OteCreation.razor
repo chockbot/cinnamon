@@ -440,7 +440,9 @@
                     MonthRepeat = schedule.MonthRepeat,
                     MonthSelection = schedule.MonthSelection,
                     OnDayDate = schedule.OnDayDate,
-                    WeekString = schedule.WeekString
+                    WeekString = schedule.WeekString,
+                    EventDurationCount = schedule.EventDurationCount,
+                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
@@ -449,6 +451,13 @@
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name
+                    };
+                }),
+                DateOverrides = schedule.DateOverrides.Select(d => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
                     };
                 })
             }, token);
@@ -464,6 +473,10 @@
             {
                 var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
             }
+
+            await NotificationService.Success("Success! You created an activity", "Success");
+
+            await Task.Delay(1000);
 
             await JS.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
             NavigationManager.NavigateTo("/maker/dashboard");
@@ -532,6 +545,10 @@
                 var uploadRes = await oteGallery.UploadImages(oteId);
             }
 
+            await NotificationService.Success("Success! You updated an activity", "Success");
+
+            await Task.Delay(1000);
+
             NavigationManager.NavigateTo("/maker/dashboard");
         }
         catch (System.Exception)
@@ -596,6 +613,8 @@
             MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
             OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
             WeekString = ote.OteSchedule.SelectedDays,
+            EventDurationCount = ote.OteSchedule.EventDurationCount,
+            EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
             ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
