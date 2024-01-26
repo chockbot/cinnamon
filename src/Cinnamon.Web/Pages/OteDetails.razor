@@ -129,6 +129,7 @@
                                 <div class="ms-3">
                                     <label class="font-16 font-weight-400 color-grey-100 m-font-14">Experience by</label>
                                     <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-14">@provider.FirstName @provider.LastName</p>
+                                    <a class="view-profile m-font-14" href="/maker/profile/@ProfileHandler" target="_blank">View Profile</a>
                                 </div>
                             </div>
                             <div class="d-inline-flex align-items-center">
@@ -560,6 +561,7 @@
     private TimeSpan Duration { get; set; }
     private IEnumerable<OtePricing> AvailablePriceList {get; set;} = Enumerable.Empty<OtePricing>();
     private DateTime selectedDate;
+    public string ProfileHandler { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -599,6 +601,7 @@
                 if(profileResult.Succeeded || profileResult.Result is not null && profileResult.Result.IsSuccess)
                 {
                     currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
+                    ProfileHandler = profileResult.Result.Result.Handler;
                 }
             }
         }
