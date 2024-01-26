@@ -53,40 +53,42 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
         try
         {
             var purchaseOrdeRes = await purchaseOrderData.GetPurchaseOrderById(args.PurchaseOrderId);
-            if(!purchaseOrdeRes.Succeeded || purchaseOrdeRes.Result is null || !purchaseOrdeRes.Result.IsSuccess)
+            if (!purchaseOrdeRes.Succeeded || purchaseOrdeRes.Result is null || !purchaseOrdeRes.Result.IsSuccess)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(purchaseOrdeRes.Message), purchaseOrdeRes.Message);
             }
             var purchaseOrder = purchaseOrdeRes.Result.Result;
 
             var deserializedPayload = jsonSerializationProvider.Deserialize<PayloadData>(purchaseOrder.Payload);
-            if(deserializedPayload is null)
+            if (deserializedPayload is null)
             {
                 throw new Exception("An error occured. Please contact support.");
             }
 
-            var customerRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
-            if(!customerRes.Succeeded || customerRes.Result is null)
+            var customerRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs { });
+            if (!customerRes.Succeeded || customerRes.Result is null)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(customerRes.Message), customerRes.Message);
             }
             var customerProfile = customerRes.Result;
 
-            if(purchaseOrder.CustomerId != customerProfile.Id)
+            if (purchaseOrder.CustomerId != customerProfile.Id)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException("Invalid Request."), "Invalid Request.");
             }
 
-            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
+            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs
+            {
                 ActivityId = purchaseOrder.ActivityId
             });
-            if(!activityRes.Succeeded || activityRes.Result is null)
+            if (!activityRes.Succeeded || activityRes.Result is null)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(activityRes.Message), activityRes.Message);
             }
             var activity = activityRes.Result;
 
-            var oteActivityRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs {
+            var oteActivityRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs
+            {
                 Handler = activity.Handler,
                 IncludeAddress = true,
                 IncludeDescription = true,
@@ -94,7 +96,7 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 IncludePricing = true,
                 IncludeSchedule = true
             });
-            if(!oteActivityRes.Succeeded || oteActivityRes.Result is null)
+            if (!oteActivityRes.Succeeded || oteActivityRes.Result is null)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(oteActivityRes.Message), oteActivityRes.Message);
             }
@@ -104,22 +106,22 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 get first ticket and ticket price to get ote date reference
             */
             var firstTicket = deserializedPayload.Tickets.FirstOrDefault();
-            if(firstTicket is null)
+            if (firstTicket is null)
             {
                 throw new Exception("An error occured. Please contact support.");
             }
             var ticketPrice = oteActivity.Pricings.Where(p => p.Id == firstTicket.Id).FirstOrDefault();
-            if(ticketPrice is null)
+            if (ticketPrice is null)
             {
                 throw new Exception("An error occured. Please contact support.");
             }
             var oteDateRes = await oteDateData.GetOteDate(ticketPrice.OteDateId);
-            if(!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
+            if (!oteDateRes.Succeeded || oteDateRes.Result is null || !oteDateRes.Result.IsSuccess)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(oteDateRes.Message), oteDateRes.Message);
             }
             var oteDate = oteDateRes.Result.Result;
-            
+
             var url = applicationConfig.FrontendUrl
                 .AppendPathSegment("transactions")
                 .AppendPathSegment("ote-tickets")
@@ -127,15 +129,16 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 .AppendPathSegment(deserializedPayload.Token);
 
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : string.IsNullOrEmpty(oteActivity.PinnedLocation) ? $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}" : oteActivity.PinnedLocation;
-            
+
             var ticketsRes = await oteTicketData.GetByPurchaseOrderId(purchaseOrder.Id, new());
-            if(!ticketsRes.Succeeded || ticketsRes.Result is null || !ticketsRes.Result.IsSuccess)
+            if (!ticketsRes.Succeeded || ticketsRes.Result is null || !ticketsRes.Result.IsSuccess)
             {
                 return AppResult<OtePurchaseOrderDetailsResult>.CreateFailed(new ApplicationException(ticketsRes.Error?.Description), ticketsRes.Message);
             }
             var tickets = ticketsRes.Result.Result;
-            
-            var result = new OtePurchaseOrderDetailsResult {
+
+            var result = new OtePurchaseOrderDetailsResult
+            {
                 EventDate = oteDate.DateStart,
                 EventLocation = location,
                 EventName = oteActivity.EventName,
@@ -145,7 +148,8 @@ public class OtePurchaseOrderDetailsHandler : IOtePurchaseOrderDetailsHandler
                 TotalPurchase = purchaseOrder.OverallTotal,
                 SubTotal = purchaseOrder.Total,
                 Tickets = tickets.Select(t => {
-                    return new OtePurchaseOrderDetailsResult.Ticket {
+                    return new OtePurchaseOrderDetailsResult.Ticket
+                    {
                         Code = t.QRCode,
                         Id = t.Id,
                         ImageData = t.QRImageData,

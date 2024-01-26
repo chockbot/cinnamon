@@ -1,5 +1,6 @@
 ﻿@page "/explore"
 @page "/explore/experiences/{landingSearch}"
+@page "/explore/category/{filterSearch}"
 @page "/confirm-email"
 @layout EmptyLayout
 @using Microsoft.AspNetCore.SignalR.Client;
@@ -274,7 +275,7 @@
                                 {
                                     <div class="swiper-slide category">
                                         <div>
-                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id, category.Category))">
+                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
                                             <img src=@category.IconPath class="img-icon text-center">
                                             <p class="card-title">@category.Category</p>
                                         </a>
@@ -698,6 +699,8 @@
 {
     [Parameter]
     public string landingSearch { get; set; }
+    [Parameter]
+    public string filterSearch { get; set; }
     private WelcomeModal WelcomeModalRef { get; set; }
     private ReviewModal ReviewModalRef { get; set; }
     private ModalLogin signinModal;
@@ -760,9 +763,7 @@
         LoadRedirectUrls();
         showOverlayPopularActivities = true;
 
-        await LoadSigninUser();
-        await GetFavorites();
-
+        //Search in Landing Page
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities(null);
@@ -773,7 +774,15 @@
             searchValue = landingSearch;
             await Search();
         }
+        //Search by Filter
+        if (!string.IsNullOrEmpty(filterSearch))
+        {
+            int filter = int.Parse(filterSearch);
+            await Filter(filter);
+        }
 
+        await LoadSigninUser();
+        await GetFavorites();
         showOverlayPopularActivities = false;
 
         // get experience categories
@@ -1245,9 +1254,10 @@
         pageIndex = 1;
         itemsPerPage = 20;
         await FetchActivities(false);
+        await FetchPopularActivities(null);
     }
 
-    public async Task Filter(int id, string type)
+    public async Task Filter(int id)
     {
         experienceCategoryId = id;
         pageIndex = 1;

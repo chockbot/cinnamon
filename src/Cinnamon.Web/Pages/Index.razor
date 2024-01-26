@@ -35,6 +35,8 @@
 <div class="circle-2-md">
     <img src="images/landing-page-images/circle-2-md.png">
 </div>
+
+
 <!--Section 1-->
 <div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
     <img class="blob_1" alt="blob_1" src="images/landing-page-images/circle.png">
@@ -47,118 +49,82 @@
     <img class="blob_2" alt="blob_2" src="images/landing-page-images/circle-2.png">
 </div>
 
+<!--Search Section-->
 <div class="wrapper search_section">
     <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
-    <div class="search_bar">
-        <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
-        <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" placeholder="Search for an activity.." @oninput="OnChageInput">
-        <button class="explore_button" @onclick="() =>SearchToExplorePage()">
-            @buttonLabel
-        </button>
-    </div>
+    <form class="search-bar" @onsubmit=SearchToExplorePage>
+        <div class="search_bar">
+            <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
+            <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" placeholder="Search for an activity.." @oninput="OnChageInput" @bind-value="searchValue">
+            <button class="explore_button" @onclick="() =>SearchToExplorePage()">
+                @buttonLabel
+            </button>
+        </div>
+    </form>
     <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
 </div>
 
-<section class="carousel_pics col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+<!--Section Category-->
+<div class="categories-section">
+    <div class="schedule-swiper">
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          <div class="swiper-slide">
+            <div class="landing_page_pic" @onclick="() =>SearchByFilter(2)">
+                <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/landing_page_pic1.png">
+                <p class="carousel_pics_text">
+                    <span>Academics</span>
+                </p>
+            </div>
+        </div>
 
-    <div class="landing_page_pic">
-        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/landing_page_pic1.webp">
-        <p class="carousel_pics_text">
-            <span>Coding</span>
-        </p>
-    </div>
+          <div class="swiper-slide">
+                <div class="landing_page_pic" id="second-pic" @onclick="() =>SearchByFilter(4)">
+                <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/landing_page_pic2.png">
+                <p class="carousel_pics_text">
+                    <span>Music</span>
+                </p>
+            </div>
+        </div>
 
+          <div class="swiper-slide">
+            <div class="landing_page_pic" @onclick="() =>SearchByFilter(3)">
+                <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/landing_page_pic3.png">
+                <p class="carousel_pics_text">
+                    <span>Language</span>
+                </p>
+            </div>
+        </div>
 
-    <div class="landing_page_pic" style="margin-top:140px;">
-        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/landing_page_pic2.webp">
-        <p class="carousel_pics_text">
-            <span>Cycling</span>
-        </p>
-    </div>
+          <div class="swiper-slide">
+            <div class="landing_page_pic" id="fourth-pic" @onclick="() =>SearchByFilter(5)">
+                <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/landing_page_pic4.png">
+                <p class="carousel_pics_text">
+                    <span>Skill</span>
+                </p>
+            </div>
+        </div>
 
+          <div class="swiper-slide">
+            <div class="landing_page_pic" @onclick="() =>SearchByFilter(8)">
+                <img class="landing_page_pic5" alt="landing_page_pic5" src="images/landing-page-images/landing_page_pic5.png">
+                <p class="carousel_pics_text">
+                    <span>Events</span>
+                </p>
+            </div>
+        </div>
 
-    <div class="landing_page_pic">
-        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/landing_page_pic3.webp">
-        <p class="carousel_pics_text">
-            <span>Events</span>
-        </p>
-    </div>
+          <div class="swiper-slide">
+            <div class="landing_page_pic" id="sixth-pic" @onclick="() =>SearchByFilter(6)">
+                <img class="landing_page_pic6" alt="landing_page_pic6" src="images/landing-page-images/landing_page_pic6.png">
+                <p class="carousel_pics_text">
+                    <span>Sped</span>
+                </p>
+            </div>
+        </div>
 
-
-    <div class="landing_page_pic" style="margin-top:140px;">
-        <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/landing_page_pic4.webp">
-        <p class="carousel_pics_text">
-            <span>Fun Times</span>
-        </p>
-    </div>
-
-
-    <div class="landing_page_pic">
-        <img class="landing_page_pic5" alt="landing_page_pic5" src="images/landing-page-images/landing_page_pic5.webp">
-        <p class="carousel_pics_text">
-            <span>Playing</span>
-        </p>
-    </div>
-
-    <div class="landing_page_pic" style="margin-top:140px;">
-        <img class="landing_page_pic6" alt="landing_page_pic6" src="images/landing-page-images/landing_page_pic6.webp">
-        <p class="carousel_pics_text">
-            <span>Sports</span>
-        </p>
-    </div>
-</section>
-
-<div class="carousel_pics_mobile col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
-    <div class="landing_page_pic">
-        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/img-coding-mobile.webp">
-        <p class="carousel_pics_text">
-            <span>Coding</span>
-        </p>
-    </div>
-
-
-    <div class="landing_page_pic">
-        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/img-cycling-mobile.webp">
-        <p class="carousel_pics_text">
-            <span>Cycling</span>
-        </p>
-    </div>
-
-
-    <div class="landing_page_pic">
-        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/img-events-mobile.webp">
-        <p class="carousel_pics_text">
-            <span>Events</span>
-        </p>
-    </div>
-</div>
-
-<div class="carousel_pics_tablet col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
-    <div class="landing_page_pic">
-        <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/img-coding-tablet.webp">
-        <p class="carousel_pics_text">
-            <span>Coding</span>
-        </p>
-    </div>
-
-    <div class="landing_page_pic" style="margin-top:90px;">
-        <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/img-cycling-tablet.webp">
-        <p class="carousel_pics_text">
-            <span>Cycling</span>
-        </p>
-    </div>
-
-    <div class="landing_page_pic">
-        <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/img-events-tablet.webp">
-        <p class="carousel_pics_text">
-            <span>Events</span>
-        </p>
-    </div>
-    <div class="landing_page_pic" style=" margin-top:90px;">
-        <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/img-fun-tablet.webp">
-        <p class="carousel_pics_text">
-            <span>Fun Times</span>
-        </p>
+           <div class="swiper-scrollbar"></div>
+        </div>
     </div>
 </div>
 
@@ -186,13 +152,17 @@
         </div>
 
         <div>
-            <p class="about_us_title"><span class="iba_color">Cinnamon</span> is an activity learning & events marketplace.</p>
-            <p class="about_us_subtitle">Our main focus is to help everyone spend their time on meaningful fun experiences by connecting you to people who are passionate about sharing their skills and knowledge.</p>
+            <div class="d-flex justify-content-center">
+                <img class="bubble-image" alt="bubble-image" src="images/landing-page-images/bubble-cinnamon.png" />
+            </div>
+            <p class="about_us_title">Message board feature Coming SOON!</p>
+            <p class="about_us_subtitle">Get the latest and important announcements from the Cinnamon team right here.</p>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
+                    <span>Sign up now</span>
+                </button>
+            </div>
         </div>
-
-        <img class="about_us_pic" alt="about_us_pic" src="images/landing-page-images/img-section2-desktop.webp">
-        <img class="about_us_pic_tablet" alt="about_us_pic" src="images/landing-page-images/img-section2-tablet.webp">
-        <img class="about_us_pic_mobile" alt="about_us_pic" src="images/landing-page-images/img-section2-mobile.webp">
     </div>
 
     <div class="custom-shape-divider-bottom-1691652212">
@@ -699,6 +669,7 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await GetFavorites();
         }
         else
@@ -889,6 +860,12 @@
         {
             NavigationManager.NavigateTo($"/explore/experiences/{searchValue}");
         }
+    }
+
+    private void SearchByFilter(int filter)
+    {
+        string filterString = filter.ToString();
+        NavigationManager.NavigateTo($"/explore/category/{filterString}");
     }
 
     private void NavigateToOnboardingPage()

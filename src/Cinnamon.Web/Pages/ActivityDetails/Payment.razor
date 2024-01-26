@@ -34,7 +34,9 @@
         <Div ElementId="#b-animate" class="purchase-order-page">
             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                 <div class="d-flex align-items-center mt-3">
-                    <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack"/>
+                    <button class="button-back">
+                    <img class="cursor-pointer me-3" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack" />
+                    </button>
                     <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize">Confirm experience</h4>
                 </div>
                 <Row HorizontalGutter="50" class="mt-5">
@@ -584,7 +586,9 @@
 
     <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember"
                 Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
-    <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
+    @*<SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />*@
+    <DetailsSchedulesModal @ref="DetailsModalSched" OnChooseSelected="ModalSelectedChanged"
+                       ScheduleModel="Model.Activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="Model.Activity"/>
     <Modal @ref="CardModal">
         <ModalContent Centered>
             <ModalHeader Border="Border.Is0">
@@ -766,6 +770,8 @@
     private PurchaseModel Model { get; set; }
 
     private SchedulesModal ModalSched { get; set; }
+
+    private DetailsSchedulesModal DetailsModalSched { get; set; }
 
     public AddChildrenModal AddChildrenModal { get; set; }
 
@@ -1207,7 +1213,7 @@
 
     private void OnClickChange()
     {
-        ModalSched.Open();
+        DetailsModalSched.Open();
     }
 
     private async Task SaveEditedFamilyMember(AddChildrenModal.OnSaveButtonEventArgs args)
@@ -1768,6 +1774,14 @@
             else
                 existingAddOn.AddOnCount = 0;
         }
+        return Task.CompletedTask;
+    }
+
+    private Task ModalSelectedChanged(int selectedId)
+    {
+        ScheduleId = selectedId;
+        SelectedScheduleChanged();
+        DetailsModalSched.Close();
         return Task.CompletedTask;
     }
 
