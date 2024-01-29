@@ -226,6 +226,7 @@ public class ActivityController : ControllerBase
                 Status = args.Status,
                 ExperienceCreationType = args.ExperienceCreationType,
                 ClassPolicies = args.ClassPolicies ?? string.Empty,
+                VideoLink = args.VideoLink ?? string.Empty
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -280,7 +281,8 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                ClassPolicies = activity.ClassPlicies
+                ClassPolicies = activity.ClassPlicies,
+                VideoLink   = activity.VideoLink
             }
             });
         }
@@ -329,6 +331,7 @@ public class ActivityController : ControllerBase
                 IsDeactivated           = args.IsDeactivated,
                 IsAdmin                 = args.IsAdmin,
                 Status                  = args.Status,
+                VideoLink               = args.VideoLink,
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
@@ -412,7 +415,8 @@ public class ActivityController : ControllerBase
                 Title                   = activity.Title,
                 Handler                 = activity.Handler,
                 Status                  = activity.Status,
-                ClassPolicies           = activity.ClassPolicies
+                ClassPolicies           = activity.ClassPolicies,
+                VideoLink               = activity.VideoLink
             }});
         }
         catch (Exception ex)
@@ -1130,12 +1134,13 @@ public class ActivityController : ControllerBase
                     PinnedLocation= activity.PinnedLocation,
                     Status = activity.Status,
                     ExperienceCreationType = activity.ExperienceCreationType,
-                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                    Owner           = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
-                            Id  = activity.Owner.Id
+                            Id      = activity.Owner.Id
                         } : null,
                     CompletedStudents = activity.CompletedStudents,
-                    OngoingStudents = activity.OngoingStudents
+                    OngoingStudents   = activity.OngoingStudents,
+                    VideoLink         = activity.VideoLink
                 }
             });
         }
@@ -1312,6 +1317,7 @@ public class ActivityController : ControllerBase
                     ExperienceCategoryId = activity.ExperienceCategoryId,
                     ExperienceTypeId = activity.ExperienceTypeId,
                     CreatedBy = activity.CreatedBy,
+                    VideoLink = activity.VideoLink,
                     Images = activity.Images.Select(i => {
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                             Id = i.Id,
@@ -1483,7 +1489,8 @@ public class ActivityController : ControllerBase
                         } : null,
                     CompletedStudents = activity.CompletedStudents,
                     OngoingStudents = activity.OngoingStudents,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+                    VideoLink = activity.VideoLink
                 }
             });
         }

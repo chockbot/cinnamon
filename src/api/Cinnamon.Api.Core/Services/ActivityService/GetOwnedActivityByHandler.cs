@@ -91,6 +91,7 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                 IsSetSession = activity.IsSetSession,
                 SessionName = activity.SessionName,
                 ClassPolicies = activity.ClassPolicies,
+                VideoLink = activity.VideoLink,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,

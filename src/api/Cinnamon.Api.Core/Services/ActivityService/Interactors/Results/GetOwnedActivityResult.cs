@@ -47,6 +47,7 @@ public class GetOwnedActivityResult
     public CustomerOwner? Owner {get; set;}
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public string? VideoLink { get; set; }
 
     public class ActivitySchedule 
     {
