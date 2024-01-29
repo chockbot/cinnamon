@@ -155,7 +155,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                     Id = activity.Owner.Id
                 } : null,
                 OngoingStudents = activity.OngoingStudents,
-                CompletedStudents = activity.CompletedStudents
+                CompletedStudents = activity.CompletedStudents,
+                VideoLink = activity.VideoLink
             };
 
             return AppResult<GetOwnedActivityResult>.CreateSucceeded(activityEntity, "Successfully get owned activity");

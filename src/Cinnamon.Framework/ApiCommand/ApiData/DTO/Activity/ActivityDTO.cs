@@ -52,6 +52,7 @@ public class ActivityDTO
     public Enums.Enums.ActivityStatus Status { get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public bool IsComingSoon {get; set;}
+    public string VideoLink { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<AddOnsDTO> AddOns { get; set; }
