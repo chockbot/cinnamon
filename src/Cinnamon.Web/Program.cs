@@ -1,21 +1,19 @@
+using AutoMapper;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
 using Cinnamon.Web.Extensions;
+using Cinnamon.Web.Middleware;
 using Cinnamon.Web.Providers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Serilog;
-using Cinnamon.Web.Middleware;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
-using AutoMapper;
+using Microsoft.AspNetCore.SignalR.Client;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 

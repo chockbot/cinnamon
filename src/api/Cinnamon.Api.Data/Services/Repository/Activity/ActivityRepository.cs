@@ -31,7 +31,8 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType, string? classPolicies)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType, 
+        string? classPolicies, string? videoLink)
     {
         try
         {
@@ -81,6 +82,7 @@ public class ActivityRepository : IActivityRepository
                 Guid = Guid.NewGuid().ToString(),
                 Status = (int)status,
                 ExperienceCreationTypeId = (int)experienceCreationType,
+                VideoLink = videoLink
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -682,7 +684,8 @@ public class ActivityRepository : IActivityRepository
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
-                IsComingSoon = activity.IsComingSoon
+                IsComingSoon = activity.IsComingSoon,
+                VideoLink = activity.VideoLink
             };
 
             // address fields
@@ -905,7 +908,8 @@ public class ActivityRepository : IActivityRepository
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
-                IsComingSoon = activity.IsComingSoon
+                IsComingSoon = activity.IsComingSoon,
+                VideoLink = activity.VideoLink 
             };
 
             // address fields
@@ -1082,7 +1086,7 @@ public class ActivityRepository : IActivityRepository
         string? barangay, string? postalcode, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel,
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4,
         string? searchtag5, int? experienceCategoryId, int? subCategoryId, string pinnedLocation,
-        bool? isDeactivated, Enums.ActivityStatus? status, string? handler, string? classPolicies)
+        bool? isDeactivated, Enums.ActivityStatus? status, string? handler, string? classPolicies, string? videoLink)
     {
         try
         {
@@ -1142,6 +1146,7 @@ public class ActivityRepository : IActivityRepository
             activity.IsDeactivated = isDeactivated ?? activity.IsDeactivated;
             activity.Status = status.HasValue ? (int)status.GetValueOrDefault() : activity.Status;
             activity.Handler = handler ?? activity.Handler;
+            activity.VideoLink = videoLink ?? activity.VideoLink;
 
             var updatedActivity = await dataStore.Activity.Update(activity);
             if (!updatedActivity.Succeeded)
