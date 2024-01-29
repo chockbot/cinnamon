@@ -9,7 +9,7 @@
 @inject IAdminApiHandler adminApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<Modal @ref="Model.EmailModal" class="modal-email modal-account-credential">
+<Modal @ref="Model.EmailModal" class="modal-email modal-account-credential" id="modal-disabled-close">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
             <p class="col-12 modal-title font-20 m-0">Update Email</p>
@@ -87,11 +87,20 @@
     </ModalContent>
 </Modal>
 @code {
+    IJSObjectReference module;
 
     private Models.Modals.LoginModal Model = new();
 
     string modalHeaderStyle = $"";
 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/disabledModalClose.js");
+        }
+    }
     public async Task Show()
     {
         await Model.EmailModal.Show();
