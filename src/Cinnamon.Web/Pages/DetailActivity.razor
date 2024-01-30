@@ -527,18 +527,18 @@
                                 <label class="fw-bold mb-3 detail-label">@(activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</label>
                                 @foreach (var addOn in activity.AddOns.OrderBy(a => a.Order).ToList())
                                 {
-                                    <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
-                                        <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
-                                            <div class="w-100 p-2 m-font-16">@addOn.Name</div>
+                                    <div class="add-ons-section">
+                                        <div class="prevent-select">
+                                            <div class="addon-name">@addOn.Name</div>
                                             <div @onclick = "() =>SubtractAddOns(addOn)"
-                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                 class="addon-operation">
                                                 -
                                             </div>
-                                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                            <div class="addon-count">
                                                 @addOn.AddOnCount
                                             </div>
                                             <div @onclick="() =>AddAddOns(addOn)"
-                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                 class="addon-operation">
                                                 +
                                             </div>
                                         </div>
