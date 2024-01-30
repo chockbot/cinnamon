@@ -22,6 +22,8 @@ public class LoginModal
     public bool IsResendVerificationShowError {get; set;}
     public string ResendVrificationErrorMessage {get; set;}
 
+    public string CurrentEmail { get; set; }
+
     public bool IsRevealPassword {get; set;}
 
     public TextEdit TextEmail {get; set;}

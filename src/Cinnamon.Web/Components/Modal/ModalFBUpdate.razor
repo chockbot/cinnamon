@@ -1,0 +1,212 @@
+﻿@namespace Cinnamon.Web.Components
+@using Flurl;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@inject IAccountApiHandler accountApiHandler;
+@inject Cinnamon.Web.Config.Config config;
+@inject IJSRuntime JsRuntime;
+@inject NavigationManager NavigationManager;
+@inject IAdminApiHandler adminApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<Modal @ref="Model.EmailModal" class="modal-email modal-account-credential" id="modal-disabled-close">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
+            <p class="col-12 modal-title font-20 m-0">Update Email</p>
+        </ModalHeader>
+        <ModalBody class="px-4 py-4 m-0">
+            <div class="form-content">
+                <p class="font-14 mb-3 font-weight-400 text-center" style="color:#717171">To enhance security and ensure you get important push notifications, please update your email. Thanks for keeping your info current!</p>
+                <p class="color-black-100 font-16 mb-1 font-weight-700">Email</p>
+                <div class="w-100 text-center">
+                    <Validations @ref="Model.EmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
+                        <div class="">
+                            <div class="col-12">
+                                <Validation>
+                                    <TextEdit Border="Border.Is0" @ref="Model.TextEmail" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter new email address"
+                                              @bind-Text="Model.EmailModel.Email" Size="Size.ExtraLarge" class="bg-grey-300 py-4 color-grey-100 font-16">
+                                        <Feedback>
+                                            <ValidationError TextAlignment="TextAlignment.Start" />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </div>
+                            <Button Clicked="SubmitEmail" Type="ButtonType.Submit" class="btn-primary py-2 h-auto rounded-pill"
+                                    Loading="Model.EmailModel.IsEmailSubmitting" Disabled="Model.EmailModel.IsEmailSubmitting">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Continue
+                                </ChildContent>
+                            </Button>
+                        </div>
+                    </Validations>
+                    <Divider />
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
+                        <AlertDescription>@ErrorMessage</AlertDescription>
+                    </Alert>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed" class="modal-account-credential">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
+            <p class="col-12 modal-title font-20 m-0">Verification Email</p>
+            <button type="button" style="top: 22px;" class="btn-close" @onclick="() => Model.VerificationModal.Hide()" />
+        </ModalHeader>
+        <ModalBody class="px-4 py-4 m-0">
+            <h5 class="col-12 text-center font-16 font-weight-400"> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+            <div class="card-filter">
+                <div class="col-12 text-center color-black-100 font-16">
+                    <p>We've sent an email to your inbox. Please check and click verify.</p>
+                    <p>
+                        Haven't received a verification email?
+                        @if (!Model.IsResendingVerification)
+                        {
+                            <span @onclick="ResendVerification" class="resend-link"> Resend</span>
+                        }
+                        else
+                        {
+                            <span>Please Wait...</span>
+                        }
+                    </p>
+                </div>
+                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsResendVerificationShowError">
+                    <AlertDescription>@Model.ResendVrificationErrorMessage</AlertDescription>
+                </Alert>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+@code {
+    IJSObjectReference module;
+
+    private Models.Modals.LoginModal Model = new();
+
+    string modalHeaderStyle = $"";
+
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/disabledModalClose.js");
+        }
+    }
+    public async Task Show()
+    {
+        await Model.EmailModal.Show();
+        await Model.TextEmail.Focus();
+    }
+
+    private async Task SubmitEmail()
+    {
+        try
+        {
+            if (await Model.EmailModelValidation.ValidateAll())
+            {
+                Model.EmailModel.IsEmailSubmitting = true;
+
+                var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
+                    {
+                        Email = Model.EmailModel.Email,
+                        ValidationRoute = config.BaseUrl + "/explore"
+                    });
+
+                Model.EmailModel.IsEmailSubmitting = false;
+
+                if (!registerWaitlist.Succeeded || registerWaitlist.Result == null)
+                {
+                    Model.EmailModel.IsShowErrorMessage = true;
+                    return;
+                }
+
+                if (registerWaitlist.Succeeded && !registerWaitlist.Result.IsSuccess)
+                {
+                    switch (registerWaitlist.Result.ErrorInfo?.Code)
+                    {
+                        case "EMAIL-ALREADY-REGISTERED":
+                            Model.EmailModel.IsShowErrorMessage = true;
+                            ErrorMessage = "Email is already registered. Please try another email.";
+                            return;
+                        case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
+                        case "EMAIL-ALREADY-REGISTERED-VERIFIED":
+                            await Model.VerificationModal.Show();
+                            break;
+                        default:
+                            Model.EmailModel.IsShowErrorMessage = true;
+                            ErrorMessage = "An error occured. Please try again later";
+                            return;
+                    }
+                }
+                await Model.VerificationModal.Show();
+            }
+        }
+        catch
+        {
+            Model.EmailModel.IsShowErrorMessage = true;
+        }
+    }
+
+    private Task OnEmailTextSubmit(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            return SubmitEmail();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void VerificationModalClosed()
+    {
+        Model.ResendVrificationErrorMessage = string.Empty;
+        Model.IsResendingVerification = false;
+        Model.IsResendVerificationShowError = false;
+    }
+
+    private async Task ResendVerification()
+    {
+        try
+        {
+            Model.IsResendingVerification = true;
+
+            var result = await accountApiHandler.ResendVerification(new Framework.ApiCommand.ApiCore.Account.Request.ResendVerificationArgs
+                {
+                    Email = Model.EmailModel.Email,
+                    ValidationRoute = "/explore"
+                });
+
+            Model.IsResendingVerification = false;
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+
+            if (result.Succeeded && !result.Result.IsSuccess)
+            {
+                Model.ResendVrificationErrorMessage = result.Result.ErrorInfo?.Message ?? "An error occured. please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+        }
+        catch
+        {
+            Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+            Model.IsResendVerificationShowError = true;
+        }
+    }
+
+    private async Task CloseEmailModal()
+    {
+        await Model.EmailModal.Hide();
+    }
+}
