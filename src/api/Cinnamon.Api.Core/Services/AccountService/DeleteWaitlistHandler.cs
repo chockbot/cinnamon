@@ -46,6 +46,6 @@ public class DeleteWaitlistHandler : IDeleteWaitlistHandler
         return AppResult<DeleteWaitlistResult>.CreateSucceeded(new DeleteWaitlistResult
         {
             IsSuccess = deleteWaitlist.Result.IsSuccess
-        }, "Successfully removed add-on");
+        }, "Successfully removed waitlist");
     }
 }

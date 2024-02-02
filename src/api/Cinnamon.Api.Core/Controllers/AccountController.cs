@@ -58,6 +58,7 @@ public class AccountController : ControllerBase
     private readonly IBlockedAccountHandler blockedAccountHandler;
     private readonly IExtraLoginHandler extraLoginHandler;
     private readonly IChangeEmailHandler changeEmailHandler;
+    private readonly IDeleteWaitlistHandler deleteWaitlistHandler;
 
     #endregion
 
@@ -79,47 +80,48 @@ public class AccountController : ControllerBase
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
         IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
         IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
-        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler)
+        IBlockedAccountHandler blockedAccountHandler, IExtraLoginHandler extraLoginHandler, IChangeEmailHandler changeEmailHandler, IDeleteWaitlistHandler deleteWaitlistHandler)
     {
-        this.submitRegisterHandler = submitRegisterHandler;
-        this.submitWaitlistHandler = submitWaitlistHandler;
-        this.submitVerifyEmailHandler = submitVerifyEmailHandler;
-        this.submitLoginHandler = submitLoginHandler;
-        this.submitResendEmailHandler = submitResendEmailHandler;
-        this.getProfileHandler = getProfileHandler;
-        this.getFamilyMembersHandler = getFamilyMembersHandler;
-        this.updateFamilyMembersHandler = updateFamilyMembersHandler;
-        this.createFamilyMembersHandler = createFamilyMembersHandler;
-        this.deleteFamilyMembersHandler = deleteFamilyMembersHandler;
-        this.updateProfileHandler = updateProfileHandler;
-        this.getGovernmentIdsHandler = getGovernmentIdsHandler;
-        this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
-        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
-        this.getProfilePictureHandler = getProfilePictureHandler;
-        this.getWaitListHandler = getWaitListHandler;
-        this.getCustomerByEmailHandler = getCustomerByEmailHandler;
-        this.getWaitListByGuidHandler = getWaitListByGuidHandler;
-        this.getCustomerByIdHandler = getCustomerByIdHandler;
-        this.externalLoginHandler = externalLoginHandler;
-        this.externalRegisterHandler = externalRegisterHandler;
-        this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
-        this.getCustomerByHandler = getCustomerByHandler;
-        this.resetPasswordHandler = resetPasswordHandler;
-        this.verifyResetPasswordHandler = verifyResetPasswordHandler;
-        this.requestRefundHandler = requestRefundHandler;
-        this.getRequestRefundHandler = getRequestRefundHandler;
-        this.deleteProfilePictureHandler = deleteProfilePictureHandler;
-        this.getPayoutAccountHandler = getPayoutAccountHandler;
+        this.submitRegisterHandler            = submitRegisterHandler;
+        this.submitWaitlistHandler            = submitWaitlistHandler;
+        this.submitVerifyEmailHandler         = submitVerifyEmailHandler;
+        this.submitLoginHandler               = submitLoginHandler;
+        this.submitResendEmailHandler         = submitResendEmailHandler;
+        this.getProfileHandler                = getProfileHandler;
+        this.getFamilyMembersHandler          = getFamilyMembersHandler;
+        this.updateFamilyMembersHandler       = updateFamilyMembersHandler;
+        this.createFamilyMembersHandler       = createFamilyMembersHandler;
+        this.deleteFamilyMembersHandler       = deleteFamilyMembersHandler;
+        this.updateProfileHandler             = updateProfileHandler;
+        this.getGovernmentIdsHandler          = getGovernmentIdsHandler;
+        this.uploadGovernmentIdHandler        = uploadGovernmentIdHandler;
+        this.uploadProfilePictureHandler      = uploadProfilePictureHandler;
+        this.getProfilePictureHandler         = getProfilePictureHandler;
+        this.getWaitListHandler               = getWaitListHandler;
+        this.getCustomerByEmailHandler        = getCustomerByEmailHandler;
+        this.getWaitListByGuidHandler         = getWaitListByGuidHandler;
+        this.getCustomerByIdHandler           = getCustomerByIdHandler;
+        this.externalLoginHandler             = externalLoginHandler;
+        this.externalRegisterHandler          = externalRegisterHandler;
+        this.getExternalLoginDetailHandler    = getExternalLoginDetailHandler;
+        this.getCustomerByHandler             = getCustomerByHandler;
+        this.resetPasswordHandler             = resetPasswordHandler;
+        this.verifyResetPasswordHandler       = verifyResetPasswordHandler;
+        this.requestRefundHandler             = requestRefundHandler;
+        this.getRequestRefundHandler          = getRequestRefundHandler;
+        this.deleteProfilePictureHandler      = deleteProfilePictureHandler;
+        this.getPayoutAccountHandler          = getPayoutAccountHandler;
         this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
-        this.getAllCustomersHandler = getAllCustomersHandler;
-        this.updateCustomerProfileHandler = updateCustomerProfileHandler;
-        this.updateRequestRefundHandler = updateRequestRefundHandler;
-        this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
-        this.updateConnectionIdHandler = updateConnectionIdHandler;
-        this.verifyUserNotificationHandler = verifyUserNotificationHandler;
-        this.blockedAccountHandler = blockedAccountHandler;
-        this.extraLoginHandler = extraLoginHandler;
-        this.changeEmailHandler = changeEmailHandler;   
+        this.getAllCustomersHandler           = getAllCustomersHandler;
+        this.updateCustomerProfileHandler     = updateCustomerProfileHandler;
+        this.updateRequestRefundHandler       = updateRequestRefundHandler;
+        this.accountSubmitVerifiedHandler     = accountSubmitVerifiedHandler;
+        this.updateConnectionIdHandler        = updateConnectionIdHandler;
+        this.verifyUserNotificationHandler    = verifyUserNotificationHandler;
+        this.blockedAccountHandler            = blockedAccountHandler;
+        this.extraLoginHandler                = extraLoginHandler;
+        this.changeEmailHandler               = changeEmailHandler;   
+        this.deleteWaitlistHandler            = deleteWaitlistHandler;
     }
 
     #endregion
@@ -1570,6 +1572,36 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SecretLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("DeleteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteWaitlistResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAddOnById([FromBody] DeleteWaitlistArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteWaitlistHandler.ExecuteAsync(new Services.AccountService.Interactors.DeleteWaitlistArgs
+            {
+                Email = args.Email
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteWaitlistResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
