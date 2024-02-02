@@ -137,7 +137,27 @@ public class WaitlistData : IWaitListData
         }
         catch (Exception ex)
         {
-            return AppResult<UpdateWaitlistResult>.CreateFailed(ex, "An error occured when getting all waitlist");
+            return AppResult<UpdateWaitlistResult>.CreateFailed(ex, "An error occurred when getting all waitlist");
+        }
+    }
+    public async Task<AppResult<DeleteWaitlistResult>> DeleteWaitlist(DeleteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"WaitList/DeleteWaitlist")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<DeleteWaitlistResult>();
+
+            return AppResult<DeleteWaitlistResult>.CreateSucceeded(result, "Successfully deleted waitlist");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DeleteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteWaitlistResult>.CreateFailed(ex, "An error occurred when deleting waitlist");
         }
     }
 }
