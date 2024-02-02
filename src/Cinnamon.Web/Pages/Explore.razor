@@ -695,7 +695,7 @@
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
 <ReviewModal @ref=ReviewModalRef/>
 <ModalFBUpdate @ref="fbUpdateModal"></ModalFBUpdate>
-<UpdatePasswordModal @ref=updatePasswordModal New=@NewEmail Current=@CurrentEmail Token=@CustomerModel.Token
+<UpdatePasswordModal @ref=updatePasswordModal New=@NewEmail Current=@Email Token=@CustomerModel.Token
                      Birthdate=@Birthday />
 
 @code
@@ -763,7 +763,9 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? CurrentEmail { get; set; } = string.Empty;
+    public string? CurrentEmail { get; set; }
+
+    public string Email { get; set; } = string.Empty;
 
     public string NewEmail { get; set; } = string.Empty;
 
@@ -895,7 +897,7 @@
                         {
                             if (!string.IsNullOrEmpty(CustomerModel.CustomerProfile.Email))
                             {
-                                CurrentEmail = CustomerModel.CustomerProfile.Email;
+                                Email        = CustomerModel.CustomerProfile.Email;
                                 NewEmail     = verifyRes.Result.Result.Email;
                                 Birthday     = CustomerModel.CustomerProfile.Birthdate;
                                 await updatePasswordModal.Show();
