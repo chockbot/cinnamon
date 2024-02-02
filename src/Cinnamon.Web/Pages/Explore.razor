@@ -894,7 +894,7 @@
                     {
                         if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
                         {
-                            if (!string.IsNullOrEmpty(CustomerModel.CustomerProfile.Email))
+                            if (CustomerModel.CustomerProfile != null)
                             {
                                 Email        = CustomerModel.CustomerProfile.Email;
                                 NewEmail     = verifyRes.Result.Result.Email;
@@ -902,10 +902,7 @@
                                 //Show update password modal
                                 updatePasswordModal.Show(Email, NewEmail);
                             }
-                            else
-                            {
-                                 modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
-                            }
+                            modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
                         }
                         if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
                         {
