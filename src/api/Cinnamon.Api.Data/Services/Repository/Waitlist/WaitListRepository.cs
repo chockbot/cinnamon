@@ -3,6 +3,9 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
+using Newtonsoft.Json.Linq;
+using System;
+using Cinnamon.Api.Data.Repository;
 
 namespace Cinnamon.Api.Data.Services.Repository.Waitlist;
 
@@ -229,6 +232,31 @@ public class WaitListRepository : IWaitListRepository
         catch (Exception ex)
         {
             return AppResult<WaitListDTO>.CreateFailed(ex, "An error occured when updating waitlist");
+        }
+    }
+
+    public async Task<AppResult<bool>> Delete(string email)
+    {
+        try
+        {
+            var waitlist = await dataStore.WaitList.GetWaitListByEmailAsync(email);
+            if (waitlist.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No waitlist to delete"), "No waitlist to delete");
+            }
+
+            var result = await dataStore.WaitList.Remove(waitlist.Result);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted waitlist");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occurred in deleting waitlist");
         }
     }
 }

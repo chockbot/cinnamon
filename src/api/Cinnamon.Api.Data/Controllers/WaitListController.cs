@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Request;
+using Cinnamon.Api.Data.Services.Repository.AddOns;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -171,4 +172,26 @@ public class WaitListController : ControllerBase
             return new JsonResult(new UpdateWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("DeleteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteWaitlistResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> DeleteWaitlist([FromBody] DeleteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await waitListRepository.Delete(args.Email);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteWaitlistResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
 }

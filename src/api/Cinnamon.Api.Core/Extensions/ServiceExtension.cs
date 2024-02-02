@@ -109,7 +109,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IBlockedAccountHandler, Services.AccountService.BlockedAccountHandler>();
         services.AddTransient<Services.AccountService.Handlers.IIsAccountBlockedHandler, Services.AccountService.IsAccountBlockedHandler>();
         services.AddTransient<Services.AccountService.Handlers.IExtraLoginHandler, Services.AccountService.ExtraLoginHandler>();
-        services.AddTransient<Services.AccountService.Handlers.IChangeEmailHandler, Services.AccountService.ChangeEmailHandler>();  
+        services.AddTransient<Services.AccountService.Handlers.IChangeEmailHandler, Services.AccountService.ChangeEmailHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IDeleteWaitlistHandler, Services.AccountService.DeleteWaitlistHandler>();
 
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
