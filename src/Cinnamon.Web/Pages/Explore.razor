@@ -696,8 +696,7 @@
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
 <ReviewModal @ref=ReviewModalRef/>
 <ModalFBUpdate @ref="fbUpdateModal"></ModalFBUpdate>
-<UpdatePasswordModal @ref=updatePasswordModal New=@NewEmail Current=@Email Token=@CustomerModel.Token
-                     Birthdate=@Birthday />
+<UpdatePasswordModal @ref=updatePasswordModal Token=@CustomerModel.Token Birthdate=@Birthday />
 
 @code
 {
@@ -909,7 +908,8 @@
                                 Email        = CustomerModel.CustomerProfile.Email;
                                 NewEmail     = verifyRes.Result.Result.Email;
                                 Birthday     = CustomerModel.CustomerProfile.Birthdate;
-                                await updatePasswordModal.Show();
+                                //Show update password modal
+                                updatePasswordModal.Show(Email, NewEmail);
                             }
                             else
                             {
