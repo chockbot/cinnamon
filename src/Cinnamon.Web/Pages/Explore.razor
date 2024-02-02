@@ -911,7 +911,10 @@
                                 //Show update password modal
                                 updatePasswordModal.Show(Email, NewEmail);
                             }
-                            modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
+                            else
+                            {
+                                 modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
+                            }
                         }
                         if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
                         {
