@@ -12,4 +12,5 @@ public interface IWaitListData
     Task<AppResult<GetAllWaitlistResult>> GetAllWaitlist(GetAllWaitlistArgs args);
     Task<AppResult<CreatedWaitlistResult>> CreateWaitlist(CreateWaitlistArgs args);
     Task<AppResult<UpdateWaitlistResult>> UpdateWaitlist(UpdateWaitlistArgs args);
+    Task<AppResult<DeleteWaitlistResult>> DeleteWaitlist(DeleteWaitlistArgs args);
 }
