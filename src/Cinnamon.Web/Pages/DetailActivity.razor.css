@@ -4,6 +4,15 @@
 a {
   text-decoration: none;
 }
+.cinnamon-video {
+    border-radius: 16px;
+    background-color: black;
+}
+::deep .video-link {
+    width: 100%;
+    height: 450px;
+    border-radius: 16px;
+}
 .provider-about-me {
     font-family: Nunito;
     font-size: 18px;
@@ -1956,10 +1965,16 @@ hr {
         gap: 5px;
         align-items: center;
     }
+    ::deep .video-link {
+        height: 300px;
+    }
 }
 
 @media only screen and (max-width: 991px) {
   .select-calendar-container {
     width: 100%;
+  }
+  ::deep .video-link {
+      height: 300px;
   }
 }

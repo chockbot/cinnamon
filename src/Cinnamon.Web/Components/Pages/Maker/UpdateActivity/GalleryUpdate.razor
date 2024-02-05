@@ -4,6 +4,8 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 @using Cinnamon.Web.Components; 
+@using System;
+@using System.Text.RegularExpressions;
 
 <div class="gallery-section col-12">
     @if(!string.IsNullOrEmpty(errorMessage))
@@ -107,6 +109,21 @@
                         </div>
                     }
                 </Row>
+            </div>
+            <div class="cover-photo-image-container-wrapper mt-4">
+                <div class="d-flex">
+                        <span class="field-number d-inline-block me-2 flex-shrink-0">8</span>
+                        <p class="color-grey-100 mb-0">
+                            Supporting Video (Optional)
+                        </p>
+                    </div>
+                <div class="video-url mt-3">
+                        <div class="col-12 col-lg-12 col-md-12 col-sm-12">
+                            <label for="title" class="form-control-label mb-2">Url</label>
+                            <p class="url-description">Enhance your activity with a video by pasting the link below. We recommend using YouTube or Vimeo.</p>
+                            <input class="form-control @RequiredCheck(Model.Activity.VideoLink)" id="video-url" @bind="Model.Activity.VideoLink" placeholder="Paste your link here..." />
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -284,6 +301,7 @@
         var supportedPhotosCount = imageItems.Count;
         var isHaveCoverPhoto = coverPhotoItem.Display;
         var totalFileSize = imageItems.Sum(i => i.FileSize) + coverPhotoItem.FileSize;
+        var VideoLink = Model.Activity.VideoLink;
 
         var message = string.Empty;
         var isAllFieldsValid = true;
@@ -307,11 +325,37 @@
             isAllFieldsValid = false;
             message += "<li>Total file size must only 25MB</li>";
         }
+        if (!string.IsNullOrEmpty(VideoLink))
+        {
+            // Using regular expressions to check for YouTube or Vimeo links
+            Regex youtubeRegex = new Regex(@"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})", RegexOptions.IgnoreCase);
+            Regex vimeoRegex = new Regex(@"(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|video\/|)(\d+)(?:$|\/|\?))", RegexOptions.IgnoreCase);
+            if (!youtubeRegex.IsMatch(VideoLink) && !vimeoRegex.IsMatch(VideoLink))
+            {
+                isAllFieldsValid = false;
+                message += "<li>Please provide YouTube or Vimeo links only; other links are invalid.</li>";
+            }
+        }
 
         errorMessage = message;
         return isAllFieldsValid;
     }
+    private string RequiredCheck(String? value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            // Using regular expressions to check for YouTube or Vimeo links
+            Regex youtubeRegex = new Regex(@"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})", RegexOptions.IgnoreCase);
+            Regex vimeoRegex = new Regex(@"(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|video\/|)(\d+)(?:$|\/|\?))", RegexOptions.IgnoreCase);
 
+            if (!youtubeRegex.IsMatch(value) && !vimeoRegex.IsMatch(value))
+            {
+                return "invalid";
+            }
+            return "";
+        }
+        return "";
+    }
     private Task DeleteImage(ImageItem imageItem)
     {
         imageItems.Remove(imageItem);
