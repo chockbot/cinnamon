@@ -876,6 +876,7 @@ public class ActivityController : ControllerBase
                         CompletedStudents = a.CompletedStudents,
                         AverageRating = a.AverageRating,
                         NumberOfReviews = a.NumberOfReviews,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
