@@ -866,4 +866,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<ChangEmailAddressResult>.CreateFailed(ex, "An error occured when calling change email api");
         }
     }
+    public async Task<AppResult<DeleteWaitlistResult>> DeleteWaitlist(DeleteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/DeleteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteWaitlistResult>();
+
+            return AppResult<DeleteWaitlistResult>.CreateSucceeded(result, "Successfully called DELETE waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DeleteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteWaitlistResult>.CreateFailed(ex, "An error occurred when calling DELETE waitlist api");
+        }
+    }
 }

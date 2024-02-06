@@ -402,20 +402,47 @@ public class AccountController : Controller
                 IsEmptyUsername = isEmptyUsername
             });
 
-            if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+            if (!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {
                 await HttpContext.SignOutAsync();
                 return Redirect("/explore");
             }
-
-            if(result.Result.Result.IsNew)
+            //Check if fb login
+            var authenticationInfo = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var externalLoginProvider = authenticationInfo.Properties.Items[".AuthScheme"];
+            if (externalLoginProvider != null && externalLoginProvider.Equals("Facebook", StringComparison.OrdinalIgnoreCase))
             {
-                await HttpContext.SignOutAsync();
-                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&Redirect={redirect}");
+                if (result.Result.Result.IsNew)
+                {
+                    //New
+                    await HttpContext.SignOutAsync();
+                    return Redirect($"/facebook-login/?IsNewUser={result.Result.Result.IsNew}&");
+                }
+                else
+                {
+                    //Existing
+                    bool isNewUser = result.Result.Result.IsNew;
+                    var loginClaims = new List<Claim>
+                    {
+                        new Claim("Email", result.Result.Result.Email),
+                        new Claim("Token", result.Result.Result.GeneratedToken),
+                    };
+                    var loginClaimsIdentity = new ClaimsIdentity(loginClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var loginAuthProperties = new AuthenticationProperties { IsPersistent = true };
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(loginClaimsIdentity), loginAuthProperties);
+                    return Redirect($"/facebook-login/?IsNewUser={result.Result.Result.IsNew}&CurrentEmail={result.Result.Result.Email}&");
+                }
+            }
+            else
+            {
+                if (result.Result.Result.IsNew)
+                {
+                    await HttpContext.SignOutAsync();
+                    return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&Redirect={redirect}");
+                }
             }
 
             // sign out and sign again to save the cookie login
-
             await HttpContext.SignOutAsync();
 
             var adminUserResult = await adminApiHandler.GetAdminUserByEmail(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAdminUserByEmailArgs

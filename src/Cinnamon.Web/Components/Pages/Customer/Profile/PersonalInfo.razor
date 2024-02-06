@@ -229,14 +229,14 @@
                     <Divider />
                     <div class="mt-2">
                         <p class="title mb-1">Email</p>
-                        @if (!isEditEmail)
+                        @*@if (!isEditEmail)
                         {
-                            errorMessage2 = string.Empty;
+                            errorMessage2 = string.Empty;*@
                             <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                                 <span class="info-email">@Model.CustomerProfile.Email</span>
-                                <span class="edit" @onclick="EditEmail">Edit</span>
+                                @*<span class="edit" @onclick="EditEmail">Edit</span>*@
                             </Div>
-                        }
+                       @* }
                         else
                         {
                             <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
@@ -256,7 +256,7 @@
                             {
                                 <p class="activity-image-photos-error-message text-center">@errorMessage2</p>
                             }
-                        }
+                        }*@
                     </div>
                     <Divider />
                     <div class="p-section ids-section">

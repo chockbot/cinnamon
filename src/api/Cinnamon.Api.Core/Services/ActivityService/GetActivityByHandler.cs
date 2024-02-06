@@ -92,6 +92,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                 PinnedLocation = activity.PinnedLocation,
                 ExperienceCreationType = activity.ExperienceCreationType,
                 ClassPolicies = activity.ClassPolicies,
+                VideoLink = activity.VideoLink,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,

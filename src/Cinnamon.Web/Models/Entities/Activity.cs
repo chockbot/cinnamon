@@ -184,6 +184,7 @@ public class Activity
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
+    public string VideoLink { get; set; }
     public DateTime CreatedOn { get; set; }
     public Cinnamon.Framework.Enums.Enums.ActivityStatus Status { get; set; }
     public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
