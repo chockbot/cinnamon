@@ -33,6 +33,7 @@ public class CreateActivityArgs
     public string? CustomerBringWithThem { get; set; }
     public string? AdditionalRequirements { get; set; }
     public string? ClassPolicies { get; set; }
+    public string? VideoLink { get; set; }
     public string ActivityLevel { get; set; } = string.Empty;
     public string SkillLevel { get; set; } = string.Empty;
     public int MinimumAge { get; set; }

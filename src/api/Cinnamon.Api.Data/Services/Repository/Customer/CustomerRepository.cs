@@ -587,10 +587,11 @@ public class CustomerRepository : ICustomerRepository
             {
                 return AppResult<bool>.CreateFailed(new ApplicationException("Can't find user account."), "Can't find user account.");
             }
+            //var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            user.UserName = newEmail;
+            user.Email    = newEmail;
 
-            var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
-
-            var result = await userManager.ChangeEmailAsync(user, newEmail, token);
+            var result = await userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 return AppResult<bool>.CreateFailed(new ApplicationException("An error occurred when updating email"), "An error occurred when updating email");

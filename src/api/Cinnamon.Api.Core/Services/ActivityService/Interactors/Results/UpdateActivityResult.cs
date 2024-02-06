@@ -27,6 +27,7 @@ public class UpdateActivityResult
     public string CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
     public string? ClassPolicies { get; set; }
+    public string? VideoLink { get; set; }
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}

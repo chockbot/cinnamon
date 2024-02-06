@@ -593,6 +593,7 @@
                 Status                  = Enums.ActivityStatus.InProgress,
                 ExperienceCreationType  = ExperienceCreationType,
                 ClassPolicies           = ReplaceEmptyValue(Model.Activity.ClassPolicies, NOTHING_PROVIDED),
+                VideoLink               = ReplaceEmptyValue(Model.Activity.ClassPolicies, NOTHING_PROVIDED),
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
                {
                    var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>();
@@ -773,7 +774,8 @@
                     PinnedLocation          = Model.Activity.PinnedLocation,
                     Status                  = Enums.ActivityStatus.Submitted,
                     ExperienceCreationType  = ExperienceCreationType,
-                    ClassPolicies           = Model.Activity.ClassPolicies
+                    ClassPolicies           = Model.Activity.ClassPolicies,
+                    VideoLink               = Model.Activity.VideoLink
                 };
 
             var submit = await activityApiHandler.CreateActivity(args, Model.Token);
