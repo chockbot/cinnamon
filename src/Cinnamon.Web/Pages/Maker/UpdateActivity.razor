@@ -573,7 +573,7 @@
 
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
-                ActivityId = activity.ActivityId,
+                ActivityId    = activity.ActivityId,
                 ActivityLevel = activity.ActivityLevel,
                 ActivitySchedules = activity.ActivitySchedules.Select(s => {
                     return new Models.Entities.ActivitySchedule {
@@ -618,23 +618,24 @@
                         Order       = s.Order
                     };
                 }).ToList(),
-                ClassPolicies = activity.ClassPolicies,
+                ClassPolicies          = activity.ClassPolicies,
                 AdditionalRequirements = activity.AdditionalRequirements,
-                Address1 = activity.Address1,
-                Address2 = activity.Address2,
-                CanAdultsJoin = activity.CanAdultsJoin,
-                    City = activity.City,
-                    CityName = activity.CityName,
-                Subdivision = activity.Subdivision,
-                Region = activity.Region,
-                    Barangay = activity.Barangay,
-                    BarangayName = activity.BarangayName,
-                PostalCode = activity.PostalCode,
-                CustomerBringWithThem = activity.CustomerBringWithThem,
-                Description = activity.Description,
-                District = activity.District,
-                ExperienceCategoryId = activity.ExperienceCategoryId,
-                ExperienceTypeId = activity.ExperienceTypeId,
+                Address1               = activity.Address1,
+                Address2               = activity.Address2,
+                CanAdultsJoin          = activity.CanAdultsJoin,
+                City                   = activity.City,
+                CityName               = activity.CityName,
+                Subdivision            = activity.Subdivision,
+                Region                 = activity.Region,
+                Barangay               = activity.Barangay,
+                BarangayName           = activity.BarangayName,
+                PostalCode             = activity.PostalCode,
+                CustomerBringWithThem  = activity.CustomerBringWithThem,
+                Description            = activity.Description,
+                District               = activity.District,
+                ExperienceCategoryId   = activity.ExperienceCategoryId,
+                ExperienceTypeId       = activity.ExperienceTypeId,
+                VideoLink              = activity.VideoLink,
                 Images = activity.Images.Select(i => {
                     return new Models.Entities.ActivityImage {
                         ImageSrc = i.ImageSrc,
@@ -643,19 +644,19 @@
                         Order = i.Order
                     };
                 }).ToList(),
-                IsPublished = activity.IsPublished,
-                MinimumAge = activity.MinimumAge,
-                Price = activity.Price,
-                Remarks = activity.Remarks,
-                ScheduleIndicator = activity.ScheduleIndicator,
-                SearchTags = activity.SearchTags.ToList(),
-                SkillLevel = activity.SkillLevel,
+                IsPublished             = activity.IsPublished,
+                MinimumAge              = activity.MinimumAge,
+                Price                   = activity.Price,
+                Remarks                 = activity.Remarks,
+                ScheduleIndicator       = activity.ScheduleIndicator,
+                SearchTags              = activity.SearchTags.ToList(),
+                SkillLevel              = activity.SkillLevel,
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
-                SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title,
-                PinnedLocation = activity.PinnedLocation,
-                Status = activity.Status,
-                ExperienceCreationType = activity.ExperienceCreationType
+                SubCategoryId           = activity.SubCategoryId,
+                Title                   = activity.Title,
+                PinnedLocation          = activity.PinnedLocation,
+                Status                  = activity.Status,
+                ExperienceCreationType  = activity.ExperienceCreationType
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -890,6 +891,7 @@
                 DeletedAddOnIds         = Model.DeletedAddOnsIds,
                 PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status                  = Enums.ActivityStatus.InProgress,
+                VideoLink               = ReplaceEmptyValue(Model.Activity.VideoLink, NOTHING_PROVIDED),
             }, Model.Token);
 
         if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -963,24 +965,24 @@
                     }
 
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
-                        Id = s.Id,
-                        DateTime = s.DateTime ?? "N/A",
-                        Name = Model.Activity.ScheduleType == Enums.ScheduleType.Calendly ? "Calendly Appointment" : s.Name ?? "N/A",
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName ?? "N/A",
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate ?? DateTime.MinValue,
-                        PriceType = s.PriceType,
-                        ScheduleType = Model.Activity.ScheduleType,
-                        SchedulingUrl = Model.Activity.SchedulingUrl ?? string.Empty,
+                        Id                    = s.Id,
+                        DateTime              = s.DateTime ?? "N/A",
+                        Name                  = Model.Activity.ScheduleType == Enums.ScheduleType.Calendly ? "Calendly Appointment" : s.Name ?? "N/A",
+                        PerUnit1              = s.PerUnit1,
+                        PerUnit2              = s.PerUnit2,
+                        Price                 = s.Price,
+                        PriceUnit1            = s.PriceUnit1,
+                        PriceUnit2            = s.PriceUnit2,
+                        UnitPrice             = s.UnitPrice,
+                        Order                 = s.Order,
+                        IsActiveSchedule      = s.IsActiveSchedule,
+                        IsSetSession          = s.IsSetSession,
+                        SessionName           = s.SessionName ?? "N/A",
+                        HasExpiration         = s.HasExpiration,
+                        StartDate             = s.StartDate ?? DateTime.MinValue,
+                        PriceType             = s.PriceType,
+                        ScheduleType          = Model.Activity.ScheduleType,
+                        SchedulingUrl         = Model.Activity.SchedulingUrl ?? string.Empty,
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),
@@ -996,36 +998,37 @@
                         Order       = s.Order
                     };
                 }),
-                ClassPolicies = Model.Activity.ClassPolicies,
-                AdditionalRequirements = Model.Activity.AdditionalRequirements,
-                Address1 = Model.Activity.Address1,
-                Address2 = Model.Activity.Address2,
-                CanAdultsJoin = Model.Activity.CanAdultsJoin,
-                City = Model.Activity.City,
-                Subdivision = Model.Activity.Subdivision,
-                Region = Model.Activity.Region,
-                Barangay = Model.Activity.Barangay,
-                PostalCode = Model.Activity.PostalCode,
-                CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
-                Description = Model.Activity.Description,
-                District = Model.Activity.District,
-                ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
-                ExperienceTypeId = Model.Activity.ExperienceTypeId,
-                IsPublished = Model.Activity.IsPublished,
-                MinimumAge = Model.Activity.MinimumAge,
-                Price = Model.Activity.Price,
-                Remarks = Model.Activity.Remarks,
-                ScheduleIndicator = Model.Activity.ScheduleIndicator,
-                SearchTags = Model.Activity.SearchTags,
-                SkillLevel = Model.Activity.SkillLevel,
+                ClassPolicies           = Model.Activity.ClassPolicies,
+                AdditionalRequirements  = Model.Activity.AdditionalRequirements,
+                Address1                = Model.Activity.Address1,
+                Address2                = Model.Activity.Address2,
+                CanAdultsJoin           = Model.Activity.CanAdultsJoin,
+                City                    = Model.Activity.City,
+                Subdivision             = Model.Activity.Subdivision,
+                Region                  = Model.Activity.Region,
+                Barangay                = Model.Activity.Barangay,
+                PostalCode              = Model.Activity.PostalCode,
+                CustomerBringWithThem   = Model.Activity.CustomerBringWithThem,
+                Description             = Model.Activity.Description,
+                District                = Model.Activity.District,
+                ExperienceCategoryId    = Model.Activity.ExperienceCategoryId,
+                ExperienceTypeId        = Model.Activity.ExperienceTypeId,
+                IsPublished             = Model.Activity.IsPublished,
+                MinimumAge              = Model.Activity.MinimumAge,
+                Price                   = Model.Activity.Price,
+                Remarks                 = Model.Activity.Remarks,
+                ScheduleIndicator       = Model.Activity.ScheduleIndicator,
+                SearchTags              = Model.Activity.SearchTags,
+                SkillLevel              = Model.Activity.SkillLevel,
                 SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
-                SubCategoryId = Model.Activity.SubCategoryId,
-                Title = Model.Activity.Title,
-                ActivityId = Model.Activity.ActivityId,
-                DeletedScheduleIds = Model.DeletedScheduleIds,
-                DeletedAddOnIds = Model.DeletedAddOnsIds,
-                PinnedLocation = Model.Activity.PinnedLocation,
-                Status = Enums.ActivityStatus.Submitted
+                SubCategoryId           = Model.Activity.SubCategoryId,
+                Title                   = Model.Activity.Title,
+                ActivityId              = Model.Activity.ActivityId,
+                DeletedScheduleIds      = Model.DeletedScheduleIds,
+                DeletedAddOnIds         = Model.DeletedAddOnsIds,
+                PinnedLocation          = Model.Activity.PinnedLocation,
+                Status                  = Enums.ActivityStatus.Submitted,
+                VideoLink               = Model.Activity.VideoLink
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1286,6 +1289,7 @@
         activity.SpecificsYouWillProvide = ReplaceTemporaryValues(activity.SpecificsYouWillProvide);
         activity.PinnedLocation          = ReplaceTemporaryValues(activity.PinnedLocation);
         activity.ClassPolicies           = ReplaceTemporaryValues(activity.ClassPolicies);
+        activity.VideoLink               = ReplaceTemporaryValues(activity.VideoLink);
 
         return activity;
     }

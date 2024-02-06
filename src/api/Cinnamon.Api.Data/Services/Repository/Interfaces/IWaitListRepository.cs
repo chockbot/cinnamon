@@ -12,4 +12,5 @@ public interface IWaitListRepository
     Task<AppResult<IEnumerable<WaitListDTO>>> GetAllAsync();
     Task<AppResult<WaitListDTO>> Create(string email, string guid, string token, bool isVerified);
     Task<AppResult<WaitListDTO>> Update(string email, string? guid, string? token, bool? isVerified);
+    Task<AppResult<bool>> Delete(string email);
 }

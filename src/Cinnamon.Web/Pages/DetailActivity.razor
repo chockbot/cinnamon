@@ -370,6 +370,23 @@
                                     )
                             </p>
                         }
+                        @*Display Video Link*@
+                        @if(activity.VideoLink.Contains("youtu.be") || activity.VideoLink.Contains("youtube"))
+                        {
+                             <div class="cinnamon-video mt-3">
+                                <iframe src="@ConvertToEmbedSrc(activity.VideoLink, VideoPlatform.YouTube)" class="video-link"></iframe>
+                            </div>
+                        }
+                        else if(activity.VideoLink.Contains("vimeo"))
+                        {
+                             <div class="cinnamon-video mt-3">
+                                <iframe src="@ConvertToEmbedSrc(activity.VideoLink, VideoPlatform.Vimeo)" class="video-link"></iframe>
+                            </div>
+                        }
+                        else
+                        {
+                            <div></div>
+                        }
                     </div>
                     
                     @*Experience Schedule*@
@@ -527,18 +544,16 @@
                                 <label class="fw-bold mb-3 detail-label">@(activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</label>
                                 @foreach (var addOn in activity.AddOns.OrderBy(a => a.Order).ToList())
                                 {
-                                    <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
-                                        <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
-                                            <div class="w-100 p-2 m-font-16">@addOn.Name</div>
-                                            <div @onclick = "() =>SubtractAddOns(addOn)"
-                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
-                                                -
+                                    <div class="add-ons-section">
+                                        <div class="prevent-select">
+                                            <div class="addon-name">@addOn.Name</div>
+                                            <div @onclick = "() =>SubtractAddOns(addOn)" class="addon-operation">
+                                               -
                                             </div>
-                                            <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                            <div class="addon-count">
                                                 @addOn.AddOnCount
                                             </div>
-                                            <div @onclick="() =>AddAddOns(addOn)"
-                                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                            <div @onclick="() =>AddAddOns(addOn)" class="addon-operation">
                                                 +
                                             </div>
                                         </div>
@@ -1183,58 +1198,59 @@
 
                 activity = new Activity
                     {
-                        Id = result.ActivityId,
-                        ActivityId = result.ActivityId,
-                        ExperienceTypeId = result.ExperienceTypeId,
-                        ExperienceCategoryId = result.ExperienceCategoryId,
-                        SubCategoryId = result.SubCategoryId,
-                        Title = result.Title,
-                        Description = result.Description,
-                        Price = result.Price,
-                        ScheduleIndicator = result.ScheduleIndicator,
-                        Remarks = result.Remarks,
-                        IsPublished = result.IsPublished,
-                        Address1 = result.Address1,
-                        Address2 = result.Address2,
-                        District = result.District,
-                        City = result.City,
-                        CityName = result.CityName,
-                        Subdivision = result.Subdivision,
-                        Barangay = result.Barangay,
-                        BarangayName = result.BarangayName,
-                        Region = result.Region,
-                        RegionName = result.RegionName,
-                        PostalCode = result.PostalCode,
+                        Id                      = result.ActivityId,
+                        ActivityId              = result.ActivityId,
+                        ExperienceTypeId        = result.ExperienceTypeId,
+                        ExperienceCategoryId    = result.ExperienceCategoryId,
+                        SubCategoryId           = result.SubCategoryId,
+                        Title                   = result.Title,
+                        Description             = result.Description,
+                        Price                   = result.Price,
+                        ScheduleIndicator       = result.ScheduleIndicator,
+                        Remarks                 = result.Remarks,
+                        IsPublished             = result.IsPublished,
+                        Address1                = result.Address1,
+                        Address2                = result.Address2,
+                        District                = result.District,
+                        City                    = result.City,
+                        CityName                = result.CityName,
+                        Subdivision             = result.Subdivision,
+                        Barangay                = result.Barangay,
+                        BarangayName            = result.BarangayName,
+                        Region                  = result.Region,
+                        RegionName              = result.RegionName,
+                        PostalCode              = result.PostalCode,
                         SpecificsYouWillProvide = result.SpecificsYouWillProvide,
-                        CustomerBringWithThem = result.CustomerBringWithThem,
-                        AdditionalRequirements = result.AdditionalRequirements,
-                        ActivityLevel = result.ActivityLevel,
-                        SkillLevel = result.SkillLevel,
-                        MinimumAge = result.MinimumAge,
-                        CanAdultsJoin = result.CanAdultsJoin,
-                        CreatedBy = result.CreatedBy,
-                        MapDetails = result.MapDetails,
-                        PinnedLocation = result.PinnedLocation,
-                        IsComingSoon = result.IsComingSoon,
-                        ClassPolicies = result.ClassPolicies,
+                        CustomerBringWithThem   = result.CustomerBringWithThem,
+                        AdditionalRequirements  = result.AdditionalRequirements,
+                        ActivityLevel           = result.ActivityLevel,
+                        SkillLevel              = result.SkillLevel,
+                        MinimumAge              = result.MinimumAge,
+                        CanAdultsJoin           = result.CanAdultsJoin,
+                        CreatedBy               = result.CreatedBy,
+                        MapDetails              = result.MapDetails,
+                        PinnedLocation          = result.PinnedLocation,
+                        IsComingSoon            = result.IsComingSoon,
+                        ClassPolicies           = result.ClassPolicies,
+                        VideoLink               = result.VideoLink,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule
                             {
-                                Id = e.Id,
-                                Name = e.Name,
-                                DateTime = e.DateTime,
-                                PerUnit1 = e.PerUnit1,
-                                PerUnit2 = e.PerUnit2,
-                                Price = e.Price,
-                                PriceUnit1 = e.PriceUnit1,
-                                PriceUnit2 = e.PriceUnit2,
-                                UnitPrice = e.UnitPrice,
+                                Id               = e.Id,
+                                Name             = e.Name,
+                                DateTime         = e.DateTime,
+                                PerUnit1         = e.PerUnit1,
+                                PerUnit2         = e.PerUnit2,
+                                Price            = e.Price,
+                                PriceUnit1       = e.PriceUnit1,
+                                PriceUnit2       = e.PriceUnit2,
+                                UnitPrice        = e.UnitPrice,
                                 IsActiveSchedule = e.IsActiveSchedule,
-                                IsSetSession = e.IsSetSession,
-                                SessionName = e.SessionName,
-                                HasExpiration = e.HasExpiration,
-                                StartDate = e.StartDate,
+                                IsSetSession     = e.IsSetSession,
+                                SessionName      = e.SessionName,
+                                HasExpiration    = e.HasExpiration,
+                                StartDate        = e.StartDate,
                             };
                         }).ToList(),
                         AddOns = result.AddOns.Select(s =>{
@@ -1251,19 +1267,19 @@
                         {
                             return new ActivityImage
                             {
-                                Id = i.Id,
+                                Id       = i.Id,
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name     = i.Name
                             };
                         }).ToList(),
                         Owner = result.Owner != null ? new CustomerProfile
                         {
                             // map only required fields
-                            Id = result.Owner.Id,
+                            Id      = result.Owner.Id,
                             Handler = result.Owner.Handler
                         } : null,
-                        CompletedStudents = result.CompletedStudents,
-                        OngoingStudents = result.OngoingStudents,
+                        CompletedStudents      = result.CompletedStudents,
+                        OngoingStudents        = result.OngoingStudents,
                         ExperienceCreationType = result.ExperienceCreationType
                     };
                 MakerActivity.Add(activity);
@@ -1678,5 +1694,44 @@
     private void ToggleAboutText()
     {
         showFullAbout = !showFullAbout;
+    }
+    private string ConvertToEmbedSrc(string videoLink, VideoPlatform platform)
+    {
+        switch (platform)
+        {
+            case VideoPlatform.Vimeo:
+                return GetVimeoEmbedSrc(videoLink);
+            case VideoPlatform.YouTube:
+                return GetYouTubeEmbedSrc(videoLink);
+            default:
+                throw new ArgumentException("Invalid video platform.");
+        }
+    }
+
+    private string GetVimeoEmbedSrc(string vimeoLink)
+    {
+        // Extract Vimeo video ID from the link
+        string vimeoVideoId = vimeoLink.Substring(vimeoLink.LastIndexOf("/") + 1);
+
+        // Construct Vimeo embed src code
+        return $"https://player.vimeo.com/video/{vimeoVideoId}";
+    }
+
+    private string GetYouTubeEmbedSrc(string youtubeLink)
+    {
+        var uri = new Uri(youtubeLink);
+        string youtubeVideoId = null;
+
+        if (uri.Host.Equals("youtu.be", StringComparison.OrdinalIgnoreCase))
+            youtubeVideoId = uri.Segments.Last();
+        else if (uri.Host.Equals("www.youtube.com", StringComparison.OrdinalIgnoreCase) && uri.AbsolutePath.Equals("/watch", StringComparison.OrdinalIgnoreCase))
+            youtubeVideoId = System.Web.HttpUtility.ParseQueryString(uri.Query)["v"];
+
+        return youtubeVideoId != null ? $"https://www.youtube.com/embed/{youtubeVideoId}" : null;
+    }
+    private enum VideoPlatform
+    {
+        Vimeo,
+        YouTube
     }
 }

@@ -44,4 +44,5 @@ public interface IAccountApiHandler
     Task<AppResult<BlockedAccountResult>> BlockAccount(BlockedAccountArgs args, string token);
     Task<AppResult<SecretLoginResult>> SecretLogin(SecretLoginArgs args);
     Task<AppResult<ChangEmailAddressResult>> ChangeEmailAddress(ChangeEmailArgs args, string token);
+    Task<AppResult<DeleteWaitlistResult>> DeleteWaitlist(DeleteWaitlistArgs args, string token);
 } 
