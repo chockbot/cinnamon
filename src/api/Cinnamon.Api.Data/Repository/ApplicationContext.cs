@@ -79,6 +79,13 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    
+    // new disbursement flow
+    public DbSet<Disbursement> Disbursements {get; set;}
+    public DbSet<DisbursementDetail> DisbursementDetails {get; set;}
+    public DbSet<DisbursementBulk> DisbursementBulks {get; set;}
+    public DbSet<DisbursementDetailBulk> DisbursementDetailBulks {get; set;}
+    public DbSet<DisbursementBulkLog> DisbursementBulkLogs {get; set;}
 
     #endregion
 
@@ -311,6 +318,16 @@ public class ApplicationContext : IdentityDbContext
 
         //AddOns
         modelBuilder.Entity<AddOns>().HasIndex(o => o.Id);
+
+        // for disbursement configs
+        modelBuilder.Entity<Disbursement>()
+            .HasIndex(d => d.PurchaseOrderId);
+        modelBuilder.Entity<Disbursement>()
+            .HasIndex(d => d.CustomerId);
+        modelBuilder.Entity<DisbursementBulk>()
+            .HasIndex(d => d.CustomerId);
+        modelBuilder.Entity<DisbursementBulkLog>()
+            .HasIndex(d => d.DisbursementBulkId);
 
     }
 
