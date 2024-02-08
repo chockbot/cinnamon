@@ -3,7 +3,8 @@
 @inject NavigationManager NavigationManager;
 @implements IOteComponent;
 
-<section class="ote-publish-wrapper">
+<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+    <section class="ote-publish-wrapper">
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
         <h3 class="font-24 font-weight-700 color-black-100 text-center">Your one time event is almost ready!</h3>
         <Divider />
@@ -103,9 +104,22 @@
             </div>*@
         </div>
     </div>
-    <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+    <div class="section-footer mt-4 d-flex">
+        @if (HavePrevious)
+        {
+            <Button class="@PrevButtonClass" @onclick="PrevClick">
+                Back
+            </Button>
+        }
+        <Button class="@NextButtonClass" @onclick="NextClick">
+            <ChildContent>
+                Publish
+            </ChildContent>
+        </Button>
+    </div>
+   @* <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick"/>*@
 </section>
-
+</LoadingIndicator>
 <UserFlowModal @ref=userFlowModal Image="user-flow-ote.webp" MobileImage="user-flow-ote-mobile.png"/>
 <UserFlowModal @ref=moneyFlowsModal Image="money-flow-ote.webp" MobileImage="money-flow-ote-mobile.png" />
 
@@ -116,12 +130,14 @@
 
     [Parameter]
     public EventCallback OnPrevClick {get; set;}
-
+    LoadingIndicator loadingIndicator;
     private FormModel model = new();
     private bool invokingNext = false;
     private bool showErrorMessage = false;
     private UserFlowModal? userFlowModal;
     private UserFlowModal? moneyFlowsModal;
+    public bool HavePrevious { get; set; } = true;
+    public string NextButtonExtraClass { get; set; }
 
     public Task<bool> FieldValid()
     {
@@ -138,9 +154,11 @@
     {
         if(OnNextClick.HasDelegate)
         {
+            await loadingIndicator.Show();
             invokingNext = true;
             await OnNextClick.InvokeAsync();
             invokingNext = false;
+            await loadingIndicator.Hide();
         }
     }
 
@@ -190,5 +208,20 @@
     private void CheckboxChanged(int val)
     {
         model.ComingSoon = (val == 1) ? true : false;
+    }
+    private string NextButtonClass
+    {
+        get
+        {
+            return $"bg-orange-100 color-white-100 text-capitalize font-24 hover-color-white px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 {NextButtonExtraClass}";
+        }
+    }
+
+    private string PrevButtonClass
+    {
+        get
+        {
+            return "me-2 bg-white-200 color-black-100 text-capitalize font-24 hover-color-black-100 px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 m-margin-right-10";
+        }
     }
 }
