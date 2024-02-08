@@ -185,6 +185,7 @@ public class Activity
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public string VideoLink { get; set; }
+    public DateTime CreatedOn { get; set; }
     public Cinnamon.Framework.Enums.Enums.ActivityStatus Status { get; set; }
     public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public Cinnamon.Framework.Enums.Enums.ScheduleType ScheduleType { get; set; }

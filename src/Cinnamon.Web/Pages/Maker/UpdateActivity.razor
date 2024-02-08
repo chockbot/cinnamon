@@ -291,7 +291,9 @@
                             <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
                         </div>
                         <div class='tab @(currentIndex ==  7 ? "show" : "")'>
-                            <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                            <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+                                <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                            </LoadingIndicator>
                         </div>
                     </EditForm>
                 </div>
@@ -303,14 +305,25 @@
                                 <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
                             </div>
                             <div class="col-lg-6 col-6">
-                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                                    <LoadingTemplate>
-                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                                    </LoadingTemplate>
-                                    <ChildContent>
-                                        @(currentIndex == 7 ? "Publish" : "Next")
-                                    </ChildContent>
-                                </Button>
+                                @if (currentIndex == 7)
+                                {
+                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
+                                        <ChildContent>
+                                            @(currentIndex == 7 ? "Publish" : "Next")
+                                        </ChildContent>
+                                    </Button>
+                                }
+                                else
+                                {
+                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                        <LoadingTemplate>
+                                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                        </LoadingTemplate>
+                                        <ChildContent>
+                                            @(currentIndex == 7 ? "Publish" : "Next")
+                                        </ChildContent>
+                                    </Button>
+                                }
                             </div>
                         }
                         else
@@ -385,6 +398,8 @@
     private GeneralPublishPage GeneralPublishPage { get; set; }
 
     public List<Students> enrolledStudents = new List<Students>();
+
+    LoadingIndicator loadingIndicator;
 
     private bool isLoading = false;
 
@@ -917,6 +932,7 @@
         // for submit action
         if(index == 0 && currentIndex == 7)
         {
+            await loadingIndicator.Show();
             if (!GeneralPublishPage.Validate()) return;
 
             isLoading = true;
@@ -1042,9 +1058,8 @@
             // upload image without checking if there is error so that can't re update another activity
             bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
-
+            await loadingIndicator.Hide();
             await NotificationService.Success("Success! You updated an activity", "Success!");
-
             await Task.Delay(1000); 
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");

@@ -310,7 +310,9 @@
                             <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
                         </div>
                         <div class='tab @(currentIndex ==  7 ? "show" : "")'>
-                            <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                            <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+                                <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                            </LoadingIndicator>
                         </div>
                     </EditForm>
                 </div>
@@ -322,7 +324,17 @@
                                 <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
                             </div>
                             <div class="col-lg-6 col-6">
-                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                @if(currentIndex == 7)
+                                {
+                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
+                                        <ChildContent>
+                                            @(currentIndex == 7 ? "Publish" : "Next")
+                                        </ChildContent>
+                                    </Button>
+                                }
+                                else
+                                {
+                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
                                     <LoadingTemplate>
                                         <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
                                     </LoadingTemplate>
@@ -330,6 +342,8 @@
                                         @(currentIndex == 7 ? "Publish" : "Next")
                                     </ChildContent>
                                 </Button>
+                                }
+                                
                             </div>
                         }
                         else
@@ -421,6 +435,8 @@
     private ActivitySummary ActivitySummary { get; set; }
 
     private GeneralPublishPage GeneralPublishPage { get; set; }
+
+    LoadingIndicator loadingIndicator;
 
     public bool isCreationOverviewComponentValid { get; set; }
     public bool isLocationComponentValid { get; set; }
@@ -669,10 +685,11 @@
     private async Task OnNextClick(int index = 0)
     {
         displayError = false;
-
+        
         // for submit action
         if (index == 0 && currentIndex == 7)
         {
+            await loadingIndicator.Show();
             if (!GeneralPublishPage.Validate()) return;
 
             isLoading = true;
@@ -791,6 +808,7 @@
             // upload image without checking if there is an error so that can't re update another activity
             bool isSuccess = await galleryComponent.UploadImages(submit.Result.Result.ActivityId);
             isLoading = false;
+            await loadingIndicator.Hide();
 
             await NotificationService.Success("Success! You created an activity", "Success!");
 
@@ -799,6 +817,7 @@
             navigationManager.NavigateTo("/maker/dashboard");
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+
             return;
         }
 
@@ -1031,7 +1050,6 @@
 
             currentIndex += 1;
         }
-
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
     }

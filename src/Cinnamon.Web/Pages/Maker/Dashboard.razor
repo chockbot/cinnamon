@@ -895,6 +895,7 @@
                         ExperienceCreationType = a.ExperienceCreationType,
                         Handler                = a.Handler,
                         CityName               = a.CityName,
+                        CreatedOn              = a.CreatedOn,
                         Images = a.Images.Select(i =>
                         {
                             return new ActivityImage
@@ -911,9 +912,9 @@
                     };
             }).ToList();
         }
-        GeneralActivities    = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).ToList();
-        OTEActivities        = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).ToList();
-        AppointmentActvities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment).ToList();
+        GeneralActivities    = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderByDescending(a => a.CreatedOn).ToList();
+        OTEActivities        = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.OneTimeEvents).OrderByDescending(a => a.CreatedOn).ToList();
+        AppointmentActvities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment).OrderByDescending(a => a.CreatedOn).ToList();
         NoOfEnrollees        = activities.Sum(a => a.OngoingStudents);
         NoOfCompleted        = activities.Sum(a => a.CompletedStudents);
         NoOfReviews          = activities.Sum(a => a.NumberOfReviews);
