@@ -573,7 +573,11 @@
         {
             jsClipboard = await JS.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             await Task.Delay(2000);
-            await JS.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
+            if (activity is not null && !activity.IsComingSoon)
+            {
+                await JS.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
+            }
+            
         }
     }
 
