@@ -668,7 +668,7 @@
 </section>
 
 @code 
-{
+            {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -872,19 +872,19 @@
 
     public void SetState(ModelData data)
     {
-        modelSchedule.DateFrom = data.DateFrom;
-        modelSchedule.DateTo = data.DateTo;
-        modelSchedule.TimeFrom = data.DateFrom.TimeOfDay;
-        modelSchedule.TimeTo = data.DateTo.TimeOfDay;
-        modelSchedule.DurationEnd = data.DurationEnd ?? DateTime.Now;
-        modelSchedule.DurationStart = data.DurationStart ?? DateTime.Now;
-        modelSchedule.DurationEvery = data.DurationEvery ?? 1;
-        modelSchedule.MonthDay = data.MonthDay;
-        modelSchedule.MonthRepeat = data.MonthRepeat;
-        modelSchedule.MonthSelection = data.MonthSelection ?? 1;
-        modelSchedule.OnDayDate = data.OnDayDate ?? 1;
-        modelSchedule.EventDurationCount = data.EventDurationCount;
-        modelSchedule.EventDurationTimeUnit = data.EventDurationTimeUnit;
+        modelSchedule.DateFrom               = data.DateFrom;
+        modelSchedule.DateTo                 = data.DateTo;
+        modelSchedule.TimeFrom               = data.DateFrom.TimeOfDay;
+        modelSchedule.TimeTo                 = data.DateTo.TimeOfDay;
+        modelSchedule.DurationEnd            = data.DurationEnd ?? DateTime.Now;
+        modelSchedule.DurationStart          = data.DurationStart ?? DateTime.Now;
+        modelSchedule.DurationEvery          = data.DurationEvery ?? 1;
+        modelSchedule.MonthDay               = data.MonthDay;
+        modelSchedule.MonthRepeat            = data.MonthRepeat;
+        modelSchedule.MonthSelection         = data.MonthSelection ?? 1;
+        modelSchedule.OnDayDate              = data.OnDayDate ?? 1;
+        modelSchedule.EventDurationCount     = data.EventDurationCount;
+        modelSchedule.EventDurationTimeUnit  = data.EventDurationTimeUnit;
         modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
 
         RecurrenceChanged(data.Recurrences);
@@ -1012,7 +1012,7 @@
                 {
                     return $"Occurs every {selectedDaysString} starting {durationStart} until {durationEnd}";
                 }
-                
+
                 return $"Occurs every {modelSchedule.DurationEvery} weeks on {selectedDaysString} starting {durationStart} until {durationEnd}";
             }
 
@@ -1084,7 +1084,7 @@
         var every = modelSchedule.DurationEvery;
         var dateStart = modelSchedule.DurationStart;
         var dateEnd = modelSchedule.DurationEnd;
-        
+
         var timeStart = modelSchedule.EventDurationTimeStart;
         var timeDuration = modelSchedule.DateTo - modelSchedule.DateFrom;
 
@@ -1131,7 +1131,7 @@
                 });
             }
         }
-        
+
         await CloseCalendar();
     }
 
@@ -1148,8 +1148,8 @@
         public IList<ItemPrice> ItemPrices {get; set;}
         public IList<DateOverride> DateOverrides {get; set;}
 
-        public DateTime? DurationStart {get; set;}
-        public DateTime? DurationEnd {get; set;}
+        public DateTime? DurationStart { get; set; } = DateTime.Now;
+        public DateTime? DurationEnd {get; set;} = DateTime.Now;
         public int? DurationEvery {get; set;}
         public int? MonthSelection {get; set;}
         public string? MonthRepeat {get; set;}
