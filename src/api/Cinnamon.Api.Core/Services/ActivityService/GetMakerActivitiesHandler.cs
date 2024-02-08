@@ -93,6 +93,7 @@ public class GetMakerActivitiesHandler: IGetMakerActivitiesHandler
                         CompletedStudents = a.CompletedStudents,
                         NumberOfReviews = a.NumberOfReviews,
                         AverageRating = a.AverageRating,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetMakerActivitiesResult.Activity.ActivitySchedule
                             {
