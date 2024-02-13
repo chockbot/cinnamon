@@ -150,6 +150,14 @@ builder.Services.AddQuartz(q => {
             .WithCronSchedule(applicationConfig.ExpiringActivityNotification.CronString)
         );
     }
+
+    var generateDisbursementKey = new JobKey("GenerateDisbursementJob");
+    q.AddJob<GenerateDisbursementJob>(opts => opts.WithIdentity(generateDisbursementKey));
+    q.AddTrigger(opts => opts
+        .ForJob(generateDisbursementKey)
+        .WithIdentity("GenerateDisbursementJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
+    );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
