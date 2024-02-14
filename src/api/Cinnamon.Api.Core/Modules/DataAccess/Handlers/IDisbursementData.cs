@@ -7,4 +7,12 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 public interface IDisbursementData 
 {
     Task<AppResult<CreateDisbursementResult>> CreateDisbursements(CreateDisbursementArgs args);
+
+    Task<AppResult<GetDisbursementsResult>> GetDisbursements(GetDisbursementsArgs args);
+
+    Task<AppResult<CreateDisbursementBulkLogResult>> CreateDisbursementBulkLog(CreateDisbursementBulkLogArgs args);
+
+    Task<AppResult<UpdateDisbursementBulkStatusResult>> UpdateDisbursementBulkStatus(UpdateDisbursementBulkStatusArgs args);
+
+    Task<AppResult<CreateDisbursementBulkResult>> CreateDisbursementBulk(CreateDisbursementBulkArgs args);
 }

@@ -158,6 +158,14 @@ builder.Services.AddQuartz(q => {
         .WithIdentity("GenerateDisbursementJob-trigger")
         .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
     );
+
+    var generateDisbursementPayoutKey = new JobKey("GenerateDisbursementPayoutJob");
+    q.AddJob<GenerateDisbursementPayoutJob>(opts => opts.WithIdentity(generateDisbursementPayoutKey));
+    q.AddTrigger(opts => opts
+        .ForJob(generateDisbursementPayoutKey)
+        .WithIdentity("GenerateDisbursementPayoutJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
+    );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
