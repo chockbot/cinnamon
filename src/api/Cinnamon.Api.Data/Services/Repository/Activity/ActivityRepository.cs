@@ -1710,7 +1710,8 @@ public class ActivityRepository : IActivityRepository
                 Status = 1,
                 ExperienceCreationTypeId = experienceCreationTypeId,
                 CreatedBy = customerId,
-                IsComingSoon = comingSoon
+                IsComingSoon = comingSoon,
+                VideoLink = string.Empty
             };
 
             var activityDescription = new Entities.ActivityDescription {

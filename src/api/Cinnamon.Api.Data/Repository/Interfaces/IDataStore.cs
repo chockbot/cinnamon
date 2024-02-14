@@ -48,6 +48,11 @@ public interface IDataStore
     IAddOns AddOns { get; }
     IOteDate OteDate {get;}
     IOteDateOverride OteDateOverride {get;}
+    IDisbursement Disbursement {get;}
+    IDisbursementDetail DisbursementDetail {get;}
+    IDisbursementBulk DisbursementBulk {get;}
+    IDisbursementDetailBulk DisbursementDetailBulk {get;}
+    IDisbursementBulkLog DisbursementBulkLog {get;}
     
     Task EnsureMigrate();
 

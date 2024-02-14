@@ -1,0 +1,256 @@
+@layout AdminLayout
+@page "/admin/disbursements/{DisbursementId}"
+@using System.Security.Claims;
+@using Framework.ApiCommand.ApiCore.DTO.Disbursement;
+@using System.ComponentModel.DataAnnotations;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IAdminApiHandler adminApiHandler;
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Admin - Disbursements Details | CinnamonPH</PageTitle>
+<SeoMeta Title="Admin - Disbursements Details" Subject="Admin - Disbursements Details" Url="/admin/disbursements/" />
+
+<section class="admin-dashboard-disbursement-wrapper">
+    <div class="top-row">
+        <div class="dropdown">
+            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+                <div class="menu">
+                    <img src="images/menu.png">
+                </div>
+            </button>
+            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+                @if (AuthState != null)
+                {
+                    @if (AuthState.Identity.IsAuthenticated)
+                    {
+                        <li class="dropdown-item">
+                            <Button Border="Border.Is0" Clicked="Logout">
+                                Logout
+                            </Button>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+
+    @if(disbursement is not null)
+    {
+        <Row VerticalGutter="20">
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Title</FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.Label" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Provider Email</FieldLabel>
+                    <FieldBody>
+                        <TextEdit @bind-Text="disbursement.Disbursement.ProviderEmail" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Provider First Name</FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.ProviderFirstName" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Provider Last Name</FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.ProviderLastName" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Amount</FieldLabel>
+                    <FieldBody>
+                        <NumericPicker TValue="decimal" @bind-Value="disbursement.Disbursement.Amount" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Text="@GetUnderstandableStatus(disbursement.Disbursement.Status)" Disabled />
+                    </FieldBody>
+                </Field>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <Validations Mode="ValidationMode.Manual" Model="formModel" @ref="FormValidation">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Remarks</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="formModel.Remarks" Disabled="DisableRemarks">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </Column>
+            @if(!DisableRemarks)
+            {
+                <Column ColumnSize="ColumnSize.Is6" class="d-flex align-items-end">
+                    <Button Clicked="SubmitManualDisbursement" Type="ButtonType.Button" Size="Size.Small" 
+                        class="bg-danger color-white-100 py-2 border-radius-10 hover-color-white"
+                        Loading="isSubmitting" Disabled="isSubmitting">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Please Wait..
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Manual Disburse
+                        </ChildContent>
+                    </Button>
+                </Column>   
+            }
+        </Row>
+
+        <div class="transactions-section mt-4">
+            <div class="table-list">
+                <p class="mb-1 font-18 font-weight-700">Disbursement Details</p>
+                <Table Hoverable class="border-1-solid mb-4 font-20 m-font-12" VerticalAlignment="VerticalAlignment.Middle">
+                    <TableHeader class="bg-black-100 m-d-none" VerticalAlignment="VerticalAlignment.Middle">
+                        <TableRow class="color-white-100">
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                Id
+                            </TableHeaderCell>
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                Title
+                            </TableHeaderCell>
+                            <TableHeaderCell class="text-start color-white-100 p-3">
+                                Amount
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in disbursement.DisbursementItems)
+                        {
+                            <TableRow>
+                                <TableRowCell class="text-start p-3">@item.Id</TableRowCell>
+                                <TableRowCell class="text-start p-3">@item.Label</TableRowCell>
+                                <TableRowCell class="text-start p-3 text-capitalize">
+                                    @item.Amount.ToString("#,##0.00")
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    }
+</section>
+
+@code 
+{
+    [Parameter]
+    public string DisbursementId {get; set;}
+
+    public bool clickButton { get; set; }
+    public ClaimsPrincipal AuthState { get; set; }
+    string token = string.Empty;
+
+    private DisbursementDetailedDTO? disbursement;
+    private FormModel formModel = new();
+    private Validations? FormValidation {get; set;}
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        await LoadDisbursements();
+    }
+
+    private async Task LoadDisbursements()
+    {
+        int.TryParse(DisbursementId, out int id);
+
+        var result = await adminApiHandler.GetDisbursementDetails(id, token);
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            disbursement = result.Result.Result;
+            formModel.Remarks = disbursement.Disbursement.Remarks;
+        }
+    }
+
+    private string ShowMenu()
+    {
+        return clickButton ? "show" : "";
+    }
+
+    private void onClickMenu()
+    {
+        if (clickButton)
+        {
+            clickButton = false;
+        }
+        else
+        {
+            clickButton = true;
+        }
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/api/account/logout", true);
+    }
+
+    private Task SubmitFilters()
+    {
+        return LoadDisbursements();
+    }
+
+    private string GetUnderstandableStatus(string status) => status switch {
+        "initiated" => "Pending",
+        "disbursed" => "Disbursed",
+        "pending" => "Disbursed",
+        _ => "Unknown"
+    };
+
+    private async Task SubmitManualDisbursement()
+    {
+        bool isFormValidate = await FormValidation.ValidateAll();
+        if(isFormValidate && disbursement is not null)
+        {
+            var result = await adminApiHandler.ManaulDisbursementResult(new Framework.ApiCommand.ApiCore.AdminUser.Request.ManualDisbursementArgs {
+                DisbursementId = disbursement.Disbursement.Id,
+                Remarks = formModel.Remarks
+            }, token);
+            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/admin/disbursements");
+                return;
+            }
+        }
+    }
+
+    private bool DisableRemarks => disbursement is not null && !disbursement.Disbursement.Status.Equals("initiated", StringComparison.CurrentCultureIgnoreCase);
+
+    private record FormModel 
+    {
+        [Required(ErrorMessage = "Remarks required to manually disbursed.")]
+        public string Remarks {get; set;}
+    }
+}
