@@ -162,4 +162,23 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<IEnumerable<DisbursementInformationDTO>>.CreateFailed(ex, "An error occured when getting disbursment information.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisbursementDetailDTO>>> GetDisbursementDetails(int disbusementId)
+    {
+        try
+        {
+            var result = await dataStore.DisbursementDetail.FindAsync(d => d.DisbursementId == disbusementId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DisbursementDetailDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<IEnumerable<DisbursementDetailDTO>>(result.Result);
+            return AppResult<IEnumerable<DisbursementDetailDTO>>.CreateSucceeded(dtos, "Successfully get disbursement details.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DisbursementDetailDTO>>.CreateFailed(ex, "An error occured when getting disbursement details.");
+        }
+    }
 }

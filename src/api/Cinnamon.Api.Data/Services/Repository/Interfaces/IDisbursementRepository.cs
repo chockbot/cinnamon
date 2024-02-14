@@ -20,4 +20,6 @@ public interface IDisbursementRepository
     Task<AppResult<DisbursementBulkDTO>> GetDisbursementBulk(int id);
 
     Task<AppResult<IEnumerable<DisbursementInformationDTO>>> GetDisbursementsInformation(string filterBy, string filterValue);
+
+    Task<AppResult<IEnumerable<DisbursementDetailDTO>>> GetDisbursementDetails(int disbusementId);
 }

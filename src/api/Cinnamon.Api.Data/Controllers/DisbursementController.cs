@@ -181,4 +181,26 @@ public class DisbursementController : ControllerBase
             return new JsonResult(new GetDisbursementInformationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetDisbursementDetails/{disbursementId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDisbursementDetailsResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetDisbursementDetails(int disbursementId)
+    {
+        try
+        {
+            var result = await disbursementRepository.GetDisbursementDetails(disbursementId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetDisbursementDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetDisbursementDetailsResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDisbursementDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
