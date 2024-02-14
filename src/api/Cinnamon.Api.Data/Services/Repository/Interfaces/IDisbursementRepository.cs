@@ -18,4 +18,6 @@ public interface IDisbursementRepository
     Task<AppResult<DisbursementBulkLogDTO>> CreateDisbursementBulkLog(DisbursementBulkLogDTO disbursementBulkLog);
 
     Task<AppResult<DisbursementBulkDTO>> GetDisbursementBulk(int id);
+
+    Task<AppResult<IEnumerable<DisbursementInformationDTO>>> GetDisbursementsInformation(string filterBy, string filterValue);
 }

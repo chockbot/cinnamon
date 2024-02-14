@@ -144,4 +144,22 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<DisbursementBulkDTO>.CreateFailed(ex, "An error occured when getting disbursement bulk.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisbursementInformationDTO>>> GetDisbursementsInformation(string filterBy, string filterValue)
+    {
+        try
+        {
+            var result = await dataStore.Disbursement.GetDisbursementsInfo(filterBy, filterValue);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DisbursementInformationDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<DisbursementInformationDTO>>.CreateSucceeded(result.Result, "Successfully get disbursement information");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DisbursementInformationDTO>>.CreateFailed(ex, "An error occured when getting disbursment information.");
+        }
+    }
 }
