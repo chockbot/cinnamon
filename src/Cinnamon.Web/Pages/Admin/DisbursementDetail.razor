@@ -2,6 +2,7 @@
 @page "/admin/disbursements/{DisbursementId}"
 @using System.Security.Claims;
 @using Framework.ApiCommand.ApiCore.DTO.Disbursement;
+@using System.ComponentModel.DataAnnotations;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @using Cinnamon.Web.Components;
@@ -45,7 +46,7 @@
                 <Field>
                     <FieldLabel>Title</FieldLabel>
                     <FieldBody>
-                        <TextEdit @bind-Text="disbursement.Disbursement.Label" Disabled />
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.Label" Disabled />
                     </FieldBody>
                 </Field>
             </Column>
@@ -61,15 +62,15 @@
                 <Field>
                     <FieldLabel>Provider First Name</FieldLabel>
                     <FieldBody>
-                        <TextEdit @bind-Text="disbursement.Disbursement.ProviderFirstName" Disabled />
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.ProviderFirstName" Disabled />
                     </FieldBody>
                 </Field>
             </Column>
             <Column ColumnSize="ColumnSize.Is6">
                 <Field>
-                    <FieldLabel>Provider First Name</FieldLabel>
+                    <FieldLabel>Provider Last Name</FieldLabel>
                     <FieldBody>
-                        <TextEdit @bind-Text="disbursement.Disbursement.ProviderLastName" Disabled />
+                        <TextEdit class="text-capitalize" @bind-Text="disbursement.Disbursement.ProviderLastName" Disabled />
                     </FieldBody>
                 </Field>
             </Column>
@@ -90,13 +91,37 @@
                 </Field>
             </Column>
             <Column ColumnSize="ColumnSize.Is6">
-                <Field>
-                    <FieldLabel>Remarks</FieldLabel>
-                    <FieldBody>
-                        <MemoEdit Rows="5" @bind-Text="disbursement.Disbursement.Remarks" Disabled />
-                    </FieldBody>
-                </Field>
+                <Validations Mode="ValidationMode.Manual" Model="formModel" @ref="FormValidation">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Remarks</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="formModel.Remarks" Disabled="DisableRemarks">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
             </Column>
+            @if(!DisableRemarks)
+            {
+                <Column ColumnSize="ColumnSize.Is6" class="d-flex align-items-end">
+                    <Button Clicked="SubmitManualDisbursement" Type="ButtonType.Button" Size="Size.Small" 
+                        class="bg-danger color-white-100 py-2 border-radius-10 hover-color-white"
+                        Loading="isSubmitting" Disabled="isSubmitting">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Please Wait..
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Manual Disburse
+                        </ChildContent>
+                    </Button>
+                </Column>   
+            }
         </Row>
 
         <div class="transactions-section mt-4">
@@ -143,9 +168,10 @@
     public ClaimsPrincipal AuthState { get; set; }
     string token = string.Empty;
 
-    private bool IsFetchingTransactions {get; set;}
-
     private DisbursementDetailedDTO? disbursement;
+    private FormModel formModel = new();
+    private Validations? FormValidation {get; set;}
+    private bool isSubmitting = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,17 +184,14 @@
 
     private async Task LoadDisbursements()
     {
-        IsFetchingTransactions = true;
-
         int.TryParse(DisbursementId, out int id);
 
         var result = await adminApiHandler.GetDisbursementDetails(id, token);
         if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
             disbursement = result.Result.Result;
+            formModel.Remarks = disbursement.Disbursement.Remarks;
         }
-
-        IsFetchingTransactions = false;
     }
 
     private string ShowMenu()
@@ -205,4 +228,29 @@
         "pending" => "Disbursed",
         _ => "Unknown"
     };
+
+    private async Task SubmitManualDisbursement()
+    {
+        bool isFormValidate = await FormValidation.ValidateAll();
+        if(isFormValidate && disbursement is not null)
+        {
+            var result = await adminApiHandler.ManaulDisbursementResult(new Framework.ApiCommand.ApiCore.AdminUser.Request.ManualDisbursementArgs {
+                DisbursementId = disbursement.Disbursement.Id,
+                Remarks = formModel.Remarks
+            }, token);
+            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/admin/disbursements");
+                return;
+            }
+        }
+    }
+
+    private bool DisableRemarks => disbursement is not null && !disbursement.Disbursement.Status.Equals("initiated", StringComparison.CurrentCultureIgnoreCase);
+
+    private record FormModel 
+    {
+        [Required(ErrorMessage = "Remarks required to manually disbursed.")]
+        public string Remarks {get; set;}
+    }
 }
