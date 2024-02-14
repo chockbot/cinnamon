@@ -39,7 +39,7 @@ public class GenerateDisbursementPayout : IGenerateDisbursementPayout
 
     public AppResult<GenerateDisbursementPayoutResult> Execute(GenerateDisbursementPayoutArgs args)
     {
-        throw new NotImplementedException();
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<GenerateDisbursementPayoutResult>> ExecuteAsync(GenerateDisbursementPayoutArgs args)

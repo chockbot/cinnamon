@@ -121,4 +121,24 @@ public class DisbursementData : IDisbursementData
             return AppResult<GetDisbursementsResult>.CreateFailed(ex, "An error occured when get disbursements api");
         }
     }
+
+    public async Task<AppResult<GetDisbursementBulkResult>> GetDisbursementBulk(int disbursementBulkId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Disbursement/DisbursmentBulks/{disbursementBulkId}")
+                            .GetJsonAsync<GetDisbursementBulkResult>();
+            return AppResult<GetDisbursementBulkResult>.CreateSucceeded(result, "Successfully get disbursement bulk api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<GetDisbursementBulkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDisbursementBulkResult>.CreateFailed(ex, "An error occured when get disbursement bulk api");
+        }
+    }
 }

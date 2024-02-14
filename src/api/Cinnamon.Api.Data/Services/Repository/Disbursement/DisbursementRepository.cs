@@ -125,4 +125,23 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<DisbursementBulkLogDTO>.CreateFailed(ex, "An error occured when creating disbursement bulk log.");
         }
     }
+
+    public async Task<AppResult<DisbursementBulkDTO>> GetDisbursementBulk(int id)
+    {
+        try
+        {
+            var result = await dataStore.DisbursementBulk.FindFirstAsync(a => a.Id == id);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<DisbursementBulkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<DisbursementBulkDTO>(result.Result);
+            return AppResult<DisbursementBulkDTO>.CreateSucceeded(dto, "Successfully get disbursement bulk.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DisbursementBulkDTO>.CreateFailed(ex, "An error occured when getting disbursement bulk.");
+        }
+    }
 }

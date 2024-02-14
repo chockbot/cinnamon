@@ -15,4 +15,6 @@ public interface IDisbursementData
     Task<AppResult<UpdateDisbursementBulkStatusResult>> UpdateDisbursementBulkStatus(UpdateDisbursementBulkStatusArgs args);
 
     Task<AppResult<CreateDisbursementBulkResult>> CreateDisbursementBulk(CreateDisbursementBulkArgs args);
+
+    Task<AppResult<GetDisbursementBulkResult>> GetDisbursementBulk(int disbursementBulkId);
 }

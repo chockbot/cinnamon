@@ -15,16 +15,18 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
     private readonly ApplicationConfig applicationConfig;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IStudentData studentData;
+    private readonly IDisbursementData disbursementData;
 
     public VerifyPayoutCallbackHandler(IPayoutLogData payoutLogData, IPurchaseOrderData purchaseOrderData,
         ApplicationConfig applicationConfig, IJsonSerializationProvider jsonSerializationProvider,
-        IStudentData studentData)
+        IStudentData studentData, IDisbursementData disbursementData)
     {
         this.payoutLogData = payoutLogData;
         this.purchaseOrderData = purchaseOrderData;
         this.applicationConfig = applicationConfig;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.studentData = studentData;
+        this.disbursementData = disbursementData;
     }
 
     public AppResult<VerifyPayoutCallbackResult> Execute(VerifyPayoutCallbackArgs args)
@@ -55,7 +57,15 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             }
 
             // get payout log data
-            var transactionId = int.Parse(args.ReferenceId);
+            var splittedReference = args.ReferenceId.Split("-");
+            if(splittedReference.Count() <= 1)
+            {
+                return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid reference id"), "Invalid reference id");
+            }
+
+            var disbursementBulkId = Convert.ToInt32(splittedReference[1]);
+
+
             var getPayoutLogRes = await payoutLogData.GetPayoutLogById(transactionId);
             if(!getPayoutLogRes.Succeeded || getPayoutLogRes.Result == null || !getPayoutLogRes.Result.IsSuccess)
             {
