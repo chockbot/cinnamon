@@ -29,12 +29,96 @@ public class DisbursementData : IDisbursementData
         }
         catch (FlurlHttpException ex)
         {
-            var flutError = await ex.GetResponseJsonAsync();
+            var flurlError = await ex.GetResponseJsonAsync();
             return AppResult<CreateDisbursementResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
             return AppResult<CreateDisbursementResult>.CreateFailed(ex, "An error occured when posting create disbursement api");
+        }
+    }
+
+    public async Task<AppResult<CreateDisbursementBulkResult>> CreateDisbursementBulk(CreateDisbursementBulkArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Disbursement/CreateDisbursementBulk")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateDisbursementBulkResult>();
+            return AppResult<CreateDisbursementBulkResult>.CreateSucceeded(result, "Successfully posting create disbursement bulk api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<CreateDisbursementBulkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateDisbursementBulkResult>.CreateFailed(ex, "An error occured when posting create disbursement bulk api.");
+        }
+    }
+
+    public async Task<AppResult<UpdateDisbursementBulkStatusResult>> UpdateDisbursementBulkStatus(UpdateDisbursementBulkStatusArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Disbursement/UpdateDisbursementBulkStatus")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdateDisbursementBulkStatusResult>();
+            return AppResult<UpdateDisbursementBulkStatusResult>.CreateSucceeded(result, "Successfully posting update disbursement bulk status api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateDisbursementBulkStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateDisbursementBulkStatusResult>.CreateFailed(ex, "An error occured when posting update disbursement bulk status api.");
+        }
+    }
+
+    public async Task<AppResult<CreateDisbursementBulkLogResult>> CreateDisbursementBulkLog(CreateDisbursementBulkLogArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Disbursement/CreateDisbursementBulkLog")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateDisbursementBulkLogResult>();
+            return AppResult<CreateDisbursementBulkLogResult>.CreateSucceeded(result, "Successfully posting create disbursement bulk log api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<CreateDisbursementBulkLogResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateDisbursementBulkLogResult>.CreateFailed(ex, "An error occured when posting create disbursement bulk log api.");
+        }
+    }
+
+    public async Task<AppResult<GetDisbursementsResult>> GetDisbursements(GetDisbursementsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Disbursement")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetDisbursementsResult>();
+            return AppResult<GetDisbursementsResult>.CreateSucceeded(result, "Successfully get disbursements api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<GetDisbursementsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDisbursementsResult>.CreateFailed(ex, "An error occured when get disbursements api");
         }
     }
 }
