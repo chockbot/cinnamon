@@ -14,4 +14,6 @@ public interface IDisbursementRepository
 
     Task<AppResult<DisbursementBulkDTO>> UpdateDisbursementBulkStatus(int disbursementBulkId, 
         string disbursementBulkStatus, string disbursementStatus, string remarks);
+    
+    Task<AppResult<DisbursementBulkLogDTO>> CreateDisbursementBulkLog(DisbursementBulkLogDTO disbursementBulkLog);
 }
