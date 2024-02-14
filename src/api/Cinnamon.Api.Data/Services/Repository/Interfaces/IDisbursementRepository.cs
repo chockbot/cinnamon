@@ -22,4 +22,6 @@ public interface IDisbursementRepository
     Task<AppResult<IEnumerable<DisbursementInformationDTO>>> GetDisbursementsInformation(string filterBy, string filterValue);
 
     Task<AppResult<IEnumerable<DisbursementDetailDTO>>> GetDisbursementDetails(int disbusementId);
+
+    Task<AppResult<DisbursementDTO>> UpdateDisbursementStatus(int disbursementId, string status, string remarks);
 }

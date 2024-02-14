@@ -181,4 +181,33 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<IEnumerable<DisbursementDetailDTO>>.CreateFailed(ex, "An error occured when getting disbursement details.");
         }
     }
+
+    public async Task<AppResult<DisbursementDTO>> UpdateDisbursementStatus(int disbursementId, string status, string remarks)
+    {
+        try
+        {
+            var disbursementRes = await dataStore.Disbursement.FindFirstAsync(d => d.Id == disbursementId);
+            if(!disbursementRes.Succeeded || disbursementRes.Result is null)
+            {
+                return AppResult<DisbursementDTO>.CreateFailed(new ApplicationException(disbursementRes.Message), disbursementRes.Message);
+            }
+
+            var disbursement = disbursementRes.Result;
+            disbursement.Status = status;
+            disbursement.Remarks = remarks;
+
+            var updateDisbursementRes = await dataStore.Disbursement.Update(disbursement);
+            if(!updateDisbursementRes.Succeeded || updateDisbursementRes.Result is null)
+            {
+                return AppResult<DisbursementDTO>.CreateFailed(new ApplicationException(updateDisbursementRes.Message), updateDisbursementRes.Message);
+            }
+
+            var dto = mapper.Map<DisbursementDTO>(updateDisbursementRes.Result);
+            return AppResult<DisbursementDTO>.CreateSucceeded(dto, "Successfully update disbursement status.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DisbursementDTO>.CreateFailed(ex, "An error occured when updating disbursement status.");
+        }
+    }
 }

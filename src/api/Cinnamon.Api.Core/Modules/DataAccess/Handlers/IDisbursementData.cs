@@ -21,4 +21,6 @@ public interface IDisbursementData
     Task<AppResult<GetDisbursementInformationResult>> GetDisbursementInformation(GetDisbursementInformationArgs args);
 
     Task<AppResult<GetDisbursementDetailsResult>> GetDisbursementDetails(int disbursementId);
+
+    Task<AppResult<UpdateDisbursementStatusResult>> UpdateDisbursementStatus(UpdateDisbursementStatusArgs args);
 }

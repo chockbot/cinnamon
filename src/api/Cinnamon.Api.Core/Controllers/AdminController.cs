@@ -19,11 +19,13 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly ICreateCouponHandler createCouponHandler;
         private readonly IGetDisbursements getDisbursements;
         private readonly IGetDisbursementDetails getDisbursementDetails;
+        private readonly IManualDisbursement manualDisbursement;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
-            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails)
+            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
+            IManualDisbursement manualDisbursement)
         {
             _logger = logger;
 
@@ -33,6 +35,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.createCouponHandler = createCouponHandler;
             this.getDisbursements = getDisbursements;
             this.getDisbursementDetails = getDisbursementDetails;
+            this.manualDisbursement = manualDisbursement;
         }
 
         [Route("User")]
@@ -283,6 +286,35 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetDisbursementDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ManualDisbursement")]
+        [HttpPost]
+        [ProducesResponseType(typeof(ManaulDisbursementResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ManualDisbursement([FromBody] ManualDisbursementArgs args)
+        {
+            try
+            {
+                var result = await manualDisbursement.ExecuteAsync(new Services.Disbursement.Interactors.ManualDisbursementArgs {
+                    DisbursementId = args.DisbursementId,
+                    Remarks = args.Remarks
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new ManaulDisbursementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new ManaulDisbursementResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new ManaulDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
