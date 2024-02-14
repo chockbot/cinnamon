@@ -11,5 +11,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
         Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args, string token);
         Task<AppResult<AdminCreateCouponResult>> CreateCoupon(AdminCreateCouponArgs args, string token);
         Task<AppResult<GetDisbursementResult>> GetDisbursements(GetDisbursementArgs args, string token);
+        Task<AppResult<GetDisbursementDetailsResult>> GetDisbursementDetails(int disbursementId, string token);
     }
 }

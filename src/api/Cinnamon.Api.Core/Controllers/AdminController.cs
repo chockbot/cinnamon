@@ -18,11 +18,12 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler;
         private readonly ICreateCouponHandler createCouponHandler;
         private readonly IGetDisbursements getDisbursements;
+        private readonly IGetDisbursementDetails getDisbursementDetails;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
-            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements)
+            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails)
         {
             _logger = logger;
 
@@ -31,6 +32,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.getAllInclusiveTransactionHandler = getAllInclusiveTransactionHandler;
             this.createCouponHandler = createCouponHandler;
             this.getDisbursements = getDisbursements;
+            this.getDisbursementDetails = getDisbursementDetails;
         }
 
         [Route("User")]
@@ -234,6 +236,53 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("GetDisbursements/{disbursementId}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetDisbursementDetailsResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetDisbursementDetails(int disbursementId)
+        {
+            try
+            {
+                var result = await getDisbursementDetails.ExecuteAsync(new Services.Disbursement.Interactors.GetDisbursementDetailsArgs {
+                    DisbursementId = disbursementId
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetDisbursementDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                var disbursement = result.Result.DisbursementDetailed;
+
+                return new JsonResult(new GetDisbursementDetailsResult
+                {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Disbursement.DisbursementDetailedDTO {
+                        Disbursement = new Framework.ApiCommand.ApiCore.DTO.Disbursement.DisbursementsInformationDTO {
+                            Amount = disbursement.Amount,
+                            Id = disbursement.Id,
+                            InclusivePayment = disbursement.InclusivePayment,
+                            Label = disbursement.Label,
+                            ProviderEmail = disbursement.ProviderEmail,
+                            ProviderFirstName = disbursement.ProviderFirstName,
+                            ProviderLastName = disbursement.ProviderLastName,
+                            Remarks = disbursement.Remarks,
+                            Status = disbursement.Status,
+                        },
+                        DisbursementItems = disbursement.DisbursementDetails.Select(d => new Framework.ApiCommand.ApiCore.DTO.Disbursement.DisbursementItemDTO {
+                            Amount = d.Amount,
+                            DisbursementId = disbursement.Id,
+                            Id = d.Id,
+                            Label = d.Label
+                        })
+                    }
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetDisbursementDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

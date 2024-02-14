@@ -133,5 +133,27 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<GetDisbursementResult>.CreateFailed(ex, "An error occured when calling disbursements information api");
             }
         }
+
+        public async Task<AppResult<GetDisbursementDetailsResult>> GetDisbursementDetails(int disbursementId, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request($"Admin/GetDisbursements/{disbursementId}")
+                    .GetJsonAsync<GetDisbursementDetailsResult>();
+
+                return AppResult<GetDisbursementDetailsResult>.CreateSucceeded(result, "Successfully called disbursements information api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, "An error occured when calling disbursements information api");
+            }
+        }
     }
 }

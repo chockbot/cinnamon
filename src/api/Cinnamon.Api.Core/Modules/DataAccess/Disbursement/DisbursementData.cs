@@ -162,4 +162,24 @@ public class DisbursementData : IDisbursementData
             return AppResult<GetDisbursementInformationResult>.CreateFailed(ex, "An error occured when get disbursement information api");
         }
     }
+
+    public async Task<AppResult<GetDisbursementDetailsResult>> GetDisbursementDetails(int disbursementId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Disbursement/GetDisbursementDetails/{disbursementId}")
+                            .GetJsonAsync<GetDisbursementDetailsResult>();
+            return AppResult<GetDisbursementDetailsResult>.CreateSucceeded(result, "Successfully get disbursement details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, "An error occured when get disbursement details api");
+        }
+    }
 }
