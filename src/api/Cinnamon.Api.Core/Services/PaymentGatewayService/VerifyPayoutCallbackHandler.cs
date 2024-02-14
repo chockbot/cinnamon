@@ -10,22 +10,12 @@ namespace Cinnamon.Api.Core.Services.PaymentGatewayService;
 
 public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
 {
-    private readonly IPayoutLogData payoutLogData;
-    private readonly IPurchaseOrderData purchaseOrderData;
     private readonly ApplicationConfig applicationConfig;
-    private readonly IJsonSerializationProvider jsonSerializationProvider;
-    private readonly IStudentData studentData;
     private readonly IDisbursementData disbursementData;
 
-    public VerifyPayoutCallbackHandler(IPayoutLogData payoutLogData, IPurchaseOrderData purchaseOrderData,
-        ApplicationConfig applicationConfig, IJsonSerializationProvider jsonSerializationProvider,
-        IStudentData studentData, IDisbursementData disbursementData)
+    public VerifyPayoutCallbackHandler(ApplicationConfig applicationConfig, IDisbursementData disbursementData)
     {
-        this.payoutLogData = payoutLogData;
-        this.purchaseOrderData = purchaseOrderData;
         this.applicationConfig = applicationConfig;
-        this.jsonSerializationProvider = jsonSerializationProvider;
-        this.studentData = studentData;
         this.disbursementData = disbursementData;
     }
 
@@ -64,67 +54,57 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             }
 
             var disbursementBulkId = Convert.ToInt32(splittedReference[1]);
-
-
-            var getPayoutLogRes = await payoutLogData.GetPayoutLogById(transactionId);
-            if(!getPayoutLogRes.Succeeded || getPayoutLogRes.Result == null || !getPayoutLogRes.Result.IsSuccess)
+            var disbursementBulkRes = await disbursementData.GetDisbursementBulk(disbursementBulkId);
+            if(!disbursementBulkRes.Succeeded || disbursementBulkRes.Result is null || !disbursementBulkRes.Result.IsSuccess)
             {
                 return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid reference id"), "Invalid reference id");
             }
-            var payoutLog = getPayoutLogRes.Result.Result;
+            var disbursementBulk = disbursementBulkRes.Result.Result;
 
-            int status = args.Status switch 
+            string status = args.Status switch 
             {
-                "PENDING" => 0,
-                "ACCEPTED" => 0,
-                "SUCCEEDED" => 1,
-                _ => 2
+                "PENDING" => "pending",
+                "ACCEPTED" => "accepted",
+                "SUCCEEDED" => "disbursed",
+                "FAILED" => "failed",
+                _ => args.Status
             };
 
-            // no need to do something
-            if(status == 0)
-            {
-                return AppResult<VerifyPayoutCallbackResult>.CreateSucceeded(new VerifyPayoutCallbackResult {}, "Success");
-            }
-
-            // update payout log data
-            var updatePayoutLog = await payoutLogData.UpdatePayoutLog(new Framework.ApiCommand.ApiData.PayoutLog.Request.UpdatePayoutLogArgs {
-                Id = payoutLog.Id,
-                Remarks = args.FailureCode ?? string.Empty,
-                Status = status
-            });
-            if(!updatePayoutLog.Succeeded || updatePayoutLog.Result == null || !updatePayoutLog.Result.IsSuccess)
-            {
-                return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
-            }
-
-            var deserializedPayload = jsonSerializationProvider.Deserialize<PayloadData>(updatePayoutLog.Result.Result.Payload);
-
-            // update only purchase order if callback status = 1
-            if(status == 1 && deserializedPayload != null)
-            {
-                if(deserializedPayload.PurchaseOrderIds != null && deserializedPayload.PurchaseOrderIds.Count() > 0)
-                {
-                    var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrdersStatus(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrdersStatusArgs {
-                        Ids = deserializedPayload.PurchaseOrderIds,
-                        Status = 5
-                    });
-                    if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
-                    {
-                        return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
-                    }
+            var createBulkLog = disbursementData.CreateDisbursementBulkLog(new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementBulkLogArgs {
+                DisbursementBulkLog = new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementBulkLogArgs.DisbursementBulkLogArgs {
+                    DisbursementBulkId = disbursementBulk.Id,
+                    RefferenceId = args.ReferenceId,
+                    Status = status,
+                    Remarks = args.FailureCode
                 }
+            });
 
-                if(deserializedPayload.StudentIds != null && deserializedPayload.StudentIds.Count() > 0)
+            if(status == "disbursed")
+            {
+                var updateDisburseBulkStatusRes = await disbursementData.UpdateDisbursementBulkStatus(new Framework.ApiCommand.ApiData.Disbursement.Request.UpdateDisbursementBulkStatusArgs {
+                    DisbursementBulkId = disbursementBulk.Id,
+                    DisbursementBulkStatus = "disbursed",
+                    DisbursementStatus = "disbursed",
+                    Remarks = "successfully disbursed"
+                });
+                if(!updateDisburseBulkStatusRes.Succeeded || updateDisburseBulkStatusRes.Result is null || !updateDisburseBulkStatusRes.Result.IsSuccess)
                 {
-                    var updateStudent = await studentData.UpdateStudentsDisbursementStatus(new Framework.ApiCommand.ApiData.Student.Request.UpdateStudentDisbursementArgs {
-                        Ids = deserializedPayload.StudentIds,
-                        IsDisbursement = true
-                    });
-                    if(!updateStudent.Succeeded || updateStudent.Result == null || !updateStudent.Result.IsSuccess)
-                    {
-                        return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
-                    }
+                    return AppResult<VerifyPayoutCallbackResult>.CreateFailed(
+                        new ApplicationException("An error occured. Please try again."), "An error occured. Please try again.");
+                }
+            }
+            else if(status == "failed")
+            {
+                var updateDisburseBulkStatusRes = await disbursementData.UpdateDisbursementBulkStatus(new Framework.ApiCommand.ApiData.Disbursement.Request.UpdateDisbursementBulkStatusArgs {
+                    DisbursementBulkId = disbursementBulk.Id,
+                    DisbursementBulkStatus = "failed",
+                    DisbursementStatus = "initiated",
+                    Remarks = $"Failed to disburse with error code: {args.FailureCode}"
+                });
+                if(!updateDisburseBulkStatusRes.Succeeded || updateDisburseBulkStatusRes.Result is null || !updateDisburseBulkStatusRes.Result.IsSuccess)
+                {
+                    return AppResult<VerifyPayoutCallbackResult>.CreateFailed(
+                        new ApplicationException("An error occured. Please try again."), "An error occured. Please try again.");
                 }
             }
 

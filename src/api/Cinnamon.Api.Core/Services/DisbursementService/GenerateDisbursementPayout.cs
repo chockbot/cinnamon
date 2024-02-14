@@ -149,7 +149,7 @@ public class GenerateDisbursementPayout : IGenerateDisbursementPayout
                 }
                 var disbursementBulk = disbursementBulkRes.Result.Result;
 
-                var referenceId = "TT" + "000000000000000".Substring(disbursementBulk.Id.ToString().Length) + disbursementBulk.Id;
+                var referenceId = "DPO-" + "000000000000000".Substring(disbursementBulk.Id.ToString().Length) + disbursementBulk.Id;
                 var payoutRequest = new PayoutArgs {
                     amount = customerSummary.TotalAmount,
                     channel_code = customerSummary.BankChannel,
