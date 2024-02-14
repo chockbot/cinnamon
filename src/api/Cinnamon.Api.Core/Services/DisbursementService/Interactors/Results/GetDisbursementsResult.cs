@@ -2,10 +2,14 @@ namespace Cinnamon.Api.Core.Services.Disbursement.Interactors.Results;
 
 public class GetDisbursementsResult 
 {
+    public IEnumerable<Disbursement> Disbursements {get; set;}
+
     public class Disbursement 
     {
-        public int PurchaseOrderId {get; set;}
-        public int CustomerId {get; set;}
+        public int Id {get; set;}
+        public string ProviderEmail {get; set;}
+        public string ProviderFirstName {get; set;}
+        public string ProviderLastName {get; set;}
         public string Label {get; set;}
         public decimal Amount {get; set;}
         public string Status {get; set;}
