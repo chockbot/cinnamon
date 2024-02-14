@@ -83,4 +83,25 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(ex, "An error occured when getting disbursements.");
         }
     }
+
+    public async Task<AppResult<DisbursementBulkDTO>> UpdateDisbursementBulkStatus(int disbursementBulkId, 
+        string disbursementBulkStatus, string disbursementStatus, string remarks)
+    {
+        try
+        {
+            var result = await dataStore.DisbursementBulk.UpdateDisbursementBulkStatus(disbursementBulkId, 
+                disbursementBulkStatus, disbursementStatus, remarks);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<DisbursementBulkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<DisbursementBulkDTO>(result.Result);
+            return AppResult<DisbursementBulkDTO>.CreateSucceeded(dto, "Successfully update disbursement bulk status.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DisbursementBulkDTO>.CreateFailed(ex, "An error occured when updating disbursement bulk status.");
+        }
+    }
 }

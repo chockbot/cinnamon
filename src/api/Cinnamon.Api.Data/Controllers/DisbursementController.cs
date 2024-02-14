@@ -90,4 +90,27 @@ public class DisbursementController : ControllerBase
             return new JsonResult(new CreateDisbursementBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("UpdateDisbursementBulkStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateDisbursementBulkStatusResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateDisbursementBulkStatus([FromBody] UpdateDisbursementBulkStatusArgs args)
+    {
+        try
+        {
+            var result = await disbursementRepository.UpdateDisbursementBulkStatus(args.DisbursementBulkId,
+                args.DisbursementBulkStatus, args.DisbursementStatus, args.Remarks ?? string.Empty);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateDisbursementBulkStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateDisbursementBulkStatusResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateDisbursementBulkStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
