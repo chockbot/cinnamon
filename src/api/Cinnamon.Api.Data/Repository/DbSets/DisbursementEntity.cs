@@ -68,6 +68,13 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
                 whereClause += "where ds.\"Status\" = @status";
             }
 
+            int disbursementId = 0;
+            if(filterBy.Equals("disbursementId", StringComparison.CurrentCultureIgnoreCase))
+            {
+                int.TryParse(filterValue, out disbursementId);
+                whereClause += "where ds.\"Id\" = @id";
+            }
+
             string query = "select cc.\"Email\", cc.\"FirstName\", cc.\"LastName\", " +
                                "ds.\"Id\", ds.\"Label\", ds.\"Amount\", ds.\"Status\", ds.\"InclusivePayment\", " +
                                "ds.\"Remarks\" " +
@@ -91,8 +98,13 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
                 }
                 if(filterBy.Equals("status", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var parameterEmail = new NpgsqlParameter("status", filterValue);
-                    command.Parameters.Add(parameterEmail);
+                    var parameterStatus = new NpgsqlParameter("status", filterValue);
+                    command.Parameters.Add(parameterStatus);
+                }
+                if(filterBy.Equals("disbursementId", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    var parameterId = new NpgsqlParameter("id", disbursementId);
+                    command.Parameters.Add(parameterId);
                 }
 
 				applicationContext.Database.OpenConnection();
