@@ -50,12 +50,43 @@
                         Activate your activity now
                     </span>
                 </span>
+                @if(model.Publish)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@model.ComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
+                        <label class="form-check-label" for="coming-soon">
+                            Display a Coming Soon Page
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="display-type" id="details-page" checked="@(!model.ComingSoon)" @onchange="@(()=>CheckboxChanged(2))" value="2">
+                        <label class="form-check-label" for="details-page">
+                            Display your event NOW!
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@model.ComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1" disabled>
+                        <label class="form-check-label" for="coming-soon">
+                            Display a Coming Soon Page
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="display-type" id="details-page" checked="@(!model.ComingSoon)" @onchange="@(()=>CheckboxChanged(2))" value="2" disabled>
+                        <label class="form-check-label" for="details-page">
+                            Display your event NOW!
+                        </label>
+                    </div>
+                }
+
             </div>
             <div class="mb-4">
                 <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
                     <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                     <span class="font-20 color-black-100" @onclick="NavigateToTerms">
-                        Accept Terms and Conditions
+                        [Terms and condition for one time event.]
                         @if(showErrorMessage && !model.AcceptTerms)
                         {
                             <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
@@ -63,14 +94,14 @@
                     </span>
                 </span>
             </div>
-            <div class="mb-4">
+            @*<div class="mb-4">
                 <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.ComingSoon = !model.ComingSoon">
                     <img class="me-1" src='@(model.ComingSoon ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                     <span class="font-20 color-black-100">
                         Coming Soon
                     </span>
                 </span>
-            </div>
+            </div>*@
         </div>
     </div>
     <div class="section-footer mt-4 d-flex">
@@ -188,5 +219,9 @@
         {
             return "me-2 bg-white-200 color-black-100 text-capitalize font-24 hover-color-black-100 px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 m-margin-right-10";
         }
+    }
+    private void CheckboxChanged(int val)
+    {
+        model.ComingSoon = (val == 1) ? true : false;
     }
 }
