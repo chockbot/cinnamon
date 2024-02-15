@@ -101,6 +101,9 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
@@ -112,7 +115,10 @@
                             }
                             else
                             {
-                                 <li class="dropdown-item messages-item">
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                </li>
+                                <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
                                     {
@@ -143,6 +149,11 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
+                                   Materials
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
                                     Help
                                 </Button>
@@ -154,6 +165,11 @@
                         <li class="dropdown-item">
                             <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                 @Resources.App.Sign
+                            </Button>
+                        </li>
+                        <li class="dropdown-item">
+                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
+                                Materials
                             </Button>
                         </li>
                         <li class="dropdown-item">
@@ -193,6 +209,9 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
@@ -206,6 +225,9 @@
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
                                 </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
@@ -241,6 +263,11 @@
                                 <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                             </li>
                             <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
+                                    Materials
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
                                     Help
                                 </Button>
@@ -252,6 +279,11 @@
                         <li class="dropdown-item">
                             <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                 @Resources.App.Sign
+                            </Button>
+                        </li>
+                        <li class="dropdown-item">
+                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
+                                Materials
                             </Button>
                         </li>
                         <li class="dropdown-item">
@@ -1337,6 +1369,10 @@
     private void NavigateToAttendance()
     {
         NavigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+    private void NavigateToMaterials()
+    {
+        NavigationManager.NavigateTo("/materials");
     }
 
     private void NavigateToMessages()

@@ -5,7 +5,9 @@ using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
 using Cinnamon.Web.Extensions;
 using Cinnamon.Web.Middleware;
+using Cinnamon.Web.Modules.Services;
 using Cinnamon.Web.Providers;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
@@ -19,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>();
-
+builder.Services.AddSingleton<GoogleDriveService>();
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {

@@ -1,0 +1,68 @@
+﻿@page "/view-file/{FileId}"
+@using Cinnamon.Web.Modules.Services
+@inject GoogleDriveService googleDriveService
+@inject IJSRuntime jsRuntime
+
+@if (FileContent != null)
+{
+    <p class="preview-text">Preview your image</p>
+    <div class="preview-image">
+        <div class="embed-file">
+            @if (FileType.StartsWith("image/"))
+            {
+                <img src="@($"data:{FileType};base64,{Base64EncodedFile}")" alt="Preview" />
+            }
+            else if (FileType == "application/pdf")
+            {
+                <embed src="@($"data:{FileType};base64,{Base64EncodedFile}")" type="application/pdf"/>
+            }
+            else if (FileType == "image/webp")
+            {
+                <img src="@($"data:{FileType};base64,{Base64EncodedFile}")" alt="Preview" />
+            }
+            else
+            {
+                <p>Preview not available for this file type.</p>
+            }
+        </div>
+        <div class="button-download">
+            <p class="file-name">@FileName</p>
+            <a href="@($"data:{FileType};base64,{Base64EncodedFile}")" download="@FileName" class="btn-download">Download</a>
+            <br/>
+            @if (FileType.StartsWith("image/"))
+            {
+                <button class="btn-print" title="btn-print" @onclick=PrintFile>Print Now</button>
+            }
+        </div>
+       
+    </div>
+   
+}
+@code {
+    IJSObjectReference module;
+    [Parameter]
+    public string FileId { get; set; }
+    public byte[] FileContent { get; set; }
+    public string FileType { get; set; }
+    public string FileName { get; set; }
+    public string Base64EncodedFile { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch file content from Google Drive
+        FileContent = await googleDriveService.GetFileContent(FileId);
+
+        // Determine file type
+        var fileInfo = await googleDriveService.GetFileInfo(FileId);
+        FileType = fileInfo.Type;
+        FileName = fileInfo.Name;
+
+        // If you need to display the file content directly, you can convert it to Base64
+        Base64EncodedFile = Convert.ToBase64String(FileContent);
+    }
+    private async Task PrintFile()
+    {
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/PrintFile.js");
+        await Task.Run(() => module.InvokeVoidAsync("printJS", Base64EncodedFile, FileType));
+    }
+}
