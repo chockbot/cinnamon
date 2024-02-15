@@ -155,11 +155,11 @@
             <div class="d-flex justify-content-center">
                 <img class="bubble-image" alt="bubble-image" src="images/landing-page-images/bubble-cinnamon.png" />
             </div>
-            <p class="about_us_title">Message board feature Coming SOON!</p>
-            <p class="about_us_subtitle">Get the latest and important announcements from the Cinnamon team right here.</p>
+            <p class="about_us_title">Drawing materials are now available!</p>
+            <p class="about_us_subtitle">Great news! We now have a wide range of drawing materials available on our platform. Explore our website to find the tools that will bring your artistic ideas to life.</p>
             <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
-                    <span>Sign up now</span>
+                <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToMaterialsPage())">
+                    <span>Explore now!</span>
                 </button>
             </div>
         </div>
@@ -871,6 +871,10 @@
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("/Onboarding");
+    }
+    private void NavigateToMaterialsPage()
+    {
+        NavigationManager.NavigateTo("/materials");
     }
     private Task OnChageInput(ChangeEventArgs e)
     {
