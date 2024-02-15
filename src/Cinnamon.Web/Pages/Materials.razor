@@ -2,36 +2,72 @@
 @inject IJSRuntime jsRuntime
 @inject NavigationManager NavigationManager;
 @using Cinnamon.Web.Modules.Services
+@using Cinnamon.Web.Models.Entities
 @inject GoogleDriveService googleDriveService
 @inject IConfiguration Configuration
 
-<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-<div class="top-row px-4">
-    <div class="col-12 mb-5 d-flex justify-content-center">
-    <form class="search-bar" @onsubmit=Search>
-        <div class="input-group border rounded-pill p-1">
-            <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-            <div class="input-group-append border-0">
-                <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
+
+@if (MaterialList.Count != 0)
+{
+    <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+    <div class="top-row px-4">
+        <div class="container">
+            <p class="materials-text">
+                Downloadable materials for your activities
+            </p>
+        </div>
+        <div class="col-12 mb-4 d-flex justify-content-center">
+            <form class="search-bar" @onsubmit=Search>
+                <div class="input-group border rounded-pill p-1">
+                    <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                    <div class="input-group-append border-0">
+                        <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
+                        <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="container">
+            <div class="section-2-lg row">
+                @foreach (var material in MaterialList)
+                {
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                        <Div ElementId="#b-animate">
+                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                            <div class="card activities-card">
+                                <div class="card-img img-fluid position-relative">
+                                    <a class="button carousel-card text-center" href="/view-file/@material.Id" target="_blank">
+                                        <img src=@material.ThumbnailLink alt="banner image" class="img-zoom-effect">
+                                    </a>
+                                </div>
+                                <div class="card-container">
+                                    <div class="row text-start">
+                                        <div class="title-section">
+                                            <div>
+                                                <h4 class="card-title1 mb-0">@material.Name</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </Animate>
+                            </Div>
+                    </div>
+                }
             </div>
         </div>
-    </form>
-</div>
-    <div class="container">
-      
     </div>
-</div>
+}
+
 @code {
     public string searchValue = string.Empty;
-    public List<object> MaterialList { get; set; }
+    public List<File> MaterialList = new List<File>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            googleDriveService = new GoogleDriveService(Configuration);
-            MaterialList = await googleDriveService.ListFiles();
+            MaterialList = await googleDriveService.ListFilesInFolder();
         }
         catch (Exception ex)
         {
@@ -41,10 +77,11 @@
     }
     public async Task Clear()
     {
-       
+        searchValue = string.Empty;
+        MaterialList = await googleDriveService.ListFilesInFolder();
     }
     public async Task Search()
     {
-        
+        MaterialList = await googleDriveService.SearchFile(searchValue);
     }
 }
