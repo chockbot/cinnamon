@@ -5,7 +5,7 @@
     <Div ElementId="#b-animate">
         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div class="card">
-                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType) style="text-decoration:none;">
                     <img src="@GetImage()" class="image-header card-img">
                     <div class="card-img-overlay">
                         @if (Activity.OngoingStudents > 0)
@@ -91,6 +91,19 @@
             return $"₱ {(long)schedules[0].Price}";
         }
         return string.Empty;
+    }
+    private string DetailsUrl(string handler, int xpCreationType)
+    {
+        string url = string.Empty;
+        if (xpCreationType == 3)
+        {
+            url = $"explore/ote/{handler}";
+        }
+        else if (xpCreationType == 1)
+        {
+            url = $"explore/{handler}";
+        }
+        return url;
     }
 }
 
