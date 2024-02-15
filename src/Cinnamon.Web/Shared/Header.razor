@@ -62,6 +62,9 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
@@ -102,6 +105,9 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                            </li>
+                            <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToHelp" Text="Help" />
                             </li>
                         }
@@ -135,6 +141,9 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
+                                </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
@@ -148,6 +157,9 @@
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
                                 </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
@@ -179,6 +191,9 @@
                             </li>
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToMaterials" Text="Materials" />
                             </li>
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToHelp" Text="Help" />
@@ -314,6 +329,10 @@
     private void NavigateToOnboarding()
     {
         NavigationManager.NavigateTo("/Onboarding");
+    }
+    private void NavigateToMaterials()
+    {
+        NavigationManager.NavigateTo("/materials");
     }
     
     private void onClickMenu()

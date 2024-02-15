@@ -326,34 +326,36 @@
                     {
                         return new Activity
                             {
-                                ActivityId = a.ActivityId,
-                                District = a.District,
-                                City = a.City,
-                                CityName = a.CityName,
-                                Region = a.Region,
-                                RegionName = a.RegionName,
-                                Barangay = a.Barangay,
-                                BarangayName = a.BarangayName,
-                                PinnedLocation = a.PinnedLocation,
-                                Address1 = a.Address1,
-                                Address2 = a.Address2,
-                                ExperienceTypeId = a.ExperienceTypeId,
-                                Description = a.Description,
-                                IsPublished = a.IsPublished,
-                                Price = a.Price,
-                                Title = a.Title,
-                                IsNew = a.IsNew,
-                                OngoingStudents = a.OngoingStudents,
-                                CompletedStudents = a.CompletedStudents,
-                                AverageRating = a.AverageRating,
-                                NumberOfReviews = a.NumberOfReviews,
+                                ActivityId             = a.ActivityId,
+                                District               = a.District,
+                                City                   = a.City,
+                                CityName               = a.CityName,
+                                Region                 = a.Region,
+                                RegionName             = a.RegionName,
+                                Barangay               = a.Barangay,
+                                BarangayName           = a.BarangayName,
+                                PinnedLocation         = a.PinnedLocation,
+                                Address1               = a.Address1,
+                                Address2               = a.Address2,
+                                ExperienceTypeId       = a.ExperienceTypeId,
+                                Description            = a.Description,
+                                IsPublished            = a.IsPublished,
+                                Price                  = a.Price,
+                                Title                  = a.Title,
+                                IsNew                  = a.IsNew,
+                                OngoingStudents        = a.OngoingStudents,
+                                CompletedStudents      = a.CompletedStudents,
+                                AverageRating          = a.AverageRating,
+                                NumberOfReviews        = a.NumberOfReviews,
+                                Handler                = a.Handler,
+                                ExperienceCreationType = a.ExperienceCreationType,
                                 Images = a.Images.Select(i =>
                                 {
                                 return new ActivityImage
                                 {
-                                    Id = i.Id,
+                                    Id       = i.Id,
                                     ImageSrc = i.ImageSrc,
-                                    Name = i.Name
+                                    Name     = i.Name
                                 };
                                 }).ToList(),
                                 Owner = new CustomerProfile
@@ -364,14 +366,14 @@
                                 {
                             return new ActivitySchedule
                             {
-                                Id = e.Id,
-                                Name = e.Name,
-                                PerUnit1 = e.PerUnit1,
-                                PerUnit2 = e.PerUnit2,
-                                Price = e.Price,
+                                Id         = e.Id,
+                                Name       = e.Name,
+                                PerUnit1   = e.PerUnit1,
+                                PerUnit2   = e.PerUnit2,
+                                Price      = e.Price,
                                 PriceUnit1 = e.PriceUnit1,
                                 PriceUnit2 = e.PriceUnit2,
-                                UnitPrice = e.UnitPrice
+                                UnitPrice  = e.UnitPrice
                             };
                         }).ToList(),
                             };

@@ -1,4 +1,5 @@
-﻿namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+﻿using Cinnamon.Framework.Enums;
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 public class GetMakerActivitiesResult
 {
     public IEnumerable<Activity> Activities { get; set; }
@@ -40,6 +41,7 @@ public class GetMakerActivitiesResult
         public int CompletedStudents { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfReviews { get; set; }
+        public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }

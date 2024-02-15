@@ -41,6 +41,7 @@ public class GetOwnedActivitiesResult
         public int OngoingStudents { get; set; }
         public int CompletedStudents { get; set; }
         public int NumberOfReviews { get; set; }
+        public DateTime CreatedOn { get; set; }
         public Enums.ActivityStatus Status { get; set; }
         public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
         public IEnumerable<string> SearchTags {get; set;}

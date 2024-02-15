@@ -602,18 +602,18 @@
 
         var options = ote.OteSchedule.ExtraOptions.Split("|");
         otePricing?.SetState(new OtePricing.ModelData {
-            DateFrom = ote.ScheduleFrom,
-            DateTo = ote.ScheduleTo,
-            Recurrences = ote.Recurrences,
-            DurationEnd = ote.OteSchedule.RecurrenceDateEnd,
-            DurationEvery = ote.OteSchedule.RepeatEvery,
-            DurationStart = ote.OteSchedule.RecurrenceDateStart,
-            MonthDay = options.Length >= 4 ? options[3] : "sunday",
-            MonthRepeat = options.Length >= 3 ? options[2] : "first",
-            MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
-            OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
-            WeekString = ote.OteSchedule.SelectedDays,
-            EventDurationCount = ote.OteSchedule.EventDurationCount,
+            DateFrom              = ote.ScheduleFrom,
+            DateTo                = ote.ScheduleTo,
+            Recurrences           = ote.Recurrences,
+            DurationEnd           = (ote.OteSchedule.RecurrenceDateEnd == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateEnd,
+            DurationStart         = (ote.OteSchedule.RecurrenceDateStart == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateStart,
+            DurationEvery         = ote.OteSchedule.RepeatEvery,
+            MonthDay              = options.Length >= 4 ? options[3] : "sunday",
+            MonthRepeat           = options.Length >= 3 ? options[2] : "first",
+            MonthSelection        = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
+            OnDayDate             = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
+            WeekString            = ote.OteSchedule.SelectedDays,
+            EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
             ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
