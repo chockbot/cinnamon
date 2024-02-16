@@ -75,7 +75,7 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
                     DisbursementBulkId = disbursementBulk.Id,
                     RefferenceId = args.ReferenceId,
                     Status = status,
-                    Remarks = args.FailureCode
+                    Remarks = args.FailureCode ?? string.Empty
                 }
             });
             if(!createBulkLog.Succeeded || createBulkLog.Result is null || !createBulkLog.Result.IsSuccess)
