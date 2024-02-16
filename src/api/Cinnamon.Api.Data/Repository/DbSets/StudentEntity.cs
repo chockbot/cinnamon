@@ -259,12 +259,13 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 									"on a.\"Id\" = b.\"PurchaseOrderId\" " +
 								"join public.\"Students\" c " +
 									"on c.\"OngoingActivityId\" = b.\"Id\" " +
-								"where c.\"IsDisbursement\" = false and a.\"Status\" = 1 " +
+								"where c.\"IsDisbursement\" = false " +
 									"and a.\"IsInclusivePayment\" = false and c.\"ExpirationDateEnd\" != '-infinity' " +
 							") " +
 							"select \"TransactionId\", \"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", \"StudentId\", " +
 								"\"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\", " +
-								"\"PerUnitDisburseAmount\", \"TotalDisburseAmount\", \"ExpirationDateEnd\", \"ExpirationDateStart\" " +
+								"\"PerUnitDisburseAmount\", \"TotalDisburseAmount\", \"ExpirationDateEnd\", \"ExpirationDateStart\", " +
+								"ac.\"Title\" " +
 							"from summary sm " +
 							"join public.\"Activities\" ac " +
 								"on ac.\"Id\" = sm.\"ActivityId\" " +
@@ -296,7 +297,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							MakerId               = Convert.ToInt32(item["MakerId"]),
 							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
 							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"]),
+							Title = item["Title"].ToString() ?? string.Empty
 						}).ToList();
 					}
 				}
