@@ -210,4 +210,25 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<DisbursementDTO>.CreateFailed(ex, "An error occured when updating disbursement status.");
         }
     }
+
+    public async Task<AppResult<DisbursementManualDTO>> CreateManualDisbursement(DisbursementManualDTO disbursementManual)
+    {
+        try
+        {
+            var entity = mapper.Map<Entities.DisbursementManual>(disbursementManual);
+            
+            var result = await dataStore.DisbursementManual.CreateManualDisbursement(entity);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<DisbursementManualDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<DisbursementManualDTO>(result.Result);
+            return AppResult<DisbursementManualDTO>.CreateSucceeded(dto, "Successfully create manual disbursement.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DisbursementManualDTO>.CreateFailed(ex, "An error occured when creating manual disbursement.");
+        }
+    }
 }

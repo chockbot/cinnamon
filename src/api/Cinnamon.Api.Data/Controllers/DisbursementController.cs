@@ -225,4 +225,28 @@ public class DisbursementController : ControllerBase
             return new JsonResult(new UpdateDisbursementStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CreateManualDisbursement")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateManualDisbursementResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateManualDisbursement([FromBody] CreateManualDisbursementArgs args)
+    {
+        try
+        {
+            var dto = mapper.Map<DisbursementManualDTO>(args);
+
+            var result = await disbursementRepository.CreateManualDisbursement(dto);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateManualDisbursementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateManualDisbursementResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateManualDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
