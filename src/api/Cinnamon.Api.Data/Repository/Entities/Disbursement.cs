@@ -8,6 +8,7 @@ public class Disbursement : BaseEntity
     public decimal Amount {get; set;}
     public string Status {get; set;} // initiated|pending|disbursed
     public string Remarks {get; set;}
+    public bool InclusivePayment {get; set;}
 
     public virtual IList<DisbursementDetail> DisbursementDetails {get; set;}
 }
