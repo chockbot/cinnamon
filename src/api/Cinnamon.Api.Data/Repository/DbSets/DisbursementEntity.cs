@@ -1,5 +1,6 @@
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 

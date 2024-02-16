@@ -8,6 +8,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
 using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
+using DisbursementAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement;
+using DisbursementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -48,5 +50,13 @@ public class MappingProfile : Profile
         CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
 
         CreateMap<TokenGenerated, TokenGeneratedDTO>();
+
+        // disbursement mapping
+        CreateMap<DisbursementAlias.DisbursementDTO, Disbursement>();
+        CreateMap<DisbursementAlias.DisbursementDetailDTO, DisbursementDetail>();
+        CreateMap<Disbursement, DisbursementAlias.DisbursementDTO>();
+        CreateMap<DisbursementDetail, DisbursementAlias.DisbursementDetailDTO>();
+        CreateMap<DisbursementReqAlias.CreateDisbursementArgs.DisbursementArgs, DisbursementAlias.DisbursementDTO>();
+        CreateMap<DisbursementReqAlias.CreateDisbursementArgs.DisbursementDetailArgs, DisbursementAlias.DisbursementDetailDTO>();
     }
 }

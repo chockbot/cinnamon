@@ -1,0 +1,46 @@
+using AutoMapper;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Response;
+using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement;
+
+namespace Cinnamon.Api.Data.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class DisbursementController : ControllerBase 
+{
+    private readonly IDisbursementRepository disbursementRepository;
+    private readonly IMapper mapper;
+
+    public DisbursementController(IDisbursementRepository disbursementRepository, IMapper mapper)
+    {
+        this.disbursementRepository = disbursementRepository;
+        this.mapper = mapper;
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateDisbursementResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Index([FromBody] CreateDisbursementArgs args)
+    {
+        try
+        {
+            var dtos = mapper.Map<IEnumerable<DisbursementDTO>>(args.Disbursements);
+
+            var result = await disbursementRepository.CreateDisbursements(dtos);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateDisbursementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateDisbursementResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+}
