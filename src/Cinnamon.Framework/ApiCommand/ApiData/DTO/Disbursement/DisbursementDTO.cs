@@ -10,6 +10,7 @@ public class DisbursementDTO
     public string Status {get; set;}
     public string Remarks {get; set;}
     public bool InclusivePayment {get; set;}
+    public string Payload {get; set;}
 
     public IEnumerable<DisbursementDetailDTO> DisbursementDetails {get; set;}
 }

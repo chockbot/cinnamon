@@ -18,13 +18,14 @@ public class DisbursementRepository : IDisbursementRepository
         this.mapper = mapper;
     }
 
-    public async Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements)
+    public async Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements, 
+        IEnumerable<int> studentIds)
     {
         try
         {
             var entities = mapper.Map<IEnumerable<Entities.Disbursement>>(disbursements);
 
-            var result = await dataStore.Disbursement.AddRange(entities);
+            var result = await dataStore.Disbursement.CreateDisbursements(entities, studentIds);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

@@ -6,6 +6,7 @@ public class CreateDisbursementArgs
 {
     [Required]
     public IEnumerable<DisbursementArgs> Disbursements {get; set;}
+    public IEnumerable<int>? StudentIds {get; set;}
 
     public class DisbursementArgs
     {
@@ -24,10 +25,12 @@ public class CreateDisbursementArgs
         [Required]
         public string Status {get; set;}
 
-        public string? Remarks {get; set;}
+        public string? Remarks {get; set;} = string.Empty;
 
         [Required]
         public bool InclusivePayment {get; set;}
+
+        public string? Payload {get; set;} = string.Empty;
 
         [Required]
         public IEnumerable<DisbursementDetailArgs> DisbursementDetails {get; set;}

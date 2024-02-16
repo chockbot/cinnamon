@@ -29,8 +29,9 @@ public class DisbursementController : ControllerBase
         try
         {
             var dtos = mapper.Map<IEnumerable<DisbursementDTO>>(args.Disbursements);
+            var studentIds = args.StudentIds ?? Enumerable.Empty<int>();
 
-            var result = await disbursementRepository.CreateDisbursements(dtos);
+            var result = await disbursementRepository.CreateDisbursements(dtos, studentIds);
             if(!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new CreateDisbursementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

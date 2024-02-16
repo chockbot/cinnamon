@@ -13,4 +13,28 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
     {
         this.applicationContext = applicationContext;
     }
+
+    public async Task<AppResult<IEnumerable<Disbursement>>> CreateDisbursements(IEnumerable<Disbursement> disbursements, 
+        IEnumerable<int> studentIds)
+    {
+        try
+        {
+            applicationContext.Disbursements.AddRange(disbursements);
+            foreach(var id in studentIds)
+            {
+                var student = await applicationContext.Students.FindAsync(id);
+                if(student is not null)
+                {
+                    student.IsDisbursement = true;
+                }
+            }
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<IEnumerable<Disbursement>>.CreateSucceeded(disbursements, "Disbursement successfully created.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<Disbursement>>.CreateFailed(ex, "An error occured when creating disbursements");
+        }
+    }
 }

@@ -9,6 +9,7 @@ public class Disbursement : BaseEntity
     public string Status {get; set;} // initiated|pending|disbursed
     public string Remarks {get; set;}
     public bool InclusivePayment {get; set;}
+    public string Payload {get; set;}
 
     public virtual IList<DisbursementDetail> DisbursementDetails {get; set;}
 }
