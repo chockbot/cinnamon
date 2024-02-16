@@ -70,7 +70,7 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
                 _ => args.Status
             };
 
-            var createBulkLog = disbursementData.CreateDisbursementBulkLog(new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementBulkLogArgs {
+            var createBulkLog = await disbursementData.CreateDisbursementBulkLog(new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementBulkLogArgs {
                 DisbursementBulkLog = new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementBulkLogArgs.DisbursementBulkLogArgs {
                     DisbursementBulkId = disbursementBulk.Id,
                     RefferenceId = args.ReferenceId,
@@ -78,6 +78,11 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
                     Remarks = args.FailureCode
                 }
             });
+            if(!createBulkLog.Succeeded || createBulkLog.Result is null || !createBulkLog.Result.IsSuccess)
+            {
+                return AppResult<VerifyPayoutCallbackResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please try again."), "An error occured. Please try again.");
+            }
 
             if(status == "disbursed")
             {
