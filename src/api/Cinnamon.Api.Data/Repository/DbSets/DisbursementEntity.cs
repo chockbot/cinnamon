@@ -15,11 +15,12 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
     }
 
     public async Task<AppResult<IEnumerable<Disbursement>>> CreateDisbursements(IEnumerable<Disbursement> disbursements, 
-        IEnumerable<int> studentIds)
+        IEnumerable<int> studentIds, IEnumerable<int> purchaseOrderIds)
     {
         try
         {
             applicationContext.Disbursements.AddRange(disbursements);
+            
             foreach(var id in studentIds)
             {
                 var student = await applicationContext.Students.FindAsync(id);
@@ -28,6 +29,16 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
                     student.IsDisbursement = true;
                 }
             }
+
+            foreach(var id in purchaseOrderIds)
+            {
+                var purchaseOrder = await applicationContext.PurchaseOrders.FindAsync(id);
+                if(purchaseOrder is not null)
+                {
+                    purchaseOrder.Status = 5;
+                }
+            }
+
             await applicationContext.SaveChangesAsync();
 
             return AppResult<IEnumerable<Disbursement>>.CreateSucceeded(disbursements, "Disbursement successfully created.");

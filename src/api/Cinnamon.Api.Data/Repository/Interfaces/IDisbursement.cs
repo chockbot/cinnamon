@@ -5,5 +5,5 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 
 public interface IDisbursement : IGenericEntity<Disbursement> {
     Task<AppResult<IEnumerable<Disbursement>>> CreateDisbursements(IEnumerable<Disbursement> disbursements, 
-        IEnumerable<int> studentIds);
+        IEnumerable<int> studentIds, IEnumerable<int> purchaseOrderIds);
 }

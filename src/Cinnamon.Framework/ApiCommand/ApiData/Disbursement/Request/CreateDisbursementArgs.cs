@@ -7,6 +7,7 @@ public class CreateDisbursementArgs
     [Required]
     public IEnumerable<DisbursementArgs> Disbursements {get; set;}
     public IEnumerable<int>? StudentIds {get; set;}
+    public IEnumerable<int>? PurchaseOrderIds {get; set;}
 
     public class DisbursementArgs
     {

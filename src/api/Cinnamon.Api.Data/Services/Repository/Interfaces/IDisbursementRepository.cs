@@ -5,5 +5,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
 public interface IDisbursementRepository
 {
-    Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements, IEnumerable<int> studentIds);
+    Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements, 
+        IEnumerable<int> studentIds, IEnumerable<int> purchaseOrderIds);
 }

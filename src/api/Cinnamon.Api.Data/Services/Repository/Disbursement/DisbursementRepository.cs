@@ -19,13 +19,13 @@ public class DisbursementRepository : IDisbursementRepository
     }
 
     public async Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements, 
-        IEnumerable<int> studentIds)
+        IEnumerable<int> studentIds, IEnumerable<int> purchaseOrderIds)
     {
         try
         {
             var entities = mapper.Map<IEnumerable<Entities.Disbursement>>(disbursements);
 
-            var result = await dataStore.Disbursement.CreateDisbursements(entities, studentIds);
+            var result = await dataStore.Disbursement.CreateDisbursements(entities, studentIds, purchaseOrderIds);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
