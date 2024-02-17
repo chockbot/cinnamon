@@ -79,7 +79,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							MakerId               = Convert.ToInt32(item["MakerId"]),
 							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
 							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"]),
+							Title 				  = item["Title"].ToString() ?? string.Empty
 						}).ToList();
 					}
 				}
@@ -167,7 +168,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							MakerId               = Convert.ToInt32(item["MakerId"]),
 							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
 							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"]),
+							Title				  = item["Title"].ToString() ?? string.Empty
 						}).ToList();
 					}
 				}

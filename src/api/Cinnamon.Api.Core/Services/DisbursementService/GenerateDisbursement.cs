@@ -10,14 +10,16 @@ public class GenerateDisbursement : IGenerateDisbursement
 {
     private readonly IStudentData studentData;
     private readonly IPurchaseOrderData purchaseOrderData;
+    private readonly IDisbursementData disbursementData;
     private readonly Dictionary<int, Disbursement> disbursements = new();
     private readonly Dictionary<int, int> studentIds = new();
     private readonly Dictionary<int, int> purchaseOrderIds = new();
 
-    public GenerateDisbursement(IStudentData studentData, IPurchaseOrderData purchaseOrderData)
+    public GenerateDisbursement(IStudentData studentData, IPurchaseOrderData purchaseOrderData, IDisbursementData disbursementData)
     {
         this.studentData = studentData;
         this.purchaseOrderData = purchaseOrderData;
+        this.disbursementData = disbursementData;
     }
 
     public AppResult<GenerateDisbursementResult> Execute(GenerateDisbursementArgs args)
@@ -47,6 +49,7 @@ public class GenerateDisbursement : IGenerateDisbursement
                         Label = transaction.Title,
                         PurchaseOrderId = transaction.TransactionId,
                         Status = "initiated",
+                        Remarks = string.Empty,
                     });
                 }
 
@@ -82,6 +85,7 @@ public class GenerateDisbursement : IGenerateDisbursement
                         Label = transaction.Title,
                         PurchaseOrderId = transaction.TransactionId,
                         Status = "initiated",
+                        Remarks = string.Empty,
                     });
                 }
 
@@ -117,6 +121,7 @@ public class GenerateDisbursement : IGenerateDisbursement
                         Label = transaction.Title,
                         PurchaseOrderId = transaction.TransactionId,
                         Status = "initiated",
+                        Remarks = string.Empty,
                     });
                 }
 
@@ -150,6 +155,7 @@ public class GenerateDisbursement : IGenerateDisbursement
                         Label = transaction.Title,
                         PurchaseOrderId = transaction.TransactionId,
                         Status = "initiated",
+                        Remarks = string.Empty,
                     });
                 }
 
@@ -184,6 +190,7 @@ public class GenerateDisbursement : IGenerateDisbursement
                         Label = transaction.Title,
                         PurchaseOrderId = transaction.TransactionId,
                         Status = "initiated",
+                        Remarks = string.Empty,
                     });
                 }
 
@@ -198,6 +205,33 @@ public class GenerateDisbursement : IGenerateDisbursement
                 {
                     purchaseOrderIds.Add(transaction.TransactionId, transaction.TransactionId);
                 }
+            }
+
+            var createDisbursementsRes = await disbursementData.CreateDisbursements(new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementArgs {
+                Disbursements = disbursements.Values.Select(d => {
+                    return new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementArgs.DisbursementArgs {
+                        Amount = d.Amount,
+                        CustomerId = d.CustomerId,
+                        InclusivePayment = d.InclusivePayment,
+                        Label = d.Label,
+                        PurchaseOrderId = d.PurchaseOrderId,
+                        Status = d.Status,
+                        Remarks = d.Remarks,
+                        DisbursementDetails = d.Details.Select(dt => {
+                            return new Framework.ApiCommand.ApiData.Disbursement.Request.CreateDisbursementArgs.DisbursementDetailArgs {
+                                Amount = dt.Amount,
+                                Label = dt.Label
+                            };
+                        })
+                    };
+                }),
+                PurchaseOrderIds = purchaseOrderIds.Values.Select(id => id),
+                StudentIds = studentIds.Values.Select(id => id)
+            });
+            if(!createDisbursementsRes.Succeeded || createDisbursementsRes.Result is null || !createDisbursementsRes.Result.IsSuccess)
+            {
+                return AppResult<GenerateDisbursementResult>.CreateFailed(
+                    new ApplicationException(createDisbursementsRes.Result?.ErrorInfo?.Message), createDisbursementsRes.Message);
             }
 
             return AppResult<GenerateDisbursementResult>.CreateSucceeded(new(), "Successfully generate disbursement.");
