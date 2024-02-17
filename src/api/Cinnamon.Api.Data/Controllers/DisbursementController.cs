@@ -21,6 +21,27 @@ public class DisbursementController : ControllerBase
         this.mapper = mapper;
     }
 
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDisbursementsResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Index([FromQuery] GetDisbursementsArgs args)
+    {
+        try
+        {
+            var result = await disbursementRepository.GetDisbursements(args.Status, args.Count ?? 0, args.Skip ?? 0);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetDisbursementsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            
+            return new JsonResult(new GetDisbursementsResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDisbursementsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(CreateDisbursementResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

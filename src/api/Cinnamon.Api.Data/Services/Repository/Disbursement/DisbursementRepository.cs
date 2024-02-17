@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
@@ -58,6 +59,28 @@ public class DisbursementRepository : IDisbursementRepository
         catch (Exception ex)
         {
             return AppResult<DisbursementBulkDTO>.CreateFailed(ex, "An error occured when creating disbursement bulk.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursements(string? status, int count, int skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Disbursement, bool>> filter =
+                a => (!string.IsNullOrEmpty(status) ? a.Status == status : true);
+            
+            var result = await dataStore.Disbursement.FindAsync(filter, count, skip);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<IEnumerable<DisbursementDTO>>(result.Result);
+            return AppResult<IEnumerable<DisbursementDTO>>.CreateSucceeded(dtos, "Successfully get disbursements");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(ex, "An error occured when getting disbursements.");
         }
     }
 }
