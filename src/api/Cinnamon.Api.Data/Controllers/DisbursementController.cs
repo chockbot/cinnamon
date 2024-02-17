@@ -45,4 +45,28 @@ public class DisbursementController : ControllerBase
             return new JsonResult(new CreateDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CreateDisbursementBulk")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateDisbursementBulkResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateDisbursementBulk([FromBody] CreateDisbursementBulkArgs args)
+    {
+        try
+        {
+            var dto = mapper.Map<DisbursementBulkDTO>(args.DisbursementBulk);
+
+            var result = await disbursementRepository.CreateDisbursementBulk(dto);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateDisbursementBulkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateDisbursementBulkResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateDisbursementBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

@@ -39,4 +39,25 @@ public class DisbursementRepository : IDisbursementRepository
             return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(ex, "An error occured when creating disbursements.");
         }
     }
+
+    public async Task<AppResult<DisbursementBulkDTO>> CreateDisbursementBulk(DisbursementBulkDTO disbursementBulkDTO)
+    {
+        try
+        {
+            var entity = mapper.Map<Entities.DisbursementBulk>(disbursementBulkDTO);
+
+            var result = await dataStore.DisbursementBulk.CreateDisbursementBulk(entity);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<DisbursementBulkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<DisbursementBulkDTO>(result.Result);
+            return AppResult<DisbursementBulkDTO>.CreateSucceeded(dto, "Successfully create disbursement bulk.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DisbursementBulkDTO>.CreateFailed(ex, "An error occured when creating disbursement bulk.");
+        }
+    }
 }

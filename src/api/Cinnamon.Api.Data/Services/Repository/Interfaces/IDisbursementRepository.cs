@@ -7,4 +7,6 @@ public interface IDisbursementRepository
 {
     Task<AppResult<IEnumerable<DisbursementDTO>>> CreateDisbursements(IEnumerable<DisbursementDTO> disbursements, 
         IEnumerable<int> studentIds, IEnumerable<int> purchaseOrderIds);
+    
+    Task<AppResult<DisbursementBulkDTO>> CreateDisbursementBulk(DisbursementBulkDTO disbursementBulkDTO);
 }

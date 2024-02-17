@@ -58,5 +58,13 @@ public class MappingProfile : Profile
         CreateMap<DisbursementDetail, DisbursementAlias.DisbursementDetailDTO>();
         CreateMap<DisbursementReqAlias.CreateDisbursementArgs.DisbursementArgs, DisbursementAlias.DisbursementDTO>();
         CreateMap<DisbursementReqAlias.CreateDisbursementArgs.DisbursementDetailArgs, DisbursementAlias.DisbursementDetailDTO>();
+
+        // disbursement bulk mapping
+        CreateMap<DisbursementAlias.DisbursementBulkDTO, DisbursementBulk>();
+        CreateMap<DisbursementAlias.DisbursementDetailBulkDTO, DisbursementDetailBulk>();
+        CreateMap<DisbursementBulk, DisbursementAlias.DisbursementBulkDTO>();
+        CreateMap<DisbursementDetailBulk, DisbursementAlias.DisbursementDetailBulkDTO>();
+        CreateMap<DisbursementReqAlias.CreateDisbursementBulkArgs.DisbursementBulkArgs, DisbursementAlias.DisbursementBulkDTO>();
+        CreateMap<DisbursementReqAlias.CreateDisbursementBulkArgs.DisbursementDetailBulkArgs, DisbursementAlias.DisbursementDetailBulkDTO>();
     }
 }
