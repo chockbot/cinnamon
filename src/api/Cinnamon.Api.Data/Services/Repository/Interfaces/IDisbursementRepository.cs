@@ -24,4 +24,6 @@ public interface IDisbursementRepository
     Task<AppResult<IEnumerable<DisbursementDetailDTO>>> GetDisbursementDetails(int disbusementId);
 
     Task<AppResult<DisbursementDTO>> UpdateDisbursementStatus(int disbursementId, string status, string remarks);
+
+    Task<AppResult<DisbursementManualDTO>> CreateManualDisbursement(DisbursementManualDTO disbursementManual);
 }

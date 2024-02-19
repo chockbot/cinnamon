@@ -86,6 +86,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<DisbursementBulk> DisbursementBulks {get; set;}
     public DbSet<DisbursementDetailBulk> DisbursementDetailBulks {get; set;}
     public DbSet<DisbursementBulkLog> DisbursementBulkLogs {get; set;}
+    public DbSet<DisbursementManual> DisbursementManuals {get; set;}
 
     #endregion
 
@@ -328,7 +329,8 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(d => d.CustomerId);
         modelBuilder.Entity<DisbursementBulkLog>()
             .HasIndex(d => d.DisbursementBulkId);
-
+        modelBuilder.Entity<DisbursementManual>()
+            .HasIndex(d => d.DisbursementId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -53,6 +53,7 @@ public interface IDataStore
     IDisbursementBulk DisbursementBulk {get;}
     IDisbursementDetailBulk DisbursementDetailBulk {get;}
     IDisbursementBulkLog DisbursementBulkLog {get;}
+    IDisbursementManual DisbursementManual {get;}
     
     Task EnsureMigrate();
 

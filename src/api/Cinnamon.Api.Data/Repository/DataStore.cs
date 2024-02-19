@@ -110,6 +110,7 @@ public class DataStore : IDataStore
     public IDisbursementBulk DisbursementBulk => new DisbursementBulkEntity(applicationContext);
     public IDisbursementDetailBulk DisbursementDetailBulk => new DisbursementDetailBulkEntity(applicationContext);
     public IDisbursementBulkLog DisbursementBulkLog => new DisbursementBulkLogEntity(applicationContext);
+    public IDisbursementManual DisbursementManual => new DisbursementManualEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {
