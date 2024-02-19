@@ -71,15 +71,15 @@ public class ManualDisbursement : IManualDisbursement
                 return AppResult<ManualDisbursementResult>.CreateFailed(new ApplicationException("You are not allowed. Invalid request."), "You are not allowed. Invalid request.");
             }
 
-            var updateDisbursementStatusRes = await disbursementData.UpdateDisbursementStatus(new Framework.ApiCommand.ApiData.Disbursement.Request.UpdateDisbursementStatusArgs {
+            var createManualDisbursementRes = await disbursementData.CreateManualDisbursement(new Framework.ApiCommand.ApiData.Disbursement.Request.CreateManualDisbursementArgs {
+                AdminId = getAdminRes.Result.AdminUserDetail.Id,
                 DisbursementId = disbursement.Id,
-                Remarks = args.Remarks,
-                Status = "disbursed"
+                Reason = args.Remarks
             });
-            if(!updateDisbursementStatusRes.Succeeded || updateDisbursementStatusRes.Result is null || !updateDisbursementStatusRes.Result.IsSuccess)
+            if(!createManualDisbursementRes.Succeeded || createManualDisbursementRes.Result is null || !createManualDisbursementRes.Result.IsSuccess)
             {
                 return AppResult<ManualDisbursementResult>.CreateFailed(
-                    new ApplicationException(updateDisbursementStatusRes.Result?.ErrorInfo?.Message), updateDisbursementStatusRes.Message);
+                    new ApplicationException(createManualDisbursementRes.Result?.ErrorInfo?.Message), createManualDisbursementRes.Message);
             }
 
             return AppResult<ManualDisbursementResult>.CreateSucceeded(new ManualDisbursementResult {}, "Successfully disbursed manually.");

@@ -203,4 +203,25 @@ public class DisbursementData : IDisbursementData
             return AppResult<UpdateDisbursementStatusResult>.CreateFailed(ex, "An error occured when posting update disbursement status api.");
         }
     }
+
+    public async Task<AppResult<CreateManualDisbursementResult>> CreateManualDisbursement(CreateManualDisbursementArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Disbursement/CreateManualDisbursement")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateManualDisbursementResult>();
+            return AppResult<CreateManualDisbursementResult>.CreateSucceeded(result, "Successfully posting create manual disbursement api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<CreateManualDisbursementResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateManualDisbursementResult>.CreateFailed(ex, "An error occured when posting create manual disbursement api.");
+        }
+    }
 }
