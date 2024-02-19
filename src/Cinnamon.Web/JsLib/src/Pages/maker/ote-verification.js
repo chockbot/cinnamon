@@ -29,6 +29,14 @@ class QRVerification {
   resumeScan() {
     this.scanner.resume();
   }
+
+  playSuccessNotification() {
+    document.querySelector(".notification-successs").play();
+  }
+
+  playErrorNotification() {
+    document.querySelector(".notification-error").play();
+  }
 }
 
 export default {
