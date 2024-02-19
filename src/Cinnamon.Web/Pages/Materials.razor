@@ -139,6 +139,7 @@
     }
     public async Task Search()
     {
+        SearchList.Clear();
         nextPageToken = null; // Reset nextPageToken for new search
         await LoadFiles(); // Call the method to perform the search and load files
     }
