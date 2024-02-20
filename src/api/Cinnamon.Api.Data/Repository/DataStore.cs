@@ -104,6 +104,13 @@ public class DataStore : IDataStore
     public IOteDate OteDate => new OteDateEntity(applicationContext);
     public IOteSchedulePricingGroup OteSchedulePricingGroup => new OteSchedulePricingGroupsEntity(applicationContext);
     public IOteDateOverride OteDateOverride => new OteDateOverrideEntity(applicationContext);
+    
+    public IDisbursement Disbursement => new DisbursementEntity(applicationContext);
+    public IDisbursementDetail DisbursementDetail => new DisbursementDetailEntity(applicationContext);
+    public IDisbursementBulk DisbursementBulk => new DisbursementBulkEntity(applicationContext);
+    public IDisbursementDetailBulk DisbursementDetailBulk => new DisbursementDetailBulkEntity(applicationContext);
+    public IDisbursementBulkLog DisbursementBulkLog => new DisbursementBulkLogEntity(applicationContext);
+    public IDisbursementManual DisbursementManual => new DisbursementManualEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {
