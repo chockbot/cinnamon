@@ -35,11 +35,11 @@ public class GoogleDriveService
         });
     }
 
-    public async Task<Files> ListFilesInFolder(string nextPageToken = null, int pageSize = 20)
+    public async Task<Files> ListFilesInFolder(string folderId, string nextPageToken = null, int pageSize = 20)
     {
         var files = new List<Models.Entities.File>();
         var listRequest = _driveService.Files.List();
-        listRequest.Q = $"'1A5iZBZWoF9g3m3F0p8LnmnQcxdANmEWf' in parents"; // Search for files in the given folder
+        listRequest.Q = $"'{folderId}' in parents"; // Search for files in the given folder
         listRequest.Fields = "nextPageToken, files(id, name, mimeType, thumbnailLink)";
         listRequest.PageSize = pageSize;
         listRequest.PageToken = nextPageToken;
@@ -81,7 +81,7 @@ public class GoogleDriveService
     public async Task<Files> SearchFile(string searchQuery, string nextPageToken = null, int pageSize = 20)
     {
         var listRequest = _driveService.Files.List();
-        listRequest.Q = $"'1A5iZBZWoF9g3m3F0p8LnmnQcxdANmEWf' in parents"; // Search for files in the given folder
+        listRequest.Q = $"'1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD' in parents"; // Search for files in the given folder
 
         if (!string.IsNullOrEmpty(searchQuery))
         {
