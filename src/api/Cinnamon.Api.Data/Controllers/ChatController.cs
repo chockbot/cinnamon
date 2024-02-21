@@ -24,13 +24,17 @@ namespace Cinnamon.Api.Data.Controllers
         private readonly IChatRoomRepository _chatRoomRepository;
         private readonly IChatMemberRepository _chatMemberRepository;
         private readonly IChatConnectionRepository _chatConnectionRepository;
+        private readonly IChatUnreadNotificationRepository chatUnreadNotificationRepository;
 
-        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, IChatMemberRepository chatMemberRepository, IChatConnectionRepository chatConnectionRepository)
+        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, 
+            IChatMemberRepository chatMemberRepository, IChatConnectionRepository chatConnectionRepository,
+            IChatUnreadNotificationRepository chatUnreadNotificationRepository)
         {
             _chatHistoryRepository = chatHistoryRepository;
             _chatRoomRepository = chatRoomRepository;
             _chatMemberRepository = chatMemberRepository;
             _chatConnectionRepository = chatConnectionRepository;
+            this.chatUnreadNotificationRepository = chatUnreadNotificationRepository;
         }
 
         [Route("Create")]
@@ -282,6 +286,32 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("GetUnreadMessages")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetUnreadMessagesResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUnreadMessages()
+        {
+            try
+            {
+                var result = await chatUnreadNotificationRepository.GetUnreadMessages();
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetUnreadMessagesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new GetUnreadMessagesResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetUnreadMessagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
