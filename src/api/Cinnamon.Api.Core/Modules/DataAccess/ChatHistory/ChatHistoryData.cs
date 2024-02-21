@@ -1,8 +1,7 @@
 ﻿using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
-using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
-using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
@@ -78,6 +77,47 @@ public class ChatHistoryData : IChatHistoryData
         catch (Exception ex)
         {
             return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, "An error occured when posting get chat history api");
+        }
+    }
+
+    public async Task<AppResult<GetUnreadMessagesResult>> GetUnreadMessages()
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/GetUnreadMessages")
+                        .GetJsonAsync<GetUnreadMessagesResult>();
+
+            return AppResult<GetUnreadMessagesResult>.CreateSucceeded(result, "Successfully get unread messages api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetUnreadMessagesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetUnreadMessagesResult>.CreateFailed(ex, "An error occured when get unread messages api");
+        }
+    }
+
+    public async Task<AppResult<CreateUnreadNotificationResult>> CreateUnreadNotification(CreateUnreadNotificationArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/CreateUnreadNotification")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateUnreadNotificationResult>();
+
+            return AppResult<CreateUnreadNotificationResult>.CreateSucceeded(result, "Successfully posted create unread message notification");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateUnreadNotificationResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateUnreadNotificationResult>.CreateFailed(ex, "An error occured when posting create unread message notification");
         }
     }
 }
