@@ -79,6 +79,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
 
     #endregion
 
@@ -312,6 +313,13 @@ public class ApplicationContext : IdentityDbContext
         //AddOns
         modelBuilder.Entity<AddOns>().HasIndex(o => o.Id);
 
+        // chat unread notification
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.ToUserId);
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.FromUserId);
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.ChatHistoryId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
