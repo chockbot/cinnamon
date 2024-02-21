@@ -10,6 +10,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using DisbursementAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement;
 using DisbursementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
+using ChatUnreadNotificationAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
+using ChatReqAlias = Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -74,5 +76,10 @@ public class MappingProfile : Profile
         CreateMap<DisbursementAlias.DisbursementManualDTO, DisbursementManual>();
         CreateMap<DisbursementManual, DisbursementAlias.DisbursementManualDTO>();
         CreateMap<DisbursementReqAlias.CreateManualDisbursementArgs, DisbursementAlias.DisbursementManualDTO>();
+
+        // char unread notification mapping
+        CreateMap<ChatUnreadNotification, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
+        CreateMap<ChatUnreadNotificationAlias.ChatUnreadNotificationDTO, ChatUnreadNotification>();
+        CreateMap<ChatReqAlias.CreateUnreadNotificationArgs, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
     }
 }

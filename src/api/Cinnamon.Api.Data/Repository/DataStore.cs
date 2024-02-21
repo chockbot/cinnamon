@@ -112,6 +112,8 @@ public class DataStore : IDataStore
     public IDisbursementBulkLog DisbursementBulkLog => new DisbursementBulkLogEntity(applicationContext);
     public IDisbursementManual DisbursementManual => new DisbursementManualEntity(applicationContext);
 
+    public IChatUnreadNotification ChatUnreadNotification => new ChatUnreadNotificationEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
