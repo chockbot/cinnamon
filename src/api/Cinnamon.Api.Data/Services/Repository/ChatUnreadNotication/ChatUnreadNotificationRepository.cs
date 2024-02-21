@@ -4,6 +4,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.ChatUnreadNotification;
 
@@ -23,6 +24,7 @@ public class ChatUnreadNotificationRepository : IChatUnreadNotificationRepositor
         try
         {
             var entity = mapper.Map<Entities.ChatUnreadNotification>(chatUnreadNotificationDto);
+            entity.ChatDate = entity.ChatDate.SetKindUtc();
 
             var result = await dataStore.ChatUnreadNotification.Add(entity);
             if(!result.Succeeded || result.Result is null)

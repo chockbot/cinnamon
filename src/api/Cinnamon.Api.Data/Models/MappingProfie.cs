@@ -9,6 +9,7 @@ using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using ChatUnreadNotificationAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
+using ChatReqAlias = Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -53,5 +54,6 @@ public class MappingProfile : Profile
         // char unread notification mapping
         CreateMap<ChatUnreadNotification, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
         CreateMap<ChatUnreadNotificationAlias.ChatUnreadNotificationDTO, ChatUnreadNotification>();
+        CreateMap<ChatReqAlias.CreateUnreadNotificationArgs, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
     }
 }

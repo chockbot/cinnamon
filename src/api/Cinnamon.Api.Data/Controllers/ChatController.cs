@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Data.Services.Repository.Customer;
+﻿using AutoMapper;
+using Cinnamon.Api.Data.Services.Repository.Customer;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
@@ -9,6 +10,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
 using Cinnamon.Framework.ApiCommand.ApiData.Location.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Location.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Student.Response;
@@ -25,16 +27,18 @@ namespace Cinnamon.Api.Data.Controllers
         private readonly IChatMemberRepository _chatMemberRepository;
         private readonly IChatConnectionRepository _chatConnectionRepository;
         private readonly IChatUnreadNotificationRepository chatUnreadNotificationRepository;
+        private readonly IMapper mapper;
 
         public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, 
             IChatMemberRepository chatMemberRepository, IChatConnectionRepository chatConnectionRepository,
-            IChatUnreadNotificationRepository chatUnreadNotificationRepository)
+            IChatUnreadNotificationRepository chatUnreadNotificationRepository, IMapper mapper)
         {
             _chatHistoryRepository = chatHistoryRepository;
             _chatRoomRepository = chatRoomRepository;
             _chatMemberRepository = chatMemberRepository;
             _chatConnectionRepository = chatConnectionRepository;
             this.chatUnreadNotificationRepository = chatUnreadNotificationRepository;
+            this.mapper = mapper;
         }
 
         [Route("Create")]
@@ -312,6 +316,29 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetUnreadMessagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CreateUnreadNotification")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateUnreadNotificationResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateUnreadNotification([FromBody] CreateUnreadNotificationArgs args)
+        {
+            try
+            {
+                var dto = mapper.Map<ChatUnreadNotificationDTO>(args);
+
+                var result = await chatUnreadNotificationRepository.CreateChatUnreadNotification(dto);
+                if (!result.Succeeded || result.Result is null)
+                {
+                    return new JsonResult(new CreateUnreadNotificationResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateUnreadNotificationResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateUnreadNotificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
