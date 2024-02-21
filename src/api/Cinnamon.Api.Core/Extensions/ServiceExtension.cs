@@ -242,6 +242,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.ICreateChatConnectionHandler, Services.ChatService.CreateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IUpdateChatConnectionHandler, Services.ChatService.UpdateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatConnectionByCustomerHandler, Services.ChatService.GetChatConnectionByCustomerHandler>();
+        services.AddTransient<Services.ChatService.Handlers.INotifyUnreadChatsHandler, Services.ChatService.NotifyUnreadChatsHandler>();
 
         return services;
     }

@@ -1,9 +1,13 @@
+using Flurl;
+
 namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers;
 
 public class ChatUnreadNotificationHelper 
 {
-    public string GetTemplate()
+    public string GetTemplate(string host)
     {
+        string chatUrl = host.AppendPathSegment("Messages");
+        
         return $@"
             <div
                 style='
@@ -47,7 +51,7 @@ public class ChatUnreadNotificationHelper
                     received a new message on the Cinnamon Website. Here are the details:
                     </p>
                     <a
-                    href='https://cinnamon.ph/Messages'
+                    href='{chatUrl}'
                     style='
                         background-color: #0f173b;
                         color: #ffffff;
@@ -72,8 +76,8 @@ public class ChatUnreadNotificationHelper
                 >
                     <p style='margin: 0'>
                     To view and respond to the message, simply log in to your Cinnamon account
-                    <a href='https://cinnamon.ph/Messages' style='color: #279be1'
-                        >https://cinnamon.ph/Messages</a
+                    <a href='{chatUrl}' style='color: #279be1'
+                        >{chatUrl}</a
                     >. Don't miss out on any important updates or conversations!
                     </p>
                     <p style='margin: 0; margin-top: 30px'>

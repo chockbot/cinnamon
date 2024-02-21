@@ -1,3 +1,4 @@
+using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.EmailDriver.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
@@ -11,10 +12,12 @@ public class ChatUnreadNotificationHandler : IChatUnreadNotificationHandler
 {
     private readonly ChatUnreadNotificationHelper helper = new();
     private readonly ISendMailHandler sendMailHandler;
+    private readonly ApplicationConfig config;
 
-    public ChatUnreadNotificationHandler(ISendMailHandler sendMailHandler)
+    public ChatUnreadNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig config)
     {
         this.sendMailHandler = sendMailHandler;
+        this.config = config;
     }
 
     public AppResult<ChatUnreadNotificationResult> Execute(ChatUnreadNotificationArgs args)
@@ -26,7 +29,7 @@ public class ChatUnreadNotificationHandler : IChatUnreadNotificationHandler
     {
         try
         {
-            var emailBody = helper.GetTemplate();
+            var emailBody = helper.GetTemplate(config.FrontendUrl);
 
             var sendMailResponse = await sendMailHandler.ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {
                 Body = emailBody,
