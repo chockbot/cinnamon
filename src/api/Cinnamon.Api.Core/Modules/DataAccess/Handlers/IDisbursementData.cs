@@ -1,3 +1,4 @@
+using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Reponse;
 using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Response;
 using Cinnamon.Framework.Common;
@@ -25,4 +26,6 @@ public interface IDisbursementData
     Task<AppResult<UpdateDisbursementStatusResult>> UpdateDisbursementStatus(UpdateDisbursementStatusArgs args);
 
     Task<AppResult<CreateManualDisbursementResult>> CreateManualDisbursement(CreateManualDisbursementArgs args);
+
+    Task<AppResult<GetDisbursementByProviderResult>> GetDisbursementByProvider(GetDisbursementByProviderArgs args);
 }

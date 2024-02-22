@@ -5,6 +5,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Response;
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement;
+using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Reponse;
+using Cinnamon.Api.Data.Services.Repository.Student;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -247,6 +249,48 @@ public class DisbursementController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateManualDisbursementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetDisbursementByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDisbursementByProviderResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetDisbursementByProvider([FromQuery] GetDisbursementByProviderArgs args)
+    {
+        try
+        {
+            var result = await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty, args.FilterValue ?? string.Empty, args.CountPerPage ?? 0, args.PageIndex ?? 0);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty , args.FilterValue ?? string.Empty, null, null) :
+                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, string.Empty, string.Empty, null, null);
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetDisbursementByProviderResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                               (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

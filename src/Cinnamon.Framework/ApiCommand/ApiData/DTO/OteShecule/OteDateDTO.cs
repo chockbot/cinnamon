@@ -1,6 +1,6 @@
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
-public class OteDateDTO
+public class OteScheduleDateDTO
 {
     public int Id {get; set;}
     public int OteScheduleId {get; set;}

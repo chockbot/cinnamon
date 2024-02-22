@@ -1,5 +1,7 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Services.Disbursement;
+using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Reponse;
 using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Response;
 using Cinnamon.Framework.Common;
@@ -182,6 +184,28 @@ public class DisbursementData : IDisbursementData
             return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, "An error occured when get disbursement details api");
         }
     }
+
+    public async Task<AppResult<GetDisbursementByProviderResult>> GetDisbursementByProvider(GetDisbursementByProviderArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Disbursement/GetDisbursementByProvider")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetDisbursementByProviderResult>();
+            return AppResult<GetDisbursementByProviderResult>.CreateSucceeded(result, "Successfully get disbursement details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<GetDisbursementByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDisbursementByProviderResult>.CreateFailed(ex, "An error occured when get disbursement details api");
+        }
+    }
+
 
     public async Task<AppResult<UpdateDisbursementStatusResult>> UpdateDisbursementStatus(UpdateDisbursementStatusArgs args)
     {
