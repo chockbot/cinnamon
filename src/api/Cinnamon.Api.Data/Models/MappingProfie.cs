@@ -8,6 +8,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
 using OteTicketAlias = Cinnamon.Framework.ApiCommand.ApiData.OteTicket;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.TokenGenerated;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
+using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcement;
+using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -48,5 +50,12 @@ public class MappingProfile : Profile
         CreateMap<OteTicketAlias.Request.CreateOteTicketArgs, OteTicketDTO>();
 
         CreateMap<TokenGenerated, TokenGeneratedDTO>();
+
+        // for announcements mapping
+        CreateMap<AnnouncementAlias.AnnouncementDTO, Announcement>();
+        CreateMap<Announcement, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.CreateAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.DeleteAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.UpdateAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
     }
 }
