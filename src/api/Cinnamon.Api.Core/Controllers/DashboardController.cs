@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
+using Cinnamon.Api.Core.Services.Disbursement.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
@@ -28,11 +29,12 @@ public class DashboardController : ControllerBase
     private readonly IGetOTEByActivityIdHandler getOTEByActivityIdHandler;
     private readonly IGetTicketDetailsHandler getTicketDetailsHandler;
     private readonly IUpdateOTETicketHandler updateOTETicketHandler;
+    private readonly IGetDisbursementByProviderId getDisbursementByProviderId;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
         IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler,
-        IUpdateOTETicketHandler updateOTETicketHandler)
+        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId)
     {
         this.getActivitySchedulesHandler        = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler    = getCurrentDateAttendanceHandler;
@@ -48,6 +50,7 @@ public class DashboardController : ControllerBase
         this.getOTEByActivityIdHandler          = getOTEByActivityIdHandler;
         this.getTicketDetailsHandler            = getTicketDetailsHandler;
         this.updateOTETicketHandler             = updateOTETicketHandler;
+        this.getDisbursementByProviderId        = getDisbursementByProviderId;
     }
 
     [Route("GetActivitySchedules")]
@@ -630,6 +633,58 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateOTETicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetDisbursementByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDisbursementByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDisbursementByProvider([FromQuery] GetDisbursementByProviderArgs args)
+    {
+        try
+        {
+            var result = await getDisbursementByProviderId.ExecuteAsync(new Services.Disbursement.Interactors.GetDisbursementByProviderArgs
+            {
+                ProviderId   = args.ProviderId,
+                FilterBy     = args.FilterBy ?? string.Empty,
+                FilterValue  = args.FilterValue ?? string.Empty,
+                CountPerPage = args.CountPerPage,
+                PageIndex    = args.PageIndex,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetDisbursementByProviderResult
+            {
+                IsSuccess  = true,
+                ErrorInfo  = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result = result.Result.DisbursementInformation.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Disbursement.DisbursementsInformationDTO
+                    {
+                        Id                = s.Id,
+                        ProviderId        = s.ProviderId,
+                        ProviderEmail     = s.ProviderEmail,
+                        ProviderFirstName = s.ProviderFirstName,
+                        ProviderLastName  = s.ProviderLastName,
+                        CustomerName      = s.CustomerName,
+                        Amount            = s.Amount,
+                        Label             = s.Label,
+                        Payload           = s.Payload,
+                        PayoutDate        = s.PayoutDate,
+                        Status            = s.Status,
+                        Remarks           = s.Remarks,
+                        InclusivePayment  = s.InclusivePayment,
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
