@@ -126,7 +126,17 @@
                                 <TableRowCell class="name-body">@item.Label</TableRowCell>
                                 <TableRowCell class="name-body">@AddOnsStringList</TableRowCell>
                                 <TableRowCell class="name-body">@StudentStringList</TableRowCell>
-                                <TableRowCell class="name-body">@item.Amount</TableRowCell>
+                                <TableRowCell class="tr-ticket">
+                                    <span>@item.Amount</span>
+                                    @if(item.Status == "initiated")
+                                    {
+                                        <span>Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Success</span>
+                                    }
+                                </TableRowCell>
                                 <TableRowCell class="name-body">
                                     @if(item.Status == "initiated")
                                     {
