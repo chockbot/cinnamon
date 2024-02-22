@@ -53,10 +53,13 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(int? Id, string filterBy, string filterValue, int count, int skip)
+	public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(int? Id, string filterBy, string filterValue, int? count, int? skip)
 	{
 		try
 		{
+			int limitCount = count.HasValue ? count.Value : int.MaxValue;
+			int skipCount = skip.HasValue ? skip.Value : 0;
+
 			string whereClause = string.Empty;
 			if (Id.HasValue)
 			{
@@ -108,12 +111,12 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 
 						result = dt.AsEnumerable().Select(item => new DisbursementDTO
 						{
-							Amount           = Convert.ToDecimal(item["Amount"]),
-							Id               = Convert.ToInt32(item["Id"]),
-							InclusivePayment = Convert.ToBoolean(item["InclusivePayment"]),
-							Label            = item["Label"].ToString() ?? string.Empty,
-							Remarks          = item["Remarks"].ToString() ?? string.Empty,
-							Status           = item["Status"].ToString() ?? string.Empty,
+							Amount            = Convert.ToDecimal(item["Amount"]),
+							Id                = Convert.ToInt32(item["Id"]),
+							InclusivePayment  = Convert.ToBoolean(item["InclusivePayment"]),
+							Label             = item["Label"].ToString() ?? string.Empty,
+							Remarks           = item["Remarks"].ToString() ?? string.Empty,
+							Status            = item["Status"].ToString() ?? string.Empty,
 							Payload			  = item["Payload"].ToString() ?? string.Empty,
 							PayoutDate	      = item["PayoutDate"] != DBNull.Value ? Convert.ToDateTime(item["PayoutDate"]) : DateTime.MinValue,
 							DisbursementInformation = new DisbursementInformationDTO
@@ -125,7 +128,7 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 								CustomerName        = item["CustomerName"].ToString() ?? string.Empty,
 							}
 							
-						}).Skip(skip).Take(count).ToList();
+						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}
 			}
