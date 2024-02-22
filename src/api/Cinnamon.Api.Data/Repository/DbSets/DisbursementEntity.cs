@@ -71,11 +71,12 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 			{
 				whereClause += " AND ds.\"Status\" = @status";
 			}
-			string query = "SELECT ds.\"Id\", ds.\"CustomerId\" as ProviderId,cc.\"Email\", cc.\"FirstName\", cc.\"LastName\",ds.\"Label\", ds.\"Amount\", ds.\"Status\", ds.\"InclusivePayment\",ds.\"Remarks\", po.\"Payload\", ds.\"ChangedOn\" as PayoutDate, \r\n" +
-				"(SELECT cc_sub.\"FirstName\" || ' ' || cc_sub.\"LastName\" FROM public.\"Customers\" cc_sub WHERE cc_sub.\"Id\" = po.\"CustomerId\") as CustomerName\r\n" +
-				"FROM public.\"Disbursements\" ds\r\n" +
-				"JOIN public.\"PurchaseOrders\" po ON po.\"Id\" = ds.\"PurchaseOrderId\"\r\n" +
-				"JOIN public.\"Customers\" cc ON cc.\"Id\" = ds.\"CustomerId\" " + whereClause;
+			string query = "SELECT ds.\"Id\", ds.\"CustomerId\" as ProviderId,cc.\"Email\", cc.\"FirstName\", cc.\"LastName\",ds.\"Label\", " +
+								"ds.\"Amount\", ds.\"Status\", ds.\"InclusivePayment\",ds.\"Remarks\", po.\"Payload\", ds.\"ChangedOn\" as PayoutDate, " +
+								"(cc.\"FirstName\" || ' ' || cc.\"LastName\") as CustomerName " +
+							"FROM public.\"Disbursements\" ds " +
+							"JOIN public.\"PurchaseOrders\" po ON po.\"Id\" = ds.\"PurchaseOrderId\" " +
+							"JOIN public.\"Customers\" cc ON cc.\"Id\" = ds.\"CustomerId\" " + whereClause;
 
 			List<DisbursementDTO> result = new();
 
@@ -85,7 +86,7 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 				command.CommandType = System.Data.CommandType.Text;
 				if (Id.HasValue)
 				{
-					var parameterCustomerId = new NpgsqlParameter("Id", Id);
+					var parameterCustomerId = new NpgsqlParameter("Id", Id.Value);
 					command.Parameters.Add(parameterCustomerId);
 				}
 				if (filterBy.Equals("name", StringComparison.CurrentCultureIgnoreCase))
