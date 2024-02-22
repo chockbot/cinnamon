@@ -321,4 +321,26 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<UpdateOTETicketResult>.CreateFailed(ex, "An error occured when posting update ote ticket");
         }
     }
+
+    public async Task<AppResult<GetDisbursementByProviderResult>> GetDisbursementByProvider(GetDisbursementByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetDisbursementByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetDisbursementByProviderResult>();
+
+            return AppResult<GetDisbursementByProviderResult>.CreateSucceeded(result, "Successfully getting disbursement details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetDisbursementByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDisbursementByProviderResult>.CreateFailed(ex, "An error occurred when getting disbursement details api");
+        }
+    }
 }
