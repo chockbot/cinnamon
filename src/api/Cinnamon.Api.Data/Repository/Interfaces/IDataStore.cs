@@ -48,6 +48,7 @@ public interface IDataStore
     IAddOns AddOns { get; }
     IOteDate OteDate {get;}
     IOteDateOverride OteDateOverride {get;}
+    IAnnouncement Announcement {get;}
     
     Task EnsureMigrate();
 

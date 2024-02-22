@@ -79,6 +79,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<Announcement> Announcements {get; set;}
 
     #endregion
 
@@ -311,6 +312,10 @@ public class ApplicationContext : IdentityDbContext
 
         //AddOns
         modelBuilder.Entity<AddOns>().HasIndex(o => o.Id);
+
+        // announcements
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Status);
 
     }
 
