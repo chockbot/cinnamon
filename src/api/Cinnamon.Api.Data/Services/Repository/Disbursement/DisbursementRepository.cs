@@ -236,7 +236,7 @@ public class DisbursementRepository : IDisbursementRepository
     {
         try
         {
-            var result = await dataStore.Disbursement.GetDisbursementsByProvider(Id, filterBy, filterValue, count ?? 0 , skip ?? 0);
+            var result = await dataStore.Disbursement.GetDisbursementsByProvider(Id, filterBy, filterValue, count, skip);
             if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

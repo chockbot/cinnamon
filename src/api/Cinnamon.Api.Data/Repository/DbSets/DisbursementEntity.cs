@@ -127,7 +127,6 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 								ProviderLastName	= item["LastName"].ToString() ?? string.Empty,
 								CustomerName        = item["CustomerName"].ToString() ?? string.Empty,
 							}
-							
 						}).Skip(skipCount).Take(limitCount).ToList();
 					}
 				}

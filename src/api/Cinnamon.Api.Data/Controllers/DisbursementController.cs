@@ -260,7 +260,10 @@ public class DisbursementController : ControllerBase
     {
         try
         {
-            var result = await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty, args.FilterValue ?? string.Empty, args.CountPerPage ?? 0, args.PageIndex ?? 0);
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty, args.FilterValue ?? string.Empty, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, string.Empty, string.Empty, null, null);
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
