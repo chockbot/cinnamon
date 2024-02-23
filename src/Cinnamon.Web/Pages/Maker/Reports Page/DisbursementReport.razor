@@ -241,7 +241,7 @@
                         LastName   = args.LastName
                     };
                 }
-                await GetDisbursementList(0);
+                await GetDisbursementList(1);
             }
         }
         catch (Exception e)
@@ -293,7 +293,56 @@
 
     private async Task ExportToExcel()
     {
-        
+        await loadingIndicator.Show();
+        await Task.Delay(1000);
+        var result = await dashboardApiHandler.GetDisbursementByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetDisbursementByProviderArgs
+        {
+            ProviderId   = profile.Id,
+        }, Token);
+        using (var workbook = new XLWorkbook("wwwroot/Template/DisbursementList.xlsx"))
+        {
+            // Access the first worksheet in the workbook (assuming it's the only one)
+            var worksheet = workbook.Worksheet(1);
+
+            // Define the starting row for your data (assuming headers are in the first row)
+            int startRow = 3;
+
+            // Loop through the ExportEnrollees list and populate the worksheet
+            foreach (var item in result.Result.Result)
+            {
+                var itemList                      = JsonConvert.DeserializeObject<PayloadData>(item.Payload);
+                StudentStringList                 = itemList.Students?.Any() == true ? string.Join(", ", itemList.Students.Select(s => s.Name)) : "";
+                AddOnsStringList                  = itemList.AddOnsDetails?.Any() == true ? string.Join(", ", itemList.AddOnsDetails.Select(s => s.AddOnName)) : "";
+                DateTime? PayoutDate              = item.PayoutDate == DateTime.MinValue ? (DateTime?)null : item.PayoutDate;
+                string formattedPayoutDate        = PayoutDate.HasValue ? PayoutDate.Value.ToString("MMM dd, yyyy") : "TBD";
+                worksheet.Cell(1, 7).Value        = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = item.CustomerName;
+                worksheet.Cell(startRow, 2).Value = item.Label;
+                worksheet.Cell(startRow, 3).Value = AddOnsStringList;
+                worksheet.Cell(startRow, 4).Value = StudentStringList;
+                worksheet.Cell(startRow, 5).Value = item.Amount;
+                worksheet.Cell(startRow, 6).Value = item.Status;
+                worksheet.Cell(startRow, 7).Value = formattedPayoutDate;
+                startRow++;
+            }
+            // Create a MemoryStream to save the workbook
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Specify the file name
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"DisbursementList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                // Convert the bytes to base64
+                var bytesBase64 = Convert.ToBase64String(bytes);
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
     }
 
     private void NavigateToManageReports()
@@ -309,7 +358,7 @@
 
     private Task SubmitFilters()
     {
-        return GetDisbursementList(0);
+        return GetDisbursementList(1);
     }
     private bool IsActive(string page)
        => currentPage == page;
