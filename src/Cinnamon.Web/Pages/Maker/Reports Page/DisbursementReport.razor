@@ -241,7 +241,7 @@
                         LastName   = args.LastName
                     };
                 }
-                await GetDisbursementList(1);
+                await GetDisbursementList(0);
             }
         }
         catch (Exception e)
@@ -286,7 +286,7 @@
         if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
             Pagination = result.Result.Pagination;
-            FilteredDisbursements = result.Result.Result.OrderBy(s => s.PayoutDate).ToList();
+            FilteredDisbursements = result.Result.Result.OrderByDescending(s => s.PayoutDate).ToList();
         }
         IsFetchingTransactions = false;
     }
@@ -309,7 +309,7 @@
 
     private Task SubmitFilters()
     {
-        return GetDisbursementList(1);
+        return GetDisbursementList(0);
     }
     private bool IsActive(string page)
        => currentPage == page;
