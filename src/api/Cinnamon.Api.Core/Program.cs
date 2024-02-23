@@ -151,13 +151,13 @@ builder.Services.AddQuartz(q => {
         );
     }
 
-    var unreadMessagesNotificationKey = new JobKey("GenerateUnreadChatsNotificationJob");
-    q.AddJob<GenerateUnreadChatsNotificationJob>(opts => opts.WithIdentity(unreadMessagesNotificationKey));
-    q.AddTrigger(opts => opts
-        .ForJob(unreadMessagesNotificationKey)
-        .WithIdentity("GenerateUnreadChatsNotificationJob-trigger")
-        .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
-    );
+    // var unreadMessagesNotificationKey = new JobKey("GenerateUnreadChatsNotificationJob");
+    // q.AddJob<GenerateUnreadChatsNotificationJob>(opts => opts.WithIdentity(unreadMessagesNotificationKey));
+    // q.AddTrigger(opts => opts
+    //     .ForJob(unreadMessagesNotificationKey)
+    //     .WithIdentity("GenerateUnreadChatsNotificationJob-trigger")
+    //     .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
+    // );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
