@@ -8,7 +8,7 @@ public interface IAnnouncementData
 {
     Task<AppResult<GetAnnouncementsResult>> GetAnnouncements();
 
-    Task<AppResult<CreateAnnouncementResult>> CreateDisbursements(CreateAnnouncementArgs args);
+    Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args);
 
     Task<AppResult<DeleteAnnouncementResult>> DeleteAnnouncement(DeleteAnnouncementArgs args);
 

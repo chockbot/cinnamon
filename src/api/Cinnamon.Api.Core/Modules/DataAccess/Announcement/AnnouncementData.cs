@@ -37,7 +37,7 @@ public class AnnouncementData : IAnnouncementData
         }
     }
 
-    public async Task<AppResult<CreateAnnouncementResult>> CreateDisbursements(CreateAnnouncementArgs args)
+    public async Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args)
     {
         try
         {
