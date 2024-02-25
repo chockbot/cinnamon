@@ -6,7 +6,7 @@
 @inject GoogleDriveService googleDriveService
 @inject IConfiguration Configuration
 
-
+<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
 <div class="top-row px-4">
     <div class="container">
@@ -96,7 +96,7 @@ else
 {
     <div class="text-center loaded-text">You're all caught up!</div>
 }
-
+</LoadingIndicator>
 @code {
     public string searchValue = string.Empty;
     public List<File> MaterialList = new List<File>();
@@ -106,6 +106,7 @@ else
     private string nextPageToken = null;
     private bool allFilesLoaded = false;
     public string FolderID { get; set; } = "1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD";
+    LoadingIndicator loadingIndicator;
 
     protected override async Task OnInitializedAsync()
     {
@@ -194,20 +195,26 @@ else
 
     public async Task Search()
     {
+        await loadingIndicator.Show();
         FolderID       = "1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD";
         allFilesLoaded = false;
         nextPageToken  = null; // Reset nextPageToken for new search
         SearchList.Clear();
         await LoadFiles(); // Call the method to perform the search and load files
+        await loadingIndicator.Hide();
     }
 
     public async Task Filter(string FolderId)
     {
-        LoadList.Clear();
+        await loadingIndicator.Show();
+        FolderID = FolderId;
+        nextPageToken = null;
+        searchValue = string.Empty;
         allFilesLoaded = false;
-        FolderID       = FolderId;
-        nextPageToken  = null;
+        LoadList.Clear();
+        MaterialList.Clear(); // Clear MaterialList before adding filtered files
         await LoadFiles();
+        await loadingIndicator.Hide();
     }
     public class Category
     {
