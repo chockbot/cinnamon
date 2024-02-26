@@ -10,11 +10,10 @@ public class CreateAnnouncementArgs
     [Required]
     public string Description {get; set;}
 
-    [Required]
-    public string ButtonLabel {get; set;}
+    public string? ButtonLabel {get; set;} = string.Empty;
 
     public string? Link {get; set;} = string.Empty;
 
     [Required]
-    public string Status {get; set;} = string.Empty;
+    public string Status {get; set;}
 }

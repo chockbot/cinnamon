@@ -208,10 +208,10 @@ namespace Cinnamon.Api.Core.Controllers
             try
             {
                 var result = await createAnnouncementHandler.ExecuteAsync(new Services.AdminService.Interactors.CreateAnnouncementArgs {
-                    ButtonLabel = args.ButtonLabel,
+                    ButtonLabel = args.ButtonLabel ?? string.Empty,
                     Description = args.Description,
                     Link = args.Link ?? string.Empty,
-                    Status = args.Status ?? string.Empty,
+                    Status = args.Status,
                     Title = args.Title,
                 });
 
