@@ -23,7 +23,7 @@ public class CreateAnnouncementHandler : ICreateAnnouncementHandler
     
     public AppResult<CreateAnnouncementResult> Execute(CreateAnnouncementArgs args)
     {
-        throw new NotImplementedException();
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<CreateAnnouncementResult>> ExecuteAsync(CreateAnnouncementArgs args)
