@@ -233,6 +233,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.ICreateAnnouncementHandler, Services.AdminService.CreateAnnouncementHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateAnnouncementHandler, Services.AdminService.UpdateAnnouncementHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAnnouncementsHandler, Services.AdminService.GetAnnouncementsHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IDeleteAnnouncementHandler, Services.AdminService.DeleteAnnouncementHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();

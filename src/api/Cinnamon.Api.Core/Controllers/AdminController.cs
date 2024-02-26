@@ -19,12 +19,14 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly ICreateAnnouncementHandler createAnnouncementHandler;
         private readonly IUpdateAnnouncementHandler updateAnnouncementHandler;
         private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
+        private readonly IDeleteAnnouncementHandler deleteAnnouncementHandler;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
             ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
-            IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler)
+            IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
+            IDeleteAnnouncementHandler deleteAnnouncementHandler)
         {
             _logger = logger;
 
@@ -35,6 +37,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.createAnnouncementHandler = createAnnouncementHandler;
             this.updateAnnouncementHandler = updateAnnouncementHandler;
             this.getAnnouncementsHandler = getAnnouncementsHandler;
+            this.deleteAnnouncementHandler = deleteAnnouncementHandler;
         }
 
         [Route("User")]
@@ -311,6 +314,34 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetAllAnnouncementsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("DeleteAnnouncement")]
+        [HttpPost]
+        [ProducesResponseType(typeof(DeleteAnnouncementResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteAnnouncement([FromBody] DeleteAnnouncementArgs args)
+        {
+            try
+            {
+                var result = await deleteAnnouncementHandler.ExecuteAsync(new Services.AdminService.Interactors.DeleteAnnouncementArgs {
+                    AnnouncementId = args.Id
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new DeleteAnnouncementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                var deleted = result.Result;
+
+                return new JsonResult(new DeleteAnnouncementResult {
+                    IsSuccess = true,
+                    Result = deleted.AnnouncementId
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new DeleteAnnouncementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

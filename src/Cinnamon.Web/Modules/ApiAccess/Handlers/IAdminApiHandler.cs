@@ -13,5 +13,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
         Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args, string token);
         Task<AppResult<UpdateAnnouncementResult>> UpdateAnnouncement(UpdateAnnouncementArgs args, string token);
         Task<AppResult<GetAllAnnouncementsResult>> GetAllAnnouncements(string token);
+        Task<AppResult<DeleteAnnouncementResult>> DeleteAnnouncement(DeleteAnnouncementArgs args, string token);
     }
 }

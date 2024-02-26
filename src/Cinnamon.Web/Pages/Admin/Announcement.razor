@@ -84,7 +84,7 @@
                                 <Button Clicked="() => EditAnnouncement(item)" class="border-1-solid border-color-grey-200 bg-white-200">
                                     <img src="images/announcements/edit-icon.png" alt="edit">
                                 </Button>
-                                <Button class="border-1-solid border-color-grey-200 bg-white-200">
+                                <Button Clicked="() => ConfirmDelete(item.Id)" class="border-1-solid border-color-grey-200 bg-white-200">
                                     <img src="images/announcements/delete-icon.png" alt="delete">
                                 </Button>
                             </TableRowCell>
@@ -178,6 +178,26 @@
             </ModalBody>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalConfirmation">
+        <ModalContent>
+            <ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-18 m-0 font-weight-700">Notice</p>
+                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" 
+                    @onclick="() => modalConfirmation.Close(CloseReason.UserClosing)"/>
+            </ModalHeader>
+            <ModalBody class="text-center">
+                <img src="images/announcements/warning-circle.png" alt="warning">
+                <p class="font-16 color-grey-100 my-4">
+                    Are you sure you want to delete this announcement, 
+                    taking into consideration any potential implications or changes it may entail? 
+                </p>
+                <Button Clicked="DeleteAnnouncement" class="font-16 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                    Delete Anyway
+                </Button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </section>
 
 @code 
@@ -190,6 +210,8 @@
     private Validations? formValidation;
     private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
     private UserAction userAction = UserAction.View;
+    private Modal? modalConfirmation;
+    private int selectedToDelete;
 
     private enum UserAction {
         View = 0,
@@ -221,6 +243,12 @@
                 Title = a.Title
             });
         }
+    }
+
+    private async Task ConfirmDelete(int id)
+    {
+        selectedToDelete = id;
+        await modalConfirmation.Show();
     }
 
     private string ShowMenu()
@@ -358,6 +386,25 @@
                 userAction = UserAction.View;
                 await LoadAnnnouncements();
             }
+        }
+    }
+
+    private async Task DeleteAnnouncement()
+    {
+        var deleteRes = await adminApiHandler.DeleteAnnouncement(new Framework.ApiCommand.ApiCore.AdminUser.Request.DeleteAnnouncementArgs {
+            Id = selectedToDelete
+        }, token);
+        var haveError = !deleteRes.Succeeded || deleteRes.Result is null || !deleteRes.Result.IsSuccess;
+
+        if(haveError)
+        {
+            await NotificationService.Error("An error occured. Please try again.", "Error");
+        }
+        else 
+        {
+            await NotificationService.Success("Announcement successfully deleted.", "Success");
+            await modalConfirmation.Close(CloseReason.UserClosing);
+            await LoadAnnnouncements();
         }
     }
 
