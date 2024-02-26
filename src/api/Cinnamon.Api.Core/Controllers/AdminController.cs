@@ -16,11 +16,14 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateCustomerPricingHandler updateCustomerPricingHandler;
         private readonly IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler;
         private readonly ICreateCouponHandler createCouponHandler;
+        private readonly ICreateAnnouncementHandler createAnnouncementHandler;
+        private readonly IUpdateAnnouncementHandler updateAnnouncementHandler;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
-            ICreateCouponHandler createCouponHandler)
+            ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
+            IUpdateAnnouncementHandler updateAnnouncementHandler)
         {
             _logger = logger;
 
@@ -28,6 +31,8 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateCustomerPricingHandler = updateCustomerPricingHandler;
             this.getAllInclusiveTransactionHandler = getAllInclusiveTransactionHandler;
             this.createCouponHandler = createCouponHandler;
+            this.createAnnouncementHandler = createAnnouncementHandler;
+            this.updateAnnouncementHandler = updateAnnouncementHandler;
         }
 
         [Route("User")]
@@ -192,6 +197,85 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new AdminCreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CreateAnnouncement")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateAnnouncementResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAnnouncement([FromBody] CreateAnnouncementArgs args)
+        {
+            try
+            {
+                var result = await createAnnouncementHandler.ExecuteAsync(new Services.AdminService.Interactors.CreateAnnouncementArgs {
+                    ButtonLabel = args.ButtonLabel,
+                    Description = args.Description,
+                    Link = args.Link ?? string.Empty,
+                    Status = args.Status ?? string.Empty,
+                    Title = args.Title,
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new CreateAnnouncementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                var created = result.Result;
+
+                return new JsonResult(new CreateAnnouncementResult {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Announcement.AnnouncementDTO {
+                        ButtonLabel = created.ButtonLabel,
+                        Description = created.Description,
+                        Id = created.Id,
+                        Link = created.Link,
+                        Status = created.Status,
+                        Title = created.Title
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateAnnouncementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("UpdateAnnouncement")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateAnnouncementResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateAnnouncement([FromBody] UpdateAnnouncementArgs args)
+        {
+            try
+            {
+                var result = await updateAnnouncementHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateAnnouncementArgs {
+                    ButtonLabel = args.ButtonLabel,
+                    Description = args.Description,
+                    Id = args.Id,
+                    Link = args.Link,
+                    Status = args.Status,
+                    Title = args.Title
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new UpdateAnnouncementResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                var created = result.Result;
+
+                return new JsonResult(new UpdateAnnouncementResult {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Announcement.AnnouncementDTO {
+                        ButtonLabel = created.ButtonLabel,
+                        Description = created.Description,
+                        Id = created.Id,
+                        Link = created.Link,
+                        Status = created.Status,
+                        Title = created.Title
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateAnnouncementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

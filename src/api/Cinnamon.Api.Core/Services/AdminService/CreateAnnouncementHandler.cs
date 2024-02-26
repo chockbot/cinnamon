@@ -56,7 +56,7 @@ public class CreateAnnouncementHandler : ICreateAnnouncementHandler
                 Description = args.Description,
                 Link = args.Link,
                 Status = args.Status,
-                Title = args.Title
+                Title = args.Title,
             });
             if(!createAnnnouncementRes.Succeeded || createAnnnouncementRes.Result is null || !createAnnnouncementRes.Result.IsSuccess)
             {
