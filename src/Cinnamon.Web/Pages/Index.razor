@@ -36,6 +36,62 @@
     <img src="images/landing-page-images/circle-2-md.png">
 </div>
 
+<div class="announcements" style="width: 100vw;">
+    <div class="container">
+        <div class="swiper announcement-swipper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <Row class="align-items-center">
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <p class="font-24 m-font-14 font-weight-900 color-black-100">Drawing materials are now available!</p>
+                            <p class="font-20 m-font-12 color-grey-100">
+                                Great news! We now have a wide range of drawing materials available on our platform. 
+                                Explore our website to find the tools that will bring your artistic ideas to life.
+                            </p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                            <a class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                Explore now
+                            </a>
+                        </Column>
+                    </Row>
+                </div>
+                <div class="swiper-slide">
+                    <Row class="align-items-center">
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <p class="font-24 m-font-14 font-weight-900 color-black-100">Drawing materials are now available!</p>
+                            <p class="font-20 m-font-12 color-grey-100">
+                                Great news! We now have a wide range of drawing materials available on our platform. 
+                                Explore our website to find the tools that will bring your artistic ideas to life.
+                            </p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                            <a class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                Explore now
+                            </a>
+                        </Column>
+                    </Row>
+                </div>
+                <div class="swiper-slide">
+                    <Row class="align-items-center">
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <p class="font-24 m-font-14 font-weight-900 color-black-100">Drawing materials are now available!</p>
+                            <p class="font-20 m-font-12 color-grey-100">
+                                Great news! We now have a wide range of drawing materials available on our platform. 
+                                Explore our website to find the tools that will bring your artistic ideas to life.
+                            </p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                            <a class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                Explore now
+                            </a>
+                        </Column>
+                    </Row>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!--Section 1-->
 <div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
@@ -670,6 +726,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
             await GetFavorites();
         }
         else
