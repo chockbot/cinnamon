@@ -4,6 +4,8 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Google.Apis.Drive.v3.Data;
 using Cinnamon.Web.Models.Entities;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using Serilog.Parsing;
 
 
 namespace Cinnamon.Web.Modules.Services;
@@ -33,27 +35,27 @@ public class GoogleDriveService
         });
     }
 
-    public async Task<List<Models.Entities.File>> ListFilesInFolder()
+    public async Task<Files> ListFilesInFolder(string folderId, string nextPageToken = null, int pageSize = 20)
     {
         var files = new List<Models.Entities.File>();
         var listRequest = _driveService.Files.List();
-        listRequest.Q = $"'1A5iZBZWoF9g3m3F0p8LnmnQcxdANmEWf' in parents"; // Search for files in the given folder
-        listRequest.Fields = "files(id, name, mimeType, thumbnailLink)";
+        listRequest.Q = $"'{folderId}' in parents"; // Search for files in the given folder
+        listRequest.Fields = "nextPageToken, files(id, name, mimeType, thumbnailLink)";
+        listRequest.PageSize = pageSize;
+        listRequest.PageToken = nextPageToken;
 
         var result = await listRequest.ExecuteAsync();
 
-        foreach (var file in result.Files)
+        var nextToken = result.NextPageToken;
+        var fileList = result.Files.Select(file => new Models.Entities.File
         {
-            files.Add(new Models.Entities.File
-            {
-                Id = file.Id,
-                Name = file.Name,
-                Type = file.MimeType,
-                ThumbnailLink = file.ThumbnailLink
-            });
-        }
+            Id = file.Id,
+            Name = file.Name,
+            Type = file.MimeType,
+            ThumbnailLink = file.ThumbnailLink
+        }).ToList();
 
-        return files;
+        return new Files {FileList = fileList, Token = nextToken };
     }
     public async Task<byte[]> GetFileContent(string fileId)
     {
@@ -76,11 +78,10 @@ public class GoogleDriveService
             ThumbnailLink = file.ThumbnailLink
         };
     }
-    public async Task<List<Models.Entities.File>> SearchFile(string searchQuery)
+    public async Task<Files> SearchFile(string searchQuery, string nextPageToken = null, int pageSize = 20)
     {
-        var files = new List<Models.Entities.File>();
         var listRequest = _driveService.Files.List();
-        listRequest.Q = $"'1A5iZBZWoF9g3m3F0p8LnmnQcxdANmEWf' in parents"; // Search for files in the given folder
+        listRequest.Q = $"'1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD' in parents"; // Search for files in the given folder
 
         if (!string.IsNullOrEmpty(searchQuery))
         {
@@ -88,22 +89,22 @@ public class GoogleDriveService
             listRequest.Q += $" and name contains '{searchQuery}'";
         }
 
-        listRequest.Fields = "files(id, name, mimeType, thumbnailLink)";
+        listRequest.Fields = "nextPageToken, files(id, name, mimeType, thumbnailLink)";
+        listRequest.PageSize = pageSize;
+        listRequest.PageToken = nextPageToken;
 
         var result = await listRequest.ExecuteAsync();
 
-        foreach (var file in result.Files)
+        var nextToken = result.NextPageToken;
+        var fileList = result.Files.Select(file => new Models.Entities.File
         {
-            files.Add(new Models.Entities.File
-            {
-                Id = file.Id,
-                Name = file.Name,
-                Type = file.MimeType,
-                ThumbnailLink = file.ThumbnailLink
-            });
-        }
+            Id = file.Id,
+            Name = file.Name,
+            Type = file.MimeType,
+            ThumbnailLink = file.ThumbnailLink
+        }).ToList();
 
-        return files;
+        return new Files { FileList = fileList, Token = nextToken };
     }
 }
 

@@ -6,28 +6,53 @@
 @inject GoogleDriveService googleDriveService
 @inject IConfiguration Configuration
 
-
+<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+<div class="top-row px-4">
+    <div class="container">
+        <p class="materials-text">
+            Downloadable materials for your activities
+        </p>
+    </div>
+    <div class="col-12 mb-4 justify-content-center search-section">
+        <form class="search-bar" @onsubmit=Search>
+            <div class="input-group border rounded-pill p-1">
+                <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                <div class="input-group-append border-0">
+                    <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
+                    <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 @if (MaterialList.Count != 0)
 {
-    <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-    <div class="top-row px-4">
-        <div class="container">
-            <p class="materials-text">
-                Downloadable materials for your activities
-            </p>
-        </div>
-        <div class="col-12 mb-4 d-flex justify-content-center">
-            <form class="search-bar" @onsubmit=Search>
-                <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                    <div class="input-group-append border-0">
-                        <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                        <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
+    <div class="container">
+            <div class="section-1 row">
+            <div class="categories">
+                <div class="row d-flex justify-content-start">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 categories-container">
+                        <div class="schedule-swiper">
+                            <div class="swiper-wrapper text-center">
+                                @foreach (var category in Categories)
+                                {
+                                    <div class="swiper-slide category">
+                                        <div>
+                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
+                                            <img src=@category.Image class="img-icon text-center">
+                                            <p class="card-title">@category.Name</p>
+                                        </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="swiper-scrollbar"></div>
+                        </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-        <div class="container">
             <div class="section-2-lg row">
                 @foreach (var material in MaterialList)
                 {
@@ -55,19 +80,47 @@
                     </div>
                 }
             </div>
-        </div>
+            @if (!allFilesLoaded)
+            {
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-load" @onclick="LoadMore">Load More</button>
+                </div>
+            }
+            else
+            {
+                <div class="text-center loaded-text">You're all caught up!</div>
+            }
     </div>
 }
-
+else
+{
+    <div class="text-center loaded-text">You're all caught up!</div>
+}
+</LoadingIndicator>
 @code {
     public string searchValue = string.Empty;
     public List<File> MaterialList = new List<File>();
+    public List<File> LoadList = new List<File>();
+    public List<File> SearchList = new List<File>();
+    public List<Category> Categories = new List<Category>();
+    private string nextPageToken = null;
+    private bool allFilesLoaded = false;
+    public string FolderID { get; set; } = "1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD";
+    LoadingIndicator loadingIndicator;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            MaterialList = await googleDriveService.ListFilesInFolder();
+            Categories.Add(new Category { Id = "1m8Ur8T6eA-BBqNzr2GITsogsJzYD_FVA", Name = "Alphabets",         Image = "images/materials-categories/alphabets.png" });
+            Categories.Add(new Category { Id = "1hbF0jRC-wnc46kZqZSP6eHPzgHt8RUZ9", Name = "Animals",           Image = "images/materials-categories/animals.png" });
+            Categories.Add(new Category { Id = "1Q-9TPh3hKtjMbeH3VvIVUOeo0mjlaqiG", Name = "English Worksheet", Image = "images/materials-categories/english.png" });
+            Categories.Add(new Category { Id = "1Nx-fD2CsW8el_pr48sBJvkfOglJaQ-Gb", Name = "Filipino Worksheet",Image = "images/materials-categories/filipino.png" });
+            Categories.Add(new Category { Id = "1CVIpvj7hRpda6JFJQH507BSGmkokz3n8", Name = "People",            Image = "images/materials-categories/people.png" });
+            Categories.Add(new Category { Id = "1g87sISAjzsyjoLQy44OWgP_hWeDi1IPR", Name = "Plants",            Image = "images/materials-categories/plants.png" });
+            Categories.Add(new Category { Id = "1gfxmRfWZz43LiFZrcxrs94BdYIPxeRlr", Name = "Science Worksheet", Image = "images/materials-categories/science.png" });
+            Categories.Add(new Category { Id = "1cnkXQOyV-P-NtsdB8v6OFacH3WUUyTjX", Name = "Things",            Image = "images/materials-categories/things.png" });
+            await LoadFiles();
         }
         catch (Exception ex)
         {
@@ -75,13 +128,98 @@
             Console.WriteLine("Error: " + ex.Message);
         }
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Materials Page Loaded");
+        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await InitializeSwiper();
+    }
+    private async Task InitializeSwiper()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
+    }
+    private async Task LoadFiles()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(searchValue))
+            {
+                var result = await googleDriveService.ListFilesInFolder(FolderID, nextPageToken);
+                LoadList.AddRange(result.FileList);
+                MaterialList = LoadList.ToList();
+                nextPageToken = result.Token;
+                // Check if there are no more files to load
+                if (string.IsNullOrEmpty(nextPageToken))
+                {
+                    allFilesLoaded = true;
+                }
+            }
+            else
+            {
+                var result = await googleDriveService.SearchFile(searchValue, nextPageToken);
+                SearchList.AddRange(result.FileList);
+                MaterialList = SearchList.ToList();
+                nextPageToken = result.Token;
+
+                // Check if there are no more files to load
+                if (string.IsNullOrEmpty(nextPageToken))
+                {
+                    allFilesLoaded = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+
+    public async Task LoadMore()
+    {
+        await LoadFiles();
+    }
+
     public async Task Clear()
     {
-        searchValue = string.Empty;
-        MaterialList = await googleDriveService.ListFilesInFolder();
+        FolderID       = "1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD";
+        nextPageToken  = null;
+        searchValue    = string.Empty;
+        allFilesLoaded = false;
+        LoadList.Clear();
+        await LoadFiles();
     }
+
     public async Task Search()
     {
-        MaterialList = await googleDriveService.SearchFile(searchValue);
+        await loadingIndicator.Show();
+        FolderID       = "1f06LS6xwK4DrhL1nmeGL9HlUJAyJlrvD";
+        allFilesLoaded = false;
+        nextPageToken  = null; // Reset nextPageToken for new search
+        SearchList.Clear();
+        await LoadFiles(); // Call the method to perform the search and load files
+        await loadingIndicator.Hide();
+    }
+
+    public async Task Filter(string FolderId)
+    {
+        await loadingIndicator.Show();
+        FolderID = FolderId;
+        nextPageToken = null;
+        searchValue = string.Empty;
+        allFilesLoaded = false;
+        LoadList.Clear();
+        MaterialList.Clear(); // Clear MaterialList before adding filtered files
+        await LoadFiles();
+        await loadingIndicator.Hide();
+    }
+    public class Category
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Image { get; set; }
     }
 }

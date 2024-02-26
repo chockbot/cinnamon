@@ -1,5 +1,10 @@
 ﻿namespace Cinnamon.Web.Models.Entities;
 
+public class Files {
+
+    public string Token { get; set; }
+    public List<File> FileList { get; set; }
+}
 public class File
 {
     public string Id { get; set; }

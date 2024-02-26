@@ -1,12 +1,53 @@
 ﻿#btn-search {
 	background-color: #ffa942;
 	border-radius: 50%;
-	outline: none;
 	box-shadow: none;
 }
 #btn-clear {
 	outline: none;
 	box-shadow: none;
+}
+.swiper-scrollbar {
+	display: none;
+}
+.row {
+	--bs-gutter-x: 0rem;
+}
+.search-section{
+	display: flex;
+}
+input {
+	font-size: 16px;
+	font-family: "Nunito";
+	font-weight: 500;
+}
+a {
+	text-decoration: none;
+	color: #71717199;
+	cursor: pointer;
+}
+a:hover {
+	color: #717171;
+}
+.btn-load {
+	width: 20%;
+	background-color: #ffa942;
+	color: black;
+	font-family: "Nunito";
+	padding: 15px 15px;
+	border: none;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	color: #ffffff;
+	font-size: 20px;
+	font-weight: 800;
+}
+.loaded-text {
+	font-family: "Nunito";
+	font-size: 20px;
+	font-weight: 800;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 .materials-text {
 	font-family: Nunito;
@@ -65,10 +106,11 @@ button:focus {
 .card-title {
 	font-size: 12px;
 	font-family: "Nunito";
+	text-decoration: none;
 }
 
 .card {
-	margin: 0 1em;
+	padding: 0 10px 0 10px;
 	border: 1px;
 }
 
@@ -101,10 +143,6 @@ button:focus {
 .activities-card .carousel-item img {
 	z-index: 1;
 }
-
-.card {
-	margin: 0px;
-}
 .placeholder-image {
 	border-radius: 10px;
 }
@@ -125,11 +163,33 @@ button:focus {
 .img-zoom-effect:hover {
 	transform: scale(1.1);
 }
+.categories-container {
+	display: flex;
+	justify-content: center;
+	border: 1px solid #D9D9D9;
+	margin-bottom: 1rem;
+	border-radius: 20px;
+}
+
+.schedule-swiper .swiper-wrapper {
+	display: flex;
+	flex-wrap: nowrap; /* Ensure items stay in a single row */
+}
+
+.categories .schedule-swiper {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.swiper-slide.category[style] {
+	position: relative;
+	width: 120px;
+}
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
 	.card-img.img-fluid {
-		width: 150px;
+		width: 170px;
 		height: 223.39px;
 		border-radius: 10px;
 	}
@@ -152,15 +212,11 @@ button:focus {
 		line-height: 19px;
 		color: #344869;
 	}
+
 }
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-	.card-img.img-fluid {
-		width: 175px;
-		height: 223.39px;
-		border-radius: 10px;
-	}
 	.card-title1 {
 		font-family: "Nunito";
 		font-style: normal;
@@ -199,8 +255,14 @@ button:focus {
 	.placeholder-image {
 		height: 223.39px;
 	}
-}
+	.swiper-slide.category[style] {
+		width: 77px;
+	}
+	.categories .swiper-slide.category {
+		width: 100px; /*tied up with margin-left of .categories .schedule-swiper*/
+	}
 
+}
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
 	.card-img.img-fluid {
@@ -242,8 +304,10 @@ button:focus {
 	.card-img-overlay {
 		height: 261.78px;
 	}
+	.categories .swiper-slide.category {
+		width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
+	}
 }
-
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
 	.card-img.img-fluid {
@@ -272,7 +336,6 @@ button:focus {
 		height: 261.78px;
 	}
 }
-
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
 	
@@ -282,8 +345,8 @@ button:focus {
 		gap: 10px;
 	}
 	.card-img.img-fluid {
-		width: 278px;
-		height: 340px;
+		width: 310px;
+		height: 360px;
 		border-radius: 10px;
 		object-fit: cover;
 	}
@@ -296,12 +359,14 @@ button:focus {
 		line-height: 27px;
 		color: #343d4c;
 	}
-	.card-placeholder-popular {
-		width: 278px;
-	}
 	.card-img-overlay {
 		height: 340px;
 	}
+	/*.categories .swiper-slide.category {
+		display: flex;
+		justify-content: space-evenly;
+		width: 100%;*/ /*tied up with margin-left of .categories .schedule-swiper*/
+	/*}*/
 }
 
 @media screen and (max-width: 767.98px) {
@@ -312,11 +377,36 @@ button:focus {
 		font-family: Nunito;
 		font-size: 16px;
 	}
+	.btn-load {
+		width: 50%;
+	}
+	.swiper-slide.category[style] {
+		margin-right: 25px !important;
+		width: 50px;
+	}
+	.categories-container {
+		border: none;
+		justify-content: start;
+	}
+	.search-section {
+		display: block;
+	}
 }
 
 @media screen and (min-width:768px) and (max-width:991px) {
 	.swiper-slide {
 		width: 25%;
+	}
+	.btn-load {
+		width: 40%;
+	}
+	.materials-text{
+		font-size: 20px;
+	}
+	.card-img.img-fluid{
+		width: 230.04px;
+		height: 250.78px;
+		border-radius: 10px;
 	}
 }
 
