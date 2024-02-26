@@ -156,5 +156,27 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<UpdateAnnouncementResult>.CreateFailed(ex, "An error occured when calling update announcement api");
             }
         }
+
+        public async Task<AppResult<GetAllAnnouncementsResult>> GetAllAnnouncements(string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/GetAllAnnouncements")
+                    .GetJsonAsync<GetAllAnnouncementsResult>();
+
+                return AppResult<GetAllAnnouncementsResult>.CreateSucceeded(result, "Successfully called get announcements api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetAllAnnouncementsResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllAnnouncementsResult>.CreateFailed(ex, "An error occured when calling get announcements api");
+            }
+        }
     }
 }

@@ -64,41 +64,32 @@
                         <TableHeaderCell class="text-start color-white-100 p-3">
                             Title
                         </TableHeaderCell>
-                        <TableHeaderCell class="text-start color-white-100 p-3">
+                        <TableHeaderCell class="text-end color-white-100 p-3">
                             Status
                         </TableHeaderCell>
-                        <TableHeaderCell class="text-start color-white-100 p-3">
+                        <TableHeaderCell class="text-end color-white-100 p-3">
                             Actions
                         </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    @* @foreach (var item in activities)
+                    @foreach (var item in Announcements)
                     {
-                        bool isChecked = !item.IsPublished;
-
-                        <TableRow>
-                            <TableRowCell class="text-start p-3">@item.Owner.Email</TableRowCell>
-                            <TableRowCell class="text-start p-3 text-capitalize">
-                                <label class="d-flex">
-                                    <p class="m-0 w-50">@item.Owner.FirstName</p>
-                                    <p class="m-0 w-50 d-block d-md-none border-left-1-solid">@item.Owner.LastName</p>
-                                </label>
+                        <TableRow VerticalAlignment="VerticalAlignment.Middle">
+                            <TableRowCell class="text-start p-3 text-capitalize">@item.Title</TableRowCell>
+                            <TableRowCell class="text-end p-3 text-capitalize">
+                                <span class="@item.Status" >@item.Status</span>
                             </TableRowCell>
-                            <TableRowCell class="text-start p-3 text-capitalize m-d-none">@item.Owner.LastName</TableRowCell>
-                            <TableRowCell class="text-start p-3">
-                                <a href="/explore/@(string.IsNullOrEmpty(item.Handler) ? item.ActivityId.ToString() : item.Handler)" target="_blank">
-                                    @item.Title
-                                </a>
-                            </TableRowCell>
-                            <TableRowCell class="text-center p-3">
-                                <span class="form-switch d-inline">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@isChecked" 
-                                        @onchange="((e) => HandleCheckedChanged(e, item))">
-                                </span>
+                            <TableRowCell class="text-end p-3">
+                                <Button Clicked="() => EditAnnouncement(item)" class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/edit-icon.png" alt="edit">
+                                </Button>
+                                <Button class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/delete-icon.png" alt="delete">
+                                </Button>
                             </TableRowCell>
                         </TableRow>
-                    } *@
+                    }
                 </TableBody>
             </Table>
         </div>
@@ -107,7 +98,7 @@
     <Modal @ref="modalAction">
         <ModalContent>
             <ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
-                <p class="font-24 my-2 font-weight-700 color-black-100">Create Announcement</p>
+                <p class="font-24 my-2 font-weight-700 color-black-100">@(userAction == UserAction.Create ? "Create" : "Edit") Announcement</p>
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="formValidation" Model="model" Mode="ValidationMode.Manual">
@@ -115,7 +106,7 @@
                         <Field class="mb-2">
                             <FieldLabel class="font-20">Title</FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="model.Title">
+                                <TextEdit Role="TextRole.Text" @bind-Text="model.Title">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -197,6 +188,14 @@
     private Modal? modalAction;
     private AnnouncementModel model = new();
     private Validations? formValidation;
+    private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
+    private UserAction userAction = UserAction.View;
+
+    private enum UserAction {
+        View = 0,
+        Create = 1,
+        Edit = 2
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -204,6 +203,24 @@
         token = user.FindFirstValue("Token");
         AuthState = user;
 
+        await LoadAnnnouncements();
+    }
+
+    private async Task LoadAnnnouncements()
+    {
+        var result = await adminApiHandler.GetAllAnnouncements(token);
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            Announcements = result.Result.Result.Select(a => new AnnouncementModel {
+                ButtonLabel = a.ButtonLabel,
+                Description = a.Description,
+                HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
+                Id = a.Id,
+                Link = a.Link,
+                Status = a.Status,
+                Title = a.Title
+            });
+        }
     }
 
     private string ShowMenu()
@@ -231,25 +248,88 @@
 
     private async Task CreateAnnouncement()
     {
+        userAction = UserAction.Create;
         await modalAction?.Show();
+    }
+
+    private async Task EditAnnouncement(AnnouncementModel announcement)
+    {
+        model.ButtonLabel = announcement.ButtonLabel;
+        model.Id = announcement.Id;
+        model.Description = announcement.Description;
+        model.HasButtonAction = announcement.HasButtonAction;
+        model.Link = announcement.Link;
+        model.Status = announcement.Status;
+        model.Title = announcement.Title;
+
+        userAction = UserAction.Edit;
+        await modalAction.Show();
     }
 
     private async Task CloseModal()
     {
+        userAction = UserAction.View;
         await modalAction?.Close(CloseReason.UserClosing);
     }
 
     private Task SaveDraft()
     {
-        return SaveAnnouncement("draft");
+        if(userAction == UserAction.Create)
+        {
+            return SaveCreated("draft");
+        }
+        else
+        {
+            return SaveUpdated("draft");
+        }
     }
 
     private Task SavePublish()
     {
-        return SaveAnnouncement("published");
+        if(userAction == UserAction.Create)
+        {
+            return SaveCreated("published");
+        }
+        else 
+        {
+            return SaveUpdated("published");
+        }
     }
 
-    private async Task SaveAnnouncement(string status)
+    private async Task SaveUpdated(string status)
+    {
+        await formValidation.ClearAll();
+        var isFormValid = await formValidation.ValidateAll();
+
+        if(isFormValid)
+        {
+            model.Status = status;
+
+            var result = await adminApiHandler.UpdateAnnouncement(new Framework.ApiCommand.ApiCore.AdminUser.Request.UpdateAnnouncementArgs {
+                ButtonLabel = model.ButtonLabel,
+                Description = model.Description,
+                Link = model.Link,
+                Status = model.Status,
+                Title = model.Title,
+                Id = model.Id
+            }, token);
+            var haveError = !result.Succeeded || result.Result is null || !result.Result.IsSuccess;
+            if(haveError)
+            {
+                await NotificationService.Error("An error occured. Please try again.", "Error");
+            }
+            else 
+            {
+                await NotificationService.Success("Announcement successfully updated.", "Success");
+                await CloseModal();
+
+                userAction = UserAction.View;
+                await LoadAnnnouncements();
+            }
+        }
+    }
+
+    private async Task SaveCreated(string status)
     {
         await formValidation.ClearAll();
         var isFormValid = await formValidation.ValidateAll();
@@ -274,6 +354,9 @@
             {
                 await NotificationService.Success("Announcement successfully created.", "Success");
                 await CloseModal();
+
+                userAction = UserAction.View;
+                await LoadAnnnouncements();
             }
         }
     }

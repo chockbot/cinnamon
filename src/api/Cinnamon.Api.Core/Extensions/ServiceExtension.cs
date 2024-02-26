@@ -232,6 +232,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateAnnouncementHandler, Services.AdminService.CreateAnnouncementHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateAnnouncementHandler, Services.AdminService.UpdateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAnnouncementsHandler, Services.AdminService.GetAnnouncementsHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
