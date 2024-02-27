@@ -62,6 +62,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteDateData, Modules.DataAccess.OteDate.OTeDateData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -231,6 +232,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+        services.AddTransient<Services.AdminService.Handlers.ICreateAnnouncementHandler, Services.AdminService.CreateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateAnnouncementHandler, Services.AdminService.UpdateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAnnouncementsHandler, Services.AdminService.GetAnnouncementsHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IDeleteAnnouncementHandler, Services.AdminService.DeleteAnnouncementHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
