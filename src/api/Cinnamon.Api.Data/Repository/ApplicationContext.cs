@@ -88,6 +88,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<DisbursementBulkLog> DisbursementBulkLogs {get; set;}
     public DbSet<DisbursementManual> DisbursementManuals {get; set;}
 
+    public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -331,6 +333,14 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(d => d.DisbursementBulkId);
         modelBuilder.Entity<DisbursementManual>()
             .HasIndex(d => d.DisbursementId);
+            
+        // chat unread notification
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.ToUserId);
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.FromUserId);
+        modelBuilder.Entity<ChatUnreadNotification>()
+            .HasIndex(c => c.ChatHistoryId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

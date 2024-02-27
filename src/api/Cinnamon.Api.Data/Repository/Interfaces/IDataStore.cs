@@ -54,6 +54,7 @@ public interface IDataStore
     IDisbursementDetailBulk DisbursementDetailBulk {get;}
     IDisbursementBulkLog DisbursementBulkLog {get;}
     IDisbursementManual DisbursementManual {get;}
+    IChatUnreadNotification ChatUnreadNotification {get;}
     
     Task EnsureMigrate();
 

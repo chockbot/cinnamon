@@ -21,6 +21,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IVerifyResetPasswordNotificationHandler, Modules.NotificationDriver.EmailNotification.VerifyResetPasswordNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IExpiringStudentNotificationHandler, Modules.NotificationDriver.EmailNotification.ExpiringStudentNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteCustomerPayedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteCustomerPayedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IChatUnreadNotificationHandler, Modules.NotificationDriver.EmailNotification.ChatUnreadNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -242,6 +243,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.ICreateChatConnectionHandler, Services.ChatService.CreateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IUpdateChatConnectionHandler, Services.ChatService.UpdateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatConnectionByCustomerHandler, Services.ChatService.GetChatConnectionByCustomerHandler>();
+        services.AddTransient<Services.ChatService.Handlers.INotifyUnreadChatsHandler, Services.ChatService.NotifyUnreadChatsHandler>();
 
         // disbursement
         services.AddTransient<Services.Disbursement.Handlers.IGenerateDisbursement, Services.Disbursement.GenerateDisbursement>();

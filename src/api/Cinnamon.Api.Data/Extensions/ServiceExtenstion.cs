@@ -77,6 +77,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IAddOnsRepository, Services.Repository.AddOns.AddOnsRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOteDateRepository, Services.Repository.OteDate.OteDateRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDisbursementRepository, Services.Repository.Disbursement.DisbursementRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatUnreadNotificationRepository, Services.Repository.ChatUnreadNotification.ChatUnreadNotificationRepository>();
 
         return services;
     }
