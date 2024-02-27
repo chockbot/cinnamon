@@ -6,4 +6,5 @@ public class OteVerificationArgs : IInteractor
 {
     public string Handler {get; set;}
     public string QrCode {get; set;}
+    public int DateId {get; set;}
 }

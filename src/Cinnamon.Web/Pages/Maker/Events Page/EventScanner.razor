@@ -80,6 +80,8 @@
 {
     [Parameter]
     public string Handler {get; set;}
+    [Parameter, SupplyParameterFromQuery]
+    public string? Date {get; set;}
 
     private DotNetObjectReference<EventScanner>? objRef;
     private IJSObjectReference? scannerInstance;
@@ -88,6 +90,7 @@
     private string token = string.Empty;
     private EventDetail? eventDetail;
     private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
+    private int dateId = 0;
 
     enum ScanStatus {
         NotStarted = 0,
@@ -132,6 +135,11 @@
             Id = ote.Id,
             Title = ote.EventName
         };
+
+        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
+        {
+            dateId = parsedDate;
+        }
     }
 
     protected override void OnInitialized()
@@ -219,7 +227,8 @@
 
         var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
             Handler = Handler,
-            QrCode = qr
+            QrCode = qr,
+            DateId = dateId
         }, token);
         if(!verificationRes.Succeeded || verificationRes.Result is null)
         {
