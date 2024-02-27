@@ -251,6 +251,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Disbursement.Handlers.IGetDisbursements, Services.Disbursement.GetDisbursements>();
         services.AddTransient<Services.Disbursement.Handlers.IGetDisbursementDetails, Services.Disbursement.GetDisbursementDetails>();
         services.AddTransient<Services.Disbursement.Handlers.IManualDisbursement, Services.Disbursement.ManualDisbursement>();
+        services.AddTransient<Services.Disbursement.Handlers.IGetDisbursementByProviderId, Services.Disbursement.GetDisbursementByProviderId>();
 
         return services;
     }

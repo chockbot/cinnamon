@@ -1690,7 +1690,7 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
         IList<OteDateOverrideDTO>? dateOverrides)
     {
         try
