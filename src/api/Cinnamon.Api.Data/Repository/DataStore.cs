@@ -114,6 +114,8 @@ public class DataStore : IDataStore
 
     public IChatUnreadNotification ChatUnreadNotification => new ChatUnreadNotificationEntity(applicationContext);
 
+    public IAnnouncement Announcement => new AnnouncementEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

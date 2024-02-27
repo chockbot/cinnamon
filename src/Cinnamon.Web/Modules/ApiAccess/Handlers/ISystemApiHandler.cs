@@ -6,4 +6,5 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface ISystemApiHandler 
 {
     Task<AppResult<GetServerDateResult>> GetServerDate();
+    Task<AppResult<GetAnnouncementsResult>> GetAnnouncements();
 } 
