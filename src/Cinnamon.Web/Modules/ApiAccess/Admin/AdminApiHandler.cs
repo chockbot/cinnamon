@@ -110,5 +110,73 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<AdminCreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
             }
         }
+
+        public async Task<AppResult<GetDisbursementResult>> GetDisbursements(GetDisbursementArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/GetDisbursements")
+                    .SetQueryParams(args)
+                    .GetJsonAsync<GetDisbursementResult>();
+
+                return AppResult<GetDisbursementResult>.CreateSucceeded(result, "Successfully called disbursements information api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetDisbursementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetDisbursementResult>.CreateFailed(ex, "An error occured when calling disbursements information api");
+            }
+        }
+
+        public async Task<AppResult<GetDisbursementDetailsResult>> GetDisbursementDetails(int disbursementId, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request($"Admin/GetDisbursements/{disbursementId}")
+                    .GetJsonAsync<GetDisbursementDetailsResult>();
+
+                return AppResult<GetDisbursementDetailsResult>.CreateSucceeded(result, "Successfully called disbursements information api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetDisbursementDetailsResult>.CreateFailed(ex, "An error occured when calling disbursements information api");
+            }
+        }
+
+        public async Task<AppResult<ManaulDisbursementResult>> ManaulDisbursementResult(ManualDisbursementArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/ManualDisbursement")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<ManaulDisbursementResult>();
+
+                return AppResult<ManaulDisbursementResult>.CreateSucceeded(result, "Successfully post manual disbursement api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<ManaulDisbursementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<ManaulDisbursementResult>.CreateFailed(ex, "An error occured when posting manual disbursement api");
+            }
+        }
     }
 }

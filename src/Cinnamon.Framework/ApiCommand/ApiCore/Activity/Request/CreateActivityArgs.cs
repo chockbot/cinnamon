@@ -105,7 +105,7 @@ public class CreateActivityArgs
         set { _classPolicies = value; }
     }
 
-    public string? VideoLink { get; set; }
+    public string? VideoLink { get; set; } = string.Empty;
 
     [Required]
     public string ActivityLevel {get; set;}
