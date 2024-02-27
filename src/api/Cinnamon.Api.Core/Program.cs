@@ -107,17 +107,17 @@ builder.Services.Configure<FormOptions>(opts => {
 builder.Services.AddQuartz(q => {
     q.UseMicrosoftDependencyInjectionJobFactory();
 
-    if(applicationConfig.Disbursement.RunDisbursement)
-    {
-        var payoutJobkey = new JobKey("GeneratePayoutHandler");
-        q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
+    // if(applicationConfig.Disbursement.RunDisbursement)
+    // {
+    //     var payoutJobkey = new JobKey("GeneratePayoutHandler");
+    //     q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
 
-        q.AddTrigger(opts => opts
-            .ForJob(payoutJobkey)
-            .WithIdentity("GeneratePayoutHandler-trigger")
-            .WithCronSchedule(applicationConfig.Disbursement.CronString)
-        );
-    }
+    //     q.AddTrigger(opts => opts
+    //         .ForJob(payoutJobkey)
+    //         .WithIdentity("GeneratePayoutHandler-trigger")
+    //         .WithCronSchedule(applicationConfig.Disbursement.CronString)
+    //     );
+    // }
 
     var activityGuidJobKey = new JobKey("UpdateActivityGuidHandler");
     q.AddJob<UpdateActivityGuidJob>(opts => opts.WithIdentity(activityGuidJobKey));
@@ -150,6 +150,34 @@ builder.Services.AddQuartz(q => {
             .WithCronSchedule(applicationConfig.ExpiringActivityNotification.CronString)
         );
     }
+
+    var generateDisbursementKey = new JobKey("GenerateDisbursementJob");
+    q.AddJob<GenerateDisbursementJob>(opts => opts.WithIdentity(generateDisbursementKey));
+    q.AddTrigger(opts => opts
+        .ForJob(generateDisbursementKey)
+        .WithIdentity("GenerateDisbursementJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(2).RepeatForever())
+    );
+
+    if(applicationConfig.Disbursement.RunDisbursement)
+    {
+        var generateDisbursementPayoutKey = new JobKey("GenerateDisbursementPayoutJob");
+        q.AddJob<GenerateDisbursementPayoutJob>(opts => opts.WithIdentity(generateDisbursementPayoutKey));
+        q.AddTrigger(opts => opts
+            .ForJob(generateDisbursementPayoutKey)
+            .WithIdentity("GenerateDisbursementPayoutJob-trigger")
+            .WithCronSchedule(applicationConfig.Disbursement.CronString)
+            // .WithSimpleSchedule(x => x.WithIntervalInHours(3).RepeatForever())
+        );
+    }
+
+    var unreadMessagesNotificationKey = new JobKey("GenerateUnreadChatsNotificationJob");
+    q.AddJob<GenerateUnreadChatsNotificationJob>(opts => opts.WithIdentity(unreadMessagesNotificationKey));
+    q.AddTrigger(opts => opts
+        .ForJob(unreadMessagesNotificationKey)
+        .WithIdentity("GenerateUnreadChatsNotificationJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
+    );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

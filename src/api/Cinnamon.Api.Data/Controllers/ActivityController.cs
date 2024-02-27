@@ -412,7 +412,7 @@ public class ActivityController : ControllerBase
             }).ToList();
 
             var dates = args.Dates.Select(d => {
-                return new OteDateDTO {
+                return new OteScheduleDateDTO {
                     Date = d.Date,
                     DateEnd = d.DateEnd,
                     DateStart = d.DateStart,

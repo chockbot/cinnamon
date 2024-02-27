@@ -260,66 +260,21 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
 		try
 		{
 			string query = "select po.\"Id\" as \"TransactionId\", po.\"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", " +
-							   "po.\"ActivityId\", 0 as \"StudentId\", po.\"UnitCount\", po.\"UnitPrice\", po.\"PerUnitDisburseAmount\", " +
-							   "po.\"TotalDisburseAmount\" " +
-						   "from public.\"PurchaseOrders\" po " +
-						   "join public.\"Activities\" ac " +
-							   "on po.\"ActivityId\" = ac.\"Id\" " +
-						   "where po.\"Status\" = 1 and ac.\"ExperienceCreationTypeId\" = 3 ";
-			
-			IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
-			
-			using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
-			{
-				command.CommandText = query;
-				command.CommandType = System.Data.CommandType.Text;
-
-				applicationContext.Database.OpenConnection();
-				
-				using(var dr = await command.ExecuteReaderAsync())
-				{
-					if(dr.HasRows)
-					{
-						var dt = new DataTable();
-						dt.Load(dr);
-
-						listResult                = dt.AsEnumerable().Select(item => new DisburseStudentDTO {
-							Name                  = string.Empty,
-							StudentId             = Convert.ToInt32(item["StudentId"]),
-							TransactionId         = Convert.ToInt32(item["TransactionId"]),
-							UnitCount             = Convert.ToInt32(item["UnitCount"]),
-							UnitPrice             = Convert.ToDecimal(item["UnitPrice"]),
-							ActivityId            = Convert.ToInt32(item["ActivityId"]),
-							MakerId               = Convert.ToInt32(item["MakerId"]),
-							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
-							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
-						}).ToList();
-					}
-				}
-			}
-
-			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(listResult, "Successfully get ote's need to disburse");
-
-		}
-		catch (Exception ex)
-		{
-			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when trying to get ote's need to disburse");
-		}
-	}
-
-	public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse()
-	{
-		try
-		{
-			string query = "select po.\"Id\" as \"TransactionId\", po.\"ActivityId\", po.\"ScheduleId\", po.\"Status\", " +
-							   "po.\"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", po.\"AddOnsAmount\" as \"PerUnitDisburseAmount\", " +
-							   "po.\"AddOnsAmount\" as \"TotalDisburseAmount\", '' as \"Name\", 0 as \"StudentId\", " +
-							   "0 as \"UnitCount\", 0 as \"UnitPrice\" " +
-						   "from public.\"PurchaseOrders\" po " +
-						   "join public.\"Activities\" ac " +
-							   "on po.\"ActivityId\" = ac.\"Id\" " +
-						   "where po.\"Status\" = 1 and po.\"AddOnsAmount\" > 0";
+							"po.\"ActivityId\", ot.\"OteSchedulePricingId\" as \"StudentId\", po.\"UnitCount\", " +
+							"op.\"Price\" as \"UnitPrice\", op.\"Price\" * Count(*) as \"PerUnitDisburseAmount\", " +
+							"po.\"TotalDisburseAmount\", ac.\"Title\", Concat(ot.\"Title\", '  (x', count(*), ')')  as \"Name\" " +
+							"from public.\"PurchaseOrders\" po " +
+							"join public.\"Activities\" ac " +
+								"on po.\"ActivityId\" = ac.\"Id\" " +
+							"join public.\"OteTickets\" ot " +
+								"on ot.\"PurchaseOrderId\" = po.\"Id\" " +
+							"join public.\"OteSchedulePricings\" op " +
+								"on op.\"Id\" = ot.\"OteSchedulePricingId\" " +
+							"where po.\"Status\" = 1 and ac.\"ExperienceCreationTypeId\" = 3 " +
+							"group by po.\"Id\", po.\"IsInclusivePayment\", ac.\"CreatedBy\", " +
+								"po.\"ActivityId\", ot.\"OteSchedulePricingId\", po.\"UnitCount\", " +
+								"po.\"UnitPrice\", po.\"PerUnitDisburseAmount\", po.\"TotalDisburseAmount\", " +
+								"ac.\"Title\", ot.\"Title\", op.\"Price\" ";
 			
 			IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
 			
@@ -347,7 +302,63 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
 							MakerId               = Convert.ToInt32(item["MakerId"]),
 							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
 							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
-							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"])
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"]),
+							Title				  = item["Title"].ToString() ?? string.Empty
+						}).ToList();
+					}
+				}
+			}
+
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(listResult, "Successfully get ote's need to disburse");
+
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when trying to get ote's need to disburse");
+		}
+	}
+
+	public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> AddOnsNeedToDisburse()
+	{
+		try
+		{
+			string query = "select po.\"Id\" as \"TransactionId\", po.\"ActivityId\", po.\"ScheduleId\", po.\"Status\", " +
+								"po.\"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", po.\"AddOnsAmount\" as \"PerUnitDisburseAmount\", " +
+								"po.\"AddOnsAmount\" as \"TotalDisburseAmount\", 'AddOns' as \"Name\", 0 as \"StudentId\", " +
+								"0 as \"UnitCount\", 0 as \"UnitPrice\", ac.\"Title\" " +
+							"from public.\"PurchaseOrders\" po " +
+							"join public.\"Activities\" ac " +
+								"on po.\"ActivityId\" = ac.\"Id\" " +
+							"where po.\"Status\" = 1 and po.\"AddOnsAmount\" > 0 ";
+			
+			IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
+			
+			using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+				
+				using(var dr = await command.ExecuteReaderAsync())
+				{
+					if(dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+
+						listResult                = dt.AsEnumerable().Select(item => new DisburseStudentDTO {
+							Name                  = item["Name"].ToString() ?? string.Empty,
+							StudentId             = Convert.ToInt32(item["StudentId"]),
+							TransactionId         = Convert.ToInt32(item["TransactionId"]),
+							UnitCount             = Convert.ToInt32(item["UnitCount"]),
+							UnitPrice             = Convert.ToDecimal(item["UnitPrice"]),
+							ActivityId            = Convert.ToInt32(item["ActivityId"]),
+							MakerId               = Convert.ToInt32(item["MakerId"]),
+							IsInclusivePayment    = Convert.ToBoolean(item["IsInclusivePayment"]),
+							PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
+							TotalDisburseAmount   = Convert.ToDecimal(item["TotalDisburseAmount"]),
+							Title 				  = item["Title"].ToString() ?? string.Empty
 						}).ToList();
 					}
 				}

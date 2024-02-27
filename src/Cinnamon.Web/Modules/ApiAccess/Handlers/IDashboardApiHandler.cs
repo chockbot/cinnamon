@@ -20,4 +20,5 @@ public interface IDashboardApiHandler
     Task<AppResult<GetOTEByActivityIdResult>> GetOTEByActivityId(GetOTEByActivityIdArgs args, string token);
     Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args, string token);
     Task<AppResult<UpdateOTETicketResult>> UpdateOTETicket(UpdateOTETicketArgs args, string token);
+    Task<AppResult<GetDisbursementByProviderResult>> GetDisbursementByProvider(GetDisbursementByProviderArgs args, string token);
 } 

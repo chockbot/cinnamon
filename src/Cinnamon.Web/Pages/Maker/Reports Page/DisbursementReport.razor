@@ -1,0 +1,432 @@
+﻿@page "/maker/dashboard/disbursement-report"
+@layout DashboardLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Framework.ApiCommand.ApiCore.DTO.Disbursement;
+@using System.Security.Claims
+@using System.Globalization;
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims
+@using Cinnamon.Web.Models.Entities;
+@using ClosedXML.Excel;
+@using System.IO;
+@using Microsoft.AspNetCore.Mvc
+@using Cinnamon.Web.Models.Maker
+@using Cinnamon.Framework.ApiCommand.ApiCore
+@using Newtonsoft.Json
+@inject IJSRuntime JSRuntime
+@inject IAccountApiHandler accountApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IJSRuntime jsRuntime
+
+<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+    <section class="mt-5 enrollee-masterlist">
+        <div class="header-masterlist">
+            <div class="export-file col-lg-10 col-md-7 col-sm-12 col-12 d-flex justify-content-start">
+                <button class="back-button" @onclick="@(() => NavigateToManageReports())"><img src="images/dashboard-back.png"></button>
+                <p class="back-text">Reports</p>
+            </div>
+            <div class="export-file col-lg-2 col-md-5 col-sm-12 col-12 d-flex justify-content-end">
+                <button class="btn-export" @onclick="ExportToExcel">
+                    Download Excel File
+                    <img class="excel-icon" src="images/xls-icon.png" />
+                </button>
+            </div>
+        </div>
+        <div class="page-title">
+            <h3 class="text-capitalize fw-bold header-title">Disbursement Report List</h3>
+            <div class="master-list">
+                <h6 class="masterlist-text col-lg-10 col-md-8 col-sm-12 col-12 d-flex justify-content-start">List of individuals who have paid for your activities, along with their disbursement details.</h6>
+            </div>
+        </div>
+        <div class="transactions-section mt-4">
+            <div class="filters">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 for="filter-by" class="m-font-16 mb-0">Filter by</h5>
+                </div>
+                <Select style="width: 300px; margin-bottom: 1rem;" TValue="Filters"
+                        name="fiter-by" id="filter-by" class="form-control m-font-12 m-width-100" @bind-SelectedValue="selectedValue">
+                    <SelectItem Value="Filters.All">All</SelectItem>
+                    <SelectItem Value="Filters.Name">Name</SelectItem>
+                    <SelectItem Value="Filters.Status">Status</SelectItem>
+                </Select>
+                <div class="filter-fields mt-3 mb-3">
+                    @if (selectedValue == Filters.Name)
+                    {
+                        <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's email" Role="TextRole.Email"
+                              @bind-Text="selectedFilterValues.StringField" />
+                    }
+                    else if (selectedValue == Filters.Status)
+                    {
+                        <Select style="width: 300px;" TValue="string"
+                                class="form-control m-font-16 m-width-100" @bind-SelectedValue="selectedFilterValues.Status">
+                            <SelectItem Value=@("")>All</SelectItem>
+                            <SelectItem Value=@("initiated")>Pending</SelectItem>
+                            <SelectItem Value=@("disbursed")>Disbursed</SelectItem>
+                        </Select>
+                    }
+                </div>
+                <div class="d-flex justify-content-between">
+                    <Button class="btn-primary min-width-130 font-16 mb-3 m-width-100 m-font-14" Border="Border.Is0" Clicked="SubmitFilters"
+                            Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Please wait..
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Submit Filter
+                        </ChildContent>
+                    </Button>
+                </div>
+            </div>
+        </div>
+            @if (FilteredDisbursements.Count != 0)
+            {
+            <div class="enrollees-section">
+                <div class="table-list">
+                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>
+                                Payment by
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Class Enrolled
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Add-on
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Student Enrolled
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Paid
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Status
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Payout Date
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in FilteredDisbursements)
+                        {
+                            var itemList               = JsonConvert.DeserializeObject<PayloadData>(item.Payload);
+                            StudentStringList          = itemList.Students?.Any() == true ? string.Join(", ", itemList.Students.Select(s => s.Name)) : "";
+                            AddOnsStringList           = itemList.AddOnsDetails?.Any() == true ? string.Join(", ", itemList.AddOnsDetails.Select(s => s.AddOnName)) : "";
+                            DateTime? PayoutDate       = item.PayoutDate == DateTime.MinValue ? (DateTime?)null : item.PayoutDate;
+                            string formattedPayoutDate = PayoutDate.HasValue ? PayoutDate.Value.ToString("MMM dd, yyyy") : "TBD"; 
+                            <TableRow>
+                                <TableRowCell class="name-body">@item.CustomerName</TableRowCell>
+                                <TableRowCell class="name-body">@item.Label</TableRowCell>
+                                <TableRowCell class="name-body">@AddOnsStringList</TableRowCell>
+                                <TableRowCell class="name-body">@StudentStringList</TableRowCell>
+                                <TableRowCell class="tr-ticket">
+                                    <span>@item.Amount</span>
+                                    @if(item.Status == "initiated")
+                                    {
+                                        <span>Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Success</span>
+                                    }
+                                </TableRowCell>
+                                <TableRowCell class="name-body">
+                                    @if(item.Status == "initiated")
+                                    {
+                                        <span class="tr-pending">
+                                            Pending
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tr-success">
+                                            Success
+                                        </span>
+                                    }
+                                </TableRowCell>
+                                <TableRowCell class="name-body">@formattedPayoutDate</TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+                <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                        <PaginationLink>
+                            <span aria-hidden="true">«</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                    @{
+                        int pagesToShow = 6;
+                        int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                        int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                        for (var i = startPage; i <= endPage; i++)
+                        {
+                            var pageNumberAsString = i.ToString();
+                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                    @pageNumberAsString
+                                </PaginationLink>
+                            </PaginationItem>
+                        }
+                    }
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                        <PaginationLink>
+                            <span aria-hidden="true">»</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                </Pagination>
+                </div>
+            </div>
+            }
+        </div>
+    </section>
+</LoadingIndicator>    
+
+
+
+@code {
+    LoadingIndicator loadingIndicator;
+    IJSObjectReference module;
+    private CustomerProfile profile = new CustomerProfile();
+    private List<DisbursementsInformationDTO> Disbursements = new();
+    private List<DisbursementsInformationDTO> FilteredDisbursements = new();
+    public IEnumerable<Student> Students { get; set; }
+    public const string PREVIOUS = "previous";
+    public const string NEXT     = "next";
+    public int pageItems         = 10;
+    public string currentPage    = "1";
+    public int counterPage = 10;
+    private Filters selectedValue = Filters.All;
+    private SelectedFilterValues selectedFilterValues = new();
+    private bool IsFetchingTransactions { get; set; }
+    public string Token { get; set; }
+
+    public string StudentStringList { get; set; }
+    public string AddOnsStringList { get; set; }
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    public enum Filters
+    {
+        All = 0,
+        Name = 2,
+        Status = 4
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token = user.FindFirstValue("Token");
+            if (user != null && user.Identity.IsAuthenticated)
+            {
+                var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    var args = result.Result.Result;
+                    profile = new CustomerProfile
+                    {
+                        Id         = args.Id,
+                        IsMaker    = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                        Birthdate  = args.Birthdate,
+                        Email      = args.Email,
+                        FirstName  = args.FirstName,
+                        LastName   = args.LastName
+                    };
+                }
+                await GetDisbursementList(1);
+            }
+        }
+        catch (Exception e)
+        {
+            e.Message.ToString();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
+    }
+
+    private async Task GetDisbursementList(int pageIndex)
+    {
+        var filterValue = selectedValue switch
+        {
+            Filters.All => string.Empty,
+            Filters.Name => selectedFilterValues.StringField,
+            Filters.Status => selectedFilterValues.Status,
+            _ => string.Empty
+        };
+        var filterBy = selectedValue switch
+        {
+            Filters.All => string.Empty,
+            Filters.Name => "name",
+            Filters.Status => string.IsNullOrEmpty(filterValue) ? string.Empty : "status"
+        };
+        IsFetchingTransactions = true;
+        //Code
+        var result = await dashboardApiHandler.GetDisbursementByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetDisbursementByProviderArgs
+        {
+                ProviderId   = profile.Id,
+                CountPerPage = counterPage,
+                PageIndex    = pageIndex,
+                FilterBy     = filterBy,
+                FilterValue  = filterValue
+        }, Token);
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            Pagination = result.Result.Pagination;
+            FilteredDisbursements = result.Result.Result.OrderByDescending(s => s.PayoutDate).ToList();
+        }
+        IsFetchingTransactions = false;
+    }
+
+    private async Task ExportToExcel()
+    {
+        await loadingIndicator.Show();
+        await Task.Delay(1000);
+        var result = await dashboardApiHandler.GetDisbursementByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetDisbursementByProviderArgs
+        {
+            ProviderId   = profile.Id,
+        }, Token);
+        using (var workbook = new XLWorkbook("wwwroot/Template/DisbursementList.xlsx"))
+        {
+            // Access the first worksheet in the workbook (assuming it's the only one)
+            var worksheet = workbook.Worksheet(1);
+
+            // Define the starting row for your data (assuming headers are in the first row)
+            int startRow = 3;
+
+            // Loop through the ExportEnrollees list and populate the worksheet
+            foreach (var item in result.Result.Result)
+            {
+                var itemList                      = JsonConvert.DeserializeObject<PayloadData>(item.Payload);
+                StudentStringList                 = itemList.Students?.Any() == true ? string.Join(", ", itemList.Students.Select(s => s.Name)) : "";
+                AddOnsStringList                  = itemList.AddOnsDetails?.Any() == true ? string.Join(", ", itemList.AddOnsDetails.Select(s => s.AddOnName)) : "";
+                DateTime? PayoutDate              = item.PayoutDate == DateTime.MinValue ? (DateTime?)null : item.PayoutDate;
+                string formattedPayoutDate        = PayoutDate.HasValue ? PayoutDate.Value.ToString("MMM dd, yyyy") : "TBD";
+                worksheet.Cell(1, 7).Value        = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = item.CustomerName;
+                worksheet.Cell(startRow, 2).Value = item.Label;
+                worksheet.Cell(startRow, 3).Value = AddOnsStringList;
+                worksheet.Cell(startRow, 4).Value = StudentStringList;
+                worksheet.Cell(startRow, 5).Value = item.Amount;
+                worksheet.Cell(startRow, 6).Value = item.Status;
+                worksheet.Cell(startRow, 7).Value = formattedPayoutDate;
+                startRow++;
+            }
+            // Create a MemoryStream to save the workbook
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Specify the file name
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"DisbursementList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                // Convert the bytes to base64
+                var bytesBase64 = Convert.ToBase64String(bytes);
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
+    }
+
+    private void NavigateToManageReports()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/reports");
+    }
+
+    public class SelectedFilterValues
+    {
+        public string StringField { get; set; }
+        public string Status { get; set; }
+    }
+
+    private Task SubmitFilters()
+    {
+        return GetDisbursementList(1);
+    }
+    private bool IsActive(string page)
+       => currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1)
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+            await GetDisbursementList(int.Parse(currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < Pagination.TotalPages)
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+            await GetDisbursementList(int.Parse(currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetDisbursementList(int.Parse(page));
+    }
+    public class PayloadData
+    {
+        public IEnumerable<Student> Students { get; set; }
+        public IEnumerable<AddOnDetails> AddOnsDetails { get; set; }
+        public Fees Fees { get; set; }
+        public string PaymentMethod { get; set; }
+        public string PaymentChannel { get; set; }
+        public bool IsInclusivePayment { get; set; }
+        public string SelectedPeriod { get; set; }
+    }
+
+    public class Student
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class Fees
+    {
+        public decimal PaymentProviderFee { get; set; }
+        public decimal ServiceFee { get; set; }
+    }
+    public class AddOnDetails
+    {
+        public int AddOnId { get; set; }
+        public string AddOnName { get; set; }
+        public int AddOnCount { get; set; }
+    }
+}

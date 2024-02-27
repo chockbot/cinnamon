@@ -8,12 +8,17 @@
 @inject NavigationManager NavigationManager;
 @inject INotificationService NotificationService;
 @implements IAsyncDisposable;
+@layout EmptyLayout;
 
-<section class="wrapper-ote-ticket-verification py-5">
+<section class="wrapper-ote-ticket-verification">
     <Container>
+        <label class="d-flex align-items-center mt-3 mb-2 mb-md-5">
+            <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
+            <a href=@($"maker/dashboard/events/{Handler}") class="cursor-pointer ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</a>
+        </label>
         @if(eventDetail is not null)
         {
-            <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-3 text-capitalize">@eventDetail.Title</h3>
+            <h3 class="font-32 color-black-100 font-weight-900 m-font-24 m-text-center mb-1 mb-md-3 text-capitalize">@eventDetail.Title</h3>
         }
         <div class="scanner-log-container">
             <div class="scanner-container text-center">
@@ -67,6 +72,8 @@
             </div>
         </div>
     </Container>
+    <audio class="notification-successs"><source src="media/notifications/success.mp3" /></audio>
+    <audio class="notification-error"><source src="media/notifications/error.mp3" /></audio>
 </section>
 
 @code 
@@ -217,6 +224,7 @@
         if(!verificationRes.Succeeded || verificationRes.Result is null)
         {
             NotificationService.Error(defaultErrorMessage, "Error");
+            await scannerInstance.InvokeVoidAsync("playErrorNotification");
         }
 
         if(verificationRes.Succeeded && !verificationRes.Result.IsSuccess)
@@ -228,6 +236,7 @@
                 LogDate = DateTime.Now,
                 TicketSeat = "Not Applicable"
             });
+            await scannerInstance.InvokeVoidAsync("playErrorNotification");
         }
         else 
         {
@@ -239,6 +248,7 @@
                 TicketSeat = verificationRes.Result.Result.TicketSeat,
                 TicketNumber = verificationRes.Result.Result.Id
             });
+            await scannerInstance.InvokeVoidAsync("playSuccessNotification");
         }
 
         validating = false;
