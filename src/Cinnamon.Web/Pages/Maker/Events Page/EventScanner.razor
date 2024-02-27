@@ -13,8 +13,10 @@
 <section class="wrapper-ote-ticket-verification">
     <Container>
         <label class="d-flex align-items-center mt-3 mb-2 mb-md-5">
-            <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
-            <a href=@($"maker/dashboard/events/{Handler}") class="cursor-pointer ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</a>
+            <a href=@($"maker/dashboard/events/{Handler}/?date={dateId}")>
+                <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
+            </a>
+            <label class="ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</label>
         </label>
         @if(eventDetail is not null)
         {
