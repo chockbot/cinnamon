@@ -65,9 +65,19 @@ public class OteVerificationHandler : IOteVerificationHandler
             }
             var qrcode = qrcodeRes.Result.Result;
 
+            if(qrcode.ActivityId != oteDetails.Id)
+            {
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
+            }
+
             if(qrcode.Status != "UNVERIFIED")
             {
                 return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("QR Code already used."), "QR Code already used.", "duplicate");
+            }
+
+            if(args.DateId != qrcode.OteDateId)
+            {
+                return AppResult<OteVerificationResult>.CreateFailed(new ApplicationException("Invalid QR Code."), "Invalid QR Code.", "invalid");
             }
 
             var updateQrRes = await oteTicketData.UpdateTicket(new Framework.ApiCommand.ApiData.OteTicket.Request.UpdateTicketArgs {
