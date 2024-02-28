@@ -5,8 +5,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Dto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Cinnamon.Api.Data.Services.Repository.Student;
-using Cinnamon.Api.Data.Services.Repository.Activity;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -154,6 +153,7 @@ public class OteTicketController : ControllerBase
             return new JsonResult(new UpdateTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetTicketDetails")]
     [HttpGet]
     [ProducesResponseType(typeof(GetTicketDetailsResult), StatusCodes.Status200OK)]
@@ -172,6 +172,68 @@ public class OteTicketController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetTicketDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateSharedLink")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateSharedLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateSharedLink([FromBody] CreateSharedLinkArgs args)
+    {
+        try
+        {
+            var dto = mapper.Map<OteSharedLinkDTO>(args);
+
+            var result = await oteTicketRepository.CreateSharedLink(dto);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateSharedLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateSharedLinkResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetSharedLink")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetSharedLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSharedLink([FromQuery] GetSharedLinkArgs args)
+    {
+        try
+        {
+            List<OteSharedLinkDTO> sharedLinks = new();
+
+            if(!string.IsNullOrEmpty(args.Guid) && !string.IsNullOrEmpty(args.Token))
+            {
+                var tokenResult = await oteTicketRepository.GetSharedLinks(args.Token, args.Guid);
+                if(!tokenResult.Succeeded || tokenResult.Result is null)
+                {
+                    return new JsonResult(new GetSharedLinkResult { ErrorInfo = new ErrorInfo { Message = tokenResult.Message } });
+                }
+
+                sharedLinks.Add(tokenResult.Result);
+            }
+
+            if(args.ActivityId is not null && args.OteDateId is not null)
+            {
+                var idResult = await oteTicketRepository.GetSharedLinks(args.ActivityId.Value, args.OteDateId.Value);
+                if(!idResult.Succeeded || idResult.Result is null)
+                {
+                    return new JsonResult(new GetSharedLinkResult { ErrorInfo = new ErrorInfo { Message = idResult.Message } });
+                }
+                
+                sharedLinks.AddRange(idResult.Result);
+            }
+
+            return new JsonResult(new GetSharedLinkResult { IsSuccess = true, Result = sharedLinks });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
