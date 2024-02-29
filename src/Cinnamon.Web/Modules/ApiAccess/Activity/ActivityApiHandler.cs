@@ -1117,7 +1117,7 @@ public class ActivityApiHandler : IActivityApiHandler
         try
         {
             var result = await flurlClient
-                .Request($"Activity/GetOtePerDay")
+                .Request($"Activity/ValidateSharedLink")
                 .SetQueryParams(args)
                 .GetJsonAsync<OteValidateSharedLinkResult>();
 

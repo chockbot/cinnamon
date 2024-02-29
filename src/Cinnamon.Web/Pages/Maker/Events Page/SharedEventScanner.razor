@@ -84,10 +84,8 @@
     private IJSObjectReference? scannerInstance;
     private bool validating = false;
     private ScanStatus scanStatus = ScanStatus.NotStarted;
-    private string token = string.Empty;
     private EventDetail? eventDetail;
     private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
-    private int dateId = 0;
 
     enum ScanStatus {
         NotStarted = 0,
@@ -98,19 +96,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        /**
-        eventDetail = new EventDetail {
-            Id = ote.Id,
-            Title = ote.EventName
-        };
-        **/
-
-        /**
-        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
+        var validateTokenRes = await activityApiHandler.ValidateSharedLink(new Framework.ApiCommand.ApiCore.Activity.Request.OteValidateSharedLinkArgs {
+            Guid = Guid,
+            Token = Token
+        });
+        if(!validateTokenRes.Succeeded || validateTokenRes.Result is null || !validateTokenRes.Result.IsSuccess)
         {
-            dateId = parsedDate;
+            NavigationManager.NavigateTo("/page-not-found");
+            return;
         }
-        **/
+        var validated = validateTokenRes.Result.Result;
+
+        eventDetail = new EventDetail {
+            Id = validated.Id,
+            Title = validated.Title
+        };
     }
 
     protected override void OnInitialized()
@@ -196,12 +196,11 @@
 
         string defaultErrorMessage = "An error occured. Please contact support.";
 
-        /**
-        var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
-            Handler = Handler,
-            QrCode = qr,
-            DateId = dateId
-        }, token);
+        var verificationRes = await activityApiHandler.VerifySharedEventLink(new Framework.ApiCommand.ApiCore.Activity.Request.VerifySharedEventLinkArgs {
+            Guid = Guid,
+            Token = Token,
+            QrCode = qr
+        });
         if(!verificationRes.Succeeded || verificationRes.Result is null)
         {
             NotificationService.Error(defaultErrorMessage, "Error");
@@ -231,8 +230,6 @@
             });
             await scannerInstance.InvokeVoidAsync("playSuccessNotification");
         }
-
-        **/
 
         validating = false;
         StateHasChanged();
