@@ -2824,7 +2824,8 @@ public class ActivityController : ControllerBase
         {
             var result = await oteVerificationHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteVerificationArgs {
                 Handler = args.Handler,
-                QrCode = args.QrCode
+                QrCode = args.QrCode,
+                DateId = args.DateId
             });
             if (!result.Succeeded || result.Result == null)
             {
