@@ -1111,4 +1111,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GenerateEventSharedLinkResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
         }
     }
+
+    public async Task<AppResult<OteValidateSharedLinkResult>> ValidateSharedLink(OteValidateSharedLinkArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/GetOtePerDay")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteValidateSharedLinkResult>();
+
+            return AppResult<OteValidateSharedLinkResult>.CreateSucceeded(result, "Successfully validate shared link.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteValidateSharedLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteValidateSharedLinkResult>.CreateFailed(ex, "An error occured when validate shared link.");
+        }
+    }
 }

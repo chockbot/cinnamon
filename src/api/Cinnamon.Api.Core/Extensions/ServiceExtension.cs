@@ -153,6 +153,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IRecommendedActivitiesHandler, Services.ActivityService.RecommendedActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteCreateSharedLinkHandler, Services.ActivityService.OteCreateSharedLinkHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGenerateEventSharedLinkHandler, Services.ActivityService.GenerateEventSharedLinkHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteValidateSharedLinkHandler, Services.ActivityService.OteValidateSharedLinkHandler>();
 
         services.AddTransient<Services.ActivityService.Handlers.ICreateFavoriteHandler, Services.ActivityService.CreateFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRemoveFavoriteHandler, Services.ActivityService.RemoveFavoriteHandler>();

@@ -59,4 +59,5 @@ public interface IActivityApiHandler
     Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args, string token);
     Task<AppResult<OtePerDayResult>> GetOtePerDay(string token);
     Task<AppResult<GenerateEventSharedLinkResult>> GenerateEventSharedLink(GenerateEventSharedLinkArgs args, string token);
+    Task<AppResult<OteValidateSharedLinkResult>> ValidateSharedLink(OteValidateSharedLinkArgs args);
 }
