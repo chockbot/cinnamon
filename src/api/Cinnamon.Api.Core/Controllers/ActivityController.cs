@@ -72,6 +72,9 @@ public class ActivityController : ControllerBase
     private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
     private readonly IDeleteAddOnHandler deleteAddOnHandler;
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
+    private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
+    private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
+    private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -94,7 +97,9 @@ public class ActivityController : ControllerBase
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
-        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler)
+        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
+        IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler)
     {
         _logger = logger;
 
@@ -148,6 +153,9 @@ public class ActivityController : ControllerBase
         this.deleteAddOnsHandler = deleteAddOnsHandler;
         this.deleteAddOnHandler = deleteAddOnHandler;
         this.getOtePerDayHandler = getOtePerDayHandler;
+        this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
+        this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
+        this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
     }
 
     [Route("CreateActivity")]
@@ -2943,6 +2951,101 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GenerateEventSharedLink")]
+    [HttpPost]
+    [ProducesResponseType(typeof(GenerateEventSharedLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GenerateEventSharedLink([FromBody] GenerateEventSharedLinkArgs args)
+    {
+        try
+        {
+            var result = await generateEventSharedLinkHandler.ExecuteAsync(new Services.ActivityService.Interactors.GenerateEventSharedLinkArgs {
+                DateId = args.DateId,
+                Handler = args.Handler
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GenerateEventSharedLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GenerateEventSharedLinkResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GeneratedLink
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GenerateEventSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ValidateSharedLink")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteValidateSharedLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ValidateSharedLink([FromQuery] OteValidateSharedLinkArgs args)
+    {
+        try
+        {
+            var result = await oteValidateSharedLinkHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteValidateSharedLinkArgs {
+                Guid = args.Guid,
+                Token = args.Token
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteValidateSharedLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OteValidateSharedLinkResult
+            {
+                IsSuccess = true,
+                Result = new CoreDto.Activity.OteValidateSharedLinkDTO {
+                    Id = result.Result.Id,
+                    Title = result.Result.EventTitle
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteValidateSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("VerifySharedEventLink")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifySharedEventLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> VerifySharedEventLink([FromBody] VerifySharedEventLinkArgs args)
+    {
+        try
+        {
+            var result = await oteSharedLinkVerificationHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteSharedLinkVerificationArgs {
+                Guid = args.Guid,
+                QrCode = args.QrCode,
+                Token = args.Token
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new VerifySharedEventLinkResult
+            {
+                IsSuccess = true,
+                Result = new CoreDto.Activity.OteVerificationDTO {
+                    TicketSeat = result.Result.TicketSeat,
+                    Verified = result.Result.Verified,
+                    Id = result.Result.Id
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -1088,4 +1088,70 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when calling delete add-on api");
         }
     }
+
+    public async Task<AppResult<GenerateEventSharedLinkResult>> GenerateEventSharedLink(GenerateEventSharedLinkArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GenerateEventSharedLink")
+                .PostJsonAsync(args)
+                .ReceiveJson<GenerateEventSharedLinkResult>();
+
+            return AppResult<GenerateEventSharedLinkResult>.CreateSucceeded(result, "Successfully called generate event shared link api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GenerateEventSharedLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GenerateEventSharedLinkResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
+        }
+    }
+
+    public async Task<AppResult<OteValidateSharedLinkResult>> ValidateSharedLink(OteValidateSharedLinkArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/ValidateSharedLink")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteValidateSharedLinkResult>();
+
+            return AppResult<OteValidateSharedLinkResult>.CreateSucceeded(result, "Successfully validate shared link.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteValidateSharedLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteValidateSharedLinkResult>.CreateFailed(ex, "An error occured when validate shared link.");
+        }
+    }
+
+    public async Task<AppResult<VerifySharedEventLinkResult>> VerifySharedEventLink(VerifySharedEventLinkArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/VerifySharedEventLink")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifySharedEventLinkResult>();
+
+            return AppResult<VerifySharedEventLinkResult>.CreateSucceeded(result, "Successfully called OTE verification API");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<VerifySharedEventLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifySharedEventLinkResult>.CreateFailed(ex, "An error occured when calling OTE verification API");
+        }
+    }
 }

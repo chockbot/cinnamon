@@ -55,6 +55,10 @@ public class MappingProfile : Profile
 
         CreateMap<TokenGenerated, TokenGeneratedDTO>();
 
+        CreateMap<OteSharedLink, OteSharedLinkDTO>();
+        CreateMap<OteSharedLinkDTO, OteSharedLink>();
+        CreateMap<OteTicketAlias.Request.CreateSharedLinkArgs, OteSharedLinkDTO>();
+
         // disbursement mapping
         CreateMap<DisbursementAlias.DisbursementDTO, Disbursement>();
         CreateMap<DisbursementAlias.DisbursementDetailDTO, DisbursementDetail>();
@@ -79,7 +83,7 @@ public class MappingProfile : Profile
         CreateMap<DisbursementManual, DisbursementAlias.DisbursementManualDTO>();
         CreateMap<DisbursementReqAlias.CreateManualDisbursementArgs, DisbursementAlias.DisbursementManualDTO>();
 
-        // char unread notification mapping
+        // chat unread notification mapping
         CreateMap<ChatUnreadNotification, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
         CreateMap<ChatUnreadNotificationAlias.ChatUnreadNotificationDTO, ChatUnreadNotification>();
         CreateMap<ChatReqAlias.CreateUnreadNotificationArgs, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();

@@ -12,4 +12,7 @@ public interface IOteTicketRepository
     Task<AppResult<OteTicketDTO>> Update(OteTicketDTO ticket);
     Task<AppResult<IEnumerable<OteTicketDTO>>> GetByPurchaseOrderId(int purchaseOrderId, bool includeCustomer = false, bool includeImageAsResult = false);
     Task<AppResult<IEnumerable<OteScheduleDTO>>> GetTicketDetails(int activityId, int oteDateId);
+    Task<AppResult<OteSharedLinkDTO>> CreateSharedLink(OteSharedLinkDTO sharedLinkdto);
+    Task<AppResult<OteSharedLinkDTO>> GetSharedLinks(string token, string guid);
+    Task<AppResult<IEnumerable<OteSharedLinkDTO>>> GetSharedLinks(int activityId, int dateId);
 }
