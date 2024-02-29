@@ -4,6 +4,6 @@ namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
 
 public class OteCreateSharedLinkArgs : IInteractor
 {
-    public string Handler {get; set;}
+    public int ActivityId {get; set;}
     public int OteDateId {get; set;}
 }
