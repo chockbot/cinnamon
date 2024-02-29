@@ -1088,4 +1088,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OtePerDayResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
         }
     }
+
+    public async Task<AppResult<GenerateEventSharedLinkResult>> GenerateEventSharedLink(GenerateEventSharedLinkArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GenerateEventSharedLink")
+                .PostJsonAsync(args)
+                .ReceiveJson<GenerateEventSharedLinkResult>();
+
+            return AppResult<GenerateEventSharedLinkResult>.CreateSucceeded(result, "Successfully called generate event shared link api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GenerateEventSharedLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GenerateEventSharedLinkResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
+        }
+    }
 }

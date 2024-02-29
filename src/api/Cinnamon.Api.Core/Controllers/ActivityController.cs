@@ -72,6 +72,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
     private readonly IDeleteAddOnHandler deleteAddOnHandler;
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
+    private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -94,7 +95,7 @@ public class ActivityController : ControllerBase
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
-        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler)
+        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, IGenerateEventSharedLinkHandler generateEventSharedLinkHandler)
     {
         _logger = logger;
 
@@ -148,6 +149,7 @@ public class ActivityController : ControllerBase
         this.deleteAddOnsHandler = deleteAddOnsHandler;
         this.deleteAddOnHandler = deleteAddOnHandler;
         this.getOtePerDayHandler = getOtePerDayHandler;
+        this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
     }
 
     [Route("CreateActivity")]
@@ -2942,6 +2944,35 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GenerateEventSharedLink")]
+    [HttpPost]
+    [ProducesResponseType(typeof(GenerateEventSharedLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GenerateEventSharedLink([FromBody] GenerateEventSharedLinkArgs args)
+    {
+        try
+        {
+            var result = await generateEventSharedLinkHandler.ExecuteAsync(new Services.ActivityService.Interactors.GenerateEventSharedLinkArgs {
+                DateId = args.DateId,
+                Handler = args.Handler
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GenerateEventSharedLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GenerateEventSharedLinkResult
+            {
+                IsSuccess = true,
+                Result = result.Result.GeneratedLink
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GenerateEventSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
