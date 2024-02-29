@@ -45,7 +45,8 @@ public class GenerateEventSharedLinkHandler : IGenerateEventSharedLinkHandler
 
             var getOteRes = await oteFindByHandler.ExecuteAsync(new OteFindByHandlerArgs {
                 Handler = args.Handler,
-                IncludeSchedule = true
+                IncludeSchedule = true,
+                IncludePricing = true
             });
             if(!getOteRes.Succeeded || getOteRes.Result is null)
             {
