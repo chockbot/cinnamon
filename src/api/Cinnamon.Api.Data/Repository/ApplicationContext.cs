@@ -348,6 +348,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(o => o.ActivityId);
         modelBuilder.Entity<OteSharedLink>()
             .HasIndex(o => o.OteDateId);
+        modelBuilder.Entity<OteSharedLink>()
+            .HasIndex("ActivityId","OteDateId");
+        modelBuilder.Entity<OteSharedLink>()
+            .HasIndex("Guid", "Token");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
