@@ -358,7 +358,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  initSwiper: selector => {\n    const swiper = new Swiper(selector, {});\n    console.log(\"swiper initialized\");\n  }\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/landing/announcement.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  initSwiper: selector => {\n    const swiper = new Swiper(selector, {\n      loop: true,\n      autoplay: {\n        delay: 3000,\n        disableOnInteraction: false\n      }\n    });\n    console.log(\"swiper initialized\");\n  }\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/landing/announcement.js?");
 
 /***/ }),
 
