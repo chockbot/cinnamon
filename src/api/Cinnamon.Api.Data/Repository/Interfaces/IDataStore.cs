@@ -48,6 +48,7 @@ public interface IDataStore
     IAddOns AddOns { get; }
     IOteDate OteDate {get;}
     IOteDateOverride OteDateOverride {get;}
+    IOteSharedLink OteSharedLink {get;}
     IDisbursement Disbursement {get;}
     IDisbursementDetail DisbursementDetail {get;}
     IDisbursementBulk DisbursementBulk {get;}
