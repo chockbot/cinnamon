@@ -707,14 +707,21 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
             await GetFavorites();
+
+            await InitAnnouncementSwiper();   
         }
         else
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await GetFavorites();
         }
+    }
+
+    private async Task InitAnnouncementSwiper()
+    {
+        await Task.Delay(2000);
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
     }
 
     private async Task FetchActivities()
