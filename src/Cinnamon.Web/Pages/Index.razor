@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
+@inject ISystemApiHandler systemApiHandler;
 
 <PageTitle>Welcome to Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</PageTitle>
 <SeoMeta />
@@ -36,6 +37,38 @@
     <img src="images/landing-page-images/circle-2-md.png">
 </div>
 
+@if(Announcements.Count() > 0)
+{
+    <div class="announcements">
+        <div class="container">
+            <div class="swiper announcement-swipper">
+                <div class="swiper-wrapper">
+                    @foreach (var item in Announcements)
+                    {
+                        <div class="swiper-slide">
+                            <Row class="align-items-center">
+                                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                    <p class="font-24 m-font-14 font-weight-900 color-black-100">@item.Title</p>
+                                    <p class="font-20 m-font-12 color-grey-100">
+                                        @item.Description
+                                    </p>
+                                </Column>
+                                @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
+                                {
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                            @item.ButtonLabel
+                                        </a>
+                                    </Column>
+                                }
+                            </Row>
+                        </div>   
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <!--Section 1-->
 <div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
@@ -633,6 +666,8 @@
 
     int SelectedValue = 5;
 
+    private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
+
     protected override async Task OnInitializedAsync()
     {
         //get activities randomly
@@ -661,6 +696,8 @@
                 };
             }
         }
+
+        await LoadAnnnouncements();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -670,6 +707,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
             await GetFavorites();
         }
         else
@@ -889,5 +927,33 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private async Task LoadAnnnouncements()
+    {
+        var result = await systemApiHandler.GetAnnouncements();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            Announcements = result.Result.Result.Select(a => new AnnouncementModel {
+                ButtonLabel = a.ButtonLabel,
+                Description = a.Description,
+                HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
+                Id = a.Id,
+                Link = a.Link,
+                Status = a.Status,
+                Title = a.Title
+            });
+        }
+    }
+
+    record AnnouncementModel
+    {
+        public int Id {get; set;}
+        public string Title {get; set;}
+        public string Description {get; set;}
+        public string ButtonLabel {get; set;}
+        public string Link {get; set;}
+        public bool HasButtonAction {get; set;}
+        public string Status {get; set;}
     }
 }

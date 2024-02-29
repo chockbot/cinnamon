@@ -79,6 +79,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<Announcement> Announcements {get; set;}
+
     
     // new disbursement flow
     public DbSet<Disbursement> Disbursements {get; set;}
@@ -341,6 +343,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(c => c.FromUserId);
         modelBuilder.Entity<ChatUnreadNotification>()
             .HasIndex(c => c.ChatHistoryId);
+        // announcements
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Status);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

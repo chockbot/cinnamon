@@ -12,6 +12,8 @@ using DisbursementAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement
 using DisbursementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 using ChatUnreadNotificationAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
 using ChatReqAlias = Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
+using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcement;
+using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -81,5 +83,12 @@ public class MappingProfile : Profile
         CreateMap<ChatUnreadNotification, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
         CreateMap<ChatUnreadNotificationAlias.ChatUnreadNotificationDTO, ChatUnreadNotification>();
         CreateMap<ChatReqAlias.CreateUnreadNotificationArgs, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
+
+        // for announcements mapping
+        CreateMap<AnnouncementAlias.AnnouncementDTO, Announcement>();
+        CreateMap<Announcement, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.CreateAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.DeleteAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
+        CreateMap<AnnouncementReqAlias.UpdateAnnouncementArgs, AnnouncementAlias.AnnouncementDTO>();
     }
 }

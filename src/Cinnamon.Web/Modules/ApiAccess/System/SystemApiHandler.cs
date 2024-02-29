@@ -35,4 +35,24 @@ public class SystemApiHandler: ISystemApiHandler
             return AppResult<GetServerDateResult>.CreateFailed(ex, "An error occured when getting server date api");
         }
     }
+
+    public async Task<AppResult<GetAnnouncementsResult>> GetAnnouncements()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/GetAnnouncements")
+                .GetJsonAsync<GetAnnouncementsResult>();
+
+            return AppResult<GetAnnouncementsResult>.CreateSucceeded(result, "Successfully get announcement api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAnnouncementsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAnnouncementsResult>.CreateFailed(ex, "An error occured when get announcement api");
+        }
+    }
 }

@@ -111,6 +111,97 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             }
         }
 
+        public async Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/CreateAnnouncement")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<CreateAnnouncementResult>();
+
+                return AppResult<CreateAnnouncementResult>.CreateSucceeded(result, "Successfully called create announcement api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<CreateAnnouncementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreateAnnouncementResult>.CreateFailed(ex, "An error occured when calling create announcement api");
+            }
+        }
+
+        public async Task<AppResult<UpdateAnnouncementResult>> UpdateAnnouncement(UpdateAnnouncementArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/UpdateAnnouncement")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<UpdateAnnouncementResult>();
+
+                return AppResult<UpdateAnnouncementResult>.CreateSucceeded(result, "Successfully called update announcement api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<UpdateAnnouncementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdateAnnouncementResult>.CreateFailed(ex, "An error occured when calling update announcement api");
+            }
+        }
+
+        public async Task<AppResult<GetAllAnnouncementsResult>> GetAllAnnouncements(string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/GetAllAnnouncements")
+                    .GetJsonAsync<GetAllAnnouncementsResult>();
+
+                return AppResult<GetAllAnnouncementsResult>.CreateSucceeded(result, "Successfully called get announcements api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetAllAnnouncementsResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllAnnouncementsResult>.CreateFailed(ex, "An error occured when calling get announcements api");
+            }
+        }
+
+        public async Task<AppResult<DeleteAnnouncementResult>> DeleteAnnouncement(DeleteAnnouncementArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/DeleteAnnouncement")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<DeleteAnnouncementResult>();
+
+                return AppResult<DeleteAnnouncementResult>.CreateSucceeded(result, "Successfully called delete announcement api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<DeleteAnnouncementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<DeleteAnnouncementResult>.CreateFailed(ex, "An error occured when calling delete announcement api");
+            }
+        }
+
         public async Task<AppResult<GetDisbursementResult>> GetDisbursements(GetDisbursementArgs args, string token)
         {
             try
