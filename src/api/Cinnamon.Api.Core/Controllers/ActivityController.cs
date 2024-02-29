@@ -74,6 +74,7 @@ public class ActivityController : ControllerBase
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
     private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
     private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
+    private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -97,7 +98,8 @@ public class ActivityController : ControllerBase
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
-        IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler)
+        IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler)
     {
         _logger = logger;
 
@@ -153,6 +155,7 @@ public class ActivityController : ControllerBase
         this.getOtePerDayHandler = getOtePerDayHandler;
         this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
         this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
+        this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
     }
 
     [Route("CreateActivity")]
@@ -3009,6 +3012,40 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteValidateSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("VerifySharedEventLink")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifySharedEventLinkResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> VerifySharedEventLink([FromBody] VerifySharedEventLinkArgs args)
+    {
+        try
+        {
+            var result = await oteSharedLinkVerificationHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteSharedLinkVerificationArgs {
+                Guid = args.Guid,
+                QrCode = args.QrCode,
+                Token = args.Token
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new VerifySharedEventLinkResult
+            {
+                IsSuccess = true,
+                Result = new CoreDto.Activity.OteVerificationDTO {
+                    TicketSeat = result.Result.TicketSeat,
+                    Verified = result.Result.Verified,
+                    Id = result.Result.Id
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
