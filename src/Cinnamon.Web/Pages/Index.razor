@@ -39,8 +39,11 @@
 
 @if(Announcements.Count() > 0)
 {
-    <div class="announcements">
+    <div class="announcements" style="display:@IsDisplay">
         <div class="container">
+            <button type="button" class="close-button" aria-label="Close" @onclick="() =>DisplayAnnouncement()">
+                <span aria-hidden="true">&times;</span>
+            </button>
             <div class="swiper announcement-swipper">
                 <div class="swiper-wrapper">
                     @foreach (var item in Announcements)
@@ -111,7 +114,7 @@
                                 {
                                     <div class="swiper-slide category">
                                     <div>
-                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
+                                            <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
                                             <img src=@category.IconPath class="img-icon text-center">
                                             <p class="card-title">@category.Category</p>
                                         </a>
@@ -151,6 +154,25 @@
                                                 <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                                 </a>
+                                                <div class="creation-section">
+                                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/GA.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/OTE.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/AVA.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/SUP.png" />
+                                                    }
+                                                </div>
+                                                
                                                 @if (act.OngoingStudents > 0)
                                                 {
                                                     <CustomTooltip MarginLeft="-100">
@@ -596,6 +618,8 @@
 
     public string buttonLabel = "Browse all";
 
+    public string IsDisplay = "block";
+
     int SelectedValue = 5;
 
     private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
@@ -698,44 +722,45 @@
                 activities = ActivityListData.Result.Result.Select(r =>
                 {
                     return new Activity{
-                        ActivityId = r.ActivityId,
-                        ExperienceTypeId = r.ExperienceTypeId,
-                        ExperienceType = r.ExperienceType,
-                        ExperienceCategoryId = r.ExperienceCategoryId,
-                        SubCategoryId = r.SubCategoryId,
-                        ExperienceCategory = r.ExperienceCategory,
-                        SubCategory = r.SubCategory,
-                        Title = r.Title,
-                        Description = r.Description,
-                        Price = r.Price,
-                        ScheduleIndicator = r.ScheduleIndicator,
-                        Remarks = r.Remarks,
-                        IsPublished = r.IsPublished,
-                        Address1 = r.Address1,
-                        Address2 = r.Address2,
-                        District = r.District,
-                        City = r.City,
-                        CityName = r.CityName,
-                        Subdivision = r.Subdivision,
-                        Region = r.Region,
-                        RegionName = r.RegionName,
-                        Barangay = r.Barangay,
-                        BarangayName = r.BarangayName,
-                        PostalCode = r.PostalCode,
+                        ActivityId              = r.ActivityId,
+                        ExperienceTypeId        = r.ExperienceTypeId,
+                        ExperienceType          = r.ExperienceType,
+                        ExperienceCategoryId    = r.ExperienceCategoryId,
+                        SubCategoryId           = r.SubCategoryId,
+                        ExperienceCategory      = r.ExperienceCategory,
+                        SubCategory             = r.SubCategory,
+                        Title                   = r.Title,
+                        Description             = r.Description,
+                        Price                   = r.Price,
+                        ScheduleIndicator       = r.ScheduleIndicator,
+                        Remarks                 = r.Remarks,
+                        IsPublished             = r.IsPublished,
+                        Address1                = r.Address1,
+                        Address2                = r.Address2,
+                        District                = r.District,
+                        City                    = r.City,
+                        CityName                = r.CityName,
+                        Subdivision             = r.Subdivision,
+                        Region                  = r.Region,
+                        RegionName              = r.RegionName,
+                        Barangay                = r.Barangay,
+                        BarangayName            = r.BarangayName,
+                        PostalCode              = r.PostalCode,
                         SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                        CustomerBringWithThem = r.CustomerBringWithThem,
-                        AdditionalRequirements = r.AdditionalRequirements,
-                        ActivityLevel = r.ActivityLevel,
-                        SkillLevel = r.SkillLevel,
-                        MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin,
-                        CreatedBy = r.CreatedBy,
-                        Handler = r.Handler,
-                        IsNew = r.IsNew,
-                        OngoingStudents = r.OngoingStudents,
-                        CompletedStudents = r.CompletedStudents,
-                        NumberOfReviews = r.NumberOfReviews,
-                        AverageRating = r.AverageRating,
+                        CustomerBringWithThem   = r.CustomerBringWithThem,
+                        AdditionalRequirements  = r.AdditionalRequirements,
+                        ActivityLevel           = r.ActivityLevel,
+                        SkillLevel              = r.SkillLevel,
+                        MinimumAge              = r.MinimumAge,
+                        CanAdultsJoin           = r.CanAdultsJoin,
+                        CreatedBy               = r.CreatedBy,
+                        Handler                 = r.Handler,
+                        IsNew                   = r.IsNew,
+                        OngoingStudents         = r.OngoingStudents,
+                        CompletedStudents       = r.CompletedStudents,
+                        NumberOfReviews         = r.NumberOfReviews,
+                        AverageRating           = r.AverageRating,
+                        ExperienceCreationType  = r.ExperienceCreationType,
                         ActivitySchedules = r.ActivitySchedules.Select(e =>
                         {
                         return new ActivitySchedule{
@@ -899,9 +924,9 @@
             });
         }
     }
-    public async Task Filter(int id)
+    public void DisplayAnnouncement()
     {
-        
+        IsDisplay = "none";
     }
 
     record AnnouncementModel
