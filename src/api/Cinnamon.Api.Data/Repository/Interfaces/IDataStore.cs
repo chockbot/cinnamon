@@ -55,6 +55,7 @@ public interface IDataStore
     IDisbursementBulkLog DisbursementBulkLog {get;}
     IDisbursementManual DisbursementManual {get;}
     IChatUnreadNotification ChatUnreadNotification {get;}
+    IDynamicContent DynamicContent {get;}
     
     Task EnsureMigrate();
 

@@ -90,6 +90,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
 
+    public DbSet<DynamicContent> DynamicContents {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -341,6 +343,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(c => c.FromUserId);
         modelBuilder.Entity<ChatUnreadNotification>()
             .HasIndex(c => c.ChatHistoryId);
+
+        // for dynamic content
+        modelBuilder.Entity<DynamicContent>()
+            .HasIndex(d => d.Identifier);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
