@@ -91,10 +91,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<DisbursementDetailBulk> DisbursementDetailBulks {get; set;}
     public DbSet<DisbursementBulkLog> DisbursementBulkLogs {get; set;}
     public DbSet<DisbursementManual> DisbursementManuals {get; set;}
-
     public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
-
-    public DbSet<Announcement> Announcements {get; set;}
 
     #endregion
 

@@ -24,7 +24,6 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateAnnouncementHandler updateAnnouncementHandler;
         private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
         private readonly IDeleteAnnouncementHandler deleteAnnouncementHandler;
->>>>>>>>> Temporary merge branch 2
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
@@ -47,7 +46,6 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateAnnouncementHandler = updateAnnouncementHandler;
             this.getAnnouncementsHandler = getAnnouncementsHandler;
             this.deleteAnnouncementHandler = deleteAnnouncementHandler;
->>>>>>>>> Temporary merge branch 2
         }
 
         [Route("User")]

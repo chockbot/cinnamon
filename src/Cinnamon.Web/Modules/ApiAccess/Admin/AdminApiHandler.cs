@@ -112,6 +112,23 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
         }
 
         public async Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args, string token)
+        {
+                    .Request("Admin/CreateAnnouncement")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<CreateAnnouncementResult>();
+
+            return AppResult<CreateAnnouncementResult>.CreateSucceeded(result, "Successfully called create announcement api");
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<CreateAnnouncementResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreateAnnouncementResult>.CreateFailed(ex, "An error occured when calling create announcement api");
+            }
+        }
+
         public async Task<AppResult<GetDisbursementResult>> GetDisbursements(GetDisbursementArgs args, string token)
 =========
         public async Task<AppResult<CreateAnnouncementResult>> CreateAnnouncement(CreateAnnouncementArgs args, string token)
