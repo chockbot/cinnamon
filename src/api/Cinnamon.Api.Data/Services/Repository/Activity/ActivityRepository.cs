@@ -614,20 +614,21 @@ public class ActivityRepository : IActivityRepository
             {
                 return new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
-                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    MapDetails = a.MapDetails,
-                    Handler = a.Handler,
-                    IsComingSoon = a.IsComingSoon
+                    Id                     = a.Id,
+                    SubTitle               = a.Subtitle,
+                    Title                  = a.Title,
+                    Description            = a.Description,
+                    Price                  = a.Price,
+                    Remarks                = a.Remarks,
+                    IsPublished            = a.IsPublished,
+                    ExperienceCategoryId   = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId          = a.SubCategoryId ?? 0,
+                    CreatedBy              = a.CreatedBy,
+                    ExperienceTypeId       = a.ExperienceTypeId,
+                    MapDetails             = a.MapDetails,
+                    Handler                = a.Handler,
+                    IsComingSoon           = a.IsComingSoon,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId
                 };
             });
 

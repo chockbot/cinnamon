@@ -79,6 +79,9 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<Announcement> Announcements {get; set;}
+
+    
     public DbSet<OteSharedLink> OteSharedLinks {get; set;}
     
     // new disbursement flow

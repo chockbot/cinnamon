@@ -39,8 +39,11 @@
 
 @if(Announcements.Count() > 0)
 {
-    <div class="announcements">
+    <div class="announcements" style="display:@IsDisplay">
         <div class="container">
+            <button type="button" class="close-button" aria-label="Close" @onclick="() =>DisplayAnnouncement()">
+                <span aria-hidden="true">&times;</span>
+            </button>
             <div class="swiper announcement-swipper">
                 <div class="swiper-wrapper">
                     @foreach (var item in Announcements)
@@ -98,120 +101,46 @@
 </div>
 
 <!--Section Category-->
-<div class="categories-section">
-    <div class="schedule-swiper">
-        <div class="swiper-wrapper">
-          <!-- Slides -->
-          <div class="swiper-slide">
-            <div class="landing_page_pic" @onclick="() =>SearchByFilter(2)">
-                <img class="landing_page_pic1" alt="landing_page_pic1" src="images/landing-page-images/landing_page_pic1.png">
-                <p class="carousel_pics_text">
-                    <span>Academics</span>
-                </p>
+<div class="container">
+    <div class="section-1 row">
+        <div class="categories">
+            <div class="row d-flex justify-content-start">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 categories-container">
+                    <div class="schedule-swiper">
+                        <div class="swiper-wrapper text-center">
+                            @foreach (var category in categories)
+                            {
+                                @if(category.Category != "New")
+                                {
+                                    <div class="swiper-slide category">
+                                    <div>
+                                            <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
+                                            <img src=@category.IconPath class="img-icon text-center">
+                                            <p class="card-title">@category.Category</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                }
+                            }
+                        </div>
+                    <div class="swiper-scrollbar"></div>
+                </div>
             </div>
         </div>
-
-          <div class="swiper-slide">
-                <div class="landing_page_pic" id="second-pic" @onclick="() =>SearchByFilter(4)">
-                <img class="landing_page_pic2" alt="landing_page_pic2" src="images/landing-page-images/landing_page_pic2.png">
-                <p class="carousel_pics_text">
-                    <span>Music</span>
-                </p>
-            </div>
-        </div>
-
-          <div class="swiper-slide">
-            <div class="landing_page_pic" @onclick="() =>SearchByFilter(3)">
-                <img class="landing_page_pic3" alt="landing_page_pic3" src="images/landing-page-images/landing_page_pic3.png">
-                <p class="carousel_pics_text">
-                    <span>Language</span>
-                </p>
-            </div>
-        </div>
-
-          <div class="swiper-slide">
-            <div class="landing_page_pic" id="fourth-pic" @onclick="() =>SearchByFilter(5)">
-                <img class="landing_page_pic4" alt="landing_page_pic4" src="images/landing-page-images/landing_page_pic4.png">
-                <p class="carousel_pics_text">
-                    <span>Skill</span>
-                </p>
-            </div>
-        </div>
-
-          <div class="swiper-slide">
-            <div class="landing_page_pic" @onclick="() =>SearchByFilter(8)">
-                <img class="landing_page_pic5" alt="landing_page_pic5" src="images/landing-page-images/landing_page_pic5.png">
-                <p class="carousel_pics_text">
-                    <span>Events</span>
-                </p>
-            </div>
-        </div>
-
-          <div class="swiper-slide">
-            <div class="landing_page_pic" id="sixth-pic" @onclick="() =>SearchByFilter(6)">
-                <img class="landing_page_pic6" alt="landing_page_pic6" src="images/landing-page-images/landing_page_pic6.png">
-                <p class="carousel_pics_text">
-                    <span>Sped</span>
-                </p>
-            </div>
-        </div>
-
-           <div class="swiper-scrollbar"></div>
-        </div>
+    </div>
     </div>
 </div>
-
-<!--Backed By-->
-<div class="section-backed-by row text-center">
-    <div class="backed-by-text col-12 d-flex justify-content-center">
-         <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
-            <img src="images/landing-page-images/backed-by.webp">
-         </a>
-    </div>
-</div>
-
-<!--Section 2-->
-<section class="section-2" style="position:relative;">
-
-    <div class="custom-shape-divider-top-1691648202">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
-        </svg>
-    </div>
-    <div class="wrapper about_us">
-        <div>
-            <img class="about_us_float3" alt="float_3" src="images/landing-page-images/laptop.png">
-            <img class="about_us_float4" alt="float_4" src="images/landing-page-images/ticket.png">
-        </div>
-
-        <div>
-            <div class="d-flex justify-content-center">
-                <img class="bubble-image" alt="bubble-image" src="images/landing-page-images/bubble-cinnamon.png" />
-            </div>
-            <p class="about_us_title">Drawing materials are now available!</p>
-            <p class="about_us_subtitle">Great news! We now have a wide range of drawing materials available on our platform. Explore our website to find the tools that will bring your artistic ideas to life.</p>
-            <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToMaterialsPage())">
-                    <span>Explore now!</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="custom-shape-divider-bottom-1691652212">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
-        </svg>
-    </div>
-</section>
 
 <!--Section 3-->
 @if (activities.Count != 0)
 {
     <div class="section-3 row">
         <div class="featured-activities col-12 justify-content-center">
-            <p class="featured-text">Featured<span style="color:var(--primary);"> Activities</span></p>
             <div class="container">
+                <div class="featured-header d-flex">
+                    <p class="featured-text">Featured Activities</p>
+                    <a class="see-more" href="/explore">See More</a>
+                </div>
                 <div class="row d-flex justify-content-start">
                     @foreach (var act in activities)
                     {
@@ -225,6 +154,25 @@
                                                 <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                                 </a>
+                                                <div class="creation-section">
+                                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/GA.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/OTE.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/AVA.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/SUP.png" />
+                                                    }
+                                                </div>
+                                                
                                                 @if (act.OngoingStudents > 0)
                                                 {
                                                     <CustomTooltip MarginLeft="-100">
@@ -318,14 +266,18 @@
                     }
                 </div>
             </div>
-            <div class="align-items-center" style="text-align:center;">
-                <button type="button" class="btn btn-see-more border-0" id="btnExploreMore" @onclick="() =>NavigateToExplorePage()">
-                        <span>See More</span>
-                </button>
-            </div>
         </div>
     </div>
 }
+
+<!--Backed By-->
+<div class="section-backed-by row text-center">
+    <div class="backed-by-text col-12 d-flex justify-content-center">
+         <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+            <img src="images/landing-page-images/backed-by.webp">
+         </a>
+    </div>
+</div>
 
 <!--Testimonials-->
 <div class="testimonial-section">
@@ -656,6 +608,8 @@
 
     public Profile CustomerModel = new Profile();
 
+    public List<ExperienceCategory> categories = new List<ExperienceCategory>();
+
     public List<Activity> activities = new List<Activity>();
 
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
@@ -663,6 +617,8 @@
     public string searchValue = string.Empty;
 
     public string buttonLabel = "Browse all";
+
+    public string IsDisplay = "block";
 
     int SelectedValue = 5;
 
@@ -696,6 +652,20 @@
                 };
             }
         }
+        // get experience categories
+        var experienceCategory = await activityApiHandler.GetExperienceCategories();
+        if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
+        {
+            categories = experienceCategory.Result.Result.Select(i =>
+            {
+                return new ExperienceCategory
+                    {
+                        Id = i.Id,
+                        Category = i.Name,
+                        IconPath = i.IconPath
+                    };
+            }).ToList();
+        }
 
         await LoadAnnnouncements();
     }
@@ -716,6 +686,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await GetFavorites();
         }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
     }
 
     private async Task InitAnnouncementSwiper()
@@ -737,7 +708,7 @@
                 IncludeSubCategories = true,
                 IsActive = true,
                 PageIndex = 1,
-                CountPerPage = 4,
+                CountPerPage = 8,
                 IncludeCustomer = true,
                 IncludeStudents = true,
                 IsDeactivated = false,
@@ -751,44 +722,45 @@
                 activities = ActivityListData.Result.Result.Select(r =>
                 {
                     return new Activity{
-                        ActivityId = r.ActivityId,
-                        ExperienceTypeId = r.ExperienceTypeId,
-                        ExperienceType = r.ExperienceType,
-                        ExperienceCategoryId = r.ExperienceCategoryId,
-                        SubCategoryId = r.SubCategoryId,
-                        ExperienceCategory = r.ExperienceCategory,
-                        SubCategory = r.SubCategory,
-                        Title = r.Title,
-                        Description = r.Description,
-                        Price = r.Price,
-                        ScheduleIndicator = r.ScheduleIndicator,
-                        Remarks = r.Remarks,
-                        IsPublished = r.IsPublished,
-                        Address1 = r.Address1,
-                        Address2 = r.Address2,
-                        District = r.District,
-                        City = r.City,
-                        CityName = r.CityName,
-                        Subdivision = r.Subdivision,
-                        Region = r.Region,
-                        RegionName = r.RegionName,
-                        Barangay = r.Barangay,
-                        BarangayName = r.BarangayName,
-                        PostalCode = r.PostalCode,
+                        ActivityId              = r.ActivityId,
+                        ExperienceTypeId        = r.ExperienceTypeId,
+                        ExperienceType          = r.ExperienceType,
+                        ExperienceCategoryId    = r.ExperienceCategoryId,
+                        SubCategoryId           = r.SubCategoryId,
+                        ExperienceCategory      = r.ExperienceCategory,
+                        SubCategory             = r.SubCategory,
+                        Title                   = r.Title,
+                        Description             = r.Description,
+                        Price                   = r.Price,
+                        ScheduleIndicator       = r.ScheduleIndicator,
+                        Remarks                 = r.Remarks,
+                        IsPublished             = r.IsPublished,
+                        Address1                = r.Address1,
+                        Address2                = r.Address2,
+                        District                = r.District,
+                        City                    = r.City,
+                        CityName                = r.CityName,
+                        Subdivision             = r.Subdivision,
+                        Region                  = r.Region,
+                        RegionName              = r.RegionName,
+                        Barangay                = r.Barangay,
+                        BarangayName            = r.BarangayName,
+                        PostalCode              = r.PostalCode,
                         SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                        CustomerBringWithThem = r.CustomerBringWithThem,
-                        AdditionalRequirements = r.AdditionalRequirements,
-                        ActivityLevel = r.ActivityLevel,
-                        SkillLevel = r.SkillLevel,
-                        MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin,
-                        CreatedBy = r.CreatedBy,
-                        Handler = r.Handler,
-                        IsNew = r.IsNew,
-                        OngoingStudents = r.OngoingStudents,
-                        CompletedStudents = r.CompletedStudents,
-                        NumberOfReviews = r.NumberOfReviews,
-                        AverageRating = r.AverageRating,
+                        CustomerBringWithThem   = r.CustomerBringWithThem,
+                        AdditionalRequirements  = r.AdditionalRequirements,
+                        ActivityLevel           = r.ActivityLevel,
+                        SkillLevel              = r.SkillLevel,
+                        MinimumAge              = r.MinimumAge,
+                        CanAdultsJoin           = r.CanAdultsJoin,
+                        CreatedBy               = r.CreatedBy,
+                        Handler                 = r.Handler,
+                        IsNew                   = r.IsNew,
+                        OngoingStudents         = r.OngoingStudents,
+                        CompletedStudents       = r.CompletedStudents,
+                        NumberOfReviews         = r.NumberOfReviews,
+                        AverageRating           = r.AverageRating,
+                        ExperienceCreationType  = r.ExperienceCreationType,
                         ActivitySchedules = r.ActivitySchedules.Select(e =>
                         {
                         return new ActivitySchedule{
@@ -951,6 +923,10 @@
                 Title = a.Title
             });
         }
+    }
+    public void DisplayAnnouncement()
+    {
+        IsDisplay = "none";
     }
 
     record AnnouncementModel
