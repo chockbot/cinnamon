@@ -24,6 +24,7 @@ public class DynamicContentRepository : IDynamicContnetRepository
         try
         {
             var entity = mapper.Map<Entities.DynamicContent>(args);
+            entity.DateLastUpdated = entity.DateLastUpdated.SetKindUtc();
 
             var result = await dataStore.DynamicContent.Add(entity);
             if(!result.Succeeded || result.Result is null)
@@ -55,7 +56,7 @@ public class DynamicContentRepository : IDynamicContnetRepository
             dynamicContent.Title = args.Title ?? dynamicContent.Title;
             dynamicContent.Description = args.Description ?? dynamicContent.Description;
             dynamicContent.Content = args.Content ?? dynamicContent.Content;
-            dynamicContent.DateLastUpdated = args.DateLastUpdated.SetKindUtc();
+            dynamicContent.DateLastUpdated = args.DateLastUpdated == DateTime.MinValue ? dynamicContent.DateLastUpdated.SetKindUtc() : args.DateLastUpdated.SetKindUtc();
 
             var result = await dataStore.DynamicContent.Update(dynamicContent);
             if(!result.Succeeded || result.Result is null)

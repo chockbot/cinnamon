@@ -12,6 +12,8 @@ using DisbursementAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.Disbursement
 using DisbursementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 using ChatUnreadNotificationAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatUnreadNotification;
 using ChatReqAlias = Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
+using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicContent;
+using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -81,5 +83,11 @@ public class MappingProfile : Profile
         CreateMap<ChatUnreadNotification, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
         CreateMap<ChatUnreadNotificationAlias.ChatUnreadNotificationDTO, ChatUnreadNotification>();
         CreateMap<ChatReqAlias.CreateUnreadNotificationArgs, ChatUnreadNotificationAlias.ChatUnreadNotificationDTO>();
+
+        // dynamic content mappings
+        CreateMap<DynamicContent, DynamicContentAlias.DynamicContentDTO>();
+        CreateMap<DynamicContentAlias.DynamicContentDTO, DynamicContent>();
+        CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
+        CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
     }
 }
