@@ -154,7 +154,7 @@
                                                 <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                                 </a>
-                                                <div class="creation-section">
+                                               @* <div class="creation-section">
                                                     @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
                                                     {
                                                         <img class="creation-type" src="images/Creation-type/GA.png" />
@@ -171,7 +171,7 @@
                                                     {
                                                         <img class="creation-type" src="images/Creation-type/SUP.png" />
                                                     }
-                                                </div>
+                                                </div>*@
                                                 
                                                 @*@if (act.OngoingStudents > 0)
                                                 {
