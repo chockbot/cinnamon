@@ -55,4 +55,84 @@ public class SystemApiHandler: ISystemApiHandler
             return AppResult<GetAnnouncementsResult>.CreateFailed(ex, "An error occured when get announcement api");
         }
     }
+
+    public async Task<AppResult<GetEventPoliciesResult>> GetEventPolicies()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/GetEventPolicies")
+                .GetJsonAsync<GetEventPoliciesResult>();
+
+            return AppResult<GetEventPoliciesResult>.CreateSucceeded(result, "Successfully getting event policies content.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEventPoliciesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEventPoliciesResult>.CreateFailed(ex, "An error occured when getting event policies content.");
+        }
+    }
+
+    public async Task<AppResult<GetEventBuyerPoliciesResult>> GetEventBuyerPolicies()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/GetEventBuyerPolicies")
+                .GetJsonAsync<GetEventBuyerPoliciesResult>();
+
+            return AppResult<GetEventBuyerPoliciesResult>.CreateSucceeded(result, "Successfully getting event policies content.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEventBuyerPoliciesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEventBuyerPoliciesResult>.CreateFailed(ex, "An error occured when getting event policies content.");
+        }
+    }
+
+    public async Task<AppResult<GetEventSellerPoliciesResult>> GetEventSellerPolicies()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/GetEventSellerPolicies")
+                .GetJsonAsync<GetEventSellerPoliciesResult>();
+
+            return AppResult<GetEventSellerPoliciesResult>.CreateSucceeded(result, "Successfully getting event policies content.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEventSellerPoliciesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEventSellerPoliciesResult>.CreateFailed(ex, "An error occured when getting event policies content.");
+        }
+    }
+
+    public async Task<AppResult<GetPrivacyPoliciesResult>> GetPrivacyPolicies()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/GetPrivacyPolicies")
+                .GetJsonAsync<GetPrivacyPoliciesResult>();
+
+            return AppResult<GetPrivacyPoliciesResult>.CreateSucceeded(result, "Successfully getting event policies content.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetPrivacyPoliciesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPrivacyPoliciesResult>.CreateFailed(ex, "An error occured when getting event policies content.");
+        }
+    }
 }
