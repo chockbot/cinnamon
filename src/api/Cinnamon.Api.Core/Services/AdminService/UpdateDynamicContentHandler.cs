@@ -25,6 +25,7 @@ public class UpdateDynamicContentHandler : IUpdateDynamicContentHandler
         this.htmlSanitizer = new 
             HtmlSanitizer(
                 allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br", "div", "label", "u", "b", "span", "i"});
+        this.htmlSanitizer.AllowedAttributes.Add("class");
     }
 
     public AppResult<UpdateDynamicContentResult> Execute(UpdateDynamicContentArgs args)
