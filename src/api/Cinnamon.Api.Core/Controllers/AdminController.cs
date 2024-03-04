@@ -24,6 +24,7 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateAnnouncementHandler updateAnnouncementHandler;
         private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
         private readonly IDeleteAnnouncementHandler deleteAnnouncementHandler;
+        private readonly IUpdateDynamicContentHandler updateDynamicContentHandler;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
@@ -31,7 +32,7 @@ namespace Cinnamon.Api.Core.Controllers
             ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
             IManualDisbursement manualDisbursement, ICreateAnnouncementHandler createAnnouncementHandler,
             IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
-            IDeleteAnnouncementHandler deleteAnnouncementHandler)
+            IDeleteAnnouncementHandler deleteAnnouncementHandler, IUpdateDynamicContentHandler updateDynamicContentHandler)
         {
             _logger = logger;
 
@@ -46,6 +47,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateAnnouncementHandler = updateAnnouncementHandler;
             this.getAnnouncementsHandler = getAnnouncementsHandler;
             this.deleteAnnouncementHandler = deleteAnnouncementHandler;
+            this.updateDynamicContentHandler = updateDynamicContentHandler;
         }
 
         [Route("User")]
@@ -465,6 +467,134 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new DeleteAnnouncementResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("EventPolicies")]
+        [HttpPost]
+        [ProducesResponseType(typeof(EventPoliciesResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> EventPolicies([FromBody] EventPoliciesArgs args)
+        {
+            try
+            {
+                var result = await updateDynamicContentHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateDynamicContentArgs {
+                    Content = args.Content,
+                    DateLastUpdated = DateTime.Now,
+                    Description = "event policies description",
+                    Identifier = "event-policies",
+                    Title = args.Title
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new EventPoliciesResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("EventBuyerPolicies")]
+        [HttpPost]
+        [ProducesResponseType(typeof(EventPoliciesResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> EventBuyerPolicies([FromBody] EventBuyerPoliciesArgs args)
+        {
+            try
+            {
+                var result = await updateDynamicContentHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateDynamicContentArgs {
+                    Content = args.Content,
+                    DateLastUpdated = DateTime.Now,
+                    Description = "event policies description",
+                    Identifier = "event-buyer-policies",
+                    Title = "Event buyer policies"
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new EventPoliciesResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("EventSellerPolicies")]
+        [HttpPost]
+        [ProducesResponseType(typeof(EventPoliciesResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> EventSellerPolicies([FromBody] EventSellerPoliciesArgs args)
+        {
+            try
+            {
+                var result = await updateDynamicContentHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateDynamicContentArgs {
+                    Content = args.Content,
+                    DateLastUpdated = DateTime.Now,
+                    Description = "event policies description",
+                    Identifier = "event-seller-policies",
+                    Title = "Event seller policies"
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new EventPoliciesResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new EventPoliciesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("PrivacyPolicies")]
+        [HttpPost]
+        [ProducesResponseType(typeof(PrivacyPoliciesResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> PrivacyPolicies([FromBody] PrivacyPoliciesArgs args)
+        {
+            try
+            {
+                var result = await updateDynamicContentHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateDynamicContentArgs {
+                    Content = args.Content,
+                    DateLastUpdated = DateTime.Now,
+                    Description = "privacy policies description",
+                    Identifier = "privacy-policies",
+                    Title = args.Title
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new PrivacyPoliciesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new PrivacyPoliciesResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new PrivacyPoliciesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

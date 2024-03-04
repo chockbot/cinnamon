@@ -93,6 +93,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<DisbursementManual> DisbursementManuals {get; set;}
     public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
 
+    public DbSet<DynamicContent> DynamicContents {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -358,6 +360,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex("ActivityId","OteDateId");
         modelBuilder.Entity<OteSharedLink>()
             .HasIndex("Guid", "Token");
+
+        // for dynamic content
+        modelBuilder.Entity<DynamicContent>()
+            .HasIndex(d => d.Identifier);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
