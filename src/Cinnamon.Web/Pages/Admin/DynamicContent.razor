@@ -1,0 +1,271 @@
+@layout AdminLayout
+@page "/admin/dynamic-contents"
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Components.Pages;
+@inject IAdminApiHandler adminApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@inject INotificationService NotificationService;
+@attribute [Authorize]
+
+<PageTitle>Dynamic Contents | CinnamonPH</PageTitle>
+<SeoMeta Title="Coupons" Subject="Dashboard" Url="/admin/coupons" />
+
+<section class="admin-coupons-wrapper admin-dashboard-coupons-wrapper">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-5">
+        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Dynamic Contents</p>
+    </div>
+
+    <div class="section-content mt-4">
+        <Row VerticalGutter="50" HorizontalGutter="20">
+            <Column ColumnSize="ColumnSize.Is6">
+                <p class="font-18 font-weight-700 mb-2">Event Policies</p>
+                <Validations @ref="eventPoliciesValidation" Mode="ValidationMode.Manual" Model="eventPoliciesModel">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Title</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="eventPoliciesModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mt-3">
+                            <FieldLabel>Content</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="eventPoliciesModel.Content">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <div class="mt-3">
+                        <Button Clicked="SaveEventPolicies" class="bg-orange-100 color-white-100 hover-color-white">
+                            Save Changes
+                        </Button>
+                    </div>
+                </Validations>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <p class="font-18 font-weight-700 mb-2">Event Buyer Policies</p>
+                <Validations @ref="eventBuyerValidation" Mode="ValidationMode.Manual" Model="eventBuyerModel">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Title</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="eventBuyerModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mt-3">
+                            <FieldLabel>Content</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="eventBuyerModel.Content">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <div class="mt-3">
+                        <Button Clicked="SaveEventBuyerPolicies" class="bg-orange-100 color-white-100 hover-color-white">
+                            Save Changes
+                        </Button>
+                    </div>
+                </Validations>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <p class="font-18 font-weight-700 mb-2">Event Seller Policies</p>
+                <Validations @ref="eventSellerValidation" Mode="ValidationMode.Manual" Model="eventSellerModel">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Title</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="eventSellerModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mt-3">
+                            <FieldLabel>Content</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="eventSellerModel.Content">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <div class="mt-3">
+                        <Button Clicked="SaveEventSellerPolicies" class="bg-orange-100 color-white-100 hover-color-white">
+                            Save Changes
+                        </Button>
+                    </div>
+                </Validations>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6">
+                <p class="font-18 font-weight-700 mb-2">Privacy Policies</p>
+                <Validations @ref="privacyPolicyValidation" Mode="ValidationMode.Manual" Model="privacyPoliciesModel">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Title</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="privacyPoliciesModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mt-3">
+                            <FieldLabel>Content</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="5" @bind-Text="privacyPoliciesModel.Content">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <div class="mt-3">
+                        <Button Clicked="SavePrivacyPolicies" class="bg-orange-100 color-white-100 hover-color-white">
+                            Save Changes
+                        </Button>
+                    </div>
+                </Validations>
+            </Column>
+        </Row>
+    </div>
+</section>
+
+@code
+{
+    private string Token = string.Empty;
+
+    private Validations? eventPoliciesValidation;
+    private Validations? eventSellerValidation;
+    private Validations? eventBuyerValidation;
+    private Validations? privacyPolicyValidation;
+
+    private DynamicContentForm eventPoliciesModel = new();
+    private DynamicContentForm eventSellerModel = new();
+    private DynamicContentForm eventBuyerModel = new();
+    private DynamicContentForm privacyPoliciesModel = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        Token = user.FindFirstValue("Token");
+    }
+
+    private async Task SaveEventPolicies()
+    {
+        var fieldsValid = await eventPoliciesValidation.ValidateAll();
+        if(fieldsValid)
+        {
+            var result = await adminApiHandler.EventPolicies(new Framework.ApiCommand.ApiCore.AdminUser.Request.EventPoliciesArgs {
+                Content = eventPoliciesModel.Content,
+                Title = eventPoliciesModel.Title
+            }, Token);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again.", "Error!");
+            }
+            else 
+            {
+                await NotificationService.Success("Changes successfully saved.", "Success!");
+            }
+        }
+    }
+
+    private async Task SaveEventBuyerPolicies()
+    {
+        var fieldsValid = await eventBuyerValidation.ValidateAll();
+        if(fieldsValid)
+        {
+            var result = await adminApiHandler.EventBuyerPolicies(new Framework.ApiCommand.ApiCore.AdminUser.Request.EventBuyerPoliciesArgs {
+                Content = eventBuyerModel.Content
+            }, Token);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again.", "Error!");
+            }
+            else 
+            {
+                await NotificationService.Success("Changes successfully saved.", "Success!");
+            }
+        }
+    }
+
+    private async Task SaveEventSellerPolicies()
+    {
+        var fieldsValid = await eventSellerValidation.ValidateAll();
+        if(fieldsValid)
+        {
+            var result = await adminApiHandler.EventSellerPolicies(new Framework.ApiCommand.ApiCore.AdminUser.Request.EventSellerPoliciesArgs {
+                Content = eventSellerModel.Content
+            }, Token);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again.", "Error!");
+            }
+            else 
+            {
+                await NotificationService.Success("Changes successfully saved.", "Success!");
+            }
+        }
+    }
+
+    private async Task SavePrivacyPolicies()
+    {
+        var fieldsValid = await privacyPolicyValidation.ValidateAll();
+        if(fieldsValid)
+        {
+            var result = await adminApiHandler.PrivacyPolicies(new Framework.ApiCommand.ApiCore.AdminUser.Request.PrivacyPoliciesArgs {
+                Content = privacyPoliciesModel.Content,
+                Title = privacyPoliciesModel.Title
+            }, Token);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again.", "Error!");
+            }
+            else 
+            {
+                await NotificationService.Success("Changes successfully saved.", "Success!");
+            }
+        }
+    }
+
+    record DynamicContentForm 
+    {
+        [Required]
+        public string Title {get; set;}
+
+        [Required]
+        public string Content {get; set;}
+    }
+}

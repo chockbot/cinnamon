@@ -15,7 +15,7 @@ public class UpdateDynamicContentHandler : IUpdateDynamicContentHandler
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IAdminUserData adminUserData;
 
-    public UpdateDynamicContentHandler(IDynamicContentData dynamicContentData, HtmlSanitizer htmlSanitizer,
+    public UpdateDynamicContentHandler(IDynamicContentData dynamicContentData,
         IGetProfileHandler getProfileHandler, IAdminUserData adminUserData)
     {
         this.dynamicContentData = dynamicContentData;
