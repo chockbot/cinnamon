@@ -98,11 +98,12 @@
     private OteGallery? oteGallery;
     private OteSummary? oteSummary;
     private OtePublish? otePublish;
+    private OteOnlineEvent? oteOnline;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private OteSummary.ComponentSummary? summary = default;
-    
+
     private string token = string.Empty;
     private int accountId = 0;
     private int oteId = 0;
@@ -395,8 +396,8 @@
         var component = components[currentIndex];
         if(component.Component is not null)
         {
-           bool valid = await component.Component.FieldValid();
-           return Tuple.Create<bool, ComponentItem<IOteComponent>?>(valid, component);
+            bool valid = await component.Component.FieldValid();
+            return Tuple.Create<bool, ComponentItem<IOteComponent>?>(valid, component);
         }
         return Tuple.Create<bool, ComponentItem<IOteComponent>?>(false, null);
     }
@@ -468,7 +469,7 @@
             {
                 throw new ApplicationException(publishOte.Message);
             }
-            
+
             if(oteGallery is not null)
             {
                 var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
@@ -564,7 +565,8 @@
             IncludeDescription = true,
             IncludePricing = true,
             IncludeSchedule = true,
-            IncludeImages = true
+            IncludeImages = true,
+            IncludeOnlineEvent = true
         }, Handler);
 
         if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
@@ -627,6 +629,11 @@
             }).ToList()
         });
 
+        oteOnline?.SetState(new OteOnlineEvent.ModelData
+        {
+            
+        });
+
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
                 Id = i.Id,
@@ -648,7 +655,8 @@
             EventData = oteEvent.GetData(),
             LocationData = oteLocation.GetData(),
             PricingData = otePricing.GetData(),
-            PublishData = otePublish.GetData()
+            PublishData = otePublish.GetData(),
+            OnlineData = oteOnline.GetData()
         };
     }
 

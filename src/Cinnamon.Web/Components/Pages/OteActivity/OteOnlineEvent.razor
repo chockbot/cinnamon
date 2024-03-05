@@ -78,7 +78,7 @@
                                             Ticket Restriction
                                         </FieldLabel>
                                         <FieldBody>
-                                            <Select TValue="string" Size="Size.Medium" SelectedValue="item.TicketRestriction">
+                                            <Select TValue="string" Size="Size.Medium" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
                                                 <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
                                                 @foreach (var item in Summary.PricingData.ItemPrices)
                                                 {
@@ -96,7 +96,7 @@
             </div>
         </Validations>
     </div>
-@*    @if (modelPricingList.Pricings.Count > 0)
+    @if (modelTicketList.TicketInformations.Count > 0)
     {
         <Divider class="d-none m-d-block" />
     }
@@ -113,14 +113,14 @@
                 Fill up prices and max slots for every category.
             </p>
         </div>
-        <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+        <Validations @ref="ticketListFormValidation" Mode="FormMode" Model="modelTicketInfo">
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        ticket name
+                        Video conference link
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
+                        <TextEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelTicketInfo.VideoLink">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -131,10 +131,10 @@
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        admission description
+                        Title
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description">
+                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelTicketInfo.Title">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -142,14 +142,43 @@
                     </FieldBody>
                 </Field>
             </Validation>
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Description
+                    </FieldLabel>
+                    <FieldBody>
+                        <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="modelTicketInfo.Description">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </MemoEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Field class="mb-4">
+                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                    Ticket Restriction
+                </FieldLabel>
+                <FieldBody>
+                    <Select TValue="string" Size="Size.Medium" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                        <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                        @foreach (var item in Summary.PricingData.ItemPrices)
+                        {
+                            <SelectItem Value="item.Name">@item.Name</SelectItem>
+                        }
+                    </Select>
+                    <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                </FieldBody>
+            </Field>
             <div>
-                <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
-                    add more ticket price
+                <Button Clicked="AddMoreTicket" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
+                    add more 
                 </Button>
             </div>
         </Validations>
     </div>
-    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />*@
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
 
@@ -191,15 +220,65 @@
 
         return true;
     }
-    private async Task ViewGuide()
+    public ModelData GetData()
     {
+        ModelData data = new ModelData
+            {
+                TicketInfos = modelTicketList.TicketInformations.Select(p =>
+                {
+                    return new ModelData.TicketInfo
+                    {
+                        Id                        = p.Id,
+                        Title                     = p.Title,
+                        VideoLink                 = p.VideoLink,
+                        Description               = p.Description,
+                        TicketRestriction         = p.TicketRestriction,
+                        OteSchedulePricingGroupId = p.OteSchedulePricingGroupId
+
+                    };
+                }).ToList()
+            };
+        data.TicketInfos.Add(new ModelData.TicketInfo
+        {
+                Id                        = modelTicketInfo.Id,
+                Title                     = modelTicketInfo.Title,
+                Description               = modelTicketInfo.Description,
+                VideoLink                 = modelTicketInfo.VideoLink,
+                TicketRestriction         = modelTicketInfo.TicketRestriction,
+                OteSchedulePricingGroupId = modelTicketInfo.OteSchedulePricingGroupId
+        });
+        return data;
+    }
+
+    public void SetState(ModelData data)
+    {
+        data.TicketInfos = data.TicketInfos.OrderBy(a => a.Id).ToList();
+        var last = data.TicketInfos.LastOrDefault();
+        if (last is not null)
+        {
+            var notLast = data.TicketInfos.Where(p => p.Id != last.Id);
+            foreach (var item in notLast)
+            {
+                modelTicketList.TicketInformations.Add(new TicketInformation
+                    {
+                        Id                        = item.Id,
+                        Description               = item.Description,
+                        Title                     = item.Title,
+                        VideoLink                 = item.VideoLink,
+                        TicketRestriction         = item.TicketRestriction,
+                        OteSchedulePricingGroupId = item.OteSchedulePricingGroupId
+                    });
+            }
+            modelTicketInfo.Id                        = last.Id;
+            modelTicketInfo.Title                     = last.Title;
+            modelTicketInfo.Description               = last.Description;
+            modelTicketInfo.TicketRestriction         = last.TicketRestriction;
+            modelTicketInfo.VideoLink                 = last.TicketRestriction;
+            modelTicketInfo.OteSchedulePricingGroupId = last.OteSchedulePricingGroupId;
+        }
 
     }
 
-    private async Task CloseGuide()
-    {
-
-    }
     private string TicketClass
     {
         get
@@ -216,34 +295,35 @@
             return defaultStyle;
         }
     }
+
     private async Task SelectedRestrictionChanged(int Id)
     {
         var restriction = Summary.PricingData.ItemPrices.Where(a => a.Id == Id).FirstOrDefault();
         if (restriction is not null)
         {
             modelTicketInfo.TicketRestriction = restriction.Name;
+            modelTicketInfo.OteSchedulePricingGroupId = restriction.Id;
         }
     }
     public class ModelData
     {
-        public string VideoLink { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string TicketRestriction { get; set; }
-        public class ItemPrice
+        public IList<TicketInfo> TicketInfos { get; set; }
+        public class TicketInfo
         {
             public int Id { get; set; }
-            public decimal Price { get; set; }
-            public int MaxSlots { get; set; }
-            public bool AbsorbFees { get; set; }
+            public string VideoLink { get; set; }
+            public string Title { get; set; }
             public string Description { get; set; }
-            public string Name { get; set; }
+            public string TicketRestriction { get; set; }
+            public int OteSchedulePricingGroupId { get; set; }
         }
     }
+
     private class TicketList
     {
         public IList<TicketInformation> TicketInformations { get; set; } = new List<TicketInformation>();
     }
+
     public class TicketInformation
     {
         [Required(ErrorMessage = "The video link field is mandatory.")]
@@ -252,11 +332,14 @@
         [Required(ErrorMessage = "The title is mandatory.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "The title is mandatory.")]
+        [Required(ErrorMessage = "The description is mandatory.")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "The title is mandatory.")]
+        [Required(ErrorMessage = "The restriction is mandatory.")]
         public string TicketRestriction { get; set; }
+
+        [Required(ErrorMessage = "The pricing id is mandatory.")]
+        public int OteSchedulePricingGroupId { get; set; }
 
         // extras
         public bool IsOpen { get; set; } = false;
@@ -269,9 +352,47 @@
             }
         }
     }
+
+    private async Task SelectedRestrictionChanged(string restriction)
+    {
+
+        var result = Summary.PricingData.ItemPrices.Where(a => a.Name.Contains(restriction)).FirstOrDefault();
+        if (result is not null)
+        {
+            modelTicketInfo.TicketRestriction = result.Name;
+        }
+    }
+
     public class ComponentSummary
     {
         public OteLocation.ModelData LocationData { get; set; }
         public OtePricing.ModelData PricingData { get; set; }
+    }
+
+    private ValidationMode FormMode
+    {
+        get
+        {
+            return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
+        }
+    }
+    private async Task AddMoreTicket()
+    {
+        bool priceValid = await ticketListFormValidation.ValidateAll();
+        if (priceValid)
+        {
+            modelTicketInfo.Id = modelTicketList.TicketInformations.Count + 1;
+            modelTicketList.TicketInformations.Add(modelTicketInfo);
+            modelTicketInfo = new();
+        }
+    }
+    private async Task ViewGuide()
+    {
+
+    }
+
+    private async Task CloseGuide()
+    {
+
     }
 }

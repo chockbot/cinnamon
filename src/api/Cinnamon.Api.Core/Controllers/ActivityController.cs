@@ -2752,12 +2752,13 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
-                Handler = handler,
-                IncludeAddress = args.IncludeAddress ?? false,
+                Handler            = handler,
+                IncludeAddress     = args.IncludeAddress ?? false,
                 IncludeDescription = args.IncludeDescription ?? false,
-                IncludePricing = args.IncludePricing ?? false,
-                IncludeSchedule = args.IncludeSchedule ?? false,
-                IncludeImages = args.IncludeImages ?? false
+                IncludePricing     = args.IncludePricing ?? false,
+                IncludeSchedule    = args.IncludeSchedule ?? false,
+                IncludeImages      = args.IncludeImages ?? false,
+                IncludeOnlineEvent = args.IncludeOnlineEvent ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {

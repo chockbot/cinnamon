@@ -479,7 +479,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     }
 
     public async Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
-        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false)
+        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false)
     {
         try
         {
@@ -493,6 +493,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricingGroups);
+                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteOnlineEvents);
             }
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 
