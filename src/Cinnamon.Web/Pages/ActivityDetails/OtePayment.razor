@@ -1015,6 +1015,10 @@
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
                 }
+                else if(submit.Result.Result.Action == 0)
+                {
+                    NavigationManager.NavigateTo(submit.Result.Result.Url);
+                }
                 else
                 {
                     NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
