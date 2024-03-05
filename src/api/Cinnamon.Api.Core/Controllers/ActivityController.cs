@@ -2640,7 +2640,16 @@ public class ActivityController : ControllerBase
                         Date = d.Date,
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
-                    }) : null
+                    }) : null,
+                OteOnlineEvents = args.OnlineEvents is not null ?
+                    args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
+                    {
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,    
+                        TicketRestriction = s.TicketRestriction,
+                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
+                    }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2700,6 +2709,17 @@ public class ActivityController : ControllerBase
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name
+                    };
+                }),
+                OnlineEvents = args.OnlineEvents.Select(s => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
+                    {
+                        Id = s.Id,
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                     };
                 })
             });

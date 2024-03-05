@@ -1691,7 +1691,7 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides)
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1754,6 +1754,20 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
+            var onlineEvent = oteOnlineEventsDTOs.Select(s =>
+            {
+                return new OteOnlineEvent 
+                {
+                    Id                        = s.Id,
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                    OteSchedulePricingGroupId = s.OteSchedulePricingGroupId,
+                    OteScheduleId             = schedule.Id,
+                };
+            }).ToList();
+
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate {
                     Date = d.Date.SetKindUtc(),
@@ -1794,7 +1808,7 @@ public class ActivityRepository : IActivityRepository
             }
 
             var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, 
-                schedule, pricingsGroup, dates, overrides);
+                schedule, pricingsGroup, dates, overrides, onlineEvent);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
@@ -1833,7 +1847,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon)
+        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1878,6 +1892,20 @@ public class ActivityRepository : IActivityRepository
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name
+                };
+            }).ToList();
+
+            schedule.OteOnlineEvents = oteOnlineEventsDTOs.Select(s =>
+            {
+                return new OteOnlineEvent
+                {
+                    Id                        = s.Id,
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                    OteSchedulePricingGroupId = s.OteSchedulePricingGroupId,
+                    OteScheduleId             = schedule.Id,
                 };
             }).ToList();
 

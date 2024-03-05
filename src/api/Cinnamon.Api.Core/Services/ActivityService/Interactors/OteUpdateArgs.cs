@@ -8,6 +8,8 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    public IEnumerable<OteOnlineEvent> OnlineEvents { get; set; }
+
     public class OteActivity 
     {
         public int Id {get; set;}
@@ -61,5 +63,19 @@ public class OteUpdateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+    }
+    public class OteOnlineEvent
+    {
+        public int Id { get; set; }
+
+        public string VideoLink { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public string TicketRestriction { get; set; }
+
+        public int OteSchedulePricingGroupId { get; set; }
     }
 }

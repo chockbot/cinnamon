@@ -12,9 +12,13 @@ public class CreateOteActivityArgs
     public IList<OtePricing> Pricings {get; set;}
 
     [Required]
+    public IList<OteOnlineEvent>? OnlineEvents { get; set; }
+
+    [Required]
     public IList<OteDate> Dates {get; set;}
     
     public IList<OteDateOverride>? DateOverrides {get; set;}
+
 
     public class OteActivity 
     {
@@ -110,6 +114,23 @@ public class CreateOteActivityArgs
 
         [Required]
         public decimal Price {get; set;}
+    }
+
+    public class OteOnlineEvent
+    {
+        [Required]
+        public string VideoLink { get; set; }
+        [Required]
+        public string Title { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public string TicketRestriction { get; set; }
+
+        [Required]
+        public int OteSchedulePricingGroupId { get; set; }
     }
 
     public class OteDate 

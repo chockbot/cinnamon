@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Extensions;
+using System.Security.AccessControl;
 
 namespace Cinnamon.Api.Data.Repository;
 
@@ -79,6 +80,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<OteOnlineEvent> OteOnlineEvents { get; set;}
     
     // new disbursement flow
     public DbSet<Disbursement> Disbursements {get; set;}
@@ -291,6 +293,7 @@ public class ApplicationContext : IdentityDbContext
         // for ote schedule
         modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
         modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
+        modelBuilder.Entity<OteOnlineEvent>().HasOne(o => o.OteSchedule);
 
         // for ote tickets
         modelBuilder.Entity<OteTicket>()

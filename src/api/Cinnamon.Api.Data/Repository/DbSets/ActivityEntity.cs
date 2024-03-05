@@ -297,7 +297,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
     public async Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, 
         ActivityAddress address, OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups,
-        IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides)
+        IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents)
     {
         try
         {
@@ -311,7 +311,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.OteSchedules.Add(oteSchedule);
             this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
             this.applicationContext.OteDates.AddRange(oteDates);
-            this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
+            if (activity.ExperienceTypeId == 2)
+            {
+                this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
+            }
+            this.applicationContext.OteOnlineEvents.AddRange(oteOnlineEvents);
             
             await this.applicationContext.SaveChangesAsync();
 
@@ -336,6 +340,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvents);
 
             var result = await activityResult.FirstOrDefaultAsync();
             
@@ -425,6 +430,42 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         });
                     }
                 }
+
+                if (activity.ExperienceTypeId == 2)
+                {
+                    // Update Online Events
+                    var updatedOnlineEvents = oteSchedule.OteOnlineEvents.Where(p => p.Id > 0);
+                    foreach (var onlineEvent in updatedOnlineEvents)
+                    {
+                        var existingOnlineEvent = result.OteSchedule.OteOnlineEvents.FirstOrDefault(e => e.Id == onlineEvent.Id);
+                        if (existingOnlineEvent is not null)
+                        {
+                            existingOnlineEvent.Title = onlineEvent.Title;
+                            existingOnlineEvent.Description = onlineEvent.Description;
+                            existingOnlineEvent.Videolink = onlineEvent.Videolink;
+                            existingOnlineEvent.TicketRestriction = onlineEvent.TicketRestriction;
+                            existingOnlineEvent.OteScheduleId = result.OteSchedule.Id;
+                            existingOnlineEvent.OteSchedulePricingGroupId = onlineEvent.OteSchedulePricingGroupId;
+                        }
+                    }
+
+                    // Add New Online Events
+                    var newOnlineEvents = oteSchedule.OteOnlineEvents.Where(p => p.Id == 0);
+                    foreach (var newEvent in newOnlineEvents)
+                    {
+                        var newOnlineEvent = new OteOnlineEvent
+                        {
+                            Title = newEvent.Title,
+                            Description = newEvent.Description,
+                            Videolink = newEvent.Videolink,
+                            TicketRestriction = newEvent.TicketRestriction,
+                            OteScheduleId = result.OteSchedule.Id,
+                            OteSchedulePricingGroupId = newEvent.OteSchedulePricingGroupId
+                        };
+                        result.OteSchedule.OteOnlineEvents.Add(newOnlineEvent);
+                    }
+                }
+
 
                 await applicationContext.SaveChangesAsync();
             }

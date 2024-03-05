@@ -411,6 +411,17 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var onlineEvent = args.OnlineEvents.Select(e => {
+                return new OteOnlineEventsDTO
+                {
+                    Title                     = e.Title,
+                    Description               = e.Description,
+                    Videolink                 = e.VideoLink,
+                    TicketRestriction         = e.TicketRestriction,
+                    OteSchedulePricingGroupId = e.OteSchedulePricingGroupId
+                };
+            }).ToList();
+
             var dates = args.Dates.Select(d => {
                 return new OteScheduleDateDTO {
                     Date = d.Date,
@@ -434,7 +445,7 @@ public class ActivityController : ControllerBase
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides);
+                dateOverrides, onlineEvent);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -473,12 +484,25 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var onlineEvents = args.OnlineEvents.Select(u =>
+            {
+                return new OteOnlineEventsDTO
+                {
+                    Id                        = u.Id,
+                    Description               = u.Description,
+                    Title                     = u.Title,
+                    TicketRestriction         = u.TicketRestriction,
+                    Videolink                 = u.VideoLink,
+                    OteSchedulePricingGroupId = u.OteSchedulePricingGroupId 
+                };
+            }).ToList();
+
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
                 args.Activity.BarangayCode ?? string.Empty, args.Activity.BarangayName ?? string.Empty,
                 args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
-                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon);
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,onlineEvents);
             
             if(!result.Succeeded || result.Result is null)
             {

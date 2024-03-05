@@ -49,6 +49,15 @@ public class OteUpdateHandler : IOteUpdateHandler
                 return AppResult<OteUpdateResult>.CreateFailed(new ApplicationException("Pricing must not empty. Invalid request."), "Pricing must not empty. Invalid request.");
             }
 
+            if (args.Activity.ExperienceTypeId == 2)
+            {
+                var isEmptyOnlineEventlist = args.OnlineEvents.Count() == 0;
+                if (isEmptyOnlineEventlist)
+                {
+                    return AppResult<OteUpdateResult>.CreateFailed(new ApplicationException("Online event informations must not empty. Invalid request."), "Online event informations must not empty. Invalid request.");
+                }
+            }
+
             var currentUser = await this.getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
             if(!currentUser.Succeeded || currentUser.Result is null)
             {
@@ -115,9 +124,19 @@ public class OteUpdateHandler : IOteUpdateHandler
                         Price = p.Price,
                         Name = p.Name
                     };
+                }).ToList(),
+                OnlineEvents = args.OnlineEvents.Select(p => {
+                    return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOteOnlineEvent
+                    {
+                        Id                        = p.Id,
+                        Title                     = p.Title,
+                        Description               = p.Description,
+                        VideoLink                 = p.VideoLink,
+                        TicketRestriction         = p.TicketRestriction,
+                        OteSchedulePricingGroupId = p.OteSchedulePricingGroupId
+                    };
                 }).ToList()
             };
-
             var updateOte = await activityData.UpdateOteActivity(entity);
             if(!updateOte.Succeeded || updateOte.Result is null || !updateOte.Result.IsSuccess)
             {
