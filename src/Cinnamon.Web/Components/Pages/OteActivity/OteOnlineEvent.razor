@@ -349,7 +349,6 @@
 
     private async Task SelectedRestrictionChanged(string restriction)
     {
-
         var result = PricingData.ItemPrices.Where(a => a.Name.Contains(restriction)).FirstOrDefault();
         if (result is not null)
         {

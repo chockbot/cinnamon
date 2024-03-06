@@ -151,6 +151,7 @@
         if(firstRender)
         {
             LoadComponents();
+            LoadSidebarItems();
         }
     }
 
@@ -175,6 +176,8 @@
 
     private void LoadSidebarItems()
     {
+        sidebarItems.Clear(); 
+
         sidebarItems.Add(new OteSidebarNavigation.Item {
             Label = "event",
             IsActive = true,
@@ -192,12 +195,15 @@
             IsActive = false,
             OnClick = NavigateToPricings
         });
-        sidebarItems.Add(new OteSidebarNavigation.Item
-            {
-                Label = "online event page",
-                IsActive = false,
-                OnClick = NavigateToOnlineEvents
-            });
+        if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
+        {
+            sidebarItems.Add(new OteSidebarNavigation.Item
+                {
+                    Label = "online event page",
+                    IsActive = false,
+                    OnClick = NavigateToOnlineEvents
+                });
+        }
         sidebarItems.Add(new OteSidebarNavigation.Item {
             Label = "gallery",
             IsActive = false,
@@ -337,6 +343,7 @@
         sidebarImages.Add("images/ote/event-preview.svg");
         sidebarImages.Add("images/ote/location-preview.svg");
         sidebarImages.Add("images/ote/pricing-preview.svg");
+        sidebarImages.Add("images/ote/pricing-preview.svg");
         sidebarImages.Add("images/ote/gallery-preview.svg");
     }
 
@@ -402,6 +409,7 @@
         {
             if(field.HasNext)
             {
+                LoadSidebarItems();
                 SetActiveItem(++currentIndex);
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
                 if(currentIndex == 5)
@@ -420,6 +428,7 @@
                     await UpdateOte();
                 }
             }
+            StateHasChanged();
         }
     }
 
@@ -682,11 +691,9 @@
             }).ToList()
         });
 
-        oteOnline?.SetState(new OteOnlineEvent.ModelData
-        {
+        oteOnline?.SetState(new OteOnlineEvent.ModelData {
             TicketInfos = ote.OnlineEvents.Select(a => {
-                return new OteOnlineEvent.ModelData.TicketInfo
-                {
+                return new OteOnlineEvent.ModelData.TicketInfo {
                     Id                        = a.Id,
                     Title                     = a.Title,
                     Description               = a.Description,
