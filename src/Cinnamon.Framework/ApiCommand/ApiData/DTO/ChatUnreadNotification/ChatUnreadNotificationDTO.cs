@@ -8,4 +8,5 @@ public class ChatUnreadNotificationDTO
     public int ToUserId {get; set;}
     public DateTime ChatDate {get; set;}
     public string CustomerEmail {get; set;}
+    public string Repeated {get; set;}
 }
