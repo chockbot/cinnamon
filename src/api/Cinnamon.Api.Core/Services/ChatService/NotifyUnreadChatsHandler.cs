@@ -45,14 +45,14 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
                 if(string.IsNullOrEmpty(message.Repeated))
                 {
                     var currentDate = DateTime.Now.AddHours(-1);
-                    if(currentDate > message.ChatDate) continue;
+                    if(currentDate < message.ChatDate) continue;
                 }
 
                 // skip messages less than 24 hrs
                 if(message.Repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var currentDate = DateTime.Now.AddHours(-24);
-                    if(currentDate > message.ChatDate) continue;
+                    if(currentDate < message.ChatDate) continue;
 
                     repeated = "second";
                 }
@@ -61,7 +61,7 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
                 if(message.Repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var currentDate = DateTime.Now.AddDays(-2);
-                    if(currentDate > message.ChatDate) continue;
+                    if(currentDate < message.ChatDate) continue;
 
                     repeated = "third";
                 }
