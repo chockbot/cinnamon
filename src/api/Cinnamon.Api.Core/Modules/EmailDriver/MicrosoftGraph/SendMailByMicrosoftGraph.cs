@@ -126,7 +126,8 @@ public class SendMailByMicrosoftGraph : ISendMailHandler
             payload.message.toRecipients = recipients;
 
             // from data
-            payload.message.from = new BodyPayload.From { emailAddress = new BodyPayload.EmailAddress { address = applicationConfig.EmailService.Email } };
+            var fromEmail = string.IsNullOrEmpty(args.EmailFrom) ? applicationConfig.EmailService.Email : args.EmailFrom;
+            payload.message.from = new BodyPayload.From { emailAddress = new BodyPayload.EmailAddress { address = fromEmail } };
 
             var cli = new FlurlClient("https://graph.microsoft.com");
 

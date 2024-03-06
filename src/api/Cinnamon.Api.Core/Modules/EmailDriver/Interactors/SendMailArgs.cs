@@ -9,4 +9,5 @@ public class SendMailArgs : IInteractor
     public string Body {get; set;}
     // content type default to text
     public string ContentType { get; set; } = "text";
+    public string? EmailFrom {get; set;}
 }

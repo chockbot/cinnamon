@@ -22,13 +22,24 @@ public class ChatUnreadNotificationEntity : GenericEntity<ChatUnreadNotification
             string query = "with withRow as " +
                            "( " +
                                "select ch.\"Id\", ch.\"FromUserId\", ch.\"ToUserId\", ch.\"CreatedOn\" \"ChatDate\", cc.\"Email\", " +
-                                   "Row_Number() over(partition by ch.\"ToUserId\" order by ch.\"ToUserId\", ch.\"CreatedOn\" desc) as \"RowCnt\" " +
+                                   "Row_Number() over(partition by ch.\"ToUserId\", ch.\"FromUserId\" order by ch.\"ToUserId\", ch.\"FromUserId\", ch.\"CreatedOn\" desc) as \"RowCnt\" " +
                                "from public.\"ChatHistories\" ch " +
                                "join public.\"Customers\" cc " +
                                    "on cc.\"Id\" = ch.\"ToUserId\" " +
                                "where \"IsViewed\" = false " +
+                           "), " +
+                           "withRepeated as " +
+                           "( " +
+                               "select wr.\"Id\", wr.\"FromUserId\", wr.\"ToUserId\", wr.\"ChatDate\", " +
+                                   "cn.\"Repeated\", wr.\"Email\", " +
+                                   "Row_Number() over(partition by wr.\"Id\" order by wr.\"Id\", cn.\"Id\" desc) as \"RowCnt\" " +
+                               "from withRow wr " +
+                               "join public.\"ChatUnreadNotifications\" cn " +
+                                   "on wr.\"Id\" = cn.\"ChatHistoryId\" " +
+                               "where wr.\"RowCnt\" = 1 " +
                            ") " +
-                           "select * from withRow " +
+                           "select * " +
+                           "from withRepeated " +
                            "where \"RowCnt\" = 1 ";
 
             List<ChatUnreadNotification> result = new();
@@ -52,7 +63,8 @@ public class ChatUnreadNotificationEntity : GenericEntity<ChatUnreadNotification
                             CustomerEmail = item["Email"].ToString() ?? string.Empty,
                             FromUserId = Convert.ToInt32(item["FromUserId"]),
                             ToUserId = Convert.ToInt32(item["ToUserId"]),
-                            ChatDate = Convert.ToDateTime(item["ChatDate"])
+                            ChatDate = Convert.ToDateTime(item["ChatDate"]),
+                            Repeated = item["Repeated"].ToString() ?? string.Empty
                         }).ToList();
                     }
                 }

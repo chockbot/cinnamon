@@ -35,7 +35,8 @@ public class ChatUnreadNotificationHandler : IChatUnreadNotificationHandler
                 Body = emailBody,
                 Recipients = args.Emails,
                 ContentType = "html",
-                Subject = "Unread Messages"
+                Subject = "Unread Messages",
+                EmailFrom = config.EmailService.AdminEmail
             });
             if(!sendMailResponse.Succeeded || sendMailResponse.Result is null)
             {
