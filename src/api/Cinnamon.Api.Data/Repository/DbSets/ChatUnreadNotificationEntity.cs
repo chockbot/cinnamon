@@ -34,7 +34,7 @@ public class ChatUnreadNotificationEntity : GenericEntity<ChatUnreadNotification
                                    "cn.\"Repeated\", wr.\"Email\", " +
                                    "Row_Number() over(partition by wr.\"Id\" order by wr.\"Id\", cn.\"Id\" desc) as \"RowCnt\" " +
                                "from withRow wr " +
-                               "join public.\"ChatUnreadNotifications\" cn " +
+                               "left join public.\"ChatUnreadNotifications\" cn " +
                                    "on wr.\"Id\" = cn.\"ChatHistoryId\" " +
                                "where wr.\"RowCnt\" = 1 " +
                            ") " +
