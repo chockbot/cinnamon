@@ -11,12 +11,13 @@
         Online Event Page
     </p>
     <p class="font-20 color-grey-100 text-justify m-font-16">
-        Note: A one-time event refers to a specific occurrence or happening that takes place at a
-        designated time and location. It could be a seminar, workshop, conference, concert,
-        or any other event that is not recurring on a regular basis.
+        Attendees will join your online event through your virtual venue. Utilize this space to 
+        integrate your online meeting or event hosting platform and provide exclusive content. 
+        We'll direct your ticket holders to this page from your event listing and in reminder 
+        emails.
     </p>
     <div class="my-3 border-radius-10">
-        <Validations @ref="ticketListFormValidation" Model="modelTicketInfo" Mode="ValidationMode.Auto">
+        <Validations @ref="ticketListFormValidation" Model="modelTicketList" Mode="ValidationMode.Auto">
             <div class="accordion" id="pricings-accordion">
                 @foreach (var item in modelTicketList.TicketInformations)
                 {
@@ -51,11 +52,11 @@
                                                 Title
                                             </FieldLabel>
                                             <FieldBody>
-                                                <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Title">
+                                                <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Title">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
-                                                </MemoEdit>
+                                                </TextEdit>
                                             </FieldBody>
                                         </Field>
                                     </Validation>
@@ -73,21 +74,24 @@
                                             </FieldBody>
                                         </Field>
                                     </Validation>
-                                    <Field class="mb-4">
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            Ticket Restriction
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <Select TValue="string" Size="Size.Medium" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                                                <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
-                                                @foreach (var item in Summary.PricingData.ItemPrices)
-                                                {
-                                                    <SelectItem Value="item.Name">@item.Name</SelectItem>
-                                                }
-                                            </Select>
-                                            <div class="invalid-feedback">The ticket restriction is mandatory.</div>
-                                        </FieldBody>
-                                    </Field>
+                                    @if (PricingData.ItemPrices.Count != 0)
+                                    {
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                Ticket Restriction
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                                                    <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                                                    @foreach (var item in PricingData.ItemPrices)
+                                                    {
+                                                        <SelectItem Value="item.Name">@item.Name</SelectItem>
+                                                    }
+                                                </Select>
+                                                <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                                            </FieldBody>
+                                        </Field>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -101,19 +105,7 @@
         <Divider class="d-none m-d-block" />
     }
     <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
-        <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                <span>
-                    pricing
-                </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
-            </h3>
-            <p class="font-16 color-grey-100 text-justify">
-                Add your price range or your admission categories for every budget. From affordable offers to more premium experience.
-                Fill up prices and max slots for every category.
-            </p>
-        </div>
-        <Validations @ref="ticketListFormValidation" Mode="FormMode" Model="modelTicketInfo">
+        <Validations @ref="ticketFormValidation" Mode="FormMode" Model="modelTicketInfo">
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -134,11 +126,11 @@
                         Title
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelTicketInfo.Title">
+                        <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="modelTicketInfo.Title">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
-                        </MemoEdit>
+                        </TextEdit>
                     </FieldBody>
                 </Field>
             </Validation>
@@ -156,21 +148,24 @@
                     </FieldBody>
                 </Field>
             </Validation>
-            <Field class="mb-4">
-                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                    Ticket Restriction
-                </FieldLabel>
-                <FieldBody>
-                    <Select TValue="string" Size="Size.Medium" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                        <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
-                        @foreach (var item in Summary.PricingData.ItemPrices)
-                        {
-                            <SelectItem Value="item.Name">@item.Name</SelectItem>
-                        }
-                    </Select>
-                    <div class="invalid-feedback">The ticket restriction is mandatory.</div>
-                </FieldBody>
-            </Field>
+            @if (PricingData.ItemPrices.Count != 0)
+            {
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Ticket Restriction
+                    </FieldLabel>
+                    <FieldBody>
+                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                            <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                            @foreach (var item in PricingData.ItemPrices)
+                            {
+                                <SelectItem Value="item.Name">@item.Name</SelectItem>
+                            }
+                        </Select>
+                        <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                    </FieldBody>
+                </Field>
+            }
             <div>
                 <Button Clicked="AddMoreTicket" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
                     add more 
@@ -189,16 +184,16 @@
     [Parameter]
     public EventCallback OnPrevClick { get; set; }
     [Parameter]
-    public ComponentSummary Summary { get; set; }
+    public OteLocation.ModelData LocationData { get; set; }
+
+    [Parameter]
+    public OtePricing.ModelData PricingData { get; set; }
     private TicketInformation modelTicketInfo = new();
     private TicketList modelTicketList = new();
+    private Validations? ticketFormValidation;
     private Validations? ticketListFormValidation;
+
     private bool showErrors = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
 
     private async Task NextClick()
     {
@@ -215,11 +210,26 @@
             await OnPrevClick.InvokeAsync();
         }
     }
+
     public async Task<bool> FieldValid()
     {
-
-        return true;
+        if (ticketFormValidation is not null)
+        {
+            bool ticketValid = await ticketFormValidation.ValidateAll();
+            bool ticketListValid = await ticketListFormValidation.ValidateAll();
+            bool valid = ticketValid && ticketListValid;
+            showErrors = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            if (!valid)
+            {
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-online-wrapper .is-invalid");
+            }
+            return valid;
+        }
+        return false;
     }
+
     public ModelData GetData()
     {
         ModelData data = new ModelData
@@ -279,32 +289,16 @@
 
     }
 
-    private string TicketClass
-    {
-        get
-        {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
-            if (showErrors)
-            {
-                if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction))
-                {
-                    return $"{defaultStyle} is-invalid";
-                }
-                return $"{defaultStyle} is-valid";
-            }
-            return defaultStyle;
-        }
-    }
-
     private async Task SelectedRestrictionChanged(int Id)
     {
-        var restriction = Summary.PricingData.ItemPrices.Where(a => a.Id == Id).FirstOrDefault();
+        var restriction = PricingData.ItemPrices.Where(a => a.Id == Id).FirstOrDefault();
         if (restriction is not null)
         {
             modelTicketInfo.TicketRestriction = restriction.Name;
             modelTicketInfo.OteSchedulePricingGroupId = restriction.Id;
         }
     }
+
     public class ModelData
     {
         public IList<TicketInfo> TicketInfos { get; set; }
@@ -356,17 +350,11 @@
     private async Task SelectedRestrictionChanged(string restriction)
     {
 
-        var result = Summary.PricingData.ItemPrices.Where(a => a.Name.Contains(restriction)).FirstOrDefault();
+        var result = PricingData.ItemPrices.Where(a => a.Name.Contains(restriction)).FirstOrDefault();
         if (result is not null)
         {
             modelTicketInfo.TicketRestriction = result.Name;
         }
-    }
-
-    public class ComponentSummary
-    {
-        public OteLocation.ModelData LocationData { get; set; }
-        public OtePricing.ModelData PricingData { get; set; }
     }
 
     private ValidationMode FormMode
@@ -376,6 +364,7 @@
             return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
         }
     }
+
     private async Task AddMoreTicket()
     {
         bool priceValid = await ticketListFormValidation.ValidateAll();
@@ -386,6 +375,24 @@
             modelTicketInfo = new();
         }
     }
+
+    private string RestrictionClass
+    {
+        get
+        {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            if (showErrors)
+            {
+                if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
     private async Task ViewGuide()
     {
 

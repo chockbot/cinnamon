@@ -11,7 +11,7 @@ public class CreateOteArgs
     public IEnumerable<OtePricing> Pricings {get; set;}
 
     [Required]
-    public IList<OteOnlineEvent>? OnlineEvents { get; set; }
+    public IEnumerable<OteOnlineEvent>? OnlineEvents { get; set; }
 
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 

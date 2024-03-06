@@ -20,7 +20,7 @@
     <Container>
         <div class="progress-bar-section mt-4">
             <p class="progress-details">
-                IN PROGRESS: Step @(currentIndex + 1) of 6 <span id="loader"></span>
+                IN PROGRESS: Step @(currentIndex + 1) of 7 <span id="loader"></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
@@ -55,7 +55,7 @@
                 <OteSidebarNavigation SidebarItems="sidebarItems" />
                 <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
                 <div>
-                    @if(currentIndex < 4)
+                    @if(currentIndex < 5)
                     {
                         <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
                         <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
@@ -72,13 +72,19 @@
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
                     <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
-                <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                @if (oteLocation != null)
+                {
+                    <div class='@(currentIndex == 3 && oteLocation.GetData().ExperienceType == 2 ? "d-block" : "d-none")'>
+                        <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" LocationData="oteLocation.GetData()" PricingData="otePricing.GetData()" OnPrevClick="MovePrev" />
+                    </div>
+                }
+                <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
                     <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
-                <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
                     <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
                 </div>
-                <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                <div class='@(currentIndex == 6 ? "d-block" : "d-none")'>
                     <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
             </Column>
@@ -186,7 +192,12 @@
             IsActive = false,
             OnClick = NavigateToPricings
         });
-
+        sidebarItems.Add(new OteSidebarNavigation.Item
+            {
+                Label = "online event page",
+                IsActive = false,
+                OnClick = NavigateToOnlineEvents
+            });
         sidebarItems.Add(new OteSidebarNavigation.Item {
             Label = "gallery",
             IsActive = false,
@@ -236,11 +247,11 @@
 
     private async Task NavigateToPricings(OteSidebarNavigation.Item _)
     {
-        if(currentIndex != 2)
+        if (currentIndex != 2)
         {
             var (valid, _) = await CurrentFieldValid();
             SetValidItem(currentIndex, valid);
-            if(valid)
+            if (valid)
             {
                 SetActiveItem(2);
                 StateHasChanged();
@@ -248,13 +259,13 @@
         }
     }
 
-    private async Task NavigateToGallery(OteSidebarNavigation.Item _)
+    private async Task NavigateToOnlineEvents(OteSidebarNavigation.Item _)
     {
-        if(currentIndex != 3)
+        if (currentIndex != 3)
         {
             var (valid, _) = await CurrentFieldValid();
             SetValidItem(currentIndex, valid);
-            if(valid)
+            if (valid)
             {
                 SetActiveItem(3);
                 StateHasChanged();
@@ -262,7 +273,7 @@
         }
     }
 
-    private async Task NavigateToSummary(OteSidebarNavigation.Item _)
+    private async Task NavigateToGallery(OteSidebarNavigation.Item _)
     {
         if(currentIndex != 4)
         {
@@ -271,13 +282,12 @@
             if(valid)
             {
                 SetActiveItem(4);
-                summary = GetSummary();
                 StateHasChanged();
             }
         }
     }
 
-    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    private async Task NavigateToSummary(OteSidebarNavigation.Item _)
     {
         if(currentIndex != 5)
         {
@@ -286,6 +296,21 @@
             if(valid)
             {
                 SetActiveItem(5);
+                summary = GetSummary();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    {
+        if(currentIndex != 6)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if(valid)
+            {
+                SetActiveItem(6);
                 summary = GetSummary();
                 StateHasChanged();
             }
@@ -338,7 +363,14 @@
             HasNext = true,
             HasPrevious = true
         });
-
+        
+        components.Add(new ComponentItem<IOteComponent> {
+            Component = oteOnline,
+            Name = "online event",
+            HasNext = true,
+            HasPrevious = true
+        });
+        
         components.Add(new ComponentItem<IOteComponent> {
             Component = oteGallery,
             Name = "gallery",
@@ -372,7 +404,7 @@
             {
                 SetActiveItem(++currentIndex);
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
-                if(currentIndex == 4)
+                if(currentIndex == 5)
                 {
                     summary = GetSummary();
                 }
@@ -411,57 +443,67 @@
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
             var publishData = summary.PublishData;
+            var onlineDate = summary.OnlineData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
             var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
-                Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
-                    BarangayCode = location.BarangayCode,
-                    BarangayName = location.BarangayName,
-                    CityName = location.CityName,
-                    CityNumber = location.CityCode,
-                    Description = eventData.Description,
-                    EventName = eventData.Name,
-                    ExperienceCreationTypeId = 3,
-                    ExperienceTypeId = location.ExperienceType,
-                    HouseNo = location.HouseNo,
-                    IsPublished = publishData.IsPublish,
-                    PinnedLocation = location.PinnedLocation,
-                    PostalCode = location.PostalCode,
-                    Recurrence = schedule.Recurrences,
-                    RegionCode = location.RegionCode,
-                    RegionName = location.RegionName,
-                    ScheduleFrom = schedule.DateFrom,
-                    ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon,
-                    DurationEnd = schedule.DurationEnd,
-                    DurationEvery = schedule.DurationEvery,
-                    DurationStart = schedule.DurationStart,
-                    MonthDay = schedule.MonthDay,
-                    MonthRepeat = schedule.MonthRepeat,
-                    MonthSelection = schedule.MonthSelection,
-                    OnDayDate = schedule.OnDayDate,
-                    WeekString = schedule.WeekString,
-                    EventDurationCount = schedule.EventDurationCount,
-                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
-                },
-                Pricings = schedule.ItemPrices.Select(p => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
-                        Description = p.Description,
-                        IsAbsorbFees = p.AbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Price = p.Price,
-                        Name = p.Name
-                    };
-                }),
-                DateOverrides = schedule.DateOverrides.Select(d => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
-                        Date = d.Date,
-                        TimeEnd = d.TimeEnd,
-                        TimeStart = d.TimeStart
-                    };
-                })
-            }, token);
+                    Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
+                        BarangayCode = location.BarangayCode,
+                        BarangayName = location.BarangayName,
+                        CityName = location.CityName,
+                        CityNumber = location.CityCode,
+                        Description = eventData.Description,
+                        EventName = eventData.Name,
+                        ExperienceCreationTypeId = 3,
+                        ExperienceTypeId = location.ExperienceType,
+                        HouseNo = location.HouseNo,
+                        IsPublished = publishData.IsPublish,
+                        PinnedLocation = location.PinnedLocation,
+                        PostalCode = location.PostalCode,
+                        Recurrence = schedule.Recurrences,
+                        RegionCode = location.RegionCode,
+                        RegionName = location.RegionName,
+                        ScheduleFrom = schedule.DateFrom,
+                        ScheduleTo = schedule.DateTo,
+                        IsComingSoon = publishData.ComingSoon,
+                        DurationEnd = schedule.DurationEnd,
+                        DurationEvery = schedule.DurationEvery,
+                        DurationStart = schedule.DurationStart,
+                        MonthDay = schedule.MonthDay,
+                        MonthRepeat = schedule.MonthRepeat,
+                        MonthSelection = schedule.MonthSelection,
+                        OnDayDate = schedule.OnDayDate,
+                        WeekString = schedule.WeekString,
+                        EventDurationCount = schedule.EventDurationCount,
+                        EventDurationTimeUnit = schedule.EventDurationTimeUnit
+                    },
+                    Pricings = schedule.ItemPrices.Select(p => {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
+                            Description = p.Description,
+                            IsAbsorbFees = p.AbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Price = p.Price,
+                            Name = p.Name
+                        };
+                    }),
+                    DateOverrides = schedule.DateOverrides.Select(d => {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
+                            Date = d.Date,
+                            TimeEnd = d.TimeEnd,
+                            TimeStart = d.TimeStart
+                        };
+                    }),
+                    OnlineEvents = onlineDate.TicketInfos.Select(a => {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteOnlineEvent{
+                            Title = a.Title,
+                            Description = a.Description,
+                            VideoLink = a.VideoLink,
+                            TicketRestriction = a.TicketRestriction,
+                            OteSchedulePricingGroupId = a.OteSchedulePricingGroupId
+                        };
+                    })
+             }, token);
 
             await ProgressService.Go(-1);
 
@@ -497,6 +539,7 @@
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
             var publishData = summary.PublishData;
+            var onlineEvent = summary.OnlineData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
@@ -530,6 +573,16 @@
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name
+                    };
+                }),
+                OnlineEvents = onlineEvent.TicketInfos.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateOnlineEvent {
+                        Id                        = s.Id,
+                        Title                     = s.Title,
+                        Description               = s.Description,
+                        VideoLink                 = s.VideoLink,
+                        TicketRestriction         = s.TicketRestriction,
+                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                     };
                 })
             }, token);
@@ -631,7 +684,17 @@
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData
         {
-            
+            TicketInfos = ote.OnlineEvents.Select(a => {
+                return new OteOnlineEvent.ModelData.TicketInfo
+                {
+                    Id                        = a.Id,
+                    Title                     = a.Title,
+                    Description               = a.Description,
+                    VideoLink                 = a.Videolink,
+                    TicketRestriction         = a.TicketRestriction,
+                    OteSchedulePricingGroupId = a.OteSchedulePricingGroupId
+                };
+            }).ToList()
         });
 
         oteGallery?.SetState(ote.Images.Select(i => {
@@ -666,7 +729,7 @@
         if(valid && field.HasNext && currentIndex < sidebarItems.Count -1)
         {
             SetActiveItem(++currentIndex);
-            if(currentIndex == 4)
+            if(currentIndex == 5)
             {
                 summary = GetSummary();
             }
