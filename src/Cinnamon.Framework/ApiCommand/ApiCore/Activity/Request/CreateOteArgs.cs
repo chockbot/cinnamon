@@ -115,7 +115,6 @@ public class CreateOteArgs
         [Required]
         public string TicketRestriction { get; set; }
 
-        [Required]
         public int OteSchedulePricingGroupId { get; set; }
     }
 

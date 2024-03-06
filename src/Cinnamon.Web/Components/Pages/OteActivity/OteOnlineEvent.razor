@@ -156,10 +156,10 @@
                     </FieldLabel>
                     <FieldBody>
                         <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="@modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                            <SelectItem Value="0" Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                            <SelectItem Value='0' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
                             @foreach (var item in PricingData.ItemPrices)
                             {
-                                <SelectItem Value="item.Name">@item.Name</SelectItem>
+                                <SelectItem Value="@item.Name">@item.Name</SelectItem>
                             }
                         </Select>
                         <div class="invalid-feedback">The ticket restriction is mandatory.</div>
@@ -330,9 +330,8 @@
         public string Description { get; set; }
 
         [Required(ErrorMessage = "The restriction is mandatory.")]
-        public string TicketRestriction { get; set; }
+        public string TicketRestriction { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "The pricing id is mandatory.")]
         public int OteSchedulePricingGroupId { get; set; }
 
         // extras
