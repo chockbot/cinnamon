@@ -311,11 +311,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.OteSchedules.Add(oteSchedule);
             this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
             this.applicationContext.OteDates.AddRange(oteDates);
-            if (activity.ExperienceTypeId == 2)
-            {
-                this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
-            }
-            this.applicationContext.OteOnlineEvents.AddRange(oteOnlineEvents);
+            this.applicationContext.OteOnlineEvent.AddRange(oteOnlineEvents);
+            this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
+            
             
             await this.applicationContext.SaveChangesAsync();
 
@@ -340,7 +338,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvents);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvent);
 
             var result = await activityResult.FirstOrDefaultAsync();
             
@@ -434,10 +432,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 if (activity.ExperienceTypeId == 2)
                 {
                     // Update Online Events
-                    var updatedOnlineEvents = oteSchedule.OteOnlineEvents.Where(p => p.Id > 0);
+                    var updatedOnlineEvents = oteSchedule.OteOnlineEvent.Where(p => p.Id > 0);
                     foreach (var onlineEvent in updatedOnlineEvents)
                     {
-                        var existingOnlineEvent = result.OteSchedule.OteOnlineEvents.FirstOrDefault(e => e.Id == onlineEvent.Id);
+                        var existingOnlineEvent = result.OteSchedule.OteOnlineEvent.FirstOrDefault(e => e.Id == onlineEvent.Id);
                         if (existingOnlineEvent is not null)
                         {
                             existingOnlineEvent.Title = onlineEvent.Title;
@@ -450,7 +448,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                     }
 
                     // Add New Online Events
-                    var newOnlineEvents = oteSchedule.OteOnlineEvents.Where(p => p.Id == 0);
+                    var newOnlineEvents = oteSchedule.OteOnlineEvent.Where(p => p.Id == 0);
                     foreach (var newEvent in newOnlineEvents)
                     {
                         var newOnlineEvent = new OteOnlineEvent
@@ -462,7 +460,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             OteScheduleId = result.OteSchedule.Id,
                             OteSchedulePricingGroupId = newEvent.OteSchedulePricingGroupId
                         };
-                        result.OteSchedule.OteOnlineEvents.Add(newOnlineEvent);
+                        result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }
                 }
 
@@ -485,15 +483,15 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         {
             var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower() && a.ExperienceCreationTypeId == 3);
 
-            if(includeAddress) query = query.Include(a => a.Address);
+            if(includeAddress) query     = query.Include(a => a.Address);
             if(includeDescription) query = query.Include(a => a.ActivityDescription);
-            if(includeProvider) query = query.Include(a => a.Customer);
-            if(includeImages) query = query.Include(a => a.Images);
-            if(includeSchedule && includePricing) {
+            if(includeProvider) query    = query.Include(a => a.Customer);
+            if(includeImages) query      = query.Include(a => a.Images);
+            if (includeOnlineEvent)query = query.Include(a => a.OteSchedule).ThenInclude(o => o.OteOnlineEvent);
+            if (includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricingGroups);
-                query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteOnlineEvents);
             }
             if(includeSchedule && !includePricing) query = query.Include(a => a.OteSchedule);
 

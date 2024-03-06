@@ -411,16 +411,15 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
-            var onlineEvent = args.OnlineEvents.Select(e => {
-                return new OteOnlineEventsDTO
-                {
+            var onlineEvent = args.OnlineEvents is not null? args.OnlineEvents.Select(e => {
+                return new OteOnlineEventsDTO {
                     Title                     = e.Title,
                     Description               = e.Description,
                     Videolink                 = e.VideoLink,
                     TicketRestriction         = e.TicketRestriction,
                     OteSchedulePricingGroupId = e.OteSchedulePricingGroupId
                 };
-            }).ToList();
+            }).ToList() : null;
 
             var dates = args.Dates.Select(d => {
                 return new OteScheduleDateDTO {
@@ -484,10 +483,8 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
-            var onlineEvents = args.OnlineEvents.Select(u =>
-            {
-                return new OteOnlineEventsDTO
-                {
+            var onlineEvents = args.OnlineEvents.Select(u => {
+                return new OteOnlineEventsDTO {
                     Id                        = u.Id,
                     Description               = u.Description,
                     Title                     = u.Title,

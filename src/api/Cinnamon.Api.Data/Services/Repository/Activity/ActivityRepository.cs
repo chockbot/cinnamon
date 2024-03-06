@@ -1754,11 +1754,8 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
-            var onlineEvent = oteOnlineEventsDTOs.Select(s =>
-            {
-                return new OteOnlineEvent 
-                {
-                    Id                        = s.Id,
+            var onlineEvent = oteOnlineEventsDTOs.Select(s => {
+                return new OteOnlineEvent {
                     Title                     = s.Title,
                     Description               = s.Description,
                     TicketRestriction         = s.TicketRestriction,
@@ -1895,10 +1892,8 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
-            schedule.OteOnlineEvents = oteOnlineEventsDTOs.Select(s =>
-            {
-                return new OteOnlineEvent
-                {
+            schedule.OteOnlineEvent = oteOnlineEventsDTOs.Select(s =>{
+                return new OteOnlineEvent {
                     Id                        = s.Id,
                     Title                     = s.Title,
                     Description               = s.Description,

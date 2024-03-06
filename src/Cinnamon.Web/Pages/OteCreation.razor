@@ -115,7 +115,7 @@
     private int oteId = 0;
 
     protected override void OnInitialized()
-    {
+   {
         LoadSidebarItems();
         LoadImages();
     }
@@ -452,7 +452,7 @@
             var eventData = summary.EventData;
             var schedule = summary.PricingData;
             var publishData = summary.PublishData;
-            var onlineDate = summary.OnlineData;
+            var onlineData = summary.OnlineData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
@@ -503,7 +503,7 @@
                             TimeStart = d.TimeStart
                         };
                     }),
-                    OnlineEvents = onlineDate.TicketInfos.Select(a => {
+                    OnlineEvents = onlineData.TicketInfos.Select(a => {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteOnlineEvent{
                             Title = a.Title,
                             Description = a.Description,

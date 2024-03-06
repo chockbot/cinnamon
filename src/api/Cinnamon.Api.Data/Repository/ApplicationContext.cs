@@ -80,7 +80,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
-    public DbSet<OteOnlineEvent> OteOnlineEvents { get; set;}
+    public DbSet<OteOnlineEvent> OteOnlineEvent { get; set;}
     
     // new disbursement flow
     public DbSet<Disbursement> Disbursements {get; set;}
@@ -293,7 +293,7 @@ public class ApplicationContext : IdentityDbContext
         // for ote schedule
         modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
         modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
-        modelBuilder.Entity<OteOnlineEvent>().HasOne(o => o.OteSchedule);
+        modelBuilder.Entity<OteOnlineEvent>().HasOne(o => o.OteSchedule).WithMany(o => o.OteOnlineEvent);
 
         // for ote tickets
         modelBuilder.Entity<OteTicket>()

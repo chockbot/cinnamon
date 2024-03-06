@@ -81,11 +81,11 @@
                                                 Ticket Restriction
                                             </FieldLabel>
                                             <FieldBody>
-                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                                                    <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="@item.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                                                    <SelectItem Value='0' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
                                                     @foreach (var item in PricingData.ItemPrices)
                                                     {
-                                                        <SelectItem Value="item.Name">@item.Name</SelectItem>
+                                                        <SelectItem Value="@item.Name">@item.Name</SelectItem>
                                                     }
                                                 </Select>
                                                 <div class="invalid-feedback">The ticket restriction is mandatory.</div>
@@ -155,8 +155,8 @@
                         Ticket Restriction
                     </FieldLabel>
                     <FieldBody>
-                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                            <SelectItem Value='"none"' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="@modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                            <SelectItem Value="0" Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
                             @foreach (var item in PricingData.ItemPrices)
                             {
                                 <SelectItem Value="item.Name">@item.Name</SelectItem>
@@ -349,10 +349,11 @@
 
     private async Task SelectedRestrictionChanged(string restriction)
     {
-        var result = PricingData.ItemPrices.Where(a => a.Name.Contains(restriction)).FirstOrDefault();
-        if (result is not null)
+        var result = PricingData.ItemPrices.FirstOrDefault(item => item.Name.Equals(restriction, StringComparison.OrdinalIgnoreCase));
+        if (result != null)
         {
             modelTicketInfo.TicketRestriction = result.Name;
+            modelTicketInfo.OteSchedulePricingGroupId = result.Id;
         }
     }
 
