@@ -1948,7 +1948,6 @@ public class ActivityRepository : IActivityRepository
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
-
             var model = mapper.Map<OteActivityDTO>(result.Result);
             return AppResult<OteActivityDTO>.CreateSucceeded(model, "Sucessfully find one time event");
         }
