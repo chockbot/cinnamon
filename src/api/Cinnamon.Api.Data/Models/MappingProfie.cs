@@ -38,7 +38,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.Owner, o => o.MapFrom(s => s.Customer))
             .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title))
             .ForMember(d => d.OteDates, o => o.MapFrom(s => s.OteSchedule.OteDates))
-            .ForMember(d => d.OteOnlineEvents, o => o.MapFrom(s => s.OteSchedule.OteOnlineEvent));
+            .ForMember(d => d.OteOnlineEvent, o => o.MapFrom(s => s.OteSchedule.OteOnlineEvent));
 
 
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();

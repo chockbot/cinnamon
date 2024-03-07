@@ -488,8 +488,7 @@ public class ActivityController : ControllerBase
                     Description               = u.Description,
                     Title                     = u.Title,
                     TicketRestriction         = u.TicketRestriction,
-                    Videolink                 = u.VideoLink,
-                    OteSchedulePricingGroupId = u.OteSchedulePricingGroupId 
+                    Videolink                 = u.VideoLink, 
                 };
             }).ToList();
 

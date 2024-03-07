@@ -115,7 +115,7 @@
     private int oteId = 0;
 
     protected override void OnInitialized()
-   {
+    {
         LoadSidebarItems();
         LoadImages();
     }
@@ -151,7 +151,6 @@
         if(firstRender)
         {
             LoadComponents();
-            LoadSidebarItems();
         }
     }
 
@@ -370,14 +369,14 @@
             HasNext = true,
             HasPrevious = true
         });
-        
+
         components.Add(new ComponentItem<IOteComponent> {
             Component = oteOnline,
             Name = "online event",
             HasNext = true,
             HasPrevious = true
         });
-        
+
         components.Add(new ComponentItem<IOteComponent> {
             Component = oteGallery,
             Name = "gallery",
@@ -691,7 +690,7 @@
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
-                TicketInfos = ote.OnlineEvents.Select(a =>
+                TicketInfos = ote.OnlineEvent.Select(a =>
                 {
                 return new OteOnlineEvent.ModelData.TicketInfo {
                     Id                        = a.Id,
@@ -699,7 +698,6 @@
                     Description               = a.Description,
                     VideoLink                 = a.Videolink,
                     TicketRestriction         = a.TicketRestriction,
-                    OteSchedulePricingGroupId = a.OteSchedulePricingGroupId
                 };
             }).ToList()
         });
@@ -717,6 +715,9 @@
             ComingSoon = ote.IsComingSoon,
             IsPublish = ote.IsPublished
         });
+
+        LoadSidebarItems();
+        StateHasChanged();
     }
 
     private OteSummary.ComponentSummary GetSummary()

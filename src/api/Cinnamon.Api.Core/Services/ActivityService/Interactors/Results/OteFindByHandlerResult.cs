@@ -24,7 +24,7 @@ public class OteFindByHandlerResult
     public string Recurrences {get; set;}
     public int ProviderId {get; set;}
     public IEnumerable<OtePricing> Pricings {get; set;}
-    public IEnumerable<OteOnlineEvent> OnlineEvents { get; set;}
+    public IEnumerable<OteOnlineEvent> OnlineEvent { get; set;}
     public IEnumerable<Image> Images {get; set;}
     public bool IsComingSoon {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}
@@ -96,6 +96,5 @@ public class OteFindByHandlerResult
         public string Title { get; set; }
         public string Description { get; set; }
         public string TicketRestriction { get; set; }
-        public int OteSchedulePricingGroupId { get; set; }
     }
 }

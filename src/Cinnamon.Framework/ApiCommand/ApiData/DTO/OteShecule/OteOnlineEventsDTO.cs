@@ -7,5 +7,4 @@ public class OteOnlineEventsDTO
     public string Title { get; set; }
     public string Description { get; set; }
     public string TicketRestriction { get; set; }
-    public int OteSchedulePricingGroupId { get; set; }
 }
