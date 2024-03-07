@@ -88,8 +88,6 @@ public class OteCreateArgs : IInteractor
         public string Description { get; set; }     
         
         public string TicketRestriction { get; set; }
-
-        public int OteSchedulePricingGroupId { get; set; }
     }
 
     public class DateOverride 

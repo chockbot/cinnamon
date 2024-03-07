@@ -417,7 +417,6 @@ public class ActivityController : ControllerBase
                     Description               = e.Description,
                     Videolink                 = e.VideoLink,
                     TicketRestriction         = e.TicketRestriction,
-                    OteSchedulePricingGroupId = e.OteSchedulePricingGroupId
                 };
             }).ToList() : null;
 

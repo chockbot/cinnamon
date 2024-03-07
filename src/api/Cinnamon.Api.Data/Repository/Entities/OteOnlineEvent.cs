@@ -7,7 +7,6 @@ public class OteOnlineEvent: BaseEntity
     public string Title { get; set; }
     public string Description { get; set; }
     public string TicketRestriction { get; set; }
-    public int? OteSchedulePricingGroupId { get; set; }
+    public int OteSchedulePricingGroupId { get; set; }
     public virtual OteSchedule OteSchedule { get; set; }
-    public virtual OteSchedulePricingGroup? OteSchedulePricingGroup { get; set; }
 }

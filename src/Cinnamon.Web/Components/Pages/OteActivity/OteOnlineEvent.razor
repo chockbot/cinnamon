@@ -243,8 +243,6 @@
                         VideoLink                 = p.VideoLink,
                         Description               = p.Description,
                         TicketRestriction         = p.TicketRestriction,
-                        OteSchedulePricingGroupId = p.OteSchedulePricingGroupId
-
                     };
                 }).ToList()
             };
@@ -255,7 +253,6 @@
                 Description               = modelTicketInfo.Description,
                 VideoLink                 = modelTicketInfo.VideoLink,
                 TicketRestriction         = modelTicketInfo.TicketRestriction,
-                OteSchedulePricingGroupId = modelTicketInfo.OteSchedulePricingGroupId
         });
         return data;
     }
@@ -276,7 +273,6 @@
                         Title                     = item.Title,
                         VideoLink                 = item.VideoLink,
                         TicketRestriction         = item.TicketRestriction,
-                        OteSchedulePricingGroupId = item.OteSchedulePricingGroupId
                     });
             }
             modelTicketInfo.Id                        = last.Id;
@@ -284,19 +280,8 @@
             modelTicketInfo.Description               = last.Description;
             modelTicketInfo.TicketRestriction         = last.TicketRestriction;
             modelTicketInfo.VideoLink                 = last.TicketRestriction;
-            modelTicketInfo.OteSchedulePricingGroupId = last.OteSchedulePricingGroupId;
         }
 
-    }
-
-    private async Task SelectedRestrictionChanged(int Id)
-    {
-        var restriction = PricingData.ItemPrices.Where(a => a.Id == Id).FirstOrDefault();
-        if (restriction is not null)
-        {
-            modelTicketInfo.TicketRestriction = restriction.Name;
-            modelTicketInfo.OteSchedulePricingGroupId = restriction.Id;
-        }
     }
 
     public class ModelData
@@ -332,8 +317,6 @@
         [Required(ErrorMessage = "The restriction is mandatory.")]
         public string TicketRestriction { get; set; } = string.Empty;
 
-        public int OteSchedulePricingGroupId { get; set; }
-
         // extras
         public bool IsOpen { get; set; } = false;
         public int Id { get; set; }
@@ -352,7 +335,6 @@
         if (result != null)
         {
             modelTicketInfo.TicketRestriction = result.Name;
-            modelTicketInfo.OteSchedulePricingGroupId = result.Id;
         }
     }
 

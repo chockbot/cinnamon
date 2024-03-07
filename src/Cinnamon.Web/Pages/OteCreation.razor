@@ -591,7 +591,6 @@
                         Description               = s.Description,
                         VideoLink                 = s.VideoLink,
                         TicketRestriction         = s.TicketRestriction,
-                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                     };
                 })
             }, token);
@@ -692,7 +691,8 @@
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
-            TicketInfos = ote.OnlineEvents.Select(a => {
+                TicketInfos = ote.OnlineEvents.Select(a =>
+                {
                 return new OteOnlineEvent.ModelData.TicketInfo {
                     Id                        = a.Id,
                     Title                     = a.Title,

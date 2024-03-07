@@ -99,9 +99,6 @@ public class UpdateOteArgs
 
         [Required]
         public string TicketRestriction { get; set; }
-
-        [Required]
-        public int OteSchedulePricingGroupId { get; set; }
     }
 
 }

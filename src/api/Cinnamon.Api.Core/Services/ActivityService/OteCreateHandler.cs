@@ -244,7 +244,6 @@ public class OteCreateHandler : IOteCreateHandler
                             Description = s.Description,
                             VideoLink = s.VideoLink,
                             TicketRestriction = s.TicketRestriction,
-                            OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                         };
                     }).ToList() : null,
             });

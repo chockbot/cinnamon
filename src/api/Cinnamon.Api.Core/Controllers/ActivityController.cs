@@ -2648,7 +2648,6 @@ public class ActivityController : ControllerBase
                         Description = s.Description,
                         VideoLink = s.VideoLink,    
                         TicketRestriction = s.TicketRestriction,
-                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                     }) : null,
             });
 
@@ -2719,7 +2718,6 @@ public class ActivityController : ControllerBase
                         Description = s.Description,
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
-                        OteSchedulePricingGroupId = s.OteSchedulePricingGroupId
                     };
                 })
             });

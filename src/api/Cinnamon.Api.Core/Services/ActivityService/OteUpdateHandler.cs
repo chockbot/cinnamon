@@ -133,7 +133,6 @@ public class OteUpdateHandler : IOteUpdateHandler
                         Description               = p.Description,
                         VideoLink                 = p.VideoLink,
                         TicketRestriction         = p.TicketRestriction,
-                        OteSchedulePricingGroupId = p.OteSchedulePricingGroupId
                     };
                 }).ToList()
             };

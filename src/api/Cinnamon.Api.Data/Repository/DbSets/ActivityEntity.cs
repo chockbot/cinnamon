@@ -487,7 +487,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             if(includeDescription) query = query.Include(a => a.ActivityDescription);
             if(includeProvider) query    = query.Include(a => a.Customer);
             if(includeImages) query      = query.Include(a => a.Images);
-            if (includeOnlineEvent)query = query.Include(a => a.OteSchedule).ThenInclude(o => o.OteOnlineEvent);
+            if (includeOnlineEvent)query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteOnlineEvent);
             if (includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteSchedulePricing);

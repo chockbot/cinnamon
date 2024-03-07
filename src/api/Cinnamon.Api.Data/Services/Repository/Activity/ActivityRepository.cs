@@ -1760,8 +1760,7 @@ public class ActivityRepository : IActivityRepository
                     Description               = s.Description,
                     TicketRestriction         = s.TicketRestriction,
                     Videolink                 = s.Videolink,
-                    OteSchedulePricingGroupId = s.OteSchedulePricingGroupId,
-                    OteScheduleId             = schedule.Id,
+                    OteSchedule               = schedule
                 };
             }).ToList();
 
