@@ -12,8 +12,7 @@ public class UpdateOteActivityArgs
     [Required]
     public IList<UpdateOtePricing> Pricings {get; set;}
 
-    [Required]
-    public IList<UpdateOteOnlineEvent> OnlineEvents { get; set; }
+    public IList<UpdateOteOnlineEvent>? OnlineEvents { get; set; }
 
     public class UpdateOteActivity 
     {
@@ -96,22 +95,15 @@ public class UpdateOteActivityArgs
 
     public class UpdateOteOnlineEvent
     {
-        [Required]
         public int Id { get; set; }
-
-        [Required]
         public string VideoLink { get; set; }
 
-        [Required]
         public string Title { get; set; }
 
-        [Required]
         public string Description { get; set; }
 
-        [Required]
         public string TicketRestriction { get; set; }
 
-        [Required]
         public int OteSchedulePricingGroupId { get; set; }
     }
 }

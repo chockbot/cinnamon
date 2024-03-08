@@ -1891,7 +1891,7 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
-            schedule.OteOnlineEvent = oteOnlineEventsDTOs.Select(s =>{
+            schedule.OteOnlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s =>{
                 return new OteOnlineEvent {
                     Id                        = s.Id,
                     Title                     = s.Title,
@@ -1899,7 +1899,7 @@ public class ActivityRepository : IActivityRepository
                     TicketRestriction         = s.TicketRestriction,
                     Videolink                 = s.Videolink,
                 };
-            }).ToList();
+            }).ToList() : null;
 
             var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
             if(!updatedRes.Succeeded || updatedRes.Result is null)

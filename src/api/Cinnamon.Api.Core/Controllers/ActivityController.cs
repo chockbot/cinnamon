@@ -2710,7 +2710,7 @@ public class ActivityController : ControllerBase
                         Name = p.Name
                     };
                 }),
-                OnlineEvents = args.OnlineEvents.Select(s => {
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
                     {
                         Id = s.Id,
@@ -2719,7 +2719,7 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     };
-                })
+                }): null
             });
 
             if (!result.Succeeded || result.Result == null)

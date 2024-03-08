@@ -125,7 +125,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                         Name = p.Name
                     };
                 }).ToList(),
-                OnlineEvents = args.OnlineEvents.Select(p => {
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOteOnlineEvent
                     {
                         Id                        = p.Id,
@@ -134,7 +134,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                         VideoLink                 = p.VideoLink,
                         TicketRestriction         = p.TicketRestriction,
                     };
-                }).ToList()
+                }).ToList() : null
             };
             var updateOte = await activityData.UpdateOteActivity(entity);
             if(!updateOte.Succeeded || updateOte.Result is null || !updateOte.Result.IsSuccess)

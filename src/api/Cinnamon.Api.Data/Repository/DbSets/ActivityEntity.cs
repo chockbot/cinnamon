@@ -338,8 +338,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvent);
-
+            if (oteSchedule.OteOnlineEvent != null)
+            {
+                activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvent);
+            }
             var result = await activityResult.FirstOrDefaultAsync();
             
             if(result is not null)
@@ -429,7 +431,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                     }
                 }
 
-                if (activity.ExperienceTypeId == 2)
+                if (result.OteSchedule.OteOnlineEvent != null)
                 {
                     // Update Online Events
                     var updatedOnlineEvents = oteSchedule.OteOnlineEvent.Where(p => p.Id > 0);

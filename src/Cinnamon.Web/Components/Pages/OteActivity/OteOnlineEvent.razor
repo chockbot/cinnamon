@@ -155,11 +155,10 @@
                         Ticket Restriction
                     </FieldLabel>
                     <FieldBody>
-                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="@modelTicketInfo.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
-                            <SelectItem Value='0' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
                             @foreach (var item in PricingData.ItemPrices)
                             {
-                                <SelectItem Value="@item.Name">@item.Name</SelectItem>
+                                <SelectItem Value="@item.Id">@item.Name</SelectItem>
                             }
                         </Select>
                         <div class="invalid-feedback">The ticket restriction is mandatory.</div>
@@ -192,8 +191,24 @@
     private TicketList modelTicketList = new();
     private Validations? ticketFormValidation;
     private Validations? ticketListFormValidation;
-
     private bool showErrors = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PricingData != null)
+        {
+            var listOfPricing = new List<OtePricing.ModelData.ItemPrice>();
+            listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = -1, Name = "Select Ticket Restriction", Disabled = true });
+            foreach (var item in PricingData.ItemPrices)
+            {
+                listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
+            }
+            PricingData = new OtePricing.ModelData
+            {
+                ItemPrices = listOfPricing
+            };
+        }
+    }
 
     private async Task NextClick()
     {

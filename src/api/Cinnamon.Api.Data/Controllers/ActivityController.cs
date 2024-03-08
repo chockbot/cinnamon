@@ -482,7 +482,7 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
-            var onlineEvents = args.OnlineEvents.Select(u => {
+            var onlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(u => {
                 return new OteOnlineEventsDTO {
                     Id                        = u.Id,
                     Description               = u.Description,
@@ -490,7 +490,7 @@ public class ActivityController : ControllerBase
                     TicketRestriction         = u.TicketRestriction,
                     Videolink                 = u.VideoLink, 
                 };
-            }).ToList();
+            }).ToList() : null;
 
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,

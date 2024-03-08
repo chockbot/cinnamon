@@ -8,7 +8,7 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<OtePricing> Pricings {get; set;}
 
-    public IEnumerable<OteOnlineEvent> OnlineEvents { get; set; }
+    public IEnumerable<OteOnlineEvent>? OnlineEvents { get; set; }
 
     public class OteActivity 
     {
