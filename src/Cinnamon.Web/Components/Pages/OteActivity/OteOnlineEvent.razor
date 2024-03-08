@@ -158,7 +158,7 @@
                         <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
                             @foreach (var item in PricingData.ItemPrices)
                             {
-                                <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                                <SelectItem Value="@item.Name">@item.Name</SelectItem>
                             }
                         </Select>
                         <div class="invalid-feedback">The ticket restriction is mandatory.</div>
