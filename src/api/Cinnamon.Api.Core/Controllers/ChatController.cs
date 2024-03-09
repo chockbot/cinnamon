@@ -35,12 +35,14 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler;
         private readonly IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler;
         private readonly IRequestMessageHandler requestMessageHandler;
+        private readonly IGetRequestMessageHandler getRequestMessageHandler;
 
         public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, 
             IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, 
             ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, 
             IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, 
-            IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler, IRequestMessageHandler requestMessageHandler)
+            IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler, IRequestMessageHandler requestMessageHandler,
+            IGetRequestMessageHandler getRequestMessageHandler)
         {
             _logger = logger;
 
@@ -53,6 +55,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.getChatMembersByChatRoomIdHandler = getChatMembersByChatRoomIdHandler;
             this.getChatConnectionByCustomerHandler = getChatConnectionByCustomerHandler;
             this.requestMessageHandler = requestMessageHandler;
+            this.getRequestMessageHandler = getRequestMessageHandler;
         }
 
         [Route("Create")]
@@ -433,6 +436,42 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new RequestMessageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("GetRequestMessage")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetRequestMessageResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetRequestMessage([FromQuery] GetRequestMessageArgs args)
+        {
+            try
+            {
+                var result = await getRequestMessageHandler.ExecuteAsync(new Services.ChatService.Interactors.GetRequestMessageArgs {
+                    Guid = args.Guid,
+                    Token = args.Token
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetRequestMessageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var payload = result.Result;
+
+                return new JsonResult(new GetRequestMessageResult
+                {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.ChatRoom.RequestMessagePayloadDTO {
+                        FirstName = payload.FirstName,
+                        ImageSrc = payload.ImageSrc,
+                        LastName = payload.LastName,
+                        ProviderId = payload.ProviderId
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetRequestMessageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
