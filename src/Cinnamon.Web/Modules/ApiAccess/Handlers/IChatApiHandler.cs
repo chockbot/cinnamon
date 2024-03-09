@@ -20,7 +20,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
         Task<AppResult<UpdateConnectionIdResult>> UpdateConnectionId(UpdateConnectionIdArgs args, string token);
         Task<AppResult<GetChatMembersByChatRoomIdResult>> GetChatMembersByChatRoomId(GetChatMembersByChatRoomIdArgs args, string token);
         Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args, string token);
-
-
+        Task<AppResult<RequestMessageResult>> RequestMessage(RequestMessageArgs args, string token);
     }
 }

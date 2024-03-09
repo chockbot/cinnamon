@@ -210,5 +210,28 @@ namespace Cinnamon.Web.Modules.ApiAccess.Chat
                 return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, "An error occured when calling get chat connections api");
             }
         }
+
+        public async Task<AppResult<RequestMessageResult>> RequestMessage(RequestMessageArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Chat/RequestMessage")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<RequestMessageResult>();
+
+                return AppResult<RequestMessageResult>.CreateSucceeded(result, "Successfully called request message api.");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<RequestMessageResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<RequestMessageResult>.CreateFailed(ex, "An error occured when calling request message api.");
+            }
+        }
     }
 }
