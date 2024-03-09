@@ -81,7 +81,7 @@
                                                 Ticket Restriction
                                             </FieldLabel>
                                             <FieldBody>
-                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" SelectedValue="@item.TicketRestriction" SelectedValueChanged="SelectedRestrictionChanged">
+                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
                                                     <SelectItem Value='0' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
                                                     @foreach (var item in PricingData.ItemPrices)
                                                     {
@@ -156,9 +156,10 @@
                     </FieldLabel>
                     <FieldBody>
                         <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
+                            <SelectItem Disabled Value="string.Empty">Select Ticket Restriction</SelectItem>
                             @foreach (var item in PricingData.ItemPrices)
                             {
-                                <SelectItem Value="@item.Name">@item.Name</SelectItem>
+                                <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
                             }
                         </Select>
                         <div class="invalid-feedback">The ticket restriction is mandatory.</div>
@@ -193,12 +194,11 @@
     private Validations? ticketListFormValidation;
     private bool showErrors = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
         if (PricingData != null)
         {
             var listOfPricing = new List<OtePricing.ModelData.ItemPrice>();
-            listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = -1, Name = "Select Ticket Restriction", Disabled = true });
             foreach (var item in PricingData.ItemPrices)
             {
                 listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
@@ -209,6 +209,7 @@
             };
         }
     }
+
 
     private async Task NextClick()
     {
