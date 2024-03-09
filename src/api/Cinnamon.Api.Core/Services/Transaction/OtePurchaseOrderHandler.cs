@@ -26,6 +26,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
+    private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
     private readonly ILogger<OtePurchaseOrderHandler> logger;
     private readonly ApplicationConfig applicationConfig;
 
@@ -33,7 +34,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData, ILogger<OtePurchaseOrderHandler> logger,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
-        ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -47,6 +48,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.logger = logger;
         this.applicationConfig = applicationConfig;
+        this.oteFinishTransactionHandler = oteFinishTransactionHandler;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -317,6 +319,22 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 .SetQueryParam("Ticket", ticketQueryString)
                 .SetQueryParam("Status","failed");
 
+            if(overallTotal == 0)
+            {
+                var finishTransaction = await oteFinishTransactionHandler.ExecuteAsync(new OteFinishTransactionArgs {
+                    TransactionId = result.Result.Result.Id
+                });
+                if(!finishTransaction.Succeeded || finishTransaction.Result is null)
+                {
+                    return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                }
+
+                return AppResult<OtePurchaseOrderResult>.CreateSucceeded(new OtePurchaseOrderResult {
+                    Action = 0,
+                    Id = result.Result.Result.Id,
+                    Url = successUrl
+                }, "Successfully request purchase order details.");
+            }
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
