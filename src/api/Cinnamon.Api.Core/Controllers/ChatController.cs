@@ -34,8 +34,13 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
         private readonly IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler;
         private readonly IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler;
+        private readonly IRequestMessageHandler requestMessageHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, 
+            IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, 
+            ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, 
+            IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, 
+            IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler, IRequestMessageHandler requestMessageHandler)
         {
             _logger = logger;
 
@@ -47,6 +52,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateConnectionIdHandler = updateConnectionIdHandler;
             this.getChatMembersByChatRoomIdHandler = getChatMembersByChatRoomIdHandler;
             this.getChatConnectionByCustomerHandler = getChatConnectionByCustomerHandler;
+            this.requestMessageHandler = requestMessageHandler;
         }
 
         [Route("Create")]
@@ -394,6 +400,39 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("RequestMessage")]
+        [HttpPost]
+        [ProducesResponseType(typeof(RequestMessageResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RequestMessage([FromBody] RequestMessageArgs args)
+        {
+            try
+            {
+                var result = await requestMessageHandler.ExecuteAsync(new Services.ChatService.Interactors.RequestMessageArgs {
+                    ProviderId = args.ProviderId
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new RequestMessageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var updateResult = result.Result;
+
+                return new JsonResult(new RequestMessageResult
+                {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.ChatRoom.RequestMessageDTO {
+                        Guid = result.Result.Guid,
+                        Token = result.Result.Token
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new RequestMessageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
