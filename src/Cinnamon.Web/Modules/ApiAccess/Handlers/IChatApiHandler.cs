@@ -21,5 +21,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
         Task<AppResult<GetChatMembersByChatRoomIdResult>> GetChatMembersByChatRoomId(GetChatMembersByChatRoomIdArgs args, string token);
         Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args, string token);
         Task<AppResult<RequestMessageResult>> RequestMessage(RequestMessageArgs args, string token);
+        Task<AppResult<GetRequestMessageResult>> GetRequestMessage(GetRequestMessageArgs args, string token);
     }
 }
