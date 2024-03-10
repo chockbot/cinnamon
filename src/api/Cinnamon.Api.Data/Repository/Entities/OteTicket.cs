@@ -17,7 +17,6 @@ public class OteTicket : BaseEntity
     public Activity Activity {get; set;}
     public OteSchedule OteSchedule {get; set;}
     public OteSchedulePricing OteSchedulePricing {get; set;}
-    public OteOnlineEvent OteOnlineEvent { get; set; }
     public Customer Customer {get; set;}
     public OteDate? OteDate {get; set;}
 }
