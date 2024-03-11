@@ -1,11 +1,15 @@
 @page "/transactions/ote-tickets/{Guid}/{Token}"
+@using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Framework.ApiCommand.ApiCore.DTO.Activity;
 @using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Components
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
+@inject IChatApiHandler chatApiHandler;
 
 
 @if(ticketDetails is not null)
@@ -96,7 +100,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="message-me">Message me</button>
+                    <button class="message-me" @onclick="() => MessageProvider(customerDetail.Id)">Message me</button>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile" class="ticket-column">
                     @foreach(var item in ticketDetails.Tickets)
@@ -161,9 +165,9 @@
                 </Column>
             </Row>
         </Container>
-
     }
 }
+<ModalLogin @ref="signinModal" ReturnUrl="@signInReturnUrl" />
 
 @code 
 {
@@ -172,15 +176,26 @@
     [Parameter]
     public string Token {get; set;}
 
+    private ModalLogin signinModal;
+
     private OteTicketDetailsDTO? ticketDetails;
 
     private bool IsOnlineEvent { get; set; } = false;
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    private string signInReturnUrl = string.Empty;
+
+    private bool isAuthenticated = false;
+
+    public CustomerProfile customerProfile = new CustomerProfile();
 
     public CustomerProfile customerDetail = new CustomerProfile();
 
     protected override async Task OnParametersSetAsync()
     {
         await LoadTickets();
+        await LoadProfile();
     }
 
     private async Task LoadTickets()
@@ -222,6 +237,52 @@
         }
     }
 
+    private async Task LoadProfile()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        Token = user.FindFirstValue("Token");
+        if (user != null && user.Identity != null)
+        {
+            isAuthenticated = user.Identity.IsAuthenticated;
+            //Get User Profile
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                customerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
+        }
+    }
+    private async Task MessageProvider(int providerId)
+    {
+        if (customerProfile is null)
+        {
+            await signinModal.Show();
+            return;
+        }
+
+        var messageProviderRes = await chatApiHandler.RequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.RequestMessageArgs
+            {
+                ProviderId = providerId
+            }, Token);
+        if (messageProviderRes.Succeeded && messageProviderRes.Result is not null && messageProviderRes.Result.IsSuccess)
+        {
+            var result = messageProviderRes.Result.Result;
+            var url = $"messages/?guid={result.Guid}&token={result.Token}";
+
+            NavigationManager.NavigateTo(url);
+        }
+    }
     private string FormattedId(int id)
     {
         var idString = id.ToString();
