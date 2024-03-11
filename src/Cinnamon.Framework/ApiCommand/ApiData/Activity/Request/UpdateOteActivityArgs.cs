@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using static Cinnamon.Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 
@@ -10,6 +11,8 @@ public class UpdateOteActivityArgs
 
     [Required]
     public IList<UpdateOtePricing> Pricings {get; set;}
+
+    public IList<UpdateOteOnlineEvent>? OnlineEvents { get; set; }
 
     public class UpdateOteActivity 
     {
@@ -88,5 +91,19 @@ public class UpdateOteActivityArgs
 
         [Required]
         public decimal Price {get; set;}
+    }
+
+    public class UpdateOteOnlineEvent
+    {
+        public int Id { get; set; }
+        public string VideoLink { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public string TicketRestriction { get; set; }
+
+        public int OteSchedulePricingGroupId { get; set; }
     }
 }

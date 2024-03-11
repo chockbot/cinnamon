@@ -10,6 +10,9 @@ public class CreateOteArgs
     [Required]
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    [Required]
+    public IEnumerable<OteOnlineEvent>? OnlineEvents { get; set; }
+
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 
     public class OteActivity 
@@ -97,6 +100,22 @@ public class CreateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+    }
+
+    public class OteOnlineEvent
+    {
+        [Required]
+        public string VideoLink { get; set; }
+        [Required]
+        public string Title { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public string TicketRestriction { get; set; }
+
+        public int OteSchedulePricingGroupId { get; set; }
     }
 
     public class DateOverride 

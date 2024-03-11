@@ -15,6 +15,8 @@ public class OteScheduleDTO
     public string EventDurationTimeUnit {get; set;}
 
     public OteSchedulePricingDTO OteSchedulePricingDTO { get; set; }
+    public OteOnlineEventsDTO OteOnlineEventsDTO { get; set; }
     public IList<OteSchedulePricingDTO> OteSchedulePricingDTOs { get; set; }
     public virtual IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
+    //public virtual IList<OteOnlineEventsDTO> OteOnlineEvent { get; set; }
 }

@@ -235,7 +235,17 @@ public class OteCreateHandler : IOteCreateHandler
                             DateEnd = d.Date.Date.Add(d.TimeEnd),
                             DateStart = d.Date.Date.Add(d.TimeStart)
                         };
-                    }).ToList() : null
+                    }).ToList() : null,
+                OnlineEvents = args.OteOnlineEvents is not null ?
+                    args.OteOnlineEvents.Select(s => {
+                        return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OteOnlineEvent
+                        {
+                            Title = s.Title,
+                            Description = s.Description,
+                            VideoLink = s.VideoLink,
+                            TicketRestriction = s.TicketRestriction,
+                        };
+                    }).ToList() : null,
             });
             if(!createOteRes.Succeeded || createOteRes.Result is null || !createOteRes.Result.IsSuccess)
             {

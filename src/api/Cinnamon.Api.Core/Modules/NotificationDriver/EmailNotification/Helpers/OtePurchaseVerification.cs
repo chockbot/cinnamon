@@ -34,6 +34,7 @@ public class OtePurchaseVerification
                 </div>
             ";
         }
+        string ticketLinkText = args.EventLocation.ToLower() == "online" ? "View Link Here!" : "View Ticket Here!";
 
         string htmlDiscount = string.Empty;
         if(args.Discount.HasValue)
@@ -122,7 +123,7 @@ public class OtePurchaseVerification
                         text-decoration: none;
                         '
                         href='{args.TicketDetailsLink}'
-                        ><b>View Ticket Here!</b></a
+                        ><b>{ticketLinkText}</b></a
                     >
                     </div>
                 </div>
