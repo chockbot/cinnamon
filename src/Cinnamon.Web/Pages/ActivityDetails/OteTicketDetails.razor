@@ -1,59 +1,168 @@
 @page "/transactions/ote-tickets/{Guid}/{Token}"
-@layout EmptyLayout
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Framework.ApiCommand.ApiCore.DTO.Activity;
+@using Cinnamon.Web.Models.Entities
 @inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
 
+
 @if(ticketDetails is not null)
 {
-    <div class="ticket-details-wrapper py-5">
-        <Container>
-            @foreach (var item in ticketDetails.Tickets)
-            {
-                <Row class="mb-4 ticket-box">
-                    <Column ColumnSize="ColumnSize.Is6" class="m-padding-0">
-                        <div class="p-2 p-md-3 text-center">
-                            <img class="img-banner" src="@ticketDetails.ImageSrc" alt="event banner">
-                        </div>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is6" class="m-padding-0 border-ticket-dashed">
-                        <div class="p-3">
-                            <div>
-                                <h3 class="font-weight-700 font-30 color-black-100 mb-2 mb-md-4 text-capitalize m-font-14">@ticketDetails.EventName</h3>
-                                <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                    <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-pin-icon.png" alt="location">
-                                    <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventLocation</p>
-                                </div>
-                                <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                    <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-calendar-icon.png" alt="calendar">
-                                    <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
-                                </div>
-                                <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                    <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-clock-icon.png" alt="clock">
-                                    <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
-                                </div>
-                                <div class="d-flex mb-1 mb-md-3 align-items-center">
-                                    <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
-                                    <p class="font-14 color-grey-100 mb-0 m-font-7">@item.Name</p>
-                                </div>
-
-                                <div class="text-center">
-                                    <p style="margin-bottom: -5px;">@FormattedId(item.Id)</p>
-                                    <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
-                                </div>
-
+    @if (ticketDetails.EventLocation != "Online")
+    {
+        <div class="ticket-details-wrapper py-5">
+            <Container>
+                @foreach (var item in ticketDetails.Tickets)
+                {
+                    <Row class="mb-4 ticket-box">
+                        <Column ColumnSize="ColumnSize.Is6" class="m-padding-0">
+                            <div class="p-2 p-md-3 text-center">
+                                <img class="img-banner" src="@ticketDetails.ImageSrc" alt="event banner">
+                            </div>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6" class="m-padding-0 border-ticket-dashed">
+                            <div class="p-3">
                                 <div>
-                                    <p class="font-18 color-black-100 font-weight-700 text-center m-font-10 mb-0">Thankyou for choosing <span class="font-weight-400 color-orange-100 font-familt-backline">Cinnamon!</span></p>
+                                    <h3 class="font-weight-700 font-30 color-black-100 mb-2 mb-md-4 text-capitalize m-font-14">@ticketDetails.EventName</h3>
+                                    <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                        <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-pin-icon.png" alt="location">
+                                        <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventLocation</p>
+                                    </div>
+                                    <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                        <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-calendar-icon.png" alt="calendar">
+                                        <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                        <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-clock-icon.png" alt="clock">
+                                        <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
+                                    </div>
+                                    <div class="d-flex mb-1 mb-md-3 align-items-center">
+                                        <img class="me-2 m-width-10-px h-auto" src="images/ote/ticket-ticket-icon.png" alt="ticket">
+                                        <p class="font-14 color-grey-100 mb-0 m-font-7">@item.Name</p>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <p style="margin-bottom: -5px;">@FormattedId(item.Id)</p>
+                                        <img class="img-qrcode" src="@item.QRCodeData" alt="qrcode">
+                                    </div>
+
+                                    <div>
+                                        <p class="font-18 color-black-100 font-weight-700 text-center m-font-10 mb-0">Thankyou for choosing <span class="font-weight-400 color-orange-100 font-familt-backline">Cinnamon!</span></p>
+                                    </div>
                                 </div>
                             </div>
+                        </Column>
+                    </Row>
+                }
+            </Container>
+        </div>
+    }
+    else
+    {
+        <Container>
+            <Row class="mb-4 mt-5 ticket-box">
+                <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                    <div class="event-image">
+                        <img class="img-banner" src="@ticketDetails.ImageSrc" alt="event banner">
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                    <div class="event-details">
+                        <p class="event-title">@ticketDetails.EventName</p>
+                        <div class="event-type d-flex">
+                            <img class="xp-type-img me-2" src="images/activity-summary/laptop-icon.png" alt="online" />
+                            <label class="font-14 font-weight-700 color-white-100 rounded-pill bg-black-100 prevent-select px-3 py-1">Online</label>
                         </div>
-                    </Column>
-                </Row>   
-            }
+                        <div class="event-schedule">
+                            <p class="font-14  color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.DayOfWeek, @ticketDetails.EventDate.ToString("MMMM dd, yyyy")</p>
+                            <p class="font-14 color-grey-100 mb-0 m-font-7">@ticketDetails.EventDate.ToString("hh:mm tt")</p>
+                        </div>
+                        <p class="event-description">@ticketDetails.EventDescription</p>
+                    </div>
+                </Column>
+            </Row>
+            <Divider />
+            <Row class="mb-4 mt-4 ticket-schedule">
+                <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile" class="event-column">
+                    <p class="event-by">Event by</p>
+                    <div class="d-inline-flex">
+                        <div class="d-flex align-items-center me-2 me-md-5">
+                            <img class="provider-avatar rounded-circle" src="@customerDetail.ProfilePath" alt="avatar">
+                            <div class="ms-3">
+                                <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-16">@customerDetail.FirstName @customerDetail.LastName</p>
+                                <label class="font-16 font-weight-400 color-grey-100 m-font-16">Joined @customerDetail.DateJoined.Year</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="message-me">Message me</button>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile" class="ticket-column">
+                    @foreach(var item in ticketDetails.Tickets)
+                    {
+                        DateTime now = DateTime.Now.Date;
+                        DateTime eventDate = ticketDetails.EventDate.Date;
+                        // Calculate the difference in days
+                        TimeSpan timeUntilEvent = eventDate - now;
+                        // Get the number of days left
+                        int daysLeft = timeUntilEvent.Days;
+
+                        <div class="online-ticket-wrapper">
+                            <div class="header-title">
+                                <div class="title">
+                                    <img class="camera-img" src="images/camera-icon.png" alt="camera-icon">
+                                    <p class="link-name">@item.LinkTitle</p>
+                                </div>
+                                <div class="start-in-section">
+                                    @if (daysLeft == 0)
+                                    {
+                                        <p class="start-in">Ongoing</p>
+                                    }
+                                    else if (daysLeft >= 1)
+                                    {
+                                        <p class="start-in">Start in @daysLeft day@(daysLeft != 1 ? "s" : "")</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="start-in">Expired</p>
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="d-flex schedule-date">
+                                <img class="me-2" src="images/ote/ticket-calendar-icon.png" alt="clock">
+                                <label class="ote-schedule me-1">@eventDate.ToString("MMMM dd, yyyy")</label>
+                            </div>
+                            <div class="d-flex schedule-time">
+                                <img class="me-2" src="images/ote/ticket-clock-icon.png" alt="clock">
+                                <label class="ote-schedule me-1">@ticketDetails.EventDate.ToString("hh:mm tt")</label>
+                            </div>
+                            <Divider/>
+                            @if (daysLeft > 1)
+                            {
+                                <Tooltip Multiline Text="Button will be enabeled a day before the event.">
+                                    <button class="button-disabled">View Event Link</button>
+                                </Tooltip>
+                                
+                            }
+                            else if (daysLeft == 1 || daysLeft == 0)
+                            {
+                                <a class="button-link" href="@item.VideoLink" target="_blank">View Event Link</a>
+                            }
+                            else
+                            {
+                                <Tooltip Multiline Text="Event ends.">
+                                    <button class="button-disabled">View Event Link</button>
+                                </Tooltip>
+                            }
+                        </div>
+                    }
+                </Column>
+            </Row>
         </Container>
-    </div>
+
+    }
 }
 
 @code 
@@ -64,6 +173,10 @@
     public string Token {get; set;}
 
     private OteTicketDetailsDTO? ticketDetails;
+
+    private bool IsOnlineEvent { get; set; } = false;
+
+    public CustomerProfile customerDetail = new CustomerProfile();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -86,8 +199,22 @@
                 NavigationManager.NavigateTo("/not-found");
                 return;
             }
-
             ticketDetails = ticketResult.Result.Result;
+
+            //Get Provider Details
+            var customer = await accountApiHandler.GetCustomerById(ticketDetails.ProviderId);
+            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+            {
+                var args = customer.Result.Result;
+                customerDetail = new CustomerProfile
+                    {
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        ProfilePath = args.ProfileImg,
+                        DateJoined = args.DateJoined
+                    };
+            }
         }
         catch (System.Exception)
         {

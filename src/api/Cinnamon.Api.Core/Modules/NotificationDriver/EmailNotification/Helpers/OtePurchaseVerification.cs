@@ -34,7 +34,7 @@ public class OtePurchaseVerification
                 </div>
             ";
         }
-
+        string ticketLinkText = args.EventLocation.ToLower() == "online" ? "View Link Here!" : "View Ticket Here!";
         return $@"
             <div
                 style='
@@ -105,7 +105,7 @@ public class OtePurchaseVerification
                         text-decoration: none;
                         '
                         href='{args.TicketDetailsLink}'
-                        ><b>View Ticket Here!</b></a
+                        ><b>{ticketLinkText}</b></a
                     >
                     </div>
                 </div>

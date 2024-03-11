@@ -116,9 +116,7 @@
                             <div class="header">Thankyou for choosing <span class="cinnamon-text">Cinnamon!</span></div>
                             <p class="checkout-text">Checkout your event now!</p>
                             <div class="text-center">
-                                <Button Clicked="NavigateToHome" class="view-link">
-                                    View Link/s
-                                </Button>
+                                <a class="view-link text-decoration-none" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Link/s</a>
                             </div>
                             <div class="text-center">
                                 <Button Clicked="NavigateToHome" class="home-button">
@@ -173,7 +171,6 @@
             NavigationManager.NavigateTo("/not-found");
             return;
         }
-
         purchaseOrder = orderSummaryRes.Result.Result;
     }
 
