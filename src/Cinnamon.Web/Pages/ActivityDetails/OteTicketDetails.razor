@@ -265,8 +265,9 @@
     }
     private async Task MessageProvider(int providerId)
     {
-        if (customerProfile is null)
+        if (!isAuthenticated)
         {
+            signInReturnUrl = NavigationManager.Uri;
             await signinModal.Show();
             return;
         }
