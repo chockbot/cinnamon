@@ -1,0 +1,402 @@
+﻿@namespace Cinnamon.Web.Components.Pages.OteActivity
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@inject INotificationService NotificationService;
+@inject IJSRuntime JS;
+@implements IOteComponent;
+
+<section class="ote-online-wrapper">
+    <p class="header-title">
+        Online Event Page
+    </p>
+    <p class="font-20 color-grey-100 text-justify m-font-16">
+        Attendees will join your online event through your virtual venue. Utilize this space to 
+        integrate your online meeting or event hosting platform and provide exclusive content. 
+        We'll direct your ticket holders to this page from your event listing and in reminder 
+        emails.
+    </p>
+    <div class="my-3 border-radius-10">
+        <Validations @ref="ticketListFormValidation" Model="modelTicketList" Mode="ValidationMode.Auto">
+            <div class="accordion" id="pricings-accordion">
+                @foreach (var item in modelTicketList.TicketInformations)
+                {
+                    <div class="accordion-item" @key="item">
+                        <h2 class="accordion-header">
+                            <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")'
+                                    class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")'
+                                    type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
+                                @item.Title
+                            </button>
+                        </h2>
+                        <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
+                            <div class="accordion-body bg-white-200">
+                                <div class="item-form-body">
+                                    <Validation>
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                Video conference link
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.VideoLink">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation>
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                Title
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Title">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation>
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                Description
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    @if (PricingData.ItemPrices.Count != 0)
+                                    {
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                Ticket Restriction
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
+                                                    <SelectItem Value='0' Disabled class="text-capitalize">-Select Ticket Restriction-</SelectItem>
+                                                    @foreach (var item in PricingData.ItemPrices)
+                                                    {
+                                                        <SelectItem Value="@item.Name">@item.Name</SelectItem>
+                                                    }
+                                                </Select>
+                                                <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                                            </FieldBody>
+                                        </Field>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </Validations>
+    </div>
+    @if (modelTicketList.TicketInformations.Count > 0)
+    {
+        <Divider class="d-none m-d-block" />
+    }
+    <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <Validations @ref="ticketFormValidation" Mode="FormMode" Model="modelTicketInfo">
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Video conference link
+                    </FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelTicketInfo.VideoLink">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Title
+                    </FieldLabel>
+                    <FieldBody>
+                        <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="modelTicketInfo.Title">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Description
+                    </FieldLabel>
+                    <FieldBody>
+                        <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="modelTicketInfo.Description">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </MemoEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            @if (PricingData.ItemPrices.Count != 0)
+            {
+                <Field class="mb-4">
+                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                        Ticket Restriction
+                    </FieldLabel>
+                    <FieldBody>
+                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
+                            <SelectItem Disabled Value="string.Empty">Select Ticket Restriction</SelectItem>
+                            @foreach (var item in PricingData.ItemPrices)
+                            {
+                                <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
+                            }
+                        </Select>
+                        <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                    </FieldBody>
+                </Field>
+            }
+            <div>
+                <Button Clicked="AddMoreTicket" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
+                    add more 
+                </Button>
+            </div>
+        </Validations>
+    </div>
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+</section>
+
+
+
+@code {
+    [Parameter]
+    public EventCallback OnNextClick { get; set; }
+    [Parameter]
+    public EventCallback OnPrevClick { get; set; }
+    [Parameter]
+    public OteLocation.ModelData LocationData { get; set; }
+
+    [Parameter]
+    public OtePricing.ModelData PricingData { get; set; }
+    private TicketInformation modelTicketInfo = new();
+    private TicketList modelTicketList = new();
+    private Validations? ticketFormValidation;
+    private Validations? ticketListFormValidation;
+    private bool showErrors = false;
+
+    protected override void OnParametersSet()
+    {
+        if (PricingData != null)
+        {
+            var listOfPricing = new List<OtePricing.ModelData.ItemPrice>();
+            foreach (var item in PricingData.ItemPrices)
+            {
+                listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
+            }
+            PricingData = new OtePricing.ModelData
+            {
+                ItemPrices = listOfPricing
+            };
+        }
+    }
+
+
+    private async Task NextClick()
+    {
+        if (OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync();
+        }
+    }
+
+    private async Task PrevClick()
+    {
+        if (OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync();
+        }
+    }
+
+    public async Task<bool> FieldValid()
+    {
+        if (ticketFormValidation is not null)
+        {
+            bool ticketValid = await ticketFormValidation.ValidateAll();
+            bool ticketListValid = await ticketListFormValidation.ValidateAll();
+            bool valid = ticketValid && ticketListValid;
+            showErrors = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            if (!valid)
+            {
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-online-wrapper .is-invalid");
+            }
+            return valid;
+        }
+        return false;
+    }
+
+    public ModelData GetData()
+    {
+        ModelData data = new ModelData
+            {
+                TicketInfos = modelTicketList.TicketInformations.Select(p =>
+                {
+                    return new ModelData.TicketInfo
+                    {
+                        Id                        = p.Id,
+                        Title                     = p.Title,
+                        VideoLink                 = p.VideoLink,
+                        Description               = p.Description,
+                        TicketRestriction         = p.TicketRestriction,
+                    };
+                }).ToList()
+            };
+        data.TicketInfos.Add(new ModelData.TicketInfo
+        {
+                Id                        = modelTicketInfo.Id,
+                Title                     = modelTicketInfo.Title,
+                Description               = modelTicketInfo.Description,
+                VideoLink                 = modelTicketInfo.VideoLink,
+                TicketRestriction         = modelTicketInfo.TicketRestriction,
+        });
+        return data;
+    }
+
+    public void SetState(ModelData data)
+    {
+        data.TicketInfos = data.TicketInfos.OrderBy(a => a.Id).ToList();
+        var last = data.TicketInfos.LastOrDefault();
+        if (last is not null)
+        {
+            var notLast = data.TicketInfos.Where(p => p.Id != last.Id);
+            foreach (var item in notLast)
+            {
+                modelTicketList.TicketInformations.Add(new TicketInformation
+                    {
+                        Id                        = item.Id,
+                        Description               = item.Description,
+                        Title                     = item.Title,
+                        VideoLink                 = item.VideoLink,
+                        TicketRestriction         = item.TicketRestriction,
+                    });
+            }
+            modelTicketInfo.Id                        = last.Id;
+            modelTicketInfo.Title                     = last.Title;
+            modelTicketInfo.Description               = last.Description;
+            modelTicketInfo.TicketRestriction         = last.TicketRestriction;
+            modelTicketInfo.VideoLink                 = last.TicketRestriction;
+        }
+
+    }
+
+    public class ModelData
+    {
+        public IList<TicketInfo> TicketInfos { get; set; }
+        public class TicketInfo
+        {
+            public int Id { get; set; }
+            public string VideoLink { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string TicketRestriction { get; set; }
+            public int OteSchedulePricingGroupId { get; set; }
+        }
+    }
+
+    private class TicketList
+    {
+        public IList<TicketInformation> TicketInformations { get; set; } = new List<TicketInformation>();
+    }
+
+    public class TicketInformation
+    {
+        [Required(ErrorMessage = "The video link field is mandatory.")]
+        public string VideoLink { get; set; }
+
+        [Required(ErrorMessage = "The title is mandatory.")]
+        public string Title { get; set; }
+
+        [Required(ErrorMessage = "The description is mandatory.")]
+        public string Description { get; set; }
+
+        [Required(ErrorMessage = "The restriction is mandatory.")]
+        public string TicketRestriction { get; set; } = string.Empty;
+
+        // extras
+        public bool IsOpen { get; set; } = false;
+        public int Id { get; set; }
+        public bool Valid
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(VideoLink) && !string.IsNullOrEmpty(Title) && !string.IsNullOrEmpty(TicketRestriction);
+            }
+        }
+    }
+
+    private async Task SelectedRestrictionChanged(string restriction)
+    {
+        var result = PricingData.ItemPrices.FirstOrDefault(item => item.Name.Equals(restriction, StringComparison.OrdinalIgnoreCase));
+        if (result != null)
+        {
+            modelTicketInfo.TicketRestriction = result.Name;
+        }
+    }
+
+    private ValidationMode FormMode
+    {
+        get
+        {
+            return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
+        }
+    }
+
+    private async Task AddMoreTicket()
+    {
+        bool priceValid = await ticketListFormValidation.ValidateAll();
+        if (priceValid)
+        {
+            modelTicketInfo.Id = modelTicketList.TicketInformations.Count + 1;
+            modelTicketList.TicketInformations.Add(modelTicketInfo);
+            modelTicketInfo = new();
+        }
+    }
+
+    private string RestrictionClass
+    {
+        get
+        {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            if (showErrors)
+            {
+                if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private async Task ViewGuide()
+    {
+
+    }
+
+    private async Task CloseGuide()
+    {
+
+    }
+}

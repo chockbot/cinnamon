@@ -2648,7 +2648,15 @@ public class ActivityController : ControllerBase
                         Date = d.Date,
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
-                    }) : null
+                    }) : null,
+                OteOnlineEvents = args.OnlineEvents is not null ?
+                    args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
+                    {
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,    
+                        TicketRestriction = s.TicketRestriction,
+                    }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2709,7 +2717,17 @@ public class ActivityController : ControllerBase
                         Price = p.Price,
                         Name = p.Name
                     };
-                })
+                }),
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
+                    {
+                        Id = s.Id,
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                    };
+                }): null
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2740,12 +2758,13 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
-                Handler = handler,
-                IncludeAddress = args.IncludeAddress ?? false,
+                Handler            = handler,
+                IncludeAddress     = args.IncludeAddress ?? false,
                 IncludeDescription = args.IncludeDescription ?? false,
-                IncludePricing = args.IncludePricing ?? false,
-                IncludeSchedule = args.IncludeSchedule ?? false,
-                IncludeImages = args.IncludeImages ?? false
+                IncludePricing     = args.IncludePricing ?? false,
+                IncludeSchedule    = args.IncludeSchedule ?? false,
+                IncludeImages      = args.IncludeImages ?? false,
+                IncludeOnlineEvent = args.IncludeOnlineEvent ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {

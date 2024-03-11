@@ -10,6 +10,8 @@ public class UpdateOteArgs
     [Required]
     public IEnumerable<OteUpdatePricing> Pricings {get; set;}
 
+    public IEnumerable<OteUpdateOnlineEvent>? OnlineEvents { get; set; }
+
     public class OteUpdateActivity 
     {
         [Required]
@@ -80,6 +82,14 @@ public class UpdateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+    }
+    public class OteUpdateOnlineEvent
+    {
+        public int Id { get; set; }
+        public string VideoLink { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string TicketRestriction { get; set; }
     }
 
 }

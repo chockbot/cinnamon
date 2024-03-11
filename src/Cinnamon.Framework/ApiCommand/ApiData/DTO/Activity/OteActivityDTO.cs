@@ -37,5 +37,6 @@ public class OteActivityDTO
     public IEnumerable<ActivityImageDTO> Images {get; set;}
     public CustomerDTO Owner {get; set;}
     public IEnumerable<OteScheduleDateDTO> OteDates {get; set;}
+    public IEnumerable<OteOnlineEventsDTO> OteOnlineEvent { get; set;}
     public OteScheduleDTO OteSchedule {get; set;}
 }
