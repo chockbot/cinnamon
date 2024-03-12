@@ -311,7 +311,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             this.applicationContext.OteSchedules.Add(oteSchedule);
             this.applicationContext.OteSchedulePricingGroups.AddRange(schedulePricingGroups);
             this.applicationContext.OteDates.AddRange(oteDates);
-            this.applicationContext.OteOnlineEvent.AddRange(oteOnlineEvents);
+            if (oteOnlineEvents != null)
+            {
+                this.applicationContext.OteOnlineEvent.AddRange(oteOnlineEvents);
+            }
             this.applicationContext.OteDateOverrides.AddRange(dateOverrides);
             
             

@@ -485,11 +485,11 @@
         try
         {
             summary = GetSummary();
-            var location = summary.LocationData;
-            var eventData = summary.EventData;
-            var schedule = summary.PricingData;
+            var location    = summary.LocationData;
+            var eventData   = summary.EventData;
+            var schedule    = summary.PricingData;
             var publishData = summary.PublishData;
-            var onlineData = summary.OnlineData;
+            var onlineData  = string.IsNullOrEmpty(summary.OnlineData.TicketInfos[0].Title) ? null : summary.OnlineData;
 
             await ProgressService.Go(null, opts => {opts.Color = Color.Warning;});
 
@@ -540,14 +540,14 @@
                             TimeStart = d.TimeStart
                         };
                     }),
-                    OnlineEvents = onlineData.TicketInfos.Select(a => {
+                    OnlineEvents = onlineData is not null ? onlineData.TicketInfos.Select(a => {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteOnlineEvent{
                             Title = a.Title,
                             Description = a.Description,
                             VideoLink = a.VideoLink,
                             TicketRestriction = a.TicketRestriction,
                         };
-                    })
+                    }) : null
              }, token);
 
             await ProgressService.Go(-1);
