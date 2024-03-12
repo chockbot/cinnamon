@@ -1755,7 +1755,7 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
-            var onlineEvent = oteOnlineEventsDTOs.Select(s => {
+            var onlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s => {
                 return new OteOnlineEvent {
                     Title                     = s.Title,
                     Description               = s.Description,
@@ -1775,7 +1775,7 @@ public class ActivityRepository : IActivityRepository
                         };
                     }).ToList(),
                 };
-            }).ToList();
+            }).ToList(): null;
 
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate {
