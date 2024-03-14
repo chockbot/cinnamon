@@ -178,5 +178,97 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<ManaulDisbursementResult>.CreateFailed(ex, "An error occured when posting manual disbursement api");
             }
         }
+
+        public async Task<AppResult<EventPoliciesResult>> EventPolicies(EventPoliciesArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/EventPolicies")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<EventPoliciesResult>();
+
+                return AppResult<EventPoliciesResult>.CreateSucceeded(result, "Successfully post event policies api.");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, "An error occured when posting event policies api.");
+            }
+        }
+
+        public async Task<AppResult<EventPoliciesResult>> EventBuyerPolicies(EventBuyerPoliciesArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/EventBuyerPolicies")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<EventPoliciesResult>();
+
+                return AppResult<EventPoliciesResult>.CreateSucceeded(result, "Successfully post event policies api.");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, "An error occured when posting event policies api.");
+            }
+        }
+
+        public async Task<AppResult<EventPoliciesResult>> EventSellerPolicies(EventSellerPoliciesArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/EventSellerPolicies")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<EventPoliciesResult>();
+
+                return AppResult<EventPoliciesResult>.CreateSucceeded(result, "Successfully post event policies api.");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<EventPoliciesResult>.CreateFailed(ex, "An error occured when posting event policies api.");
+            }
+        }
+
+        public async Task<AppResult<PrivacyPoliciesResult>> PrivacyPolicies(PrivacyPoliciesArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/PrivacyPolicies")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<PrivacyPoliciesResult>();
+
+                return AppResult<PrivacyPoliciesResult>.CreateSucceeded(result, "Successfully post event policies api.");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<PrivacyPoliciesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<PrivacyPoliciesResult>.CreateFailed(ex, "An error occured when posting event policies api.");
+            }
+        }
     }
 }

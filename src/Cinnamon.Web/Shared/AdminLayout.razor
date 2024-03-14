@@ -60,6 +60,11 @@
                             <img class="icon-promotion" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Disbursements</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToDynamicContents">
+                            <img class="icon-promotion" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Dynamic Policies</span>
+                        </a>
+                    </li>
                 </ul>
             }
         </LayoutSiderContent>
@@ -137,5 +142,10 @@
     private void NavigateToDisbursements()
     {
         navigationManager.NavigateTo("/admin/disbursements");
+    }
+
+    private void NavigateToDynamicContents()
+    {
+        navigationManager.NavigateTo("/admin/dynamic-contents");
     }
 }

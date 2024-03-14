@@ -62,6 +62,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteDateData, Modules.DataAccess.OteDate.OTeDateData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -235,6 +236,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateDynamicContentHandler, Services.AdminService.UpdateDynamicContentHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetDynamicContentHandler, Services.AdminService.GetDynamicContentHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();

@@ -3,9 +3,11 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @using Cinnamon.Web.Pages
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
 @inject IJSRuntime jsRuntime;
+@inject ISystemApiHandler systemApiHandler;
 
 <PageTitle>@Title | CinnamonPH</PageTitle>
 <SeoMeta Title="@Title" Subject="@Title" Url="/help" />
@@ -924,287 +926,19 @@
             @if (isPrivacyDisplayed)
             {
 				<div class="container p-5">
-					<p class="heading-secondary text-center">Cinnamon Privacy Policy</p>
-					<p class="heading-secondary text-center">(“Cinnamon Privacy Policy”)</p>
+					<p class="heading-secondary text-center">@privacyPoliciesModel.Title</p>
 					<p class="terms-caption text-center">Last modified – March 01, 2023</p>
-					<div class="policy-style mt-5">
-						<p class="justify">
-							Cinnamon (“we”, “us”, “our” or “Cinnamon”), as an online referral marketing software, respects, values, and protects the privacy of its Users (“you”, “your”, or “Users”).
-						</p>
-
-						<p class="justify">
-							The Cinnamon Privacy Policy (“Privacy Policy”) provides for the treatment and rules governing our collection, use, retention, and sharing of your personal information, as well as your rights with respect to your data, in accordance with established data privacy laws including Republic Act 10173 – Data Privacy Act of 2012 (“DPA”).The Privacy Policy, in particular, contains the following:
-						</p>
-						<br />
-						<ol>
-							<li class="justify">Notice of Consent,</li>
-							<li class="justify">Definition of Key Terminologies,</li>
-							<li class="justify">Information we collect from Users,</li>
-							<li class="justify">Our use for collected personal information,</li>
-							<li class="justify">Rules on Third Parties</li>
-							<li class="justify">Rules on our retention of personal information,</li>
-							<li class="justify">Rules on our Disposal of personal data or personal information,</li>
-							<li class="justify">Our protection and security for your personal information,</li>
-							<li class="justify">Your rights in relation to your personal information, and</li>
-							<li class="justify">Other rules concerning personal information.</li>
-						</ol>
-						<br />
-						<p class="justify">
-							All visitors to our site, whether registered or not, shall be classified as a “User” for the purpose of this Cinnamon Privacy Policy. Registered users, Non-registered users, subscribers, brands, customer brands, prospective customer brands, affiliates, and any other person or entity who avail of our Service, Software, and Website shall likewise be considered as a “User” for the purpose of this Policy. Furthermore, all persons and/or entities that use the API of any third-party website, Company, or entity and/or that use Cinnamon’s generated API access tokens to enable Integrations or Interoperations with Cinnamon’s Services, Software, and Website are hereby likewise expressly considered as a “User” for the purpose of this Policy.
-						</p>
-						<p class="justify">
-							Should you have any questions, requests, or any concern regarding this Privacy Policy or our treatment of your personal information or data, please send us a message at: (<a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>).
-						</p>
-						<br />
-						<p class="justify">
-							<b><u>Notice of Consent</u></b>
-						</p>
-						<p class="justify">
-							Through your use of this Website and accessing of our Services, you consent to the collection, use, retention, and sharing of your personal information in accordance with the Privacy Policy and within the limits of data privacy laws, including DPA.
-						</p>
-						<br />
-						<p class="justify">
-							<b><u>Definitions of Key Terminologies</u></b>
-						</p>
-						<p class="justify">
-							Terms used in the Privacy Policy are defined below:
-						</p>
-						<ol>
-							<li class="justify"><b>Data Subject</b> - Data Subject, as defined in the DPA, refers to an individual whose personal information is processed.</li>
-							<li class="justify">
-								<b>Personal Information</b> - Personal Information, as defined in the DPA, is refers to any information whether recorded in a material form or not, from which the identity of an individual is apparent or can be reasonably and directly ascertained by the entity holding the information, or when put together with other information would directly and certainly identify an individual.
-								<br /><br />
-								<p class="justify">Personal information, however, does not include publicly available information or lawfully obtained, truthful information that is a matter of public concern, and deidentified or aggregate consumer information.</p>
-							</li>
-							<li class="justify">
-								<b>Sensitive Personal Information</b> – Sensitive Personal Information, as defined in DPA, information refers to personal information:
-								<ol class="numbered-list-parentheses">
-									<li class="justify">About an individual’s race, ethnic origin, marital status, age, color, and religious, philosophical or political affiliations.</li>
-									<li class="justify">About an individual’s health, education, genetic or sexual life of a person, or to any proceeding for any offense committed or alleged to have been committed by such person, the disposal of such proceedings, or the sentence of any court in such proceedings;</li>
-									<li class="justify">Issued by government agencies peculiar to an individual which includes, but not limited to, social security numbers, previous or current health records, licenses or its denials, suspension or revocation, and tax returns; and</li>
-									<li class="justify">
-										<label class="justify">Specifically established by an executive order or an act of Congress to be kept classified.</label>
-										<br /><br />
-										<p class="justify">Sensitive Personal Information likewise include the processing of biometric information for the purpose of uniquely identifying a consumer, personal information collected and analyzed concerning a consumer’s health, and personal information collected and analyzed concerning a consumer’s sex life or sexual orientation.</p>
-										<p class="justify">Sensitive Personal Information, however, does not include publicly available information or information that is lawfully made available from federal, state, or local government records.</p>
-									</li>
-								</ol>
-							</li>
-							<li class="justify"><b>Processing</b> – Processing, as defined in the DPA, means any operation or any set of operations performed upon personal information including, but not limited to, the collection, recording, organization, storage, updating or modification, retrieval, consultation, use, consolidation, blocking, erasure or destruction of data.</li>
-							<li class="justify">
-								<b>Consent</b> - Consent, as defined in the DPA, refers to any freely given, specific, informed indication of will, whereby the data subject agrees to the collection and processing of personal information about and/or relating to him or her. Consent shall be evidenced by written, electronic or recorded means. It may also be given on behalf of the data subject by an agent specifically authorized by the data subject to do so.
-								<br /><br />
-								<p class="justify">Data Subject as applied in this Policy pertains to the current and previous employees, customer personnel, partner/vendor personnel, website visitors, sub-contractors, activity providers, customers and visitors of Cinnamon.</p>
-							</li>
-							<li class="justify">
-								<b>Controller</b> - Controller, as defined in the DPA, refers to a person or organization who controls the collection, holding, processing or use of personal information, including a person or organization who instructs another person or organization to collect, hold, process, use, transfer or disclose personal information on his or her behalf. The term excludes:
-								<ol class="numbered-list-parentheses">
-									<li class="justify">A person or organization who performs such functions as instructed by another person or organization; and</li>
-									<li class="justify">An individual who collects, holds, processes or uses personal information in connection with the individual’s personal, family or household affairs;</li>
-								</ol>
-							</li>
-							<li class="justify"><b>Processor</b> – Processor, as defined in the DPA,  refers to any natural or juridical person qualified to act as such under this Act to whom a personal information controller may outsource the processing of personal data pertaining to a data subject.;</li>
-							<li class="justify"><b>Third Party</b> – Third Party, as defined by the National Privacy Commission, refer to other organizations or individuals who may be involved in the processing of personal data by a personal information controller.</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>Information we collect from Users</u></b>
-						</p>
-						<p class="justify">
-							The following are the categories of personal information that we collect from Users:
-						</p>
-						<ol>
-							<li class="justify"><b>Account and Contact Data</b> – We collect the following information through our sign-up form when a user registers on our website or subscribes to one of our services: full name, birthday,gender, physical address, email address, company name, email address, mobile number, and bank account details. We may also collect images of your government-issued ID, your ID number or other verification information for identity or business confirmation. We use your contact information in providing our services, answering your requests, billing and other management purposes, and marketing and communicating purposes, and in analyzing service trends through the usage of data in aggregated/anonymized form. We note that all marketing materials we send contain an option for you to opt-out at any time. Furthermore, Cinnamon does not record or store credit information from Users, and rely on third-party PCI-DSS-compliant payment processors for credit card processing.</li>
-							<li class="justify"><b>Browser Data</b> – When a user visits our website, Cinnamon detects and store the user’s browser language and geolocation. Our servers also passively record the information sent by Users’ browsers for statistical, security, and legal purposes, including the user’s IP address, the time and date of a user’s visit, the user’s browser version and platform, and the web page that referred a user to our Site. We anonymously analyze this automatically recorded data in maintaining and improving our services.</li>
-							<li class="justify"><b>Payment Information</b> – Cinnamon collects the billing and financial information of Users that are necessary to process charges for our services which require payment. We may also receive the billing and payment information that you provide when your purchase is processed by another party, including your postal and e-mail addresses.</li>
-							<li class="justify"><b>Technical and usage information</b> – Cinnamon collects the following information when Users access our websites and use our services: certain technical information about the user’s mobile device or computer system, including IP Address and mobile device ID, and usage statistics about your interaction with our Service.</li>
-							<li class="justify"><b>Cookies and tracking</b> – Cinnamon may use cookies and similar tracking technologies on its Website, such as pixels and web beacons. Personal information sourced through these technologies are used to improve our services by providing a more personalized experience to Users.</li>
-							<li class="justify"><b>Third-party websites</b> - In order to protect our public API from abuse and misuse, we apply rate-limit tactics based only on the IP address of the visitor when our widgets and snippets are installed on third-party websites. These IP addresses are only temporarily stored and expires after one (1) minute. For the protection of our Users and our Services, Software, and Website, Cinnamon hereby reserves the right to collect and process offending IP addresses in case of abuse or misuse of our public API. Unless specified above, however, Cinnamon stresses that it does not collect, use, retain, and share personal information gathered on Services, Software, and Website that are not owned by Cinnamon.</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>Our use for collected personal information</u></b>
-						</p>
-						<p class="justify">
-							We collect, use, and retain your personal information to improve our services and to enhance your customer experience.
-						</p>
-						<p class="justify">
-							In particular, the following are examples by which information we collect can be used:
-						</p>
-						<ol>
-							<li class="justify">Sharing with the activity providers called Activity Providers for those customers booking experiences. The kid' name,age and gender will be provided to the Activity Providers.</li>
-							<li class="justify">Providing, supporting, and improving our website and services, monitoring and analysis of user trends, usage, and activities in connection with our services,</li>
-							<li class="justify">Processing essential operations such as billing for purchased services,</li>
-							<li class="justify">Sending communications to Users including, but not limited to, our responses to your comments, questions, and requests to provide customer service, technical notices, updates, security alerts, support and administrative messages, and informational, marketing and promotional content on our services,</li>
-							<li class="justify">Assessing our system security and investigating system issues which may affect our services to Users,</li>
-							<li class="justify">Enforcing compliance with our terms and applicable law, meeting legal requirements, such as court orders, discovery requests, and subpoenas, as well as accounting and security requirements, and responding to lawful requests by public authorities.</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>Rules on Third Parties</u></b>
-						</p>
-						<p class="justify">
-							The following are the rules governing our treatment of your personal information and data with respect to third parties such as service providers and subprocessors.
-						</p>
-						<ol class="alpha-list-upper">
-							<li class="justify">
-								<b>Consent of Users is required prior to disclosure, Exceptions</b>
-								<p>As our policy, we do not sell, rent, trade, share, or otherwise transfer the personal information and data that we collect from you to third parties outside of Cinnamon without your consent.</p>
-								<p>Notwithstanding the foregoing, we may provide personal data to third parties where we are legally mandated by law enforcement and governmental authorities, and where we are required to comply with legal processes. Furthermore, we may provide personal data to third parties, where absolutely necessary, to respond to claims asserted against us, to administer our policies and agreements with Users, for essential operations such as risk assessments, investigations, and product development, and to protect the rights, property, and safety of Cinnamon, our employees, our Users, and the members of the general public. Cinnamon may also share or disclose aggregated, anonymous, and de-identified information for research purposes and analysis of trends or statistics.</p>
-							</li>
-							<li class="justify">
-								<b>Third Parties with whom your personal information is shared</b>
-								<p>We rely and contract with third party companies, organizations, and individuals that support our Site and Services in essential operations such as software maintenance, data hosting, sending of email messages, web audience analysis, cloud hosting, and marketing and communications. As such, we share the personal information of Users to enable these third parties to perform their functions.</p>
-								<p>Third parties with whom we share your information include affiliates and vendors, legal, accounting, and other general service providers, service providers who bolster our essential operations, marketing agencies or website hosts, and third parties approved by the user, including social media sites which Users choose to link their accounts to.</p>
-								<p>Our sharing of personal data and information to third parties as enumerated above is only to the extent of what is necessary to enable them to perform their functions, is limited to the specific purpose for such sharing, and is covered by a specific data processing contract. Furthermore, Cinnamon takes stringent procedures in ensuring that these third parties are compliant with established data privacy laws, including DPA, in processing your personal information, including both not limited to, the imposition of contract obligations to the third parties that personal information we share to them can only be used for their provision of services to us.</p>
-							</li>
-							<li class="justify">
-								<b>Direct Marketing</b>
-								<p>Cinnamon does not share the personal data and information of its Users with third parties for their direct marketing purposes.</p>
-							</li>
-							<li class="justify">
-								<b>No liability for third-party websites</b>
-								<p>Cinnamon shall not be responsible and shall not be held liable for the safety of any information that Users share to third parties who are not affiliated with our Site and Services. Third parties who are not affiliated with our Site and Services include, but are not limited to, brands and other third-parties who advertise, subscribe, or otherwise use our Site but are not affiliated with us, and other websites, online services, or mobile applications that are linked by third-party Users in our Site.</p>
-							</li>
-							<li class="justify">
-								<b>Business Transfers</b>
-								<p>In cases where Cinnamon sells, transfers, or otherwise share some or all of its assets, which include the personal information and data of Users, in connection with a legitimate business transfer such as, but not limited to, a merger, acquisition, reorganization, sale of assets, or bankruptcy, Cinnamon will perform all commercially reasonable efforts to notify Users if their personal information is to be disclosed, transferred, or becomes subject to a different Privacy Policy.</p>
-							</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>Rules on our retention of personal information</u></b>
-						</p>
-						<p class="justify">
-							Cinnamon retains a user’s personal information only for the period that is reasonably necessary to accomplish the purpose for which such information was collected.
-						</p>
-						<ol>
-							<li class="justify"><b>Account and Contact Data and Payment Information</b> – we retain such personal information only until we have an ongoing legitimate business need to do so in relation to a user and whether such data is necessary to provide our service. However, we will retain user data for no longer than seven (7) years from the date of termination of contract between the user and Cinnamon, unless a longer period is provided by law or lawful orders of legal authority. We will retain financial data for no longer than eight (8) years from the date of termination of contract between the user and Cinnamon, unless a longer period is provided by law or lawful orders of legal authority.</li>
-							<li class="justify"><b>Browser Data and Technical and Usage Information, Cookies and tracking</b> – Browser data is retained for a maximum of 12 months, with the exception of cases where there is legitimate concern related to our security or performance of services. Further, Cinnamon retains audit logs for no longer than one (1) year, and other records for no longer than three (3) years, unless a longer period is provided by law or lawful orders of legal authority.</li>
-							<li class="justify"><b>Job Application Data</b> – We retain information related to job applications for up to 2 years, in order for us to contact prospective employees again for future job propositions. We retain information related to our employees for the duration of their employment contract and for a reasonable time following termination of such contract. Cinnamon, however, will retain employees’ data for no longer than eight (8) years, unless a longer period is provided by law or lawful orders of legal authority.</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>Rules on our Disposal of personal data or personal information</u></b>
-						</p>
-						<p class="justify">
-							Our disposal of Users’ personal data and information shall be governed by reasonable data security practices and shall follow the requirements of established data privacy laws.
-						</p>
-						<br />
-						<p class="justify">
-							<b><u>Our protection and security for your personal information,</u></b>
-						</p>
-						<p class="justify">
-							Cinnamon implements security procedures and employs information systems to detect security incidents that compromise the availability, authenticity, integrity, and confidentiality of stored or transmitted personal information, and to protect the personal information from unauthorized or illegal access, destruction, use, modification, or disclosure.
-						</p>
-						<p class="justify">
-							The ways that Cinnamon secures your personal information include, but are not limited to: SSL encryption in our processing of personal data, encryption of our database, usage of secure and encrypted servers, usage of E-mail One Time Password (OTP) or email verification Method for the protection of Users’ accounts, and following organizational procedures that restrict staff access to personal data and ensure data security.
-						</p>
-						<br />
-						<p class="justify">
-							<b><u>Your rights in relation to your personal information</u></b>
-						</p>
-						<p class="justify">
-							Data privacy laws including the TDA  provide for your rights as data subject as regards your personal data. In relation to our collection, use, retention, and sharing of your personal data, you have the following rights, subject to the limitations, exceptions, and requirements imposed by the law:
-						</p>
-						<p class="justify">
-							The data subject is entitled to:
-						</p>
-						<ol class="alpha-list-parentheses">
-							<li class="justify">Be informed whether personal information pertaining to him or her shall be, are being or have been processed;</li>
-							<li class="justify">
-								Be furnished the information indicated hereunder before the entry of his or her personal information into the processing system of the personal information controller, or at the next practical opportunity:
-								<ol class="numbered-list-parentheses">
-									<li class="justify">Description of the personal information to be entered into the system;</li>
-									<li class="justify">Purposes for which they are being or are to be processed;</li>
-									<li class="justify">Scope and method of the personal information processing;</li>
-									<li class="justify">The recipients or classes of recipients to whom they are or may be disclosed;</li>
-									<li class="justify">Methods utilized for automated access, if the same is allowed by the data subject, and the extent to which such access is authorized;</li>
-									<li class="justify">The identity and contact details of the personal information controller or its representative;</li>
-									<li class="justify">The period for which the information will be stored; and</li>
-									<li class="justify">The existence of their rights, i.e., to access, correction, as well as the right to lodge a complaint before the Commission.</li>
-								</ol>
-							</li>
-							<li class="justify">
-								Reasonable access to, upon demand, the following:
-								<ol class="numbered-list-parentheses">
-									<li class="justify">Contents of his or her personal information that were processed;</li>
-									<li class="justify">Sources from which personal information were obtained;</li>
-									<li class="justify">Names and addresses of recipients of the personal information;</li>
-									<li class="justify">Manner by which such data were processed;</li>
-									<li class="justify">Reasons for the disclosure of the personal information to recipients;</li>
-									<li class="justify">Information on automated processes where the data will or likely to be made as the sole basis for any decision significantly affecting or will affect the data subject;</li>
-									<li class="justify">Date when his or her personal information concerning the data subject were last accessed and modified; and</li>
-									<li class="justify">The designation, or name or identity and address of the personal information controller;</li>
-								</ol>
-							</li>
-							<li class="justify">Dispute the inaccuracy or error in the personal information and have the personal information controller correct it immediately and accordingly, unless the request is vexatious or otherwise unreasonable. If the personal information have been corrected, the personal information controller shall ensure the accessibility of both the new and the retracted information and the simultaneous receipt of the new and the retracted information by recipients thereof: Provided, That the third parties who have previously received such processed personal information shall he informed of its inaccuracy and its rectification upon reasonable request of the data subject;</li>
-							<li class="justify">Suspend, withdraw or order the blocking, removal or destruction of his or her personal information from the personal information controller’s filing system upon discovery and substantial proof that the personal information are incomplete, outdated, false, unlawfully obtained, used for unauthorized purposes or are no longer necessary for the purposes for which they were collected. In this case, the personal information controller may notify third parties who have previously received such processed personal information; and</li>
-							<li class="justify">
-								<label>Be indemnified for any damages sustained due to such inaccurate, incomplete, outdated, false, unlawfully obtained or unauthorized use of personal information.</label>
-								<br /><br />
-								<p>Cinnamon shall not discriminate against any user who exercises his or her rights as enumerated above. We shall not, among others, deny goods or services to the user, charge different prices or rates for goods or services, including through the use of discounts or other benefits or imposing penalties, provide a different level or quality of goods or services to the consumer, and suggest that the consumer will receive a different price or rate for goods or services or a different level or quality of goods or services. </p>
-							</li>
-						</ol>
-						<br />
-						<p class="justify">
-							<b><u>How to exercise your rights in relation to your personal information</u></b>
-						</p>
-						<p class="justify">
-							Should you wish to exercise any of the above-mentioned rights, please send us a message at (<a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>).
-						</p>
-						<p class="justify">
-							We shall treat your message as valid requests once you provide sufficient information that will allow us to verify your identity as the correct person whom we collected personal data or information from, and sufficient detail as will allow us to understand, evaluate, and respond to your requests. Users may also use authorized agents to exercise their rights on their behalf.
-						</p>
-						<p class="justify">
-							We shall also follow established procedures for the exercise of rights of data subjects as stated in data privacy laws such as the DPA.
-						</p>
-						<br />
-						<p class="justify">
-							<b><u>Other rules concerning personal information.</u></b>
-						</p>
-						<ol class="alpha-list-upper">
-							<li class="justify">
-								<b>Policy on the personal information of minors</b>
-								<p>We do not willfully disregard our Users’ age when we collect, use, retain, and share personal date. Before we process the personal data of minors, the consent of their parents or legal guardians is first obtained when they book the experience on Cinnamon or absent such consent, but with a lawful basis under existing laws, rules, or regulations.</p>
-							</li>
-							<li class="justify">
-								<b>Complaints and Grievances</b>
-								<p>Please direct any concerns, complaints, or grievances about our collection, use, retention, or sharing of personal data, personal information, or sensitive personal data to our Data Protection Officer with the following contact details:</p>
-								<table class="tbl-bordered">
-									<tr>
-										<td>Name of Data Protection Officer</td>
-										<td>Andrew Pacis</td>
-									</tr>
-									<tr>
-										<td>Email ID:</td>
-										<td>support@cinnamon.ph</td>
-									</tr>
-								</table>
-								<p>You may also direct any inquiries or message to our postal address at Muntinlupa City, Metro Manila 1781.</p>
-							</li>
-							<li class="justify">
-								<b>Updates to the Privacy Policy</b>
-								<p>Cinnamon regularly updates its Privacy Policy in accordance with the requirements of established data privacy laws. We will provide Users with notice of amendments to the Privacy Policy, as required by established data privacy laws, and update the “Last modified” date as contained in the title of this Privacy Policy. We encourage you to regularly review our Privacy Policy to stay informed on our collection, use, retention, sharing, and protection of your data. </p>
-							</li>
-						</ol>
-					</div>
+					@((MarkupString)privacyPoliciesModel.Content)
 				</div>
             }
 			@if (isEventToCDisplayed)
             {
 				<div class="container p-5">
-					<p class="heading-secondary text-center">Transaction Agreement</p>
+					<p class="heading-secondary text-center">@eventPoliciesModel.Title</p>
 					<p class="terms-caption text-center">Last updated January 22, 2024</p>
 
 					<div class="policy-style mt-5">
-						<p class="justify font-20 color-black-100">
-							Terms of Use These Terms of Use ("Agreement") establish a legally binding agreement between 
-							Cinnamon PH ("Company," "we," "us," or "our") and users ("Buyers") of our website and related 
-							services (collectively, the "Services"). By accessing or utilizing the services, you affirm 
-							your consent to be bound by the terms and conditions outlined in this agreement. 
-							Should you disagree with these terms, kindly refrain from using the services.
-						</p>
+						@((MarkupString)eventPoliciesModel.Content)
 
 						<div class="d-flex justify-content-center my-5">
 							<Button Clicked="() => eventTab = EventTab.Buyer" class="@BtnClass(EventTab.Buyer)">
@@ -1217,213 +951,12 @@
 						
 						@if(eventTab == EventTab.Buyer)
 						{
-							<div class="ote-buyer justify">
-								<ol type="A" style="margin-left: 0; padding-left: 23px;">
-									<li class="font-24 font-weight-700 mb-5">Booking a Ticket
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li class="mb-4">
-												All tickets sold through the website are subject to Clause D (“Ticket Terms and Conditions”). 
-												By purchasing a ticket through the website, it is deemed that you have read and agree with the 
-												Terms and Conditions.
-											</li>
-											<li class="mb-4">
-												Booking a ticket When booking a ticket through the website, you will be required to complete an 
-												online booking form (the “Booking Form”). When submitting the booking form, you declare that: 
-												(a) You have provided complete, correct, accurate, and verified information; (b) You have the legal 
-												capacity to enter into contracts and are not otherwise incapacitated or disqualified from 
-												fulfilling any contractual obligation; (c) if you are booking on behalf of a group or an institution, 
-												that you are authorized to bind all members of that group or institution; (d) You consent to the Terms 
-												and Conditions of this platform, and: (e) You are authorized to pay for the ticket(s) in cash or if you 
-												are the credit card holder, e-wallet owner, or bank account holder whose account will be used for the payment of 
-												this transaction.
-											</li>
-											<li class="mb-4">
-												Date of Admission. Except otherwise expressly stated in the ticket, a ticket is valid only on the date 
-												purchased or on the actual day(s) of the event. All tickets are non-transferable, non-exchangeable, 
-												non-refundable, revocable, and void if altered. The ticket must be used by the same person during its 
-												period of validity and is not valid for special events or attractions that require a separate admission fee.
-											</li>
-											<li class="mb-4">
-												Promotions. When booking a ticket through the website, you must indicate that you are purchasing the 
-												ticket through a promotion offered by the website. Every promotion has its own set of qualifiers, 
-												privileges, and duration. Any qualifier, privilege, and/or discount linked to the aforesaid promotion 
-												shall be subject to the terms and conditions of the promotion.
-											</li>
-											<li>
-												Payment. Payment for the booking may be made through any of the following modes of payment: credit or 
-												debit card, e-wallet, bank-to-bank transfer, or other acceptable options available on the website.
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Changes to Your Booking 
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li class="mb-4">
-												Notice of Changes. You agree to notify Cinnamon PH of any changes to any data submitted in the booking form. 
-												If, for any reason, you need to make changes to the data in the booking, please notify us at least one (1) 
-												day prior to the date of the visit. 
-											</li>
-											<li>
-												Changes in Date. Changes in date after a confirmed booking has been made are subject to Clauses D.1.Ticket 
-												Terms and Conditions; and Clause E.Ticket Refunds, Re-Bookings, and Cancellations.
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Confirmation of Your Booking 
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li class="mb-4">
-												E-Ticket. Upon the completion of the online booking process, Cinnamon PH, within a reasonable time, 
-												will send a confirmation email containing an e-ticket to the email address you provided in your 
-												booking form. Should you not receive the e-ticket within twenty-four (24) hours, please notify us 
-												by sending us an email at support@cinnamon.ph. For reference purposes, please retain the confirmation 
-												email with the e-ticket. You have the responsibility to ensure the confidentiality of the e-ticket 
-												and the confirmation email.
-											</li>
-											<li class="mb-4">
-												Presentation of a Valid Identification Document. For purposes of redeeming a ticket, the holder of 
-												an e-ticket must present a valid identification document. 
-											</li>
-											<li class="mb-4">
-												Claimant Other than You. Establishments may refuse the redemption of a ticket if the claimant is 
-												not you or the person you have designated in your booking form. 
-											</li>
-											<li>
-												Promotional Tickets. A ticket purchased through a promotional offer may require the presentation of 
-												additional documentary requirements as a qualifier and as specified by the terms and conditions of the promotion. 
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Ticket Terms and Conditions
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li>
-												Ticket. One (1) voucher is valid for one (1) person only. If you cannot attend on the date you have pre-booked, 
-												and unless otherwise allowed by the organizer, you may transfer your ticket to another party. 
-												Kindly email us at support@cinnamon.ph to facilitate the transfer on the platform. 
-												Opening times and prices are subject to change without notice. 
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Ticket Refunds, Rebookings and Cancellations 
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li class="mb-4">
-												Unless otherwise stated by the organizer, all ticket sales are final. You may not cancel or refund your ticket. 
-												You will be deemed to have confirmed your booking upon the transmission by Cinnamon PH of the e-ticket to 
-												the email address indicated in your booking form. Failure of a guest to redeem or use a ticket forfeits any 
-												payment made in consideration for it and shall not entitle the guest to a rebook or replacement. 
-											</li>
-											<li class="mb-4">
-												On Cinnamon, event organizers are granted the authority to establish their own refund policies. As a consequence, 
-												the refund policy may differ for each event. Prior to purchasing tickets, it is crucial to review and comprehend 
-												the refund policy established by the event organizer for the specific occasion in which you are interested.
-											</li>
-											<li>
-												Cinnamon customarily processes refunds for ticket purchasers in the event that an event organizer cancels 
-												the occasion. In instances where the refund procedure for a canceled event is subject to variation, 
-												it is prudent to consult the specifics provided by Cinnamon or the event host.
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Data Protection and Privacy 
-										<ol class="font-20 font-weight-400 mt-4" style="margin-left: 0; padding-left: 0;">
-											<li class="mb-4">
-												Securing Your Data. Information such as transaction details and customer data is securely stored in Cinnamon 
-												PH’s content management system, which is protected by encryption and the SSL security protocol accessible 
-												only through a customer-created login ID and password. You have the responsibility to ensure the 
-												confidentiality of your login ID and password. 
-											</li>
-											<li>
-												Security, Integrity, and Confidentiality. In order to carry out your booking and purchase, Cinnamon PH may collect, 
-												use, store, disclose, and process your personal information. Cinnamon PH’s Privacy Policy. The security, 
-												integrity, and confidentiality of your information are extremely important to us. We have implemented technical, 
-												administrative, and physical security measures that are designed to protect guest information from unauthorized access, 
-												disclosure, use, and modification. We regularly review our security procedures to consider appropriate new 
-												technology and methods. We will retain your personal information for the length of time needed to fulfill the 
-												purposes outlined in this privacy policy, unless a longer retention period is required or permitted by law. 
-											</li>
-										</ol>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Changes
-										<p class="font-20 font-weight-400 mt-4" style="margin-left: -25px;">
-											From time to time, we may change this privacy policy to accommodate new technologies, industry practices, 
-											regulatory requirements, or for other purposes. We will provide notice to you if these changes are material and, 
-											where required by applicable law, we will obtain your consent. Notice may be sent by email to you at the last email 
-											address you provided us, by posting notice of such changes on our sites and applications, or by other means 
-											consistent with applicable law.
-										</p>
-									</li>
-									<li class="font-24 font-weight-700 mb-5">Contact Us.
-										<p class="font-20 font-weight-400 mt-4" style="margin-left: -25px;">
-											If you have any questions about these terms, please contact us at support@cinnamon.ph
-										</p>
-									</li>
-								</ol>
-							</div>
+							@((MarkupString)eventBuyerModel.Content)
 						}
 
 						@if(eventTab == EventTab.Seller)
 						{
-							<div class="ote-seller justify">
-								<ol style="margin-left: -8px; padding-left: 0;">
-									<li>
-										Acceptance of Terms By using Cinnamon's ticket-selling services, you agree to comply with and be bound by these Terms. 
-										If you do not agree with any part of these Terms, please do not use our services. 
-									</li>
-									<li>
-										Eligibility You must be at least 18 years old and capable of forming a legally binding agreement to use Cinnamon's 
-										ticket-selling services. By using our platform, you represent and warrant that you meet these eligibility requirements. 
-									</li>
-									<li>
-										Ticket Listing and Sales 
-										<ol style="margin-left: 0px; padding-left: 0;">
-											<li>
-												Accurate Information: You are responsible for providing accurate and up-to-date information 
-												about the tickets you list for sale on Cinnamon. 
-											</li>
-											<li>
-												Authorization: You must have the legal right and authorization to sell the tickets you list on Cinnamon. 
-												Any misrepresentation may result in the suspension or termination of your account. 
-											</li>
-											<li>
-												Pricing: You have control over the pricing of your tickets, but it must comply with local laws and regulations. 
-												Cinnamon reserves the right to limit or suspend your account if pricing practices are deemed unfair or in violation of applicable laws. 
-											</li>
-										</ol>
-									</li>
-									<li>
-										Payments and Fees 
-										<ol style="margin-left: 0px; padding-left: 0;">
-											<li>
-												Payment Processing: Cinnamon will process payments on your behalf for tickets sold. 
-												You agree to the payment terms specified in the Cinnamon Seller Agreement.
-											</li>
-											<li>
-												Fees: Cinnamon may charge fees for the use of its ticket-selling services. 
-												You agree to pay any applicable fees, and Cinnamon reserves the right to change fee structures with notice.
-											</li>
-										</ol>
-									</li>
-									<li>
-										Compliance with Laws You agree to comply with all applicable laws and regulations related to the sale of tickets, 
-										including but not limited to consumer protection laws and anti-fraud regulations.
-									</li>
-									<li>
-										Customer Service You are responsible for addressing any issues or disputes related to the tickets you sell on Cinnamon. 
-										Cinnamon may provide customer support assistance, but ultimate responsibility lies with the seller. 
-									</li>
-									<li>
-										Termination Cinnamon reserves the right to terminate or suspend your account at its discretion, 
-										with or without cause. Termination may result from a violation of these Terms or for any other reason. 
-									</li>
-									<li>
-										Changes to Terms Cinnamon may update or modify these Terms at any time. Sellers will be notified of changes, 
-										and continued use of the platform after such notification constitutes acceptance of the modified Terms. 
-									</li>
-									<li>
-										Governing Law These Terms are governed by and construed in accordance with the laws of the Philippines. 
-										Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in the Philippines. 
-										Thank you for using Cinnamon's ticket-selling services!
-									</li>
-								</ol>
-							</div>
+							@((MarkupString)eventSellerModel.Content)
 						}
 
 					</div>
@@ -1441,6 +974,11 @@
     private bool isTermsDisplayed = false;
     private bool isPrivacyDisplayed = false;
 	private bool isEventToCDisplayed = false;
+
+	private DynamicContentForm eventPoliciesModel = new();
+    private DynamicContentForm eventSellerModel = new();
+    private DynamicContentForm eventBuyerModel = new();
+    private DynamicContentForm privacyPoliciesModel = new();
 
 	enum EventTab {
 		Buyer = 0,
@@ -1480,6 +1018,15 @@
         {
             NavigateToFaq();
         }
+
+		await Task.WhenAll(new Task[] 
+            {
+                LoadEventPolicies(), 
+                LoadEventBuyerPolicies(), 
+                LoadEventSellerPolicies(), 
+                LoadPrivacyPolicies()
+            }
+        );
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -1537,4 +1084,50 @@
 
 		return resultClass += "bg-grey-200";
 	}
+
+	private async Task LoadEventPolicies()
+    {
+        var result = await systemApiHandler.GetEventPolicies();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            eventPoliciesModel.Content = result.Result.Result.Content;
+            eventPoliciesModel.Title = result.Result.Result.Title;
+        }
+    }
+
+    private async Task LoadEventBuyerPolicies()
+    {
+        var result = await systemApiHandler.GetEventBuyerPolicies();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            eventBuyerModel.Content = result.Result.Result.Content;
+            eventBuyerModel.Title = result.Result.Result.Title;
+        }
+    }
+
+    private async Task LoadEventSellerPolicies()
+    {
+        var result = await systemApiHandler.GetEventSellerPolicies();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            eventSellerModel.Content = result.Result.Result.Content;
+            eventSellerModel.Title = result.Result.Result.Title;
+        }
+    }
+
+    private async Task LoadPrivacyPolicies()
+    {
+        var result = await systemApiHandler.GetPrivacyPolicies();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            privacyPoliciesModel.Content = result.Result.Result.Content;
+            privacyPoliciesModel.Title = result.Result.Result.Title;
+        }
+    }
+
+	record DynamicContentForm 
+    {
+        public string Title {get; set;}
+        public string Content {get; set;}
+    }
 }
