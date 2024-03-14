@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 
-public class OteVerificationArgs
+public class VerifySharedEventLinkArgs
 {
     [Required]
-    public string Handler {get; set;}
+    public string Guid {get; set;}
+
+    [Required]
+    public string Token {get; set;}
 
     [Required]
     public string QrCode {get; set;}
-
-    [Required]
-    public int DateId {get; set;}
 }

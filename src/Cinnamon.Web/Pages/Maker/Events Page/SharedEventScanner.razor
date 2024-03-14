@@ -1,9 +1,6 @@
-@page "/maker/dashboard/events/{Handler}/verification"
+@page "/shared/event-scanner";
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
-@inject IAccountApiHandler accountApiHandler;
-@using System.Security.Claims;
-@inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IJSRuntime JS;
 @inject NavigationManager NavigationManager;
 @inject INotificationService NotificationService;
@@ -13,9 +10,6 @@
 <section class="wrapper-ote-ticket-verification">
     <Container>
         <label class="d-flex align-items-center mt-3 mb-2 mb-md-5">
-            <a href=@($"maker/dashboard/events/{Handler}/?date={dateId}")>
-                <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
-            </a>
             <label class="ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</label>
         </label>
         @if(eventDetail is not null)
@@ -80,19 +74,18 @@
 
 @code 
 {
-    [Parameter]
-    public string Handler {get; set;}
     [Parameter, SupplyParameterFromQuery]
-    public string? Date {get; set;}
+    public string Guid {get; set;}
 
-    private DotNetObjectReference<EventScanner>? objRef;
+    [Parameter, SupplyParameterFromQuery]
+    public string Token {get; set;}
+
+    private DotNetObjectReference<SharedEventScanner>? objRef;
     private IJSObjectReference? scannerInstance;
     private bool validating = false;
     private ScanStatus scanStatus = ScanStatus.NotStarted;
-    private string token = string.Empty;
     private EventDetail? eventDetail;
     private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
-    private int dateId = 0;
 
     enum ScanStatus {
         NotStarted = 0,
@@ -103,45 +96,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        if(!user.Identity.IsAuthenticated)
+        var validateTokenRes = await activityApiHandler.ValidateSharedLink(new Framework.ApiCommand.ApiCore.Activity.Request.OteValidateSharedLinkArgs {
+            Guid = Guid,
+            Token = Token
+        });
+        if(!validateTokenRes.Succeeded || validateTokenRes.Result is null || !validateTokenRes.Result.IsSuccess)
         {
             NavigationManager.NavigateTo("/page-not-found");
             return;
         }
-        token =  user.FindFirstValue("Token");
-
-        var accountRes = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs {}, token);
-        if(!accountRes.Succeeded || accountRes.Result is null || !accountRes.Result.IsSuccess)
-        {
-            NavigationManager.NavigateTo("/page-not-found");
-            return;
-        }
-        var profile = accountRes.Result.Result;
-
-        var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {}, Handler);
-        if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
-        {
-            NavigationManager.NavigateTo("/page-not-found");
-            return;
-        }
-        var ote = result.Result.Result;
-
-        if(ote.ProviderId != profile.Id)
-        {
-            NavigationManager.NavigateTo("/page-not-found");
-            return;   
-        }
+        var validated = validateTokenRes.Result.Result;
 
         eventDetail = new EventDetail {
-            Id = ote.Id,
-            Title = ote.EventName
+            Id = validated.Id,
+            Title = validated.Title
         };
-
-        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
-        {
-            dateId = parsedDate;
-        }
     }
 
     protected override void OnInitialized()
@@ -227,11 +196,11 @@
 
         string defaultErrorMessage = "An error occured. Please contact support.";
 
-        var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
-            Handler = Handler,
-            QrCode = qr,
-            DateId = dateId
-        }, token);
+        var verificationRes = await activityApiHandler.VerifySharedEventLink(new Framework.ApiCommand.ApiCore.Activity.Request.VerifySharedEventLinkArgs {
+            Guid = Guid,
+            Token = Token,
+            QrCode = qr
+        });
         if(!verificationRes.Succeeded || verificationRes.Result is null)
         {
             NotificationService.Error(defaultErrorMessage, "Error");
