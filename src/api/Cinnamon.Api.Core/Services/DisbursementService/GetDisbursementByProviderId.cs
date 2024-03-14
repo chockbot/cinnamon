@@ -1,9 +1,11 @@
-﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+﻿using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.Disbursement.Handlers;
 using Cinnamon.Api.Core.Services.Disbursement.Interactors;
 using Cinnamon.Api.Core.Services.Disbursement.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Quartz;
 
 namespace Cinnamon.Api.Core.Services.Disbursement;
 
@@ -11,11 +13,14 @@ public class GetDisbursementByProviderId : IGetDisbursementByProviderId
 {
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IDisbursementData disbursementData;
+    private readonly ApplicationConfig applicationConfig;
 
-    public GetDisbursementByProviderId(IGetProfileHandler getProfileHandler, IDisbursementData disbursementData)
+    public GetDisbursementByProviderId(IGetProfileHandler getProfileHandler, IDisbursementData disbursementData,
+        ApplicationConfig applicationConfig)
     {
         this.getProfileHandler = getProfileHandler;
         this.disbursementData = disbursementData;
+        this.applicationConfig = applicationConfig;
     }
 
     public AppResult<GetDisbursementByProviderResult> Execute(GetDisbursementByProviderArgs args)
@@ -42,21 +47,30 @@ public class GetDisbursementByProviderId : IGetDisbursementByProviderId
 
             return AppResult<GetDisbursementByProviderResult>.CreateSucceeded(new GetDisbursementByProviderResult
             {
-                DisbursementInformation = disbursementInfo.Result.Result.Select(d => new GetDisbursementByProviderResult.DisbursementByProviderId
-                {
-                    Id                = d.Id,
-                    Amount            = d.Amount,
-                    InclusivePayment  = d.InclusivePayment,
-                    Label             = d.Label,
-                    Remarks           = d.Remarks,
-                    Status            = d.Status,
-                    Payload           = d.Payload,
-                    PayoutDate        = d.PayoutDate,
-                    ProviderId        = d.DisbursementInformation.ProviderId,
-                    ProviderEmail     = d.DisbursementInformation.ProviderEmail,
-                    CustomerName      = d.DisbursementInformation.CustomerName,
-                    ProviderFirstName = d.DisbursementInformation.ProviderFirstName,
-                    ProviderLastName  = d.DisbursementInformation.ProviderLastName
+                DisbursementInformation = disbursementInfo.Result.Result.Select(d => {
+                    DateTimeOffset? payoudDate = d.PayoutDate;
+                    if(d.PayoutDate == DateTime.MinValue)
+                    {
+                        CronExpression expression = new CronExpression(applicationConfig.Disbursement.CronString);
+                        payoudDate = expression.GetNextValidTimeAfter(DateTime.Now);
+                    }
+                    
+                    return new GetDisbursementByProviderResult.DisbursementByProviderId
+                    {
+                        Id                = d.Id,
+                        Amount            = d.Amount,
+                        InclusivePayment  = d.InclusivePayment,
+                        Label             = d.Label,
+                        Remarks           = d.Remarks,
+                        Status            = d.Status,
+                        Payload           = d.Payload,
+                        PayoutDate        = payoudDate.Value.LocalDateTime,
+                        ProviderId        = d.DisbursementInformation.ProviderId,
+                        ProviderEmail     = d.DisbursementInformation.ProviderEmail,
+                        CustomerName      = d.DisbursementInformation.CustomerName,
+                        ProviderFirstName = d.DisbursementInformation.ProviderFirstName,
+                        ProviderLastName  = d.DisbursementInformation.ProviderLastName
+                    };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
                 {

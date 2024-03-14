@@ -141,4 +141,46 @@ public class OteTicketData : IOteTicketData
 			return AppResult<GetTicketDetailsResult>.CreateFailed(ex, "An error occured when getting all tickets");
 		}
 	}
+
+	public async Task<AppResult<CreateSharedLinkResult>> CreateSharedLink(CreateSharedLinkArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+				.Request("OteTicket/CreateSharedLink")
+				.PostJsonAsync(args)
+				.ReceiveJson<CreateSharedLinkResult>();
+
+            return AppResult<CreateSharedLinkResult>.CreateSucceeded(result, "Successfully posting create shared link.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateSharedLinkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateSharedLinkResult>.CreateFailed(ex, "An error occured when posting create shared link.");
+        }
+    }
+
+	public async Task<AppResult<GetSharedLinkResult>> GetSharedLink(GetSharedLinkArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"OteTicket/GetSharedLink")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetSharedLinkResult>();
+
+			return AppResult<GetSharedLinkResult>.CreateSucceeded(result, "Successfully getting get all shared links");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetSharedLinkResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetSharedLinkResult>.CreateFailed(ex, "An error occured when getting all shared links");
+		}
+	}
 }

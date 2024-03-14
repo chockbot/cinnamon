@@ -168,4 +168,63 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(ex, "An error occured when getting ticket details");
         }
     }
+
+    public async Task<AppResult<OteSharedLinkDTO>> CreateSharedLink(OteSharedLinkDTO sharedLinkdto)
+    {
+        try
+        {
+            var entity = mapper.Map<Entities.OteSharedLink>(sharedLinkdto);
+
+            var result = await dataStore.OteSharedLink.Add(entity);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<OteSharedLinkDTO>(result.Result);
+            return AppResult<OteSharedLinkDTO>.CreateSucceeded(dto, "Ote shared link successfully created.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteSharedLinkDTO>.CreateFailed(ex, "An error occured when creating shared link.");
+        }
+    }
+
+    public async Task<AppResult<OteSharedLinkDTO>> GetSharedLinks(string token, string guid)
+    {
+        try
+        {
+            var result = await dataStore.OteSharedLink.FindFirstAsync(o => o.Token == token && o.Guid == guid);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<OteSharedLinkDTO>(result.Result);
+            return AppResult<OteSharedLinkDTO>.CreateSucceeded(dto, "Successfully get shared link using token and guid.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteSharedLinkDTO>.CreateFailed(ex, "An error occured when getting shared link.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteSharedLinkDTO>>> GetSharedLinks(int activityId, int dateId)
+    {
+        try
+        {
+            var result = await dataStore.OteSharedLink.FindAsync(o => o.ActivityId == activityId && o.OteDateId == dateId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteSharedLinkDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<IEnumerable<OteSharedLinkDTO>>(result.Result);
+            return AppResult<IEnumerable<OteSharedLinkDTO>>.CreateSucceeded(dtos, "Successfully get shared links by activity id and date id.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteSharedLinkDTO>>.CreateFailed(ex, "An error occured when getting shared links.");
+        }
+    }
 }

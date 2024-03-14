@@ -406,6 +406,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "./src/utils/clipboardCopy.js":
+/*!************************************!*\
+  !*** ./src/utils/clipboardCopy.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nasync function useExecCommand(value) {\n  const el = document.createElement(\"textarea\");\n  el.value = value;\n  el.setAttribute(\"readonly\", \"\");\n  el.style.position = \"absolute\";\n  el.style.left = \"-999999px\";\n  document.body.appendChild(el);\n  const selrange = document.getSelection();\n  const selected = selrange !== null ? selrange.rangeCount > 0 ? selrange.getRangeAt(0) : false : false;\n  el.select();\n  document.execCommand(\"copy\");\n  document.body.removeChild(el);\n\n  if (selected && selrange) {\n    selrange.removeAllRanges();\n    selrange.addRange(selected);\n  }\n}\n\nasync function useNavigatorClipboard(value) {\n  await navigator.clipboard.writeText(value);\n}\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  copyToClipboard: value => {\n    if (navigator.clipboard !== undefined) {\n      return useNavigatorClipboard(value);\n    }\n\n    return useExecCommand(value);\n  }\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/clipboardCopy.js?");
+
+/***/ }),
+
 /***/ "./src/utils/cookieManager.js":
 /*!************************************!*\
   !*** ./src/utils/cookieManager.js ***!
@@ -435,7 +446,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n/* harmony import */ var _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToView.js */ \"./src/utils/scrollToView.js\");\n/* harmony import */ var _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wordsCount.js */ \"./src/utils/wordsCount.js\");\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  scrollToView: _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__.scrollToView,\n  scrollToTop: _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__.scrollToTop,\n  countWords: _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__.countWords\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n/* harmony import */ var _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToView.js */ \"./src/utils/scrollToView.js\");\n/* harmony import */ var _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wordsCount.js */ \"./src/utils/wordsCount.js\");\n/* harmony import */ var _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./clipboardCopy.js */ \"./src/utils/clipboardCopy.js\");\n\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  scrollToView: _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__.scrollToView,\n  scrollToTop: _scrollToView_js__WEBPACK_IMPORTED_MODULE_2__.scrollToTop,\n  countWords: _wordsCount_js__WEBPACK_IMPORTED_MODULE_3__.countWords,\n  clipboardCopy: _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
 
 /***/ }),
 

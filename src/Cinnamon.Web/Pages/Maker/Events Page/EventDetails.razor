@@ -17,6 +17,7 @@
 @inject NavigationManager NavigationManager
 @inject IMapper mapper;
 @inject IJSRuntime jsRuntime
+@inject INotificationService NotificationService;
 @attribute [Authorize]
 
 <PageTitle>Event Details | CinnamonPH</PageTitle>
@@ -93,10 +94,22 @@
                                 </div>
                             </div>
                         </div>
-                        <a class="text-capitalize bg-orange-100 text-decoration-none color-white-100 p-2 border-radius-5 my-2 d-inline-block hover-color-white" 
-                                href="/maker/dashboard/events/@(activity.Handler)/verification">
-                                verify tickets here!
-                        </a>
+                        <div class="d-flex align-items-center">
+                            <a class="text-capitalize bg-orange-100 text-decoration-none color-white-100 p-2 border-radius-5 my-2 d-inline-block hover-color-white" 
+                                    href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+                                    verify tickets here!
+                            </a>
+                            <Button Disabled="generatingEventSharedLink" Loading="generatingEventSharedLink" 
+                                Clicked="GenerateSharedLink" class="border-1-solid border-color-grey-100 font-16 ms-3">
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                    Getting Event Link...
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Share QR scanner link
+                                </ChildContent>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,9 +259,26 @@
             </LoadingIndicator>
         </div>
     </div>
+
+    <Modal @ref="modalSharedLink">
+        <ModalContent Centered>
+            <ModalBody class="py-4">
+                <TextEdit @bind-Text="eventSharedLink" />
+                <div class="d-flex justify-content-center mt-3">
+                    <Button Clicked="CloseModalSharedLink" class="me-3 text-capitalize border-1-solid border-color-grey-100">
+                        close
+                    </Button>
+                    <Button Clicked="CopyToClipboard" class="text-capitalize bg-orange-100 color-white-100 hover-color-white">
+                        copy link
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 }
 
-@code {
+@code 
+{
     [Parameter]
     public string Handler { get; set; } = string.Empty;
     [Parameter, SupplyParameterFromQuery]
@@ -277,7 +307,9 @@
     public int selectedFilter;
     public bool IsDisplay = false;
 
-
+    private string eventSharedLink = string.Empty;
+    private Modal? modalSharedLink;
+    private bool generatingEventSharedLink = false;
 
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     private int dateId = 0;
@@ -542,6 +574,7 @@
                 break;
         }
     }
+
     private async void TextSearchChanged(string search)
     {
         SearchValue = search;
@@ -549,5 +582,34 @@
         await GetCustomerList(1);
         FilteredCustomer = oteCustomer.OrderBy(a => a.Id).ToList();
         await loadingIndicator.Hide();
+    }
+
+    private async Task GenerateSharedLink()
+    {
+        generatingEventSharedLink = true;
+        var generateLinkRes = await activityApiHandler.GenerateEventSharedLink(new Framework.ApiCommand.ApiCore.Activity.Request.GenerateEventSharedLinkArgs {
+            DateId = dateId,
+            Handler = Handler
+        }, Token);
+        generatingEventSharedLink = false;
+        if(!generateLinkRes.Succeeded || generateLinkRes.Result is null || !generateLinkRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured when generating event shared link.", "Error");
+            return;
+        }
+
+        eventSharedLink = generateLinkRes.Result.Result;
+        await modalSharedLink?.Show();
+    }
+
+    private async Task CloseModalSharedLink()
+    {
+        await modalSharedLink?.Close(CloseReason.UserClosing);
+    }
+
+    private async Task CopyToClipboard()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.clipboardCopy.copyToClipboard", eventSharedLink);
+        await NotificationService.Info("Event scanner link copied to clipboard.", "Copied!");
     }
 }

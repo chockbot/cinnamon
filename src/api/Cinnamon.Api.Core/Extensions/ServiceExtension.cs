@@ -62,6 +62,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteDateData, Modules.DataAccess.OteDate.OTeDateData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -151,6 +152,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IValidateCouponCodeHandler, Services.ActivityService.ValidateCouponCodeHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateCouponHandler, Services.ActivityService.UpdateCouponHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRecommendedActivitiesHandler, Services.ActivityService.RecommendedActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteCreateSharedLinkHandler, Services.ActivityService.OteCreateSharedLinkHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGenerateEventSharedLinkHandler, Services.ActivityService.GenerateEventSharedLinkHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteValidateSharedLinkHandler, Services.ActivityService.OteValidateSharedLinkHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteSharedLinkVerificationHandler, Services.ActivityService.OteSharedLinkVerificationHandler>();
 
         services.AddTransient<Services.ActivityService.Handlers.ICreateFavoriteHandler, Services.ActivityService.CreateFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRemoveFavoriteHandler, Services.ActivityService.RemoveFavoriteHandler>();
@@ -231,6 +236,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateDynamicContentHandler, Services.AdminService.UpdateDynamicContentHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetDynamicContentHandler, Services.AdminService.GetDynamicContentHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();

@@ -9,4 +9,7 @@ public class OteVerificationArgs
 
     [Required]
     public string QrCode {get; set;}
+
+    [Required]
+    public int DateId {get; set;}
 }

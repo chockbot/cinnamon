@@ -13,8 +13,10 @@
 <section class="wrapper-ote-ticket-verification">
     <Container>
         <label class="d-flex align-items-center mt-3 mb-2 mb-md-5">
-            <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
-            <a href=@($"maker/dashboard/events/{Handler}") class="cursor-pointer ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</a>
+            <a href=@($"maker/dashboard/events/{Handler}/?date={dateId}")>
+                <img style="width: 10px; height: auto;" src="images/back-icon.png" alt="back-icon">
+            </a>
+            <label class="ms-3 font-32 color-orange-100 font-weight-700 m-font-20 text-decoration-none hover-color-primary">Verify Tickets</label>
         </label>
         @if(eventDetail is not null)
         {
@@ -80,6 +82,8 @@
 {
     [Parameter]
     public string Handler {get; set;}
+    [Parameter, SupplyParameterFromQuery]
+    public string? Date {get; set;}
 
     private DotNetObjectReference<EventScanner>? objRef;
     private IJSObjectReference? scannerInstance;
@@ -88,6 +92,7 @@
     private string token = string.Empty;
     private EventDetail? eventDetail;
     private IList<VerificationLog> verificationLogs = new List<VerificationLog>();
+    private int dateId = 0;
 
     enum ScanStatus {
         NotStarted = 0,
@@ -132,6 +137,11 @@
             Id = ote.Id,
             Title = ote.EventName
         };
+
+        if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
+        {
+            dateId = parsedDate;
+        }
     }
 
     protected override void OnInitialized()
@@ -219,7 +229,8 @@
 
         var verificationRes = await activityApiHandler.VerifyOTE(new Framework.ApiCommand.ApiCore.Activity.Request.OteVerificationArgs {
             Handler = Handler,
-            QrCode = qr
+            QrCode = qr,
+            DateId = dateId
         }, token);
         if(!verificationRes.Succeeded || verificationRes.Result is null)
         {
