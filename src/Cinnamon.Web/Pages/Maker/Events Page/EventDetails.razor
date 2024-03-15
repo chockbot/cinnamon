@@ -195,7 +195,7 @@
                         <TableBody>
                             @foreach (var item in FilteredCustomer)
                                 {
-                                    <TableRow>
+                                    <TableRow @key="item">
                                         <TableRowCell class="tr-name">
                                             <span>@FormattedId(item.Id)</span>
                                         </TableRowCell>
@@ -533,7 +533,7 @@
                 Status = ticket.Status
             }, Token);
 
-        await GetCustomerList(1);
+        //await GetCustomerList(1);
     }
 
     private string FormattedId(int id)
