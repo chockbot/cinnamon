@@ -3002,6 +3002,7 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [Route("ValidateSharedLink")]
     [HttpGet]
     [ProducesResponseType(typeof(OteValidateSharedLinkResult), StatusCodes.Status200OK)]
