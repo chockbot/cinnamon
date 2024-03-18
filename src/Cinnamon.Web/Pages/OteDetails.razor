@@ -571,6 +571,7 @@
     {
         if(firstRender)
         {
+            await JS.InvokeVoidAsync("MyLib.Track", "OTE Details Page");
             jsClipboard = await JS.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             await Task.Delay(2000);
             if (activity is not null && !activity.IsComingSoon)

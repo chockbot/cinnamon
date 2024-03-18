@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject INotificationService NotificationService;
 @inject NavigationManager NavigationManager;
+@inject IJSRuntime jsRuntime;
 
 @if(purchaseOrder is not null)
 {
@@ -138,6 +139,14 @@
         catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "OTE Payment Page");
         }
     }
 

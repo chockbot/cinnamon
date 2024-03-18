@@ -1,8 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using Cinnamon.Web.Components
+@using System.Security.Claims
+@inject IJSRuntime JS;
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@using System.Security.Claims
+
 
 <PageTitle>Cinnamon</PageTitle>
 
@@ -17,13 +19,13 @@
                 {
                     <p class="cinnamon-link" @onclick="NavigateToExplore">Explore</p>
                     <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/" @onclick="NavigateToBlogs">Blogs</a>
                     <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
                 }
                 else
                 {
                     <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/" @onclick="NavigateToBlogs">Blogs</a>
                     <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
                     <button class="btn-login" @onclick="() => signinModal.Show()">
                         Login | Signup
@@ -49,7 +51,7 @@
                                 </a>
                             </li>
                             <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
+                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog" @onclick="NavigateToBlogs">
                                     Blogs
                                 </a>
                             </li>
@@ -68,7 +70,7 @@
                                 </a>
                             </li>
                             <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
+                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog" @onclick="NavigateToBlogs">
                                     Blogs
                                 </a>
                             </li>
@@ -114,9 +116,9 @@
     {
         navigationManager.NavigateTo("https://cinnamon.ph/blog/cinnamon/", forceLoad: true);
     }
-    private void NavigateToBlogs()
+    private async Task NavigateToBlogs()
     {
-        navigationManager.NavigateTo("https://cinnamon.ph/blog/", forceLoad: true);
+        await JS.InvokeVoidAsync("MyLib.Track", "Blogs");
     }
     private void NavigateToExplore()
     {
