@@ -178,6 +178,14 @@ builder.Services.AddQuartz(q => {
     //     .WithIdentity("GenerateUnreadChatsNotificationJob-trigger")
     //     .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
     // );
+
+    var forceDisabledExpiredEventKey = new JobKey("ForceDisableExpiredEventJob");
+    q.AddJob<ForceDisableExpiredEventJob>(otps => otps.WithIdentity(forceDisabledExpiredEventKey));
+    q.AddTrigger(opts => opts
+        .ForJob(forceDisabledExpiredEventKey)
+        .WithIdentity("ForceDisableExpiredEventJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInMinutes(5).RepeatForever())
+    );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
