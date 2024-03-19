@@ -181,7 +181,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "from public.\"Activities\" ac " +
                                "join public.\"Students\" st " +
                                    "on ac.\"Id\" = st.\"ActivityId\" " +
-                               "where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " +
+                               "where ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false and ac.\"IsDeactivated\" = false " +
                                    "and ac.\"IsNew\" = false " + categoryFilter +
                                "group by ac.\"Id\" " +
                            "), " +
@@ -191,7 +191,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "from public.\"OteTickets\" ot " +
                                "join public.\"Activities\" ac " +
                                    "on ot.\"ActivityId\" = ac.\"Id\" " +
-                           	"where ac.\"IsPublished\" = true and ac.\"IsDeactivated\" = false " + categoryFilter +
+                           	   "where ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false and ac.\"IsDeactivated\" = false " + categoryFilter +
                                "group by ot.\"ActivityId\" " +
                                "union "+
                                "select * from totalStudents" +
