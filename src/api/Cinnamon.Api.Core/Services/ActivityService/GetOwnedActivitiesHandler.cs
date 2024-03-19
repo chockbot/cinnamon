@@ -105,6 +105,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
                         CreatedOn = a.CreatedOn,
+                        ForceDisable = a.ForceDisable,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,

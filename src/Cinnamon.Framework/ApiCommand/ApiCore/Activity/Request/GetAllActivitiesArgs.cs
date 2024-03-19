@@ -24,4 +24,5 @@ public class GetAllActivitiesArgs
     public bool? IsAdmin { get; set; }
     public bool? IncludeReviews { get; set; }
     public bool? IncludeTickets { get; set; }
+    public bool? ForceDisable {get; set;}
 }

@@ -396,14 +396,22 @@
                                                         </button>
                                                         <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                                                     </div>
-                                                    <div class="button-section">
-                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
-                                                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
-                                                        {
-                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
-                                                        }
-                                                    </div>
-
+                                                    @if(item.ForceDisable)
+                                                    {
+                                                        <div class="button-section">
+                                                            <a button class="update-button bg-green-100" href="/maker/dashboard/expired-event/@item.Handler">Details</a>
+                                                        </div>
+                                                    }
+                                                    else 
+                                                    {
+                                                        <div class="button-section">
+                                                            <a button class="update-button bg-orange-100" href="/experiences/ote/@item.Handler">Update</a>
+                                                            @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                                                            {
+                                                                <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                            }
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         }
@@ -908,7 +916,8 @@
                         Status            = a.Status,
                         OngoingStudents   = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
-                        NumberOfReviews   = a.NumberOfReviews
+                        NumberOfReviews   = a.NumberOfReviews,
+                        ForceDisable      = a.ForceDisable
                     };
             }).ToList();
         }

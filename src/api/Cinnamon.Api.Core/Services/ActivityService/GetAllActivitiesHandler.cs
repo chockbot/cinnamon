@@ -49,7 +49,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 				Status = args.Status,
 				IsAdmin = args.IsAdmin,
 				IncludeReviews = args.IncludeReviews,
-				IncludeTickets = args.IncludeTickets
+				IncludeTickets = args.IncludeTickets,
+				ForceDisable = args.ForceDisable
 			});
 			if (!result.Succeeded || result.Result == null)
 			{
