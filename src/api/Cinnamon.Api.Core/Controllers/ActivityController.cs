@@ -931,7 +931,8 @@ public class ActivityController : ControllerBase
                 Status = args.Status,
                 IsAdmin = args.IsAdmin,
                 IncludeReviews = args.IncludeReviews ?? false,
-                IncludeTickets = args.IncludeTickets ?? false
+                IncludeTickets = args.IncludeTickets ?? false,
+                ForceDisable = args.ForceDisable
             });
             if (!result.Succeeded || result.Result == null)
             {

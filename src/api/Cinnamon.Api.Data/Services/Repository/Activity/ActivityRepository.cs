@@ -393,7 +393,8 @@ public class ActivityRepository : IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
-        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false)
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false,
+        bool? forceDisable = false)
     {
         try
         {
@@ -414,6 +415,7 @@ public class ActivityRepository : IActivityRepository
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (forceDisable.HasValue ? a.ForceDisable == forceDisable.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
                         (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
