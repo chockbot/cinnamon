@@ -452,7 +452,8 @@ public class ActivityRepository : IActivityRepository
                     IsDeactivated          = a.IsDeactivated,
                     Status                 = (Enums.ActivityStatus)a.Status,
                     ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
-                    IsComingSoon           = a.IsComingSoon
+                    IsComingSoon           = a.IsComingSoon,
+                    ForceDisable           = a.ForceDisable
                 };
 
                 // address fields

@@ -48,6 +48,7 @@ public class GetOwnedActivitiesResult
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
         public IEnumerable<ActivityImage> Images {get; set;}
         public CustomerOwner? Owner {get; set;}
+        public bool ForceDisable {get; set;}
         
 
         public class ActivitySchedule 
