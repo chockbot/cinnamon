@@ -632,4 +632,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("ForceDisableActivities")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ForceDisableActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForceDisableActivities([FromBody] ForceDisableActivitiesArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.ForceDisableActivities(args.Ids);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ForceDisableActivitiesResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

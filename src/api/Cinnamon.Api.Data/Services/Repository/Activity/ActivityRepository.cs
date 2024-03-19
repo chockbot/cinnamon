@@ -2065,4 +2065,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ForceDisableActivities(activityIds);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
 }

@@ -722,4 +722,27 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting activities.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds)
+    {
+        try
+        {
+            var activities = await applicationContext.Activities.Where(a => activityIds.Contains(a.Id)).ToListAsync();
+            foreach(var activity in activities)
+            {
+                activity.ForceDisable = true;
+            }
+
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities.Select(a => new ActivityDTO {
+                Id = a.Id,
+                IsPublished = a.IsPublished
+            }), "Successfully force disable activities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when forcing disable activities.");
+        }
+    }
 }

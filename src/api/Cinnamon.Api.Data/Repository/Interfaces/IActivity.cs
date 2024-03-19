@@ -25,4 +25,5 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetActivitiesNeedToDisable();
+    Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
 }
