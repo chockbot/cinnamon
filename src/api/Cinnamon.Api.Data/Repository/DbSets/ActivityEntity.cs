@@ -668,4 +668,58 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting ote per date");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetActivitiesNeedToDisable()
+    {
+        try
+        {
+            var dateString = DateTime.Now.ToString("YYYY-MM-DD hh:mm:ss");
+
+            string query = "with activityDates as " +
+                           "( " +
+                               "select ac.\"Id\", ac.\"Title\", ac.\"IsPublished\", ac.\"ForceDisable\", " +
+                                   "os.\"From\", os.\"To\", od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+                                   "Row_Number() over (partition by ac.\"Id\", os.\"Id\" order by ac.\"Id\", os.\"Id\", od.\"DateEnd\" desc) as \"RwCnt\" " +
+                               "from public.\"Activities\" ac " +
+                               "join public.\"OteSchedules\" os " +
+                                   "on os.\"ActivityId\" = ac.\"Id\" " +
+                               "join public.\"OteDates\" od " +
+                                   "on od.\"OteScheduleId\" = os.\"Id\" " +
+                               "where ac.\"ExperienceCreationTypeId\" = 3 and ac.\"ForceDisable\" = false " +
+                           ") " +
+                           "select * " +
+                           "from activityDates " +
+                           "where \"RwCnt\" = 1 and \"DateEnd\" < '" + dateString + "' ";
+            
+            IList<ActivityDTO> listResult = new List<ActivityDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new ActivityDTO {
+                            Id = Convert.ToInt32(item["Id"]),
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            IsPublished = Convert.ToBoolean(item["IsPublished"]),
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(listResult, "Successfully get activities need to disable.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting activities.");
+        }
+    }
 }
