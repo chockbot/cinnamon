@@ -611,4 +611,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("ExpiredEvents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ExpiredEventsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExpiredEvents()
+    {
+        try
+        {
+            var result = await activityRepository.ExpiredEvents();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ExpiredEventsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

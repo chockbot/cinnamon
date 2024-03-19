@@ -2047,4 +2047,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting customer ote.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents()
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetActivitiesNeedToDisable();
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
 }

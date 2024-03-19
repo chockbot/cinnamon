@@ -673,7 +673,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            var dateString = DateTime.Now.ToString("YYYY-MM-DD hh:mm:ss");
+            var dateString = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
 
             string query = "with activityDates as " +
                            "( " +

@@ -69,4 +69,5 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id);
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
+    Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents();
 }
