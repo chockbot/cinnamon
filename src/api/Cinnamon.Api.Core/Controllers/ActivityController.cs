@@ -72,6 +72,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
     private readonly IDeleteAddOnHandler deleteAddOnHandler;
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
+    private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -94,7 +95,7 @@ public class ActivityController : ControllerBase
         IPopularActivitiesHandler popularActivitiesHandler, IOteCreateHandler oteCreateHandler, IOteUpdateHandler oteUpdateHandler, 
         IOteFindByHandler oteFindByHandler, IMapper mapper, IOteTicketDetailsHandler oteTicketDetailsHandler,
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
-        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler)
+        IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler)
     {
         _logger = logger;
 
@@ -148,6 +149,7 @@ public class ActivityController : ControllerBase
         this.deleteAddOnsHandler = deleteAddOnsHandler;
         this.deleteAddOnHandler = deleteAddOnHandler;
         this.getOtePerDayHandler = getOtePerDayHandler;
+        this.deleteOnlineEventHandler = deleteOnlineEventHandler;
     }
 
     [Route("CreateActivity")]
@@ -2961,6 +2963,35 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteOnlineEvent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteOnlineEventById([FromBody] DeleteOnlineEventArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOnlineEventHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOnlineEventArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOnlineEventResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

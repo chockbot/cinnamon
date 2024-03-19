@@ -75,7 +75,7 @@
                 @if (oteLocation != null)
                 {
                     <div class='@(currentIndex == 3 && oteLocation.GetData().ExperienceType == 2 ? "d-block" : "d-none")'>
-                        <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" LocationData="oteLocation.GetData()" PricingData="otePricing.GetData()" OnPrevClick="MovePrev" />
+                        <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" LocationData="oteLocation.GetData()" PricingData="otePricing.GetData()" OnPrevClick="MovePrev" Token="@token" />
                     </div>
 
                     <div class='@(oteLocation.GetData().ExperienceType == 2 ? (currentIndex == 4 ? "d-block" : "d-none") : (currentIndex == 3 ? "d-block" : "d-none"))'>
@@ -726,8 +726,7 @@
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
-                TicketInfos = ote.OnlineEvent.Select(a =>
-                {
+                TicketInfos = ote.OnlineEvent.Select(a => {
                 return new OteOnlineEvent.ModelData.TicketInfo {
                     Id                        = a.Id,
                     Title                     = a.Title,
