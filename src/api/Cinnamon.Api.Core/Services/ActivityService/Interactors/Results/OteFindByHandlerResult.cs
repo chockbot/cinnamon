@@ -18,6 +18,7 @@ public class OteFindByHandlerResult
     public string PostalCode {get; set;}
     public string PinnedLocation {get; set;}
     public bool IsPublished {get; set;}
+    public bool ForceDisable {get; set;}
     public string Handler {get; set;}
     public DateTime ScheduleFrom {get; set;}
     public DateTime ScheduleTo {get; set;}

@@ -658,7 +658,7 @@
             }
             var act = result.Result.Result;
 
-            if(!act.IsPublished)
+            if(!act.IsPublished || act.ForceDisable)
             {
                 NavigationManager.NavigateTo("page-not-found");
                 return;
