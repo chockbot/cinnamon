@@ -25,4 +25,5 @@ public class GetAllActivities
     public bool? IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus? Status { get; set; }
     public bool? IsAdmin { get; set; }
+    public bool? ForceDisable {get; set;}
 }

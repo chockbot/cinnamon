@@ -30,4 +30,6 @@ public interface IActivityData
     Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args);
     Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args);
     Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args);
+    Task<AppResult<ExpiredEventsResult>> ExpiredEvents();
+    Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
 }

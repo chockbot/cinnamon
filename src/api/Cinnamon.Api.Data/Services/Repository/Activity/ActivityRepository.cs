@@ -393,7 +393,8 @@ public class ActivityRepository : IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
-        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false)
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false,
+        bool? forceDisable = false)
     {
         try
         {
@@ -414,6 +415,7 @@ public class ActivityRepository : IActivityRepository
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (forceDisable.HasValue ? a.ForceDisable == forceDisable.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
                         (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
@@ -450,7 +452,8 @@ public class ActivityRepository : IActivityRepository
                     IsDeactivated          = a.IsDeactivated,
                     Status                 = (Enums.ActivityStatus)a.Status,
                     ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
-                    IsComingSoon           = a.IsComingSoon
+                    IsComingSoon           = a.IsComingSoon,
+                    ForceDisable           = a.ForceDisable
                 };
 
                 // address fields
@@ -2076,6 +2079,42 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting customer ote.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents()
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetActivitiesNeedToDisable();
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ForceDisableActivities(activityIds);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
         }
     }
 }

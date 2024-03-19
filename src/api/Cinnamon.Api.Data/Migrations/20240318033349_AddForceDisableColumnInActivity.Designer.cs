@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240318033349_AddForceDisableColumnInActivity")]
+    partial class AddForceDisableColumnInActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -553,56 +555,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("AdminUsers");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Announcement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AdminId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ButtonLabel")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Link")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("Announcements");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.BadgeList", b =>
                 {
                     b.Property<int>("Id")
@@ -904,10 +856,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<int>("FromUserId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Repeated")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("ToUserId")
                         .HasColumnType("integer");
@@ -1919,55 +1867,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("OteDateOverrides");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteOnlineEvent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("OteScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OteSchedulePricingGroupId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TicketRestriction")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Videolink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OteScheduleId");
-
-                    b.ToTable("OteOnlineEvent");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -2070,9 +1969,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int?>("OteDateId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("OteOnlineEventId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OteScheduleId")
                         .HasColumnType("integer");
 
@@ -2088,8 +1984,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OteDateId");
-
-                    b.HasIndex("OteOnlineEventId");
 
                     b.HasIndex("OteScheduleId");
 
@@ -3437,17 +3331,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("OteDate");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteOnlineEvent", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteSchedule", "OteSchedule")
-                        .WithMany("OteOnlineEvent")
-                        .HasForeignKey("OteScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OteSchedule");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteSchedule", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
@@ -3464,10 +3347,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteDate", "OteDate")
                         .WithMany("OteSchedulePricing")
                         .HasForeignKey("OteDateId");
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteOnlineEvent", null)
-                        .WithMany("OteSchedulePricing")
-                        .HasForeignKey("OteOnlineEventId");
 
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.OteSchedule", "OteSchedule")
                         .WithMany("OteSchedulePricing")
@@ -3770,16 +3649,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("OteSchedulePricing");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteOnlineEvent", b =>
-                {
-                    b.Navigation("OteSchedulePricing");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteSchedule", b =>
                 {
                     b.Navigation("OteDates");
-
-                    b.Navigation("OteOnlineEvent");
 
                     b.Navigation("OteSchedulePricing");
 
