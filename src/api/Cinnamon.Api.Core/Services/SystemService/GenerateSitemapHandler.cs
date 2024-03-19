@@ -89,6 +89,7 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
                 var activitiesRes = await getAllActivitiesHandler.ExecuteAsync(new ActivityService.Interactors.GetAllActivitiesArgs {
                     IncludeActivityDescription = true,
                     IsActive = true,
+                    ForceDisable = false
                 });
                 if(activitiesRes.Succeeded && activitiesRes.Result != null)
                 {
