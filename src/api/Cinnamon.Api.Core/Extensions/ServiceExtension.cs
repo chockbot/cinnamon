@@ -174,6 +174,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteVerificationHandler, Services.ActivityService.OteVerificationHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnsHandler, Services.ActivityService.DeleteAddOnsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnHandler, Services.ActivityService.DeleteAddOnHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteUpdateSharedLinkStatusHandler, Services.ActivityService.OteUpdateSharedLinkStatusHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
