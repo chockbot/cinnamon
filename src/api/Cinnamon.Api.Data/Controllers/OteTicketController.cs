@@ -183,6 +183,7 @@ public class OteTicketController : ControllerBase
         try
         {
             var dto = mapper.Map<OteSharedLinkDTO>(args);
+            dto.Enable = true;
 
             var result = await oteTicketRepository.CreateSharedLink(dto);
             if(!result.Succeeded || result.Result is null)
@@ -234,6 +235,27 @@ public class OteTicketController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetSharedLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateSharedLinkStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateSharedLinkStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateSharedLinkStatus([FromBody] UpdateSharedLinkStatusArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.UpdateSharedLinkStatus(args.Id, args.Status);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateSharedLinkStatusResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

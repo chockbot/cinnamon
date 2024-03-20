@@ -162,7 +162,8 @@ public class GetActivityHandler : IGetActivityHandler
                 }) : Enumerable.Empty<GetActivityResult.AddOn>(),
                 OngoingStudents = activity.OngoingStudents,
                 CompletedStudents = activity.CompletedStudents,
-                NumberOfTickets = activity.NumberOfTickets
+                NumberOfTickets = activity.NumberOfTickets,
+                ForceDisable = activity.ForceDisable
             };
 
             return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");
