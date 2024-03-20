@@ -7,4 +7,5 @@ public interface ITokenGeneratedRepository
 {
     Task<AppResult<TokenGeneratedDTO>> CreateTokenGenearted(string tokenType, string guid, string token, string payload);
     Task<AppResult<TokenGeneratedDTO>> GetTokenGenerated(string guid, string token);
+    Task<AppResult<TokenGeneratedDTO>> UpdateTokenGenearted(int id, string? tokenType, string? guid, string? token, string? payload);
 }
