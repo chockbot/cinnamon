@@ -750,6 +750,19 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;div style=&quot;width: 746px&quot;&gt;
+        ///&lt;span style=&quot;color: #343D4C; font-size: 18px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;1. URL&lt;br/&gt;&lt;/span&gt;
+        ///&lt;span style=&quot;color: #717171; font-size: 18px; font-family: Nunito; font-weight: 400; word-wrap: break-word&quot;&gt;-Choose a dependable hosting platform for your event page, such as Zoom or Google Meet.&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;
+        ///&lt;span style=&quot;color: #343D4C; font-size: 18px; font-family: Nunito; font-weight: 700; word-wrap: break-word&quot;&gt;2. Title&lt;br/&gt;&lt;/span&gt;
+        ///&lt;span style= [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string OnlineEventString {
+            get {
+                return ResourceManager.GetString("OnlineEventString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Online - join via video conferencing software (provided by the Activity Provider).
         /// </summary>
         internal static string onlineType {

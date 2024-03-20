@@ -7,9 +7,15 @@
 @implements IOteComponent;
 
 <section class="ote-online-wrapper">
-    <p class="header-title">
-        Online Event Page
-    </p>
+    <div class="d-flex justify-content-between">
+        <p class="header-title">
+            Online Event Page
+        </p>
+        <label @onclick="() => howToModal.ShowModal()" class="cursor-pointer">
+            <span class="font-14 font-weight-700 color-green-100 text-decoration-underline">How to do this</span>
+            <img src="images/ote/green-how-do-this.png" alt="icon">
+        </label>
+    </div>
     <p class="font-20 color-grey-100 text-justify m-font-16">
         Attendees will join your online event through your virtual venue. Utilize this space to 
         integrate your online meeting or event hosting platform and provide exclusive content. 
@@ -194,7 +200,7 @@
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
 </ConfirmDialog>
-
+<HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create Online Event Page" />
 
 @code {
     [Parameter]
@@ -209,7 +215,8 @@
 
     [Parameter]
     public string Token { get; set; }
-
+    private HowToModal howToModal { get; set; }
+    public string htmlString = Resources.App.OnlineEventString;
     private TicketInformation modelTicketInfo = new();
     private TicketInformation ticketToDelete = new();
     private TicketList modelTicketList = new();
@@ -491,14 +498,5 @@
             }
             return defaultStyle;
         }
-    }
-    private async Task ViewGuide()
-    {
-
-    }
-
-    private async Task CloseGuide()
-    {
-
     }
 }
