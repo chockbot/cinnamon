@@ -100,7 +100,7 @@ public class ActivityController : ControllerBase
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
-        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, DeleteOnlineEventHandler deleteOnlineEventHandler)
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler)
     {
         _logger = logger;
 
