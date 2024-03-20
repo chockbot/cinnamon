@@ -230,6 +230,13 @@
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool allTicketRestrictionsSelected = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (existingList.TicketInformations.Count == 0)
+        {
+            AddMoreTicket();
+        }
+    }
     protected override void OnParametersSet()
     {
         if (PricingData != null)
@@ -362,7 +369,6 @@
             modelTicketInfo.VideoLink                 = last.VideoLink;
             modelTicketInfo.IsNew                     = false;
         }
-
     }
 
     private async Task SelectedRestrictionChanged(string restriction)
@@ -391,26 +397,25 @@
 
     private async Task AddMoreTicket()
     {
-        bool priceValid = await ticketListFormValidation.ValidateAll();
-        if (priceValid)
+        modelTicketList.TicketInformations = existingList.TicketInformations;
+        int maxId                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
+        int order                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
+        existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true});
+        var last = existingList.TicketInformations.LastOrDefault();
+        if (last is not null)
         {
-            modelTicketList.TicketInformations = existingList.TicketInformations;
-            int maxId                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
-            int order                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
-            existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true});
-            var last = existingList.TicketInformations.LastOrDefault();
-            if (last is not null)
+            modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.TempId != last.TempId).ToList();
+            //Update Pricing Availability
+            foreach(var item in modelTicketList.TicketInformations)
             {
-                modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.TempId != last.TempId).ToList();
-                //Update Pricing Availability
-                foreach(var item in modelTicketList.TicketInformations)
+                if (!string.IsNullOrEmpty(ticketToDelete.TicketRestriction))
                 {
                     PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
                 }
-                modelTicketInfo = last;
             }
-            IsAddTicketDisable();
+            modelTicketInfo = last;
         }
+        IsAddTicketDisable();
     }
 
     private async Task DeleteClick(TicketInformation ticket)
