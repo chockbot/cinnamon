@@ -75,6 +75,7 @@ public class ActivityController : ControllerBase
     private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
     private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
     private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
+    private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -99,7 +100,7 @@ public class ActivityController : ControllerBase
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
-        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler)
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler)
     {
         _logger = logger;
 
@@ -156,6 +157,7 @@ public class ActivityController : ControllerBase
         this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
         this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
         this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
+        this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
     }
 
     [Route("CreateActivity")]
@@ -3050,6 +3052,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateSharedLinkStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateSharedLinkStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateSharedLinkStatus([FromBody] UpdateSharedLinkStatusArgs args)
+    {
+        try
+        {
+            var result = await oteUpdateSharedLinkStatusHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateSharedLinkStatusArgs {
+                Enable = args.Enable,
+                Guid = args.Guid,
+                Token = args.Token
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateSharedLinkStatusResult
+            {
+                IsSuccess = true,
+                Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -1154,4 +1154,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<VerifySharedEventLinkResult>.CreateFailed(ex, "An error occured when calling OTE verification API");
         }
     }
+
+    public async Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateSharedLinkStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateSharedLinkStatusResult>();
+
+            return AppResult<UpdateSharedLinkStatusResult>.CreateSucceeded(result, "Successfully called generate event shared link api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
+        }
+    }
 }

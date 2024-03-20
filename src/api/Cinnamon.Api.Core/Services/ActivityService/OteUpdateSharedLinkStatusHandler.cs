@@ -17,7 +17,7 @@ public class OteUpdateSharedLinkStatusHandler : IOteUpdateSharedLinkStatusHandle
     
     public AppResult<OteUpdateSharedLinkResult> Execute(OteUpdateSharedLinkStatusArgs args)
     {
-        throw new NotImplementedException();
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<OteUpdateSharedLinkResult>> ExecuteAsync(OteUpdateSharedLinkStatusArgs args)
