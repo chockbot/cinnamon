@@ -15,4 +15,5 @@ public interface IOteTicketRepository
     Task<AppResult<OteSharedLinkDTO>> CreateSharedLink(OteSharedLinkDTO sharedLinkdto);
     Task<AppResult<OteSharedLinkDTO>> GetSharedLinks(string token, string guid);
     Task<AppResult<IEnumerable<OteSharedLinkDTO>>> GetSharedLinks(int activityId, int dateId);
+    Task<AppResult<OteSharedLinkDTO>> UpdateSharedLinkStatus(int id, bool status);
 }

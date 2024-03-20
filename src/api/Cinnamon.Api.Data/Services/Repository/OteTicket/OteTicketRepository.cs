@@ -227,4 +227,32 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<IEnumerable<OteSharedLinkDTO>>.CreateFailed(ex, "An error occured when getting shared links.");
         }
     }
+
+    public async Task<AppResult<OteSharedLinkDTO>> UpdateSharedLinkStatus(int id, bool status)
+    {
+        try
+        {
+            var sharedLinkRes = await dataStore.OteSharedLink.FindFirstAsync(s => s.Id == id);
+            if(!sharedLinkRes.Succeeded || sharedLinkRes.Result is null)
+            {
+                return AppResult<OteSharedLinkDTO>.CreateFailed(
+                    new ApplicationException("Unable to find shared link to update."), "Unable to find shared link to update.");
+            }
+            var sharedLink = sharedLinkRes.Result;
+            
+            sharedLink.Enable = status;
+            var result = await dataStore.OteSharedLink.Update(sharedLink);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteSharedLinkDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<OteSharedLinkDTO>(result.Result);
+            return AppResult<OteSharedLinkDTO>.CreateSucceeded(dtos, "Successfully update shared link status.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteSharedLinkDTO>.CreateFailed(ex, "An error occured when updating shared link status.");
+        }
+    }
 }
