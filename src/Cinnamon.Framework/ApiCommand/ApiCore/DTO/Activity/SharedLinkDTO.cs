@@ -1,6 +1,6 @@
-namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
-public class GenerateEventSharedLinkResult
+public class SharedLinkDTO
 {
     public string GeneratedLink {get; set;}
     public bool Enable {get; set;}

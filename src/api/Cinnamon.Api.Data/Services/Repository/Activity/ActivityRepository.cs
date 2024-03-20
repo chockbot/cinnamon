@@ -689,7 +689,8 @@ public class ActivityRepository : IActivityRepository
                 Status = (Enums.ActivityStatus)activity.Status,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
                 IsComingSoon = activity.IsComingSoon,
-                VideoLink = activity.VideoLink
+                VideoLink = activity.VideoLink,
+                ForceDisable = activity.ForceDisable
             };
 
             // address fields
