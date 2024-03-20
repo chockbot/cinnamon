@@ -4,6 +4,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Response;
 using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
@@ -32,4 +34,5 @@ public interface IActivityData
     Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args);
     Task<AppResult<ExpiredEventsResult>> ExpiredEvents();
     Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
+    Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args);
 }

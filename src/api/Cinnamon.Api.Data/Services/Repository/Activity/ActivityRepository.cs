@@ -1765,18 +1765,6 @@ public class ActivityRepository : IActivityRepository
                     TicketRestriction         = s.TicketRestriction,
                     Videolink                 = s.Videolink,
                     OteSchedule               = schedule,
-                    OteSchedulePricing = pricingsGroup.Select(p => {
-                        return new OteSchedulePricing
-                        {
-                            Description = p.Description,
-                            IsAbsorbFees = p.IsAbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
-                            Name = p.Name,
-                            OteSchedule = schedule,
-                            OteSchedulePricingGroup = p
-                        };
-                    }).ToList(),
                 };
             }).ToList(): null;
 
