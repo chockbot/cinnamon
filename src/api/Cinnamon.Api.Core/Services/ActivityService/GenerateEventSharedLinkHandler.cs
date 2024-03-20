@@ -83,7 +83,10 @@ public class GenerateEventSharedLinkHandler : IGenerateEventSharedLinkHandler
                                 .SetQueryParam("Token", defaultLink.Token);
 
                 return AppResult<GenerateEventSharedLinkResult>.CreateSucceeded(new GenerateEventSharedLinkResult {
-                    GeneratedLink = generatedLink
+                    GeneratedLink = generatedLink,
+                    Enable = defaultLink.Enable,
+                    Guid = defaultLink.Guid,
+                    Token = defaultLink.Token
                 }, "Successfully generate event shared link.");
             }
 
@@ -103,7 +106,10 @@ public class GenerateEventSharedLinkHandler : IGenerateEventSharedLinkHandler
                                 .SetQueryParam("Token", createdSharedLink.Token);
 
             return AppResult<GenerateEventSharedLinkResult>.CreateSucceeded(new GenerateEventSharedLinkResult {
-                GeneratedLink = link
+                GeneratedLink = link,
+                Enable = true,
+                Guid = createdSharedLink.Guid,
+                Token = createdSharedLink.Token
             }, "Successfully generate event shared link.");
         }
         catch (Exception ex)

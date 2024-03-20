@@ -2979,7 +2979,12 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GenerateEventSharedLinkResult
             {
                 IsSuccess = true,
-                Result = result.Result.GeneratedLink
+                Result = new CoreDto.Activity.SharedLinkDTO {
+                    Enable = result.Result.Enable,
+                    GeneratedLink = result.Result.GeneratedLink,
+                    Guid = result.Result.Guid,
+                    Token = result.Result.Token
+                }
             });
         }
         catch (Exception ex)
