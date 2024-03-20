@@ -988,20 +988,25 @@
 
     private async Task MessageProvider(int providerId)
     {
-        if(currentLogin is null)
-        {
-            await loginModal.Show();
-            return;
-        }
-
         var messageProviderRes = await chatApiHandler.RequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.RequestMessageArgs {
             ProviderId = providerId
         }, token);
-        if(messageProviderRes.Succeeded && messageProviderRes.Result is not null && messageProviderRes.Result.IsSuccess)
+        if(!messageProviderRes.Succeeded || messageProviderRes.Result is null || !messageProviderRes.Result.IsSuccess)
         {
-            var result = messageProviderRes.Result.Result;
-            var url = $"messages/?guid={result.Guid}&token={result.Token}";
+            await NotificationService.Error("An error occured. Please try again.", "Error");
+            return;
+        }
 
+        var result = messageProviderRes.Result.Result;
+        var url = $"/messages/?guid={result.Guid}&token={result.Token}";
+
+        if(currentLogin is null)
+        {
+            signInReturnUrl = url;
+            await loginModal.Show();
+        }
+        else 
+        {
             NavigationManager.NavigateTo(url);
         }
     }
