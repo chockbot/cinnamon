@@ -32,6 +32,11 @@
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
                             <div class="accordion-body bg-white-200">
                                 <div class="item-form-body">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(item)">
+                                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                        </Button>
+                                    </div>
                                     <Validation>
                                         <Field class="mb-4">
                                             <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -106,6 +111,11 @@
     }
     <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
         <Validations @ref="ticketFormValidation" Mode="FormMode" Model="modelTicketInfo">
+            <div class="col-12 d-flex justify-content-end">
+                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(modelTicketInfo)">
+                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                </Button>
+            </div>
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -175,7 +185,15 @@
     </div>
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
-
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this ticket?</p>
+    </BodyContent>
+</ConfirmDialog>
 
 
 @code {
@@ -188,11 +206,18 @@
 
     [Parameter]
     public OtePricing.ModelData PricingData { get; set; }
+
+    [Parameter]
+    public string Token { get; set; }
+
     private TicketInformation modelTicketInfo = new();
+    private TicketInformation ticketToDelete = new();
     private TicketList modelTicketList = new();
+    private TicketList existingList = new TicketList();
     private Validations? ticketFormValidation;
     private Validations? ticketListFormValidation;
     private bool showErrors = false;
+    private ConfirmDialog confirmDialogRef { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -275,6 +300,18 @@
 
     public void SetState(ModelData data)
     {
+        //existing ticket
+        foreach(var item in data.TicketInfos)
+        {
+            existingList.TicketInformations.Add(new TicketInformation {
+                Id = item.Id,
+                Description = item.Description,
+                Title = item.Title,
+                VideoLink = item.VideoLink,
+                TicketRestriction = item.TicketRestriction,
+            });
+        }
+
         data.TicketInfos = data.TicketInfos.OrderBy(a => a.Id).ToList();
         var last = data.TicketInfos.LastOrDefault();
         if (last is not null)
@@ -284,18 +321,20 @@
             {
                 modelTicketList.TicketInformations.Add(new TicketInformation
                     {
-                        Id                        = item.Id,
-                        Description               = item.Description,
-                        Title                     = item.Title,
-                        VideoLink                 = item.VideoLink,
-                        TicketRestriction         = item.TicketRestriction,
+                        Id                = item.Id,
+                        Description       = item.Description,
+                        Title             = item.Title,
+                        VideoLink         = item.VideoLink,
+                        TicketRestriction = item.TicketRestriction,
+                        IsNew             = false
                     });
             }
             modelTicketInfo.Id                        = last.Id;
             modelTicketInfo.Title                     = last.Title;
             modelTicketInfo.Description               = last.Description;
             modelTicketInfo.TicketRestriction         = last.TicketRestriction;
-            modelTicketInfo.VideoLink                 = last.TicketRestriction;
+            modelTicketInfo.VideoLink                 = last.VideoLink;
+            modelTicketInfo.IsNew                     = false;
         }
 
     }
@@ -334,13 +373,17 @@
         public string TicketRestriction { get; set; } = string.Empty;
 
         // extras
-        public bool IsOpen { get; set; } = false;
+        public int Order { get; set; }
+        public int TempId { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public int Id { get; set; }
         public bool Valid
         {
             get
             {
-                return !string.IsNullOrEmpty(VideoLink) && !string.IsNullOrEmpty(Title) && !string.IsNullOrEmpty(TicketRestriction);
+                return !string.IsNullOrEmpty(VideoLink) && !string.IsNullOrEmpty(Title) && 
+                !string.IsNullOrEmpty(TicketRestriction);
             }
         }
     }
@@ -367,12 +410,72 @@
         bool priceValid = await ticketListFormValidation.ValidateAll();
         if (priceValid)
         {
-            modelTicketInfo.Id = modelTicketList.TicketInformations.Count + 1;
+            //get all tickets
+            modelTicketList.TicketInformations = existingList.TicketInformations;
+            int maxId                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
+            int order                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
+            modelTicketInfo.IsNew              = true;
+            modelTicketInfo.Order              = order;
+            modelTicketInfo.TempId             = maxId;
+            modelTicketInfo.VideoLink          = string.Empty;
+            modelTicketInfo.Title              = string.Empty;
+            modelTicketInfo.Description        = string.Empty;
+            modelTicketInfo.TicketRestriction  = string.Empty;
+            modelTicketInfo.Id                 = 0;
             modelTicketList.TicketInformations.Add(modelTicketInfo);
-            modelTicketInfo = new();
+
+            var last = modelTicketList.TicketInformations.LastOrDefault();
+            if (last is not null)
+            {
+                modelTicketList.TicketInformations = modelTicketList.TicketInformations.Where(p => p.Id != last.Id).ToList();
+                modelTicketInfo = last;
+            }
         }
     }
 
+    private async Task DeleteClick(TicketInformation ticket)
+    {
+        ticketToDelete = ticket;
+        await confirmDialogRef.Open();
+    }
+
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            //existing online ticket info
+            modelTicketList.TicketInformations = existingList.TicketInformations;
+            if (ticketToDelete.Id != 0)
+            {
+                modelTicketList.TicketInformations.Where(a => a.Id == ticketToDelete.Id).FirstOrDefault().IsDeleted = true;
+                var deleteTicket = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
+                {
+                    Id = ticketToDelete.Id
+                }, Token);
+                if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
+                {
+                    modelTicketList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                    var last = modelTicketList.TicketInformations.LastOrDefault();
+                    if (last is not null)
+                    {
+                        modelTicketList.TicketInformations = modelTicketList.TicketInformations.Where(p => p.Id != last.Id).ToList();
+                        modelTicketInfo = last;
+                    }
+                }
+            }
+            else
+            {
+                modelTicketList.TicketInformations.Where(a => a.TempId == ticketToDelete.TempId).FirstOrDefault().IsDeleted = true;
+                modelTicketList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsNew && !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                var last = modelTicketList.TicketInformations.LastOrDefault();
+                if (last is not null)
+                {
+                    modelTicketList.TicketInformations = modelTicketList.TicketInformations.Where(p => p.Id != last.Id).ToList();
+                    modelTicketInfo = last;
+                }
+            }
+        }
+    }
     private string RestrictionClass
     {
         get
@@ -389,7 +492,6 @@
             return defaultStyle;
         }
     }
-
     private async Task ViewGuide()
     {
 

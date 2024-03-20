@@ -448,7 +448,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             existingOnlineEvent.Videolink = onlineEvent.Videolink;
                             existingOnlineEvent.TicketRestriction = onlineEvent.TicketRestriction;
                             existingOnlineEvent.OteScheduleId = result.OteSchedule.Id;
-                            existingOnlineEvent.OteSchedulePricingGroupId = onlineEvent.OteSchedulePricingGroupId;
                         }
                     }
 
@@ -463,7 +462,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             Videolink = newEvent.Videolink,
                             TicketRestriction = newEvent.TicketRestriction,
                             OteScheduleId = result.OteSchedule.Id,
-                            OteSchedulePricingGroupId = newEvent.OteSchedulePricingGroupId
                         };
                         result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }

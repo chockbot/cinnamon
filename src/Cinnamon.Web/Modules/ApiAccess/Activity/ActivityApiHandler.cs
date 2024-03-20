@@ -1154,4 +1154,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<VerifySharedEventLinkResult>.CreateFailed(ex, "An error occured when calling OTE verification API");
         }
     }
+
+    public async Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteOnlineEvent")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteOnlineEventResult>();
+
+            return AppResult<DeleteOnlineEventResult>.CreateSucceeded(result, "Successfully called delete online event");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
+        }
+    }
 }
