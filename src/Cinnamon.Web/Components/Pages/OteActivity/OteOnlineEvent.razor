@@ -235,12 +235,19 @@
     private bool allRestrictionDisabled = false;
     private bool DisplayDelete = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (existingList.TicketInformations.Count == 0)
+        if (firstRender)
         {
-            DisplayDelete = false;
-            AddMoreTicket();
+
+        }
+        else
+        {
+            if (existingList.TicketInformations.Count == 0)
+            {
+                DisplayDelete = false;
+                AddMoreTicket();
+            }
         }
     }
     protected override void OnParametersSet()
@@ -264,6 +271,7 @@
                     if (item.TicketRestriction == "1")
                     {
                         DisableAllPrices();
+                        allRestrictionDisabled = true;
                     }
                     else
                     {
@@ -280,7 +288,6 @@
                     }
                 }
             }
-            IsAddTicketDisable();
         }
     }
 
@@ -441,7 +448,6 @@
             }
             modelTicketInfo = last;
         }
-        IsAddTicketDisable();
     }
 
     private async Task DeleteClick(TicketInformation ticket)
@@ -459,7 +465,10 @@
             if (ticketToDelete.TempId == 0)
             {
                 modelTicketList.TicketInformations.Where(a => a.Id == ticketToDelete.Id).FirstOrDefault().IsDeleted = true;
-                PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                if(ticketToDelete.TicketRestriction != "1")
+                {
+                    PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                }
                 var deleteTicket = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
                 {
                     Id = ticketToDelete.Id
@@ -472,6 +481,11 @@
                     {
                         modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.Id != last.Id).ToList();
                         modelTicketInfo = last;
+                    }
+                    else
+                    {
+                        AddMoreTicket();
+                        EnableAllPrices();
                     }
                 }
             }
@@ -487,8 +501,8 @@
                     }
                     else if (ticketToDelete.TicketRestriction == "0")
                     {
-                        EnableAllPrices();
-                        allRestrictionDisabled = false;
+                        //EnableAllPrices();
+                        //allRestrictionDisabled = false;
                     }
                     else
                     {
@@ -502,13 +516,18 @@
                     modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.TempId != last.TempId).ToList();
                     modelTicketInfo = last;
                 }
-                else
+                else if (last is not null && last.TempId == 0)
                 {
                     modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.Id != last.Id).ToList();
                     modelTicketInfo = last;
                 }
+                else
+                {
+                    AddMoreTicket();
+                    EnableAllPrices();
+                }
             }
-            IsAddTicketDisable();
+            
         }
     }
     private string RestrictionClass
@@ -542,12 +561,6 @@
             }
             return defaultStyle;
         }
-    }
-    private bool IsAddTicketDisable()
-    {
-        allTicketRestrictionsSelected = PricingData.ItemPrices.All(ticket => ticket.Disabled);
-
-        return allTicketRestrictionsSelected;
     }
     private void DisableAllPrices()
     {
