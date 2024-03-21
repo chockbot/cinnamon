@@ -89,11 +89,11 @@
                                     {
                                         <Field class="mb-4">
                                             <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                Ticket Restriction
+                                                Ticket Conditions
                                             </FieldLabel>
                                             <FieldBody>
                                                 <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
-                                                    <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Restriction</SelectItem>
+                                                    <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Conditions</SelectItem>
                                                     <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
                                                     @foreach (var item in PricingData.ItemPrices)
                                                     {
@@ -173,11 +173,11 @@
             {
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        Ticket Restriction
+                        Ticket Conditions
                     </FieldLabel>
                     <FieldBody>
                         <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
-                            <SelectItem Disabled Value="0">Select Ticket Restriction</SelectItem>
+                            <SelectItem Disabled Value="0">Select Ticket Conditions</SelectItem>
                             <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
                             @foreach (var item in PricingData.ItemPrices)
                             {
