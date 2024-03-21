@@ -127,6 +127,10 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 ProviderId = oteActivity.ProviderId,
                 Tickets = tickets.Select(t => {
                     var onlineEvent = oteActivity.OnlineEvent?.FirstOrDefault(a => a.TicketRestriction == t.Title);
+                    if(onlineEvent == null)
+                    {
+                        onlineEvent = oteActivity.OnlineEvent?.FirstOrDefault(a => a.TicketRestriction == "1");
+                    }
                     return new OteTicketDetailsResult.Ticket {
                         Id = t.Id,
                         Name = t.Title,
