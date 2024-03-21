@@ -232,11 +232,11 @@ public class DisbursementRepository : IDisbursementRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementByProvider(int Id, string filterBy, string filterValue, int? count, int? skip)
+    public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementByProvider(string payoutDateString, int Id, string filterBy, string filterValue, int? count, int? skip)
     {
         try
         {
-            var result = await dataStore.Disbursement.GetDisbursementsByProvider(Id, filterBy, filterValue, count, skip);
+            var result = await dataStore.Disbursement.GetDisbursementsByProvider(payoutDateString, Id, filterBy, filterValue, count, skip);
             if (!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<DisbursementDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

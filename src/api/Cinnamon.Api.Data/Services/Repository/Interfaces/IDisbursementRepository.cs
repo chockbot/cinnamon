@@ -27,5 +27,5 @@ public interface IDisbursementRepository
 
     Task<AppResult<DisbursementManualDTO>> CreateManualDisbursement(DisbursementManualDTO disbursementManual);
 
-    Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementByProvider(int Id, string filterBy, string filterValue, int? count, int? skip);
+    Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementByProvider(string payoutDateString, int Id, string filterBy, string filterValue, int? count, int? skip);
 }
