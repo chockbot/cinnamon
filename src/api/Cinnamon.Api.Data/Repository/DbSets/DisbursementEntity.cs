@@ -53,7 +53,8 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(int? Id, string filterBy, string filterValue, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(string payoutDateString, int? Id, string filterBy, 
+		string filterValue, int? count, int? skip)
 	{
 		try
 		{
@@ -74,12 +75,25 @@ public class DisbursementEntity : GenericEntity<Disbursement>, IDisbursement
 			{
 				whereClause += " AND ds.\"Status\" = @status";
 			}
-			string query = "SELECT ds.\"Id\", ds.\"CustomerId\" as ProviderId,cc.\"Email\", cc.\"FirstName\", cc.\"LastName\",ds.\"Label\", " +
-								"ds.\"Amount\", ds.\"Status\", ds.\"InclusivePayment\",ds.\"Remarks\", po.\"Payload\", ds.\"ChangedOn\" as PayoutDate, " +
-								"(cc.\"FirstName\" || ' ' || cc.\"LastName\") as CustomerName " +
-							"FROM public.\"Disbursements\" ds " +
-							"JOIN public.\"PurchaseOrders\" po ON po.\"Id\" = ds.\"PurchaseOrderId\" " +
-							"JOIN public.\"Customers\" cc ON cc.\"Id\" = ds.\"CustomerId\" " + whereClause;
+			
+			string query = "with filtered as " +
+							"( " +
+								"SELECT ds.\"Id\", ds.\"CustomerId\" as ProviderId, cc.\"Email\", cc.\"FirstName\", cc.\"LastName\", ds.\"Label\", " +
+									"ds.\"Amount\", ds.\"Status\", ds.\"InclusivePayment\",ds.\"Remarks\", po.\"Payload\", " +
+									"case " +
+										"when ds.\"Status\" = 'initiated' then '" + payoutDateString + "' " +
+										"else ds.\"ChangedOn\" " +
+									"end as \"PayoutDate\", " +
+									"(cc.\"FirstName\" || ' ' || cc.\"LastName\") as CustomerName " +
+								"FROM public.\"Disbursements\" ds " +
+								"JOIN public.\"PurchaseOrders\" po " +
+									"ON po.\"Id\" = ds.\"PurchaseOrderId\" " +
+								"JOIN public.\"Customers\" cc " +
+									"ON cc.\"Id\" = ds.\"CustomerId\" " + whereClause + " " +
+							") " +
+							"select * " +
+							"from filtered " +
+							"order by \"PayoutDate\" desc ";
 
 			List<DisbursementDTO> result = new();
 

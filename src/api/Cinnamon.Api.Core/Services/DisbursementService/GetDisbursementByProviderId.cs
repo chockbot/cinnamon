@@ -32,13 +32,18 @@ public class GetDisbursementByProviderId : IGetDisbursementByProviderId
     {
         try
         {
+            CronExpression expression = new CronExpression(applicationConfig.Disbursement.CronString);
+            DateTimeOffset payoudDate = expression.GetNextValidTimeAfter(DateTime.Now) ?? DateTime.Now;
+            string payoutDateString = payoudDate.LocalDateTime.ToString("yyyy-MM-dd hh:mm");
+
             var disbursementInfo = await disbursementData.GetDisbursementByProvider(new Framework.ApiCommand.ApiData.Disbursement.Request.GetDisbursementByProviderArgs
             {
                 ProviderId   = args.ProviderId,
                 FilterBy     = args.FilterBy,
                 FilterValue  = args.FilterValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex    = args.PageIndex    
+                PageIndex    = args.PageIndex,
+                PayoutString = payoutDateString
             });
             if (!disbursementInfo.Succeeded || disbursementInfo.Result is null || !disbursementInfo.Result.IsSuccess)
             {
@@ -48,13 +53,6 @@ public class GetDisbursementByProviderId : IGetDisbursementByProviderId
             return AppResult<GetDisbursementByProviderResult>.CreateSucceeded(new GetDisbursementByProviderResult
             {
                 DisbursementInformation = disbursementInfo.Result.Result.Select(d => {
-                    DateTimeOffset? payoudDate = d.PayoutDate;
-                    if(d.PayoutDate == DateTime.MinValue)
-                    {
-                        CronExpression expression = new CronExpression(applicationConfig.Disbursement.CronString);
-                        payoudDate = expression.GetNextValidTimeAfter(DateTime.Now);
-                    }
-                    
                     return new GetDisbursementByProviderResult.DisbursementByProviderId
                     {
                         Id                = d.Id,
@@ -64,7 +62,7 @@ public class GetDisbursementByProviderId : IGetDisbursementByProviderId
                         Remarks           = d.Remarks,
                         Status            = d.Status,
                         Payload           = d.Payload,
-                        PayoutDate        = payoudDate.Value.LocalDateTime,
+                        PayoutDate        = d.PayoutDate,
                         ProviderId        = d.DisbursementInformation.ProviderId,
                         ProviderEmail     = d.DisbursementInformation.ProviderEmail,
                         CustomerName      = d.DisbursementInformation.CustomerName,
