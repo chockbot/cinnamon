@@ -1,4 +1,11 @@
-﻿.footer {
+﻿.swiper-scrollbar-drag {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  position: relative;
+}
+
+.footer {
   height: 128px;
   width: 100%;
   margin-top: 60px;
@@ -11,6 +18,7 @@
   text-align: left;
   position: absolute;
   width: 100%;
+  background: red;
   top: 10%;
 }
 
@@ -23,6 +31,7 @@
   font-family: "Inter";
   font-size: 1vw;
 }
+
 .faq-style {
   font-family: "Nunito";
 }
@@ -127,7 +136,17 @@ li + li {
   list-style-type: disc;
 }
 
+.btn-carousel-section {
+  padding-bottom: 20px;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
 @media (min-width: 0px) and (max-width: 575.98px) {
+  .footer {
+    height: auto;
+  }
   .heading {
     font-family: "Nunito";
     font-style: normal;
@@ -148,6 +167,10 @@ li + li {
     color: #ffa942;
   }
 
+  .btn-section.border-bottom.col-lg-12.d-lg-block.d-md-none.d-sm-none.d-none {
+    padding-bottom: 20px;
+  } 
+
   .app-name-section {
     margin-bottom: 30px;
   }
@@ -156,7 +179,7 @@ li + li {
     font-family: "Nunito";
     font-style: normal;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 15px;
     line-height: 27px;
     text-align: center;
     color: #343d4c;
@@ -164,8 +187,6 @@ li + li {
 
   .btn-section,
   .btn-carousel-section {
-    padding: 0px 0px 20px 0px;
-    max-width: 100%;
     overflow-x: hidden;
   }
 
@@ -184,22 +205,33 @@ li + li {
   }
 
   .swiper-slide.faq[style] {
-    width: 325px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.terms[style] {
-    width: 240px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.policy[style] {
-    width: 185px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 }
 
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (min-width: 660px) and (max-width: 768.87px ) {
+  .top-row.px4 {
+    background-color: white;
+    border-bottom: 1px solid var(--lineColor);
+    justify-content: space-between;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 768.98px) {
   .heading {
     font-family: "Nunito";
     font-style: normal;
@@ -235,9 +267,9 @@ li + li {
 
   .btn-section,
   .btn-carousel-section {
-    padding: 0px 0px 20px 0px;
-    max-width: 100%;
+    padding-bottom: 20px;
     overflow-x: hidden;
+    flex-direction: nowrap;
   }
 
   .caption {
@@ -255,17 +287,17 @@ li + li {
   }
 
   .swiper-slide.faq[style] {
-    width: 325px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.terms[style] {
-    width: 240px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.policy[style] {
-    width: 185px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 }
@@ -308,9 +340,12 @@ li + li {
   .btn-section,
   .btn-carousel-section {
     padding-bottom: 20px;
-    max-width: 100%;
     overflow-x: hidden;
   }
+
+  .btn-section.border-bottom.col-lg-12.d-lg-block.d-md-none.d-sm-none.d-none {
+    padding-bottom: 20px;
+  } 
 
   .caption {
     font-family: "Nunito";
@@ -327,17 +362,17 @@ li + li {
   }
 
   .swiper-slide.faq[style] {
-    width: 325px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.terms[style] {
-    width: 240px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 
   .swiper-slide.policy[style] {
-    width: 185px !important;
+    width: auto !important;
     margin-right: 15px !important;
   }
 }
@@ -377,11 +412,18 @@ li + li {
     color: #343d4c;
   }
 
+ .btn-section.border-bottom.col-lg-12.d-lg-block.d-md-none.d-sm-none.d-none {
+    padding-bottom: 20px;
+  } 
+
+  .row.justify-content-center {
+    padding: 0;
+  }
+
   .btn-section,
   .btn-carousel-section {
     padding-bottom: 20px;
-    max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
   .caption {
@@ -399,17 +441,17 @@ li + li {
   }
 
   .swiper-slide.faq {
-    width: 325px;
+    width: auto !important;
     margin-right: 17px;
   }
 
   .swiper-slide.terms {
-    width: 240px;
+    width: auto !important;
     margin-right: 17px;
   }
 
   .swiper-slide.policy {
-    width: 185px;
+    width: auto !important;
     margin-right: 17px;
   }
 }
@@ -452,9 +494,13 @@ li + li {
   .btn-section,
   .btn-carousel-section {
     padding-bottom: 20px;
-    max-width: 100%;
     overflow-x: hidden;
+    text-align: center;
   }
+
+  .btn-section.border-bottom.col-lg-12.d-lg-block.d-md-none.d-sm-none.d-none {
+    padding-bottom: 20px;
+  } 
 
   .caption {
     font-family: "Nunito";
@@ -471,17 +517,18 @@ li + li {
   }
 
   .swiper-slide.faq {
-    width: 325px;
+    width: auto !important;
     margin-right: 17px;
   }
 
   .swiper-slide.terms {
-    width: 240px;
+    width: auto !important;
     margin-right: 17px;
+    white-space: nowrap;
   }
 
   .swiper-slide.policy {
-    width: 185px;
+    width: auto !important;
     margin-right: 17px;
   }
 }
@@ -493,7 +540,7 @@ li + li {
 }
 
 .ote-seller li {
-  display: block;
+  display: flex;
   margin-bottom: 1rem;
   margin-top: 0;
 }
