@@ -94,7 +94,7 @@
                                             <FieldBody>
                                                 <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
                                                     <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Restriction</SelectItem>
-                                                    <SelectItem Value='1' Disabled="@IsAllDisabled">All</SelectItem>
+                                                    <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
                                                     @foreach (var item in PricingData.ItemPrices)
                                                     {
                                                         <SelectItem Value="@item.Name" Disabled="@item.Disabled">@item.Name</SelectItem>
@@ -118,11 +118,15 @@
     }
     <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
         <Validations @ref="ticketFormValidation" Mode="FormMode" Model="modelTicketInfo">
-            <div class="col-12 d-flex justify-content-end">
-                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(modelTicketInfo)">
-                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
-                </Button>
-            </div>
+            @if(DisplayDelete)
+            {
+                <div class="col-12 d-flex justify-content-end">
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(modelTicketInfo)">
+                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                    </Button>
+                </div>
+            }
+            
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -173,8 +177,8 @@
                     </FieldLabel>
                     <FieldBody>
                         <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
-                            <SelectItem Disabled Value="string.Empty">Select Ticket Restriction</SelectItem>
-                            <SelectItem Value="1" Disabled="@IsAllDisabled">All</SelectItem>
+                            <SelectItem Disabled Value="0">Select Ticket Restriction</SelectItem>
+                            <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
                             @foreach (var item in PricingData.ItemPrices)
                             {
                                 <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
@@ -226,14 +230,16 @@
     private Validations? ticketFormValidation;
     private Validations? ticketListFormValidation;
     private bool showErrors = false;
-    private bool IsAllDisabled = false;
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool allTicketRestrictionsSelected = false;
+    private bool allRestrictionDisabled = false;
+    private bool DisplayDelete = true;
 
     protected override async Task OnInitializedAsync()
     {
         if (existingList.TicketInformations.Count == 0)
         {
+            DisplayDelete = false;
             AddMoreTicket();
         }
     }
@@ -253,20 +259,28 @@
             // Disable the selected item in the dropdown
             if (existingList.TicketInformations.Count != 0)
             {
-                IsAllDisabled = true;
                 foreach (var item in existingList.TicketInformations)
                 {
-                    if (!string.IsNullOrEmpty(item.TicketRestriction))
+                    if (item.TicketRestriction == "1")
                     {
-                        PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                        DisableAllPrices();
+                    }
+                    else
+                    {
+                        if (item.TicketRestriction == "0")
+                        {
+                            EnableAllPrices();
+                            allRestrictionDisabled = false;
+                        }
+                        else
+                        {
+                            allRestrictionDisabled = true;
+                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                        }
                     }
                 }
-                IsAddTicketDisable();
             }
-            else
-            {
-                IsAllDisabled = false;
-            }
+            IsAddTicketDisable();
         }
     }
 
@@ -371,22 +385,6 @@
         }
     }
 
-    private async Task SelectedRestrictionChanged(string restriction)
-    {
-        var result = PricingData.ItemPrices.FirstOrDefault(item => item.Name.Equals(restriction, StringComparison.OrdinalIgnoreCase));
-        if (result != null)
-        {
-            modelTicketInfo.TicketRestriction = result.Name;
-
-            // Disable the selected item in the dropdown
-            foreach (var item in PricingData.ItemPrices)
-            {
-                item.Disabled = item.Name.Equals(restriction, StringComparison.OrdinalIgnoreCase);
-            }
-            IsAddTicketDisable();
-        }
-    }
-
     private ValidationMode FormMode
     {
         get
@@ -397,10 +395,22 @@
 
     private async Task AddMoreTicket()
     {
+        //check the first item
+        if (existingList.TicketInformations.Count == 1)
+        {
+            if (existingList.TicketInformations.FirstOrDefault().TicketRestriction == "1")
+            {
+                DisableAllPrices();
+            }
+        }
+        else
+        {
+            DisplayDelete = true;
+        }
         modelTicketList.TicketInformations = existingList.TicketInformations;
         int maxId                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
         int order                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
-        existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true});
+        existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true, TicketRestriction = "0"});
         var last = existingList.TicketInformations.LastOrDefault();
         if (last is not null)
         {
@@ -408,9 +418,25 @@
             //Update Pricing Availability
             foreach(var item in modelTicketList.TicketInformations)
             {
-                if (!string.IsNullOrEmpty(ticketToDelete.TicketRestriction))
+                if (!string.IsNullOrEmpty(item.TicketRestriction))
                 {
-                    PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                    if (item.TicketRestriction == "1")
+                    {
+                        DisableAllPrices();
+                    }
+                    else
+                    {
+                        if (item.TicketRestriction == "0")
+                        {
+                            EnableAllPrices();
+                            allRestrictionDisabled = false;
+                        }
+                        else
+                        {
+                            allRestrictionDisabled = true;
+                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                        }
+                    }
                 }
             }
             modelTicketInfo = last;
@@ -454,7 +480,20 @@
                 modelTicketList.TicketInformations.Where(a => a.TempId == ticketToDelete.TempId).FirstOrDefault().IsDeleted = true;
                 if (!string.IsNullOrEmpty(ticketToDelete.TicketRestriction))
                 {
-                    PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                    if (ticketToDelete.TicketRestriction == "1")
+                    {
+                        allRestrictionDisabled = false;
+                        DisableAllPrices();
+                    }
+                    else if (ticketToDelete.TicketRestriction == "0")
+                    {
+                        EnableAllPrices();
+                        allRestrictionDisabled = false;
+                    }
+                    else
+                    {
+                        PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                    }
                 }
                 existingList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
                 var last = existingList.TicketInformations.LastOrDefault();
@@ -509,6 +548,20 @@
         allTicketRestrictionsSelected = PricingData.ItemPrices.All(ticket => ticket.Disabled);
 
         return allTicketRestrictionsSelected;
+    }
+    private void DisableAllPrices()
+    {
+        foreach (var item in PricingData.ItemPrices)
+        {
+            item.Disabled = true;
+        }
+    }
+    private void EnableAllPrices()
+    {
+        foreach (var item in PricingData.ItemPrices)
+        {
+            item.Disabled = false;
+        }
     }
     public class ModelData
     {
