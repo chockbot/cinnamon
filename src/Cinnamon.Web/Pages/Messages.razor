@@ -110,8 +110,8 @@
     </div>
 </div>
 
-<div class="messages-container row">
-    <div class="col-lg-2 col-md-2 col-sm-2 col-12 messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
+<div class="messages-container row flex-nowrap">
+    <div class="sidebar-messages left-sidebar messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
         <div class="message-title-section">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-6 col-6">
@@ -176,7 +176,7 @@
                             
                         </div>
                         <div class="col-lg-10 col-md-10 col-sm-10 col-10 chatroom-name-section">
-                            <div class="chatroom-name">
+                            <div class="chatroom-name text-capitalize">
                                 @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                 {
                                     @fullName
@@ -200,7 +200,7 @@
             }
         </div>
     </div>
-    <div class="col-lg-8 col-md-8 col-sm-8 col-12 chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
+    <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="chat-profile-section">
                 <div class="row">
@@ -274,17 +274,17 @@
                 <div class="chat-profile-section">
                     <div class="row">
                         <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                            <div class="row">
+                            <div class="d-flex">
                                 @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                 {
-                                    <div class="col-lg-1 chatmate-profile-picture-section">
+                                    <div class="chatmate-profile-picture-section me-3">
                                         <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
                                         @if (!string.IsNullOrEmpty(chatMateConnectionId))
                                         {
                                             <span class="logged-in"></span>
                                         }
                                     </div>
-                                    <div class="col-lg-10">
+                                    <div class="">
                                         <div class="chat-profile-name">
                                             @chatMateFullName
                                         </div>
@@ -302,14 +302,14 @@
                                 }
                                 else
                                 {
-                                    <div class="col-lg-1 chatmate-profile-picture-section">
-                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
+                                    <div class="chatmate-profile-picture-section">
+                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
                                         @if (!string.IsNullOrEmpty(chatMateGroupName))
                                         {
                                             <span class="logged-in"></span>
                                         }
                                     </div>
-                                    <div class="col-lg-10">
+                                    <div class="">
                                         <div class="chat-profile-name">
                                             @chatMateChatName
                                         </div>
@@ -548,7 +548,7 @@
             }
         </div>
     </div>
-    <div class="col-lg-2 col-md-2 col-sm-2 col-12 profile-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
+    <div class="sidebar-messages profile-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
             <div class="row justify-content-center placeholder-glow">
                 <div class="col-lg-12 text-center">
@@ -620,13 +620,13 @@
                             Chat members
                         </label>
 
-                        <div class="row">
+                        <div class="row align-items-center">
                             @foreach (var item in chatMembers)
                             {
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-2 chat-member-picture-section">
                                     <img src="@item.FromProfilePath" class="chat-profile-picture" />
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-6 chat-member-name-section">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-6 chat-member-name-section text-capitalize">
                                     @item.FromFirstName @item.FromLastName
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
