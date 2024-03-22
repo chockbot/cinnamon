@@ -141,18 +141,12 @@
                 throw new ApplicationException("Invalid request");
             }
             accountId = accountRes.Result.Result.Id;
+
+            LoadComponents();
         }
         catch (System.Exception)
         {
             NavigationManager.NavigateTo("explore");
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if(firstRender)
-        {
-            LoadComponents();
         }
     }
 
@@ -164,7 +158,7 @@
             {
                 await LoadComponentState();
             }
-        }   
+        }
     }
 
     private double GetPerentCompletion
@@ -679,7 +673,7 @@
         var ote = oteRes.Result.Result;
 
         oteId = ote.Id;
-        oteEvent?.SetState(new OteEvent.ModelData {
+        await oteEvent?.SetState(new OteEvent.ModelData {
             Category = ote.CategoryId,
             Description = ote.Description,
             Name = ote.EventName
@@ -699,7 +693,7 @@
         });
 
         var options = ote.OteSchedule.ExtraOptions.Split("|");
-        otePricing?.SetState(new OtePricing.ModelData {
+        await otePricing?.SetState(new OtePricing.ModelData {
             DateFrom              = ote.ScheduleFrom,
             DateTo                = ote.ScheduleTo,
             Recurrences           = ote.Recurrences,
@@ -737,7 +731,7 @@
             }).ToList()
         });
 
-        oteGallery?.SetState(ote.Images.Select(i => {
+        await oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
                 Id = i.Id,
                 ImageSrc = i.ImageSrc,
@@ -745,7 +739,7 @@
             };
         }).ToList());
 
-        otePublish?.SetState(new OtePublish.ModelData {
+        await otePublish?.SetState(new OtePublish.ModelData {
             AcceptTerms = true,
             ComingSoon = ote.IsComingSoon,
             IsPublish = ote.IsPublished

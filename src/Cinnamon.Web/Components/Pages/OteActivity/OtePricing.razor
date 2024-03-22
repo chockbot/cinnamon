@@ -670,7 +670,7 @@
 </section>
 
 @code 
-            {
+{
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -872,7 +872,7 @@
         return data;
     }
 
-    public void SetState(ModelData data)
+    public Task SetState(ModelData data)
     {
         modelSchedule.DateFrom               = data.DateFrom;
         modelSchedule.DateTo                 = data.DateTo;
@@ -924,7 +924,7 @@
             modelPricing.Name = last.Name;
         }
 
-        //StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private async Task ViewDetails(Pricing ticketPricing)
