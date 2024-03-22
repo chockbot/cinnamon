@@ -132,18 +132,12 @@
                 throw new ApplicationException("Invalid request");
             }
             accountId = accountRes.Result.Result.Id;
+
+            LoadComponents();
         }
         catch (System.Exception)
         {
             NavigationManager.NavigateTo("explore");
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if(firstRender)
-        {
-            LoadComponents();
         }
     }
 
@@ -155,7 +149,7 @@
             {
                 await LoadComponentState();
             }
-        }   
+        }
     }
 
     private double GetPerentCompletion
@@ -581,7 +575,7 @@
         var ote = oteRes.Result.Result;
 
         oteId = ote.Id;
-        oteEvent?.SetState(new OteEvent.ModelData {
+        await oteEvent?.SetState(new OteEvent.ModelData {
             Category = ote.CategoryId,
             Description = ote.Description,
             Name = ote.EventName

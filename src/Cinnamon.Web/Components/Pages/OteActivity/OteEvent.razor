@@ -89,11 +89,6 @@
     private Validation? eventDescriptionValidation;
     private bool isNextClick = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCategory();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -201,8 +196,9 @@
         return data;
     }
 
-    public void SetState(ModelData data)
+    public async Task SetState(ModelData data)
     {
+        await LoadCategory();
         model.Description = data.Description;
         model.EventName = data.Name;
         model.SelectedCategory = data.Category;
