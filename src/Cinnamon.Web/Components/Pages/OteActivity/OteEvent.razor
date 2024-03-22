@@ -89,6 +89,11 @@
     private Validation? eventDescriptionValidation;
     private bool isNextClick = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategory();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -128,6 +133,8 @@
         if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
         {
             var categories = categoryRes.Result.Result.Where(c => c.Name.ToLower() != "new");
+            categoryItems.Clear();
+            
             foreach(var item in categories)
             {
                 categoryItems.Add(new CategoryItem {
