@@ -85,14 +85,14 @@
             <div class="mb-4">
                 <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
                     <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="font-20 color-black-100" @onclick="NavigateToTerms">
-                        [Terms and condition for one time event.]
-                        @if(showErrorMessage && !model.AcceptTerms)
-                        {
-                            <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
-                        }
-                    </span>
+                        <a class="terms-link" href="help/terms" target="_blank">
+                            [Terms and condition for one time event.]
+                        </a>
                 </span>
+                @if (showErrorMessage && !model.AcceptTerms)
+                {
+                    <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
+                }
             </div>
             @*<div class="mb-4">
                 <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.ComingSoon = !model.ComingSoon">
