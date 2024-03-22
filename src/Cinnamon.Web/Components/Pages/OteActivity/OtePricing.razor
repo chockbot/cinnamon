@@ -394,7 +394,9 @@
                                 <Row VerticalGutter="10" class="mb-4">
                                     <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
                                         <div class="d-flex justify-content-between mb-3">
-                                            <span class="font-14 font-weight-700 color-orange-100">Buyer total: P 12.73</span>
+                                            <span class="font-14 font-weight-700 color-orange-100">
+                                                Buyer total: ₱ @(CalCulateBuyerTotal(item).ToString("#,##0.00"))
+                                            </span>
                                             <span @onclick="() => ViewDetails(item)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
                                                 view details
                                             </span>
