@@ -595,7 +595,7 @@
         });
 
         var options = ote.OteSchedule.ExtraOptions.Split("|");
-        otePricing?.SetState(new OtePricing.ModelData {
+        await otePricing?.SetState(new OtePricing.ModelData {
             DateFrom              = ote.ScheduleFrom,
             DateTo                = ote.ScheduleTo,
             Recurrences           = ote.Recurrences,
@@ -621,7 +621,7 @@
             }).ToList()
         });
 
-        oteGallery?.SetState(ote.Images.Select(i => {
+        await oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
                 Id = i.Id,
                 ImageSrc = i.ImageSrc,
@@ -629,7 +629,7 @@
             };
         }).ToList());
 
-        otePublish?.SetState(new OtePublish.ModelData {
+        await otePublish?.SetState(new OtePublish.ModelData {
             AcceptTerms = true,
             ComingSoon = ote.IsComingSoon,
             IsPublish = ote.IsPublished

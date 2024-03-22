@@ -361,7 +361,7 @@
         }
     }
 
-    public void SetState(IList<ImageItem> images)
+    public Task SetState(IList<ImageItem> images)
     {
         var orderedImages = images.OrderBy(i => i.Order).ThenBy(i => i.Id);
         var coverImage = orderedImages.FirstOrDefault();
@@ -401,6 +401,8 @@
                 });
             }
         }
+
+        return Task.CompletedTask;
     }
 
     private Task DeleteCoverPhoto()
