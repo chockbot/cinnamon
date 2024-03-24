@@ -10,14 +10,14 @@
 
 <div class="page app-name-section">
     <main>
-        <div class="top-row px-4 d-flex">
-            <div class="app-name col-lg-8 col-md-6 col-sm-8 col-8">
+        <div class="top-row px-4 d-flex justify-content-between">
+            <div class="app-name">
                 <a href="/explore" class="app-name">@Resources.App.appName</a>
             </div>
-            <div class="login-button col-lg-4 col-md-6">
+            <div class="login-button">
                 @if(isLogin)
                 {
-                    <p class="cinnamon-link" @onclick="NavigateToExplore">Explore</p>
+                    <a class="cinnamon-link" hre="/explore">Explore</a>
                     <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
                     <a class="cinnamon-link" href="https://cinnamon.ph/blog/" @onclick="NavigateToBlogs">Blogs</a>
                     <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
@@ -25,9 +25,9 @@
                 else
                 {
                     <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/" @onclick="NavigateToBlogs">Blogs</a>
-                    <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
-                    <button class="btn-login" @onclick="() => signinModal.Show()">
+                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                    <a class="cinnamon-link" href="/help">Help</a>
+                    <button class="btn-login ms-3" @onclick="() => signinModal.Show()">
                         Login | Signup
                     </button>
                 }
