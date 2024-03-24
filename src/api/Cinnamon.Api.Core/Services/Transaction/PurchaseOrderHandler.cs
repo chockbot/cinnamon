@@ -7,7 +7,9 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
+using System.Text;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -25,13 +27,14 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ICustomerPricingData customerPricingData;
     private readonly ILogger logger;
     private readonly ApplicationConfig applicationConfig;
+    private readonly ITokenGeneratedData tokenGeneratedData;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData,
-        ILogger<PurchaseOrderHandler> logger, ApplicationConfig applicationConfig)
+        ILogger<PurchaseOrderHandler> logger, ApplicationConfig applicationConfig, ITokenGeneratedData tokenGeneratedData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -45,6 +48,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.customerPricingData = customerPricingData;
         this.logger = logger;
         this.applicationConfig = applicationConfig;
+        this.tokenGeneratedData = tokenGeneratedData;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -289,6 +293,40 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             var failedUrl = applicationConfig.FrontendUrl
                 .AppendPathSegment($"payment/{args.ActivityId}/{args.ScheduleId}")
                 .SetQueryParam("Status", "failed");
+            
+            // generate token and guid for transaction redirection details
+            var guid = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
+            byte[] key = guid.ToByteArray();
+            var token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var payload = new 
+            {
+                ActivityId = result.Result.Result.ActivityId,
+                TransactionId = result.Result.Result.Id,
+                SuccessUrl = successUrl,
+                FailedUrl = failedUrl
+            };
+
+            var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
+
+            var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
+                Guid = guid.ToString(),
+                Payload = tokenSerializedPayload,
+                Token = encodedToken,
+                TokenType = "TRANSACTION-REQUEST",
+            });
+            if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(
+                    new ApplicationException(createTokenRes.Result?.ErrorInfo?.Message), "An error occured in PurchaseOrderHandler");
+            }
+
+            var paymentRedirectUrl = applicationConfig.FrontendUrl
+                                        .AppendPathSegment($"/transaction/finalize")
+                                        .SetQueryParam("Guid", guid.ToString())
+                                        .SetQueryParam("Token", encodedToken);
 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
@@ -303,8 +341,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
                 } : null,
-                SuccessUrl = successUrl,
-                FailedUrl = failedUrl
+                SuccessUrl = paymentRedirectUrl,
+                FailedUrl = paymentRedirectUrl
             });
 
             if(!requestPayment.Succeeded || requestPayment.Result == null)
