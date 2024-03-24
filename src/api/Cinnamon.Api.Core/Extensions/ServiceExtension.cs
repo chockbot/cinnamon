@@ -184,6 +184,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderHandler, Services.TransactionService.OtePurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOteFinishTransactionHandler, Services.TransactionService.OteFinishTransactionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderDetailsHandler, Services.TransactionService.OtePurchaseOrderDetailsHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.ITransactionRedirectionHandler, Services.TransactionService.TransactionRedirectionHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
