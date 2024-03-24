@@ -29,12 +29,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
     private readonly ILogger<OtePurchaseOrderHandler> logger;
     private readonly ApplicationConfig applicationConfig;
-
+    private readonly ITokenGeneratedData tokenGeneratedData;
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData, ILogger<OtePurchaseOrderHandler> logger,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
-        ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler)
+        ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler,
+        ITokenGeneratedData tokenGeneratedData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -49,6 +50,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.logger = logger;
         this.applicationConfig = applicationConfig;
         this.oteFinishTransactionHandler = oteFinishTransactionHandler;
+        this.tokenGeneratedData = tokenGeneratedData;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -335,6 +337,40 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     Url = successUrl
                 }, "Successfully request purchase order details.");
             }
+
+            // generate token and guid for transaction redirection details
+            var validGuid = Guid.NewGuid();
+            var validTimestamp = DateTime.UtcNow;
+            byte[] validTtime = BitConverter.GetBytes(validTimestamp.ToBinary());
+            byte[] validKey = validGuid.ToByteArray();
+            var validToken = Convert.ToBase64String(validTtime.Concat(validKey).ToArray());
+            var validEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(validToken));
+            var payload = new 
+            {
+                ActivityId = result.Result.Result.ActivityId,
+                TransactionId = result.Result.Result.Id,
+                SuccessUrl = successUrl,
+                FailedUrl = failedUrl
+            };
+
+            var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
+
+            var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
+                Guid = validGuid.ToString(),
+                Payload = tokenSerializedPayload,
+                Token = validEncodedToken,
+                TokenType = "TRANSACTION-REQUEST",
+            });
+            if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                    new ApplicationException(createTokenRes.Result?.ErrorInfo?.Message), "An error occured in when purchasing an event.");
+            }
+
+            var paymentRedirectUrl = applicationConfig.FrontendUrl
+                                        .AppendPathSegment($"/transaction/finalize")
+                                        .SetQueryParam("Guid", guid.ToString())
+                                        .SetQueryParam("Token", encodedToken);
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
@@ -349,8 +385,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
                 } : null,
-                SuccessUrl = successUrl,
-                FailedUrl = failedUrl
+                SuccessUrl = paymentRedirectUrl,
+                FailedUrl = paymentRedirectUrl
             });
             if(!requestPayment.Succeeded || requestPayment.Result == null)
             {
