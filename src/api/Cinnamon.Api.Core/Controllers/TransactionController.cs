@@ -22,10 +22,11 @@ public class TransactionController : ControllerBase
     private readonly IOtePurchaseOrderHandler otePurchaseOrderHandler;
     private readonly IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler;
     private readonly IMapper mapper;
+    private readonly ITransactionRedirectionHandler transactionRedirectionHandler;
 
     public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
         IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler,
-        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper)
+        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
@@ -34,6 +35,7 @@ public class TransactionController : ControllerBase
         this.otePurchaseOrderHandler = otePurchaseOrderHandler;
         this.otePurchaseOrderDetailsHandler = otePurchaseOrderDetailsHandler;
         this.mapper = mapper;
+        this.transactionRedirectionHandler = transactionRedirectionHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -314,6 +316,36 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteGetPurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("TransactionRedirection")]
+    [HttpGet]
+    [ProducesResponseType(typeof(TransactionRedirectionResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> TransactionRedirection([FromQuery] TransactionRedirectionArgs args)
+    {
+        try
+        {
+            var result = await transactionRedirectionHandler.ExecuteAsync(new Services.TransactionService.Interactors.TransactionRedirectionArgs {
+                Guid = args.Guid,
+                Token = args.Token
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new TransactionRedirectionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new TransactionRedirectionResult 
+            {
+                IsSuccess = true, 
+                Result = result.Result.RedirectUrl
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new TransactionRedirectionResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
