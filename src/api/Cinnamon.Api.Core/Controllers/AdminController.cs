@@ -32,9 +32,7 @@ namespace Cinnamon.Api.Core.Controllers
             ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
             IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
             IDeleteAnnouncementHandler deleteAnnouncementHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
-            IManualDisbursement manualDisbursement)
-            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
-            IManualDisbursement manualDisbursement, IUpdateDynamicContentHandler updateDynamicContentHandler)
+            IManualDisbursement manualDisbursementt,IUpdateDynamicContentHandler updateDynamicContentHandler)
         {
             _logger = logger;
 
@@ -48,7 +46,6 @@ namespace Cinnamon.Api.Core.Controllers
             this.deleteAnnouncementHandler = deleteAnnouncementHandler;
             this.getDisbursements = getDisbursements;
             this.getDisbursementDetails = getDisbursementDetails;
-            this.manualDisbursement = manualDisbursement;
             this.updateDynamicContentHandler = updateDynamicContentHandler;
         }
 

@@ -16,8 +16,7 @@ public class SystemController : ControllerBase
     private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
     private readonly IGetDynamicContentHandler getDynamicContentHandler;
 
-    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetDynamicContentHandler getDynamicContentHandler)
-    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetAnnouncementsHandler getAnnouncementsHandler)
+    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetDynamicContentHandler getDynamicContentHandler, IGetAnnouncementsHandler getAnnouncementsHandler)
     {
         this.getSystemDateHandler = getSystemDateHandler;
         this.getAnnouncementsHandler = getAnnouncementsHandler;
