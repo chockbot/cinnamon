@@ -349,8 +349,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             {
                 ActivityId = result.Result.Result.ActivityId,
                 TransactionId = result.Result.Result.Id,
-                SuccessUrl = successUrl,
-                FailedUrl = failedUrl
+                OteQuery = ticketQueryString
             };
 
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
@@ -369,8 +368,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             var paymentRedirectUrl = applicationConfig.FrontendUrl
                                         .AppendPathSegment($"/transaction/finalize")
-                                        .SetQueryParam("Guid", guid.ToString())
-                                        .SetQueryParam("Token", encodedToken);
+                                        .SetQueryParam("Guid", validGuid.ToString())
+                                        .SetQueryParam("Token", validEncodedToken);
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,

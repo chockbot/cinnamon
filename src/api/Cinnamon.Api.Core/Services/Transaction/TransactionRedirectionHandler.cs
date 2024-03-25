@@ -6,6 +6,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -14,13 +15,17 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IPurchaseOrderData purchaseOrderData;
+    private readonly IGetActivityHandler getActivityHandler;
+    private readonly ApplicationConfig applicationConfig;
 
     public TransactionRedirectionHandler(ITokenGeneratedData tokenGeneratedData, IJsonSerializationProvider jsonSerializationProvider,
-        IPurchaseOrderData purchaseOrderData)
+        IPurchaseOrderData purchaseOrderData, IGetActivityHandler getActivityHandler, ApplicationConfig applicationConfig)
     {
         this.tokenGeneratedData = tokenGeneratedData;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.purchaseOrderData = purchaseOrderData;
+        this.getActivityHandler = getActivityHandler;
+        this.applicationConfig = applicationConfig;
     }
 
     public AppResult<TransactionRedirectionResult> Execute(TransactionRedirectionArgs args)
@@ -71,24 +76,73 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
                 throw new ApplicationException("Unable to get purchase order transaction");
             }
             var transaction = transactionRes.Result.Result;
+            
+            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
+                ActivityId = deserializedPayload.ActivityId,
+            });
+            if(!activityRes.Succeeded || activityRes.Result is null)
+            {
+                throw new ApplicationException("Unable to get purchased activity.");
+            }
+            var activity = activityRes.Result;
+
+            string redirect = string.Empty;
 
             if(transaction.Status == 0)
             {
+                redirect = activity.ExperienceCreationType switch {
+                    Framework.Enums.Enums.ExperienceCreationType.GeneralExperience => 
+                        applicationConfig.FrontendUrl
+                            .AppendPathSegment($"payment/{transaction.ActivityId}/{transaction.ScheduleId}")
+                            .SetQueryParam("Status", "failed"),
+                    Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents =>
+                        applicationConfig.FrontendUrl
+                            .AppendPathSegment($"payment/ote/{activity.Handler}")
+                            .SetQueryParam("Ticket", deserializedPayload.OteQuery)
+                            .SetQueryParam("Status","failed"),
+                    _ => "/not-found"
+                };
+
                 return AppResult<TransactionRedirectionResult>.CreateSucceeded(new TransactionRedirectionResult {
-                    RedirectUrl = deserializedPayload.FailedUrl
+                    RedirectUrl = redirect
                 }, "Successfully validate and redirect transaction.");
             }
 
             bool successTransaction = transaction.Status == 1 || transaction.Status == 5;
             if(!successTransaction)
             {
+                redirect = activity.ExperienceCreationType switch {
+                    Framework.Enums.Enums.ExperienceCreationType.GeneralExperience => 
+                        applicationConfig.FrontendUrl
+                            .AppendPathSegment($"payment/{transaction.ActivityId}/{transaction.ScheduleId}")
+                            .SetQueryParam("Status", "failed"),
+                    Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents =>
+                        applicationConfig.FrontendUrl
+                            .AppendPathSegment($"payment/ote/{activity.Handler}")
+                            .SetQueryParam("Ticket", deserializedPayload.OteQuery)
+                            .SetQueryParam("Status","failed"),
+                    _ => "/not-found"
+                };
+
                 return AppResult<TransactionRedirectionResult>.CreateSucceeded(new TransactionRedirectionResult {
-                    RedirectUrl = deserializedPayload.FailedUrl
+                    RedirectUrl = redirect
                 }, "Successfully validate and redirect transaction.");
             }
 
+            redirect = activity.ExperienceCreationType switch {
+                Framework.Enums.Enums.ExperienceCreationType.GeneralExperience => 
+                    applicationConfig.FrontendUrl
+                        .AppendPathSegment("purchase/order")
+                        .SetQueryParam("purchaseid", transaction.Id),
+                Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents =>
+                    applicationConfig.FrontendUrl
+                        .AppendPathSegment("purchase/order/ote")
+                        .AppendPathSegment(transaction.Id),
+                _ => "/not-found"
+            };
+
             return AppResult<TransactionRedirectionResult>.CreateSucceeded(new TransactionRedirectionResult {
-                RedirectUrl = deserializedPayload.SuccessUrl,
+                RedirectUrl = redirect,
             }, "Successfully validate and redirect transcation.");
         }
         catch (Exception ex)
@@ -100,8 +154,8 @@ public class TransactionRedirectionHandler : ITransactionRedirectionHandler
     private record TokenPayload 
     {
         public int ActivityId {get; set;}
+        public int ScheduleId {get; set;}
         public int TransactionId {get; set;}
-        public string SuccessUrl {get; set;}
-        public string FailedUrl {get; set;}
+        public string OteQuery {get; set;}
     }
 }
