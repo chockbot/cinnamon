@@ -87,22 +87,24 @@
                                     </Validation>
                                     @if (PricingData.ItemPrices.Count != 0)
                                     {
-                                        <Field class="mb-4">
-                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                Ticket Conditions
-                                            </FieldLabel>
-                                            <FieldBody>
-                                                <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
-                                                    <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Conditions</SelectItem>
-                                                    <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
-                                                    @foreach (var item in PricingData.ItemPrices)
-                                                    {
-                                                        <SelectItem Value="@item.Name" Disabled="@item.Disabled">@item.Name</SelectItem>
-                                                    }
-                                                </Select>
-                                                <div class="invalid-feedback">The ticket restriction is mandatory.</div>
-                                            </FieldBody>
-                                        </Field>
+                                        <Validation>
+                                            <Field class="mb-4">
+                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                    Ticket Conditions
+                                                </FieldLabel>
+                                                <FieldBody>
+                                                    <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
+                                                        <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Conditions</SelectItem>
+                                                        <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
+                                                        @foreach (var item in PricingData.ItemPrices)
+                                                        {
+                                                            <SelectItem Value="@item.Name" Disabled="@item.Disabled">@item.Name</SelectItem>
+                                                        }
+                                                    </Select>
+                                                    <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                                                </FieldBody>
+                                            </Field>
+                                        </Validation>
                                     }
                                 </div>
                             </div>
@@ -171,22 +173,24 @@
             </Validation>
             @if (PricingData.ItemPrices.Count != 0)
             {
-                <Field class="mb-4">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        Ticket Conditions
-                    </FieldLabel>
-                    <FieldBody>
-                        <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
-                            <SelectItem Disabled Value="0">Select Ticket Conditions</SelectItem>
-                            <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
-                            @foreach (var item in PricingData.ItemPrices)
-                            {
-                                <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
-                            }
-                        </Select>
-                        <div class="invalid-feedback">The ticket restriction is mandatory.</div>
-                    </FieldBody>
-                </Field>
+                <Validation>
+                    <Field class="mb-4">
+                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                            Ticket Conditions
+                        </FieldLabel>
+                        <FieldBody>
+                            <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
+                                <SelectItem Disabled Value="0">Select Ticket Conditions</SelectItem>
+                                <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
+                                @foreach (var item in PricingData.ItemPrices)
+                                {
+                                    <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
+                                }
+                            </Select>
+                            <div class="invalid-feedback">The ticket restriction is mandatory.</div>
+                        </FieldBody>
+                    </Field>
+                </Validation>
             }
             <div>
                 <Button Clicked="AddMoreTicket" Disabled="@allTicketRestrictionsSelected" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
@@ -309,18 +313,24 @@
 
     public async Task<bool> FieldValid()
     {
-        if (ticketFormValidation is not null)
+        if (ticketFormValidation is not null && ticketListFormValidation is not null)
         {
-            bool ticketValid = await ticketFormValidation.ValidateAll();
-            bool ticketListValid = await ticketListFormValidation.ValidateAll();
+            bool ticketConditionValid   = !string.IsNullOrEmpty(modelTicketInfo.TicketRestriction) && modelTicketInfo.TicketRestriction != "0";
+            bool ticketValid            = await ticketFormValidation.ValidateAll() && ticketConditionValid;
+            bool ticketConditionsValid  = modelTicketList.TicketInformations.All(ticket => !string.IsNullOrEmpty(ticket.TicketRestriction) && ticket.TicketRestriction != "0");
+            bool ticketListValid        = await ticketListFormValidation.ValidateAll() && ticketConditionsValid;
+            
             bool valid = ticketValid && ticketListValid;
+
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
+
             if (!valid)
             {
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-online-wrapper .is-invalid");
             }
+
             return valid;
         }
         return false;
@@ -527,7 +537,7 @@
                     EnableAllPrices();
                 }
             }
-            
+
         }
     }
     private string RestrictionClass
@@ -537,27 +547,15 @@
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if (showErrors)
             {
-                if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction))
+                if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction) || modelTicketInfo.TicketRestriction == "0")
                 {
-                    if (modelTicketInfo.IsNew)
-                    {
-                        if (string.IsNullOrEmpty(modelTicketInfo.Title) && string.IsNullOrEmpty(modelTicketInfo.Description) 
-                        && string.IsNullOrEmpty(modelTicketInfo.VideoLink) && string.IsNullOrEmpty(modelTicketInfo.TicketRestriction))
-                        {
-                            return $"{defaultStyle} is-valid";
-                        }
-                        else
-                        {
-                            return $"{defaultStyle} is-invalid";
-                        }
-                    }
-                    else
-                    {
-                        return $"{defaultStyle} is-invalid";
-                    }
-
+                    return $"{defaultStyle} is-invalid";
+                        
                 }
-                return $"{defaultStyle} is-valid";
+                else
+                {
+                    return $"{defaultStyle} is-valid";
+                }
             }
             return defaultStyle;
         }
@@ -607,7 +605,7 @@
         [Required(ErrorMessage = "The description is mandatory.")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "The restriction is mandatory.")]
+        [Required(ErrorMessage = "The conditions is mandatory.")]
         public string TicketRestriction { get; set; }
         // extras
         public int Order { get; set; }
@@ -619,8 +617,10 @@
         {
             get
             {
-                return !string.IsNullOrEmpty(VideoLink) && !string.IsNullOrEmpty(Title) &&
-                !string.IsNullOrEmpty(TicketRestriction);
+                return !string.IsNullOrEmpty(VideoLink) &&
+              !string.IsNullOrEmpty(Title) &&
+              !string.IsNullOrEmpty(TicketRestriction) &&
+              (string.IsNullOrEmpty(VideoLink) || VideoLink != "0");
             }
         }
     }
