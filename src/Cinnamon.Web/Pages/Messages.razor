@@ -677,7 +677,14 @@
     </div>
 </div>
 
-@code {
+@code 
+{
+    [Parameter, SupplyParameterFromQuery]
+    public string Guid {get; set;}
+
+    [Parameter, SupplyParameterFromQuery(Name = "Token")]
+    public string Tokenize {get; set;}
+
     private string messageInput = string.Empty;
     private string searchValue = string.Empty;
     private string addMemberSearchValue = string.Empty;
@@ -927,6 +934,8 @@
         });
 
         await LoadSigninUser();
+
+        await LoadRequestMessage();
 
         NavigationManager.LocationChanged += LocationChanged;
     }
@@ -1574,5 +1583,29 @@
                 ToUserId = currentUserId,
                 IsViewed = true
             }, Token);
+    }
+
+    private async Task LoadRequestMessage()
+    {
+        if(!string.IsNullOrEmpty(Tokenize) && !string.IsNullOrEmpty(Guid))
+        {
+            var getRequestMessageRes = await chatApiHandler.GetRequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetRequestMessageArgs {
+                Guid = Guid,
+                Token = Tokenize
+            }, Token);
+            if(!getRequestMessageRes.Succeeded || getRequestMessageRes.Result is not null && getRequestMessageRes.Result.IsSuccess)
+            {
+                var payload = getRequestMessageRes.Result.Result;
+
+                await CreatePrivateMessage(new ChatMember {
+                    ChatMemberType = ChatMemberType.Customer,
+                    CommonPrivateChatRoomId = 0,
+                    FromFirstName = payload.FirstName,
+                    FromLastName = payload.LastName,
+                    FromProfilePath = payload.ImageSrc,
+                    FromUserId = payload.ProviderId
+                });
+            }
+        }
     }
 }

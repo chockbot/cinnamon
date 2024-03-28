@@ -39,10 +39,13 @@ public class MappingProfile : Profile
             .ForMember(d => d.ProviderId, o => o.MapFrom(s => s.CreatedBy))
             .ForMember(d => d.Owner, o => o.MapFrom(s => s.Customer))
             .ForMember(d => d.EventName, o => o.MapFrom(s => s.Title))
-            .ForMember(d => d.OteDates, o => o.MapFrom(s => s.OteSchedule.OteDates));
-        
+            .ForMember(d => d.OteDates, o => o.MapFrom(s => s.OteSchedule.OteDates))
+            .ForMember(d => d.OteOnlineEvent, o => o.MapFrom(s => s.OteSchedule.OteOnlineEvent));
+
+
         CreateMap<OteSchedulePricing, OteSchedulePricingDTO>();
         CreateMap<OteSchedulePricingDTO, OteSchedulePricing>();
+        CreateMap<OteOnlineEvent, OteOnlineEventsDTO>();
         CreateMap<OteSchedule, OteScheduleDTO>();
         CreateMap<OteSchedulePricingGroup, OtePricingGroupDTO>();
         CreateMap<ActivityImage, ActivityImageDTO>();

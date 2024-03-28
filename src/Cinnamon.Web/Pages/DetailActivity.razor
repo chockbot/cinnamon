@@ -18,6 +18,7 @@
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
 @inject NavigationManager NavigationManager
+@inject IChatApiHandler chatApiHandler;
 @using Microsoft.EntityFrameworkCore
 @using Cinnamon.Framework.Helpers
 @using Cinnamon.Web.Modules.Services
@@ -794,10 +795,9 @@
 
                                 </div>
                                 <div>
-                                        <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100"
-                                        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet">
+                                        <Button Clicked="() => MessageProvider(customerDetail.Id)" class="font-18 font-weight-700 bg-orange-100 color-white-100 hover-color-white mt-3">
                                             Message Me
-                                        </button>
+                                        </Button>
                                 </div>
                                 </Column>
                             </Row>
@@ -1418,8 +1418,6 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
-            await Task.Delay(3000);
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
         }
         else
         {
@@ -1733,5 +1731,25 @@
     {
         Vimeo,
         YouTube
+    }
+
+    private async Task MessageProvider(int providerId)
+    {
+        if(CustomerModel.CustomerProfile is null)
+        {
+            await signinModal.Show();
+            return;
+        }
+
+        var messageProviderRes = await chatApiHandler.RequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.RequestMessageArgs {
+            ProviderId = providerId
+        }, Token);
+        if(messageProviderRes.Succeeded && messageProviderRes.Result is not null && messageProviderRes.Result.IsSuccess)
+        {
+            var result = messageProviderRes.Result.Result;
+            var url = $"messages/?guid={result.Guid}&token={result.Token}";
+
+            NavigationManager.NavigateTo(url);
+        }
     }
 }

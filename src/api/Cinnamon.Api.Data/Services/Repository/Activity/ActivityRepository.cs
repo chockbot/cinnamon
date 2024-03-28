@@ -1691,7 +1691,7 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides)
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1754,6 +1754,16 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
+            var onlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s => {
+                return new OteOnlineEvent {
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                    OteSchedule               = schedule,
+                };
+            }).ToList(): null;
+
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate {
                     Date = d.Date.SetKindUtc(),
@@ -1794,7 +1804,7 @@ public class ActivityRepository : IActivityRepository
             }
 
             var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, 
-                schedule, pricingsGroup, dates, overrides);
+                schedule, pricingsGroup, dates, overrides, onlineEvent);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
@@ -1833,7 +1843,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon)
+        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1881,6 +1891,16 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
+            schedule.OteOnlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s =>{
+                return new OteOnlineEvent {
+                    Id                        = s.Id,
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                };
+            }).ToList() : null;
+
             var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
@@ -1916,17 +1936,16 @@ public class ActivityRepository : IActivityRepository
     
     public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, 
-        bool includeProvider = false, bool includeImages = false)
+        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false)
     {
         try
         {
             var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, 
-                includeSchedule, includePricing, includeProvider, includeImages);
+                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
-
             var model = mapper.Map<OteActivityDTO>(result.Result);
             return AppResult<OteActivityDTO>.CreateSucceeded(model, "Sucessfully find one time event");
         }

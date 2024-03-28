@@ -8,4 +8,5 @@ public class GetOteActivityArgs
     public bool? IncludePricing {get; set;}
     public bool? IncludeImages {get; set;}
     public bool? IncludeProvider {get; set;}
+    public bool? IncludeOnlineEvents { get; set;}
 }

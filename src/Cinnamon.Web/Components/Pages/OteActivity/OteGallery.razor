@@ -31,6 +31,12 @@
         </ul>
         <div class="main-images-container-wrapper mb-5">
             <Row>
+                <Column ColumnSize="ColumnSize.Is12" Flex="Flex.JustifyContent.End">
+                    <div class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
+                        <label class="how-to-text">How to do this</label>
+                        <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
+                    </div>
+                </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                     <div class="mt-4">
                         <label class="d-flex align-items-center mb-2">
@@ -86,10 +92,16 @@
             </Row>
         </div>
         <div class="supporting-images-container-wrapper text-center">
-            <label class="d-flex align-items-center mb-5">
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
-                <p class="font-16 color-grey-100 mb-0">Supporting Photos (Min of 4 and Max of 6 photos)</p>
-            </label>
+            <div class="text-start font-16 mb-2 d-flex" style="justify-content: space-between;">
+                <label class="d-flex align-items-center mb-5">
+                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding me-2">6</span>
+                    <p class="font-16 color-grey-100 mb-0">Supporting Photos (Min of 4 and Max of 6 photos)</p>
+                </label>
+                <div class="how-to-guide mb-5" style="display:flex" @onclick="() => howToModalSupporting.ShowModal()">
+                    <label class="how-to-text">How to do this</label>
+                    <img src="images/experience-creation/guide-icon.png" id="info-title" class="guide-icon" alt="check-icon" />
+                </div>
+            </div>
             <label for="photo-upload" class="cursor-pointer supporting-photos-container">
                 <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
                     Choose Photos
@@ -120,6 +132,8 @@
             </Row>
         </div>
     </div>
+    <HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Cover Photo Guidelines" />
+    <HowToModal @ref="howToModalSupporting" HtmlContent="@htmlSupporting" Title="Supporting Photo Guidelines" />
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
     <ImageCropper @ref="imageCropper" />
     <LoadingIndicator FullScreen @ref="loadingIndicator"  />
@@ -156,6 +170,10 @@
     private string errorMessage = string.Empty;
     private IList<int> deletedIds = new List<int>();
     private LoadingIndicator? loadingIndicator;
+    private HowToModal howToModal { get; set; }
+    private HowToModal howToModalSupporting { get; set; }
+    public string htmlString = Resources.App.CoverPhotoString;
+    public string htmlSupporting = Resources.App.SupportingPhotoString;
 
     private async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
     {

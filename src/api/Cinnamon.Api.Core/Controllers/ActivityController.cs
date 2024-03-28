@@ -75,6 +75,7 @@ public class ActivityController : ControllerBase
     private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
     private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
     private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
+    private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -99,7 +100,7 @@ public class ActivityController : ControllerBase
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
-        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler)
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler)
     {
         _logger = logger;
 
@@ -156,6 +157,7 @@ public class ActivityController : ControllerBase
         this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
         this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
         this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
+        this.deleteOnlineEventHandler = deleteOnlineEventHandler;
     }
 
     [Route("CreateActivity")]
@@ -2648,7 +2650,15 @@ public class ActivityController : ControllerBase
                         Date = d.Date,
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
-                    }) : null
+                    }) : null,
+                OteOnlineEvents = args.OnlineEvents is not null ?
+                    args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
+                    {
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,    
+                        TicketRestriction = s.TicketRestriction,
+                    }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2709,7 +2719,17 @@ public class ActivityController : ControllerBase
                         Price = p.Price,
                         Name = p.Name
                     };
-                })
+                }),
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
+                    {
+                        Id = s.Id,
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                    };
+                }): null
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2740,12 +2760,13 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
-                Handler = handler,
-                IncludeAddress = args.IncludeAddress ?? false,
+                Handler            = handler,
+                IncludeAddress     = args.IncludeAddress ?? false,
                 IncludeDescription = args.IncludeDescription ?? false,
-                IncludePricing = args.IncludePricing ?? false,
-                IncludeSchedule = args.IncludeSchedule ?? false,
-                IncludeImages = args.IncludeImages ?? false
+                IncludePricing     = args.IncludePricing ?? false,
+                IncludeSchedule    = args.IncludeSchedule ?? false,
+                IncludeImages      = args.IncludeImages ?? false,
+                IncludeOnlineEvent = args.IncludeOnlineEvent ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -3047,6 +3068,35 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteOnlineEvent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteOnlineEventById([FromBody] DeleteOnlineEventArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOnlineEventHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOnlineEventArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOnlineEventResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

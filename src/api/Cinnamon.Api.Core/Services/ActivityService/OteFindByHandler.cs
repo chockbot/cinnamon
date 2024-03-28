@@ -36,11 +36,12 @@ public class OteFindByHandler : IOteFindByHandler
         try
         {
             var oteRes = await activityData.GetOteActivityByHandler(new Framework.ApiCommand.ApiData.Activity.Request.GetOteActivityArgs {
-                IncludeAddress = args.IncludeAddress,
-                IncludeDescription = args.IncludeDescription,
-                IncludePricing = args.IncludePricing,
-                IncludeSchedule = args.IncludeSchedule,
-                IncludeImages = args.IncludeImages,
+                IncludeAddress      = args.IncludeAddress,
+                IncludeDescription  = args.IncludeDescription,
+                IncludePricing      = args.IncludePricing,
+                IncludeSchedule     = args.IncludeSchedule,
+                IncludeImages       = args.IncludeImages,
+                IncludeOnlineEvents = args.IncludeOnlineEvent
             }, args.Handler);
             if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
             {

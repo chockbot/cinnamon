@@ -4,6 +4,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Response;
 using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
@@ -30,4 +32,5 @@ public interface IActivityData
     Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args);
     Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args);
     Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args);
+    Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args);
 }
