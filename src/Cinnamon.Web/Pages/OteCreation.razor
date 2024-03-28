@@ -20,7 +20,7 @@
     <Container>
         <div class="progress-bar-section mt-4">
             <p class="progress-details">
-                IN PROGRESS: Step @(currentIndex + 1) of 7 <span id="loader"></span>
+                IN PROGRESS: Step @(currentIndex + 1) of @numberOfPage <span id="loader"></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
@@ -110,6 +110,7 @@
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private OteSummary.ComponentSummary? summary = default;
+    private int numberOfPage = 6;
 
     private string token = string.Empty;
     private int accountId = 0;
@@ -198,6 +199,7 @@
         });
         if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
         {
+            numberOfPage = 7;
             sidebarItems.Add(new OteSidebarNavigation.Item
                 {
                     Label = "online event page",
@@ -425,7 +427,7 @@
 
     private async Task NextClick()
     {
-        
+
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
         if(valid && field is not null)
@@ -737,6 +739,8 @@
             }).ToList()
         });
 
+        numberOfPage = oteOnline.GetData().TicketInfos != null ? 7 : 6;
+
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
                 Id = i.Id,
@@ -790,12 +794,12 @@
 
     private async Task MovePrev()
     {
-        var (valid, field) = await CurrentFieldValid();
-        if(valid && field.HasPrevious && currentIndex > 0)
-        {
+        //var (valid, field) = await CurrentFieldValid();
+        //if(valid && field.HasPrevious && currentIndex > 0)
+        //{
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
-        }
+        //}
     }
 
     private class ComponentItem<T> where T : IOteComponent 
