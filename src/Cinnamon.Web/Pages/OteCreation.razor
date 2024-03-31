@@ -591,25 +591,35 @@
 
             var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
                 Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateActivity {
-                    BarangayCode = location.BarangayCode,
-                    BarangayName = location.BarangayName,
-                    CategoryId = eventData.Category,
-                    CityName = location.CityName,
-                    CityNumber = location.CityCode,
-                    Description = eventData.Description,
-                    EventName = eventData.Name,
-                    ExperienceTypeId = location.ExperienceType,
-                    HouseNo = location.HouseNo,
-                    Id = oteId,
-                    IsPublished = publishData.IsPublish,
-                    PinnedLocation = location.PinnedLocation,
-                    PostalCode = location.PostalCode,
-                    Recurrence = schedule.Recurrences,
-                    RegionCode = location.RegionCode,
-                    RegionName = location.RegionName,
-                    ScheduleFrom = schedule.DateFrom,
-                    ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon
+                    BarangayCode          = location.BarangayCode,
+                    BarangayName          = location.BarangayName,
+                    CategoryId            = eventData.Category,
+                    CityName              = location.CityName,
+                    CityNumber            = location.CityCode,
+                    Description           = eventData.Description,
+                    EventName             = eventData.Name,
+                    ExperienceTypeId      = location.ExperienceType,
+                    HouseNo               = location.HouseNo,
+                    Id                    = oteId,
+                    IsPublished           = publishData.IsPublish,
+                    PinnedLocation        = location.PinnedLocation,
+                    PostalCode            = location.PostalCode,
+                    IsComingSoon          = publishData.ComingSoon,
+                    RegionCode            = location.RegionCode,
+                    RegionName            = location.RegionName,
+                    ScheduleFrom          = schedule.DateFrom,
+                    ScheduleTo            = schedule.DateTo,
+                    Recurrence            = schedule.Recurrences,
+                    DurationEnd           = schedule.DurationEnd,
+                    DurationEvery         = schedule.DurationEvery,
+                    DurationStart         = schedule.DurationStart,
+                    MonthDay              = schedule.MonthDay,
+                    MonthRepeat           = schedule.MonthRepeat,
+                    MonthSelection        = schedule.MonthSelection,
+                    OnDayDate             = schedule.OnDayDate,
+                    WeekString            = schedule.WeekString,
+                    EventDurationCount    = schedule.EventDurationCount,
+                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -619,6 +629,13 @@
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name
+                    };
+                }),
+                DateOverrides = schedule.DateOverrides.Select(d =>  {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
                     };
                 }),
                 OnlineEvents = oteLocation.GetData().ExperienceType == 2 ? onlineEvent.TicketInfos.Select(s => {
@@ -794,12 +811,12 @@
 
     private async Task MovePrev()
     {
-        //var (valid, field) = await CurrentFieldValid();
-        //if(valid && field.HasPrevious && currentIndex > 0)
-        //{
+        var (valid, field) = await CurrentFieldValid();
+        if(valid && field.HasPrevious && currentIndex > 0)
+        {
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
-        //}
+        }
     }
 
     private class ComponentItem<T> where T : IOteComponent 
