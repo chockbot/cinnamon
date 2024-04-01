@@ -750,7 +750,7 @@
             }).ToList()
         });
 
-        numberOfPage = oteLocation != null && oteLocation.GetData().ExperienceType == 2 ? 7 : 6;
+        numberOfPage = ote.ExperienceTypeId == 2 ? 7 : 6;
 
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
