@@ -612,6 +612,7 @@
                 };
             }).ToList()
         });
+        scheduleModel.EventDurationTimeStart = ote.ScheduleFrom.TimeOfDay;
         scheduleModel.DateFrom = ote.ScheduleFrom;
         scheduleModel.DateTo = ote.ScheduleTo;
         scheduleModel.TimeFrom = scheduleModel.DateFrom.TimeOfDay;
@@ -625,7 +626,6 @@
         scheduleModel.OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
         scheduleModel.EventDurationCount = ote.OteSchedule.EventDurationCount;
         scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
-        scheduleModel.EventDurationTimeStart = scheduleModel.DateFrom.TimeOfDay;
 
         await oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
