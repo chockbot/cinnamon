@@ -1696,7 +1696,7 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
         {
@@ -1706,7 +1706,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = experienceTypeId,
                 Price = stringPrice,
                 IsPublished = isPublished,
-                ExperienceCategoryId = 1,
+                ExperienceCategoryId = categoryId,
                 SubCategoryId = 1,
                 Handler = handler,
                 IsNew = true,

@@ -31,6 +31,9 @@ public class CreateOteActivityArgs
         public int ExperienceTypeId {get; set;}
 
         [Required]
+        public int CategoryId {get; set;}
+
+        [Required]
         public int CustomerId {get; set;}
 
         [Required]
