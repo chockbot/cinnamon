@@ -70,7 +70,7 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" ModelState="scheduleModel" />
                 </div>
                 <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
                     <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
@@ -108,6 +108,7 @@
     private int oteId = 0;
 
     private OteEvent.FormModel eventModel = new();
+    private OtePricing.Schedule scheduleModel = new();
 
     protected override void OnInitialized()
     {
@@ -595,21 +596,11 @@
             RegionName = ote.RegionName
         });
 
+        // set ote schedules state and parameters
         var options = ote.OteSchedule.ExtraOptions.Split("|");
         await otePricing?.SetState(new OtePricing.ModelData {
-            DateFrom              = ote.ScheduleFrom,
-            DateTo                = ote.ScheduleTo,
             Recurrences           = ote.Recurrences,
-            DurationEnd           = (ote.OteSchedule.RecurrenceDateEnd == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateEnd,
-            DurationStart         = (ote.OteSchedule.RecurrenceDateStart == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateStart,
-            DurationEvery         = ote.OteSchedule.RepeatEvery,
-            MonthDay              = options.Length >= 4 ? options[3] : "sunday",
-            MonthRepeat           = options.Length >= 3 ? options[2] : "first",
-            MonthSelection        = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1,
-            OnDayDate             = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1,
             WeekString            = ote.OteSchedule.SelectedDays,
-            EventDurationCount    = ote.OteSchedule.EventDurationCount,
-            EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
             ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
@@ -621,6 +612,20 @@
                 };
             }).ToList()
         });
+        scheduleModel.DateFrom = ote.ScheduleFrom;
+        scheduleModel.DateTo = ote.ScheduleTo;
+        scheduleModel.TimeFrom = scheduleModel.DateFrom.TimeOfDay;
+        scheduleModel.TimeTo = scheduleModel.DateTo.TimeOfDay;
+        scheduleModel.DurationEnd = (ote.OteSchedule.RecurrenceDateEnd == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateEnd;
+        scheduleModel.DurationStart = (ote.OteSchedule.RecurrenceDateStart == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateStart;
+        scheduleModel.DurationEvery = ote.OteSchedule.RepeatEvery;
+        scheduleModel.MonthDay = options.Length >= 4 ? options[3] : "sunday";
+        scheduleModel.MonthRepeat = options.Length >= 3 ? options[2] : "first";
+        scheduleModel.MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1;
+        scheduleModel.OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
+        scheduleModel.EventDurationCount = ote.OteSchedule.EventDurationCount;
+        scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
+        scheduleModel.EventDurationTimeStart = scheduleModel.DateFrom.TimeOfDay;
 
         await oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
