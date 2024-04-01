@@ -192,6 +192,7 @@ public class OteCreateHandler : IOteCreateHandler
                     EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
                     ExperienceTypeId         = activity.ExperienceTypeId,
+                    CategoryId               = activity.CategoryId,
                     Handler                  = generateHandlerRes.Result.GeneratedHandler,
                     HouseNo                  = activity.HouseNo ?? string.Empty,
                     IsPublished              = activity.IsPublished,
