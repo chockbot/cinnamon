@@ -347,7 +347,29 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _customer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./customer */ \"./src/Pages/customer/index.js\");\n/* harmony import */ var _activity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./activity */ \"./src/Pages/activity/index.js\");\n/* harmony import */ var _maker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maker */ \"./src/Pages/maker/index.js\");\nObject(function webpackMissingModule() { var e = new Error(\"Cannot find module './landing'\"); e.code = 'MODULE_NOT_FOUND'; throw e; }());\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  customer: _customer__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  activity: _activity__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  maker: _maker__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  landing: Object(function webpackMissingModule() { var e = new Error(\"Cannot find module './landing'\"); e.code = 'MODULE_NOT_FOUND'; throw e; }())\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _customer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./customer */ \"./src/Pages/customer/index.js\");\n/* harmony import */ var _activity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./activity */ \"./src/Pages/activity/index.js\");\n/* harmony import */ var _maker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maker */ \"./src/Pages/maker/index.js\");\n/* harmony import */ var _landing__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./landing */ \"./src/Pages/landing/index.js\");\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  customer: _customer__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  activity: _activity__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  maker: _maker__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  landing: _landing__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/index.js?");
+
+/***/ }),
+
+/***/ "./src/Pages/landing/announcement.js":
+/*!*******************************************!*\
+  !*** ./src/Pages/landing/announcement.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  initSwiper: selector => {\n    const swiper = new Swiper(selector, {\n      loop: true,\n      autoplay: {\n        delay: 3000,\n        disableOnInteraction: false\n      }\n    });\n    console.log(\"swiper initialized\");\n  }\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/landing/announcement.js?");
+
+/***/ }),
+
+/***/ "./src/Pages/landing/index.js":
+/*!************************************!*\
+  !*** ./src/Pages/landing/index.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _announcement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./announcement */ \"./src/Pages/landing/announcement.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  announcement: _announcement__WEBPACK_IMPORTED_MODULE_0__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/landing/index.js?");
 
 /***/ }),
 
