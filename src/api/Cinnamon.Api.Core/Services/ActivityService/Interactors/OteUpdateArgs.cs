@@ -10,6 +10,8 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<OteOnlineEvent>? OnlineEvents { get; set; }
 
+    public IEnumerable<DateOverride>? DateOverrides { get; set; }
+
     public class OteActivity 
     {
         public int Id {get; set;}
@@ -48,6 +50,22 @@ public class OteUpdateArgs : IInteractor
 
         public string Recurrence {get; set;}
         public bool IsComingSoon {get; set;}
+
+        public DateTime? DurationStart { get; set; }
+        public DateTime? DurationEnd { get; set; }
+        public int? DurationEvery { get; set; }
+
+        // week option field
+        public string? WeekString { get; set; }
+
+        // month option fields
+        public int? MonthSelection { get; set; }
+        public string? MonthRepeat { get; set; }
+        public string? MonthDay { get; set; }
+        public int? OnDayDate { get; set; }
+
+        public int EventDurationCount { get; set; }
+        public string EventDurationTimeUnit { get; set; }
     }
 
     public class OtePricing 
@@ -75,5 +93,11 @@ public class OteUpdateArgs : IInteractor
         public string Description { get; set; }
 
         public string TicketRestriction { get; set; }
+    }
+    public class DateOverride
+    {
+        public DateTime Date { get; set; }
+        public TimeSpan TimeStart { get; set; }
+        public TimeSpan TimeEnd { get; set; }
     }
 }
