@@ -322,21 +322,6 @@
         }
     }
 
-    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
-    {
-        if (currentIndex != 6)
-        {
-            var (valid, _) = await CurrentFieldValid();
-            SetValidItem(currentIndex, valid);
-            if (valid)
-            {
-                SetActiveItem(6);
-                summary = GetSummary();
-                StateHasChanged();
-            }
-        }
-    }
-
     private void SetActiveItem(int index)
     {
         foreach(var i in sidebarItems)
