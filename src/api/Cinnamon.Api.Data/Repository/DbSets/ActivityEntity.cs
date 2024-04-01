@@ -349,32 +349,39 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             
             if(result is not null)
             {
-                result.Description = activity.Description;
-                result.Title = activity.Title;
-                result.ExperienceTypeId = activity.ExperienceTypeId;
-                result.Price = activity.Price;
-                result.IsPublished = activity.IsPublished;
+                result.Description          = activity.Description;
+                result.Title                = activity.Title;
+                result.ExperienceTypeId     = activity.ExperienceTypeId;
+                result.Price                = activity.Price;
+                result.IsPublished          = activity.IsPublished;
                 result.ExperienceCategoryId = activity.ExperienceCategoryId;
-                result.Handler = activity.Handler;
-                result.IsPublished = activity.IsPublished;
-                result.IsComingSoon = activity.IsComingSoon;
+                result.Handler              = activity.Handler;
+                result.IsPublished          = activity.IsPublished;
+                result.IsComingSoon         = activity.IsComingSoon;
 
                 result.ActivityDescription.Description = description.Description;
 
-                result.Address.Address1 = address.Address1;
-                result.Address.City = address.City;
-                result.Address.CityName = address.CityName;
-                result.Address.Barangay = address.Barangay;
-                result.Address.BarangayName = address.BarangayName;
-                result.Address.Region = address.Region;
-                result.Address.RegionName = address.RegionName;
+                result.Address.Address1       = address.Address1;
+                result.Address.City           = address.City;
+                result.Address.CityName       = address.CityName;
+                result.Address.Barangay       = address.Barangay;
+                result.Address.BarangayName   = address.BarangayName;
+                result.Address.Region         = address.Region;
+                result.Address.RegionName     = address.RegionName;
                 result.Address.PinnedLocation = address.PinnedLocation;
-                result.Address.PostalCode = address.PostalCode;
+                result.Address.PostalCode     = address.PostalCode;
 
-                // disable update for ote schedule
-                // result.OteSchedule.From = oteSchedule.From;
-                // result.OteSchedule.To = oteSchedule.To;
-                // result.OteSchedule.Recurrences = oteSchedule.Recurrences;
+                // enable update for ote schedule
+                result.OteSchedule.From                  = oteSchedule.From;
+                result.OteSchedule.To                    = oteSchedule.To;
+                result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
+                result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
+                result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
+                result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
+                result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
+                result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
+                result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
+                result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
 
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
                 foreach(var price in updatedPricingList)
