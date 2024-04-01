@@ -750,7 +750,7 @@
             }).ToList()
         });
 
-        numberOfPage = oteOnline.GetData().TicketInfos != null ? 7 : 6;
+        numberOfPage = oteLocation != null && oteLocation.GetData().ExperienceType == 2 ? 7 : 6;
 
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
