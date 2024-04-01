@@ -64,7 +64,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
                 <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
-                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" />
+                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" />
                 </div>
                 <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
@@ -107,6 +107,8 @@
     private int accountId = 0;
     private int oteId = 0;
 
+    private OteEvent.FormModel eventModel = new();
+
     protected override void OnInitialized()
     {
         LoadSidebarItems();
@@ -133,6 +135,8 @@
             }
             accountId = accountRes.Result.Result.Id;
 
+            await LoadCategories();
+
             LoadComponents();
         }
         catch (System.Exception)
@@ -141,14 +145,11 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if(firstRender)
+        if(!string.IsNullOrEmpty(Handler))
         {
-            if(!string.IsNullOrEmpty(Handler))
-            {
-                await LoadComponentState();
-            }
+            await LoadComponentState();
         }
     }
 
@@ -416,6 +417,7 @@
                     Description = eventData.Description,
                     EventName = eventData.Name,
                     ExperienceCreationTypeId = 3,
+                    CategoryId = eventData.Category,
                     ExperienceTypeId = location.ExperienceType,
                     HouseNo = location.HouseNo,
                     IsPublished = publishData.IsPublish,
@@ -574,12 +576,11 @@
         }
         var ote = oteRes.Result.Result;
 
+        // set event details
         oteId = ote.Id;
-        await oteEvent?.SetState(new OteEvent.ModelData {
-            Category = ote.CategoryId,
-            Description = ote.Description,
-            Name = ote.EventName
-        });
+        eventModel.SelectedCategory = ote.CategoryId;
+        eventModel.Description = ote.Description;
+        eventModel.EventName = ote.EventName;
 
         await oteLocation?.SetState(new OteLocation.ModelData {
             BarangayCode = ote.BarangayCode,
@@ -634,6 +635,8 @@
             ComingSoon = ote.IsComingSoon,
             IsPublish = ote.IsPublished
         });
+
+        StateHasChanged();
     }
 
     private OteSummary.ComponentSummary GetSummary()
@@ -666,6 +669,23 @@
         {
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        var categoryRes = await activityApiHandler.GetExperienceCategories();
+        if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
+        {
+            var categories = categoryRes.Result.Result.Where(c => c.Name.ToLower() != "new");
+            foreach(var item in categories)
+            {
+                eventModel.categoryItems.Add(new OteEvent.CategoryItem {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Selected = false
+                });
+            }
         }
     }
 
