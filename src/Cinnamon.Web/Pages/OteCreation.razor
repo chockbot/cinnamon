@@ -278,6 +278,7 @@
 
     private async Task NavigateToGallery(OteSidebarNavigation.Item _)
     {
+        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
         if (currentIndex != 4)
         {
             var (valid, _) = await CurrentFieldValid();
@@ -292,6 +293,7 @@
 
     private async Task NavigateToSummary(OteSidebarNavigation.Item _)
     {
+        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
         if (currentIndex != 5)
         {
             var (valid, _) = await CurrentFieldValid();
@@ -299,6 +301,21 @@
             if (valid)
             {
                 SetActiveItem(5);
+                summary = GetSummary();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task NavigateToPublish(OteSidebarNavigation.Item _)
+    {
+        if (currentIndex != 6)
+        {
+            var (valid, _) = await CurrentFieldValid();
+            SetValidItem(currentIndex, valid);
+            if (valid)
+            {
+                SetActiveItem(6);
                 summary = GetSummary();
                 StateHasChanged();
             }
