@@ -12,7 +12,12 @@ public class UpdateOteActivityArgs
     [Required]
     public IList<UpdateOtePricing> Pricings {get; set;}
 
+    [Required]
+    public IList<OteDate> Dates { get; set; }
+
     public IList<UpdateOteOnlineEvent>? OnlineEvents { get; set; }
+
+    public IList<OteDateOverride>? DateOverrides { get; set; }
 
     public class UpdateOteActivity 
     {
@@ -69,6 +74,25 @@ public class UpdateOteActivityArgs
 
         [Required]
         public bool IsComingSoon {get; set;}
+
+        public string? ExtraOptions { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime RecurrenceDateStart { get; set; }
+
+        [Required]
+        public DateTime RecurrenceDateEnd { get; set; }
+
+        [Required]
+        public int RepeatEvery { get; set; }
+
+        public string SelectedDays { get; set; } = string.Empty;
+
+        [Required]
+        public int EventDurationCount { get; set; }
+
+        [Required]
+        public string EventDurationTimeUnit { get; set; }
     }
 
     public class UpdateOtePricing 
@@ -105,5 +129,27 @@ public class UpdateOteActivityArgs
         public string TicketRestriction { get; set; }
 
         public int OteSchedulePricingGroupId { get; set; }
+    }
+    public class OteDate
+    {
+        [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+        public DateTime DateStart { get; set; }
+
+        [Required]
+        public DateTime DateEnd { get; set; }
+    }
+    public class OteDateOverride
+    {
+        [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+        public DateTime DateStart { get; set; }
+
+        [Required]
+        public DateTime DateEnd { get; set; }
     }
 }
