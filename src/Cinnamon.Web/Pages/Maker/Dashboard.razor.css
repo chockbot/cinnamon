@@ -233,8 +233,11 @@ p {
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
-  color: #ffa942;
+  color: #343d4c;
   margin: 0px;
+  text-transform: capitalize;
+  line-height: 1.1;
+  margin-bottom: 8px;
 }
 
 .xp-description {
@@ -250,6 +253,7 @@ p {
   -webkit-line-clamp: 5; /* number of lines to show */
   line-clamp: 5;
   -webkit-box-orient: vertical;
+  color: #717171;
 }
 
 .xp-context {
@@ -262,6 +266,7 @@ p {
 .xp-category {
   display: flex;
   align-items: center;
+  margin-top: 10px;
 }
 
 .xp-context img {
@@ -342,6 +347,7 @@ hr {
   display: inline-block;
   margin-right: 10px;
   line-height: 40px;
+  text-decoration: none;
 }
 
 .delete-button {
@@ -796,7 +802,7 @@ hr {
     font-style: normal;
     font-weight: 700;
     font-size: 20px;
-    color: #ffa942;
+    color: #343d4c;
     margin-bottom: 9px;
   }
 
@@ -807,7 +813,6 @@ hr {
     font-size: 14px;
     line-height: 22px;
     text-align: justify;
-    margin-bottom: 14px;
   }
 
   .xp-context img {
@@ -983,4 +988,15 @@ hr {
 .xp-context-container {
   width: 70%;
   padding-left: 20px;
+}
+
+@media only screen and (max-width: 715px) {
+  .xp-image-container {
+    width: 100%;
+  }
+
+  .xp-context-container {
+    width: 100%;
+    padding-left: 0;
+  }
 }
