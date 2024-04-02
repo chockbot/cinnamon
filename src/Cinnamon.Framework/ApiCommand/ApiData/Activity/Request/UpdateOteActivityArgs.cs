@@ -12,12 +12,11 @@ public class UpdateOteActivityArgs
     [Required]
     public IList<UpdateOtePricing> Pricings {get; set;}
 
-    [Required]
-    public IList<OteDate> Dates { get; set; }
+    public IList<UpdateOteDate> Dates { get; set; }
 
     public IList<UpdateOteOnlineEvent>? OnlineEvents { get; set; }
 
-    public IList<OteDateOverride>? DateOverrides { get; set; }
+    public IList<UpdateOteDateOverride>? DateOverrides { get; set; }
 
     public class UpdateOteActivity 
     {
@@ -130,7 +129,7 @@ public class UpdateOteActivityArgs
 
         public int OteSchedulePricingGroupId { get; set; }
     }
-    public class OteDate
+    public class UpdateOteDate
     {
         [Required]
         public DateTime Date { get; set; }
@@ -141,7 +140,7 @@ public class UpdateOteActivityArgs
         [Required]
         public DateTime DateEnd { get; set; }
     }
-    public class OteDateOverride
+    public class UpdateOteDateOverride
     {
         [Required]
         public DateTime Date { get; set; }
