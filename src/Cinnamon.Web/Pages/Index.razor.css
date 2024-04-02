@@ -36,7 +36,6 @@ button:focus {
 }
 .see-more {
 	line-height: 5;
-	margin-right: 1rem;
 	color: #343D4C;
 	font-family: nunito;
 	font-weight: 600;
@@ -375,14 +374,13 @@ img.search_icon {
   top: 70%;
 }
 
-.featured-text {
-  margin-left: 1rem;
+p.featured-text {
   text-align: center;
   font-family: nunito-extrabold;
   font-size: 32px;
   font-weight: 900;
   color: #343d4c;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-3 .overview-cards {
@@ -797,6 +795,7 @@ img.search_icon {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  border-radius: 20px;
 }
 .card-img.img-fluid {
 	width: 278px;
@@ -836,7 +835,7 @@ img.search_icon {
 
 /*Testimonial*/
 .testimonial-section {
-  margin-top: 5%;
+  margin-top: 10%;
 }
 
 .testimonial-wrapper {
@@ -2100,6 +2099,22 @@ img.search_icon {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
 
+	.see-more{
+		line-height: 5;
+		color: #343D4C;
+		font-family: nunito;
+		font-weight: 600;
+	}
+
+	.featured-text {
+		text-align: center;
+		font-family: nunito-extrabold;
+		font-size: 32px;
+		font-weight: 900;
+		color: #343d4c;
+		margin-bottom: 1rem;
+	}
+	}
 
 	.btn-login {
 		width: 182px;
@@ -2218,9 +2233,17 @@ img.search_icon {
 	.testimonial-content {
 		display: flex;
 		position: relative;
-		padding: 80px;
 		gap: 50px;
 	}
+
+	.testimonial-image {
+		margin-bottom: 2.5rem;
+	}
+
+	.testimonial-name {
+		font-style: italic;
+	}
+	
 
 	.section2-container-desktop {
 		/*height: 1000px;*/
@@ -2482,7 +2505,7 @@ img.search_icon {
 	width: 24px;
 	height: 24px;
   }
-}
+
 
 @media screen and (max-width: 767.98px) {
 	.close-button {
@@ -3115,6 +3138,7 @@ img.search_icon {
 		justify-content: center;
 	}
 }
+
 
 @media screen and (min-width:768px) and (max-width:991px) {
 	
