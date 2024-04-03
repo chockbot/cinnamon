@@ -14,6 +14,7 @@
 @inject NavigationManager NavigationManager;
 @inject IMapper mapper;
 @inject IJSRuntime JS;
+@inject IChatApiHandler chatApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>@(activity?.EventName ?? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH") | CinnamonPH</PageTitle>
@@ -349,11 +350,10 @@
 
                             </div>
                                 <div>
-                                <button id="typeFormBtn" data-tf-popup="cgzRQKWI" data-tf-opacity="100" data-tf-size="100"
-                                        data-tf-iframe-props="title=Contact Me Form" data-tf-transitive-search-params data-tf-medium="snippet">
-                                    Message Me
-                                </button>
-                            </div>
+                                    <Button Clicked="() => MessageProvider(provider.Id)" class="font-18 font-weight-700 bg-orange-100 color-white-100 hover-color-white mt-3">
+                                        Message Me
+                                    </Button>
+                                </div>
                             </Column>
                         </Row>
                     </section>
@@ -572,12 +572,6 @@
         if(firstRender)
         {
             jsClipboard = await JS.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
-            await Task.Delay(2000);
-            if (activity is not null && !activity.IsComingSoon)
-            {
-                await JS.InvokeVoidAsync("MyLib.Pages.activity.integrateTypeform");
-            }
-            
         }
     }
 
@@ -649,7 +643,8 @@
                 IncludeDescription = true,
                 IncludePricing = true,
                 IncludeSchedule = true,
-                IncludeImages = true
+                IncludeImages = true,
+                IncludeOnlineEvent = true
             }, Handler);
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
@@ -990,5 +985,25 @@
     private void ToggleAboutText()
     {
         showFullAbout = !showFullAbout;
+    }
+
+    private async Task MessageProvider(int providerId)
+    {
+        if(currentLogin is null)
+        {
+            await loginModal.Show();
+            return;
+        }
+
+        var messageProviderRes = await chatApiHandler.RequestMessage(new Framework.ApiCommand.ApiCore.ChatRoom.Request.RequestMessageArgs {
+            ProviderId = providerId
+        }, token);
+        if(messageProviderRes.Succeeded && messageProviderRes.Result is not null && messageProviderRes.Result.IsSuccess)
+        {
+            var result = messageProviderRes.Result.Result;
+            var url = $"messages/?guid={result.Guid}&token={result.Token}";
+
+            NavigationManager.NavigateTo(url);
+        }
     }
 }

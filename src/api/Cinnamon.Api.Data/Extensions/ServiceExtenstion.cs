@@ -35,7 +35,8 @@ public static class ServiceExtenstion
         services.AddTransient<IFavorite, FavoriteEntity>();
         services.AddTransient<IChatConnection, ChatConnectionEntity>();
         services.AddTransient<IExperienceCreationType, ExperienceCreationTypeEntity>();
-        services.AddTransient<IAddOns, AddOnsEntity>(); ;
+        services.AddTransient<IAddOns, AddOnsEntity>(); 
+        services.AddTransient<IOteOnlineEvent, OteOnlineEventEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -80,6 +81,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IChatUnreadNotificationRepository, Services.Repository.ChatUnreadNotification.ChatUnreadNotificationRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDynamicContnetRepository, Services.Repository.DynamicContent.DynamicContentRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAnnouncementRepository, Services.Repository.Announcement.AnnouncementRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOnlineEventRepository, Services.Repository.OnlineEvent.OnlineEventRepository>();
 
         return services;
     }

@@ -174,6 +174,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteVerificationHandler, Services.ActivityService.OteVerificationHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnsHandler, Services.ActivityService.DeleteAddOnsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnHandler, Services.ActivityService.DeleteAddOnHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteOnlineEventHandler, Services.ActivityService.DeleteOnlineEventHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -256,6 +257,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.IUpdateChatConnectionHandler, Services.ChatService.UpdateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatConnectionByCustomerHandler, Services.ChatService.GetChatConnectionByCustomerHandler>();
         services.AddTransient<Services.ChatService.Handlers.INotifyUnreadChatsHandler, Services.ChatService.NotifyUnreadChatsHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IRequestMessageHandler, Services.ChatService.RequestMessageHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetRequestMessageHandler, Services.ChatService.GetRequestMessageHandler>();
 
         // disbursement
         services.AddTransient<Services.Disbursement.Handlers.IGenerateDisbursement, Services.Disbursement.GenerateDisbursement>();

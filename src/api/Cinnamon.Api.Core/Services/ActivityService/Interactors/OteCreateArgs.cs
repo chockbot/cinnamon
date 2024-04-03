@@ -8,6 +8,8 @@ public class OteCreateArgs : IInteractor
 
     public IEnumerable<OtePricing> Pricings {get; set;}
 
+    public IEnumerable<OteOnlinEvent>? OteOnlineEvents { get; set; }
+
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 
     public class OteActivity 
@@ -75,6 +77,17 @@ public class OteCreateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+    }
+
+    public class OteOnlinEvent
+    {
+        public string VideoLink { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }     
+        
+        public string TicketRestriction { get; set; }
     }
 
     public class DateOverride 

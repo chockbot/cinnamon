@@ -6,6 +6,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;
@@ -443,7 +445,26 @@ public class ActivityData: IActivityData
 			return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when deleting add-on");
 		}
 	}
+	public async Task <AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("OnlineEvent/DeleteOnlineEvent")
+							.PostJsonAsync(args)
+							.ReceiveJson<DeleteOnlineEventResult>();
 
+			return AppResult<DeleteOnlineEventResult>.CreateSucceeded(result, "Successfully deleted online event");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, "An error occurred when deleting online event");
+		}
+	}
 	public async Task<AppResult<OtePerDateResult>> OtePerDate(OtePerDateArgs args)
 	{
 		try

@@ -97,6 +97,8 @@ public class DataStore : IDataStore
 
     public IOteTicket OteTicket => new OteTicketEntity(applicationContext);
 
+    public IOteOnlineEvent OteOnlineEvent => new OteOnlineEventEntity(applicationContext);
+
     public ITokenGenerated TokenGenerated => new TokenGenratedEntity(applicationContext);
 
     public IAddOns AddOns => new AddOnsEntity(applicationContext);
