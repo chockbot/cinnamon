@@ -43,6 +43,7 @@ public class ActivityDTO
     public int CompletedStudents { get; set; }
     public int NumberOfTickets { get; set; }
     public bool IsComingSoon {get; set;}
+    public bool ForceDisable {get; set;}
     public DateTime CreatedOn { get; set; }
     public Enums.Enums.ActivityStatus Status{ get; set; }
     public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }

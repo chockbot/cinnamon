@@ -1154,4 +1154,50 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<VerifySharedEventLinkResult>.CreateFailed(ex, "An error occured when calling OTE verification API");
         }
     }
+
+    public async Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteOnlineEvent")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteOnlineEventResult>();
+
+            return AppResult<DeleteOnlineEventResult>.CreateSucceeded(result, "Successfully called delete online event");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteOnlineEventResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
+        }
+    }
+
+    public async Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateSharedLinkStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateSharedLinkStatusResult>();
+
+            return AppResult<UpdateSharedLinkStatusResult>.CreateSucceeded(result, "Successfully called generate event shared link api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
+        }
+    }
 }

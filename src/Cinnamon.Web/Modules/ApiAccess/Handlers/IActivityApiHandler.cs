@@ -61,4 +61,6 @@ public interface IActivityApiHandler
     Task<AppResult<GenerateEventSharedLinkResult>> GenerateEventSharedLink(GenerateEventSharedLinkArgs args, string token);
     Task<AppResult<OteValidateSharedLinkResult>> ValidateSharedLink(OteValidateSharedLinkArgs args);
     Task<AppResult<VerifySharedEventLinkResult>> VerifySharedEventLink(VerifySharedEventLinkArgs args);
+    Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args, string token);
+    Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args, string token);
 }

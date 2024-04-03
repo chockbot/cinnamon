@@ -105,6 +105,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         Status = a.Status,
                         CreatedOn = a.CreatedOn,
                         ExperienceCreationType = a.ExperienceCreationType,
+                        ForceDisable = a.ForceDisable,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,

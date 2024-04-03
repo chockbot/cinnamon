@@ -57,6 +57,7 @@ public class Activity
     public string ScheduleIndicator {get; set;} = " ";
     public string Remarks {get; set;} = " ";
     public bool IsPublished {get; set;}
+    public bool ForceDisable {get; set;}
 
     public string IsPublishedDescription
     {

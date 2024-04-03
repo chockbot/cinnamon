@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cinnamon.Framework.ApiCommand.ApiData.Disbursement.Request;
 
 public class GetDisbursementByProviderArgs
 {
@@ -7,4 +9,7 @@ public class GetDisbursementByProviderArgs
     public string? FilterValue { get; set; }
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
+    
+    [Required]
+    public string PayoutString {get; set;}
 }

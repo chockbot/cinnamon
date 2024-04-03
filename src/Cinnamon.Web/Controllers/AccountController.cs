@@ -390,7 +390,15 @@ public class AccountController : Controller
 
             if(Request.Query.Keys.Any(a => a == "redirect") && !string.IsNullOrEmpty(Request.Query["redirect"]))
             {
-                redirect = Request.Query["redirect"];
+                // append first the redirect query then append the others
+                redirect = Request.Query["redirect"].ToString();
+                foreach(var query in Request.Query)
+                {
+                    if(!query.Key.Equals("redirect", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        redirect += $"&{query.Key}={query.Value}";
+                    }
+                }
             }
 
             bool? isEmptyUsername = string.IsNullOrEmpty(email);

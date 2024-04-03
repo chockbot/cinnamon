@@ -19,4 +19,7 @@ public class CreateUnreadNotificationArgs
     [Required]
     [EmailAddress]
     public string CustomerEmail {get; set;}
+
+    [Required]
+    public string Repeated {get; set;}
 }

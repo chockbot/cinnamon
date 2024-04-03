@@ -61,6 +61,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.ITokenGeneratedData, Modules.DataAccess.TokenGenerated.TokenGeneratedData>();
         services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteDateData, Modules.DataAccess.OteDate.OTeDateData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
 
@@ -164,6 +165,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCreationTypeHandler, Services.ActivityService.GetExperienceCreationTypeHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivityScheduleTimesHandler, Services.ActivityService.GetActivityScheduleTimesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateOngoingActivityScheduleHandler, Services.ActivityService.CreateOngoingActivityScheduleHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDisabledExpiredEventHandler, Services.ActivityService.DisabledExpiredEventHandler>();
 
         services.AddTransient<Services.ActivityService.Handlers.IOteCreateHandler, Services.ActivityService.OteCreateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteUpdateHandler, Services.ActivityService.OteUpdateHandler>();
@@ -173,6 +175,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteVerificationHandler, Services.ActivityService.OteVerificationHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnsHandler, Services.ActivityService.DeleteAddOnsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteAddOnHandler, Services.ActivityService.DeleteAddOnHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteOnlineEventHandler, Services.ActivityService.DeleteOnlineEventHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteUpdateSharedLinkStatusHandler, Services.ActivityService.OteUpdateSharedLinkStatusHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -184,6 +188,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderHandler, Services.TransactionService.OtePurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOteFinishTransactionHandler, Services.TransactionService.OteFinishTransactionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderDetailsHandler, Services.TransactionService.OtePurchaseOrderDetailsHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.ITransactionRedirectionHandler, Services.TransactionService.TransactionRedirectionHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -236,6 +241,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+        services.AddTransient<Services.AdminService.Handlers.ICreateAnnouncementHandler, Services.AdminService.CreateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateAnnouncementHandler, Services.AdminService.UpdateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAnnouncementsHandler, Services.AdminService.GetAnnouncementsHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IDeleteAnnouncementHandler, Services.AdminService.DeleteAnnouncementHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateDynamicContentHandler, Services.AdminService.UpdateDynamicContentHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetDynamicContentHandler, Services.AdminService.GetDynamicContentHandler>();
 
@@ -251,6 +260,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.IUpdateChatConnectionHandler, Services.ChatService.UpdateChatConnectionHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatConnectionByCustomerHandler, Services.ChatService.GetChatConnectionByCustomerHandler>();
         services.AddTransient<Services.ChatService.Handlers.INotifyUnreadChatsHandler, Services.ChatService.NotifyUnreadChatsHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IRequestMessageHandler, Services.ChatService.RequestMessageHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetRequestMessageHandler, Services.ChatService.GetRequestMessageHandler>();
 
         // disbursement
         services.AddTransient<Services.Disbursement.Handlers.IGenerateDisbursement, Services.Disbursement.GenerateDisbursement>();

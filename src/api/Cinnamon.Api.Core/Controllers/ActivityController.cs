@@ -75,6 +75,8 @@ public class ActivityController : ControllerBase
     private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
     private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
     private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
+    private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
+    private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -99,7 +101,8 @@ public class ActivityController : ControllerBase
         ICustomerOteHandler customerOteHandler, IOteVerificationHandler oteVerificationHandler, IDeleteAddOnsHandler deleteAddOnsHandler, 
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
-        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler)
+        IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler)
     {
         _logger = logger;
 
@@ -156,6 +159,8 @@ public class ActivityController : ControllerBase
         this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
         this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
         this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
+        this.deleteOnlineEventHandler = deleteOnlineEventHandler;
+        this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
     }
 
     [Route("CreateActivity")]
@@ -755,6 +760,7 @@ public class ActivityController : ControllerBase
                         ExperienceTypeId = a.ExperienceTypeId,
                         ExperienceCreationType = a.ExperienceCreationType,
                         CreatedOn = a.CreatedOn,
+                        ForceDisable = a.ForceDisable,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
@@ -778,6 +784,7 @@ public class ActivityController : ControllerBase
                         CompletedStudents = a.CompletedStudents,
                         NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
+                        
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
@@ -931,7 +938,8 @@ public class ActivityController : ControllerBase
                 Status = args.Status,
                 IsAdmin = args.IsAdmin,
                 IncludeReviews = args.IncludeReviews ?? false,
-                IncludeTickets = args.IncludeTickets ?? false
+                IncludeTickets = args.IncludeTickets ?? false,
+                ForceDisable = args.ForceDisable
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -2648,7 +2656,15 @@ public class ActivityController : ControllerBase
                         Date = d.Date,
                         TimeEnd = d.TimeEnd,
                         TimeStart = d.TimeStart
-                    }) : null
+                    }) : null,
+                OteOnlineEvents = args.OnlineEvents is not null ?
+                    args.OnlineEvents.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.OteOnlinEvent
+                    {
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,    
+                        TicketRestriction = s.TicketRestriction,
+                    }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2709,7 +2725,17 @@ public class ActivityController : ControllerBase
                         Price = p.Price,
                         Name = p.Name
                     };
-                })
+                }),
+                OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
+                    return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
+                    {
+                        Id = s.Id,
+                        Title = s.Title,
+                        Description = s.Description,
+                        VideoLink = s.VideoLink,
+                        TicketRestriction = s.TicketRestriction,
+                    };
+                }): null
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2740,12 +2766,13 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await oteFindByHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteFindByHandlerArgs {
-                Handler = handler,
-                IncludeAddress = args.IncludeAddress ?? false,
+                Handler            = handler,
+                IncludeAddress     = args.IncludeAddress ?? false,
                 IncludeDescription = args.IncludeDescription ?? false,
-                IncludePricing = args.IncludePricing ?? false,
-                IncludeSchedule = args.IncludeSchedule ?? false,
-                IncludeImages = args.IncludeImages ?? false
+                IncludePricing     = args.IncludePricing ?? false,
+                IncludeSchedule    = args.IncludeSchedule ?? false,
+                IncludeImages      = args.IncludeImages ?? false,
+                IncludeOnlineEvent = args.IncludeOnlineEvent ?? false
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -2953,6 +2980,35 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("DeleteOnlineEvent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteOnlineEventById([FromBody] DeleteOnlineEventArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOnlineEventHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOnlineEventArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOnlineEventResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("GenerateEventSharedLink")]
     [HttpPost]
@@ -2974,7 +3030,12 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GenerateEventSharedLinkResult
             {
                 IsSuccess = true,
-                Result = result.Result.GeneratedLink
+                Result = new CoreDto.Activity.SharedLinkDTO {
+                    Enable = result.Result.Enable,
+                    GeneratedLink = result.Result.GeneratedLink,
+                    Guid = result.Result.Guid,
+                    Token = result.Result.Token
+                }
             });
         }
         catch (Exception ex)
@@ -3047,6 +3108,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateSharedLinkStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateSharedLinkStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateSharedLinkStatus([FromBody] UpdateSharedLinkStatusArgs args)
+    {
+        try
+        {
+            var result = await oteUpdateSharedLinkStatusHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateSharedLinkStatusArgs {
+                Enable = args.Enable,
+                Guid = args.Guid,
+                Token = args.Token
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateSharedLinkStatusResult
+            {
+                IsSuccess = true,
+                Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
