@@ -87,35 +87,17 @@
                             <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                                 recurrences
                             </FieldLabel>
-                            @if(modelSchedule.TicketSold == 0)
-                            {
-                                <FieldBody>
-                                    <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                        SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
-                                        <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
-                                        <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
-                                        <SelectItem Value='@("daily")'>Daily</SelectItem>
-                                        <SelectItem Value='@("weekly")'>Weekly</SelectItem>
-                                        <SelectItem Value='@("monthly")'>Monthly</SelectItem>
-                                    </Select>
-                                    <div class="invalid-feedback">The recurrences field is mandatory.</div>
-                                </FieldBody>
-                            }
-                            else
-                            {
-                                <FieldBody>
-                                    <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                        SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
-                                        <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
-                                        <SelectItem Value='@("every-weekday")' Disabled>Every weekday</SelectItem>
-                                        <SelectItem Value='@("daily")' Disabled>Daily</SelectItem>
-                                        <SelectItem Value='@("weekly")' Disabled>Weekly</SelectItem>
-                                        <SelectItem Value='@("monthly")' Disabled>Monthly</SelectItem>
-                                    </Select>
-                                    <div class="invalid-feedback">The recurrences field is mandatory.</div>
-                                </FieldBody>
-                            }
-
+                            <FieldBody>
+                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
+                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
+                                    <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
+                                    <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
+                                    <SelectItem Value='@("daily")'>Daily</SelectItem>
+                                    <SelectItem Value='@("weekly")'>Weekly</SelectItem>
+                                    <SelectItem Value='@("monthly")'>Monthly</SelectItem>
+                                </Select>
+                                <div class="invalid-feedback">The recurrences field is mandatory.</div>
+                            </FieldBody>
                         </Field>
                     </div>
 
