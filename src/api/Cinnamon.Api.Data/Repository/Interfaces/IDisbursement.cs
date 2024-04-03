@@ -10,5 +10,5 @@ public interface IDisbursement : IGenericEntity<Disbursement> {
     
     Task<AppResult<IEnumerable<DisbursementInformationDTO>>> GetDisbursementsInfo(string filterBy, string filterValue);
 
-    Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(int? Id, string filterBy, string filterValue, int? count, int? skip);
+    Task<AppResult<IEnumerable<DisbursementDTO>>> GetDisbursementsByProvider(string payoutDateString, int? Id, string filterBy, string filterValue, int? count, int? skip);
 }
