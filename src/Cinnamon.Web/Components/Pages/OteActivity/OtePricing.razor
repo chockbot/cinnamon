@@ -88,8 +88,8 @@
                                 recurrences
                             </FieldLabel>
                             <FieldBody>
-                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
-                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="ModelState.Recurrences">
+                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
+                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
                                     <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
                                     <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
                                     <SelectItem Value='@("daily")'>Daily</SelectItem>
@@ -876,6 +876,22 @@
 
     public Task SetState(ModelData data)
     {
+        modelSchedule.DateFrom               = data.DateFrom;
+        modelSchedule.DateTo                 = data.DateTo;
+        modelSchedule.TimeFrom               = data.DateFrom.TimeOfDay;
+        modelSchedule.TimeTo                 = data.DateTo.TimeOfDay;
+        modelSchedule.DurationEnd            = data.DurationEnd ?? DateTime.Now;
+        modelSchedule.DurationStart          = data.DurationStart ?? DateTime.Now;
+        modelSchedule.DurationEvery          = data.DurationEvery ?? 1;
+        modelSchedule.MonthDay               = data.MonthDay;
+        modelSchedule.MonthRepeat            = data.MonthRepeat;
+        modelSchedule.MonthSelection         = data.MonthSelection ?? 1;
+        modelSchedule.OnDayDate              = data.OnDayDate ?? 1;
+        modelSchedule.EventDurationCount     = data.EventDurationCount;
+        modelSchedule.EventDurationTimeUnit  = data.EventDurationTimeUnit;
+        modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
+        modelSchedule.TicketSold             = data.TicketSold;
+
         RecurrenceChanged(data.Recurrences);
 
         // set selected days
@@ -1147,6 +1163,7 @@
         public string? WeekString {get; set;}
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
+        public int TicketSold { get; set; }
 
         public class ItemPrice 
         {
@@ -1250,6 +1267,7 @@
         // for date override
         public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
         public TimeSpan TimeEnd {get; set;} = DateTime.Now.TimeOfDay;
+        public int TicketSold {get; set;} = 0;
     }
 
     public class Pricing 
