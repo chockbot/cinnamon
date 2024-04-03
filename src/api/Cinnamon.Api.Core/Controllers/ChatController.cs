@@ -406,6 +406,7 @@ namespace Cinnamon.Api.Core.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("RequestMessage")]
         [HttpPost]
         [ProducesResponseType(typeof(RequestMessageResult), StatusCodes.Status200OK)]
