@@ -1905,6 +1905,7 @@ public class ActivityRepository : IActivityRepository
                     OteSchedule = schedule
                 };
             }).ToList();
+
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate
                 {
@@ -1948,7 +1949,7 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList() : null;
 
-            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
+            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule, dates);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);
