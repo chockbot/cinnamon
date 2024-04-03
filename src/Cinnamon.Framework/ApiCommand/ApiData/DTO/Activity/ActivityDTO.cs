@@ -35,6 +35,7 @@ public class ActivityDTO
     public IEnumerable<string> SearchTags { get; set; }
     public string ExperienceType { get; set; }
     public bool IsPublished { get; set; }
+    public bool ForceDisable {get; set;}
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}

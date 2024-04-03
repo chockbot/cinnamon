@@ -757,6 +757,7 @@ public class ActivityController : ControllerBase
                         ExperienceTypeId = a.ExperienceTypeId,
                         ExperienceCreationType = a.ExperienceCreationType,
                         CreatedOn = a.CreatedOn,
+                        ForceDisable = a.ForceDisable,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
@@ -780,6 +781,7 @@ public class ActivityController : ControllerBase
                         CompletedStudents = a.CompletedStudents,
                         NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
+                        
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
@@ -933,7 +935,8 @@ public class ActivityController : ControllerBase
                 Status = args.Status,
                 IsAdmin = args.IsAdmin,
                 IncludeReviews = args.IncludeReviews ?? false,
-                IncludeTickets = args.IncludeTickets ?? false
+                IncludeTickets = args.IncludeTickets ?? false,
+                ForceDisable = args.ForceDisable
             });
             if (!result.Succeeded || result.Result == null)
             {

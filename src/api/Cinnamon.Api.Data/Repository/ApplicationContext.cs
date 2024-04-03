@@ -163,6 +163,9 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Activity>()
             .HasIndex("PurchaseOrderCount","IsPublished","IsDeactivated", "IsNew");
+        
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.ForceDisable);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()

@@ -486,4 +486,46 @@ public class ActivityData: IActivityData
 			return AppResult<OtePerDateResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
 		}
 	}
+
+	public async Task<AppResult<ExpiredEventsResult>> ExpiredEvents()
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"Activity/ExpiredEvents")
+							.GetJsonAsync<ExpiredEventsResult>();
+
+			return AppResult<ExpiredEventsResult>.CreateSucceeded(result, "Successfully get expired events.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			var error = ex.GetResponseJsonAsync();
+			return AppResult<ExpiredEventsResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<ExpiredEventsResult>.CreateFailed(ex, "An error occured when getting expired events.");
+		}
+	}
+
+	public async Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/ForceDisableActivities")
+							.PostJsonAsync(args)
+							.ReceiveJson<ForceDisableActivitiesResult>();
+
+			return AppResult<ForceDisableActivitiesResult>.CreateSucceeded(result, "Successfully disabled activities.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<ForceDisableActivitiesResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<ForceDisableActivitiesResult>.CreateFailed(ex, "An error occurred when disabling activities.");
+		}
+	}
 }

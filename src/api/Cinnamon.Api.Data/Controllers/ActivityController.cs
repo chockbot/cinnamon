@@ -94,7 +94,7 @@ public class ActivityController : ControllerBase
                 args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0 ||
                 !string.IsNullOrEmpty(args.LikeHandler) || args.IncludeCustomer.HasValue || args.IncludeExperienceTypes.HasValue ||
                 args.IncludeExperienceCategories.HasValue || args.IncludeSubCategories.HasValue || args.IncludeStudents.HasValue || 
-                args.IsDeactivated.HasValue || args.IncludeTickets.HasValue;
+                args.IsDeactivated.HasValue || args.IncludeTickets.HasValue || args.ForceDisable.HasValue;
             
             var includeAddress = args.IncludeAddress ?? false;
 
@@ -117,7 +117,7 @@ public class ActivityController : ControllerBase
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, 
-                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false) :
+                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false, args.ForceDisable) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -628,6 +628,48 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ExpiredEvents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ExpiredEventsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExpiredEvents()
+    {
+        try
+        {
+            var result = await activityRepository.ExpiredEvents();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ExpiredEventsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ForceDisableActivities")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ForceDisableActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForceDisableActivities([FromBody] ForceDisableActivitiesArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.ForceDisableActivities(args.Ids);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ForceDisableActivitiesResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
