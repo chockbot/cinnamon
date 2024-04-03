@@ -246,7 +246,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                     };
                 }).ToList(),
                 Dates = dateItems.Select(d => {
-                    return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.OteDate
+                    return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOteDate
                     {
                         Date = d.Date,
                         DateEnd = d.DateEnd,
@@ -255,7 +255,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                 }).ToList(),
                 DateOverrides = args.DateOverrides is not null ?
                     args.DateOverrides.Select(d => {
-                        return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.OteDateOverride
+                        return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOteDateOverride
                         {
                             Date = d.Date,
                             DateEnd = d.Date.Date.Add(d.TimeEnd),

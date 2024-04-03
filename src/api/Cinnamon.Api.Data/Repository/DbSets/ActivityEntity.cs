@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Data;
 using AutoMapper;
 using Npgsql;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -328,7 +329,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates)
     {
         try
         {
@@ -338,6 +339,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             activityResult = activityResult.Include(a => a.ActivityDescription);
             activityResult = activityResult.Include(a => a.Address);
             activityResult = activityResult.Include(a => a.OteSchedule);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
@@ -383,6 +385,30 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
                 result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
 
+                // Update existing OteDates
+                foreach (var oteDate in result.OteSchedule.OteDates)
+                {
+                    // Find the corresponding updated OteDate
+                    var updatedOteDate = oteDates.FirstOrDefault(d => d.Id == oteDate.Id);
+                    if (updatedOteDate != null)
+                    {
+                        result.OteSchedule.OteDates.Remove(updatedOteDate);
+                    }
+                }
+
+                // Add new OteDates
+                foreach (var newOteDate in oteDates.Where(d => d.Id == 0))
+                {
+                    var addedOteDate = new OteDate
+                    {
+                        Date = newOteDate.Date,
+                        DateEnd = newOteDate.DateEnd,
+                        DateStart = newOteDate.DateStart
+                    };
+                    result.OteSchedule.OteDates.Add(addedOteDate);
+                }
+
+
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
                 foreach(var price in updatedPricingList)
                 {
@@ -409,7 +435,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         }
                     }
                 }
-
                 var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
                 var newPricingGroups = newPricingList.Select(p => {
                     return new OteSchedulePricingGroup {
@@ -421,7 +446,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         OteSchedule = result.OteSchedule
                     };
                 });
-                
                 foreach(var item in newPricingGroups)
                 {
                     result.OteSchedule.OteSchedulePricingGroups.Add(item);
@@ -473,7 +497,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }
                 }
-
 
                 await applicationContext.SaveChangesAsync();
             }
