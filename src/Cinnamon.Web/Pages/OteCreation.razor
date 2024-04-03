@@ -734,7 +734,7 @@
             WeekString            = ote.OteSchedule.SelectedDays,
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
-            ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
+            ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
@@ -743,7 +743,8 @@
                     Price = p.Price,
                     Name = p.Name
                 };
-            }).ToList()
+            }).ToList(),
+            TicketSold            = ote.Pricings.Sum(a => a.TicketSold)
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
