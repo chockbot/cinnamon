@@ -70,4 +70,5 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
     Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents();
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
+    Task<AppResult<bool>> DeleteTicket(int Id);
 }

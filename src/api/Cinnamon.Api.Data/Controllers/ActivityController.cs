@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
+using Cinnamon.Api.Data.Services.Repository.OnlineEvent;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -669,6 +670,26 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteTicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.DeleteTicket(args.Id);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

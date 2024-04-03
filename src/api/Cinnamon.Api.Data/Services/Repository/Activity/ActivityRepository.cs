@@ -13,6 +13,7 @@ using Cinnamon.Framework.Enums;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Api.Data.Extensions;
 using AutoMapper;
+using Cinnamon.Api.Data.Repository;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -2106,4 +2107,38 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
         }
     }
+    public async Task<AppResult<bool>> DeleteTicket(int Id)
+    {
+        try
+        {
+            var oteTicketResult = await dataStore.OteSchedulePricing.GetByIdAsync(Id);
+            var oteTicket = oteTicketResult.Result;
+            if (oteTicket == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No ticket to delete"), "No ticket to delete");
+            }
+
+            var oteGroupTicketResult = await dataStore.OteSchedulePricingGroup.GetByIdAsync(oteTicket.OteSchedulePricingGroupId ?? 0);
+            var oteGroupTicket = oteGroupTicketResult.Result;
+            if (oteGroupTicket == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Associated group ticket not found"), "Associated group ticket not found");
+            }
+
+            var result = await dataStore.OteSchedulePricing.Remove(oteTicket);
+            var result1 = await dataStore.OteSchedulePricingGroup.Remove(oteGroupTicket);
+
+            if (!result.Succeeded || !result1.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Failed to delete ticket or associated group"), "Failed to delete ticket or associated group");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted ticket and associated group");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occurred in deleting ticket");
+        }
+    }
+
 }
