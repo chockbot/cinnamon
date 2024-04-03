@@ -13,13 +13,37 @@ public class DeleteTicketHandler : IDeleteTicketHandler
         this.activityData = activityData;
     }
 
-    public AppResult<DeleteTicketResult> Execute(DeleteTicketArgs interactor)
+    public AppResult<DeleteTicketResult> Execute(DeleteTicketArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred in DeleteTicketHandler");
+        }
     }
 
-    public Task<AppResult<DeleteTicketResult>> ExecuteAsync(DeleteTicketArgs interactor)
+    public async Task<AppResult<DeleteTicketResult>> ExecuteAsync(DeleteTicketArgs args)
     {
-        throw new NotImplementedException();
+        var removeTicket = await activityData.DeleteTicket(new Framework.ApiCommand.ApiData.Activity.Request.DeleteTicketArgs
+        {
+            Id = args.Id
+        });
+        if (!removeTicket.Succeeded || removeTicket.Result == null)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(new ApplicationException(removeTicket.Message), removeTicket.Message);
+        }
+        if (removeTicket.Succeeded && !removeTicket.Result.IsSuccess)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(
+                new ApplicationException(removeTicket.Result.ErrorInfo?.Message), "An error occurred in DeleteTicketHandler");
+        }
+
+        return AppResult<DeleteTicketResult>.CreateSucceeded(new DeleteTicketResult
+        {
+            IsSuccess = removeTicket.Result.IsSuccess
+        }, "Successfully removed ticket");
     }
 }

@@ -528,4 +528,25 @@ public class ActivityData: IActivityData
 			return AppResult<ForceDisableActivitiesResult>.CreateFailed(ex, "An error occurred when disabling activities.");
 		}
 	}
+
+	public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/DeleteTicket")
+							.PostJsonAsync(args)
+							.ReceiveJson<DeleteTicketResult>();
+
+			return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully removed ticket.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when deleting ticket.");
+		}
+	}
 }

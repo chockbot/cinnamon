@@ -35,4 +35,5 @@ public interface IActivityData
     Task<AppResult<ExpiredEventsResult>> ExpiredEvents();
     Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
     Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args);
+    Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args);
 }
