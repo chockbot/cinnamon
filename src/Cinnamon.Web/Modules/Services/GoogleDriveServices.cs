@@ -52,8 +52,9 @@ public class GoogleDriveService
             Id = file.Id,
             Name = file.Name,
             Type = file.MimeType,
-            ThumbnailLink = file.ThumbnailLink
-        }).ToList();
+            ThumbnailLink = file.ThumbnailLink,
+            ModifiedDate = file.ModifiedTime // Add modified time property
+        }).OrderByDescending(file => file.ModifiedDate).ToList();
 
         return new Files {FileList = fileList, Token = nextToken };
     }
