@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Components.Common;
 @using Cinnamon.Framework.Extensions.DateTimeExtension;
 @inject INotificationService NotificationService;
+@inject IActivityApiHandler activityApiHandler;
 @inject IJSRuntime JS;
 @implements IOteComponent;
 
@@ -327,6 +328,11 @@
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
                         <div class="accordion-body bg-white-200">
                             <div class="item-form-body">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(item)">
+                                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                        </Button>
+                                    </div>
                                 <Validation>
                                     <Field class="mb-4">
                                         <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -434,6 +440,15 @@
             </p>
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+            @if (DisplayDelete)
+            {
+                <div class="col-12 d-flex justify-content-end">
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(modelTicketInfo)">
+                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                    </Button>
+                </div>
+            }
+
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -668,27 +683,43 @@
         </ModalContent>
     </Modal>
 </section>
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this ticket?</p>
+    </BodyContent>
+</ConfirmDialog>
 
 @code 
-{
+            {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
     [Parameter]
     public EventCallback OnPrevClick {get; set;}
 
+    [Parameter]
+    public string Token { get; set; }
+
     private Schedule modelSchedule = new();
     private Pricing modelPricing = new();
+    private Pricing priceToDelete = new();
     private PricingList modelPricingList = new();
+    private PricingList existingList = new PricingList();
     private Validations? scheduleFormValidation;
     private Validations? pricingFormValidation;
     private Validations? pringListFormValidation;
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
     private bool showErrors = false;
+    private bool DisplayDelete = true;
     private Modal? modalFeeBreakdown {get; set;}
     private Modal? modalScheduleGuid {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
+    private ConfirmDialog confirmDialogRef { get; set; }
     private IList<DayItem> dayItems = new List<DayItem> {
         new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
         new DayItem { Day = "M", Value = "MON", DayString = "Monday"},
@@ -703,6 +734,21 @@
     private Calendar? calendar {get; set;}
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+        else
+        {
+            if (existingList.Pricings.Count == 0)
+            {
+                DisplayDelete = false;
+                AddMoreTicketPrice();
+            }
+        }
+    }
     private async Task NextClick()
     {
         if(OnNextClick.HasDelegate)
@@ -809,9 +855,16 @@
         bool priceValid = await pricingFormValidation.ValidateAll();
         if(priceValid)
         {
-            modelPricing.Id = modelPricingList.Pricings.Count + 1;
-            modelPricingList.Pricings.Add(modelPricing);
-            modelPricing = new();
+            modelPricingList.Pricings = existingList.Pricings;
+            int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+            int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+            existingList.Pricings.Add(new Pricing { TempId = maxId, Order = order, IsNew = true});
+            var last = existingList.Pricings.LastOrDefault();
+            if(last is not null)
+            {
+                existingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
+            }
+            modelPricing = last;
         }
     }
 
@@ -891,6 +944,19 @@
 
         RecurrenceChanged(data.Recurrences);
 
+        //existing ticket
+        foreach(var item in data.ItemPrices)
+        {
+            existingList.Pricings.Add(new Pricing {
+                AbsorbFees = item.AbsorbFees,
+                    Description = item.Description,
+                    Id = item.Id,
+                    MaxSlots = item.MaxSlots,
+                    Price = item.Price,
+                    Name = item.Name
+            });
+        }
+
         // set selected days
         var days = data.WeekString.Split("|");
         foreach(var item in dayItems)
@@ -899,7 +965,6 @@
         }
 
         data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
-
         var last = data.ItemPrices.LastOrDefault();
         if(last is not null)
         {
@@ -907,15 +972,14 @@
             foreach(var item in notLast)
             {
                 modelPricingList.Pricings.Add(new Pricing {
-                    AbsorbFees = item.AbsorbFees,
+                    AbsorbFees  = item.AbsorbFees,
                     Description = item.Description,
-                    Id = item.Id,
-                    MaxSlots = item.MaxSlots,
-                    Price = item.Price,
-                    Name = item.Name
+                    Id          = item.Id,
+                    MaxSlots    = item.MaxSlots,
+                    Price       = item.Price,
+                    Name        = item.Name
                 });
             }
-
             modelPricing.AbsorbFees = last.AbsorbFees;
             modelPricing.Description = last.Description;
             modelPricing.Id = last.Id;
@@ -1253,7 +1317,7 @@
         public int MonthSelection {get; set;} = 1;
         public string MonthRepeat {get; set;} = "first";
         public string MonthDay {get; set;} = "sunday";
-        
+
         [Range(1, 31)]
         public int OnDayDate {get; set;} = 1;
 
@@ -1288,6 +1352,10 @@
 
         // extras
         public bool IsOpen {get; set;} = false;
+        public int Order { get; set; }
+        public int TempId { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public int Id {get; set;}
         public bool Valid 
         {
@@ -1411,7 +1479,7 @@
                             DateStart = recurringDate.Date.Add(timeStart),
                             DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         };
-            
+
 
             generatedDates.Add(item);
 
@@ -1453,7 +1521,7 @@
         IList<DateItem> generatedDates = new List<DateItem>();
 
         int daysToSkip = (repeat - 1) * 7;
-        
+
         var dayWeeks = ToDictionaryDayWeek(selectedDays);
 
         DateTime recurringDate = start;
@@ -1581,6 +1649,49 @@
 
         return generatedDates;
     }
+    private async Task DeleteClick(Pricing price)
+    {
+        priceToDelete = price;
+        await confirmDialogRef.Open();
+    }
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            modelPricingList.Pricings = existingList.Pricings;
+            if (priceToDelete.TempId == 0)
+            {
+                modelPricingList.Pricings.Where(a => a.Id == priceToDelete.Id).FirstOrDefault().IsDeleted = true;
+                var deleteTicket = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
+                    {
+                        Id = priceToDelete.Id
+                    }, Token);
+                if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
+                {
+                    existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                    var last = existingList.Pricings.LastOrDefault();
+                    if (last is not null)
+                    {
+                        modelPricingList.Pricings = existingList.Pricings.Where(p => p.Id != last.Id).ToList();
+                        modelPricing = last;
+                    }
+                    else
+                    {
+                        AddMoreTicketPrice();
+                    }
+                }
+            }
+            else
+            {
+                
+            }
+        }
+        else
+        {
+            
+        }
+    }
+
 
     private record DateItem 
     {

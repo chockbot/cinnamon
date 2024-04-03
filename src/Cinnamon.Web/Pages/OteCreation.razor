@@ -70,7 +70,7 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Token="@token"/>
                 </div>
                 @if (oteLocation != null)
                 {
