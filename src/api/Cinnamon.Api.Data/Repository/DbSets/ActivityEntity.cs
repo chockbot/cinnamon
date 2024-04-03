@@ -390,12 +390,16 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 {
                     // Find the corresponding updated OteDate
                     var updatedOteDate = oteDates.FirstOrDefault(d => d.Id == oteDate.Id);
+
+                    // If the updated OteDate exists, update its properties
                     if (updatedOteDate != null)
                     {
-                        result.OteSchedule.OteDates.Remove(updatedOteDate);
+                        oteDate.Date      = updatedOteDate.Date;
+                        oteDate.DateStart = updatedOteDate.DateStart;
+                        oteDate.DateEnd   = updatedOteDate.DateStart;
                     }
                 }
-
+                
                 // Add new OteDates
                 foreach (var newOteDate in oteDates.Where(d => d.Id == 0))
                 {
