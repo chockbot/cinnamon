@@ -61,6 +61,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.ITokenGeneratedData, Modules.DataAccess.TokenGenerated.TokenGeneratedData>();
         services.AddTransient<Modules.DataAccess.Handlers.IAddOnsData, Modules.DataAccess.AddOns.AddOnsData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteDateData, Modules.DataAccess.OteDate.OTeDateData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
 
@@ -236,6 +237,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+        services.AddTransient<Services.AdminService.Handlers.ICreateAnnouncementHandler, Services.AdminService.CreateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateAnnouncementHandler, Services.AdminService.UpdateAnnouncementHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAnnouncementsHandler, Services.AdminService.GetAnnouncementsHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IDeleteAnnouncementHandler, Services.AdminService.DeleteAnnouncementHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateDynamicContentHandler, Services.AdminService.UpdateDynamicContentHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetDynamicContentHandler, Services.AdminService.GetDynamicContentHandler>();
 
