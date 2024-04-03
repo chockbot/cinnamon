@@ -183,4 +183,25 @@ public class OteTicketData : IOteTicketData
 			return AppResult<GetSharedLinkResult>.CreateFailed(ex, "An error occured when getting all shared links");
 		}
 	}
+
+	public async Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+				.Request("OteTicket/UpdateSharedLinkStatus")
+				.PostJsonAsync(args)
+				.ReceiveJson<UpdateSharedLinkStatusResult>();
+
+            return AppResult<UpdateSharedLinkStatusResult>.CreateSucceeded(result, "Successfully posting update shared link status.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occured when posting update shared link status.");
+        }
+    }
 }

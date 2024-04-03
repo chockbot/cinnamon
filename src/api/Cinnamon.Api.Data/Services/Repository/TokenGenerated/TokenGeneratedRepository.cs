@@ -62,4 +62,35 @@ public class TokenGeneratedRepository : ITokenGeneratedRepository
             return AppResult<TokenGeneratedDTO>.CreateFailed(ex, "An error occured when getting token generated.");
         }
     }
+
+    public async Task<AppResult<TokenGeneratedDTO>> UpdateTokenGenearted(int id, string? tokenType, string? guid, string? token, string? payload)
+    {
+        try
+        {
+            var tokenGeneratedRes = await dataStore.TokenGenerated.FindFirstAsync(t => t.Id == id);
+            if(!tokenGeneratedRes.Succeeded || tokenGeneratedRes.Result is null)
+            {
+                return AppResult<TokenGeneratedDTO>.CreateFailed(new ApplicationException("Unable to find token to update."), "Unable to find token to update.");
+            }
+            var tokenGenerated = tokenGeneratedRes.Result;
+
+            tokenGenerated.TokenType = tokenType ?? tokenGenerated.TokenType;
+            tokenGenerated.Guid = guid ?? tokenGenerated.Guid;
+            tokenGenerated.Token = token ?? tokenGenerated.Token;
+            tokenGenerated.Payload = payload ?? tokenGenerated.Payload;
+
+            var updateRes = await dataStore.TokenGenerated.Update(tokenGenerated);
+            if(!updateRes.Succeeded || updateRes.Result is null)
+            {
+                return AppResult<TokenGeneratedDTO>.CreateFailed(new ApplicationException(updateRes.Message), updateRes.Message);
+            }
+
+            var resultData = mapper.Map<TokenGeneratedDTO>(tokenGenerated);
+            return AppResult<TokenGeneratedDTO>.CreateSucceeded(resultData, "Token generated successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TokenGeneratedDTO>.CreateFailed(ex, "An error occured when updating token generated.");
+        }
+    }
 }

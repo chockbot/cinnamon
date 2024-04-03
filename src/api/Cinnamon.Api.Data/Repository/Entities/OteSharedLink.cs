@@ -6,4 +6,5 @@ public class OteSharedLink : BaseEntity
     public int OteDateId {get; set;}
     public string Guid {get; set;}
     public string Token {get; set;}
+    public bool Enable {get; set;}
 }
