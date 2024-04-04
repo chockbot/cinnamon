@@ -1,6 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
 @implements IOteComponent;
-@inject IJSRuntime JS;
+@inject IJSRuntime JS;  
 
 <section class="ote-summary-wrapper">
     @if(Summary is not null)
@@ -15,10 +15,83 @@
             <Divider />
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
-                <p class="font-20 color-black-100 mb-0">
-                    @Summary.PricingData.DateFrom.ToString("dd MMM yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
-                </p>
-            </div>
+                /* Switch case for recurrences */
+                @switch (Summary.PricingData.Recurrences)
+                {
+                    case "daily":
+                        DateTime? dailyStartDate = Summary.PricingData.DurationStart;
+                        DateTime? dailyEndDate = Summary.PricingData.DurationEnd;
+                        int dailyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
+                        {
+                            <p class="font-20 color-black-100 mb-0">
+                                @dailyStartDate.Value.ToString("MMMM dd, yyyy")
+                            </p>
+                            dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
+                        }
+                        break;
+                    case "weekly":
+                        DateTime? weeklyStartDate = Summary.PricingData.DurationStart;
+                        DateTime? weeklyEndDate = Summary.PricingData.DurationEnd;
+                        List<string> weeklySelectedDays = Summary.PricingData.WeekString.Split('|').ToList();
+                        int weeklyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        while (weeklyStartDate.HasValue && weeklyEndDate.HasValue && weeklyStartDate.Value.Date <= weeklyEndDate.Value.Date)
+                        {
+                            if (weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
+                            {
+                            <p class="font-20 color-black-100 mb-0">
+                                @weeklyStartDate.Value.ToString("MMMM dd, yyyy")
+                            </p>
+                            }
+                            weeklyStartDate = weeklyStartDate.Value.AddDays(weeklyDurationEvery);
+                        }
+                        break;
+                    case "monthly":
+                        DateTime? monthlyStartDate = Summary.PricingData.DurationStart;
+                        DateTime? monthlyEndDate = Summary.PricingData.DurationEnd;
+                        int monthlyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        int? onDayDate = Summary.PricingData.OnDayDate;
+
+                        if (onDayDate.HasValue)
+                        {
+                            monthlyStartDate = new DateTime(monthlyStartDate.Value.Year, monthlyStartDate.Value.Month, onDayDate.Value);
+                        }
+                        while (monthlyStartDate.HasValue && monthlyEndDate.HasValue && monthlyStartDate.Value.Date <= monthlyEndDate.Value.Date)
+                        {
+                            <p class="font-20 color-black-100 mb-0">
+                                @monthlyStartDate.Value.ToString("MMMM dd, yyyy")
+                                Month Day: @Summary.PricingData.MonthDay |
+                                Month Repeat: @Summary.PricingData.MonthRepeat |
+                                Month Select: @Summary.PricingData.MonthSelection |
+                                Month OnDayDate: @Summary.PricingData.OnDayDate
+                            </p>
+                            monthlyStartDate = monthlyStartDate.Value.AddMonths(monthlyDurationEvery);
+                        }
+                        break;
+                    case "every-weekday":
+                        DateTime? everyWeekDayStartDate = Summary.PricingData.DurationStart;
+                        DateTime? everyWeekDayEndDate = Summary.PricingData.DurationEnd;
+                        List<string> everyWeekDaySelectedDays = Summary.PricingData.WeekString.Split('|').ToList();
+                        int everyWeekDayDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        while (everyWeekDayStartDate.HasValue && everyWeekDayEndDate.HasValue && everyWeekDayStartDate.Value.Date <= everyWeekDayEndDate.Value.Date);
+                        {
+                            if (everyWeekDaySelectedDays.Contains(everyWeekDayStartDate.Value.ToString("ddd").ToUpper()))
+                            {
+                            <p class="font-20 color-black-100 mb-0">
+                                @everyWeekDayStartDate.Value.ToString("MMMM dd, yyyy")
+                            </p>
+                            }
+                            everyWeekDayStartDate = everyWeekDayStartDate.Value.AddDays(everyWeekDayDurationEvery);
+                        }
+                        break;
+                    default:
+                    <p class="font-20 color-black-100 mb-0">
+                        @Summary.PricingData.Recurrences
+                        No recurrences
+                    </p>
+                    break;
+                }
+            </div>  
             <Divider />
             @if(Summary.LocationData.ExperienceType == 1)
             {
@@ -51,7 +124,7 @@
 
     [Parameter]
     public EventCallback OnPrevClick {get; set;}
-
+    
     [Parameter]
     public ComponentSummary Summary {get; set;}
 
@@ -74,7 +147,6 @@
             await OnPrevClick.InvokeAsync();
         }
     }
-
     public Task<bool> FieldValid()
     {
         return Task.Run<bool>(() => true);
