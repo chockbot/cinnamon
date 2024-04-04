@@ -668,7 +668,7 @@
 </section>
 
 @code 
-            {
+{
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -1347,7 +1347,7 @@
         public TimeSpan TimeEnd {get; set;}
     }
 
-    // <!--- Date generation. Refactor this Code
+    // Date generation. Refactor this Code
     private IEnumerable<DateItem> GenerateWeekday(int repeat, DateTime start, DateTime end, 
         TimeSpan timeDuration, TimeSpan timeStart)
     {
@@ -1503,7 +1503,7 @@
                 else {
                     var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
                     generatedDates.Add(new DateItem {
-                        Date = recurringDate.Date,
+                        Date = dateStart.Date,
                         DateStart = dateStart.Date.Add(timeStart),
                         DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
                     });
@@ -1584,5 +1584,5 @@
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
     }
-    // ---!> until here. Date generation. Refactor this Code
+    // until here. Date generation. Refactor this Code
 }

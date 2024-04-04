@@ -428,7 +428,7 @@ public class OteCreateHandler : IOteCreateHandler
                 else {
                     var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
                     generatedDates.Add(new DateItem {
-                        Date = recurringDate.Date,
+                        Date = dateStart.Date,
                         DateStart = dateStart.Date.Add(timeStart),
                         DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
                     });
