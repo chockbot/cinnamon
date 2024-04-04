@@ -68,7 +68,7 @@
                         </Table>
                     </div>
                 </div>
-                <div class="event-section">
+                <div class="event-section mb-3">
                     <div class="event-details-content">
                         <div class="event-content d-flex">
                             <img class="event-image" src="@(activity.Images.Count() > 0 ? activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
@@ -94,13 +94,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <a class="text-capitalize bg-orange-100 text-decoration-none color-white-100 p-2 border-radius-5 my-2 d-inline-block hover-color-white" 
+                        <div class="d-flex align-items-center flex-wrap">
+                            <a class="text-capitalize bg-orange-100 text-decoration-none color-white-100 p-2 border-radius-5 mt-2 d-inline-block hover-color-white shared-link-btns me-3" 
                                     href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
                                     verify tickets here!
                             </a>
                             <Button Disabled="generatingEventSharedLink" Loading="generatingEventSharedLink" 
-                                Clicked="GenerateSharedLink" class="border-1-solid border-color-grey-100 font-16 ms-3">
+                                Clicked="GenerateLinkShowModal" class="border-1-solid border-color-grey-100 font-16 me-3 shared-link-btns mt-2">
                                 <LoadingTemplate>
                                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                                     Getting Event Link...
@@ -108,6 +108,10 @@
                                 <ChildContent>
                                     Share QR scanner link
                                 </ChildContent>
+                            </Button>
+                            <Button Disabled="sharedLinkStatus.UpdatingStatus" Loading="sharedLinkStatus.UpdatingStatus" 
+                                Clicked="() => modalSharelinkDisableEnable?.Show()" class="border-1-solid border-color-grey-100 font-16 me-3 shared-link-btns mt-2">
+                                @sharedLinkStatus.Label
                             </Button>
                         </div>
                     </div>
@@ -263,13 +267,43 @@
     <Modal @ref="modalSharedLink">
         <ModalContent Centered>
             <ModalBody class="py-4">
-                <TextEdit @bind-Text="eventSharedLink" />
+                <TextEdit @bind-Text="eventSharedLink.GeneratedLink" />
                 <div class="d-flex justify-content-center mt-3">
                     <Button Clicked="CloseModalSharedLink" class="me-3 text-capitalize border-1-solid border-color-grey-100">
                         close
                     </Button>
                     <Button Clicked="CopyToClipboard" class="text-capitalize bg-orange-100 color-white-100 hover-color-white">
                         copy link
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalSharelinkDisableEnable">
+        <ModalContent Centered>
+            <ModalHeader class="justify-content-center">
+                <label>@(eventSharedLink.Enable ? "Disable" : "Enable") Event Access</label>
+            </ModalHeader>
+            <ModalBody class="py-4">
+                <p class="text-center">
+                    We will be @(eventSharedLink.Enable ? "disabling" : "enabling") your sharing access to QR scanner link. Are you sure you want to continue?
+                </p>
+                <div class="d-flex justify-content-end">
+                    <Button Clicked="() => modalSharelinkDisableEnable.Close(CloseReason.UserClosing)" 
+                            class="border-1 border-color-grey-100 color-grey-100 border-radius-10 me-2 px-3">
+                        Cancel
+                    </Button>
+                    <Button Disabled="sharedLinkStatus.UpdatingStatus" Loading="sharedLinkStatus.UpdatingStatus" 
+                        Clicked="EnableDisableSharedLink"
+                        class="bg-green-100 color-white-100 border-radius-10 hover-color-white px-3">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Please Wait...
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Confirm
+                        </ChildContent>
                     </Button>
                 </div>
             </ModalBody>
@@ -307,8 +341,10 @@
     public int selectedFilter;
     public bool IsDisplay = false;
 
-    private string eventSharedLink = string.Empty;
+    private SharedLink eventSharedLink = new();
+    private SharedLinkStatus sharedLinkStatus = new();
     private Modal? modalSharedLink;
+    private Modal? modalSharelinkDisableEnable;
     private bool generatingEventSharedLink = false;
 
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
@@ -343,6 +379,8 @@
         await GetTicketList();
         //Get Customer List
         await GetCustomerList(1);
+
+        await GenerateSharedLink();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -591,14 +629,69 @@
             DateId = dateId,
             Handler = Handler
         }, Token);
+        var result = generateLinkRes.Result.Result;
         generatingEventSharedLink = false;
+
         if(!generateLinkRes.Succeeded || generateLinkRes.Result is null || !generateLinkRes.Result.IsSuccess)
         {
             await NotificationService.Error("An error occured when generating event shared link.", "Error");
             return;
         }
 
-        eventSharedLink = generateLinkRes.Result.Result;
+        eventSharedLink = new SharedLink {
+            Enable = result.Enable,
+            GeneratedLink = result.GeneratedLink,
+            Guid = result.Guid,
+            Token = result.Token,
+            Loaded = true
+        };
+
+        sharedLinkStatus.Label = eventSharedLink.Enable switch {
+            true => "Disable event access",
+            _   => "Enable event access"
+        };
+    }
+
+    private async Task UpdateSharedLinkStatus(bool enable)
+    {
+        var updateSharedLinkRes = await activityApiHandler.UpdateSharedLinkStatus(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateSharedLinkStatusArgs {
+            Enable = enable,
+            Guid = eventSharedLink.Guid,
+            Token = eventSharedLink.Token
+        }, Token);
+        var result = updateSharedLinkRes.Result.Result;
+
+        if(!updateSharedLinkRes.Succeeded || updateSharedLinkRes.Result is null || !updateSharedLinkRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured when generating event shared link.", "Error");
+            return;
+        }
+
+        eventSharedLink.Enable = enable;
+    }
+
+    private async Task EnableDisableSharedLink()
+    {
+        sharedLinkStatus.UpdatingStatus = true;
+        bool status = !eventSharedLink.Enable;
+        if(!eventSharedLink.Loaded)
+        {
+            await GenerateSharedLink();
+        }
+        await UpdateSharedLinkStatus(status);
+        sharedLinkStatus.UpdatingStatus = false;
+
+        sharedLinkStatus.Label = eventSharedLink.Enable switch {
+            true => "Disable event access",
+            _   => "Enable event access"
+        };
+
+        await modalSharelinkDisableEnable.Close(CloseReason.None);
+    }
+
+    private async Task GenerateLinkShowModal()
+    {
+        await GenerateSharedLink();
         await modalSharedLink?.Show();
     }
 
@@ -609,7 +702,22 @@
 
     private async Task CopyToClipboard()
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.clipboardCopy.copyToClipboard", eventSharedLink);
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.clipboardCopy.copyToClipboard", eventSharedLink.GeneratedLink);
         await NotificationService.Info("Event scanner link copied to clipboard.", "Copied!");
+    }
+
+    private record SharedLink 
+    {
+        public bool Enable {get; set;} = false;
+        public string GeneratedLink {get; set;}
+        public string Guid {get; set;}
+        public string Token {get; set;}
+        public bool Loaded {get; set;}
+    }
+
+    private record SharedLinkStatus 
+    {
+        public bool UpdatingStatus {get; set;}
+        public string Label {get; set;} = "Disable event access";
     }
 }

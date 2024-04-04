@@ -47,6 +47,7 @@ public class GetActivityResult
     public int NumberOfTickets { get; set; }
     public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public bool IsComingSoon {get; set;}
+    public bool ForceDisable {get; set;}
 
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}

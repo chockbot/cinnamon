@@ -3,23 +3,21 @@
         var img = new Image();
         img.src = 'data:' + fileType + ';base64,' + base64Content;
         img.onload = function () {
-            var printWindow = window.open('', '_blank'); // Open in a new tab
-            printWindow.document.open();
-            printWindow.document.write('<html><head><style>@page { size: A4; margin: 0; }</style><title>Print Image</title></head><body>');
-            printWindow.document.write('<img src="' + img.src + '" style="max-width: 100%; height: auto;" />');
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            var iframeDoc = iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write('<html><head><style>@page { size: A4; margin: 0; }</style><title>Print Image</title></head><body>');
+            iframeDoc.write('<img src="' + img.src + '" style="max-width: 100%; height: auto;" />');
+            iframeDoc.write('</body></html>');
+            iframeDoc.close();
 
-            // Add event listener to close print window if print dialog is canceled
-            window.addEventListener('beforeprint', function () {
-                printWindow.close();
-            });
-            // Reload the page after print dialog is closed or canceled
-            window.addEventListener('afterprint', function () {
-                location.reload(true);
-            });
+            // Print the iframe content
+            iframe.contentWindow.print();
 
-            printWindow.print();
+            // Remove the iframe after printing
+            document.body.removeChild(iframe);
         };
     } else {
         var binaryContent = atob(base64Content);

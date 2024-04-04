@@ -11,4 +11,5 @@ public class File
     public string Name { get; set; }
     public string Type { get; set; }
     public string ThumbnailLink { get; set; }
+    public DateTime?  ModifiedDate { get; set; }
 }

@@ -393,7 +393,8 @@ public class ActivityRepository : IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
-        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false)
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false,
+        bool? forceDisable = false)
     {
         try
         {
@@ -414,6 +415,7 @@ public class ActivityRepository : IActivityRepository
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (forceDisable.HasValue ? a.ForceDisable == forceDisable.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
                         (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
@@ -450,7 +452,8 @@ public class ActivityRepository : IActivityRepository
                     IsDeactivated          = a.IsDeactivated,
                     Status                 = (Enums.ActivityStatus)a.Status,
                     ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId,
-                    IsComingSoon           = a.IsComingSoon
+                    IsComingSoon           = a.IsComingSoon,
+                    ForceDisable           = a.ForceDisable
                 };
 
                 // address fields
@@ -614,20 +617,21 @@ public class ActivityRepository : IActivityRepository
             {
                 return new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
-                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    MapDetails = a.MapDetails,
-                    Handler = a.Handler,
-                    IsComingSoon = a.IsComingSoon
+                    Id                     = a.Id,
+                    SubTitle               = a.Subtitle,
+                    Title                  = a.Title,
+                    Description            = a.Description,
+                    Price                  = a.Price,
+                    Remarks                = a.Remarks,
+                    IsPublished            = a.IsPublished,
+                    ExperienceCategoryId   = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId          = a.SubCategoryId ?? 0,
+                    CreatedBy              = a.CreatedBy,
+                    ExperienceTypeId       = a.ExperienceTypeId,
+                    MapDetails             = a.MapDetails,
+                    Handler                = a.Handler,
+                    IsComingSoon           = a.IsComingSoon,
+                    ExperienceCreationType = (Enums.ExperienceCreationType)a.ExperienceCreationTypeId
                 };
             });
 
@@ -685,7 +689,8 @@ public class ActivityRepository : IActivityRepository
                 Status = (Enums.ActivityStatus)activity.Status,
                 ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
                 IsComingSoon = activity.IsComingSoon,
-                VideoLink = activity.VideoLink
+                VideoLink = activity.VideoLink,
+                ForceDisable = activity.ForceDisable
             };
 
             // address fields
@@ -1691,7 +1696,7 @@ public class ActivityRepository : IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides)
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1754,6 +1759,16 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
+            var onlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s => {
+                return new OteOnlineEvent {
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                    OteSchedule               = schedule,
+                };
+            }).ToList(): null;
+
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate {
                     Date = d.Date.SetKindUtc(),
@@ -1794,7 +1809,7 @@ public class ActivityRepository : IActivityRepository
             }
 
             var createRes = await this.dataStore.Activity.CreateOteActivity(activity, activityDescription, address, 
-                schedule, pricingsGroup, dates, overrides);
+                schedule, pricingsGroup, dates, overrides, onlineEvent);
             if(!createRes.Succeeded || createRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(createRes.Message), createRes.Message);
@@ -1833,7 +1848,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon)
+        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1881,6 +1896,16 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList();
 
+            schedule.OteOnlineEvent = oteOnlineEventsDTOs is not null ? oteOnlineEventsDTOs.Select(s =>{
+                return new OteOnlineEvent {
+                    Id                        = s.Id,
+                    Title                     = s.Title,
+                    Description               = s.Description,
+                    TicketRestriction         = s.TicketRestriction,
+                    Videolink                 = s.Videolink,
+                };
+            }).ToList() : null;
+
             var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
@@ -1916,17 +1941,16 @@ public class ActivityRepository : IActivityRepository
     
     public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, 
-        bool includeProvider = false, bool includeImages = false)
+        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false)
     {
         try
         {
             var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, 
-                includeSchedule, includePricing, includeProvider, includeImages);
+                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
-
             var model = mapper.Map<OteActivityDTO>(result.Result);
             return AppResult<OteActivityDTO>.CreateSucceeded(model, "Sucessfully find one time event");
         }
@@ -2045,6 +2069,42 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteActivityPerDateDTO>>.CreateFailed(ex, "An error occured when getting customer ote.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents()
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetActivitiesNeedToDisable();
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ForceDisableActivities(activityIds);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result, "Successfully get expired events.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
         }
     }
 }

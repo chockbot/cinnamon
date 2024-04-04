@@ -20,7 +20,8 @@ public interface IActivityRepository
         int experienceCategoryId, string searchValue, bool? isDeactivated, Enums.ActivityStatus? status,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
-        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false);
+        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, 
+        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false, bool? forceDisable = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
@@ -54,19 +55,21 @@ public interface IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
-        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides);
+        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon);
+        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
-        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false);
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false);
     
     Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets);
 
     Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id);
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
+    Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents();
+    Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
 }

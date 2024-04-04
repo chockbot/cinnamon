@@ -32,10 +32,12 @@ public class OteActivityDTO
     public int Slots { get; set; }
     public int Sold { get; set; }
     public int Available { get; set; }
+    public bool ForceDisable {get; set;}
 
     public IEnumerable<OteSchedulePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImageDTO> Images {get; set;}
     public CustomerDTO Owner {get; set;}
     public IEnumerable<OteScheduleDateDTO> OteDates {get; set;}
+    public IEnumerable<OteOnlineEventsDTO> OteOnlineEvent { get; set;}
     public OteScheduleDTO OteSchedule {get; set;}
 }

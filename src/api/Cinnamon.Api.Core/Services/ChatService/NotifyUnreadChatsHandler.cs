@@ -34,12 +34,42 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
                     new ApplicationException(unreadMessagesRes.Result?.ErrorInfo?.Message), unreadMessagesRes.Message);
             }
 
-            var currentDate = DateTime.Now.AddHours(-1);
-            var unreadMessageInHour = unreadMessagesRes.Result.Result.Where(m => currentDate > m.ChatDate);
+            var unreadMessages = unreadMessagesRes.Result.Result;
 
-            for(int i =0; i < unreadMessageInHour.Count(); i++)
+            for(int i =0; i < unreadMessages.Count(); i++)
             {
-                var message = unreadMessageInHour.ElementAt(i);
+                var message = unreadMessages.ElementAt(i);
+                string repeated = "first";
+
+                // skip messages less than 1hr
+                if(string.IsNullOrEmpty(message.Repeated))
+                {
+                    var currentDate = DateTime.Now.AddHours(-1);
+                    if(currentDate < message.ChatDate) continue;
+                }
+
+                // skip messages less than 24 hrs
+                if(message.Repeated.Equals("first", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    var currentDate = DateTime.Now.AddHours(-24);
+                    if(currentDate < message.ChatDate) continue;
+
+                    repeated = "second";
+                }
+
+                // skip message less than 2 days.
+                if(message.Repeated.Equals("second", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    var currentDate = DateTime.Now.AddDays(-2);
+                    if(currentDate < message.ChatDate) continue;
+
+                    repeated = "third";
+                }
+
+                if(message.Repeated.Equals("third", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    continue;
+                }
 
                 var notifyRes = await chatUnreadNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ChatUnreadNotificationArgs {
                     Emails = new List<string> {message.CustomerEmail}
@@ -54,7 +84,8 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
                     ChatHistoryId = message.ChatHistoryId,
                     CustomerEmail = message.CustomerEmail,
                     FromUserId = message.FromUserId,
-                    ToUserId = message.ToUserId
+                    ToUserId = message.ToUserId,
+                    Repeated = repeated
                 });
             }
 

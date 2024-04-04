@@ -218,12 +218,12 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             {
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
-
+            string Location = oteActivity.ExperienceTypeId == 2 ? "Online" : !string.IsNullOrEmpty(oteActivity.RegionName) ? $"{oteActivity.HouseNo} {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}": oteActivity.PinnedLocation;
             var notifyEmailRes = await oteCustomerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.OteCustomerPayedNotificationArgs {
                 Email = customer.Email,
                 CustomerName = customer.FirstName,
                 EventDate = oteDate.DateStart,
-                EventLocation = $"{oteActivity.HouseNo} {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}",
+                EventLocation = Location,
                 EventName = oteActivity.EventName,
                 HandlingFee = deserializedPayload.Fees.ServiceFee,
                 PaymentMethod = deserializedPayload.PaymentMethod,

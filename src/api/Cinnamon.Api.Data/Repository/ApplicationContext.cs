@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Extensions;
+using System.Security.AccessControl;
 
 namespace Cinnamon.Api.Data.Repository;
 
@@ -79,7 +80,12 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteDate> OteDates {get; set;}
     public DbSet<OteSchedulePricingGroup> OteSchedulePricingGroups {get; set;}
     public DbSet<OteDateOverride> OteDateOverrides {get; set;}
+    public DbSet<Announcement> Announcements {get; set;}
+
+    
     public DbSet<OteSharedLink> OteSharedLinks {get; set;}
+    
+    public DbSet<OteOnlineEvent> OteOnlineEvent { get; set;}
     
     // new disbursement flow
     public DbSet<Disbursement> Disbursements {get; set;}
@@ -157,6 +163,9 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Activity>()
             .HasIndex("PurchaseOrderCount","IsPublished","IsDeactivated", "IsNew");
+        
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.ForceDisable);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()
@@ -294,6 +303,7 @@ public class ApplicationContext : IdentityDbContext
         // for ote schedule
         modelBuilder.Entity<OteSchedule>().HasOne(o => o.Activity).WithOne(a => a.OteSchedule);
         modelBuilder.Entity<OteSchedulePricing>().HasOne(o => o.OteSchedule).WithMany(o => o.OteSchedulePricing);
+        modelBuilder.Entity<OteOnlineEvent>().HasOne(o => o.OteSchedule).WithMany(o => o.OteOnlineEvent);
 
         // for ote tickets
         modelBuilder.Entity<OteTicket>()
@@ -358,6 +368,10 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic content
         modelBuilder.Entity<DynamicContent>()
             .HasIndex(d => d.Identifier);
+        // announcements
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Status);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

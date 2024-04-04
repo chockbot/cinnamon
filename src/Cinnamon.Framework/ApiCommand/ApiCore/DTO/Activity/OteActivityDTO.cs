@@ -20,6 +20,7 @@ public class OteActivityDTO
     public string PostalCode {get; set;}
     public string PinnedLocation {get; set;}
     public bool IsPublished {get; set;}
+    public bool ForceDisable {get; set;}
     public string Handler {get; set;}
     public DateTime ScheduleFrom {get; set;}
     public DateTime ScheduleTo {get; set;}
@@ -32,6 +33,7 @@ public class OteActivityDTO
     public IEnumerable<OtePricingDTO> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<OteDateDTO> OteDates {get; set;}
+    public IEnumerable<OteOnlineEventDTO> OnlineEvent { get; set; }
     public OteScheduleDTO OteSchedule {get; set;}
     public bool IsComingSoon {get; set;}
 }

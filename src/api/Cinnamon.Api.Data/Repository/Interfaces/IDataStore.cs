@@ -47,6 +47,7 @@ public interface IDataStore
     ITokenGenerated TokenGenerated {get;}
     IAddOns AddOns { get; }
     IOteDate OteDate {get;}
+    IOteOnlineEvent OteOnlineEvent { get; }
     IOteDateOverride OteDateOverride {get;}
     IOteSharedLink OteSharedLink {get;}
     IDisbursement Disbursement {get;}
@@ -56,6 +57,7 @@ public interface IDataStore
     IDisbursementBulkLog DisbursementBulkLog {get;}
     IDisbursementManual DisbursementManual {get;}
     IChatUnreadNotification ChatUnreadNotification {get;}
+    IAnnouncement Announcement {get;}
     IDynamicContent DynamicContent {get;}
     
     Task EnsureMigrate();

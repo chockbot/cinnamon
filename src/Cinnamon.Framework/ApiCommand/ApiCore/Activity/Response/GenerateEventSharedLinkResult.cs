@@ -1,6 +1,6 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 
-public class GenerateEventSharedLinkResult : AbstractModel<string>
+public class GenerateEventSharedLinkResult : AbstractModel<SharedLinkDTO>
 {
 }

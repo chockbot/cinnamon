@@ -151,4 +151,26 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<OteGetPurchaseOrderResult>.CreateFailed(ex, "An error occurred when getting purchase order api");
         }
     }
+
+    public async Task<AppResult<TransactionRedirectionResult>> TransactionRedirection(TransactionRedirectionArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Transaction/TransactionRedirection")
+                .SetQueryParams(args)
+                .GetJsonAsync<TransactionRedirectionResult>();
+
+            return AppResult<TransactionRedirectionResult>.CreateSucceeded(result, "Successfully getting transaction redirection.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<TransactionRedirectionResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TransactionRedirectionResult>.CreateFailed(ex, "An error occurred when getting transaction redirection.");
+        }
+    }
 }

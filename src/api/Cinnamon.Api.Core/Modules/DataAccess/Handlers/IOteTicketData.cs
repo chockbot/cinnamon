@@ -14,4 +14,5 @@ public interface IOteTicketData
     Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args);
     Task<AppResult<CreateSharedLinkResult>> CreateSharedLink(CreateSharedLinkArgs args);
     Task<AppResult<GetSharedLinkResult>> GetSharedLink(GetSharedLinkArgs args);
+    Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args);
 }
