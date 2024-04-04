@@ -26,6 +26,7 @@ public class Activity : BaseEntity
     public int ExperienceCreationTypeId { get; set; }
     public bool IsComingSoon {get; set;}
     public string VideoLink { get; set; }
+    public bool ForceDisable {get; set;}
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}

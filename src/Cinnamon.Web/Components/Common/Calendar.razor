@@ -133,6 +133,10 @@ should have Available dates, Selected Dates, *@
 
     private async Task OnDayClick(CalendarItem item)
     {
+        if (item.StrikeOut) // Check if the date is struck out
+        {
+            return; // Exit early if the date is struck out
+        }
         if(!ViewOnly)
         {
             item.Selected = !item.Selected;

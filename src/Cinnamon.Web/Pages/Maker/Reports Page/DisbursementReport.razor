@@ -286,7 +286,7 @@
         if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
             Pagination = result.Result.Pagination;
-            FilteredDisbursements = result.Result.Result.OrderByDescending(s => s.PayoutDate).ToList();
+            FilteredDisbursements = result.Result.Result.ToList();
         }
         IsFetchingTransactions = false;
     }

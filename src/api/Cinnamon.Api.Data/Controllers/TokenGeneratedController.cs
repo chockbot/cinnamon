@@ -57,4 +57,25 @@ public class TokenGeneratedController : ControllerBase
             return new JsonResult(new GetTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [HttpPost]
+    [Route("{id}")]
+    [ProducesResponseType(typeof(UpdateTokenResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateToken([FromBody] UpdateTokenArgs args, int id)
+    {
+        try
+        {
+            var result = await tokenGeneratedRepository.UpdateTokenGenearted(id, args.TokenType, args.Guid, args.Token, args.Payload);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateTokenResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

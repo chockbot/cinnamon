@@ -94,7 +94,7 @@ public class ActivityController : ControllerBase
                 args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0 ||
                 !string.IsNullOrEmpty(args.LikeHandler) || args.IncludeCustomer.HasValue || args.IncludeExperienceTypes.HasValue ||
                 args.IncludeExperienceCategories.HasValue || args.IncludeSubCategories.HasValue || args.IncludeStudents.HasValue || 
-                args.IsDeactivated.HasValue || args.IncludeTickets.HasValue;
+                args.IsDeactivated.HasValue || args.IncludeTickets.HasValue || args.ForceDisable.HasValue;
             
             var includeAddress = args.IncludeAddress ?? false;
 
@@ -117,7 +117,7 @@ public class ActivityController : ControllerBase
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, 
-                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false) :
+                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false, args.ForceDisable) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -411,6 +411,15 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var onlineEvent = args.OnlineEvents is not null? args.OnlineEvents.Select(e => {
+                return new OteOnlineEventsDTO {
+                    Title                     = e.Title,
+                    Description               = e.Description,
+                    Videolink                 = e.VideoLink,
+                    TicketRestriction         = e.TicketRestriction,
+                };
+            }).ToList() : null;
+
             var dates = args.Dates.Select(d => {
                 return new OteScheduleDateDTO {
                     Date = d.Date,
@@ -434,7 +443,7 @@ public class ActivityController : ControllerBase
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides);
+                dateOverrides, onlineEvent);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -473,12 +482,22 @@ public class ActivityController : ControllerBase
                 };
             }).ToList();
 
+            var onlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(u => {
+                return new OteOnlineEventsDTO {
+                    Id                        = u.Id,
+                    Description               = u.Description,
+                    Title                     = u.Title,
+                    TicketRestriction         = u.TicketRestriction,
+                    Videolink                 = u.VideoLink, 
+                };
+            }).ToList() : null;
+
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
                 args.Activity.BarangayCode ?? string.Empty, args.Activity.BarangayName ?? string.Empty,
                 args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
-                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon);
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,onlineEvents);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -506,7 +525,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
-                args.IncludeSchedule ?? false, args.IncludePricing ?? false, args.IncludeProvider ?? false, args.IncludeImages ?? false);
+                args.IncludeSchedule ?? false, args.IncludePricing ?? false, args.IncludeProvider ?? false, args.IncludeImages ?? false, args.IncludeOnlineEvents ?? false);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -609,6 +628,48 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OtePerDateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ExpiredEvents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ExpiredEventsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExpiredEvents()
+    {
+        try
+        {
+            var result = await activityRepository.ExpiredEvents();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ExpiredEventsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExpiredEventsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ForceDisableActivities")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ForceDisableActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForceDisableActivities([FromBody] ForceDisableActivitiesArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.ForceDisableActivities(args.Ids);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ForceDisableActivitiesResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

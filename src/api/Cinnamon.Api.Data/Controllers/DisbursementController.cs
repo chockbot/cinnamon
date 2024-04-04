@@ -262,16 +262,16 @@ public class DisbursementController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
-                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty, args.FilterValue ?? string.Empty, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
-                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, string.Empty, string.Empty, null, null);
+                await disbursementRepository.GetDisbursementByProvider(args.PayoutString, args.ProviderId, args.FilterBy ?? string.Empty, args.FilterValue ?? string.Empty, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await disbursementRepository.GetDisbursementByProvider(args.PayoutString, args.ProviderId, string.Empty, string.Empty, null, null);
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
-                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, args.FilterBy ?? string.Empty , args.FilterValue ?? string.Empty, null, null) :
-                await disbursementRepository.GetDisbursementByProvider(args.ProviderId, string.Empty, string.Empty, null, null);
+                await disbursementRepository.GetDisbursementByProvider(args.PayoutString, args.ProviderId, args.FilterBy ?? string.Empty , args.FilterValue ?? string.Empty, null, null) :
+                await disbursementRepository.GetDisbursementByProvider(args.PayoutString, args.ProviderId, string.Empty, string.Empty, null, null);
             if (!all.Succeeded || all.Result == null)
             {
                 return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = all.Message } });

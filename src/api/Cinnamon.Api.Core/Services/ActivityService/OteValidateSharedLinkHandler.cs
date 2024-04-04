@@ -54,6 +54,18 @@ public class OteValidateSharedLinkHandler : IOteValidateSharedLinkHandler
             }
             var activity = activityRes.Result;
 
+            if(activity.ForceDisable) 
+            {
+                return AppResult<OteValidateSharedLinkResult>.CreateFailed(
+                    new ApplicationException("Event already expired."), "Event already expired.");
+            }
+
+            if(!sharedLink.Enable)
+            {
+                return AppResult<OteValidateSharedLinkResult>.CreateFailed(
+                    new ApplicationException("Shared link expired or disabled."), "Shared link expired or disabled.");
+            }
+
             return AppResult<OteValidateSharedLinkResult>.CreateSucceeded(new OteValidateSharedLinkResult {
                 EventTitle = activity.Title,
                 Id = activity.Id

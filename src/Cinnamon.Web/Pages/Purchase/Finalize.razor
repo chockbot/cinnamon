@@ -1,0 +1,31 @@
+@page "/transaction/finalize"
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject ITransactionApiHandler transactionApiHandler;
+@inject NavigationManager NavigationManager
+
+@code 
+{
+    [Parameter, SupplyParameterFromQuery]
+    public string Guid {get; set;}
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token {get; set;}
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Delay(3500);
+
+        var redirectionRes = await transactionApiHandler.TransactionRedirection(new Framework.ApiCommand.ApiCore.Transaction.Request.TransactionRedirectionArgs {
+            Guid = Guid,
+            Token = Token
+        });
+        if(!redirectionRes.Succeeded || redirectionRes.Result is null || !redirectionRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("not-found");
+            return;
+        }
+        var redirect = redirectionRes.Result.Result;
+
+        NavigationManager.NavigateTo(redirect);
+    }
+}

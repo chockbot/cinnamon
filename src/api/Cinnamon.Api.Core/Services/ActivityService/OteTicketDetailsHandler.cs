@@ -85,7 +85,8 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 IncludeAddress = true,
                 IncludeDescription = true,
                 IncludeImages = true,
-                IncludeSchedule = true
+                IncludeSchedule = true,
+                IncludeOnlineEvent = true
             });
             if(!oteActivityRes.Succeeded || oteActivityRes.Result is null)
             {
@@ -115,7 +116,6 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 return AppResult<OteTicketDetailsResult>.CreateFailed(new ApplicationException(oteDateRes.Error?.Description), oteDateRes.Message);
             }
             var oteDate = oteDateRes.Result.Result;
-
             var imageSrc = oteActivity.Images.OrderBy(i => i.Order).ThenBy(i => i.Id).First().ImageLocation;
             var location = oteActivity.ExperienceTypeId == 2 ? "Online" : string.IsNullOrEmpty(oteActivity.PinnedLocation) ? $"{oteActivity.HouseNo}, {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}" : oteActivity.PinnedLocation;
             var result = new OteTicketDetailsResult {
@@ -123,11 +123,20 @@ public class OteTicketDetailsHandler : IOteTicketDetailsHandler
                 EventLocation = location,
                 EventName = oteActivity.EventName,
                 ImageSrc = imageSrc,
+                EventDescription = oteActivity.Description,
+                ProviderId = oteActivity.ProviderId,
                 Tickets = tickets.Select(t => {
+                    var onlineEvent = oteActivity.OnlineEvent?.FirstOrDefault(a => a.TicketRestriction == t.Title);
+                    if(onlineEvent == null)
+                    {
+                        onlineEvent = oteActivity.OnlineEvent?.FirstOrDefault(a => a.TicketRestriction == "1");
+                    }
                     return new OteTicketDetailsResult.Ticket {
                         Id = t.Id,
                         Name = t.Title,
-                        QRCodeData = t.QRImageData
+                        QRCodeData = t.QRImageData,
+                        VideoLink = onlineEvent?.Videolink,
+                        LinkTitle = onlineEvent?.Title,
                     };
                 })
             };
