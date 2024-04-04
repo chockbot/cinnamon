@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.OteActivity;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
@@ -115,6 +116,7 @@
     private int accountId = 0;
     private int oteId = 0;
     private int summaryIndex = 0;
+    private int ticketSold { get; set; } = 0;
 
     protected override void OnInitialized()
     {
@@ -419,11 +421,12 @@
 
     private async Task NextClick()
     {
-        
+
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
         if(valid && field is not null)
         {
+            if(field.HasNext)
             if(field.HasNext)
             {
                 LoadSidebarItems();
@@ -637,6 +640,7 @@
             }
 
             await NotificationService.Success("Success! You updated an activity", "Success");
+            await NotificationService.Success("Success! You updated an activity", "Success");
 
             await Task.Delay(1000);
 
@@ -707,7 +711,7 @@
             WeekString            = ote.OteSchedule.SelectedDays,
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
-            ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
+            ItemPrices = ote.Pricings.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
@@ -717,7 +721,7 @@
                     Name = p.Name,
                     TicketSold = p.TicketSold
                 };
-            }).ToList()
+            }).ToList(),
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {

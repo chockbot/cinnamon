@@ -329,12 +329,6 @@
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
                         <div class="accordion-body bg-white-200">
                             <div class="item-form-body">
-                                @if (item.TicketSold != 0)
-                                {
-                                    <p class="font-16 color-red-100 text-justify">
-                                        Note: You cannot delete this ticket because there @((item.TicketSold != 1) ? "are" : "is") @item.TicketSold ticket@(item.TicketSold != 1 ? "s" : "") sold.
-                                    </p>
-                                }
                                 <div class="col-12 d-flex justify-content-end">
                                     <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="item.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(item)">
                                         <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
@@ -442,17 +436,15 @@
                 <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
             </h3>
             <p class="font-16 color-grey-100 text-justify">
-                Add your price range or your admission categories for every budget. From affordable offers to more premium experience. 
-                Fill up prices and max slots for every category. 
+                Create your event pricing with essential details, ensuring simplicity and clarity for organizers and attendees.
+            </p>
+            <p class="font-16 color-grey-100 text-justify">
+                Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the 
+                ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be 
+                deleted.
             </p>
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
-            @if (modelPricing.TicketSold != 0)
-            {
-                <p class="font-16 color-red-100 text-justify">
-                    Note: You cannot delete this ticket because there @((modelPricing.TicketSold != 1) ? "are" : "is") @modelPricing.TicketSold ticket@(modelPricing.TicketSold != 1 ? "s" : "") sold.
-                </p>
-            }
             <div class="col-12 d-flex justify-content-end">
                 <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled = "modelPricing.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(modelPricing)">
                     <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
@@ -743,20 +735,6 @@
     private Calendar? calendar {get; set;}
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-
-        }
-        else
-        {
-            if (existingList.Pricings.Count == 0)
-            {
-                AddMoreTicketPrice();
-            }
-        }
-    }
     private async Task NextClick()
     {
         if(OnNextClick.HasDelegate)
@@ -870,7 +848,7 @@
             var last = existingList.Pricings.LastOrDefault();
             if(last is not null)
             {
-                existingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
+                modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
             }
             modelPricing = last;
         }
@@ -986,7 +964,8 @@
                     MaxSlots    = item.MaxSlots,
                     Price       = item.Price,
                     Name        = item.Name,
-                    TicketSold  = item.TicketSold
+                    TicketSold  = item.TicketSold,
+                    IsNew       = false,
                 });
             }
             modelPricing.AbsorbFees  = last.AbsorbFees;
@@ -996,6 +975,7 @@
             modelPricing.Price       = last.Price;
             modelPricing.Name        = last.Name;
             modelPricing.TicketSold  = last.TicketSold;
+            modelPricing.IsNew       = false;
         }
 
         StateHasChanged();
@@ -1236,7 +1216,6 @@
         public string? WeekString {get; set;}
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
-
         public class ItemPrice 
         {
             public int Id {get; set;}
