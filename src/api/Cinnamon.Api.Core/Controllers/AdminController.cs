@@ -29,10 +29,10 @@ namespace Cinnamon.Api.Core.Controllers
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
-            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
-            IManualDisbursement manualDisbursement, ICreateAnnouncementHandler createAnnouncementHandler,
+            ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
             IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
-            IDeleteAnnouncementHandler deleteAnnouncementHandler, IUpdateDynamicContentHandler updateDynamicContentHandler)
+            IDeleteAnnouncementHandler deleteAnnouncementHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
+            IManualDisbursement manualDisbursement, IUpdateDynamicContentHandler updateDynamicContentHandler)
         {
             _logger = logger;
 

@@ -117,9 +117,9 @@ public class DataStore : IDataStore
 
     public IChatUnreadNotification ChatUnreadNotification => new ChatUnreadNotificationEntity(applicationContext);
 
-    public IAnnouncement Announcement => new AnnouncementEntity(applicationContext);
-
     public IDynamicContent DynamicContent => new DynamicContentEntity(applicationContext);
+
+    public IAnnouncement Announcement => new AnnouncementEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {

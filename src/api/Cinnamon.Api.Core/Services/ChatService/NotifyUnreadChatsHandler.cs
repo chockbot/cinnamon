@@ -36,18 +36,10 @@ public class NotifyUnreadChatsHandler : INotifyUnreadChatsHandler
 
             var unreadMessages = unreadMessagesRes.Result.Result;
 
-            // need to remove this code in production
-            string[] testEmails = new string[] {"grand11.dexter@gmail.com", "drew.pacis@gmail.com", "dechalico.dev@gmail.com"};
-
             for(int i =0; i < unreadMessages.Count(); i++)
             {
                 var message = unreadMessages.ElementAt(i);
                 string repeated = "first";
-
-                if(!testEmails.Any(e => e.Equals(message.CustomerEmail, StringComparison.CurrentCultureIgnoreCase)))
-                {
-                    continue;
-                }
 
                 // skip messages less than 1hr
                 if(string.IsNullOrEmpty(message.Repeated))
