@@ -695,7 +695,7 @@
 </ConfirmDialog>
 
 @code 
-    {
+            {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -704,6 +704,9 @@
 
     [Parameter]
     public string Token { get; set; }
+
+    [Parameter]
+    public OteOnlineEvent.ModelData OnlineEventData { get; set; }
 
     private Schedule modelSchedule = new();
     private Pricing modelPricing = new();
@@ -1660,6 +1663,15 @@
                     }, Token);
                 if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
                 {
+                    //delete created online event if meron
+                    var onlineTicket = OnlineEventData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
+                    if (onlineTicket is not null)
+                    {
+                        var deleteTicketOnline = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
+                        {
+                            Id = onlineTicket.Id
+                        }, Token);
+                    }
                     existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
                     var last = existingList.Pricings.LastOrDefault();
                     if (last is not null)

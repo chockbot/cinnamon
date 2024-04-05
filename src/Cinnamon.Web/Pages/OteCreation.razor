@@ -427,7 +427,6 @@
         if(valid && field is not null)
         {
             if(field.HasNext)
-            if(field.HasNext)
             {
                 LoadSidebarItems();
                 if (currentIndex > 2 && oteLocation != null)
@@ -695,7 +694,6 @@
             RegionCode = ote.RegionCode,
             RegionName = ote.RegionName
         });
-
         var options = ote.OteSchedule.ExtraOptions.Split("|");
         await otePricing?.SetState(new OtePricing.ModelData {
             DateFrom              = ote.ScheduleFrom,
@@ -711,7 +709,9 @@
             WeekString            = ote.OteSchedule.SelectedDays,
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
-            ItemPrices = ote.Pricings.Select(p => {
+            ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
+                 int totalTicketsSold = ote.Pricings
+                .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
@@ -719,7 +719,7 @@
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
-                    TicketSold = p.TicketSold
+                    TicketSold = totalTicketsSold
                 };
             }).ToList(),
         });

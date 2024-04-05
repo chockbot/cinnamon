@@ -2111,34 +2111,34 @@ public class ActivityRepository : IActivityRepository
     {
         try
         {
-            var oteTicketResult = await dataStore.OteSchedulePricing.GetByIdAsync(Id);
-            var oteTicket = oteTicketResult.Result;
-            if (oteTicket == null)
-            {
-                return AppResult<bool>.CreateFailed(new ApplicationException("No ticket to delete"), "No ticket to delete");
-            }
-
-            var oteGroupTicketResult = await dataStore.OteSchedulePricingGroup.GetByIdAsync(oteTicket.OteSchedulePricingGroupId ?? 0);
+            var oteGroupTicketResult = await dataStore.OteSchedulePricingGroup.GetByIdAsync(Id);
             var oteGroupTicket = oteGroupTicketResult.Result;
+
             if (oteGroupTicket == null)
             {
-                return AppResult<bool>.CreateFailed(new ApplicationException("Associated group ticket not found"), "Associated group ticket not found");
+                return AppResult<bool>.CreateFailed(new ApplicationException("No group ticket found with the provided ID"), "No group ticket found with the provided ID");
             }
+            var oteTicketResult = await dataStore.OteSchedulePricing.GetPricings(oteGroupTicket.Id);
+            var oteTicket = oteTicketResult.Result;
 
-            var result = await dataStore.OteSchedulePricing.Remove(oteTicket);
-            var result1 = await dataStore.OteSchedulePricingGroup.Remove(oteGroupTicket);
 
-            if (!result.Succeeded || !result1.Succeeded)
+            if (oteTicket == null || !oteTicket.Any())
             {
-                return AppResult<bool>.CreateFailed(new ApplicationException("Failed to delete ticket or associated group"), "Failed to delete ticket or associated group");
+                return AppResult<bool>.CreateFailed(new ApplicationException("No associated tickets found for the group ticket"), "No associated tickets found for the group ticket");
+            }
+            var associatedTicketsRemovalResult = await dataStore.OteSchedulePricing.RemoveRange(oteTicket);
+            var groupTicketRemovalResult = await dataStore.OteSchedulePricingGroup.Remove(oteGroupTicket);
+
+            if (!groupTicketRemovalResult.Succeeded || !associatedTicketsRemovalResult.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Failed to delete group ticket or associated tickets"), "Failed to delete group ticket or associated tickets");
             }
 
-            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted ticket and associated group");
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted group ticket and associated tickets");
         }
         catch (Exception ex)
         {
-            return AppResult<bool>.CreateFailed(ex, "An error occurred in deleting ticket");
+            return AppResult<bool>.CreateFailed(ex, "An error occurred while deleting ticket and associated tickets");
         }
     }
-
 }
