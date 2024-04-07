@@ -135,4 +135,6 @@ public class SystemApiHandler: ISystemApiHandler
             return AppResult<GetPrivacyPoliciesResult>.CreateFailed(ex, "An error occured when getting event policies content.");
         }
     }
+
+    
 }
