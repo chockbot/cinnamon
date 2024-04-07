@@ -340,7 +340,7 @@
                                             ticket name
                                         </FieldLabel>
                                         <FieldBody>
-                                            <TextEdit Disabled="item.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name" >
+                                            <TextEdit ReadOnly="item.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name" >
                                                 <Feedback>
                                                     <ValidationError />
                                                 </Feedback>
@@ -459,7 +459,7 @@
                         ticket name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit Disabled="modelPricing.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
+                        <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
