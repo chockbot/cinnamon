@@ -356,7 +356,10 @@
         sidebarImages.Add("images/ote/event-preview.svg");
         sidebarImages.Add("images/ote/location-preview.svg");
         sidebarImages.Add("images/ote/pricing-preview.svg");
-        sidebarImages.Add("images/ote/pricing-preview.svg");
+        if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
+        {
+            sidebarImages.Add("images/ote/online-preview.svg");
+        }
         sidebarImages.Add("images/ote/gallery-preview.svg");
     }
 
@@ -436,6 +439,8 @@
         {
             if(field.HasNext)
             {
+                sidebarImages.Clear();
+                LoadImages();
                 LoadSidebarItems();
                 if (currentIndex > 2 && oteLocation != null)
                 {
