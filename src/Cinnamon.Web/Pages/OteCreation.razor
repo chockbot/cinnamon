@@ -423,10 +423,6 @@
 
     private async Task NextClick()
     {
-        if (summaryIndex == 5 && currentIndex == 3)
-        {
-            onlineEventSummary = GetOnlineSummary();
-        }
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
         if(valid && field is not null)
