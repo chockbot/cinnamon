@@ -446,9 +446,12 @@
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
             <div class="col-12 d-flex justify-content-end">
-                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled = "modelPricing.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(modelPricing)">
-                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
-                </Button>
+                @if(DisplayDelete)
+                {
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="modelPricing.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(modelPricing)">
+                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                    </Button>
+                }
             </div>
             <Validation>
                 <Field class="mb-4">
@@ -683,6 +686,23 @@
             </ModalFooter>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalError">
+        <ModalContent Centered class="border-radius-15">
+            <ModalHeader class="justify-content-center pb-0">
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
+                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
+            </ModalHeader>
+            <ModalBody class="px-4">
+                <div class="color-black-100">
+                   @errorMessageAlert
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+
+
 </section>
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
                OnConfirmationChanged="ConfirmDeleteChanged">
@@ -695,7 +715,7 @@
 </ConfirmDialog>
 
 @code 
-            {
+    {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -705,6 +725,10 @@
     [Parameter]
     public string Token { get; set; }
 
+    [Parameter]
+    public ComponentSummary Summary { get; set; }
+
+    private OteOnlineEvent? oteOnline;
     private Schedule modelSchedule = new();
     private Pricing modelPricing = new();
     private Pricing priceToDelete = new();
@@ -716,9 +740,11 @@
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
     private bool showErrors = false;
+    private string errorMessageAlert { get; set; }
     private bool DisplayDelete = true;
     private Modal? modalFeeBreakdown {get; set;}
     private Modal? modalScheduleGuid {get; set;}
+    private Modal modalError { get; set; }
     private ModalTicketPricing modalTicketPricing = new();
     private ConfirmDialog confirmDialogRef { get; set; }
     private IList<DayItem> dayItems = new List<DayItem> {
@@ -734,6 +760,20 @@
     private Modal? modalCalendar {get; set;}
     private Calendar? calendar {get; set;}
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+        else
+        {
+            if (existingList.Pricings.Count == 0)
+            {
+                AddMoreTicketPrice();
+            }
+        }
+    }
 
     private async Task NextClick()
     {
@@ -750,7 +790,6 @@
             await OnPrevClick.InvokeAsync();
         }
     }
-
     public async Task<bool> FieldValid()
     {
         if(pricingFormValidation is not null && scheduleFormValidation is not null && pricingFormValidation is not null)
@@ -833,24 +872,6 @@
                 return $"{defaultClass} is-valid";
             }
             return defaultClass;
-        }
-    }
-
-    private async Task AddMoreTicketPrice()
-    {
-        bool priceValid = await pricingFormValidation.ValidateAll();
-        if(priceValid)
-        {
-            modelPricingList.Pricings = existingList.Pricings;
-            int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
-            int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
-            existingList.Pricings.Add(new Pricing { TempId = maxId, Order = order, IsNew = true});
-            var last = existingList.Pricings.LastOrDefault();
-            if(last is not null)
-            {
-                modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
-            }
-            modelPricing = last;
         }
     }
 
@@ -999,6 +1020,10 @@
         {
             await modalFeeBreakdown.Close(CloseReason.UserClosing);
         }
+    }
+    private async Task CloseErrorMessage()
+    {
+        await modalError.Close(CloseReason.UserClosing);
     }
 
     private decimal CalCulateBuyerTotal(Pricing ticketPrice)
@@ -1640,9 +1665,56 @@
         return generatedDates;
     }
 
+    private async Task AddMoreTicketPrice()
+    {
+        bool priceValid = await pricingFormValidation.ValidateAll();
+        if(priceValid)
+        {
+            if(existingList.Pricings.Count == 0)
+            {
+                modelPricing.TempId = 1;
+                if (modelPricing.IsDeleted)
+                {
+                    modelPricing.Price       = 0;
+                    modelPricing.Name        = string.Empty;
+                    modelPricing.Description = string.Empty;
+                    modelPricing.MaxSlots    = 0;
+                    modelPricing.IsNew       = true;
+                    modelPricing.IsDeleted   = false;
+                }
+                else
+                {
+                    existingList.Pricings.Add(modelPricing);
+                    return;
+                }
+            }
+            modelPricingList.Pricings = existingList.Pricings;
+            int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+            int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+            existingList.Pricings.Add(new Pricing { TempId = maxId, Order = order, IsNew = true});
+            var last = existingList.Pricings.LastOrDefault();
+            if (last is not null)
+            {
+                modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
+                modelPricing = last;
+            }
+        }
+    }
+
     private async Task DeleteClick(Pricing price)
     {
         priceToDelete = price;
+        //delete created online event if meron
+        if (Summary is not null)
+        {
+            var onlineTicket = Summary.OnlineData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
+            if (onlineTicket is not null)
+            {
+                errorMessageAlert = "Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.";
+                await modalError.Show();
+                return;
+            }
+        }
         await confirmDialogRef.Open();
     }
 
@@ -1660,15 +1732,6 @@
                     }, Token);
                 if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
                 {
-                    //delete created online event if meron
-                   @* var onlineTicket = OnlineEventData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
-                    if (onlineTicket is not null)
-                    {
-                        var deleteTicketOnline = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
-                        {
-                            Id = onlineTicket.Id
-                        }, Token);
-                    }*@
                     existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
                     var last = existingList.Pricings.LastOrDefault();
                     if (last is not null)
@@ -1678,6 +1741,7 @@
                     }
                     else
                     {
+                        modelPricing.IsDeleted = false;
                         AddMoreTicketPrice();
                     }
                 }
@@ -1699,13 +1763,10 @@
                 }
                 else
                 {
+                    existingList.Pricings.Clear();
                     AddMoreTicketPrice();
                 }
             }
-        }
-        else
-        {
-            
         }
     }
     private record DateItem 
@@ -1713,5 +1774,9 @@
         public DateTime Date {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+    }
+    public class ComponentSummary
+    {
+        public OteOnlineEvent.ModelData OnlineData { get; set; }
     }
 }

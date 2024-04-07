@@ -71,7 +71,7 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Token="@token"/>
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Token="@token" Summary="onlineEventSummary" />
                 </div>
                 @if (oteLocation != null)
                 {
@@ -111,6 +111,7 @@
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private OteSummary.ComponentSummary? summary = default;
+    private OtePricing.ComponentSummary? onlineEventSummary = default;
 
     private string token = string.Empty;
     private int accountId = 0;
@@ -257,6 +258,7 @@
             if (valid)
             {
                 SetActiveItem(2);
+                onlineEventSummary = GetOnlineSummary();
                 StateHasChanged();
             }
         }
@@ -421,7 +423,10 @@
 
     private async Task NextClick()
     {
-
+        if (summaryIndex == 5 && currentIndex == 3)
+        {
+            onlineEventSummary = GetOnlineSummary();
+        }
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
         if(valid && field is not null)
@@ -765,6 +770,14 @@
         };
     }
 
+    private OtePricing.ComponentSummary GetOnlineSummary()
+    {
+        return new OtePricing.ComponentSummary
+            {
+                OnlineData = oteOnline.GetData()
+            };
+    }
+
     private async Task MoveNext()
     {
         var (valid, field) = await CurrentFieldValid();
@@ -792,6 +805,10 @@
         var (valid, field) = await CurrentFieldValid();
         if(valid && field.HasPrevious && currentIndex > 0)
         {
+            if (summaryIndex == 5 && currentIndex == 3)
+            {
+                onlineEventSummary = GetOnlineSummary();
+            }
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
         }
