@@ -353,6 +353,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(c => c.FromUserId);
         modelBuilder.Entity<ChatUnreadNotification>()
             .HasIndex(c => c.ChatHistoryId);
+            
+        // announcements
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Status);
 
         // for ote shared link
         modelBuilder.Entity<OteSharedLink>()
@@ -367,9 +371,6 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic content
         modelBuilder.Entity<DynamicContent>()
             .HasIndex(d => d.Identifier);
-        // announcements
-        modelBuilder.Entity<Announcement>()
-            .HasIndex(a => a.Status);
 
     }
 

@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.OteActivity;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
@@ -70,7 +71,7 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" ModelState="scheduleModel" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
                 </div>
                 @if (oteLocation != null)
                 {
@@ -111,11 +112,13 @@
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private OteSummary.ComponentSummary? summary = default;
     private int numberOfPage = 6;
+    private OtePricing.ComponentSummary? onlineEventSummary = default;
 
     private string token = string.Empty;
     private int accountId = 0;
     private int oteId = 0;
     private int summaryIndex = 0;
+    private int ticketSold { get; set; } = 0;
 
     private OteEvent.FormModel eventModel = new();
     private OtePricing.Schedule scheduleModel = new();
@@ -259,6 +262,7 @@
             if (valid)
             {
                 SetActiveItem(2);
+                onlineEventSummary = GetOnlineSummary();
                 StateHasChanged();
             }
         }
@@ -723,16 +727,18 @@
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
+                 int totalTicketsSold = ote.Pricings
+                .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
                     Id = p.Id,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    TicketSold = totalTicketsSold
                 };
             }).ToList(),
-            TicketSold            = ote.Pricings.Sum(a => a.TicketSold)
         });
         scheduleModel.EventDurationTimeStart = ote.ScheduleFrom.TimeOfDay;
         scheduleModel.DateFrom = ote.ScheduleFrom;
@@ -792,6 +798,14 @@
         };
     }
 
+    private OtePricing.ComponentSummary GetOnlineSummary()
+    {
+        return new OtePricing.ComponentSummary
+            {
+                OnlineData = oteOnline.GetData()
+            };
+    }
+
     private async Task MoveNext()
     {
         var (valid, field) = await CurrentFieldValid();
@@ -819,6 +833,10 @@
         //var (valid, field) = await CurrentFieldValid();
         if(currentIndex > 0)
         {
+            if (summaryIndex == 5 && currentIndex == 3)
+            {
+                onlineEventSummary = GetOnlineSummary();
+            }
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
         }
