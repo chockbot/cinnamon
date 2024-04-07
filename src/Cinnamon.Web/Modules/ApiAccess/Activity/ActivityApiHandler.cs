@@ -1200,4 +1200,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
         }
     }
+
+    public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteTicket")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteTicketResult>();
+
+            return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully called delete ticket");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when calling delete ticket api");
+        }
+    }
 }

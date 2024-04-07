@@ -13,6 +13,7 @@ using Cinnamon.Framework.Enums;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Api.Data.Extensions;
 using AutoMapper;
+using Cinnamon.Api.Data.Repository;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -1984,12 +1985,12 @@ public class ActivityRepository : IActivityRepository
     
     public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, 
-        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false)
+        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false, bool includeTickets = false)
     {
         try
         {
             var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, 
-                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents);
+                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents, includeTickets);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -2147,6 +2148,40 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
+    public async Task<AppResult<bool>> DeleteTicket(int Id)
+    {
+        try
+        {
+            var oteGroupTicketResult = await dataStore.OteSchedulePricingGroup.GetByIdAsync(Id);
+            var oteGroupTicket = oteGroupTicketResult.Result;
+
+            if (oteGroupTicket == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No group ticket found with the provided ID"), "No group ticket found with the provided ID");
+            }
+            var oteTicketResult = await dataStore.OteSchedulePricing.GetPricings(oteGroupTicket.Id);
+            var oteTicket = oteTicketResult.Result;
+
+
+            if (oteTicket == null || !oteTicket.Any())
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No associated tickets found for the group ticket"), "No associated tickets found for the group ticket");
+            }
+            var associatedTicketsRemovalResult = await dataStore.OteSchedulePricing.RemoveRange(oteTicket);
+            var groupTicketRemovalResult = await dataStore.OteSchedulePricingGroup.Remove(oteGroupTicket);
+
+            if (!groupTicketRemovalResult.Succeeded || !associatedTicketsRemovalResult.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Failed to delete group ticket or associated tickets"), "Failed to delete group ticket or associated tickets");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted group ticket and associated tickets");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occurred while deleting ticket and associated tickets");
         }
     }
 }

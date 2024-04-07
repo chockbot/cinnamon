@@ -48,7 +48,6 @@ public class SystemController : ControllerBase
             return new JsonResult(new GetServerDateResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
-
     [AllowAnonymous]
     [Route("GetEventPolicies")]
     [HttpGet]

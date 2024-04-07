@@ -42,6 +42,7 @@ public class OteFindByHandlerResult
         public string Name {get; set;}
         public bool IsAbsorbFees { get; set; }
         public int TicketSold {get; set;}
+        public int OteSchedulePricingGroupId { get; set; }
     }
 
     public class Image 
