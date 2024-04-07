@@ -167,7 +167,83 @@
                 }
             </div>
         }
-    </div> 
+    </div>
+    <p class="font-20 color-black-100 font-weight-700 mt-5">Completed</p>
+    <div class="events-section">
+        @if (isLoading == true)
+        {
+            for (int x = 0; x < 2; x++)
+            {
+                <div class="event-details-content">
+                    <div class="event-content d-flex">
+                        <img class="event-image skeleton" />
+                        <div class="event-details">
+                            <p class="event-title skeleton">Title</p>
+                            <p class="event-schedule skeleton">30 March 2023 | 10:00 AM</p>
+                            <p class="event-location skeleton">Philippine Arena</p>
+                            <button class="view-details skeleton">View Details</button>
+                        </div>
+                    </div>
+                    <div class="ticket-details">
+                        <p class="ticket-slots skeleton">Slots: 60</p>
+                        <p class="ticket-sold skeleton">Sold: 20</p>
+                        <p class="ticket-available skeleton">Available: 40</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="accordion" id="accordion-schedules">
+                @foreach (var item in CompletedEvents)
+                {
+                    <div class="accordion-item mb-3" @key="item">
+                        <h2 class="accordion-header">
+                            <button class='accordion-button text-capitalize font-20 m-font-16 font-weight-700 color-black-100 py-2 ps-3' 
+                                type="button" data-bs-toggle="collapse" 
+                                data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
+                                @item.Title
+                            </button>
+                        </h2>
+                        <div id='@($"collapse-{item.Id}")' class="collapse" aria-labelledby='@(item.Title)'
+                            data-bs-parent="#accordion-schedules">
+                            <div class="accordion-body p-0">
+                                <Table class="w-100 mb-0" Bordered>
+                                    <TableBody>
+                                        @foreach (var sched in item.Activities)
+                                        {
+                                            <TableRow @key="sched" class="font-16 m-font-14" VerticalAlignment="VerticalAlignment.Middle">
+                                                <TableRowCell class="ps-3">
+                                                    <div class="d-flex justify-content-between pe-3">
+                                                        <span>
+                                                            @sched.ScheduleFrom.ToString("MMMM dd, yyyy")
+                                                        </span>
+                                                        <img @onclick="() => NavigateToEventDetails(sched.Handler, sched.OteDateId)" 
+                                                            class="m-img-click d-none m-d-block" src="images/ote/click-icon.png" alt="click">
+                                                    </div>
+
+                                                </TableRowCell>
+                                                <TableRowCell class="ps-3 m-d-none">@sched.ScheduleFrom.ToString("hh:mm tt")</TableRowCell>
+                                                <TableRowCell class="ps-3 m-d-none">
+                                                    @GetEventLocation(sched)
+                                                </TableRowCell>
+                                                <TableRowCell class="ps-3 m-d-none">
+                                                    <Button Clicked="() => NavigateToEventDetails(sched.Handler, sched.OteDateId)" Type="ButtonType.Button"
+                                                        class="bg-white-200 border-radius-5 font-16 font-weight-700 color-black-100">
+                                                        View Details
+                                                    </Button>
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </div>
 @code {
     private List<Activity> activities = new List<Activity>();
@@ -211,7 +287,8 @@
                         EventImage       = a.EventImage,
                         ScheduleFrom     = a.DateStart,
                         ScheduleTo       = a.DateEnd,
-                        OteDateId        = a.DateId
+                        OteDateId        = a.DateId,
+                        ForceDisable     = a.ForceDisable
                     };
                 }).ToList();
             }
@@ -240,21 +317,32 @@
             var filteredResult = eventFilter switch
             {
                 EventFilter.ThisWeek => oteActivities
-                    .Where(e => (e.ScheduleFrom.Date >= DateTime.Now.Date && e.ScheduleFrom.Date <= week) && e.ScheduleFrom.Date != currentDate)
+                    .Where(e => !e.ForceDisable && (e.ScheduleFrom.Date >= DateTime.Now.Date && e.ScheduleFrom.Date <= week) && e.ScheduleFrom.Date != currentDate)
                     .GroupBy(e => e.Id)
                     .Select(e => new GroupOte {Activities = e, Title = e.FirstOrDefault()?.EventName ?? "", Id = e.Key }),
                 EventFilter.ThisMonth => oteActivities
-                    .Where(e => (e.ScheduleFrom.Date >= firstDayOfMonth && e.ScheduleTo.Date <= lastDayOfMonth) && e.ScheduleFrom.Date != currentDate)
+                    .Where(e => !e.ForceDisable && (e.ScheduleFrom.Date >= firstDayOfMonth && e.ScheduleTo.Date <= lastDayOfMonth) && e.ScheduleFrom.Date != currentDate)
                     .GroupBy(e => e.Id)
                     .Select(e => new GroupOte {Activities = e, Title = e.FirstOrDefault()?.EventName ?? "", Id = e.Key }),
                 _ => oteActivities
-                    .Where(e => e.ScheduleFrom.Date != currentDate)
+                    .Where(e => !e.ForceDisable && e.ScheduleFrom.Date != currentDate)
                     .GroupBy(e => e.Id)
                     .Select(e => new GroupOte {Activities = e, Title = e.FirstOrDefault()?.EventName ?? "", Id = e.Key }),
             };
 
             return filteredResult;
         }
+    }
+
+    private IEnumerable<GroupOte> CompletedEvents
+    {
+        get 
+        {
+            return oteActivities
+                    .Where(a => a.ForceDisable)
+                    .GroupBy(e => e.Id)
+                    .Select(e => new GroupOte {Activities = e, Title = e.FirstOrDefault()?.EventName ?? "", Id = e.Key});
+        }    
     }
 
     private string GetEventLocation(OteActivity activity)
