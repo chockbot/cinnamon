@@ -486,10 +486,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         {
             var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower() && a.ExperienceCreationTypeId == 3);
 
-            if(includeAddress) query     = query.Include(a => a.Address);
-            if(includeDescription) query = query.Include(a => a.ActivityDescription);
-            if(includeProvider) query    = query.Include(a => a.Customer);
-            if(includeImages) query      = query.Include(a => a.Tickets);
+            if(includeAddress) query      = query.Include(a => a.Address);
+            if(includeDescription) query  = query.Include(a => a.ActivityDescription);
+            if(includeProvider) query     = query.Include(a => a.Customer);
+            if (includeImages) query      = query.Include(a => a.Images);
+            if(includeTickets) query      = query.Include(a => a.Tickets);
             if (includeOnlineEvent)query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteOnlineEvent);
             if (includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
