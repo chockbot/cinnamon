@@ -31,11 +31,8 @@ namespace Cinnamon.Api.Core.Controllers
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
             ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
             IManualDisbursement manualDisbursement, ICreateAnnouncementHandler createAnnouncementHandler,
-            IDeleteAnnouncementHandler deleteAnnouncementHandler, IUpdateDynamicContentHandler updateDynamicContentHandler)
-            ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
-            IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
-            IDeleteAnnouncementHandler deleteAnnouncementHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
-            IManualDisbursement manualDisbursement, IUpdateDynamicContentHandler updateDynamicContentHandler)
+            IDeleteAnnouncementHandler deleteAnnouncementHandler, IUpdateDynamicContentHandler updateDynamicContentHandler,
+            IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler)
         {
             _logger = logger;
 

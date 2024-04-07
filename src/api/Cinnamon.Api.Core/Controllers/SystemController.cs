@@ -48,55 +48,6 @@ public class SystemController : ControllerBase
             return new JsonResult(new GetServerDateResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
-
-    [AllowAnonymous]
-<<<<<<<<< Temporary merge branch 1
-    [Route("GetAnnouncements")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetAnnouncementsResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAnnouncements()
-    {
-        try
-        {
-            var result = await getAnnouncementsHandler.ExecuteAsync(new Services.AdminService.Interactors.GetAnnouncementsArgs {
-                Status = "published"
-=========
-    [Route("GetEventPolicies")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetEventPoliciesResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetEventPolicies()
-    {
-        try
-        {
-            var result = await getDynamicContentHandler.ExecuteAsync(new Services.AdminService.Interactors.GetDynamicContentArgs {
-                Identifier = "event-policies"
->>>>>>>>> Temporary merge branch 2
-            });
-
-            if(!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetAnnouncementsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetAnnouncementsResult 
-                {
-                    IsSuccess = true, 
-                    Result = result.Result.Announcements.Select(a => new Framework.ApiCommand.ApiCore.DTO.Announcement.AnnouncementDTO {
-                        ButtonLabel = a.ButtonLabel,
-                        Description = a.Description,
-                        Id = a.Id,
-                        Link = a.Link,
-                        Status = a.Status,
-                        Title = a.Title
-                    })
-                } );
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetAnnouncementsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
-        }
-    }
-
     [AllowAnonymous]
     [Route("GetEventPolicies")]
     [HttpGet]
