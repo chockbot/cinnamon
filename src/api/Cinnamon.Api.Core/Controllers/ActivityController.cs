@@ -2982,6 +2982,35 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("DeleteOnlineEvent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteOnlineEventById([FromBody] DeleteOnlineEventArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOnlineEventHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOnlineEventArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOnlineEventResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("GenerateEventSharedLink")]
     [HttpPost]
@@ -3081,35 +3110,6 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifySharedEventLinkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-    [Route("DeleteOnlineEvent")]
-    [HttpPost]
-    [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteOnlineEventById([FromBody] DeleteOnlineEventArgs args)
-    {
-        try
-        {
-            var deleteResult = await deleteOnlineEventHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOnlineEventArgs
-            {
-                Id = args.Id
-            });
-
-            if (!deleteResult.Succeeded || deleteResult.Result == null)
-            {
-                return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
-            }
-
-            var result = deleteResult.Result;
-
-            return new JsonResult(new DeleteOnlineEventResult
-            {
-                IsSuccess = result.IsSuccess
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new DeleteOnlineEventResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
