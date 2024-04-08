@@ -1,10 +1,17 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
 @implements IOteComponent;
-@inject IJSRuntime JS;
+@inject IJSRuntime JS;  
 
 <section class="ote-summary-wrapper">
     @if(Summary is not null)
     {
+        var every = Summary.PricingData.DurationEvery ?? 0;
+        var dateStart = Summary.PricingData.DurationStart ?? DateTime.Now;
+        var dateEnd = Summary.PricingData.DurationEnd ?? DateTime.Now;
+        var timeStart = Summary.PricingData.DateFrom.TimeOfDay;
+        var timeDuration = Summary.PricingData.DateTo - Summary.PricingData.DateFrom;
+
         <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
             <div>
                 <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">@Summary.EventData.Name</h3>
@@ -15,10 +22,62 @@
             <Divider />
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
-                <p class="font-20 color-black-100 mb-0">
-                    @Summary.PricingData.DateFrom.ToString("dd MMM yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
-                </p>
-            </div>
+                @switch (Summary.PricingData.Recurrences)
+                {
+                    case "daily":
+                        DateTime? dailyStartDate = Summary.PricingData.DurationStart;
+                        DateTime? dailyEndDate = Summary.PricingData.DurationEnd;
+                        int dailyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
+                        {
+                            <p class="font-20 color-black-100 mb-0">
+                               • @dailyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            </p>
+                            dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
+                        }
+                        break;
+                    case "weekly":
+                        DateTime? weeklyStartDate = Summary.PricingData.DurationStart;
+                        DateTime? weeklyEndDate = Summary.PricingData.DurationEnd;
+                        List<string> weeklySelectedDays = Summary.PricingData.WeekString.Split('|').ToList();
+                        int weeklyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        while (weeklyStartDate.HasValue && weeklyEndDate.HasValue && weeklyStartDate.Value.Date <= weeklyEndDate.Value.Date)
+                        {
+                            if (weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
+                            {
+                                <p class="font-20 color-black-100 mb-0">
+                              • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                                </p>
+                            }
+                            weeklyStartDate = weeklyStartDate.Value.AddDays(weeklyDurationEvery);
+                        }
+                        break;
+                    case "monthly":
+                        dateItems = GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, Summary.PricingData.MonthSelection ?? 0,
+                        Summary.PricingData.OnDayDate ?? 1, Summary.PricingData.MonthRepeat ?? string.Empty, Summary.PricingData.MonthDay ?? string.Empty).ToList();
+                        foreach(var date in dateItems)
+                        {
+                            <p class="font-20 color-black-100 mb-0">
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            </p>
+                        }
+                        break;
+                    case "every-weekday":
+                        dateItems = GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart).ToList();
+                        foreach(var date in dateItems)
+                        {
+                            <p class="font-20 color-black-100 mb-0">
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            </p>
+                        }
+                        break;
+                    default:
+                    <p class="font-20 color-black-100 mb-0">
+                        • @Summary.PricingData.DateFrom.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                    </p>
+                    break;
+                }
+            </div>  
             <Divider />
             @if(Summary.LocationData.ExperienceType == 1)
             {
@@ -57,6 +116,8 @@
 
     private bool invokingNext = false;
 
+    public List<DateItem> dateItems = new List<DateItem>();
+
     private async Task NextClick()
     {
         if(OnNextClick.HasDelegate)
@@ -74,7 +135,6 @@
             await OnPrevClick.InvokeAsync();
         }
     }
-
     public Task<bool> FieldValid()
     {
         return Task.Run<bool>(() => true);
@@ -87,5 +147,138 @@
         public OtePricing.ModelData PricingData {get; set;}
         public OtePublish.ModelData PublishData {get; set;}
         public OteOnlineEvent.ModelData OnlineData { get; set; }
+    }
+    private IEnumerable<DateItem> GenerateMonthly(int repeat, DateTime start, DateTime end,
+        TimeSpan timeDuration, TimeSpan timeStart, int monthSelection, int onTheDay,
+        string monthRepeat, string monthDay)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int monthsToSkip = repeat;
+
+        DateTime recurringDate = start.FirstDayOfMonth();
+        DateTime recurringDateEnd = end.LastDayOfMonth();
+
+        if (monthSelection == 1)
+        {
+                while (recurringDate <= recurringDateEnd)
+                {
+                // Adjust the day of the recurringDate to be onTheDay, but ensure it's not beyond the end of the month
+                int day = Math.Min(onTheDay, DateTime.DaysInMonth(recurringDate.Year, recurringDate.Month));
+                DateTime adjustedDate = new DateTime(recurringDate.Year, recurringDate.Month, day);
+
+                generatedDates.Add(new DateItem
+                {
+                    Date = adjustedDate.Date,
+                    DateStart = adjustedDate.Date.Add(timeStart),
+                    DateEnd = adjustedDate.Date.Add(timeStart).Add(timeDuration)
+                });
+                    recurringDate = recurringDate.AddMonths(monthsToSkip);
+            }
+        }
+
+        if (monthSelection == 2)
+        {
+            DayOfWeek dw = monthDay switch
+            {
+                "monday" => DayOfWeek.Monday,
+                "tuesday" => DayOfWeek.Tuesday,
+                "wednesday" => DayOfWeek.Wednesday,
+                "thursday" => DayOfWeek.Thursday,
+                "friday" => DayOfWeek.Friday,
+                "saturday" => DayOfWeek.Saturday,
+                _ => DayOfWeek.Sunday
+            };
+
+            int weeksToSkip = monthRepeat switch
+            {
+                "first" => 1,
+                "second" => 2,
+                "third" => 3,
+                "fourth" => 4,
+                _ => 5
+            };
+
+            int skipCounter = 0;
+
+            while (recurringDate <= recurringDateEnd)
+            {
+                do
+                {
+                    if (recurringDate.DayOfWeek == dw)
+                    {
+                        skipCounter++;
+                    }
+
+                    if (skipCounter == weeksToSkip)
+                    {
+                        generatedDates.Add(new DateItem
+                            {
+                                Date = recurringDate.Date,
+                                DateStart = recurringDate.Date.Add(timeStart),
+                                DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                            });
+                        skipCounter = 0;
+                        break;
+                    }
+
+                    recurringDate = recurringDate.AddDays(1);
+                }
+                while (skipCounter != weeksToSkip);
+
+                recurringDate = recurringDate.FirstDayOfMonth().AddMonths(monthsToSkip);
+            }
+        }
+
+        return generatedDates;
+    }
+    private IEnumerable<DateItem> GenerateWeekday(int repeat, DateTime start, DateTime end, 
+        TimeSpan timeDuration, TimeSpan timeStart)
+    {
+        IList<DateItem> generatedDates = new List<DateItem>();
+
+        int daysToSkip = (repeat - 1) * 7;
+
+        DateTime recurringDate = start;
+        while(recurringDate <= end)
+        {
+            var item = new DateItem {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        };
+
+            switch(recurringDate.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Tuesday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Wednesday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Thursday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Friday:
+                    generatedDates.Add(item);
+                    break;
+                case DayOfWeek.Sunday:
+                    recurringDate = recurringDate.AddDays(daysToSkip);
+                    break;
+            }
+
+            recurringDate = recurringDate.AddDays(1);
+        }
+
+        return generatedDates;
+    }
+    public record DateItem
+    {
+        public DateTime Date { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
     }
 }
