@@ -737,8 +737,6 @@
         await otePricing?.SetState(new OtePricing.ModelData {
             Recurrences           = ote.Recurrences,
             WeekString            = ote.OteSchedule.SelectedDays,
-            EventDurationCount    = ote.OteSchedule.EventDurationCount,
-            EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings
                 .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);

@@ -91,7 +91,7 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
+                                    SelectedValueChanged="RecurrenceChanged" SelectedValue="ModelState.Recurrences">
                                     <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
                                     <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
                                     <SelectItem Value='@("daily")'>Daily</SelectItem>
@@ -731,8 +731,6 @@
     [Parameter]
     public ComponentSummary Summary { get; set; }
 
-    private OteOnlineEvent? oteOnline;
-    private Schedule modelSchedule = new();
     private Pricing modelPricing = new();
     private Pricing priceToDelete = new();
     private PricingList modelPricingList = new();
