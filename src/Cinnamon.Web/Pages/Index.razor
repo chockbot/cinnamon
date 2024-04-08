@@ -101,33 +101,29 @@
 </div>
 
 <!--Section Category-->
-<div class="container">
-    <div class="section-1 row">
-        <div class="categories">
-            <div class="row d-flex justify-content-start">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 categories-container">
-                    <div class="schedule-swiper">
-                        <div class="swiper-wrapper text-center">
-                            @foreach (var category in categories)
-                            {
-                                @if(category.Category != "New")
-                                {
-                                    <div class="swiper-slide category">
-                                    <div>
-                                            <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
-                                            <img src=@category.IconPath class="img-icon text-center">
-                                            <p class="card-title">@category.Category</p>
-                                        </a>
-                                    </div>
+<div class="container mt-4">
+    <div class="section-1">
+        <div id="category-section" class="categories">
+            <div class="schedule-swiper">
+                <div class="swiper-wrapper text-center justify-content-center">
+                    @foreach (var category in categories)
+                    {
+                        @if(category.Category != "New")
+                        {
+                            <div class="swiper-slide category">
+                                <div>
+                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
+                                        <img src=@category.IconPath class="img-icon text-center">
+                                        <p class="card-title">@category.Category</p>
+                                    </a>
                                 </div>
-                                }
-                            }
-                        </div>
-                    <div class="swiper-scrollbar"></div>
+                            </div>
+                        }
+                    }
                 </div>
+                <div class="swiper-scrollbar"></div>
             </div>
         </div>
-    </div>
     </div>
 </div>
 
