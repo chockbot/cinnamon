@@ -41,15 +41,21 @@
                         DateTime? weeklyEndDate = Summary.PricingData.DurationEnd;
                         List<string> weeklySelectedDays = Summary.PricingData.WeekString.Split('|').ToList();
                         int weeklyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+
+                        DateTime startOfYear = new DateTime(weeklyStartDate.Value.Year, 1, 1);
+                        int startWeekNumber = weeklyStartDate.HasValue ? (int)(weeklyStartDate.Value.Date - startOfYear).TotalDays / 7 : 0;
+
                         while (weeklyStartDate.HasValue && weeklyEndDate.HasValue && weeklyStartDate.Value.Date <= weeklyEndDate.Value.Date)
                         {
-                            if (weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
+                            int currentWeekNumber = (int)(weeklyStartDate.Value.Date - startOfYear).TotalDays / 7;
+
+                            if ((currentWeekNumber - startWeekNumber) % weeklyDurationEvery == 0 && weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
                             {
                                 <p class="font-20 color-black-100 mb-0">
-                              • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                                    • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                                 </p>
                             }
-                            weeklyStartDate = weeklyStartDate.Value.AddDays(weeklyDurationEvery);
+                            weeklyStartDate = weeklyStartDate.Value.AddDays(1);
                         }
                         break;
                     case "monthly":
@@ -161,18 +167,24 @@
 
         if (monthSelection == 1)
         {
-                while (recurringDate <= recurringDateEnd)
-                {
-                // Adjust the day of the recurringDate to be onTheDay, but ensure it's not beyond the end of the month
+            while (recurringDate <= recurringDateEnd)
+            {
                 int day = Math.Min(onTheDay, DateTime.DaysInMonth(recurringDate.Year, recurringDate.Month));
                 DateTime adjustedDate = new DateTime(recurringDate.Year, recurringDate.Month, day);
 
-                generatedDates.Add(new DateItem
-                {
-                    Date = adjustedDate.Date,
-                    DateStart = adjustedDate.Date.Add(timeStart),
-                    DateEnd = adjustedDate.Date.Add(timeStart).Add(timeDuration)
-                });
+                    if (adjustedDate < start)
+                    {
+                        recurringDate = recurringDate.AddMonths(monthsToSkip);
+                        continue;
+                    }
+
+                    generatedDates.Add(new DateItem
+                    {
+                        Date = adjustedDate.Date,
+                        DateStart = adjustedDate.Date.Add(timeStart),
+                        DateEnd = adjustedDate.Date.Add(timeStart).Add(timeDuration)
+                    });
+
                     recurringDate = recurringDate.AddMonths(monthsToSkip);
             }
         }
@@ -200,33 +212,35 @@
             };
 
             int skipCounter = 0;
+            int currentMonth = recurringDate.Month;
 
             while (recurringDate <= recurringDateEnd)
             {
-                do
+                if (recurringDate.Month != currentMonth)
                 {
-                    if (recurringDate.DayOfWeek == dw)
-                    {
-                        skipCounter++;
-                    }
+                    skipCounter = 0;
+                    currentMonth = recurringDate.Month;
+            }
 
-                    if (skipCounter == weeksToSkip)
+                if (recurringDate.DayOfWeek == dw)
+                {
+                    skipCounter++;
+
+                    if (skipCounter == weeksToSkip && recurringDate >= start)
                     {
                         generatedDates.Add(new DateItem
-                            {
-                                Date = recurringDate.Date,
-                                DateStart = recurringDate.Date.Add(timeStart),
-                                DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
-                            });
-                        skipCounter = 0;
-                        break;
+                        {
+                            Date = recurringDate.Date,
+                            DateStart = recurringDate.Date.Add(timeStart),
+                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                        });
                     }
-
-                    recurringDate = recurringDate.AddDays(1);
+                    recurringDate = recurringDate.AddDays(7);
                 }
-                while (skipCounter != weeksToSkip);
-
-                recurringDate = recurringDate.FirstDayOfMonth().AddMonths(monthsToSkip);
+                else
+                {
+                recurringDate = recurringDate.AddDays(1);
+                }
             }
         }
 
