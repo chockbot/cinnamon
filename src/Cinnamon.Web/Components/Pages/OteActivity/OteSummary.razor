@@ -22,12 +22,14 @@
             <Divider />
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
+                <div class="date-group">
                 @switch (Summary.PricingData.Recurrences)
                 {
                     case "daily":
                         DateTime? dailyStartDate = Summary.PricingData.DurationStart;
                         DateTime? dailyEndDate = Summary.PricingData.DurationEnd;
                         int dailyDurationEvery = Summary.PricingData.DurationEvery.HasValue ? Summary.PricingData.DurationEvery.Value : 1;
+                        
                         while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
                         {
                             <p class="font-20 color-black-100 mb-0">
@@ -35,6 +37,7 @@
                             </p>
                             dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
                         }
+                        </div>
                         break;
                     case "weekly":
                         DateTime? weeklyStartDate = Summary.PricingData.DurationStart;
@@ -83,6 +86,7 @@
                     </p>
                     break;
                 }
+                </div>
             </div>  
             <Divider />
             @if(Summary.LocationData.ExperienceType == 1)
