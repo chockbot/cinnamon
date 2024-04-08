@@ -22,7 +22,6 @@
             <Divider />
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
-                /* Switch case for recurrences */
                 @switch (Summary.PricingData.Recurrences)
                 {
                     case "daily":
@@ -32,7 +31,7 @@
                         while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
                         {
                             <p class="font-20 color-black-100 mb-0">
-                                @dailyStartDate.Value.ToString("MMMM dd, yyyy")
+                               • @dailyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                             </p>
                             dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
                         }
@@ -46,8 +45,8 @@
                         {
                             if (weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
                             {
-                            <p class="font-20 color-black-100 mb-0">
-                                @weeklyStartDate.Value.ToString("MMMM dd, yyyy")
+                                <p class="font-20 color-black-100 mb-0">
+                              • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                                 </p>
                             }
                             weeklyStartDate = weeklyStartDate.Value.AddDays(weeklyDurationEvery);
@@ -58,22 +57,23 @@
                         Summary.PricingData.OnDayDate ?? 1, Summary.PricingData.MonthRepeat ?? string.Empty, Summary.PricingData.MonthDay ?? string.Empty).ToList();
                         foreach(var date in dateItems)
                         {
-                            @date.Date.ToString("MMMM dd, yyyy");
-                            <br />
+                            <p class="font-20 color-black-100 mb-0">
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            </p>
                         }
                         break;
                     case "every-weekday":
                         dateItems = GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart).ToList();
                         foreach(var date in dateItems)
                         {
-                            @date.Date.ToString("MMMM dd, yyyy");
-                            <br />
+                            <p class="font-20 color-black-100 mb-0">
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            </p>
                         }
                         break;
                     default:
                     <p class="font-20 color-black-100 mb-0">
-                        @Summary.PricingData.Recurrences
-                        No recurrences
+                        • @Summary.PricingData.DateFrom.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                     </p>
                     break;
                 }
@@ -161,28 +161,19 @@
 
         if (monthSelection == 1)
         {
-            while (recurringDate <= recurringDateEnd)
-            {
-                if (onTheDay > recurringDate.LastDayOfMonth().Day)
+                while (recurringDate <= recurringDateEnd)
                 {
-                    generatedDates.Add(new DateItem
-                        {
-                            Date = recurringDate.Date,
-                            DateStart = recurringDate.LastDayOfMonth().Date.Add(timeStart),
-                            DateEnd = recurringDate.LastDayOfMonth().Date.Add(timeStart).Add(timeDuration)
-                        });
-                }
-                else
+                // Adjust the day of the recurringDate to be onTheDay, but ensure it's not beyond the end of the month
+                int day = Math.Min(onTheDay, DateTime.DaysInMonth(recurringDate.Year, recurringDate.Month));
+                DateTime adjustedDate = new DateTime(recurringDate.Year, recurringDate.Month, day);
+
+                generatedDates.Add(new DateItem
                 {
-                    var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
-                    generatedDates.Add(new DateItem
-                        {
-                            Date = recurringDate.Date,
-                            DateStart = dateStart.Date.Add(timeStart),
-                            DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
-                        });
-                }
-                recurringDate = recurringDate.AddMonths(monthsToSkip);
+                    Date = adjustedDate.Date,
+                    DateStart = adjustedDate.Date.Add(timeStart),
+                    DateEnd = adjustedDate.Date.Add(timeStart).Add(timeDuration)
+                });
+                    recurringDate = recurringDate.AddMonths(monthsToSkip);
             }
         }
 
