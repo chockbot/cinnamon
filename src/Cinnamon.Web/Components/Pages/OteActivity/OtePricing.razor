@@ -715,7 +715,7 @@
 </ConfirmDialog>
 
 @code 
-    {
+{
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
@@ -940,23 +940,15 @@
 
     public Task SetState(ModelData data)
     {
-        modelSchedule.DateFrom               = data.DateFrom;
-        modelSchedule.DateTo                 = data.DateTo;
-        modelSchedule.TimeFrom               = data.DateFrom.TimeOfDay;
-        modelSchedule.TimeTo                 = data.DateTo.TimeOfDay;
-        modelSchedule.DurationEnd            = data.DurationEnd ?? DateTime.Now;
-        modelSchedule.DurationStart          = data.DurationStart ?? DateTime.Now;
-        modelSchedule.DurationEvery          = data.DurationEvery ?? 1;
-        modelSchedule.MonthDay               = data.MonthDay;
-        modelSchedule.MonthRepeat            = data.MonthRepeat;
-        modelSchedule.MonthSelection         = data.MonthSelection ?? 1;
-        modelSchedule.OnDayDate              = data.OnDayDate ?? 1;
-        modelSchedule.EventDurationCount     = data.EventDurationCount;
-        modelSchedule.EventDurationTimeUnit  = data.EventDurationTimeUnit;
-        modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
-        modelSchedule.TicketSold             = data.TicketSold;
-
         RecurrenceChanged(data.Recurrences);
+
+        // set selected days
+        var days = data.WeekString.Split("|");
+        foreach(var item in dayItems)
+        {
+            item.Selected = days.Contains(item.Value);
+        }
+
         //existing ticket
         foreach(var item in data.ItemPrices)
         {
@@ -970,13 +962,9 @@
                     TicketSold = item.TicketSold
             });
         }
-        // set selected days
-        var days = data.WeekString.Split("|");
-        foreach(var item in dayItems)
-        {
-            item.Selected = days.Contains(item.Value);
-        }
+
         data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
+
         var last = data.ItemPrices.LastOrDefault();
         if(last is not null)
         {
