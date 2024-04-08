@@ -937,6 +937,7 @@
         if (firstRender)
         {
             objectRef = DotNetObjectReference.Create(this);
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Message Page");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
         }
