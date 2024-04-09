@@ -139,18 +139,15 @@
             await LoadCategories();
 
             LoadComponents();
+
+            if(!string.IsNullOrEmpty(Handler))
+            {
+                await LoadComponentState();
+            }
         }
         catch (System.Exception)
         {
             NavigationManager.NavigateTo("explore");
-        }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if(!string.IsNullOrEmpty(Handler))
-        {
-            await LoadComponentState();
         }
     }
 
