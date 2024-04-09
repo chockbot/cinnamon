@@ -67,7 +67,7 @@
                     <table class="tbl-members">
                         @if (formerChatMembers.Count > 0)
                         {
-                            @foreach (var item in formerChatMembers.Where(c => c.FromFirstName.ToLower().Contains(addMemberSearchValue) || c.FromLastName.ToLower().Contains(addMemberSearchValue)).ToList())
+                            @foreach (var item in FileteredFormerChatMembers)
                             {
                                 <tr>
                                     <td style="width: 10%;">
@@ -1621,5 +1621,18 @@
                         c.FromLastName.ToLower().Contains(trimmedSearch) ||
                         c.ChatName.ToLower().Contains(trimmedSearch));
         }
+    }
+
+    private IEnumerable<ChatMember> FileteredFormerChatMembers
+    {
+        get 
+        {
+            if(formerChatMembers is null || formerChatMembers.Count == 0) return Enumerable.Empty<ChatMember>();
+            
+            var trimmedSearch = addMemberSearchValue.Trim().ToLower();
+            return formerChatMembers.Where(c => 
+                        c.FromFirstName.ToLower().Contains(trimmedSearch) ||
+                        c.FromLastName.ToLower().Contains(trimmedSearch) );
+        }    
     }
 }
