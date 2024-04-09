@@ -1218,7 +1218,7 @@
         public DateTime DateFrom {get; set;}
         public DateTime DateTo {get; set;}
         public string Recurrences {get; set;}
-        public IList<ItemPrice> ItemPrices {get; set;}
+        public IList<ItemPrice> ItemPrices {get; set;} = new List<ItemPrice>();
         public IList<DateOverride> DateOverrides {get; set;}
 
         public DateTime? DurationStart { get; set; } = DateTime.Now;
