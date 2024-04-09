@@ -2254,10 +2254,40 @@ p.featured-text {
     margin-top: 3rem;
     line-height: 32px;
   }
+
+  #category-section {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    padding-left: 40px;
+}
+
+  #swiper-wrapper {
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+
+  
+#category-section {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.announcement-swipper .swiper-slide {
+  width: 100% !important;
+}
+
+
+  #swiper-wrapper {
+    margin-left: 20px;
+  }
+
   div.categories {
     margin-bottom: 20px;
     border-radius: 20px;
@@ -2273,6 +2303,11 @@ p.featured-text {
     margin-bottom: 10%;
   }
 
+  .footer {
+    display: flex;
+    justify-content: center;
+}
+
   .footer-content {
     display: flex;
     align-items: center;
@@ -2280,7 +2315,6 @@ p.featured-text {
     position: absolute;
     flex-direction: row;
     top: 30%;
-    margin-left: 55px;
   }
 
   .footer-content .footer-appname,
@@ -3328,6 +3362,7 @@ a.dropdown-item {
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
+
   .cinnamon-welcome {
     font-family: Nunito;
     font-size: 20px;
@@ -3840,6 +3875,7 @@ a.dropdown-item {
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
+
   .hero_title {
     color: #343d4c;
     text-align: center;
@@ -3980,14 +4016,37 @@ a.dropdown-item {
   .testimonial-content {
     height: 500px;
   }
+
 }
 
-#category-section {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
+
+@media only screen and (min-width: 820px) and (min-height: 1180px) {
+  
+  div.categories {
+    margin-bottom: 20px;
+    border-radius: 20px;
+    background: rgba(243, 246, 252, 0.5);
+    width: 80%;
+    height: 96px;
+    display: flex;
+    padding-top: 20px;
 }
 
-.announcement-swipper .swiper-slide {
-  width: 100% !important;
+  #category-section {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  .categories .schedule-swiper {
+    margin: 0 0 0 40px;
+    display: flex;
+
+  }
+
+  .testimonial-message {
+    line-height: 28px;
+  }
+
+
 }

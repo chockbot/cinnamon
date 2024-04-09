@@ -105,7 +105,7 @@
     <div class="section-1">
         <div id="category-section" class="categories">
             <div class="schedule-swiper">
-                <div class="swiper-wrapper text-center justify-content-center">
+                <div class="swiper-wrapper text-center justify-content-center" id="swiper-wrapper">
                     @foreach (var category in categories)
                     {
                         @if(category.Category != "New")
@@ -140,7 +140,7 @@
                 <div class="row d-flex justify-content-start">
                     @foreach (var act in activities)
                     {
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6 d-flex flex-column card-activity-body explore-activity-item" style="margin-bottom:30px" id="features-activity">
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
@@ -301,8 +301,8 @@
                 <div class="carousel-item active">
                     <div class="testimonial-wrapper">
                         <div class="testimonial-content container">
-                            <div class="testimonial-image">
-                                <img src="images/landing-page-images/main-image.png">
+                            <div class="testimonial-image" >
+                                <img src="images/landing-page-images/main-image.png" id="testimonial-image" >
                             </div>
                             <div class="testimonial-items">
                                 <div class="testimonial-title">
