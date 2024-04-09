@@ -73,22 +73,18 @@
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
                     <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
                 </div>
-                @if (oteLocation != null)
-                {
-                    <div class='@(currentIndex == 3 && oteLocation.GetData().ExperienceType == 2 ? "d-block" : "d-none")'>
-                        <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" LocationData="oteLocation.GetData()" PricingData="otePricing.GetData()" OnPrevClick="MovePrev" Token="@token" />
-                    </div>
-
-                    <div class='@(oteLocation.GetData().ExperienceType == 2 ? (currentIndex == 4 ? "d-block" : "d-none") : (currentIndex == 3 ? "d-block" : "d-none"))'>
-                        <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
-                    </div>
-                    <div class='@(oteLocation.GetData().ExperienceType == 2 ? (currentIndex == 5 ? "d-block" : "d-none") : (currentIndex == 4 ? "d-block" : "d-none"))'>
-                        <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
-                    </div>
-                    <div class='@(oteLocation.GetData().ExperienceType == 2 ? (currentIndex == 6 ? "d-block" : "d-none") : (currentIndex == 5 ? "d-block" : "d-none"))'>
-                        <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
-                    </div>
-                }
+                <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
+                    <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
+                </div>
+                <div class='@(DisplayGallerySection ? "d-block" : "d-none")'>
+                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(DisplaySummarySection ? "d-block" : "d-none")'>
+                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
+                </div>
+                <div class='@(DisplayPublishSection ? "d-block" : "d-none")'>
+                    <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                </div>
             </Column>
         </Row>
     </Container>
@@ -119,9 +115,17 @@
     private int oteId = 0;
     private int summaryIndex = 0;
     private int ticketSold { get; set; } = 0;
+    
+    enum EventType {
+        None = 0,
+        InPerson = 1,
+        Online = 2
+    }
+    private EventType eventType = EventType.None;
 
     private OteEvent.FormModel eventModel = new();
     private OtePricing.Schedule scheduleModel = new();
+    private OteOnlineEvent.ModelState onlineModel = new();
 
     protected override void OnInitialized()
     {
@@ -193,16 +197,16 @@
             IsActive = false,
             OnClick = NavigateToPricings
         });
-        if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
+
+        if(eventType == EventType.Online)
         {
-            numberOfPage = 7;
-            sidebarItems.Add(new OteSidebarNavigation.Item
-                {
-                    Label = "online event page",
-                    IsActive = false,
-                    OnClick = NavigateToOnlineEvents
-                });
+            sidebarItems.Add(new OteSidebarNavigation.Item {
+                Label = "online event page",
+                IsActive = false,
+                OnClick = NavigateToOnlineEvents
+            });
         }
+
         sidebarItems.Add(new OteSidebarNavigation.Item {
             Label = "gallery",
             IsActive = false,
@@ -259,7 +263,6 @@
             if (valid)
             {
                 SetActiveItem(2);
-                onlineEventSummary = GetOnlineSummary();
                 StateHasChanged();
             }
         }
@@ -273,8 +276,6 @@
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                sidebarImages.Clear();
-                LoadImages();
                 SetActiveItem(3);
                 StateHasChanged();
             }
@@ -283,16 +284,14 @@
 
     private async Task NavigateToGallery(OteSidebarNavigation.Item _)
     {
-        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
-        if (currentIndex != 4)
+        int galleryIndex = eventType == EventType.Online ? 4 : 3;
+        if (currentIndex != galleryIndex)
         {
             var (valid, _) = await CurrentFieldValid();
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                sidebarImages.Clear();
-                LoadImages();
-                SetActiveItem(4);
+                SetActiveItem(galleryIndex);
                 StateHasChanged();
             }
         }
@@ -300,16 +299,14 @@
 
     private async Task NavigateToSummary(OteSidebarNavigation.Item _)
     {
-        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
-        if (currentIndex != 5)
+        int summaryIndex = eventType == EventType.Online ? 5 : 4;
+        if (currentIndex != summaryIndex)
         {
             var (valid, _) = await CurrentFieldValid();
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                sidebarImages.Clear();
-                LoadImages();
-                SetActiveItem(5);
+                SetActiveItem(summaryIndex);
                 summary = GetSummary();
                 StateHasChanged();
             }
@@ -318,15 +315,14 @@
 
     private async Task NavigateToPublish(OteSidebarNavigation.Item _)
     {
-        if (currentIndex != 6)
+        int publishIndex = eventType == EventType.Online ? 6 : 5;
+        if (currentIndex != publishIndex)
         {
             var (valid, _) = await CurrentFieldValid();
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                sidebarImages.Clear();
-                LoadImages();
-                SetActiveItem(6);
+                SetActiveItem(publishIndex);
                 summary = GetSummary();
                 StateHasChanged();
             }
@@ -339,15 +335,7 @@
         {
             i.IsActive = false;
         }
-        if (oteLocation != null && oteLocation.GetData().ExperienceType != 2 && index > 3)
-        {
-            LoadComponents();
-            currentIndex = index - 1;
-        }
-        else
-        {
-            currentIndex = index;
-        }
+        currentIndex = index;
         sidebarItems[currentIndex].IsActive = true;
     }
 
@@ -358,13 +346,11 @@
 
     private void LoadImages()
     {
+        sidebarImages.Clear();
         sidebarImages.Add("images/ote/event-preview.svg");
         sidebarImages.Add("images/ote/location-preview.svg");
         sidebarImages.Add("images/ote/pricing-preview.svg");
-        if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
-        {
-            sidebarImages.Add("images/ote/online-preview.svg");
-        }
+        sidebarImages.Add("images/ote/online-preview.svg");
         sidebarImages.Add("images/ote/gallery-preview.svg");
     }
 
@@ -391,7 +377,7 @@
             HasNext = true,
             HasPrevious = true
         });
-        if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
+        if (eventType == EventType.Online)
         {
             components.Add(new ComponentItem<IOteComponent>
                 {
@@ -425,7 +411,6 @@
 
     private async Task<Tuple<bool, ComponentItem<IOteComponent>?>> CurrentFieldValid()
     {
-        LoadComponents();
         var component = components[currentIndex];
         if (component.Component is not null)
         {
@@ -440,44 +425,40 @@
 
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
+
         if(valid && field is not null)
         {
             if(field.HasNext)
             {
-                sidebarImages.Clear();
-                LoadImages();
-                LoadSidebarItems();
-                if (currentIndex > 2 && oteLocation != null)
+                int locationIndex = 1;
+                if(locationIndex == currentIndex)
                 {
-                    if (oteLocation.GetData().ExperienceType != 2)
-                    {
-                        summaryIndex = 4;
-                        SetActiveItem(currentIndex + 2);
-                    }
-                    else
-                    {
-                        summaryIndex = 5;
-                        SetActiveItem(currentIndex + 1);
-                    }
-                }
-                else
-                { 
-                    SetActiveItem(++currentIndex);
-                    if (oteLocation.GetData().ExperienceType != 2)
-                    {
-                        summaryIndex = 4;
-                    }
-                    else
-                    {
-                        summaryIndex = 5;
-                    }
+                    eventType = oteLocation?.GetData().ExperienceType switch {
+                        1 => EventType.InPerson,
+                        2 => EventType.Online,
+                        _ => EventType.None
+                    };
+                    LoadComponents();
+                    LoadSidebarItems();
                 }
 
-                await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
-                if (currentIndex == summaryIndex)
+                // if in gallery section update summary object
+                int galleryIndex = components.Count - 3;
+                if(galleryIndex == currentIndex)
                 {
                     summary = GetSummary();
                 }
+
+                // if in schedule section update onlinemodel object
+                int scheduleIndex = 2;
+                if(eventType == EventType.Online && currentIndex == scheduleIndex)
+                {
+                    onlineModel.PricingData = otePricing?.GetData();
+                    onlineModel.LocationData = oteLocation?.GetData();
+                }
+
+                SetActiveItem(++currentIndex);
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
             }
             else
             {
@@ -763,19 +744,29 @@
         scheduleModel.EventDurationCount = ote.OteSchedule.EventDurationCount;
         scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
 
-        oteOnline?.SetState(new OteOnlineEvent.ModelData {
-                TicketInfos = ote.OnlineEvent.Select(a => {
-                return new OteOnlineEvent.ModelData.TicketInfo {
-                    Id                        = a.Id,
-                    Title                     = a.Title,
-                    Description               = a.Description,
-                    VideoLink                 = a.Videolink,
-                    TicketRestriction         = a.TicketRestriction,
-                };
-            }).ToList()
-        });
+        if(ote.ExperienceTypeId == 2)
+        {
+            eventType = EventType.Online;
+            onlineModel.PricingData = otePricing?.GetData();
+            onlineModel.LocationData = oteLocation?.GetData();
 
-        numberOfPage = ote.ExperienceTypeId == 2 ? 7 : 6;
+            if(ote.OnlineEvent is not null)
+            {
+                oteOnline?.SetState(new OteOnlineEvent.ModelData {
+                        TicketInfos = ote.OnlineEvent.Select(a => {
+                        return new OteOnlineEvent.ModelData.TicketInfo {
+                            Id                        = a.Id,
+                            Title                     = a.Title,
+                            Description               = a.Description,
+                            VideoLink                 = a.Videolink,
+                            TicketRestriction         = a.TicketRestriction,
+                        };
+                    }).ToList()
+                });
+            }
+
+            numberOfPage = ote.ExperienceTypeId == 2 ? 7 : 6;
+        }
 
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {
@@ -792,6 +783,7 @@
         });
 
         LoadSidebarItems();
+        LoadComponents();
         StateHasChanged();
     }
 
@@ -819,17 +811,8 @@
         var (valid, field) = await CurrentFieldValid();
         if(valid && field.HasNext && currentIndex < sidebarItems.Count -1)
         {
-            if (currentIndex == 2 && oteLocation != null && oteLocation.GetData().ExperienceType != 2)
-            {
-                summaryIndex = 5;
-                SetActiveItem(currentIndex + 2);
-            }
-            else
-            {
-                summaryIndex = 4;
-                SetActiveItem(++currentIndex);
-            }
-            if (currentIndex == summaryIndex)
+            SetActiveItem(++currentIndex);
+            if(currentIndex == 4)
             {
                 summary = GetSummary();
             }
@@ -864,6 +847,37 @@
                     Selected = false
                 });
             }
+        }
+    }
+
+    private bool DisplayOnlineEventSection 
+    {
+        get {
+            return eventType == EventType.Online && currentIndex == 3;
+        }
+    }
+
+    private bool DisplayGallerySection 
+    {
+        get 
+        {
+            return currentIndex == (eventType == EventType.Online ?  4 : 3);
+        }
+    }
+
+    private bool DisplaySummarySection 
+    {
+        get 
+        {
+            return currentIndex == (eventType == EventType.Online ?  5 : 4);
+        }
+    }
+
+    private bool DisplayPublishSection 
+    {
+        get 
+        {
+            return currentIndex == (eventType == EventType.Online ?  6 : 5);
         }
     }
 
