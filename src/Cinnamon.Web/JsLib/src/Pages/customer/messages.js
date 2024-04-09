@@ -70,8 +70,10 @@ messages.initControls = (obj, elementId) => {
   $(document)
     .off("keyup")
     .on("keyup", chatRoomSearchInput, function (e) {
+      alert("before propogate");
       e.preventDefault();
       e.stopPropagation();
+      alert("after progate");
       dotnetObj.invokeMethodAsync("HandleInput", $(chatRoomSearchInput).text());
     });
 
@@ -302,6 +304,7 @@ export async function handleDateFormat() {
 }
 
 export async function initMessages(obj, elementId) {
+  alert(obj.toString());
   return await messages.initControls(obj, elementId);
 }
 
