@@ -85,7 +85,7 @@
                                             </FieldBody>
                                         </Field>
                                     </Validation>
-                                    @if (PricingData.ItemPrices.Count != 0)
+                                    @if (StateModel.PricingData.ItemPrices.Count != 0)
                                     {
                                         <Validation>
                                             <Field class="mb-4">
@@ -96,7 +96,7 @@
                                                     <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
                                                         <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Conditions</SelectItem>
                                                         <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
-                                                        @foreach (var item in PricingData.ItemPrices)
+                                                        @foreach (var item in StateModel.PricingData.ItemPrices)
                                                         {
                                                             <SelectItem Value="@item.Name" Disabled="@item.Disabled">@item.Name</SelectItem>
                                                         }
@@ -171,7 +171,7 @@
                     </FieldBody>
                 </Field>
             </Validation>
-            @if (PricingData.ItemPrices.Count != 0)
+            @if (StateModel.PricingData.ItemPrices.Count != 0)
             {
                 <Validation>
                     <Field class="mb-4">
@@ -182,7 +182,7 @@
                             <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
                                 <SelectItem Disabled Value="0">Select Ticket Conditions</SelectItem>
                                 <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
-                                @foreach (var item in PricingData.ItemPrices)
+                                @foreach (var item in StateModel.PricingData.ItemPrices)
                                 {
                                     <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
                                 }
@@ -218,11 +218,7 @@
     [Parameter]
     public EventCallback OnPrevClick { get; set; }
     [Parameter]
-    public OteLocation.ModelData LocationData { get; set; }
-
-    [Parameter]
-    public OtePricing.ModelData PricingData { get; set; }
-
+    public ModelState StateModel { get; set; } = new();
     [Parameter]
     public string Token { get; set; }
     private HowToModal howToModal { get; set; }
@@ -256,14 +252,14 @@
     }
     protected override void OnParametersSet()
     {
-        if (PricingData != null)
+        if (StateModel != null)
         {
             var listOfPricing = new List<OtePricing.ModelData.ItemPrice>();
-            foreach (var item in PricingData.ItemPrices)
+            foreach (var item in StateModel.PricingData.ItemPrices)
             {
                 listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
             }
-            PricingData = new OtePricing.ModelData
+            StateModel.PricingData = new OtePricing.ModelData
             {
                 ItemPrices = listOfPricing
             };
@@ -287,7 +283,7 @@
                         else
                         {
                             allRestrictionDisabled = true;
-                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                            StateModel.PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
                         }
                     }
                 }
@@ -451,7 +447,7 @@
                         else
                         {
                             allRestrictionDisabled = true;
-                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                            StateModel.PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
                         }
                     }
                 }
@@ -477,7 +473,7 @@
                 modelTicketList.TicketInformations.Where(a => a.Id == ticketToDelete.Id).FirstOrDefault().IsDeleted = true;
                 if(ticketToDelete.TicketRestriction != "1")
                 {
-                    PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                    StateModel.PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
                 }
                 var deleteTicket = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
                 {
@@ -516,7 +512,7 @@
                     }
                     else
                     {
-                        PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                        StateModel.PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
                     }
                 }
                 existingList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
@@ -562,14 +558,14 @@
     }
     private void DisableAllPrices()
     {
-        foreach (var item in PricingData.ItemPrices)
+        foreach (var item in StateModel.PricingData.ItemPrices)
         {
             item.Disabled = true;
         }
     }
     private void EnableAllPrices()
     {
-        foreach (var item in PricingData.ItemPrices)
+        foreach (var item in StateModel.PricingData.ItemPrices)
         {
             item.Disabled = false;
         }
@@ -623,5 +619,10 @@
               (string.IsNullOrEmpty(VideoLink) || VideoLink != "0");
             }
         }
+    }
+    public class ModelState
+    {
+        public OteLocation.ModelData LocationData { get; set; } = new();
+        public OtePricing.ModelData PricingData { get; set; } = new();
     }
 }
