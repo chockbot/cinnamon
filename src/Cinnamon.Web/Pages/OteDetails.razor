@@ -854,7 +854,7 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
