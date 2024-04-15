@@ -116,43 +116,33 @@
                     <TableBody>
                         @foreach (var item in FilteredDisbursements)
                         {
-                            var itemList               = JsonConvert.DeserializeObject<PayloadData>(item.Payload);
-                            StudentStringList          = itemList.Students?.Any() == true ? string.Join(", ", itemList.Students.Select(s => s.Name)) : "";
-                            AddOnsStringList           = itemList.AddOnsDetails?.Any() == true ? string.Join(", ", itemList.AddOnsDetails.Select(s => s.AddOnName)) : "";
-                            DateTime? PayoutDate       = item.PayoutDate == DateTime.MinValue ? (DateTime?)null : item.PayoutDate;
-                            string formattedPayoutDate = PayoutDate.HasValue ? PayoutDate.Value.ToString("MMM dd, yyyy") : "TBD"; 
-                            <TableRow>
-                                <TableRowCell class="name-body">@item.CustomerName</TableRowCell>
-                                <TableRowCell class="name-body">@item.Label</TableRowCell>
-                                <TableRowCell class="name-body">@AddOnsStringList</TableRowCell>
-                                <TableRowCell class="name-body">@StudentStringList</TableRowCell>
-                                <TableRowCell class="tr-ticket">
+                            string studentStringList = string.Empty;
+                            string addOnsStringList = string.Empty;
+                            var itemList = JsonConvert.DeserializeObject<PayloadData>(item.Payload);
+
+                            studentStringList = itemList.Students?.Any() == true ? string.Join(", ", itemList.Students.Select(s => s.Name)) : "";
+                            addOnsStringList = itemList.AddOnsDetails?.Any() == true ? string.Join(", ", itemList.AddOnsDetails.Select(s => s.AddOnName)) : "";
+
+                            DateTime? payoutDate = item.PayoutDate == DateTime.MinValue ? (DateTime?)null : item.PayoutDate;
+                            string formattedPayoutDate = payoutDate.HasValue ? payoutDate.Value.ToString("MMM dd, yyyy") : "TBD";
+                            string statusClass = item.Status == "initiated" ? "tr-pending" : "tr-success";
+
+                            <tr>
+                                <td class="name-body">@item.CustomerName</td>
+                                <td class="name-body">@item.Label</td>
+                                <td class="name-body">@addOnsStringList</td>
+                                <td class="name-body">@studentStringList</td>
+                                <td class="tr-ticket">
                                     <span>@item.Amount</span>
-                                    @if(item.Status == "initiated")
-                                    {
-                                        <span>Pending</span>
-                                    }
-                                    else
-                                    {
-                                        <span>Success</span>
-                                    }
-                                </TableRowCell>
-                                <TableRowCell class="name-body">
-                                    @if(item.Status == "initiated")
-                                    {
-                                        <span class="tr-pending">
-                                            Pending
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="tr-success">
-                                            Success
-                                        </span>
-                                    }
-                                </TableRowCell>
-                                <TableRowCell class="name-body">@formattedPayoutDate</TableRowCell>
-                            </TableRow>
+                                    <span>@(item.Status == "initiated" ? "Pending" : "Success")</span>
+                                </td>
+                                <td class="name-body">
+                                    <span class="@statusClass">
+                                        @(item.Status == "initiated" ? "Pending" : "Success")
+                                    </span>
+                                </td>
+                                <td class="name-body">@formattedPayoutDate</td>
+                            </tr>
                         }
                     </TableBody>
                 </Table>
@@ -198,6 +188,7 @@
     private CustomerProfile profile = new CustomerProfile();
     private List<DisbursementsInformationDTO> Disbursements = new();
     private List<DisbursementsInformationDTO> FilteredDisbursements = new();
+    private List<PayloadData> StudentList = new List<PayloadData>();
     public IEnumerable<Student> Students { get; set; }
     public const string PREVIOUS = "previous";
     public const string NEXT     = "next";
