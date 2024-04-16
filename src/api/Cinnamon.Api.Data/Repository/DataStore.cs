@@ -122,6 +122,9 @@ public class DataStore : IDataStore
     public IDynamicContent DynamicContent => new DynamicContentEntity(applicationContext);
 
 
+    public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
+
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

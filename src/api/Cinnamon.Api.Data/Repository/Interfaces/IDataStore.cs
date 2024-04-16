@@ -60,6 +60,7 @@ public interface IDataStore
     IChatUnreadNotification ChatUnreadNotification {get;}
     IAnnouncement Announcement {get;}
     IDynamicContent DynamicContent {get;}
+    IActivitySummary ActivitySummary {get;}
     
     Task EnsureMigrate();
 

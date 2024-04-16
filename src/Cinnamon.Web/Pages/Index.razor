@@ -633,7 +633,7 @@
     protected override async Task OnInitializedAsync()
     {
         //get activities randomly
-        await FetchActivities();
+        FetchActivities();
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
@@ -722,7 +722,8 @@
                 IsDeactivated = false,
                 Status = Framework.Enums.Enums.ActivityStatus.Submitted,
                 IncludeReviews = true,
-                IncludeTickets = true
+                IncludeTickets = true,
+                ForceDisable = false
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -803,6 +804,7 @@
                         };
                 }).ToList();
             }
+            StateHasChanged();
         }
     }
 
