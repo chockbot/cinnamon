@@ -788,4 +788,82 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when forcing disable activities.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    {
+        try
+        {
+            string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+            string searchClause = string.Empty;
+            if(!string.IsNullOrEmpty(search))
+            {
+                searchClause = "and ac.\"Title\" like @search ";
+            }
+
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+                                "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+                                "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+                                "su.\"TotalParticipants\" " +
+                            "from public.\"Activities\" ac " +
+                            "left join public.\"ActivityAddress\" ad " +
+                                "on ac.\"Id\" = ad.\"ActivityId\" " +
+                            "left join public.\"ActivitySummaries\" su " +
+                                "on ac.\"Id\" = su.\"ActivityId\" " +
+                            "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + categoryClause + searchClause +
+                            "order by ac.\"Guid\" " +
+                            "limit " + take + " offset " + skip + " ";
+            
+            IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if(!string.IsNullOrEmpty(search))
+                {
+                    var parameterSearch = new NpgsqlParameter("search", $"%{search}%");
+					command.Parameters.Add(parameterSearch);
+                }
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO {
+                            ActivityId = Convert.ToInt32(item["Id"]),
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            Address = new ActivityFeedDTO.Location {
+                                City = item["CityName"].ToString() ?? string.Empty,
+                                PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+                                Region = item["RegionName"].ToString() ?? string.Empty,
+                            },
+                            SummaryDetails = new ActivityFeedDTO.Summary {
+                                Completed = Convert.ToInt32(item["Completed"]),
+                                ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
+                                Ongoing = Convert.ToInt32(item["Ongoing"]),
+                                ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
+                                TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
+                                TotalReviews = Convert.ToInt32(item["TotalReviews"])
+                            }
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
+        }
+        catch (System.Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+        }       
+    }
 }
