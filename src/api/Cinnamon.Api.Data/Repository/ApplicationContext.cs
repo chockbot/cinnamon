@@ -99,6 +99,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DynamicContent> DynamicContents {get; set;}
 
+    public DbSet<ActivitySummary> ActivitySummaries {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -371,6 +373,14 @@ public class ApplicationContext : IdentityDbContext
         // announcements
         modelBuilder.Entity<Announcement>()
             .HasIndex(a => a.Status);
+
+        // for activity summary
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.ActivityId);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Ongoing);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex("Ongoing", "Completed");
 
     }
 
