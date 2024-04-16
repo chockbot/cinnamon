@@ -1603,10 +1603,7 @@ p.featured-text {
     height: 24px;
   }
 
-  .categories .swiper-slide.category {
-    width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
-
+  
   .categories .schedule-swiper {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -2867,6 +2864,36 @@ a.dropdown-item {
 
 @media screen and (max-width: 767.98px) {
   
+  .container {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #category-section {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .swiper-slide.category {
+    margin-right: 5px !important;
+    width: 28%;
+  }
+
+  div.categories {
+    margin-bottom: 20px;
+    padding-top: 10px;
+    border-radius: 20px;
+    background: rgba(243, 246, 252, 0.5);
+    display: flex;
+    width: 696px;
+    height: 96px;
+  }
+
   .close-button {
     position: absolute;
     top: 10px;
@@ -2904,10 +2931,7 @@ a.dropdown-item {
   .categories-container {
     background-color: transparent;
   }
-  .swiper-slide.category[style] {
-    margin-right: 5px !important;
-    width: 70px;
-  }
+
   .categories-container {
     border: none;
     justify-content: start;
