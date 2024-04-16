@@ -380,8 +380,11 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex(s => s.Ongoing);
         modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.TotalParticipants);
+        modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed");
-
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex("Ongoing", "Completed", "TotalParticipants");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
