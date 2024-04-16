@@ -8,4 +8,5 @@ public class ActivitySummary : BaseEntity
     public int Completed {get; set;}
     public int TotalReviews {get; set;}
     public decimal ReviewAccumulated {get; set;}
+    public int TotalParticipants {get; set;}
 }
