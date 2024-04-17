@@ -676,7 +676,7 @@ public class ActivityController : ControllerBase
     [Route("ActivityFeed")]
     [HttpGet]
     [ProducesResponseType(typeof(ActivityFeedResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ExpiredEvents([FromQuery] ActivityFeedArgs args)
+    public async Task<IActionResult> ActivityFeed([FromQuery] ActivityFeedArgs args)
     {
         try
         {

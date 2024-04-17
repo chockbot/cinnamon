@@ -528,4 +528,25 @@ public class ActivityData: IActivityData
 			return AppResult<ForceDisableActivitiesResult>.CreateFailed(ex, "An error occurred when disabling activities.");
 		}
 	}
+
+	public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/ActivityFeed")
+							.SetQueryParams(args)
+							.GetJsonAsync<ActivityFeedResult>();
+
+			return AppResult<ActivityFeedResult>.CreateSucceeded(result, "Successfully getting get all activity feed.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, "An error occured when getting all activity feed.");
+		}
+	}
 }

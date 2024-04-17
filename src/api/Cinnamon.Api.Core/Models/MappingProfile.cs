@@ -39,5 +39,10 @@ public class MappingProfile : Profile
 
         CreateMap<DataDto.Activity.OteOngoingDTO, ActivityResults.CustomerOteResult.CustomerOte>();
         CreateMap<ActivityResults.CustomerOteResult.CustomerOte, CoreDto.Activity.CustomerOteDTO>();
+
+        // for activity feed mappings
+        CreateMap<DataDto.Activity.ActivityFeedDTO, ActivityResults.ActivityFeedResult.ActivityFeed>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Location, ActivityResults.ActivityFeedResult.Location>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Summary, ActivityResults.ActivityFeedResult.Summary>();
     }
 }
