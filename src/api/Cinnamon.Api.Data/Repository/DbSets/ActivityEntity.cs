@@ -803,7 +803,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
                                 "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
                                 "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-                                "su.\"TotalParticipants\" " +
+                                "su.\"TotalParticipants\", ac.\"Price\" " +
                             "from public.\"Activities\" ac " +
                             "left join public.\"ActivityAddress\" ad " +
                                 "on ac.\"Id\" = ad.\"ActivityId\" " +
@@ -840,6 +840,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
                             ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
                             Handler = item["Handler"].ToString() ?? string.Empty,
+                            Price = item["Price"].ToString() ?? string.Empty,
                             Title = item["Title"].ToString() ?? string.Empty,
                             Address = new ActivityFeedDTO.Location {
                                 City = item["CityName"].ToString() ?? string.Empty,

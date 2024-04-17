@@ -11,6 +11,7 @@ public class ActivityFeedResult
         public string Handler {get; set;}
         public int ExperienceTypeId {get; set;}
         public int ExperienceCreationTypeId {get; set;}
+        public string Price {get; set;}
         public Location Address {get; set;}
         public Summary SummaryDetails {get; set;}
     }
