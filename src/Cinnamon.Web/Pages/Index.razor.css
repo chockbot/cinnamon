@@ -1222,7 +1222,10 @@ p.featured-text {
 
   #explore_button {
     width: 85.2px;
-    height: 40px;
+    height: 41px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .button_txt {
@@ -1264,6 +1267,7 @@ p.featured-text {
   #search_bar {
     width: 376.32px;
     height: 50px;
+    padding-right: 4px;
     border-radius: 16px;
     background: #FFF;
     box-shadow: 1.92px 5.76px 7.68px 0px rgba(113, 113, 113, 0.20);
@@ -1580,6 +1584,10 @@ p.featured-text {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
 
+  .search-image {
+    display: none;
+  }
+
   .hero_title {
     width: 601px;
     font-family: nunito-extrabold;
@@ -1806,6 +1814,10 @@ p.featured-text {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
 
+  .search-image {
+    display: none;
+  }
+
 	.featured-text {
     text-align: center;
     font-family: Nunito;
@@ -1981,6 +1993,10 @@ p.featured-text {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  .search-image {
+    display: none;
+  }
 
 	.cinnamon-welcome {
     font-family: Nunito;
@@ -2318,6 +2334,10 @@ p.featured-text {
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
  
+  .search-image {
+    display: none;
+  }
+
   .marketplace-content p {
     right: 6.5rem;
   }
@@ -2490,6 +2510,10 @@ p.featured-text {
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+
+  .search-image {
+    display: none;
+  }
 
   .hero_title {
     font-size: 64px;
@@ -2972,6 +2996,7 @@ a.dropdown-item {
 
 @media screen and (max-width: 767.98px) {
 
+
   .container {
     display: grid;
     align-items: center;
@@ -3010,7 +3035,6 @@ a.dropdown-item {
 
   .search_bar {
     width: 626px;
-    height: 70px;
     justify-content: center;
     border-radius: 20px;
     background: #FFF;
@@ -3649,6 +3673,7 @@ a.dropdown-item {
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
 
+
   .cinnamon-welcome {
     font-family: Nunito;
     font-size: 20px;
@@ -4166,6 +4191,7 @@ a.dropdown-item {
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
 
+
   .hero_title {
     color: #343d4c;
     text-align: center;
@@ -4208,8 +4234,6 @@ a.dropdown-item {
   }
 
   .search_bar {
-    height: 68px;
-    padding-right: 6.5px;
     padding-bottom: 2px;
   }
 
@@ -4309,8 +4333,12 @@ a.dropdown-item {
 }
 
 
-@media only screen and (min-width: 820px) and (min-height: 1180px) {
-  
+@media only screen and (min-width: 820px) and (min-height: 1199.98px) {
+
+  #search-image {
+    display: none;
+  }
+
   .section-marketplace .featured-text {
     text-align: center;
     font-family: nunito-extrabold;
