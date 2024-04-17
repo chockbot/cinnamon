@@ -1,0 +1,11 @@
+using Cinnamon.Framework.Interactor;
+
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
+
+public class ActivityFeedArgs : IInteractor
+{
+    public int Skip {get; set;}
+    public int Take {get; set;}
+    public string? Search {get; set;}
+    public int? CategoryId {get; set;}
+}

@@ -2184,4 +2184,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<bool>.CreateFailed(ex, "An error occurred while deleting ticket and associated tickets");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(result.Result, "Successfully get activity feed.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+        }
+    }
 }
