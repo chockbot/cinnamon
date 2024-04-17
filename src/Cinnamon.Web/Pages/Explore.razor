@@ -576,10 +576,6 @@
                         <label class="heading">Explore More</label>
                     </div>
                 </div>
-                @if (activityFeeds.Count > 0)
-                {
-                    InitializeCarouselSwipe();
-                }
                 @foreach (var act in activityFeeds)
                 {
                     <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
@@ -597,7 +593,7 @@
                                                     <div class="ongoing-section">
                                                         <div class="active-badge" style="text-align:center">
                                                             <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
+                                                            <span class="active-tag-label">@(act.ExperienceCreationTypeId == 3 ? act.SummaryDetails.TotalParticipants : act.SummaryDetails.Ongoing)</span>
                                                         </div>
                                                     </div>
                                                 </TextContent>
@@ -745,28 +741,20 @@
     public ExperienceType exptype = new ExperienceType();
     public List<ExperienceCategory> categories = new List<ExperienceCategory>();
     public List<ExperienceType> experiencesType = new List<ExperienceType>();
-    public List<Activity> filteredActivities = new List<Activity>();
     private List<PopularActivitiy> popularActivities = new List<PopularActivitiy>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    public List<Favorite> Favorites = new List<Favorite>();
     public string searchValue = string.Empty;
-    public string filterId = string.Empty;
-    public int cnt = 0;
-    public int cntCategories = 0;
     public int? experienceCategoryId = null;
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
-    private string value { get; set; }
     public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
     private ModalFinishSignUp modalFinishSignUp { get; set; }
     private ModalPassword modalPassword { get; set; }
-    private ModalLogin modalLogin { get; set; }
 
     private int pageIndex = 1;
     private int pageIndexPopularActivities = 1;
     private bool isLoading = false;
-    private bool showOverlay = false;
     private bool showOverlayPopularActivities = false;
     private bool hasNoMoreRecords = false;
     private bool hasNewMessages = false;
@@ -803,8 +791,6 @@
     public DateTime Birthday { get; set; } = DateTime.Now;
 
     private string redirectUrl {get; set;} = string.Empty;
-
-    private IAnimation selectedAnimation = Animations.FadeIn;
 
     public bool isLoginFB { get; set; } = false;
 
@@ -883,7 +869,6 @@
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
         await InitializeSwiper();
-        await InitializeCarouselSwipe();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         //Check if login via FB
@@ -1371,11 +1356,6 @@
     private async Task InitializeSwiper()
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
-    }
-
-    private async Task InitializeCarouselSwipe()
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
     }
 
     private IList<string> GetKeyWords()
