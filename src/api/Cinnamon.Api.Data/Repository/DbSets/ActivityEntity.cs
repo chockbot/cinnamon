@@ -868,4 +868,143 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
         }       
     }
+
+    public async Task<AppResult<bool>> BatchSummaryUpdate()
+    {
+        try
+        {
+            string query = "Begin; " +
+                               "with activities as ( " +
+                                   "select ac.\"Id\", " +
+                                       "case when ai.\"ImageLocation\" is null then '' else ai.\"ImageLocation\" end as \"ImageLocation\", " +
+                                       "Row_Number() over (partition by ac.\"Id\" order by ac.\"Id\", ai.\"Order\") as \"RowCnt\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"ActivityImages\" ai " +
+                                       "on ac.\"Id\" = ai.\"ActivityId\" " +
+                               ") " +
+                               "insert into public.\"ActivitySummaries\" " +
+                               "(\"ActivityId\", \"ImageBannerSrc\", \"Ongoing\", \"Completed\", \"TotalReviews\", \"ReviewAccumulated\", " +
+                                   "\"CreatedOn\", \"CreatedBy\", \"ChangedOn\", \"ChangedBy\", \"TotalParticipants\") " +
+                               "select ac.\"Id\" \"ActivityId\", ac.\"ImageLocation\", 0, 0, 0, 0, " +
+                                   "current_timestamp, 0, current_timestamp, 0, 0 " +
+                               "from activities ac " +
+                               "left join public.\"ActivitySummaries\" sm " +
+                                   "on sm.\"ActivityId\" = ac.\"Id\" " +
+                               "where ac.\"RowCnt\" = 1 and sm.\"Id\" is null; " +
+                                
+                               "with ongoingStundents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Ongoing\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "where (st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
+                                       "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date(current_timestamp) " +
+                                                   "and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Ongoing\" = og.\"Ongoing\" " +
+                               "from ongoingStundents og " +
+                               "where sm.\"ActivityId\" = og.\"ActivityId\" and og.\"Ongoing\" != sm.\"Ongoing\"; " +
+
+                               "with withCompletedStudents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "where (st.\"SessionsAttended\" >= st.\"NumberOfSessions\") or " +
+                                       "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Completed\" = cm.\"Completed\" " +
+                               "from withCompletedStudents cm " +
+                               "where sm.\"ActivityId\" = cm.\"ActivityId\" and sm.\"Completed\" != cm.\"Completed\"; " +
+
+                               "with withTotalStudents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"TotalParticipants\" = st.\"TotalParticipants\" " +
+                               "from withTotalStudents st " +
+                               "where sm.\"ActivityId\" = st.\"ActivityId\" " +
+                                   "and st.\"TotalParticipants\" != sm.\"TotalParticipants\"; " +
+
+                               "with withOngoingOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"Ongoing\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ac.\"Id\" = ot.\"ActivityId\" " +
+                                   "where ot.\"Status\" = 'UNVERIFIED' " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Ongoing\" = ote.\"Ongoing\" " +
+                               "from withOngoingOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"Ongoing\" != ote.\"Ongoing\"; " +
+
+                               "with withCompletedOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"Completed\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ac.\"Id\" = ot.\"ActivityId\" " +
+                                   "where ot.\"Status\" = 'VERIFIED' " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Completed\" = ote.\"Completed\" " +
+                               "from withCompletedOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"Completed\" != ote.\"Completed\"; " +
+
+                               "with withTotalOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"TotalParticipants\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ot.\"ActivityId\" = ac.\"Id\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"TotalParticipants\" = ote.\"TotalParticipants\" " +
+                               "from withTotalOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"TotalParticipants\" != ote.\"TotalParticipants\"; " +
+
+                               "with withTotalRatings as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
+                                       "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"Reviews\" ar " +
+                                       "on ac.\"Id\" = ar.\"ActivityId\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
+                               "from withTotalRatings rt " +
+                               "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
+                                   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
+                           "commit; ";
+            
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully update activity summary.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
+        }
+    }
 }
