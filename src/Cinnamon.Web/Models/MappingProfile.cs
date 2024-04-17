@@ -18,5 +18,10 @@ public class MappingProfile : Profile
             .ForMember(d => d.ProfilePath, o => o.MapFrom(s => s.ProfileImg));
         
         CreateMap<CoreDto.Customer.ProfileDTO, Entities.CustomerProfile>();
+
+        // activity feed mappings
+        CreateMap<CoreDto.Activity.ActivityFeedDTO, Entities.ActivityFeed>();
+        CreateMap<CoreDto.Activity.ActivityFeedDTO.Location, Entities.ActivityFeed.Location>();
+        CreateMap<CoreDto.Activity.ActivityFeedDTO.Summary, Entities.ActivityFeed.Summary>();
     }
 }

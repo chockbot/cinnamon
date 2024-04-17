@@ -78,6 +78,7 @@ public class ActivityController : ControllerBase
     private readonly IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler;
     private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
+    private readonly IActivityFeedHandler activityFeedHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -103,7 +104,8 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IDeleteTicketHandler deleteTicketHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IDeleteTicketHandler deleteTicketHandler,
+        IActivityFeedHandler activityFeedHandler)
     {
         _logger = logger;
 
@@ -163,6 +165,7 @@ public class ActivityController : ControllerBase
         this.deleteOnlineEventHandler = deleteOnlineEventHandler;
         this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
         this.deleteTicketHandler = deleteTicketHandler;
+        this.activityFeedHandler = activityFeedHandler;
     }
 
     [Route("CreateActivity")]
@@ -3195,4 +3198,38 @@ public class ActivityController : ControllerBase
         }
     }
 
+
+    [AllowAnonymous]
+    [Route("ActivityFeed")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ActivityFeedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ActivityFeed([FromQuery] ActivityFeedArgs args)
+    {
+        try
+        {
+            var result = await activityFeedHandler.ExecuteAsync(new Services.ActivityService.Interactors.ActivityFeedArgs {
+                CategoryId = args.CategoryId,
+                Search = args.Search,
+                Skip = args.Skip,
+                Take = args.Take
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.ActivityFeedDTO>>(result.Result.ActivityFeeds);
+
+            return new JsonResult(new ActivityFeedResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

@@ -549,4 +549,25 @@ public class ActivityData: IActivityData
 			return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when deleting ticket.");
 		}
 	}
+
+	public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/ActivityFeed")
+							.SetQueryParams(args)
+							.GetJsonAsync<ActivityFeedResult>();
+
+			return AppResult<ActivityFeedResult>.CreateSucceeded(result, "Successfully getting get all activity feed.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, "An error occured when getting all activity feed.");
+		}
+	}
 }
