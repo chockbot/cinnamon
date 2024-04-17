@@ -44,5 +44,8 @@ public class MappingProfile : Profile
         CreateMap<DataDto.Activity.ActivityFeedDTO, ActivityResults.ActivityFeedResult.ActivityFeed>();
         CreateMap<DataDto.Activity.ActivityFeedDTO.Location, ActivityResults.ActivityFeedResult.Location>();
         CreateMap<DataDto.Activity.ActivityFeedDTO.Summary, ActivityResults.ActivityFeedResult.Summary>();
+        CreateMap<ActivityResults.ActivityFeedResult.ActivityFeed, CoreDto.Activity.ActivityFeedDTO>();
+        CreateMap<ActivityResults.ActivityFeedResult.Location, CoreDto.Activity.ActivityFeedDTO.Location>();
+        CreateMap<ActivityResults.ActivityFeedResult.Summary, CoreDto.Activity.ActivityFeedDTO.Summary>();
     }
 }
