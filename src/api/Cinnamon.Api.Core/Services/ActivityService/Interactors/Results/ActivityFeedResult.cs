@@ -12,6 +12,7 @@ public class ActivityFeedResult
         public int ExperienceTypeId {get; set;}
         public int ExperienceCreationTypeId {get; set;}
         public string Price {get; set;}
+        public bool IsNew {get; set;}
         public Location Address {get; set;}
         public Summary SummaryDetails {get; set;}
     }

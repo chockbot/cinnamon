@@ -803,7 +803,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
                                 "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
                                 "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-                                "su.\"TotalParticipants\", ac.\"Price\" " +
+                                "su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\" " +
                             "from public.\"Activities\" ac " +
                             "left join public.\"ActivityAddress\" ad " +
                                 "on ac.\"Id\" = ad.\"ActivityId\" " +
@@ -842,6 +842,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             Handler = item["Handler"].ToString() ?? string.Empty,
                             Price = item["Price"].ToString() ?? string.Empty,
                             Title = item["Title"].ToString() ?? string.Empty,
+                            IsNew = Convert.ToBoolean(item["IsNew"]),
                             Address = new ActivityFeedDTO.Location {
                                 City = item["CityName"].ToString() ?? string.Empty,
                                 PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
