@@ -74,4 +74,5 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
     Task<AppResult<bool>> DeleteTicket(int Id);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null);
+    Task<AppResult<bool>> BatchSummaryUpdate();
 }

@@ -734,4 +734,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("BatchSummaryUpdate")]
+    [HttpPost]
+    [ProducesResponseType(typeof(BatchSummaryUpdateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BatchSummaryUpdate()
+    {
+        try
+        {
+            var result = await activityRepository.BatchSummaryUpdate();
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BatchSummaryUpdateResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

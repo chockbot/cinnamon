@@ -2202,4 +2202,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
         }
     }
+
+    public async Task<AppResult<bool>> BatchSummaryUpdate()
+    {
+        try
+        {
+            var result = await dataStore.Activity.BatchSummaryUpdate();
+            if(!result.Succeeded || !result.Result)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(result.Result, "Successfully update summary activities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
+        }
+    }
 }
