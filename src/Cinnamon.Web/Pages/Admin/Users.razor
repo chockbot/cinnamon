@@ -32,9 +32,12 @@
         </label>
         <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
             <div class="searchBar">
-                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                    <form @onsubmit="Search">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                        autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                    </form>
             </div>
-        </div>
+        </div>  
     </div>
 
     <div class="users-section mx-0">
@@ -100,32 +103,56 @@
                     </TableBody>
                 </Table>
             </div>
-<Pagination>
-    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous" Style="border-radius: 50%;">
-        <PaginationLink Style="border-radius: 50%;">
-            <span aria-hidden="true">«</span>
-        </PaginationLink>
-    </PaginationItem>
-    @{
-        for (var i = 1; i <= pageItems; i++)
-        {
-            var pageNumberAsString = i.ToString();
-            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
-                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
-                    @pageNumberAsString
+        </div>
+        <div class="pagination-main">
+        <Pagination>
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink Style="border-radius: 50%;">
+                    <span aria-hidden="true">«</span>
                 </PaginationLink>
-            </PaginationItem>
-        } 
-    }
-    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
-        <PaginationLink Style="border-radius: 50%;">
-            <span aria-hidden="true">»</span>
-        </PaginationLink>
-    </PaginationItem>
-</Pagination>
+                </PaginationItem>
+                @{
+                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
+                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
+                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
 
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <div class="pagination-item">
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                </div>
+                }
 
-           
+                if (endPage < lastPage - 1)
+                {
+                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
+                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
+                    </PaginationItem>
+                }
+
+                if (lastPage > endPage)
+                {
+                    var pageNumberAsString = lastPage.ToString();
+                    <div class="pagination-item">
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
+                    </div>
+                }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
+                    <PaginationLink Style="border-radius: 50%;">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
         </div>
     </div>
 </section>
@@ -137,11 +164,14 @@
     public List<CustomerProfile> customers = new List<CustomerProfile>();
     protected ViewImageModal viewImageModal = new ViewImageModal();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    public string searchValue = string.Empty;
     private const string PREVIOUS = "previous";
     private const string NEXT = "next";
     private string currentPage = "1";
     private int pageItems = 1;
     string token = string.Empty;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -159,6 +189,7 @@
         var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
             {
                 CountPerPage = 10,
+                SearchValue = searchValue,
                 PageIndex = pageIndex
             }, token);
 
@@ -268,20 +299,39 @@
         }
     }
 
+    public async Task Search()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
+            await GetAllCustomers(1);
+        }
+    }
+
+    public async Task Clear()
+    {
+        searchValue = string.Empty;
+        await GetAllCustomers(1);
+    }
+
    
 
     private bool IsActive(string page)
         => currentPage == page;
 
-    private bool IsPageNavigationDisabled(string navigation )
+    bool IsPageNavigationDisabled(string direction)
     {
-        if (navigation.Equals(PREVIOUS))
+        var currentPageAsInt = int.Parse(currentPage);
+        if (direction == NEXT)
         {
-            return currentPage.Equals("1");
+            return currentPageAsInt >= Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
         }
-        else if (navigation.Equals(NEXT))
+        else if (direction == PREVIOUS)
         {
-            return currentPage.Equals(pageItems.ToString());
+            return currentPageAsInt <= 1;
         }
         return false;
     }

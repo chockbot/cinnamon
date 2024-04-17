@@ -108,19 +108,56 @@
                     }
                 </TableBody>
             </Table>
-            <Pagination class="pagination-section mt-3">
+            <div class="pagination-main">
+        <Pagination>
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink Style="border-radius: 50%;">
+                    <span aria-hidden="true">«</span>
+                </PaginationLink>
+                </PaginationItem>
                 @{
-                    for (var i = 1; i <= Pagination.TotalPages; i++)
-                    {
-                        var pageNumberAsString = i.ToString();
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
+                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
+                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <div class="pagination-item">
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                </div>
+                }
+
+                if (endPage < lastPage - 1)
+                {
+                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
+                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
+                    </PaginationItem>
+                }
+
+                if (lastPage > endPage)
+                {
+                    var pageNumberAsString = lastPage.ToString();
+                    <div class="pagination-item">
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
                                 @pageNumberAsString
                             </PaginationLink>
                         </PaginationItem>
-                    }
+                    </div>
                 }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
+                    <PaginationLink Style="border-radius: 50%;">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
             </Pagination>
+        </div>
         </div>
     </div>
 
@@ -131,7 +168,10 @@
     public ClaimsPrincipal AuthState { get; set; }
     public List<Requested> refundRequests = new List<Requested>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
     private string currentPage = "1";
+    private int pageItems = 1;
     string token = string.Empty;
     private int refundStatus = 0;
     protected override async Task OnInitializedAsync()
@@ -139,6 +179,7 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         token = user.FindFirstValue("Token");
         AuthState = user;
+
 
         await GetAllRefundRequests(1, refundStatus);
     }
@@ -228,6 +269,39 @@
    
     private bool IsActive(string page)
         => currentPage == page;
+
+    bool IsPageNavigationDisabled(string direction)
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (direction == NEXT)
+        {
+            return currentPageAsInt >= Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+        }
+        else if (direction == PREVIOUS)
+        {
+            return currentPageAsInt <= 1;
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1 )
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+        }
+    }
+
+    private void Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < pageItems )
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+        }
+    }
+
 
     private async Task SetActive(string page)
     {

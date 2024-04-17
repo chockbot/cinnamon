@@ -79,21 +79,56 @@
                     }
                 </TableBody>
             </Table>
-             <div style="display: flex; overflow-x: auto; max-width: 200px;">
-            <Pagination Class="pagination-section">
+        <div class="pagination-main">
+        <Pagination>
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink Style="border-radius: 50%;">
+                    <span aria-hidden="true">«</span>
+                </PaginationLink>
+                </PaginationItem>
                 @{
-                    for (var i = 1; i <= Pagination.TotalPages; i++)
-                    {
-                        var pageNumberAsString = i.ToString();
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
+                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
+                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <div class="pagination-item">
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                </div>
+                }
+
+                if (endPage < lastPage - 1)
+                {
+                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
+                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
+                    </PaginationItem>
+                }
+
+                if (lastPage > endPage)
+                {
+                    var pageNumberAsString = lastPage.ToString();
+                    <div class="pagination-item">
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
                                 @pageNumberAsString
                             </PaginationLink>
                         </PaginationItem>
-                    }
+                    </div>
                 }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
+                    <PaginationLink Style="border-radius: 50%;">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
             </Pagination>
-             </div>
+        </div>
         </div>
     </div>
 </section>
@@ -104,7 +139,10 @@
     public ClaimsPrincipal AuthState { get; set; }
     public List<Activity> activities = new List<Activity>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
     private string currentPage = "1";
+    private int pageItems = 1;
     string token = string.Empty;
     public string searchValue = string.Empty;
 
@@ -113,6 +151,9 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         token = user.FindFirstValue("Token");
         AuthState = user;
+        await GetAllActivities(int.Parse(currentPage));
+        pageItems = activities.Count;
+    
 
         await GetAllActivities(1);
     }
@@ -262,17 +303,49 @@ LastName = r.Owner.LastName
         }
     }
 
+    private bool IsPageNavigationDisabled(string navigation )
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(pageItems.ToString());
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1 )
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+        }
+    }
+
+    private void Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < pageItems )
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+        }
+    }
+
+
     public async Task Search()
-{
-    if (string.IsNullOrEmpty(searchValue))
     {
-        await Clear();
-    }
-    else
-    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            await Clear();
+        }
+        else
+        {
         await GetAllActivities(1);
+        }
     }
-}
 
     public async Task Clear()
     {
