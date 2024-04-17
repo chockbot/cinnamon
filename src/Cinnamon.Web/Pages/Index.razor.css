@@ -551,6 +551,10 @@ p.featured-text {
   width: 100%;
   background-color: #f3f6fc;
   position: relative;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer-content {
@@ -564,19 +568,13 @@ p.featured-text {
   font-size: 1.8rem;
 }
 
-.footer-text {
-  font-family: "Inter";
-  font-size: 1.1rem;
-}
 
 .btn-primary {
   background-color: var(--primary);
   border-color: var(--primary);
 }
 
-.social-media-container {
-  margin: 10px 0;
-}
+
 
 .carousel-indicators button {
   background-color: #ffa942;
@@ -1814,6 +1812,7 @@ p.featured-text {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
 
+  
   .search-image {
     display: none;
   }
@@ -1993,6 +1992,15 @@ p.featured-text {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  .footer-text {
+    color: #343D4C;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
 
   .search-image {
     display: none;
@@ -2297,13 +2305,12 @@ p.featured-text {
 		justify-content: center;
 		display: flex;
 		padding-top: 30px;
-		margin-left: 70px;
 
 	}
 
 	.footer-content .footer-appname, 
 	.footer-content .footer-text {
-		margin-right: 200px;
+		margin-right: 150px;
 	}
 
 	.social-media-container a:nth-child(1), 
@@ -2402,13 +2409,14 @@ p.featured-text {
 
   .footer-text {
     font-family: Montserrat;
-    font-size: 0.72rem;
     color: #343d4c;
+    align-items: center;
+    display: flex;
+    font-family: Montserrat;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    align-items: center;
-    display: flex;
   }
 
 
@@ -2438,7 +2446,7 @@ p.featured-text {
 
   .footer-content .footer-appname,
   .footer-content .footer-text {
-    margin-right: 200px;
+    margin-right: 150px;
   }
 
   .testimonial-content {
@@ -2511,6 +2519,10 @@ p.featured-text {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
 
+  .social-media-container {
+    margin: 10px 0;
+  }
+
   .search-image {
     display: none;
   }
@@ -2527,8 +2539,12 @@ p.featured-text {
   }
 
   .footer-text {
+    color: #343D4C;
     font-family: Montserrat;
-    font-size: 1.1rem;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
   }
 
   .testimonial-items {
@@ -3673,6 +3689,9 @@ a.dropdown-item {
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
 
+   #footer-txt {
+    margin-right: 100px;
+  }
 
   .cinnamon-welcome {
     font-family: Nunito;
