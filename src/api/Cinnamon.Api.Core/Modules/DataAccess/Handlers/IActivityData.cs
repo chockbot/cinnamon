@@ -36,4 +36,5 @@ public interface IActivityData
     Task<AppResult<ExpiredEventsResult>> ExpiredEvents();
     Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
+    Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
 }
