@@ -96,10 +96,10 @@ should have Available dates, Selected Dates, *@
             }
             else
             {
-                var eventStart = SelectedDates.FirstOrDefault();
-                var date = new DateTime(now.Year, now.Month, i - skipCount, eventStart.TimeOfDay.Hours, eventStart.TimeOfDay.Minutes, eventStart.TimeOfDay.Seconds);
+                var currentDateTime = DateTime.UtcNow;
+                var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
                 var selected = SelectedDates.Any(a => a.Date == date.Date);
-                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a.Date < DateTime.UtcNow);
+                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a.Date <= currentDateTime);
                 calendarItems.Add(new CalendarItem {
                     Empty = false,
                     Date = date,
