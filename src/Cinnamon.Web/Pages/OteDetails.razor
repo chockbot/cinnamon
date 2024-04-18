@@ -854,7 +854,7 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
@@ -940,7 +940,7 @@
             IList<DateTime> dates = new List<DateTime>();
             if(activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.Date).ToList();
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
             }
             return dates;
         }
