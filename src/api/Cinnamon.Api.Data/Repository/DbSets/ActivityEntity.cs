@@ -797,7 +797,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             string searchClause = string.Empty;
             if(!string.IsNullOrEmpty(search))
             {
-                searchClause = "and ac.\"Title\" like @search ";
+                searchClause = "and ac.\"Title\" Ilike @search ";
             }
 
             string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
