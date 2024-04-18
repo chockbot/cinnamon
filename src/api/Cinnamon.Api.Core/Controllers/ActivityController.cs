@@ -2492,34 +2492,12 @@ public class ActivityController : ControllerBase
                 return new JsonResult(new PopularActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new PopularActivitiesResult
+            var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.ActivityFeedDTO>>(result.Result.ActivityFeeds);
+
+            return new JsonResult(new ActivityFeedResult
             {
                 IsSuccess = true,
-                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO
-                {
-                    Activities = result.Result.Activities.Select(a =>
-                    {
-                        return new Framework.ApiCommand.ApiCore.DTO.Activity.PopularActivitiesDTO.PopularActivity
-                        {
-                            CityName                 = a.CityName,
-                            ExperienceTypeId         = a.ExperienceTypeId,
-                            Handler                  = a.Handler,
-                            Id                       = a.Id,
-                            ImageSrc                 = a.ImageSrc,
-                            IsNew                    = a.IsNew,
-                            MakerId                  = a.MakerId,
-                            OngoingStudentCount      = a.OngoingStudentCount,
-                            Price                    = a.Price,
-                            Rating                   = a.Rating,
-                            RegionName               = a.RegionName,
-                            ReviewCount              = a.ReviewCount,
-                            StudentCount             = a.StudentCount,
-                            Title                    = a.Title,
-                            ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                            PinnedLocation           = a.PinnedLocation,
-                        };
-                    })
-                }
+                Result = mapResults,
             });
         }
         catch (Exception ex)
