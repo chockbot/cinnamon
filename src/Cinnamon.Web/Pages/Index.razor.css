@@ -504,15 +504,6 @@ p.featured-text {
   color: #717171;
 }
 
-.btn-sign-up {
-  background-color: #ffa942;
-  color: white;
-  font-weight: 900;
-  font-family: "Nunito";
-  padding: 15px 15px;
-  border-radius: 30px;
-  margin-top: 4rem;
-}
 
 .cinnamon-text-title {
   color: #343d4c;
@@ -778,9 +769,6 @@ p.featured-text {
   color: #343d4c;
 }
 
-.star-tag-badge {
-  /*margin-right: 10px;*/
-}
 
 .pulse-section {
   text-align: right;
@@ -1064,8 +1052,7 @@ p.featured-text {
   position: absolute;
   bottom: 0%;
   left: 40%;
-  /*	width: 137.7px;
-	height: auto;*/
+  display: none;
 }
 
 .become {
@@ -1203,11 +1190,70 @@ p.featured-text {
   margin-bottom: 1rem;
 }
 
+
+
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
 
-  .main {
-    /*display: block;*/
+  #category-section {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  .footer {
+    height: 66px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  .social-media-container a:nth-child(1), 
+  .social-media-container a:nth-child(2){
+    margin-right: 13px;
+  }
+
+  .footer-content .footer-appname,
+  .footer-content .footer-text {
+    margin-right: 90px;
+  }
+
+  .social-media-container 
+  a#fb-icon svg, 
+  a#ig-icon svg,
+  a#linkedin-icon svg {
+    width: 5px;
+    height: 10.9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .footer-appname {
+    color: #FFA942;
+    font-family: Backline;
+    font-size: 13.5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .footer-text {
+    color: #343D4C;
+    font-family: Montserrat;
+    font-size: 8.438px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-right: 100px;
   }
 
   .search {
@@ -1493,8 +1539,6 @@ p.featured-text {
     padding: 0px;
   }
 
-  .star-tag-badge {
-  }
 
   .pulse-complete {
     width: 14px;
@@ -1582,7 +1626,10 @@ p.featured-text {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
 
-  
+  .activity-ellipse {
+    display: none;
+  }
+
   .footer {
     background: #FFF;
     display: flex;
@@ -1598,12 +1645,11 @@ p.featured-text {
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    margin-right: 110px;
   }
 
   .social-media-container a:nth-child(1), 
   .social-media-container a:nth-child(2) {
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
   .footer-text {
@@ -1613,7 +1659,6 @@ p.featured-text {
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    margin-right: 110px;
   }
 
   .footer-content {
@@ -1626,7 +1671,14 @@ p.featured-text {
     margin-top: 35px;
   }
 
-  .social-media-container a#fb-icon svg, 
+  .footer-content .footer-appname,
+  .footer-content .footer-text {
+    margin-right: 90px;
+    flex-shrink: 0;
+}
+
+  .social-media-container 
+  a#fb-icon svg, 
   a#ig-icon svg,
   a#linkedin-icon svg {
     width: 10px;
@@ -1812,8 +1864,6 @@ p.featured-text {
     padding: 0px;
   }
 
-  .star-tag-badge {
-  }
 
   .active-badge-section {
     padding: 0px;
@@ -1866,8 +1916,11 @@ p.featured-text {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+ 
+  .activity-ellipse {
+    display: none;
+  }
 
-  
   .search-image {
     display: none;
   }
@@ -2047,6 +2100,70 @@ p.featured-text {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  .btn-sign-up {
+    background-color: #ffa942;
+    color: white;
+    font-weight: 700;
+    font-family: "Nunito";
+    font-size: 20px;
+    margin-top: 15px;
+    width: 172.5px;
+    height: 48px;
+    border-radius: 40px;
+  }
+
+  #btn-txt {
+    color: #FFF;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  .become-title {
+    color: #343D4C;
+    font-family: Nunito-extrabold;
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+  }
+
+  .become-description {
+    width: 479px;
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+  }
+
+  .activity-provider {
+    width: 344.25px;
+    height: 428.25px;
+    top: -20.4%;
+    margin-right: 42px;
+  }
+
+  .activity-ellipse {
+    width: 250.5px;
+    height: 245.25px;
+    margin-top: 43.9%;
+    border-bottom-right-radius: 33.75px;
+  } 
+
+  .activity-content {
+    position: relative;
+    border-radius: 45px;
+    background-color: #f3f6fc;
+    display: flex;
+    justify-content: space-between;
+    height: 356px;
+    border-radius: 33.75px;
+  }
 
   .footer-text {
     color: #343D4C;
@@ -2293,14 +2410,6 @@ p.featured-text {
     justify-content: center;
   }
 
-  .activity-provider {
-    position: absolute;
-    height: 600px;
-    margin-right: 1rem;
-    top: -26.5%;
-    right: 0%;
-  }
-
   .become {
     margin: 4rem 0 0 2rem;
     z-index: 1;
@@ -2487,7 +2596,8 @@ p.featured-text {
     top: 10%;
     display: flex;
     align-items: center;
-	margin-left: 0;
+	  margin-left: 0;
+    margin-top: 18px;
   }
 
   .footer {
@@ -2573,6 +2683,47 @@ p.featured-text {
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+
+  .btn-sign-up {
+    background-color: #ffa942;
+    color: white;
+    font-weight: 700;
+    font-family: "Nunito";
+    font-size: 24px;
+    padding: 15px 15px;
+    margin-top: 25px;
+    width: 220px;
+    width: 230px;
+    height: 64px;
+    border-radius: 40px;
+  }
+
+  .activity-provider {
+    position: absolute;
+    height: 600px;
+    top: -26%;
+    right: 0%;
+    margin-right: 2rem;
+  }
+
+  .activity-content {
+    position: relative;
+    border-radius: 45px;
+    background-color: #f3f6fc;
+    display: flex;
+    justify-content: space-between;
+    height: 475px;
+  }
+
+  .activity-ellipse {
+    margin-top: 66%;
+    border-bottom-right-radius: 45px;
+  }
+
+
+  .become-elipse {
+    display: none;
+  }
 
   .social-media-container {
     margin: 10px 0;
@@ -2765,30 +2916,12 @@ img.search_icon {
 }
 
 
-
-
 .container {
   display: grid;
   align-items: center;
   padding: 0;
 }
 
-.activity-content {
-  position: relative;
-  border-radius: 45px;
-  background-color: #f3f6fc;
-  display: flex;
-  justify-content: space-between;
-  height: 475px;
-}
-
-.activity-provider {
-  position: absolute;
-  height: 600px;
-  top: -26%;
-  right: 0%;
-  margin-right: 2rem;
-}
 
 .testimonial-content {
   display: flex;
@@ -2808,17 +2941,6 @@ img.search_icon {
   gap: 30px;
 }
 
-.section2-container-desktop {
-  /*height: 1000px;*/
-}
-
-.section4-container-desktop {
-  /* height: 500px;*/
-}
-
-.section6-container-desktop {
-  /*height: 1500px;*/
-}
 
 .top-row {
   background-color: white;
@@ -2925,15 +3047,6 @@ a.dropdown-item {
   font-family: "Nunito-Bold";
 }
 
-#btnExploreMore {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 27px;
-  color: #ffffff;
-  width: 220px;
-}
 
 .card-img.img-fluid {
   width: 278px;
@@ -3731,6 +3844,10 @@ a.dropdown-item {
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
 
+  .activity-ellipse {
+    display: none;
+  }
+
    #footer-txt {
     margin-right: 100px;
   }
@@ -4397,6 +4514,10 @@ a.dropdown-item {
 @media only screen and (min-width: 820px) and (min-height: 1199.98px) {
 
   #search-image {
+    display: none;
+  }
+
+  .become-elipse {
     display: none;
   }
 
