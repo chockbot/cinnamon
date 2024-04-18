@@ -1672,21 +1672,21 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
             var result = await dataStore.Activity.PopularActivities(take, skip, categoryId);
             if(!result.Succeeded || result.Result is null)
             {
-                return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
 
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
         }
         catch (Exception ex)
         {
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
         }
     }
 
