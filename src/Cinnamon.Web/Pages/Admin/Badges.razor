@@ -13,44 +13,16 @@
 <SeoMeta Title="Admin - Manage Badges" Subject="Admin - Manage Badges" Url="/admin/badges" />
 
 <section class="admin-dashboard-badges-wrapper">
-    <div class="top-row m-d-none">
-        <div class="dropdown">
-            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                <div class="menu">
-                    <img src="images/menu.png">
-                </div>
-            </button>
-            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                @if (AuthState != null)
-                {
-                    @if (AuthState.Identity.IsAuthenticated)
-                    {
-                        <li class="dropdown-item">
-                            <Button Border="Border.Is0" Clicked="Logout">
-                                Logout
-                            </Button>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-    </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-5">
-        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Manage Customer Badges</p>
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-3 custom-flex">
+        <p class="verification-title">Manage Customer Badges</p>
         <div class="mt-2 mt-md-0">
-            <div class="input-group border rounded-pill p-1">
-                <input type="text" placeholder="Search Email" @bind-value="searchValue" aria-describedby="button-addon3" 
-                    class="form-control bg-none border-0" 
-                    style="border-top-left-radius: 50rem !important; border-bottom-left-radius: 50rem !important;">
-                <div class="input-group-append border-0">
-                    <Button Type="ButtonType.Button" class="border-0" Clicked="Clear">
-                        <i class="fa fa-times" style="color:#8C8C8C"></i>
-                    </Button>
-                    <Button Type="ButtonType.Button" Clicked="Search" 
-                        class="bg-orange-100 rounded-pill">
-                        <i class="fa fa-search" style="color:white"></i>
-                    </Button>
+            <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
+                <div class="searchBar">
+                    <form @onsubmit="Search">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                            autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                    </form>
                 </div>
             </div>
         </div>
@@ -93,19 +65,56 @@
                     }
                 </TableBody>
             </Table>
-            <Pagination class="pagination-section mt-3">
+        <div class="pagination-main">
+        <Pagination>
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink Style="border-radius: 50%;">
+                    <span aria-hidden="true">«</span>
+                </PaginationLink>
+                </PaginationItem>
                 @{
-                    for (var i = 1; i <= Pagination.TotalPages; i++)
-                    {
-                        var pageNumberAsString = i.ToString();
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
+                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
+                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <div class="pagination-item">
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                </div>
+                }
+
+                if (endPage < lastPage - 1)
+                {
+                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
+                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
+                    </PaginationItem>
+                }
+
+                if (lastPage > endPage)
+                {
+                    var pageNumberAsString = lastPage.ToString();
+                    <div class="pagination-item">
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
                                 @pageNumberAsString
                             </PaginationLink>
                         </PaginationItem>
-                    }
+                    </div>
                 }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
+                    <PaginationLink Style="border-radius: 50%;">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
             </Pagination>
+        </div>
         </div>
     </div>
 </section>
@@ -116,8 +125,11 @@
     public ClaimsPrincipal AuthState { get; set; }
     public List<CustomerProfile> customers = new List<CustomerProfile>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
-    public bool clickButton { get; set; }
+    public bool clickButton { get; set; }    
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
     private string currentPage = "1";
+    private int pageItems = 1;
     string token = string.Empty;
     public string searchValue = string.Empty;
 
@@ -126,6 +138,8 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         token = user.FindFirstValue("Token");
         AuthState = user;
+        await GetAllCustomers(int.Parse(currentPage));
+        pageItems = customers.Count;
 
         await GetAllCustomers(1);
     }
@@ -255,8 +269,42 @@
         searchValue = string.Empty;
         await GetAllCustomers(1);
     }
+    
     private bool IsActive(string page)
         => currentPage == page;
+
+    bool IsPageNavigationDisabled(string direction)
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (direction == NEXT)
+        {
+            return currentPageAsInt >= Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+        }
+        else if (direction == PREVIOUS)
+        {
+            return currentPageAsInt <= 1;
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1 )
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+        }
+    }
+
+    private void Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < pageItems )
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+        }
+    }
+    
 
     private async Task SetActive(string page)
     {
