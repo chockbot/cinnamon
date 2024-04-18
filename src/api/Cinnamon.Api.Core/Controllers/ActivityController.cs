@@ -2494,7 +2494,7 @@ public class ActivityController : ControllerBase
 
             var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.ActivityFeedDTO>>(result.Result.ActivityFeeds);
 
-            return new JsonResult(new ActivityFeedResult
+            return new JsonResult(new PopularActivitiesResult
             {
                 IsSuccess = true,
                 Result = mapResults,
