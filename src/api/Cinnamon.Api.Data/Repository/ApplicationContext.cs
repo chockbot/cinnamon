@@ -377,7 +377,7 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Announcement>()
             .HasIndex(a => a.Status);
 
-        // for activity summary
+        // for activity summary and activity
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex(s => s.ActivityId);
         modelBuilder.Entity<ActivitySummary>()
@@ -388,6 +388,8 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex("Ongoing", "Completed");
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.Guid);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
