@@ -10,9 +10,9 @@
 {
     <div class="ticket-details-wrapper py-5">
         <Container>
-            <Row class="mb-4">
+            <div class="@(ticketDetails.Tickets.Count() > 1 ? "" : "ticket-info") row">
                 @foreach (var item in ticketDetails.Tickets)
-                {
+                {   
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="mb-3">
                         <div class="ticket-box">
                             <div class="p-3">
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                         </div>
-                    </Column>
+                    </div>
                 }
             </Row>
         </Container>
