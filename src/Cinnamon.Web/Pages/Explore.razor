@@ -799,13 +799,11 @@
     protected override async Task OnInitializedAsync()
     {
         LoadRedirectUrls();
-        showOverlayPopularActivities = true;
 
         //Search in Landing Page
         if (string.IsNullOrEmpty(landingSearch))
         {
-            await FetchPopularActivities(null);
-            await FetchActivities(false);
+            await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
         }
         else
         {
@@ -1122,7 +1120,6 @@
     private async Task FetchActivities(bool isFromScroll)
     {
         isLoading = true;
-        showOverlayPopularActivities = true;
 
         var activityFeedRes = await activityApiHandler.ActivityFeed(new Framework.ApiCommand.ApiCore.Activity.Request.ActivityFeedArgs
         {
@@ -1160,7 +1157,6 @@
             }
 
             isLoading = false;
-            showOverlayPopularActivities = false;
         }
     }
 
@@ -1188,8 +1184,7 @@
         experienceCategoryId = null;
         pageIndex = 0;
         itemsPerPage = 20;
-        await FetchActivities(false);
-        await FetchPopularActivities(null);
+        await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
     }
 
     public async Task Filter(int id)
@@ -1198,8 +1193,7 @@
         pageIndex = 0;
         itemsPerPage = 20;
 
-        await FetchActivities(false);
-        await FetchPopularActivities(id);
+        await Task.WhenAll(new Task[] {FetchPopularActivities(id), FetchActivities(false)});
     }
 
     public async Task Clear()
