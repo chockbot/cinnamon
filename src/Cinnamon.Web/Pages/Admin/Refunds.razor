@@ -16,32 +16,12 @@
 <SeoMeta Title="Admin - Manage Requested Refund" Subject="Admin - Manage Requested Refund" Url="/admin/refunds" />
 
 <div class="admin-dashboard-refund-wrapper">
-    <div class="top-row m-d-none">
-        <div class="dropdown">
-            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                <div class="menu">
-                    <img src="images/menu.png">
-                </div>
-            </button>
-            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                @if (AuthState != null)
-                {
-                    @if (AuthState.Identity.IsAuthenticated)
-                    {
-                        <li class="dropdown-item">
-                            <Button Border="Border.Is0" Clicked="Logout">
-                                Logout
-                            </Button>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-    </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-baseline mt-5">
-        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Refund Review Board</p>
-        <label class="text-md-end mt-2 mt-md-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-baseline mt-3">
+        <p class="verification-title">Refund Review Board</p>
+    </div>
+    <div class="d-flex flex-column flex-md-row custom-flex">
+        <label class="text-md mt-0 mt-md-0 parent-label">
             <label class="me-3 cursor-pointer">
                 <input class="form-check-input" type="radio" data-id="" name="refund-status" id="pending" @onchange='@(()=>CheckboxChanged(0))'>
                 <span class="m-font-12">Pending</span>
@@ -51,6 +31,11 @@
                     <span class="m-font-12">Issued</span>
             </label>
         </label>
+        <div class="searchbar-holder ml-md-auto mt-0 mt-md-0">
+            <div class="searchBar">
+                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+            </div>
+        </div>
     </div>
 
     <div class="refunds-section mx-0 mt-4">
@@ -123,30 +108,70 @@
                     }
                 </TableBody>
             </Table>
-            <Pagination class="pagination-section mt-3">
+            <div class="pagination-main">
+        <Pagination>
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink Style="border-radius: 50%;">
+                    <span aria-hidden="true">«</span>
+                </PaginationLink>
+                </PaginationItem>
                 @{
-                    for (var i = 1; i <= Pagination.TotalPages; i++)
-                    {
-                        var pageNumberAsString = i.ToString();
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
+                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
+                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <div class="pagination-item">
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                </div>
+                }
+
+                if (endPage < lastPage - 1)
+                {
+                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
+                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
+                    </PaginationItem>
+                }
+
+                if (lastPage > endPage)
+                {
+                    var pageNumberAsString = lastPage.ToString();
+                    <div class="pagination-item">
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
                                 @pageNumberAsString
                             </PaginationLink>
                         </PaginationItem>
-                    }
+                    </div>
                 }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
+                    <PaginationLink Style="border-radius: 50%;">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
             </Pagination>
         </div>
+        </div>
     </div>
-</div>
 
+</div>
 
 @code {
     public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
     public List<Requested> refundRequests = new List<Requested>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
     private string currentPage = "1";
+    private int pageItems = 1;
     string token = string.Empty;
     private int refundStatus = 0;
     protected override async Task OnInitializedAsync()
@@ -154,6 +179,7 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         token = user.FindFirstValue("Token");
         AuthState = user;
+
 
         await GetAllRefundRequests(1, refundStatus);
     }
@@ -243,6 +269,39 @@
    
     private bool IsActive(string page)
         => currentPage == page;
+
+    bool IsPageNavigationDisabled(string direction)
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (direction == NEXT)
+        {
+            return currentPageAsInt >= Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+        }
+        else if (direction == PREVIOUS)
+        {
+            return currentPageAsInt <= 1;
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1 )
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+        }
+    }
+
+    private void Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < pageItems )
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+        }
+    }
+
 
     private async Task SetActive(string page)
     {
