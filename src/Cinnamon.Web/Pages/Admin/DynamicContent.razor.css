@@ -59,6 +59,41 @@
   padding: 0px;
 }
 
+.verification-title {
+  color: #343D4C;
+  margin-top: 5px;  
+  font-family: Nunito;
+  font-size: 32px;
+  font-style: bold;
+  font-weight: 900;
+  line-height: normal;
+}
+
+@media (min-width: 0px) and (max-width: 575.98px) {
+  .verification-title {
+    font-size: 24px;
+    margin: 0px;
+  }
+
+  .search-bar.mt-2 {
+    margin-top: 0 !important;
+  }
+
+  .pagination-main {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 768.98px) {
+  .pagination-main {
+    display: flex !important;
+    justify-content:  end !important;
+  }
+
+}
+
+
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .header {
@@ -70,6 +105,10 @@
     margin-left: 40px;
     margin-right: 40px;
     margin-bottom: 15px;
+  }
+
+  .verification-title {
+    margin: 0px;
   }
 
   .header .title {
@@ -131,3 +170,37 @@
     border-style: none;
   }
 }
+
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .custom-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .verification-title {
+    margin: 0px;
+  }
+
+}
+
+@media (min-width: 1200px) {
+  .custom-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .verification-title {
+    margin: 0px;
+  }
+
+  .center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+}
+

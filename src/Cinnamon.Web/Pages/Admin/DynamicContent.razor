@@ -16,13 +16,13 @@
 
 <section class="admin-coupons-wrapper admin-dashboard-coupons-wrapper">
 
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-5">
-        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Dynamic Contents</p>
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-3 custom-flex">
+        <p class="verification-title">Dynamic Contents</p>
     </div>
 
     <div class="section-content mt-4">
         <Row VerticalGutter="50" HorizontalGutter="20">
-            <Column ColumnSize="ColumnSize.Is6">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                 <p class="font-18 font-weight-700 mb-2">Event Policies</p>
                 <Validations @ref="eventPoliciesValidation" Mode="ValidationMode.Manual" Model="eventPoliciesModel">
                     <Validation>
@@ -53,10 +53,10 @@
                         <Button Clicked="SaveEventPolicies" class="bg-orange-100 color-white-100 hover-color-white">
                             Save Changes
                         </Button>
-                    </div>
+                    </div>  
                 </Validations>
             </Column>
-            <Column ColumnSize="ColumnSize.Is6">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                 <p class="font-18 font-weight-700 mb-2">Event Buyer Policies</p>
                 <Validations @ref="eventBuyerValidation" Mode="ValidationMode.Manual" Model="eventBuyerModel">
                     <Validation>
@@ -90,7 +90,7 @@
                     </div>
                 </Validations>
             </Column>
-            <Column ColumnSize="ColumnSize.Is6">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                 <p class="font-18 font-weight-700 mb-2">Event Seller Policies</p>
                 <Validations @ref="eventSellerValidation" Mode="ValidationMode.Manual" Model="eventSellerModel">
                     <Validation>
@@ -124,7 +124,7 @@
                     </div>
                 </Validations>
             </Column>
-            <Column ColumnSize="ColumnSize.Is6">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                 <p class="font-18 font-weight-700 mb-2">Privacy Policies</p>
                 <Validations @ref="privacyPolicyValidation" Mode="ValidationMode.Manual" Model="privacyPoliciesModel">
                     <Validation>
