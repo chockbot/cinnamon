@@ -35,11 +35,8 @@ button:focus {
 .float_4 {
   display: none;
 }
-.featured-header {
-  justify-content: space-between;
-}
+
 .see-more {
-  line-height: 5;
   color: #343d4c;
   font-family: nunito;
   font-weight: 600;
@@ -382,13 +379,6 @@ p.featured-text {
   color: #343d4c;
 }
 
-.featured-header {
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  max-width: 96.5%;
-}
-
 
 .see-more {
   color: #343d4c;
@@ -403,9 +393,6 @@ p.featured-text {
   text-decoration-line: underline;
 }
 
-.featured-text {
-  margin-bottom: 0;
-}
 
 .section-3 .overview-cards {
   margin-left: 0;
@@ -610,10 +597,6 @@ p.featured-text {
   font-weight: 400;
 }
 
-.card {
-  margin: 0 1em;
-  border: 1px;
-}
 .card-body1 {
   display: flex;
   flex-direction: column;
@@ -661,9 +644,6 @@ p.featured-text {
   text-align: left;
 }
 
-.card {
-  margin: 0px;
-}
 
 .ongoing-section {
   width: 75px;
@@ -1993,6 +1973,10 @@ p.featured-text {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+
+  p.featured-text {
+    margin-bottom: 0;
+  }
  
   .activity-ellipse {
     display: none;
@@ -2182,6 +2166,17 @@ p.featured-text {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  p.featured-text {
+    margin-bottom: 0rem;
+    margin-right: 64%;
+  }
+
+  .featured-header.d-flex {
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+  }
 
   .section-6 {
     position: relative;
@@ -2595,6 +2590,16 @@ p.featured-text {
 
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
+
+  .card {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  #featured-activities {
+    display: flexbox;
+  }
  
   .search-image {
     display: none;
@@ -2604,19 +2609,11 @@ p.featured-text {
     right: 6.5rem;
   }
 
-	#row {
-		align-items: center;
-	}
-
-	#featured-activities {
-		margin-left: 25px;
-	}
-
 	.featured-header {
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
 		height: 60px;
-		width: 890px;
+		max-width: 100%;
 	}
 
   .card-title {
@@ -2775,6 +2772,30 @@ p.featured-text {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
 
+  #featured-activities {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .featured-header {
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+  }
+
+  p.featured-text{
+    text-align: center;
+    font-family: nunito-extrabold;
+    font-size: 32px;
+    font-weight: 900;
+    color: #343d4c;
+    margin-right: 70%;
+    margin-bottom: 0;
+  }
+
   .section-6 {
     position: relative;
     margin-bottom: 5rem;
@@ -2916,7 +2937,6 @@ p.featured-text {
   }
 
   .see-more {
-    line-height: 5;
     color: #343d4c;
     font-family: nunito;
     font-weight: 600;
@@ -2928,7 +2948,7 @@ p.featured-text {
     font-size: 32px;
     font-weight: 900;
     color: #343d4c;
-    margin-bottom: 1rem;
+    /*margin-bottom: 1rem;*/
   }
 
   .testimonial-image {
@@ -2961,6 +2981,11 @@ p.featured-text {
     padding-bottom: 2px;
   }
 
+}
+
+.card.activities-card {
+  border: none;
+  align-items: center;
 }
 
 .btn-login {
@@ -3017,8 +3042,6 @@ img.search_icon {
 
 
 .container {
-  display: grid;
-  align-items: center;
   padding: 0;
 }
 
@@ -3032,10 +3055,6 @@ img.search_icon {
   font-style: italic;
 }
 
-
-.featured-text {
-  margin-top: 0.2rem;
-}
 
 .marketplace-content {
   gap: 30px;
@@ -3368,7 +3387,6 @@ a.dropdown-item {
     justify-content: start;
   }
   .featured-text {
-    margin-bottom: 1rem;
     font-size: 16px;
     margin-left: 0;
     line-height: 0;
@@ -3970,9 +3988,7 @@ a.dropdown-item {
   .swiper-slide {
     width: 25%;
   }
-  .featured-text {
-    margin-bottom: 0.5rem;
-  }
+  
 
   .landing-sm .carousel-indicators {
     margin-bottom: -1.5rem;
@@ -4562,12 +4578,13 @@ a.dropdown-item {
   }
 
   p.featured-text {
-    text-align: center;
-    font-family: nunito-extrabold;
-    font-size: 28px;
-    font-weight: 900;
-    color: #343d4c;
-	margin-left: 10px;
+      text-align: center;
+      font-family: nunito-extrabold;
+      font-size: 28px;
+      font-weight: 900;
+      color: #343d4c;
+      /* margin-left: 10px; */
+      margin-right: 62%;
   }
 
   .testimonial-quote {
@@ -4608,6 +4625,12 @@ a.dropdown-item {
 
 
 @media only screen and (min-width: 820px) and (min-height: 1199.98px) {
+
+  .featured-header {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+  }
 
   #search-image {
     display: none;
