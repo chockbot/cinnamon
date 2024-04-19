@@ -31,7 +31,9 @@ public class ActivityFeedHandler : IActivityFeedHandler
                 CategoryId = args.CategoryId,
                 Search = args.Search,
                 Skip = args.Skip,
-                Take = args.Take
+                Take = args.Take,
+                ExperienceType = args.ExperienceType,
+                StarReview = args.StarReview
             });
             if(!feedRes.Succeeded || feedRes.Result is null || !feedRes.Result.IsSuccess)
             {
