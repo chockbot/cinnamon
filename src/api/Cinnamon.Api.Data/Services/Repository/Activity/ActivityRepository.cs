@@ -1672,21 +1672,21 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
             var result = await dataStore.Activity.PopularActivities(take, skip, categoryId);
             if(!result.Succeeded || result.Result is null)
             {
-                return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
 
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(result.Result, "Successfully get popular activities");
         }
         catch (Exception ex)
         {
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
         }
     }
 
@@ -2105,6 +2105,42 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(result.Result, "Successfully get activity feed.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+        }
+    }
+
+    public async Task<AppResult<bool>> BatchSummaryUpdate()
+    {
+        try
+        {
+            var result = await dataStore.Activity.BatchSummaryUpdate();
+            if(!result.Succeeded || !result.Result)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(result.Result, "Successfully update summary activities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
         }
     }
 }

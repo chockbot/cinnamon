@@ -121,6 +121,9 @@ public class DataStore : IDataStore
 
     public IAnnouncement Announcement => new AnnouncementEntity(applicationContext);
 
+    public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
+
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

@@ -99,6 +99,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DynamicContent> DynamicContents {get; set;}
 
+    public DbSet<ActivitySummary> ActivitySummaries {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -163,6 +165,9 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Activity>()
             .HasIndex("PurchaseOrderCount","IsPublished","IsDeactivated", "IsNew");
+        
+        modelBuilder.Entity<Activity>()
+            .HasIndex("IsDeactivated", "Status", "IsPublished", "ForceDisable");
         
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.ForceDisable);
@@ -372,6 +377,19 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Announcement>()
             .HasIndex(a => a.Status);
 
+        // for activity summary and activity
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.ActivityId);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Ongoing);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.TotalParticipants);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex("Ongoing", "Completed");
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex("Ongoing", "Completed", "TotalParticipants");
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.Guid);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

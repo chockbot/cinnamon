@@ -160,101 +160,35 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         return results;
     }
 
-    public async Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId)
     {
         try
         {
-            var takeValue = take ?? int.MaxValue; 
+            var takeValue = take ?? 50;
             var skipValue = skip ?? 0;
-            var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 
-            string categoryFilter = string.Empty;
+            string categoryFilter = categoryId is not null ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
 
-            if(categoryId is not null && categoryId > 0)
-            {
-                categoryFilter = " and ac.\"ExperienceCategoryId\" = @categoryId ";
-            }
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+                               "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+                               "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\", " +
+                               "su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\" " +
+                           "from public.\"Activities\" ac " +
+                           "left join public.\"ActivityAddress\" ad " +
+                               "on ac.\"Id\" = ad.\"ActivityId\" " +
+                           "left join public.\"ActivitySummaries\" su " +
+                               "on ac.\"Id\" = su.\"ActivityId\" " +
+                           "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+                               "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + categoryFilter +
+                           "order by su.\"TotalParticipants\" desc " +
+                           "limit " + takeValue + " offset " + skipValue + " ";
 
-            string query = "with totalStudents as " +
-                           "( " +
-                               "select ac.\"Id\", Count(ac.\"Id\") \"StudentCount\" " +
-                               "from public.\"Activities\" ac " +
-                               "join public.\"Students\" st " +
-                                   "on ac.\"Id\" = st.\"ActivityId\" " +
-                               "where ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false and ac.\"IsDeactivated\" = false " +
-                                   "and ac.\"IsNew\" = false " + categoryFilter +
-                               "group by ac.\"Id\" " +
-                           "), " +
-                           "withOteCount as" +
-                           "( " +
-                               "select ot.\"ActivityId\" \"Id\", Count(ot.\"ActivityId\") \"StudentCount\" "+
-                               "from public.\"OteTickets\" ot " +
-                               "join public.\"Activities\" ac " +
-                                   "on ot.\"ActivityId\" = ac.\"Id\" " +
-                           	   "where ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false and ac.\"IsDeactivated\" = false " + categoryFilter +
-                               "group by ot.\"ActivityId\" " +
-                               "union "+
-                               "select * from totalStudents" +
-                           "), " +
-                           "topActivities as " +
-                           "( " +
-                               "select * " +
-                               "from withOteCount ts " +
-                               "order by ts.\"StudentCount\" desc, ts.\"Id\" " +
-                               "limit " + takeValue + " offset " + skipValue + " " +
-                           "), " +
-                           "withRatings as " +
-                           "( " +
-                               "select ta.*, Count(ar.\"Id\") \"ReviewCount\", " +
-                                   "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " + 
-                               "from topActivities ta " +
-                               "left join public.\"Reviews\" ar " +
-                                   "on ta.\"Id\" = ar.\"ActivityId\" " +
-                               "group by ta.\"Id\", ta.\"StudentCount\" " +
-                           "), " +
-                           "withOngoingStudent as " +
-                           "( " +
-                               "select ac.*, " +
-                                   "(select Count(*) from public.\"Students\" st " +
-                                   "where st.\"ActivityId\" = ac.\"Id\" and " +
-                                        "( " +
-                                           "(st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
-                                           "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
-                                               "and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " + 
-                                       ") " + 
-                                   ") \"OngoingStudent\" " +
-                               "from withRatings ac " +
-                           "), " +
-                           "withCoverPhoto as " +
-                           "( " +
-                               "select aw.*, ac.\"Title\", ac.\"CreatedBy\", ac.\"IsNew\", ac.\"Handler\", " +
-                                   "ac.\"ExperienceTypeId\", ac.\"Price\", ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", " +
-                                   "Row_Number() over (partition by ac.\"Id\" order by ai.\"Order\", ai.\"Id\") \"RowCnt\", " +
-                                   "ai.\"ImageLocation\", ac.\"ExperienceCreationTypeId\" " +
-                               "from withOngoingStudent aw " +
-                               "join public.\"Activities\" ac " +
-                                   "on aw.\"Id\" = ac.\"Id\" " +
-                               "join public.\"ActivityAddress\" ad " +
-                                   "on ac.\"Id\" = ad.\"ActivityId\" " +
-                               "join public.\"ActivityImages\" ai " +
-                                   "on ac.\"Id\" = ai.\"ActivityId\" " +
-                           ") " +
-                           "select ac.* " +
-                           "from withCoverPhoto ac " +
-                           "where ac.\"RowCnt\" = 1 " +
-                           "order by ac.\"StudentCount\" desc, ac.\"Id\" ";
-
-            IList<PopularActivityDTO> listResult = new List<PopularActivityDTO>();
+            IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
 
             using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = query;
                 command.CommandType = System.Data.CommandType.Text;
-
-                if(categoryId is not null && categoryId > 0)
-                {
-                    command.Parameters.Add(new NpgsqlParameter("categoryId", categoryId));
-                }
 
                 applicationContext.Database.OpenConnection();
 
@@ -265,33 +199,37 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         var dt = new DataTable();
                         dt.Load(dr);
 
-                        listResult = dt.AsEnumerable().Select(item => new PopularActivityDTO {
-                            CityName                 = item["CityName"].ToString() ?? string.Empty,
-                            ExperienceTypeId         = Convert.ToInt32(item["ExperienceTypeId"]),
-                            Handler                  = item["Handler"].ToString() ?? string.Empty,
-                            Id                       = Convert.ToInt32(item["Id"]),
-                            ImageSrc                 = item["ImageLocation"].ToString() ?? string.Empty,
-                            IsNew                    = Convert.ToBoolean(item["IsNew"]),
-                            MakerId                  = Convert.ToInt32(item["CreatedBy"]),
-                            OngoingStudentCount      = Convert.ToInt32(item["OngoingStudent"]),
-                            Price                    = item["Price"].ToString() ?? string.Empty,
-                            Rating                   = Convert.ToDecimal(item["Rating"]),
-                            RegionName               = item["RegionName"].ToString() ?? string.Empty,
-                            ReviewCount              = Convert.ToInt32(item["ReviewCount"]),
-                            StudentCount             = Convert.ToInt32(item["StudentCount"]),
-                            Title                    = item["Title"].ToString() ?? string.Empty,
+                        listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO {
+                            ActivityId = Convert.ToInt32(item["Id"]),
                             ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
-                            PinnedLocation           = item["PinnedLocation"].ToString() ?? string.Empty,
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            Price = item["Price"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            IsNew = Convert.ToBoolean(item["IsNew"]),
+                            Address = new ActivityFeedDTO.Location {
+                                City = item["CityName"].ToString() ?? string.Empty,
+                                PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+                                Region = item["RegionName"].ToString() ?? string.Empty,
+                            },
+                            SummaryDetails = new ActivityFeedDTO.Summary {
+                                Completed = Convert.ToInt32(item["Completed"]),
+                                ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
+                                Ongoing = Convert.ToInt32(item["Ongoing"]),
+                                ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
+                                TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
+                                TotalReviews = Convert.ToInt32(item["TotalReviews"])
+                            }
                         }).ToList();
                     }
                 }
             }
 
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateSucceeded(listResult, "Successfully get popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get popular activities");
         }
         catch (Exception ex)
         {
-            return AppResult<IEnumerable<PopularActivityDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting popular activities");
         }
     }
 
@@ -786,6 +724,225 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when forcing disable activities.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    {
+        try
+        {
+            string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+            string searchClause = string.Empty;
+            if(!string.IsNullOrEmpty(search))
+            {
+                searchClause = "and ac.\"Title\" Ilike @search ";
+            }
+
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+                                "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+                                "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+                                "su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\" " +
+                            "from public.\"Activities\" ac " +
+                            "left join public.\"ActivityAddress\" ad " +
+                                "on ac.\"Id\" = ad.\"ActivityId\" " +
+                            "left join public.\"ActivitySummaries\" su " +
+                                "on ac.\"Id\" = su.\"ActivityId\" " +
+                            "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + categoryClause + searchClause +
+                            "order by ac.\"Guid\" " +
+                            "limit " + take + " offset " + skip + " ";
+            
+            IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if(!string.IsNullOrEmpty(search))
+                {
+                    var parameterSearch = new NpgsqlParameter("search", $"%{search}%");
+					command.Parameters.Add(parameterSearch);
+                }
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO {
+                            ActivityId = Convert.ToInt32(item["Id"]),
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            Price = item["Price"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            IsNew = Convert.ToBoolean(item["IsNew"]),
+                            Address = new ActivityFeedDTO.Location {
+                                City = item["CityName"].ToString() ?? string.Empty,
+                                PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+                                Region = item["RegionName"].ToString() ?? string.Empty,
+                            },
+                            SummaryDetails = new ActivityFeedDTO.Summary {
+                                Completed = Convert.ToInt32(item["Completed"]),
+                                ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
+                                Ongoing = Convert.ToInt32(item["Ongoing"]),
+                                ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
+                                TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
+                                TotalReviews = Convert.ToInt32(item["TotalReviews"])
+                            }
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
+        }
+        catch (System.Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+        }       
+    }
+
+    public async Task<AppResult<bool>> BatchSummaryUpdate()
+    {
+        try
+        {
+            string query = "Begin; " +
+                               "with activities as ( " +
+                                   "select ac.\"Id\", " +
+                                       "case when ai.\"ImageLocation\" is null then '' else ai.\"ImageLocation\" end as \"ImageLocation\", " +
+                                       "Row_Number() over (partition by ac.\"Id\" order by ac.\"Id\", ai.\"Order\") as \"RowCnt\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"ActivityImages\" ai " +
+                                       "on ac.\"Id\" = ai.\"ActivityId\" " +
+                               ") " +
+                               "insert into public.\"ActivitySummaries\" " +
+                               "(\"ActivityId\", \"ImageBannerSrc\", \"Ongoing\", \"Completed\", \"TotalReviews\", \"ReviewAccumulated\", " +
+                                   "\"CreatedOn\", \"CreatedBy\", \"ChangedOn\", \"ChangedBy\", \"TotalParticipants\") " +
+                               "select ac.\"Id\" \"ActivityId\", ac.\"ImageLocation\", 0, 0, 0, 0, " +
+                                   "current_timestamp, 0, current_timestamp, 0, 0 " +
+                               "from activities ac " +
+                               "left join public.\"ActivitySummaries\" sm " +
+                                   "on sm.\"ActivityId\" = ac.\"Id\" " +
+                               "where ac.\"RowCnt\" = 1 and sm.\"Id\" is null; " +
+                                
+                               "with ongoingStundents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Ongoing\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "where (st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
+                                       "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date(current_timestamp) " +
+                                                   "and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Ongoing\" = og.\"Ongoing\" " +
+                               "from ongoingStundents og " +
+                               "where sm.\"ActivityId\" = og.\"ActivityId\" and og.\"Ongoing\" != sm.\"Ongoing\"; " +
+
+                               "with withCompletedStudents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "where (st.\"SessionsAttended\" >= st.\"NumberOfSessions\") or " +
+                                       "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Completed\" = cm.\"Completed\" " +
+                               "from withCompletedStudents cm " +
+                               "where sm.\"ActivityId\" = cm.\"ActivityId\" and sm.\"Completed\" != cm.\"Completed\"; " +
+
+                               "with withTotalStudents as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"Students\" st " +
+                                       "on ac.\"Id\" = st.\"ActivityId\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"TotalParticipants\" = st.\"TotalParticipants\" " +
+                               "from withTotalStudents st " +
+                               "where sm.\"ActivityId\" = st.\"ActivityId\" " +
+                                   "and st.\"TotalParticipants\" != sm.\"TotalParticipants\"; " +
+
+                               "with withOngoingOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"Ongoing\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ac.\"Id\" = ot.\"ActivityId\" " +
+                                   "where ot.\"Status\" = 'UNVERIFIED' " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Ongoing\" = ote.\"Ongoing\" " +
+                               "from withOngoingOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"Ongoing\" != ote.\"Ongoing\"; " +
+
+                               "with withCompletedOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"Completed\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ac.\"Id\" = ot.\"ActivityId\" " +
+                                   "where ot.\"Status\" = 'VERIFIED' " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"Completed\" = ote.\"Completed\" " +
+                               "from withCompletedOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"Completed\" != ote.\"Completed\"; " +
+
+                               "with withTotalOte as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ot.\"Id\") \"TotalParticipants\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"OteTickets\" ot " +
+                                       "on ot.\"ActivityId\" = ac.\"Id\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"TotalParticipants\" = ote.\"TotalParticipants\" " +
+                               "from withTotalOte ote " +
+                               "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
+                                   "and sm.\"TotalParticipants\" != ote.\"TotalParticipants\"; " +
+
+                               "with withTotalRatings as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
+                                       "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"Reviews\" ar " +
+                                       "on ac.\"Id\" = ar.\"ActivityId\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
+                               "from withTotalRatings rt " +
+                               "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
+                                   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
+                           "commit; ";
+            
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully update activity summary.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
         }
     }
 }

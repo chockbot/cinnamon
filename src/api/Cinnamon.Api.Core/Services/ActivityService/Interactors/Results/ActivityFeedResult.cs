@@ -1,6 +1,6 @@
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
-public class PopularActivitiesResult 
+public class ActivityFeedResult 
 {
     public IEnumerable<ActivityFeed> ActivityFeeds {get; set;}
 

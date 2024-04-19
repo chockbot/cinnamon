@@ -528,4 +528,46 @@ public class ActivityData: IActivityData
 			return AppResult<ForceDisableActivitiesResult>.CreateFailed(ex, "An error occurred when disabling activities.");
 		}
 	}
+
+	public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/ActivityFeed")
+							.SetQueryParams(args)
+							.GetJsonAsync<ActivityFeedResult>();
+
+			return AppResult<ActivityFeedResult>.CreateSucceeded(result, "Successfully getting get all activity feed.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<ActivityFeedResult>.CreateFailed(ex, "An error occured when getting all activity feed.");
+		}
+	}
+
+	public async Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate()
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/BatchSummaryUpdate")
+							.PostAsync()
+							.ReceiveJson<BatchSummaryUpdateResult>();
+
+			return AppResult<BatchSummaryUpdateResult>.CreateSucceeded(result, "Successfully update batch summary.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<BatchSummaryUpdateResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<BatchSummaryUpdateResult>.CreateFailed(ex, "An error occurred when update batch summary.");
+		}
+	}
 }

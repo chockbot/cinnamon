@@ -14,7 +14,7 @@ public interface IActivity : IGenericEntity<Activity>
         int? take = 100, int? skip = 0, IEnumerable<Expression<Func<Activity, object>>>? includes = null);
 
     Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count);
-    Task<AppResult<IEnumerable<PopularActivityDTO>>> PopularActivities(int? take, int? skip, int? categoryId);
+    Task<AppResult<IEnumerable<ActivityFeedDTO>>> PopularActivities(int? take, int? skip, int? categoryId);
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
         OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 
         IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents);
@@ -26,4 +26,6 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetActivitiesNeedToDisable();
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
+    Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search, int? categoryId);
+    Task<AppResult<bool>> BatchSummaryUpdate();
 }
