@@ -13,4 +13,8 @@ public class ActivityFeedArgs
     public int? CategoryId {get; set;}
 
     public string? Search {get; set;}
+
+    public int? StarReview {get; set;}
+
+    public int? ExperienceType {get; set;}
 }
