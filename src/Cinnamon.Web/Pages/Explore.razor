@@ -30,7 +30,6 @@
 
 <SeoMeta Url="/explore" Keywords="GetKeyWords()">
     <ExtraMeta>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
         <title>Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</title>
     </ExtraMeta>
 </SeoMeta>
@@ -577,9 +576,9 @@
                             <label class="heading">Explore More</label>
                         </div>
                     </div>
-                    <Button class="border-1-solid border-color-black-100 d-flex align-items-center">
+                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
                         <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
-                        <span class="font-20 font-weight-700">Filter</span>
+                        <span class="font-20 m-font-14 font-weight-700">Filter</span>
                     </Button>
                 </div>
                 @foreach (var act in activityFeeds)
@@ -722,12 +721,61 @@
 
 <div id="observerTarget"></div>
 
-<Modal>
-    <ModalContent>
-        <ModalHeader>Filter by</ModalHeader>
-        <ModalBody>
-            Content
+<Modal @ref="filterModal">
+    <ModalContent Centered>
+        <ModalHeader Border="Border.Is0" class="font-24 color-black-100 font-weight-700 pb-0 m-font-16">Filter by</ModalHeader>
+        <ModalBody class="color-black-100 pt-2">
+            <div id="filter-by-type">
+                <label class="font-20 m-font-14">Type</label>
+                <div class="d-flex mt-3">
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                        <span class="font-16 m-font-14">All</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                        <span class="font-16 m-font-14">Online</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                        <span class="font-16 m-font-14">In-person</span>
+                    </Button>
+                </div>
+            </div>
+            <div id="filter-by-rating" class="mt-4">
+                <label class="font-20 m-font-14">Rating</label>
+                <div class="d-flex mt-3 flex-wrap">
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">5 stars</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">4 stars & up</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">3 stars & up</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">2 stars & up</span>
+                    </Button>
+                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">1 stars & up</span>
+                    </Button>
+                </div>
+            </div>
         </ModalBody>
+        <ModalFooter>
+            <Button Clicked="CloseFilter" Border="Border.Is1" class="font-16 font-weight-700 px-4 m-font-14">
+                Cancel
+            </Button>
+            <Button class="font-16 bg-orange-100 color-white-100 font-weight-700 hover-color-white px-4 m-font-14">
+                Apply
+            </Button>
+        </ModalFooter>
     </ModalContent>
 </Modal>
 
@@ -1504,4 +1552,8 @@
                (Math.Abs(number) >= 100)  ? 100 :
                                             10;
     }
+
+    public async Task OpenFilter() => await filterModal?.Show();
+
+    public async Task CloseFilter() => await filterModal.Close(CloseReason.UserClosing);
 }
