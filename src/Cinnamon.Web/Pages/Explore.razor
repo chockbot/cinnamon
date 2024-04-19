@@ -721,23 +721,26 @@
 
 <div id="observerTarget"></div>
 
-<Modal @ref="filterModal">
+<Modal id="explore-filter-modal" @ref="filterModal">
     <ModalContent Centered>
         <ModalHeader Border="Border.Is0" class="font-24 color-black-100 font-weight-700 pb-0 m-font-16">Filter by</ModalHeader>
         <ModalBody class="color-black-100 pt-2">
             <div id="filter-by-type">
                 <label class="font-20 m-font-14">Type</label>
                 <div class="d-flex mt-3">
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                    <Button Clicked="() => filters.EventType = null" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == null ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
                         <span class="font-16 m-font-14">All</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                    <Button Clicked="() => filters.EventType = 2" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == 2 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
                         <span class="font-16 m-font-14">Online</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" src="images/icons/small-selected.png" alt="icon">
+                    <Button Clicked="() => filters.EventType = 1" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == 1 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
                         <span class="font-16 m-font-14">In-person</span>
                     </Button>
                 </div>
@@ -745,23 +748,23 @@
             <div id="filter-by-rating" class="mt-4">
                 <label class="font-20 m-font-14">Rating</label>
                 <div class="d-flex mt-3 flex-wrap">
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                    <Button Clicked="() => filters.StarReview = 5" class="@StarReviewBtnClass(5)">
                         <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
                         <span class="font-16 text-capitalize m-font-14">5 stars</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                    <Button Clicked="() => filters.StarReview = 4" class="@StarReviewBtnClass(4)">
                         <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
                         <span class="font-16 text-capitalize m-font-14">4 stars & up</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                    <Button Clicked="() => filters.StarReview = 3" class="@StarReviewBtnClass(3)">
                         <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
                         <span class="font-16 text-capitalize m-font-14">3 stars & up</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                    <Button Clicked="() => filters.StarReview = 2" class="@StarReviewBtnClass(2)">
                         <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
                         <span class="font-16 text-capitalize m-font-14">2 stars & up</span>
                     </Button>
-                    <Button class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2">
+                    <Button Clicked="() => filters.StarReview = 1" class="@StarReviewBtnClass(1)">
                         <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
                         <span class="font-16 text-capitalize m-font-14">1 stars & up</span>
                     </Button>
@@ -859,6 +862,8 @@
     private List<ActivityFeed> activityFeeds = new();
     private List<ActivityFeed> popularFeeds = new();
     private Modal? filterModal;
+
+    private Filters filters = new ();
 
     protected override async Task OnInitializedAsync()
     {
@@ -1556,4 +1561,20 @@
     public async Task OpenFilter() => await filterModal?.Show();
 
     public async Task CloseFilter() => await filterModal.Close(CloseReason.UserClosing);
+
+    public string StarReviewBtnClass(int star)
+    {
+        if(star == filters.StarReview)
+        {
+            return "selected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+        }
+        
+        return "unselected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+    }
+
+    private class Filters 
+    {
+        public int? EventType {get; set;}
+        public int? StarReview {get; set;}
+    }
 }
