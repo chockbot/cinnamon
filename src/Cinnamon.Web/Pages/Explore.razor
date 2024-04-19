@@ -775,7 +775,7 @@
             <Button Clicked="CloseFilter" Border="Border.Is1" class="font-16 font-weight-700 px-4 m-font-14">
                 Cancel
             </Button>
-            <Button class="font-16 bg-orange-100 color-white-100 font-weight-700 hover-color-white px-4 m-font-14">
+            <Button Clicked="CustomFilters" class="font-16 bg-orange-100 color-white-100 font-weight-700 hover-color-white px-4 m-font-14">
                 Apply
             </Button>
         </ModalFooter>
@@ -1195,7 +1195,9 @@
             CategoryId = experienceCategoryId,
             Search = searchValue,
             Skip = pageIndex,
-            Take = itemsPerPage
+            Take = itemsPerPage,
+            ExperienceType = filters.EventType,
+            StarReview = filters.StarReview
         });
 
         if (activityFeedRes.Succeeded && activityFeedRes.Result != null && activityFeedRes.Result.IsSuccess)
@@ -1570,6 +1572,16 @@
         }
         
         return "unselected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+    }
+
+    public async Task CustomFilters()
+    {
+        experienceCategoryId = null;
+        pageIndex = 0;
+        itemsPerPage = 20;
+
+        await Task.WhenAll(new Task[] { FetchActivities(false)});
+        await CloseFilter();
     }
 
     private class Filters 
