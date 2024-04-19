@@ -272,6 +272,7 @@
             </div>
         </Validations>
     </div>
+
     <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
         <div>
             <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -310,6 +311,44 @@
             </div>
         </div>
     </div>
+
+    @*Ticket Limit*@
+    <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="modelSchedule">
+        <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <Validation>
+            <Field>
+                <FieldLabel>
+                    <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                        Max Ticket per Customer
+                    </h3>
+                </FieldLabel>
+                <div class="ticket-limit-group">
+                    <FieldBody>
+                        
+                        <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckExperienceTypeChanged">
+                            <label for="type-online" class="border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
+                                <Radio class="checkbox-round" ElementId="type-online" TValue="int" Value="1">No Limit</Radio>
+                            </label>
+                            <label for="type-in-person" class="border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
+                                <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="2">Set Limit</Radio>
+                            </label>
+                        </RadioGroup>
+                        @if (modelSchedule.IsLimit == 2)
+                        {
+                            <label for="set-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
+                            <NumericPicker ElementId="set-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelSchedule.EventTicketLimit">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericPicker>
+                        }
+                     </FieldBody>
+                </div>
+            </Field>
+        </Validation>
+    </div>
+    </Validations>
+
     <Divider class="d-none m-d-block" />
     <div class="my-3 border-radius-10">
         <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
@@ -840,7 +879,8 @@
             WeekString = weekString,
             EventDurationCount = modelSchedule.EventDurationCount,
             EventDurationTimeUnit = modelSchedule.EventDurationTimeUnit,
-
+            EventTicketLimit = modelSchedule.EventTicketLimit,
+            IsLimit = modelSchedule.EventTicketLimit != 0 ? 2 : 1,
             ItemPrices = modelPricingList.Pricings.Select(p => {
                 return new ModelData.ItemPrice {
                     AbsorbFees = p.AbsorbFees,
@@ -886,6 +926,8 @@
         modelSchedule.EventDurationCount     = data.EventDurationCount;
         modelSchedule.EventDurationTimeUnit  = data.EventDurationTimeUnit;
         modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
+        modelSchedule.EventTicketLimit       = data.EventTicketLimit;
+        modelSchedule.IsLimit                = data.IsLimit;
 
         RecurrenceChanged(data.Recurrences);
 
@@ -1158,6 +1200,8 @@
         public string? WeekString {get; set;}
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
+        public int IsLimit { get; set; } = 1;
+        public int EventTicketLimit { get; set; }
 
         public class ItemPrice 
         {
@@ -1249,7 +1293,7 @@
         public int MonthSelection {get; set;} = 1;
         public string MonthRepeat {get; set;} = "first";
         public string MonthDay {get; set;} = "sunday";
-        
+
         [Range(1, 31)]
         public int OnDayDate {get; set;} = 1;
 
@@ -1257,6 +1301,9 @@
         public int EventDurationCount {get; set;} = 1;
         public string EventDurationTimeUnit {get; set;} = "hrs";
         public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
+        [Range(1, int.MaxValue)]
+        public int EventTicketLimit { get; set; }
+        public int IsLimit { get; set; } = 1;
 
         // for date override
         public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
@@ -1407,7 +1454,7 @@
                             DateStart = recurringDate.Date.Add(timeStart),
                             DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
                         };
-            
+
 
             generatedDates.Add(item);
 
@@ -1449,7 +1496,7 @@
         IList<DateItem> generatedDates = new List<DateItem>();
 
         int daysToSkip = (repeat - 1) * 7;
-        
+
         var dayWeeks = ToDictionaryDayWeek(selectedDays);
 
         DateTime recurringDate = start;
@@ -1583,6 +1630,25 @@
         public DateTime Date {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+    }
+    private async Task CheckExperienceTypeChanged(int type)
+    {
+        modelSchedule.IsLimit = type;
+        StateHasChanged();
+    }
+    public class RequireTicketLimitWhenIsLimitIs2Attribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var schedule = (Schedule)validationContext.ObjectInstance;
+
+            if (schedule.IsLimit == 2 && schedule.EventTicketLimit == 0)
+            {
+                return new ValidationResult("Event ticket limit must not be 0 when IsLimit is 2.");
+            }
+
+            return ValidationResult.Success;
+        }
     }
     // ---!> until here. Date generation. Refactor this Code
 }

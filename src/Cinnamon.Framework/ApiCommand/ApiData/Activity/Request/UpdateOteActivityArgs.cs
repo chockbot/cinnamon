@@ -69,6 +69,10 @@ public class UpdateOteActivityArgs
 
         [Required]
         public bool IsComingSoon {get; set;}
+
+        [Required]
+
+        public int EventTicketLimit { get; set; }
     }
 
     public class UpdateOtePricing 

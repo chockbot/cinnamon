@@ -2641,6 +2641,7 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2714,7 +2715,8 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

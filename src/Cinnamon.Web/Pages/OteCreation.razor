@@ -495,56 +495,57 @@
 
             var publishOte = await activityApiHandler.CreateOte(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs {
                     Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity {
-                        BarangayCode = location.BarangayCode,
-                        BarangayName = location.BarangayName,
-                        CityName = location.CityName,
-                        CityNumber = location.CityCode,
-                        Description = eventData.Description,
-                        EventName = eventData.Name,
+                        BarangayCode             = location.BarangayCode,
+                        BarangayName             = location.BarangayName,
+                        CityName                 = location.CityName,
+                        CityNumber               = location.CityCode,
+                        Description              = eventData.Description,
+                        EventName                = eventData.Name,
                         ExperienceCreationTypeId = 3,
-                        ExperienceTypeId = location.ExperienceType,
-                        HouseNo = location.HouseNo,
-                        IsPublished = publishData.IsPublish,
-                        PinnedLocation = location.PinnedLocation,
-                        PostalCode = location.PostalCode,
-                        Recurrence = schedule.Recurrences,
-                        RegionCode = location.RegionCode,
-                        RegionName = location.RegionName,
-                        ScheduleFrom = schedule.DateFrom,
-                        ScheduleTo = schedule.DateTo,
-                        IsComingSoon = publishData.ComingSoon,
-                        DurationEnd = schedule.DurationEnd,
-                        DurationEvery = schedule.DurationEvery,
-                        DurationStart = schedule.DurationStart,
-                        MonthDay = schedule.MonthDay,
-                        MonthRepeat = schedule.MonthRepeat,
-                        MonthSelection = schedule.MonthSelection,
-                        OnDayDate = schedule.OnDayDate,
-                        WeekString = schedule.WeekString,
-                        EventDurationCount = schedule.EventDurationCount,
-                        EventDurationTimeUnit = schedule.EventDurationTimeUnit
+                        ExperienceTypeId         = location.ExperienceType,
+                        HouseNo                  = location.HouseNo,
+                        IsPublished              = publishData.IsPublish,
+                        PinnedLocation           = location.PinnedLocation,
+                        PostalCode               = location.PostalCode,
+                        Recurrence               = schedule.Recurrences,
+                        RegionCode               = location.RegionCode,
+                        RegionName               = location.RegionName,
+                        ScheduleFrom             = schedule.DateFrom,
+                        ScheduleTo               = schedule.DateTo,
+                        IsComingSoon             = publishData.ComingSoon,
+                        DurationEnd              = schedule.DurationEnd,
+                        DurationEvery            = schedule.DurationEvery,
+                        DurationStart            = schedule.DurationStart,
+                        MonthDay                 = schedule.MonthDay,
+                        MonthRepeat              = schedule.MonthRepeat,
+                        MonthSelection           = schedule.MonthSelection,
+                        OnDayDate                = schedule.OnDayDate,
+                        WeekString               = schedule.WeekString,
+                        EventDurationCount       = schedule.EventDurationCount,
+                        EventDurationTimeUnit    = schedule.EventDurationTimeUnit,
+                        EventTicketLimit         = schedule.EventTicketLimit
                     },
                     Pricings = schedule.ItemPrices.Select(p => {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing {
-                            Description = p.Description,
+                            Description  = p.Description,
                             IsAbsorbFees = p.AbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
-                            Name = p.Name
+                            MaxSlots     = p.MaxSlots,
+                            Price        = p.Price,
+                            Name         = p.Name
                         };
                     }),
                     DateOverrides = schedule.DateOverrides.Select(d => {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
-                            Date = d.Date,
-                            TimeEnd = d.TimeEnd,
+                            Date      = d.Date,
+                            TimeEnd   = d.TimeEnd,
                             TimeStart = d.TimeStart
                         };
                     }),
                     OnlineEvents = onlineData is not null ? onlineData.TicketInfos.Select(a => {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteOnlineEvent{
-                            Title = a.Title,
-                            Description = a.Description,
-                            VideoLink = a.VideoLink,
+                            Title             = a.Title,
+                            Description       = a.Description,
+                            VideoLink         = a.VideoLink,
                             TicketRestriction = a.TicketRestriction,
                         };
                     }) : null
@@ -607,7 +608,8 @@
                     RegionName = location.RegionName,
                     ScheduleFrom = schedule.DateFrom,
                     ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon
+                    IsComingSoon = publishData.ComingSoon,
+                    EventTicketLimit = schedule.EventTicketLimit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -713,6 +715,8 @@
             WeekString            = ote.OteSchedule.SelectedDays,
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
+            EventTicketLimit      = ote.OteSchedule.EventTicketLimit,
+            IsLimit               = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1,
             ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,

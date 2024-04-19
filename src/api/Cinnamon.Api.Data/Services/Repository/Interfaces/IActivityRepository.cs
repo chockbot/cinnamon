@@ -55,12 +55,12 @@ public interface IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
-        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
+        int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit ,IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
+        bool isPublished, string handler, int categoryId, bool comingSoon, int eventTicketLimit, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false);

@@ -113,7 +113,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                     ScheduleFrom     = args.Activity.ScheduleFrom,
                     ScheduleTo       = args.Activity.ScheduleTo,
                     StringPrice      = stringPrice,
-                    IsComingSoon     = args.Activity.IsComingSoon
+                    IsComingSoon     = args.Activity.IsComingSoon,
+                    EventTicketLimit = args.Activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

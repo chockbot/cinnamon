@@ -94,6 +94,9 @@ public class CreateOteActivityArgs
 
         [Required]
         public string EventDurationTimeUnit {get; set;}
+
+        [Required]
+        public int EventTicketLimit { get; set; }
     }
 
     public class OtePricing 

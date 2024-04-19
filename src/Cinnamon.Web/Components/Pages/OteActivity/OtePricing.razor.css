@@ -17,6 +17,18 @@
   cursor: not-allowed;
 }
 
+::deep .ticket-limit-group{
+    display: flex;
+}
+    ::deep .ticket-limit-group label {
+        line-height: 1.5;
+        color: #717171;
+        font-size: 20px;
+    }
+    ::deep .ticket-limit-group .form-control{
+        width: 15%;
+    }
+
 @media only screen and (max-width: 767px) {
   .date-left {
     width: 60%;
@@ -24,6 +36,23 @@
   .date-right {
     width: 35%;
   }
+  ::deep .ticket-limit-group {
+      display: flex;
+  }
+    ::deep .ticket-limit-group label {
+        line-height: 1.5;
+        color: #717171;
+        font-size: 18px;
+    }
+
+  ::deep .ticket-limit-group .form-control {
+      width: 50%;
+      margin-top:10%;
+  }
+    .specific-text {
+        margin-top: 10%;
+    }
+
 }
 
 @media only screen and (max-width: 407px) {
@@ -33,6 +62,14 @@
   .date-right {
     width: 40%;
   }
+    ::deep .ticket-limit-group .form-control {
+        width: 50%;
+        margin-top: 13%;
+    }
+
+    .specific-text {
+        margin-top: 13%;
+    }
 }
 
 @media only screen and (max-width: 991px) {

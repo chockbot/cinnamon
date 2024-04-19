@@ -48,6 +48,7 @@ public class OteUpdateArgs : IInteractor
 
         public string Recurrence {get; set;}
         public bool IsComingSoon {get; set;}
+        public int EventTicketLimit { get; set; }
     }
 
     public class OtePricing 

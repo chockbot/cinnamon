@@ -204,13 +204,14 @@ public class OteCreateHandler : IOteCreateHandler
                     ScheduleTo               = activity.ScheduleTo,
                     StringPrice              = stringPrice,
                     IsComingSoon             = args.Activity.IsComingSoon,
-                    RecurrenceDateEnd = args.Activity.DurationEnd ?? args.Activity.ScheduleTo,
-                    RecurrenceDateStart = args.Activity.DurationStart ?? args.Activity.ScheduleFrom,
-                    RepeatEvery = args.Activity.DurationEvery ?? 0,
-                    SelectedDays = args.Activity.WeekString ?? String.Empty,
-                    ExtraOptions = extraOptionsForMonthlyRecurring ?? String.Empty,
-                    EventDurationCount = args.Activity.EventDurationCount,
-                    EventDurationTimeUnit = args.Activity.EventDurationTimeUnit
+                    RecurrenceDateEnd        = args.Activity.DurationEnd ?? args.Activity.ScheduleTo,
+                    RecurrenceDateStart      = args.Activity.DurationStart ?? args.Activity.ScheduleFrom,
+                    RepeatEvery              = args.Activity.DurationEvery ?? 0,
+                    SelectedDays             = args.Activity.WeekString ?? String.Empty,
+                    ExtraOptions             = extraOptionsForMonthlyRecurring ?? String.Empty,
+                    EventDurationCount       = args.Activity.EventDurationCount,
+                    EventDurationTimeUnit    = args.Activity.EventDurationTimeUnit,
+                    EventTicketLimit         = args.Activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
