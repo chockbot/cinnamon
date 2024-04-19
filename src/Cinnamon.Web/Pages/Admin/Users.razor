@@ -21,6 +21,11 @@
         <label class="radio-button-texts">
             <label class="me-3 cursor-pointer">
                 <input class="form-check-input cursor-pointer" type="radio" data-id="" name="verification-status" id="with-pending" 
+                    @onchange='@(()=>CheckboxChanged(null))'>
+                    <span class="verification-text">Show All</span>
+            </label>
+            <label class="me-3 cursor-pointer">
+                <input class="form-check-input cursor-pointer" type="radio" data-id="" name="verification-status" id="with-pending" 
                     @onchange='@(()=>CheckboxChanged(true))'>
                     <span class="verification-text">Has Verification Request</span>
             </label>
@@ -360,7 +365,7 @@
         await GetAllCustomers(int.Parse(page));
     }
 
-    private async Task CheckboxChanged(bool hasVerification)
+    private async Task CheckboxChanged(bool? hasVerification)
     {
         hasVerificationRequest = hasVerification;
         await GetAllCustomers(1);
