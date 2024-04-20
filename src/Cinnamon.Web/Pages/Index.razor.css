@@ -1164,6 +1164,11 @@ p.featured-txt {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
 
+  div#container-categories {
+    display: flex;
+    justify-content: center;
+  }
+
   #built-by {
     display: flex;
     justify-content: center;
@@ -1684,6 +1689,61 @@ p.featured-txt {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
 
+  .search_bar {
+    width: 600px;
+    justify-content: center;
+    display: flex;
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 2px 6px 10px 0px rgba(113, 113, 113, 0.20);
+  }
+
+  div#container-categories {
+    display: flex;
+    justify-content: center;
+  }
+
+  .testimonial-content {
+    display: block;
+    padding-top: 85px;
+  }
+
+  .testimonial-title {
+    display: block;
+    text-align: center;
+    margin-top: 2.5rem;
+    margin-left: 0;
+    position: absolute;
+    top: -8%;
+    right: 33.5%;
+    display: block;
+  }
+
+  .testimonial-quote {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-title {
+    font-size: 26px;
+  }
+
+  
+  .testimonial-image img {
+    width: 212px;
+    height: 200px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+  }
+
+  .carousel-indicators {
+    display: none;
+  }
+
+  .reviews-profile {
+    display: none;
+  }
+
   #built-by {
     display: flex;
     justify-content: center;
@@ -2017,6 +2077,11 @@ p.featured-txt {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+
+  div#container-categories {
+    display: flex;
+    justify-content: center;
+  }
 
   #built-by {
     display: flex;
@@ -2598,6 +2663,7 @@ p.featured-txt {
     display: flex;
     position: relative;
     justify-content: center;
+    gap: 20px;
   }
 
   .marketplace-content {
@@ -3494,12 +3560,6 @@ a.dropdown-item {
 @media screen and (max-width: 767.98px) {
 
 
-  .container {
-    display: grid;
-    align-items: center;
-    justify-content: center;
-  }
-
   .categories img.img-icon {
     cursor: pointer;
     width: 27.648px;
@@ -3530,13 +3590,6 @@ a.dropdown-item {
     height: 96px;
   }
 
-  .search_bar {
-    width: 626px;
-    justify-content: center;
-    border-radius: 20px;
-    background: #FFF;
-    box-shadow: 2px 6px 10px 0px rgba(113, 113, 113, 0.20);
-  }
   
   .close-button {
     position: absolute;
@@ -3591,40 +3644,17 @@ a.dropdown-item {
     line-height: 0;
   }
 
-  .testimonial-content {
-    display: block;
-    padding: 20px;
-  }
-
-  .testimonial-title {
-    display: block;
-    text-align: center;
-    margin-top: 2rem;
-    margin-left: 0;
-  }
+ 
   .testimonial-review,
   .testimonial-message,
   .reviews-profile {
     margin-left: 0;
   }
-  .testimonial-quote {
-    width: 44px;
-    height: 44px;
-  }
+  
 
   .testimonial-image {
     display: flex;
     justify-content: center;
-  }
-
-  .testimonial-image img {
-    width: 188px;
-    height: 180px;
-    border-radius: 125.3px;
-  }
-
-  .header-title {
-    font-size: 27px;
   }
 
   .built-by {
@@ -4148,6 +4178,19 @@ a.dropdown-item {
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
 
+
+  .testimonial-image img {
+    margin-bottom: 30px;
+  }
+
+
+  .testimonial-quote {
+    width: 40px;
+    height: 40px;
+    margin-left: 50px;
+    margin-bottom: 10px;
+  }
+
   .section-6 {
     position: relative;
     margin-bottom: 5rem;
@@ -4524,7 +4567,10 @@ a.dropdown-item {
   }*/
 
   .testimonial-title {
-    margin-top: 2rem;
+    position: absolute;
+    top: 1%;
+    right: 33.5%;
+    display: block;
   }
 
   .testimonial-image {
@@ -4662,15 +4708,11 @@ a.dropdown-item {
   }
 
   #testimonial-content {
-    display: flex;
-    position: relative;
-    gap: 10px;
-}
+    display: block;
+    padding-top: 127px;
+    height: 760px;
+  }
 
-  /* .swiper-wrapper {
-    justify-content: space-evenly;
-	margin-left: 165px;
-} */
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
@@ -4797,7 +4839,6 @@ a.dropdown-item {
     justify-content: center;
     color: #343d4c;
     display: flex;
-    margin-left: 4rem;
     margin-bottom: 0;
   }
 
