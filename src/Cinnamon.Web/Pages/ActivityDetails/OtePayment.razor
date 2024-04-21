@@ -235,10 +235,10 @@
                                     <div>
                                         <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
                                         <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
-                                        @if (selectedDate != DateTime.MinValue)
+                                        @if (!string.IsNullOrEmpty(selectedDate))
                                         {
                                             <p class="font-14 color-grey-100 mb-1 line-h-1-1">
-                                                @selectedDate.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
+                                                @selectedDate
                                             </p>
                                         }
                                         else
@@ -531,7 +531,7 @@
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
     private Modal? failedModal;
-    private DateTime selectedDate { get; set; }
+    private string selectedDate { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -609,8 +609,7 @@
                 if(selecteds.Count > 0)
                 {
                     var ids = selecteds.First().Split("-");
-                    string dateString = ids[2];
-                    selectedDate = DateTime.ParseExact(dateString, "dd/MM/yyyy h:mm:ss tt", System.Globalization.CultureInfo.InvariantCulture);
+                    selectedDate = $"{ids[2]} | {ids[3]}";
                     if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
                     {
                         var defaultDatePricing = activity.Pricings.FirstOrDefault(p => p.Id == v1);
