@@ -313,41 +313,36 @@
     </div>
 
     @*Ticket Limit*@
-    <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="modelSchedule">
-        <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
-        <Validation>
-            <Field>
-                <FieldLabel>
-                    <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                        Max Ticket per Customer
-                    </h3>
-                </FieldLabel>
-                <div class="ticket-limit-group">
-                    <FieldBody>
-                        
-                        <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckExperienceTypeChanged">
-                            <label for="type-online" class="border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
-                                <Radio class="checkbox-round" ElementId="type-online" TValue="int" Value="1">No Limit</Radio>
-                            </label>
-                            <label for="type-in-person" class="border-radius-10 prevent-select px-3 py-2 text-capitalize cursor-pointer">
-                                <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="2">Set Limit</Radio>
-                            </label>
-                        </RadioGroup>
-                        @if (modelSchedule.IsLimit == 2)
-                        {
-                            <label for="set-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
-                            <NumericPicker ElementId="set-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelSchedule.EventTicketLimit">
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </NumericPicker>
-                        }
-                     </FieldBody>
-                </div>
-            </Field>
-        </Validation>
+    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <Field>
+            <FieldLabel>
+                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                    Max Ticket per Customer
+                </h3>
+            </FieldLabel>
+            <div class="ticket-limit-group">
+                <FieldBody>
+                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckExperienceTypeChanged">
+                        <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
+                            <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
+                        </label>
+                        <label for="set-limit" class="border-radius-10 label-set-limit">
+                            <Radio class="checkbox-round" ElementId="set-limit" TValue="int" Value="2">Set Limit</Radio>
+                        </label>
+                    </RadioGroup>
+                    @if (modelSchedule.IsLimit == 2)
+                    {
+                        <label for="specify-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
+                        <NumericPicker ElementId="specify-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="@LimitClass" @bind-Value="modelSchedule.EventTicketLimit">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </NumericPicker>
+                    }
+                 </FieldBody>
+            </div>
+        </Field>
     </div>
-    </Validations>
 
     <Divider class="d-none m-d-block" />
     <div class="my-3 border-radius-10">
@@ -722,6 +717,7 @@
     private Validations? pringListFormValidation;
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
+    private Validation? maxTicketLimit;
     private bool showErrors = false;
     private Modal? modalFeeBreakdown {get; set;}
     private Modal? modalScheduleGuid {get; set;}
@@ -763,7 +759,12 @@
             bool pricingValid = await pricingFormValidation.ValidateAll();
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
             bool pricingListValid = await pringListFormValidation.ValidateAll();
-            bool valid = pricingValid && scheduleValid && pricingListValid;
+            bool isSetLimit = true;
+            if(modelSchedule.IsLimit == 2)
+            {
+                isSetLimit = modelSchedule.EventTicketLimit != 0;
+            }
+            bool valid = pricingValid && scheduleValid && pricingListValid && isSetLimit;
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -832,6 +833,23 @@
             if(showErrors)
             {
                 if(string.IsNullOrEmpty(modelSchedule.Recurrences))
+                {
+                    return $"{defaultClass} is-invalid";
+                }
+                return $"{defaultClass} is-valid";
+            }
+            return defaultClass;
+        }
+    }
+
+    private string LimitClass
+    {
+        get
+        {
+            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
+            if(showErrors)
+            {
+                if(modelSchedule.EventTicketLimit == 0)
                 {
                     return $"{defaultClass} is-invalid";
                 }
@@ -1301,7 +1319,7 @@
         public int EventDurationCount {get; set;} = 1;
         public string EventDurationTimeUnit {get; set;} = "hrs";
         public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
-        [Range(1, int.MaxValue)]
+        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
         public int EventTicketLimit { get; set; }
         public int IsLimit { get; set; } = 1;
 

@@ -376,6 +376,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 // result.OteSchedule.To = oteSchedule.To;
                 // result.OteSchedule.Recurrences = oteSchedule.Recurrences;
 
+                //Update Event Ticket Limit
+                result.OteSchedule.EventTicketLimit = oteSchedule.EventTicketLimit;
+
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
                 foreach(var price in updatedPricingList)
                 {
