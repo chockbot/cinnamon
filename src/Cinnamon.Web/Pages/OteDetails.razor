@@ -666,7 +666,8 @@
             activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
             activity.Sold     = activity.Pricings.Sum(a => a.TicketSold);
 
-            selectedDate = SelectedDates.FirstOrDefault();
+            selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
+            //selectedDate = SelectedDates.FirstOrDefault();
 
             ViewAvailableDates();
 
@@ -854,7 +855,7 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
