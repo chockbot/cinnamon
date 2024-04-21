@@ -215,7 +215,7 @@
                             <div class="border-top-1-solid border-color-grey-200 p-3">
                                 @foreach (var item in AvailablePriceList)
                                 {
-                                    if (ticketCount != 0)
+                                    if (ticketCount != 0 && IsLimit)
                                     {
                                         if (ticketCount == activity.EventTicketLimit)
                                         {
@@ -264,7 +264,7 @@
                                                     @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                                 </span>
                                                 <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-1 counter-item prevent-select">
-                                                    @if(activity.EventTicketLimit != 0)
+                                                    @if(activity.EventTicketLimit != 0 && currentLogin is not null)
                                                     {
                                                         <Tooltip Text="@stringMaxTicket" Multiline>
                                                             <span class="item-action">+</span>
@@ -947,7 +947,11 @@
             {
                 return Task.CompletedTask;
             }
-            if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit)
+            if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
             {
                 return Task.CompletedTask;
             }
@@ -955,7 +959,7 @@
         }
         else 
         {
-            if (limitTicket == 0 && IsLimit)
+            if (limitTicket == 0 && IsLimit && currentLogin is not null)
             {
                 return Task.CompletedTask;
             }
