@@ -962,12 +962,6 @@ p.featured-txt {
   display: flex;
 }
 
-.marketplace-content {
-  display: flex;
-  gap: 50px;
-  z-index: 1000;
-  padding-top: 20px;
-}
 
 .marketplace-elipse img {
   position: absolute;
@@ -1183,6 +1177,69 @@ p.featured-txt {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
+
+  div#maketplace-item1 {
+    display: flex;
+    justify-content: center;
+  }
+
+  iframe.cinnamon-video {
+    width: 392px;
+    height: 290px;
+    border-radius: 12px 12px 0px 0px;
+  }
+
+  div#marketplace-tag {
+    width: 392px;
+    height: 185px;
+  }
+
+  #marketplace-content {
+    display: block;
+  }
+
+  .maketplace-item2 {
+    border-radius: 0px 0px 12px 12px;
+  }
+
+  #marketplace-tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F3F6FC;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0px 0px 12px 12px;
+    margin-top: -0.5rem;
+    height: 155px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  p#cinnamon-welcome {
+    font-family: Nunito;
+    font-weight: 400;
+    color: #717171;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 3.5rem;
+  }
+
+  .section-marketplace #featured-text {
+    position: absolute;
+    right: -26rem;
+    bottom: 130px;
+    text-align: left;
+    margin-left: 43.8rem;
+    font-size: 20px;
+    justify-content: space-between;
+    align-items: center;
+    width: 600px;
+    margin-bottom: 10px;
+  }
 
   .built-by {
     display: flex;
@@ -1870,6 +1927,53 @@ p.featured-txt {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
 
+  #marketplace-content {
+    display: block;
+  }
+
+  .maketplace-item2 {
+    border-radius: 0px 0px 12px 12px;
+  }
+
+  #marketplace-tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F3F6FC;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0px 0px 12px 12px;
+    margin-top: -0.5rem;
+    height: 155px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  p#cinnamon-welcome {
+    font-family: Nunito;
+    font-weight: 400;
+    color: #717171;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 3rem;
+  }
+
+  .section-marketplace #featured-text {
+    position: absolute;
+    right: -23.5rem;
+    bottom: 102px;
+    text-align: left;
+    margin-left: 43.8rem;
+    font-size: 24px;
+    justify-content: space-between;
+    align-items: center;
+    width: 600px;
+    margin-bottom: 10px;
+  }
+
   img.img-zoom-effect {
     border-radius: 12px;
   }
@@ -2320,11 +2424,7 @@ p.featured-txt {
     right: 10px;
     z-index: 9999;
   }
-  .maketplace-item2 {
-    display: grid;
-    background-color: #f3f6fc;
-    border-radius: 12px;
-  }
+  
   .maketplace-item2 .featured-text {
     order: 2;
     margin-bottom: 0rem;
@@ -2396,10 +2496,6 @@ p.featured-txt {
   .built-by .Unionbank {
     height: 42px;
     order: 2;
-  }
-
-  .marketplace-content {
-    display: block;
   }
 
   .marketplace-elipse {
@@ -2883,11 +2979,39 @@ p.featured-txt {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
 
+  .maketplace-item2 {
+    border-radius: 0px 0px 12px 12px;
+  }
+
+  #marketplace-tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F3F6FC;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0px 0px 12px 12px;
+    margin-top: 2rem;
+    height: 150px;
+  }
+
+  p#cinnamon-welcome {
+    font-family: Nunito;
+    font-weight: 400;
+    color: #717171;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 650px;
+    margin-bottom: 20px;
+    margin-top: 3rem;
+  }
 
   .section-marketplace #featured-text {
     position: absolute;
-    right: -26rem;
-    bottom: 160px;
+    right: -25rem;
+    bottom: 125px;
     text-align: left;
     margin-left: 43.8rem;
     font-size: 28px;
@@ -2909,16 +3033,6 @@ p.featured-txt {
     height: 190px;
   }
 
-  p#cinnamon-welcome {
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    width: 650px;
-    /* margin-left: 20px; */
-    margin-bottom: 20px;
-    margin-top: 2rem;
-  }
 
   img.img-zoom-effect {
     border-radius: 12px;
@@ -3139,11 +3253,13 @@ p.featured-txt {
   }
 
   .marketplace-content {
-    display: block;
+    display: flex;
     background: #f3f6fc;
-    border-radius: 24px 24px 0px 0px;
     width: 689px;
     padding-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0px 0px 12px 12px;
   }
 
   .footer-content {
@@ -3174,20 +3290,6 @@ p.featured-txt {
    #footer-txt {
     margin-right: 100px;
   }
-
-  .cinnamon-welcome {
-    font-family: Nunito;
-    font-weight: 400;
-    color: #717171;
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    width: 650px;
-    margin-left: 20px;
-    margin-bottom: 20px;
-  }
-
 
   .swiper-slide {
     width: 25%;
@@ -3540,11 +3642,6 @@ p.featured-txt {
     height: 42px;
   }
 
-  .marketplace-content {
-    display: block;
-    margin-left: 15px;
-  }
-
   .cinnamon-video {
     width: 688px;
     height: 437px;
@@ -3572,11 +3669,6 @@ p.featured-txt {
     color: #343d4c;
   }
 
-  .marketplace-tags {
-    display: block;
-    margin-top: 2rem;
-    margin-left: 5rem;
-  }
 
   .activity-content {
     display: block;
@@ -3613,10 +3705,6 @@ p.featured-txt {
   .testimonial-message,
   .become-description {
     font-size: 18px;
-  }
-
-  .marketplace-tags {
-    margin-left: 0;
   }
 
   .announcements {
@@ -4546,6 +4634,11 @@ p.featured-txt {
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+
+  .marketplace-content {
+    display: flex;
+    padding-top: 20px;
+  }
 
   .container {
     padding: 0;
