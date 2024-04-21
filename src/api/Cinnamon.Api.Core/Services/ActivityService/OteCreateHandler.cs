@@ -211,7 +211,8 @@ public class OteCreateHandler : IOteCreateHandler
                     SelectedDays             = args.Activity.WeekString ?? String.Empty,
                     ExtraOptions             = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount       = args.Activity.EventDurationCount,
-                    EventDurationTimeUnit    = args.Activity.EventDurationTimeUnit
+                    EventDurationTimeUnit    = args.Activity.EventDurationTimeUnit,
+                    EventTicketLimit         = args.Activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
