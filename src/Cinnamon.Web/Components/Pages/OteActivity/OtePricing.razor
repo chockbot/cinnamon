@@ -324,7 +324,7 @@
             </FieldLabel>
             <div class="ticket-limit-group">
                 <FieldBody>
-                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit">
+                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit" CheckedValueChanged="CheckLimitChanged">
                         <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
                             <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
                         </label>
@@ -1793,7 +1793,11 @@
             }
         }
     }
-
+    private async Task CheckLimitChanged(int type)
+    {
+        ModelState.IsLimit = type;
+        StateHasChanged();
+    }
     private async Task DeleteClick(Pricing price)
     {
         priceToDelete = price;
