@@ -322,7 +322,7 @@
             </FieldLabel>
             <div class="ticket-limit-group">
                 <FieldBody>
-                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckExperienceTypeChanged">
+                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckLimitChanged">
                         <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
                             <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
                         </label>
@@ -1649,24 +1649,10 @@
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
     }
-    private async Task CheckExperienceTypeChanged(int type)
+    private async Task CheckLimitChanged(int type)
     {
         modelSchedule.IsLimit = type;
         StateHasChanged();
-    }
-    public class RequireTicketLimitWhenIsLimitIs2Attribute : ValidationAttribute
-    {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            var schedule = (Schedule)validationContext.ObjectInstance;
-
-            if (schedule.IsLimit == 2 && schedule.EventTicketLimit == 0)
-            {
-                return new ValidationResult("Event ticket limit must not be 0 when IsLimit is 2.");
-            }
-
-            return ValidationResult.Success;
-        }
     }
     // ---!> until here. Date generation. Refactor this Code
 }
