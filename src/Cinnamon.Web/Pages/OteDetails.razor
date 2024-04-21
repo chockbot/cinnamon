@@ -918,8 +918,9 @@
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
         if(currentLogin is null)
         {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
             await loginModal.Show();
-            signInReturnUrl = paymentUrl;
+            signInReturnUrl = oteDetailsUrl;
             return;
         }
 
@@ -959,6 +960,10 @@
         else 
         {
             if (limitTicket == 0 && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            else if(selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
             {
                 return Task.CompletedTask;
             }
