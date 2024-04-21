@@ -217,7 +217,15 @@
                                 {
                                     if (ticketCount != 0)
                                     {
-                                        stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                        if (ticketCount == activity.EventTicketLimit)
+                                        {
+                                            stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                        }
+                                        else
+                                        {
+                                            stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                        }
+                                        
                                     }
                                     else
                                     {
@@ -947,13 +955,21 @@
         }
         else 
         {
-            selectedTickets.Add(pricing.Id, new TicketInfo
+            if (limitTicket == 0 && IsLimit)
             {
-                Count = 1,
-                Id = pricing.Id,
-                Price = pricing.Price,
-                Name = pricing.Name
-            });
+                return Task.CompletedTask;
+            }
+            else
+            {
+                selectedTickets.Add(pricing.Id, new TicketInfo
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    Name = pricing.Name
+                });
+            }
+            
         }
         return Task.CompletedTask;
     }
