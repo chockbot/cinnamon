@@ -324,7 +324,7 @@
             </FieldLabel>
             <div class="ticket-limit-group">
                 <FieldBody>
-                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="modelSchedule.IsLimit" CheckedValueChanged="CheckExperienceTypeChanged">
+                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit">
                         <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
                             <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
                         </label>
@@ -332,10 +332,10 @@
                             <Radio class="checkbox-round" ElementId="set-limit" TValue="int" Value="2">Set Limit</Radio>
                         </label>
                     </RadioGroup>
-                    @if (modelSchedule.IsLimit == 2)
+                    @if (ModelState.IsLimit == 2)
                     {
                         <label for="specify-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
-                        <NumericPicker ElementId="specify-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="@LimitClass" @bind-Value="modelSchedule.EventTicketLimit">
+                        <NumericPicker ElementId="specify-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="@LimitClass" @bind-Value="ModelState.EventTicketLimit">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -840,9 +840,9 @@
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
             bool pricingListValid = await pringListFormValidation.ValidateAll();
             bool isSetLimit = true;
-            if(modelSchedule.IsLimit == 2)
+            if(ModelState.IsLimit == 2)
             {
-                isSetLimit = modelSchedule.EventTicketLimit != 0;
+                isSetLimit = ModelState.EventTicketLimit != 0;
             }
             bool valid = pricingValid && scheduleValid && pricingListValid && isSetLimit;
             showErrors = true;
@@ -929,7 +929,7 @@
             string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
             if(showErrors)
             {
-                if(modelSchedule.EventTicketLimit == 0)
+                if(ModelState.EventTicketLimit == 0)
                 {
                     return $"{defaultClass} is-invalid";
                 }
