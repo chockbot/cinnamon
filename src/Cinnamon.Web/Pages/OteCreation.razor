@@ -115,7 +115,7 @@
     private int oteId = 0;
     private int summaryIndex = 0;
     private int ticketSold { get; set; } = 0;
-    
+
     enum EventType {
         None = 0,
         InPerson = 1,
@@ -156,7 +156,7 @@
             await LoadCategories();
 
             LoadComponents();
-    
+
 
             if(!string.IsNullOrEmpty(Handler))
             {
@@ -203,6 +203,7 @@
 
         if(eventType == EventType.Online)
         {
+            numberOfPage = 7;
             sidebarItems.Add(new OteSidebarNavigation.Item {
                 Label = "online event page",
                 IsActive = false,
