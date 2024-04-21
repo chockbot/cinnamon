@@ -2625,6 +2625,7 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2711,6 +2712,8 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                   
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

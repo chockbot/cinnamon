@@ -544,9 +544,9 @@
                         {
                             Description = p.Description,
                             IsAbsorbFees = p.AbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
-                            Name = p.Name
+                            MaxSlots     = p.MaxSlots,
+                            Price        = p.Price,
+                            Name         = p.Name
                         };
                     }),
                     DateOverrides = schedule.DateOverrides.Select(d =>
@@ -637,7 +637,8 @@
                     OnDayDate             = schedule.OnDayDate,
                     WeekString            = schedule.WeekString,
                     EventDurationCount    = schedule.EventDurationCount,
-                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
+                    EventDurationTimeUnit = schedule.EventDurationTimeUnit,
+                    EventTicketLimit      = schedule.EventTicketLimit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -768,7 +769,8 @@
         scheduleModel.OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
         scheduleModel.EventDurationCount = ote.OteSchedule.EventDurationCount;
         scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
-
+        scheduleModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
+        scheduleModel.IsLimit = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;

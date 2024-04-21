@@ -66,6 +66,7 @@ public class OteUpdateArgs : IInteractor
 
         public int EventDurationCount { get; set; }
         public string EventDurationTimeUnit { get; set; }
+        public int EventTicketLimit { get; set; }
     }
 
     public class OtePricing 
