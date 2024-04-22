@@ -724,7 +724,8 @@
 
 
 
-            selectedDate = SelectedDates.FirstOrDefault();
+            selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
+            //selectedDate = SelectedDates.FirstOrDefault();
 
             ViewAvailableDates();
 
@@ -912,7 +913,7 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
