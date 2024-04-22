@@ -913,7 +913,7 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()}-{ticketCount},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
