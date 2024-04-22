@@ -4,14 +4,15 @@
 }
 .btn-login {
     border: 2px solid #FFA942;
-    width: 195px;
-    height: 51px;
+    width: 182px;
+    height: 48px;
     border-radius: 40px;
     color: #FFA942;
     font-family: Nunito;
     font-size: 20px;
     font-weight: 700;
     background-color: transparent;
+    margin-left: 106px;
 }
     .btn-login:hover {
         color: #FFFFFF;
@@ -38,6 +39,8 @@
     color: #343D4C; 
     cursor: pointer;
     text-decoration: none;
+    font-style: normal;
+    line-height: normal;
 }
     .cinnamon-link:hover {
         color: #FFA942;
@@ -45,7 +48,7 @@
 .login-button {
     display: flex;
     justify-content: space-between;
-    padding-right: 20px;
+    /*padding-right: 20px;*/
     align-items: center;
 }
 .login-icon-sm {
@@ -60,7 +63,6 @@
 
 main {
     flex: 1;
-    background: linear-gradient(216.76deg, rgba(255, 169, 66, 0.14) -58.37%, rgba(255, 255, 255, 0) 31.86%);
 }
 
 .sidebar {
@@ -79,7 +81,6 @@ main {
 
     .top-row ::deep a {
         white-space: nowrap;
-        margin-left: 1.5rem;
     }
 
     .top-row a:first-child {
@@ -87,12 +88,16 @@ main {
         text-overflow: ellipsis;
     }
 
-.app-name {
-    color: var(--primary);
-    font-family: 'Backline';
-    font-size: 48px;
-    text-decoration: none;
-}
+    .app-name {
+        color: var(--primary);
+        font-family: 'Backline';
+        text-decoration: none;
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
 .img-icon-login {
     width: 24px; 
     height: 24px;
@@ -142,12 +147,18 @@ main {
         }
 
     .app-name {
-        font-size: 7vw;
+        width: 129.6px;
+        color: #FFA942;
+        font-family: Backline;
+        font-size: 28.8px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
     }
 
     .px-4 {
-        padding-right: 0.5rem !important;
-        padding-left: 0.8rem !important;
+        padding-right: 48px;
+        padding-left: 48px;
     }
 
     .top-row {
@@ -163,13 +174,40 @@ main {
         }
 }
 
+
+@media only screen and (min-width: 820px) and (min-height: 1180px) {
+  
+    .login-button .cinnamon-link:nth-child(2),
+    .login-button .cinnamon-link:nth-child(3) {
+      margin-left: 50px;
+    }
+
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+
+    .login-button .cinnamon-link:nth-child(2), 
+    .login-button .cinnamon-link:nth-child(3) {
+        margin-left: 50px;
+    }
+}
+
+
+
 @media screen and (min-width:768px) and (max-width:1024px) {
+    
+    .login-button .cinnamon-link:nth-child(2), 
+    .login-button .cinnamon-link:nth-child(3) {
+        margin-left: 50px;
+    }
+
     .btn-login {
         width: 135px;
         height: 40px;
         font-family: Nunito;
         font-size: 14px;
         font-weight: 700;
+        margin-left: 80px;
     }
     .cinnamon-link {
         font-family: Nunito;
@@ -187,6 +225,7 @@ main {
     .top-row {
         padding: 10px 0;
     }
+
 
     /*.top-row {
         position: sticky;
@@ -213,6 +252,23 @@ main {
     }*/
 }
 
+@media (min-width: 1200px) {
+    
+    .login-button .cinnamon-link:nth-child(2),
+    .login-button .cinnamon-link:nth-child(3) {
+        margin-left: 80px;
+    }
+
+   
+    .top-row a {
+        margin-left: 0;
+    }
+
+    .px-4 {
+        padding-right: 48px;
+        padding-left: 48px;
+    }
+}
 
 
 
