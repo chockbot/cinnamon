@@ -32,7 +32,7 @@
                         
                         while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
                         {
-                            <p class="font-20 color-black-100 mb-0">
+                            <p class="font-14 font-weight-700 color-white-100 rounded-pill bg-black-100 prevent-select px-3 py-1">
                                • @dailyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                             </p>
                             dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
@@ -65,7 +65,7 @@
                         Summary.PricingData.OnDayDate ?? 1, Summary.PricingData.MonthRepeat ?? string.Empty, Summary.PricingData.MonthDay ?? string.Empty).ToList();
                         foreach(var date in dateItems)
                         {
-                            <p class="font-20 color-black-100 mb-0">
+                            <p class="font-20 font-weight-700 color-white-100 rounded-pill bg-black-100 prevent-select px-3 py-1">
                             • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
                             </p>
                         }
