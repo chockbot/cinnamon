@@ -1,25 +1,54 @@
 .date-group {
     column-count: 2;
-    column-gap: 1em;
 }
 
-.date-group p {
-    font-size: 200px;
-    break-inside: avoid;
-    page-break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    padding-bottom: 24px;
-}
-
-.monthly-text {
-    font-size: 20px;
-    font-weight: 700;
-    color: white; /* Replace with the actual color */
-    border-radius: 50rem;
-    background-color: black; /* Replace with the actual color */
+.dates-text {
     user-select: none;
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    padding: 2px;
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border-radius: 8px;
+    background: #e6e9ef;
 }
+
+  @media (min-width: 0px) and (max-width: 575.98px) {
+    .dates-text {
+        font-size: 14px;
+        padding: 0px;
+    }
+
+    .date-group {
+        column-count: 1;
+    }
+  }
+  
+  @media (min-width: 576px) and (max-width: 768.98px) {
+
+  }
+  
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .monthly-text {
+        font-size: 16px;
+        padding: 0px;
+    }
+
+    .date-group {
+        column-count: 1;
+    }
+
+  
+  
+  }
+  
+  @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  
+  }
+  
+  @media (min-width: 1200px) {
+
+  }
