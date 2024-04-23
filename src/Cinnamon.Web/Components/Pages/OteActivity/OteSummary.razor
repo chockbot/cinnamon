@@ -33,7 +33,7 @@
                         while (dailyStartDate.HasValue && dailyEndDate.HasValue && dailyStartDate.Value.Date <= dailyEndDate.Value.Date)
                         {
                             <p class="dates-text">
-                               • @dailyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                               • @dailyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
                             </p>
                             dailyStartDate = dailyStartDate.Value.AddDays(dailyDurationEvery);
                         }
@@ -54,7 +54,7 @@
                             if ((currentWeekNumber - startWeekNumber) % weeklyDurationEvery == 0 && weeklySelectedDays.Contains(weeklyStartDate.Value.ToString("ddd").ToUpper()))
                             {
                                 <p class="dates-text">
-                                    • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                                    • @weeklyStartDate.Value.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
                                 </p>
                             }
                             weeklyStartDate = weeklyStartDate.Value.AddDays(1);
@@ -66,7 +66,7 @@
                         foreach(var date in dateItems)
                         {
                             <p class="dates-text">
-                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
                             </p>
                         }
                         break;
@@ -75,13 +75,13 @@
                         foreach(var date in dateItems)
                         {
                             <p class="dates-text">
-                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                            • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
                             </p>
                         }
                         break;
                     default:
                     <p class="dates-text">
-                        • @Summary.PricingData.DateFrom.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt") - @Summary.PricingData.DateTo.ToString("hh:mm tt")
+                        • @Summary.PricingData.DateFrom.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
                     </p>
                     break;
                 }
