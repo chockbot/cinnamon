@@ -22,8 +22,8 @@ experienceExcelWriter.execute = async (data) => {
     row.getCell(1).value = obj.owner.email;
     row.getCell(2).value = obj.owner.firstName;
     row.getCell(3).value = obj.owner.lastName;
-    row.getCell(4).value = obj.total;
-    row.getCell(5).value = obj.title;
+    row.getCell(4).value = obj.title;
+  
   }
 
   const buffer = await workbook.xlsx.writeBuffer();
