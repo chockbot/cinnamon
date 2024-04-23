@@ -186,6 +186,17 @@ builder.Services.AddQuartz(q => {
         .WithIdentity("ForceDisableExpiredEventJob-trigger")
         .WithSimpleSchedule(x => x.WithIntervalInMinutes(5).RepeatForever())
     );
+
+    if(applicationConfig.ActivitySummary.RunJob)
+    {
+        var updateActivitySummaryJobKey = new JobKey("UpdateActivitySummaryJob");
+        q.AddJob<UpdateActivitySummaryJob>(opts => opts.WithIdentity(updateActivitySummaryJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(updateActivitySummaryJobKey)
+            .WithIdentity("UpdateActivitySummaryJob-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInMinutes(applicationConfig.ActivitySummary.RunPerMinute).RepeatForever())
+        );
+    }  
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

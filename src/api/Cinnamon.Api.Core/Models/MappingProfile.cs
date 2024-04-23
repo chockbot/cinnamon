@@ -39,5 +39,21 @@ public class MappingProfile : Profile
 
         CreateMap<DataDto.Activity.OteOngoingDTO, ActivityResults.CustomerOteResult.CustomerOte>();
         CreateMap<ActivityResults.CustomerOteResult.CustomerOte, CoreDto.Activity.CustomerOteDTO>();
+
+        // for activity feed mappings
+        CreateMap<DataDto.Activity.ActivityFeedDTO, ActivityResults.ActivityFeedResult.ActivityFeed>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Location, ActivityResults.ActivityFeedResult.Location>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Summary, ActivityResults.ActivityFeedResult.Summary>();
+        CreateMap<ActivityResults.ActivityFeedResult.ActivityFeed, CoreDto.Activity.ActivityFeedDTO>();
+        CreateMap<ActivityResults.ActivityFeedResult.Location, CoreDto.Activity.ActivityFeedDTO.Location>();
+        CreateMap<ActivityResults.ActivityFeedResult.Summary, CoreDto.Activity.ActivityFeedDTO.Summary>();
+
+        // for activity feed popular activity mappings
+        CreateMap<DataDto.Activity.ActivityFeedDTO, ActivityResults.PopularActivitiesResult.ActivityFeed>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Location, ActivityResults.PopularActivitiesResult.Location>();
+        CreateMap<DataDto.Activity.ActivityFeedDTO.Summary, ActivityResults.PopularActivitiesResult.Summary>();
+        CreateMap<ActivityResults.PopularActivitiesResult.ActivityFeed, CoreDto.Activity.ActivityFeedDTO>();
+        CreateMap<ActivityResults.PopularActivitiesResult.Location, CoreDto.Activity.ActivityFeedDTO.Location>();
+        CreateMap<ActivityResults.PopularActivitiesResult.Summary, CoreDto.Activity.ActivityFeedDTO.Summary>();
     }
 }

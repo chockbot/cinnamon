@@ -672,4 +672,46 @@ public class ActivityController : ControllerBase
             return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("ActivityFeed")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ActivityFeedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ActivityFeed([FromQuery] ActivityFeedArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.ActivityFeed(args.Take, args.Skip, args.Search, args.CategoryId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ActivityFeedResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("BatchSummaryUpdate")]
+    [HttpPost]
+    [ProducesResponseType(typeof(BatchSummaryUpdateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BatchSummaryUpdate()
+    {
+        try
+        {
+            var result = await activityRepository.BatchSummaryUpdate();
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BatchSummaryUpdateResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

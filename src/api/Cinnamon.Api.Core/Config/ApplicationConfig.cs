@@ -12,4 +12,5 @@ public class ApplicationConfig
     public Activity Activity { get; set; }
     public Sitemap Sitemap {get; set;}
     public ExpiringStudentNotification ExpiringActivityNotification { get; set; }
+    public ActivitySummary ActivitySummary {get; set;}
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
@@ -9,54 +10,35 @@ namespace Cinnamon.Api.Core.Services.ActivityService;
 public class PopularActivitiesHandler : IPopularActivitiesHandler
 {
     private readonly IActivityData activityData;
+    private readonly IMapper mapper;
 
-    public PopularActivitiesHandler(IActivityData activityData)
+    public PopularActivitiesHandler(IActivityData activityData, IMapper mapper)
     {
         this.activityData = activityData;
+        this.mapper = mapper;
     }
 
-    public AppResult<PopularActivitiesResult> Execute(PopularActivitiesArgs interactor)
+    public AppResult<PopularActivitiesResult> Execute(PopularActivitiesArgs args)
     {
-        throw new NotImplementedException();
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<PopularActivitiesResult>> ExecuteAsync(PopularActivitiesArgs args)
     {
         try
         {
-            var result = await activityData.PopularActivities(new Framework.ApiCommand.ApiData.Activity.Request.PopularActivitiesArgs {
+            var popularRes = await activityData.PopularActivities(new Framework.ApiCommand.ApiData.Activity.Request.PopularActivitiesArgs {
                 CountPerPage = args.Take,
                 PageIndex = args.Skip,
                 CategoryId = args.CategoryId
             });
-            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            if(!popularRes.Succeeded || popularRes.Result is null || !popularRes.Result.IsSuccess)
             {
-                return AppResult<PopularActivitiesResult>.CreateFailed(new ApplicationException(result.Result?.ErrorInfo?.Message), result.Message);
+                return AppResult<PopularActivitiesResult>.CreateFailed(new ApplicationException(popularRes.Result?.ErrorInfo?.Message), popularRes.Message);
             }
-            var activities = result.Result.Result;
 
-            return AppResult<PopularActivitiesResult>.CreateSucceeded(new PopularActivitiesResult {
-                Activities = activities.Select(a => {
-                    return new PopularActivitiesResult.Activity {
-                        CityName                 = a.CityName,
-                        ExperienceTypeId         = a.ExperienceTypeId,
-                        Handler                  = a.Handler,
-                        Id                       = a.Id,
-                        ImageSrc                 = a.ImageSrc,
-                        IsNew                    = a.IsNew,
-                        MakerId                  = a.MakerId,
-                        OngoingStudentCount      = a.OngoingStudentCount,
-                        Price                    = a.Price,
-                        Rating                   = a.Rating,
-                        RegionName               = a.RegionName,
-                        ReviewCount              = a.ReviewCount,
-                        StudentCount             = a.StudentCount,
-                        Title                    = a.Title,
-                        ExperienceCreationTypeId = a.ExperienceCreationTypeId,
-                        PinnedLocation           = a.PinnedLocation
-                    };
-                })
-            }, "Popular activities successfully get");
+            var result = mapper.Map<IEnumerable<PopularActivitiesResult.ActivityFeed>>(popularRes.Result.Result);
+            return AppResult<PopularActivitiesResult>.CreateSucceeded(new PopularActivitiesResult { ActivityFeeds = result}, "Popular activities successfully get");
         }
         catch (Exception ex)
         {

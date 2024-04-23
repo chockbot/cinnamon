@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240416051244_AddActivitySummaryTable")]
+    partial class AddActivitySummaryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,8 +133,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ForceDisable");
 
-                    b.HasIndex("Guid");
-
                     b.HasIndex("Handler");
 
                     b.HasIndex("IsDeactivated");
@@ -144,8 +144,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("PurchaseOrderCount");
 
                     b.HasIndex("SubCategoryId");
-
-                    b.HasIndex("IsDeactivated", "Status", "IsPublished", "ForceDisable");
 
                     b.HasIndex("PurchaseOrderCount", "IsPublished", "IsDeactivated", "IsNew");
 
@@ -506,9 +504,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<decimal>("ReviewAccumulated")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("TotalParticipants")
-                        .HasColumnType("integer");
-
                     b.Property<int>("TotalReviews")
                         .HasColumnType("integer");
 
@@ -518,11 +513,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Ongoing");
 
-                    b.HasIndex("TotalParticipants");
-
                     b.HasIndex("Ongoing", "Completed");
-
-                    b.HasIndex("Ongoing", "Completed", "TotalParticipants");
 
                     b.ToTable("ActivitySummaries");
                 });
