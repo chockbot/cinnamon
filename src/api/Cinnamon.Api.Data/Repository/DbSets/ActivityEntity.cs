@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Data;
 using AutoMapper;
 using Npgsql;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -266,7 +267,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule)
+    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates)
     {
         try
         {
@@ -276,6 +277,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             activityResult = activityResult.Include(a => a.ActivityDescription);
             activityResult = activityResult.Include(a => a.Address);
             activityResult = activityResult.Include(a => a.OteSchedule);
+            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
             activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
@@ -287,32 +289,67 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             
             if(result is not null)
             {
-                result.Description = activity.Description;
-                result.Title = activity.Title;
-                result.ExperienceTypeId = activity.ExperienceTypeId;
-                result.Price = activity.Price;
-                result.IsPublished = activity.IsPublished;
+                result.Description          = activity.Description;
+                result.Title                = activity.Title;
+                result.ExperienceTypeId     = activity.ExperienceTypeId;
+                result.Price                = activity.Price;
+                result.IsPublished          = activity.IsPublished;
                 result.ExperienceCategoryId = activity.ExperienceCategoryId;
-                result.Handler = activity.Handler;
-                result.IsPublished = activity.IsPublished;
-                result.IsComingSoon = activity.IsComingSoon;
+                result.Handler              = activity.Handler;
+                result.IsPublished          = activity.IsPublished;
+                result.IsComingSoon         = activity.IsComingSoon;
 
                 result.ActivityDescription.Description = description.Description;
 
-                result.Address.Address1 = address.Address1;
-                result.Address.City = address.City;
-                result.Address.CityName = address.CityName;
-                result.Address.Barangay = address.Barangay;
-                result.Address.BarangayName = address.BarangayName;
-                result.Address.Region = address.Region;
-                result.Address.RegionName = address.RegionName;
+                result.Address.Address1       = address.Address1;
+                result.Address.City           = address.City;
+                result.Address.CityName       = address.CityName;
+                result.Address.Barangay       = address.Barangay;
+                result.Address.BarangayName   = address.BarangayName;
+                result.Address.Region         = address.Region;
+                result.Address.RegionName     = address.RegionName;
                 result.Address.PinnedLocation = address.PinnedLocation;
-                result.Address.PostalCode = address.PostalCode;
+                result.Address.PostalCode     = address.PostalCode;
 
-                // disable update for ote schedule
-                // result.OteSchedule.From = oteSchedule.From;
-                // result.OteSchedule.To = oteSchedule.To;
-                // result.OteSchedule.Recurrences = oteSchedule.Recurrences;
+                // enable update for ote schedule
+                result.OteSchedule.From                  = oteSchedule.From;
+                result.OteSchedule.To                    = oteSchedule.To;
+                result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
+                result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
+                result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
+                result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
+                result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
+                result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
+                result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
+                result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
+
+                // Update existing OteDates
+                foreach (var oteDate in result.OteSchedule.OteDates)
+                {
+                    // Find the corresponding updated OteDate
+                    var updatedOteDate = oteDates.FirstOrDefault(d => d.Id == oteDate.Id);
+
+                    // If the updated OteDate exists, update its properties
+                    if (updatedOteDate != null)
+                    {
+                        oteDate.Date      = updatedOteDate.Date;
+                        oteDate.DateStart = updatedOteDate.DateStart;
+                        oteDate.DateEnd   = updatedOteDate.DateStart;
+                    }
+                }
+                
+                // Add new OteDates
+                foreach (var newOteDate in oteDates.Where(d => d.Id == 0))
+                {
+                    var addedOteDate = new OteDate
+                    {
+                        Date = newOteDate.Date,
+                        DateEnd = newOteDate.DateEnd,
+                        DateStart = newOteDate.DateStart
+                    };
+                    result.OteSchedule.OteDates.Add(addedOteDate);
+                }
+
 
                 var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
                 foreach(var price in updatedPricingList)
@@ -340,7 +377,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         }
                     }
                 }
-
                 var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
                 var newPricingGroups = newPricingList.Select(p => {
                     return new OteSchedulePricingGroup {
@@ -352,7 +388,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         OteSchedule = result.OteSchedule
                     };
                 });
-                
                 foreach(var item in newPricingGroups)
                 {
                     result.OteSchedule.OteSchedulePricingGroups.Add(item);
@@ -404,7 +439,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }
                 }
-
 
                 await applicationContext.SaveChangesAsync();
             }

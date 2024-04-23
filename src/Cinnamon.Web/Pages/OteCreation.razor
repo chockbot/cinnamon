@@ -20,7 +20,7 @@
     <Container>
         <div class="progress-bar-section mt-4">
             <p class="progress-details">
-                IN PROGRESS: Step @(currentIndex + 1) of 7 <span id="loader"></span>
+                IN PROGRESS: Step @(currentIndex + 1) of @numberOfPage <span id="loader"></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
@@ -110,6 +110,7 @@
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
     private OteSummary.ComponentSummary? summary = default;
+    private int numberOfPage = 6;
 
     private string token = string.Empty;
     private int accountId = 0;
@@ -198,6 +199,7 @@
         });
         if (oteLocation != null && oteLocation.GetData().ExperienceType == 2)
         {
+            numberOfPage = 7;
             sidebarItems.Add(new OteSidebarNavigation.Item
                 {
                     Label = "online event page",
@@ -282,6 +284,7 @@
 
     private async Task NavigateToGallery(OteSidebarNavigation.Item _)
     {
+        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
         if (currentIndex != 4)
         {
             var (valid, _) = await CurrentFieldValid();
@@ -296,6 +299,7 @@
 
     private async Task NavigateToSummary(OteSidebarNavigation.Item _)
     {
+        currentIndex = oteLocation.GetData().ExperienceType == 2 ? currentIndex : currentIndex - 1;
         if (currentIndex != 5)
         {
             var (valid, _) = await CurrentFieldValid();
@@ -425,7 +429,7 @@
 
     private async Task NextClick()
     {
-        
+
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
         if(valid && field is not null)
@@ -589,25 +593,35 @@
 
             var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
                 Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateActivity {
-                    BarangayCode = location.BarangayCode,
-                    BarangayName = location.BarangayName,
-                    CategoryId = eventData.Category,
-                    CityName = location.CityName,
-                    CityNumber = location.CityCode,
-                    Description = eventData.Description,
-                    EventName = eventData.Name,
-                    ExperienceTypeId = location.ExperienceType,
-                    HouseNo = location.HouseNo,
-                    Id = oteId,
-                    IsPublished = publishData.IsPublish,
-                    PinnedLocation = location.PinnedLocation,
-                    PostalCode = location.PostalCode,
-                    Recurrence = schedule.Recurrences,
-                    RegionCode = location.RegionCode,
-                    RegionName = location.RegionName,
-                    ScheduleFrom = schedule.DateFrom,
-                    ScheduleTo = schedule.DateTo,
-                    IsComingSoon = publishData.ComingSoon
+                    BarangayCode          = location.BarangayCode,
+                    BarangayName          = location.BarangayName,
+                    CategoryId            = eventData.Category,
+                    CityName              = location.CityName,
+                    CityNumber            = location.CityCode,
+                    Description           = eventData.Description,
+                    EventName             = eventData.Name,
+                    ExperienceTypeId      = location.ExperienceType,
+                    HouseNo               = location.HouseNo,
+                    Id                    = oteId,
+                    IsPublished           = publishData.IsPublish,
+                    PinnedLocation        = location.PinnedLocation,
+                    PostalCode            = location.PostalCode,
+                    IsComingSoon          = publishData.ComingSoon,
+                    RegionCode            = location.RegionCode,
+                    RegionName            = location.RegionName,
+                    ScheduleFrom          = schedule.DateFrom,
+                    ScheduleTo            = schedule.DateTo,
+                    Recurrence            = schedule.Recurrences,
+                    DurationEnd           = schedule.DurationEnd,
+                    DurationEvery         = schedule.DurationEvery,
+                    DurationStart         = schedule.DurationStart,
+                    MonthDay              = schedule.MonthDay,
+                    MonthRepeat           = schedule.MonthRepeat,
+                    MonthSelection        = schedule.MonthSelection,
+                    OnDayDate             = schedule.OnDayDate,
+                    WeekString            = schedule.WeekString,
+                    EventDurationCount    = schedule.EventDurationCount,
+                    EventDurationTimeUnit = schedule.EventDurationTimeUnit
                 },
                 Pricings = schedule.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -617,6 +631,13 @@
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name
+                    };
+                }),
+                DateOverrides = schedule.DateOverrides.Select(d =>  {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
                     };
                 }),
                 OnlineEvents = oteLocation.GetData().ExperienceType == 2 ? onlineEvent.TicketInfos.Select(s => {
@@ -713,7 +734,7 @@
             WeekString            = ote.OteSchedule.SelectedDays,
             EventDurationCount    = ote.OteSchedule.EventDurationCount,
             EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit,
-            ItemPrices = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
+            ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                 return new OtePricing.ModelData.ItemPrice {
                     AbsorbFees = p.IsAbsorbFees,
                     Description = p.Description,
@@ -722,7 +743,8 @@
                     Price = p.Price,
                     Name = p.Name
                 };
-            }).ToList()
+            }).ToList(),
+            TicketSold            = ote.Pricings.Sum(a => a.TicketSold)
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
@@ -736,6 +758,8 @@
                 };
             }).ToList()
         });
+
+        numberOfPage = ote.ExperienceTypeId == 2 ? 7 : 6;
 
         oteGallery?.SetState(ote.Images.Select(i => {
             return new OteGallery.ImageItem {

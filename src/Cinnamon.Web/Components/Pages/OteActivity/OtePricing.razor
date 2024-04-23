@@ -88,7 +88,7 @@
                                 recurrences
                             </FieldLabel>
                             <FieldBody>
-                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass" 
+                                <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
                                     SelectedValueChanged="RecurrenceChanged" SelectedValue="modelSchedule.Recurrences">
                                     <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
                                     <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
@@ -886,6 +886,7 @@
         modelSchedule.EventDurationCount     = data.EventDurationCount;
         modelSchedule.EventDurationTimeUnit  = data.EventDurationTimeUnit;
         modelSchedule.EventDurationTimeStart = data.DateFrom.TimeOfDay;
+        modelSchedule.TicketSold             = data.TicketSold;
 
         RecurrenceChanged(data.Recurrences);
 
@@ -1158,6 +1159,7 @@
         public string? WeekString {get; set;}
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
+        public int TicketSold { get; set; }
 
         public class ItemPrice 
         {
@@ -1261,6 +1263,7 @@
         // for date override
         public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
         public TimeSpan TimeEnd {get; set;} = DateTime.Now.TimeOfDay;
+        public int TicketSold {get; set;} = 0;
     }
 
     public class Pricing 
