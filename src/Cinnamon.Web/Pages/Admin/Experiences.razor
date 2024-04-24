@@ -8,25 +8,30 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IAdminApiHandler adminApiHandler;
+@inject IJSRuntime jsRuntime
 
 <PageTitle>Admin - Manage Experience | CinnamonPH</PageTitle>
 <SeoMeta Title="Admin - Manage Experience" Subject="Admin - Manage Experience" Url="/admin/experiences" />
 
 <section class="admin-dashboard-activities-wrapper">
     
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-3 custom-flex">
+    <div class="d-flex  mt-3 custom-flex justify-content-between">
         <p class="verification-title">Experience Review Board</p>
-        <div class="mt-2 mt-md-0">
-            <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
-                <div class="searchBar">
-                    <form @onsubmit="Search">
-                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
-                            autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
-                    </form>
+        <a href="#" @onclick:preventDefault @onclick="ExportExcel" class="excel-export-text-button">
+             <span class="excel-export-text-button desktop-view">Export Excel File</span>
+            <img src="images/Dashboard Icon/excel-image-admin-new.svg" alt="Excel Icon" class="ml-2" />
+            </a>
+    </div>
+            <div class="justify-content-between search-bar-parent mt-3">
+                <div></div> <!--Empty div to keep search bar sa left-->
+                <div class="searchbar-holder ml-md-auto mt-0 mt-md-0 mb-3">
+                    <div class="searchBar">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+
 
     <div class="activities-section mt-2">
         <div class="table-list">
@@ -254,6 +259,8 @@ LastName = r.Owner.LastName
         
     }
 
+
+
     private bool IsActive(string page)
         => currentPage == page;
 
@@ -345,6 +352,12 @@ LastName = r.Owner.LastName
         {
         await GetAllActivities(1);
         }
+    }
+
+
+        private async Task ExportExcel()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.experienceExcelWriter.execute", activities);
     }
 
     public async Task Clear()
