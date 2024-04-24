@@ -8,21 +8,24 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@inject IAdminApiHandler adminApiHandler;
-@inject IJSRuntime jsRuntime
 
 <PageTitle>Admin - Manage Experience | CinnamonPH</PageTitle>
-<script src="JsLib/src/utils/experienceExcelWriter.js"></script>
 <SeoMeta Title="Admin - Manage Experience" Subject="Admin - Manage Experience" Url="/admin/experiences" />
 
 <section class="admin-dashboard-activities-wrapper">
     
-    <div class="d-flex  mt-3 custom-flex justify-content-between">
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-3 custom-flex">
         <p class="verification-title">Experience Review Board</p>
-        <a href="#" @onclick:preventDefault @onclick="ExportExcel" class="excel-export-text-button">
-             <span class="excel-export-text-button desktop-view">Export Excel File</span>
-            <img src="images/Dashboard Icon/excel-image-admin-new.svg" alt="Excel Icon" class="ml-2" />
-            </a>
+        <div class="mt-2 mt-md-0">
+            <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
+                <div class="searchBar">
+                    <form @onsubmit="Search">
+                        <input type="search" id="searchBar" class="form-control search-input" placeholder="Search" 
+                            autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3">
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="activities-section mt-2">
@@ -251,8 +254,6 @@ LastName = r.Owner.LastName
         
     }
 
-
-
     private bool IsActive(string page)
         => currentPage == page;
 
@@ -344,12 +345,6 @@ LastName = r.Owner.LastName
         {
         await GetAllActivities(1);
         }
-    }
-
-
-        private async Task ExportExcel()
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.experienceExcelWriter.execute", activities);
     }
 
     public async Task Clear()
