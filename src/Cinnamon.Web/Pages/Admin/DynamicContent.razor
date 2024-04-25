@@ -9,173 +9,241 @@
 @inject NavigationManager NavigationManager;
 @inject INotificationService NotificationService;
 @inject ISystemApiHandler systemApiHandler;
+@using Blazorise.RichTextEdit;
 @attribute [Authorize]
 
 <PageTitle>Dynamic Contents | CinnamonPH</PageTitle>
 <SeoMeta Title="Coupons" Subject="Dashboard" Url="/admin/coupons" />
 
-<section class="admin-coupons-wrapper admin-dashboard-coupons-wrapper">
+<section class="admin-dashboard-announcement-wrapper">
 
     <div class="d-flex flex-column flex-md-row justify-content-between mt-3 custom-flex">
         <p class="verification-title">Dynamic Contents</p>
     </div>
 
-    <div class="section-content mt-4">
-        <Row VerticalGutter="50" HorizontalGutter="20">
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-                <p class="font-18 font-weight-700 mb-2">Event Policies</p>
-                <Validations @ref="eventPoliciesValidation" Mode="ValidationMode.Manual" Model="eventPoliciesModel">
-                    <Validation>
-                        <Field>
-                            <FieldLabel>Title</FieldLabel>
-                            <FieldBody>
-                                <TextEdit @bind-Text="eventPoliciesModel.Title">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Validation>
-                        <Field class="mt-3">
-                            <FieldLabel>Content</FieldLabel>
-                            <FieldBody>
-                                <MemoEdit Rows="10" @bind-Text="eventPoliciesModel.Content">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <div class="mt-3">
-                        <Button Clicked="SaveEventPolicies" class="bg-orange-100 color-white-100 hover-color-white">
-                            Save Changes
-                        </Button>
-                    </div>  
-                </Validations>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-                <p class="font-18 font-weight-700 mb-2">Event Buyer Policies</p>
-                <Validations @ref="eventBuyerValidation" Mode="ValidationMode.Manual" Model="eventBuyerModel">
-                    <Validation>
-                        <Field>
-                            <FieldLabel>Title</FieldLabel>
-                            <FieldBody>
-                                <TextEdit @bind-Text="eventBuyerModel.Title">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Validation>
-                        <Field class="mt-3">
-                            <FieldLabel>Content</FieldLabel>
-                            <FieldBody>
-                                <MemoEdit Rows="10" @bind-Text="eventBuyerModel.Content">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <div class="mt-3">
-                        <Button Clicked="SaveEventBuyerPolicies" class="bg-orange-100 color-white-100 hover-color-white">
-                            Save Changes
-                        </Button>
-                    </div>
-                </Validations>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-                <p class="font-18 font-weight-700 mb-2">Event Seller Policies</p>
-                <Validations @ref="eventSellerValidation" Mode="ValidationMode.Manual" Model="eventSellerModel">
-                    <Validation>
-                        <Field>
-                            <FieldLabel>Title</FieldLabel>
-                            <FieldBody>
-                                <TextEdit @bind-Text="eventSellerModel.Title">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Validation>
-                        <Field class="mt-3">
-                            <FieldLabel>Content</FieldLabel>
-                            <FieldBody>
-                                <MemoEdit Rows="10" @bind-Text="eventSellerModel.Content">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <div class="mt-3">
-                        <Button Clicked="SaveEventSellerPolicies" class="bg-orange-100 color-white-100 hover-color-white">
-                            Save Changes
-                        </Button>
-                    </div>
-                </Validations>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-                <p class="font-18 font-weight-700 mb-2">Privacy Policies</p>
-                <Validations @ref="privacyPolicyValidation" Mode="ValidationMode.Manual" Model="privacyPoliciesModel">
-                    <Validation>
-                        <Field>
-                            <FieldLabel>Title</FieldLabel>
-                            <FieldBody>
-                                <TextEdit @bind-Text="privacyPoliciesModel.Title">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Validation>
-                        <Field class="mt-3">
-                            <FieldLabel>Content</FieldLabel>
-                            <FieldBody>
-                                <MemoEdit Rows="10" @bind-Text="privacyPoliciesModel.Content">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <div class="mt-3">
-                        <Button Clicked="SavePrivacyPolicies" class="bg-orange-100 color-white-100 hover-color-white">
-                            Save Changes
-                        </Button>
-                    </div>
-                </Validations>
-            </Column>
-        </Row>
+    <div class="activities-section mt-4">
+        <div class="table-list">
+            <Table Hoverable Responsive class="border-1-solid mb-4 font-20 m-font-12" VerticalAlignment="VerticalAlignment.Middle">
+                <TableHeader class="bg-black-100 m-d-none" VerticalAlignment="VerticalAlignment.Middle">
+                    <TableRow class="color-white-100">
+                        <TableHeaderCell class="text-start color-white-100 p-3">
+                            Title
+                        </TableHeaderCell>
+                        <TableHeaderCell class="text-start color-white-100 p-3">
+                            Actions
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+
+                        @* Event Policies *@
+                        <TableRow VerticalAlignment="VerticalAlignment.Middle">
+                            <TableRowCell class="text-start p-3 text-capitalize">Event Policies</TableRowCell>
+                            <TableRowCell class="text-start p-3">
+                                <Button @onclick="eventPolicyModal" class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/edit-icon.png" alt="edit">
+                                </Button>
+                            </TableRowCell> 
+                        </TableRow>
+
+                        @* Event Buyer Policies *@
+                        <TableRow VerticalAlignment="VerticalAlignment.Middle">
+                            <TableRowCell class="text-start p-3 text-capitalize">Event Buyer Policies</TableRowCell>
+                            <TableRowCell class="text-start p-3">
+                                <Button @onclick="eventBuyerPolicyModal" class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/edit-icon.png" alt="edit">
+                                </Button>
+                            </TableRowCell> 
+                        </TableRow>
+                        
+                        @* Event Seller Policies *@
+                        <TableRow VerticalAlignment="VerticalAlignment.Middle">
+                            <TableRowCell class="text-start p-3 text-capitalize">Event Seller Policies</TableRowCell>
+                            <TableRowCell class="text-start p-3">
+                                <Button @onclick="eventSellerPolicyModal" class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/edit-icon.png" alt="edit">
+                                </Button>
+                            </TableRowCell> 
+                        </TableRow>  
+                        
+                        @* Privacy Policies *@
+                        <TableRow VerticalAlignment="VerticalAlignment.Middle">
+                            <TableRowCell class="text-start p-3 text-capitalize">Privacy Policies</TableRowCell>
+                            <TableRowCell class="text-start p-3">
+                               <Button @onclick="privacyPolicyModal" class="border-1-solid border-color-grey-200 bg-white-200">
+                                    <img src="images/announcements/edit-icon.png" alt="edit">
+                                </Button>
+                            </TableRowCell> 
+                        </TableRow>                                                                      
+                </TableBody>
+            </Table>
+        </div>
     </div>
+    
+    @*Event Policies*@
+    <Modal @bind-Visible="isEventPolicyVisible">
+        <ModalContent>
+            <ModalHeader ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-24 my-2 font-weight-700 color-black-100">Edit Event Policies</p>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="eventPoliciesValidation" Mode="ValidationMode.Manual" Model="eventPoliciesModel">
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Title</FieldLabel>
+                        <FieldBody>
+                            <Validation>
+                                <TextEdit Role="TextRole.Text" @bind-Text="eventPoliciesModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Content</FieldLabel>
+                        <FieldBody>
+                            <RichTextEdit @ref=eventPoliciesRTE
+                                ContentChanged="@EditEventPolicy">
+                                <Editor>@((MarkupString)eventPoliciesModel.Content)</Editor>
+                            </RichTextEdit>
+                        </FieldBody>
+                    </Field>     
+                    <Button Color="Color.Primary" Clicked="SaveEventPolicies">Save</Button>
+                    <Button Color="Color.Secondary" Clicked="eventPolicyCloseModal">Cancel</Button>    
+                </Validations>
+            </ModalBody> 
+        </ModalContent>
+    </Modal>
+
+    @*Event Buyer Policies*@
+    <Modal @bind-Visible="isEventBuyerPolicyVisible">
+        <ModalContent>
+            <ModalHeader ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-24 my-2 font-weight-700 color-black-100">Edit Event Buyer Policies</p>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="eventBuyerValidation" Mode="ValidationMode.Manual" Model="eventBuyerModel">
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Title</FieldLabel>
+                        <FieldBody>
+                            <Validation>
+                                <TextEdit Role="TextRole.Text" @bind-Text="eventBuyerModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Content</FieldLabel>
+                        <FieldBody>
+                            <RichTextEdit @ref=eventBuyerPoliciesRTE
+                                ContentChanged="@EditEventBuyerPolicy">
+                                <Editor>@((MarkupString)eventBuyerModel.Content)</Editor>
+                            </RichTextEdit>
+                        </FieldBody>
+                    </Field>     
+                    <Button Color="Color.Primary" Clicked="SaveEventBuyerPolicies">Save</Button>
+                    <Button Color="Color.Secondary" Clicked="eventBuyerPolicyCloseModal">Cancel</Button>    
+                </Validations>
+            </ModalBody> 
+        </ModalContent>
+    </Modal>
+    
+    @*Event Seller Policies*@
+    <Modal @bind-Visible="isEventSellerPolicyVisible">
+        <ModalContent>
+            <ModalHeader ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-24 my-2 font-weight-700 color-black-100">Edit Event Seller Policies</p>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="eventSellerValidation" Mode="ValidationMode.Manual" Model="eventSellerModel">
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Title</FieldLabel>
+                        <FieldBody>
+                            <Validation>
+                                <TextEdit Role="TextRole.Text" @bind-Text="eventSellerModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Content</FieldLabel>
+                        <FieldBody>
+                            <RichTextEdit @ref=eventSellerPoliciesRTE
+                                ContentChanged="@EditEventSellerPolicy">
+                                <Editor>@((MarkupString)eventSellerModel.Content)</Editor>
+                            </RichTextEdit>
+                        </FieldBody>
+                    </Field>     
+                    <Button Color="Color.Primary" Clicked="SaveEventSellerPolicies">Save</Button>
+                    <Button Color="Color.Secondary" Clicked="eventSellerPolicyCloseModal">Cancel</Button>    
+                </Validations>
+            </ModalBody> 
+        </ModalContent>
+    </Modal>
+
+    @*Privacy Policy*@
+    <Modal @bind-Visible="isPrivacyPolicyVisible">
+        <ModalContent>
+            <ModalHeader ModalHeader Border="Border.Is0" class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-24 my-2 font-weight-700 color-black-100">Edit Privacy Policies</p>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="privacyPolicyValidation" Mode="ValidationMode.Manual" Model="privacyPoliciesModel">
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Title</FieldLabel>
+                        <FieldBody>
+                            <Validation>
+                                <TextEdit Role="TextRole.Text" @bind-Text="privacyPoliciesModel.Title">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-2">
+                        <FieldLabel class="font-20">Content</FieldLabel>
+                        <FieldBody>
+                            <RichTextEdit @ref=privacyPolicyRTE
+                                ContentChanged="@EditPrivacyPolicy">
+                                <Editor>@((MarkupString)privacyPoliciesModel.Content)</Editor>
+                            </RichTextEdit>
+                        </FieldBody>
+                    </Field>     
+                    <Button Color="Color.Primary" Clicked="SavePrivacyPolicies">Save</Button>
+                    <Button Color="Color.Secondary" Clicked="privacyPolicyCloseModal">Cancel</Button>    
+                </Validations>
+            </ModalBody> 
+        </ModalContent>
+    </Modal>                       
 </section>
 
 @code
 {
     private string Token = string.Empty;
-
+    private bool isEventPolicyVisible;
+    private bool isEventBuyerPolicyVisible;
+    private bool isEventSellerPolicyVisible;
+    private bool isPrivacyPolicyVisible;
     private Validations? eventPoliciesValidation;
     private Validations? eventSellerValidation;
     private Validations? eventBuyerValidation;
     private Validations? privacyPolicyValidation;
-
     private DynamicContentForm eventPoliciesModel = new();
     private DynamicContentForm eventSellerModel = new();
     private DynamicContentForm eventBuyerModel = new();
     private DynamicContentForm privacyPoliciesModel = new();
-
+    private RichTextEdit eventPoliciesRTE;
+    private RichTextEdit eventBuyerPoliciesRTE;
+    private RichTextEdit eventSellerPoliciesRTE;
+    private RichTextEdit privacyPolicyRTE;
     
 
 
@@ -210,6 +278,7 @@
             else 
             {
                 await NotificationService.Success("Changes successfully saved.", "Success!");
+                eventPolicyCloseModal();
             }
         }
     }
@@ -225,10 +294,12 @@
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
                 await NotificationService.Error("An error occured. Please try again.", "Error!");
+                
             }
             else 
             {
                 await NotificationService.Success("Changes successfully saved.", "Success!");
+                eventBuyerPolicyCloseModal();
             }
         }
     }
@@ -244,10 +315,13 @@
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
                 await NotificationService.Error("An error occured. Please try again.", "Error!");
+
+                
             }
             else 
             {
                 await NotificationService.Success("Changes successfully saved.", "Success!");
+                eventSellerPolicyCloseModal();
             }
         }
     }
@@ -319,5 +393,71 @@
 
         [Required]
         public string Content {get; set;}
+    }
+
+
+
+    @*Event Policy*@
+    private void eventPolicyModal()
+    {
+        isEventPolicyVisible = true;
+    }
+
+    private void eventPolicyCloseModal()
+    {
+        isEventPolicyVisible = false;
+    }
+
+    private async Task EditEventPolicy()
+    {
+        eventPoliciesModel.Content = await eventPoliciesRTE.GetHtmlAsync();
+    }
+
+    @*Event Buyer Policy*@
+    private void eventBuyerPolicyModal()
+    {
+        isEventBuyerPolicyVisible = true;
+    }
+
+    private void eventBuyerPolicyCloseModal()
+    {
+        isEventBuyerPolicyVisible = false;
+    }
+
+    private async Task EditEventBuyerPolicy()
+    {
+        eventBuyerModel.Content = await eventBuyerPoliciesRTE.GetHtmlAsync();
+    }
+
+    @*Event Seller Policy*@
+    private void eventSellerPolicyModal()
+    {
+        isEventSellerPolicyVisible = true;
+    }
+
+    private void eventSellerPolicyCloseModal()
+    {
+        isEventSellerPolicyVisible = false;
+    }
+
+    private async Task EditEventSellerPolicy()
+    {
+        eventSellerModel.Content = await eventSellerPoliciesRTE.GetHtmlAsync();
+    }
+
+    @*Privacy Policy*@
+    private void privacyPolicyModal()
+    {
+        isPrivacyPolicyVisible = true;
+    }
+
+    private void privacyPolicyCloseModal()
+    {
+        isPrivacyPolicyVisible = false;
+    }
+
+    private async Task EditPrivacyPolicy()
+    {
+        privacyPoliciesModel.Content = await privacyPolicyRTE.GetHtmlAsync();
     }
 }
