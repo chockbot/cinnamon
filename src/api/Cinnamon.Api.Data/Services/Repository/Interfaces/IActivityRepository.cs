@@ -76,4 +76,5 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
+    Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBooked(int activityId);
 }

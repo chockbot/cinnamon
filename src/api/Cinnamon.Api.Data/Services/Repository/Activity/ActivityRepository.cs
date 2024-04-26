@@ -2186,4 +2186,22 @@ public class ActivityRepository : IActivityRepository
             return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBooked(int activityId)
+    {
+        try
+        {
+            var result = await dataStore.Activity.OteAlreadyBookDates(activityId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateSucceeded(result.Result, "Successfully get ote already booked dates.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already booked dates.");
+        }
+    }
 }

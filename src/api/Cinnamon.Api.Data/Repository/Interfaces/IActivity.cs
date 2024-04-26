@@ -28,4 +28,5 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search, int? categoryId);
     Task<AppResult<bool>> BatchSummaryUpdate();
+    Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId);
 }

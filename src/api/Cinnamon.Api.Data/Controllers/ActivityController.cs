@@ -735,4 +735,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("OteAlreadyBooked/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBooked(int activityId)
+    {
+        try
+        {
+            var result = await activityRepository.OteAlreadyBooked(activityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OteAlreadyBookedResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

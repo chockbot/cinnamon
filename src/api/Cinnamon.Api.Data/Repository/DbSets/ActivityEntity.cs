@@ -979,4 +979,55 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId)
+    {
+        try
+        {
+            string query = "with grpDates as ( " +
+                                "select tc.\"ActivityId\", tc.\"OteDateId\" " +
+                                "from public.\"OteTickets\" tc " +
+                                "where tc.\"OteDateId\" is not null and tc.\"ActivityId\" = " + activityId + " " +
+                                "group by tc.\"ActivityId\", tc.\"OteDateId\" " +
+                                "order by tc.\"ActivityId\", tc.\"OteDateId\" " +
+                           ") " +
+                           "select grp.\"ActivityId\", grp.\"OteDateId\", " +
+                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" " +
+                           "from grpDates grp " +
+                           "join public.\"OteDates\" od " +
+                               "on od.\"Id\" = grp.\"OteDateId\" ";
+            
+            IList<OteAlreadyBookDate> listResult = new List<OteAlreadyBookDate>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new OteAlreadyBookDate {
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            Date = Convert.ToDateTime(item["Date"]),
+                            DateEnd = Convert.ToDateTime(item["DateEnd"]),
+                            DateStart = Convert.ToDateTime(item["DateStart"]),
+                            OteDateId = Convert.ToInt32(item["OteDateId"])
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateSucceeded(listResult, "Successfully get ote already booked");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already book dates.");
+        }
+    }
 }
