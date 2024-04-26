@@ -570,4 +570,24 @@ public class ActivityData: IActivityData
 			return AppResult<BatchSummaryUpdateResult>.CreateFailed(ex, "An error occurred when update batch summary.");
 		}
 	}
+
+	public async Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"Activity/OteAlreadyBooked/{activityId}")
+							.GetJsonAsync<OteAlreadyBookedResult>();
+
+			return AppResult<OteAlreadyBookedResult>.CreateSucceeded(result, "Successfully getting get all activity feed.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<OteAlreadyBookedResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<OteAlreadyBookedResult>.CreateFailed(ex, "An error occured when getting all activity feed.");
+		}
+	}
 }

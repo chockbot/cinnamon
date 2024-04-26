@@ -37,4 +37,5 @@ public interface IActivityData
     Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
+    Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);
 }
