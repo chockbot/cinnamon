@@ -78,6 +78,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
+    private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -103,7 +104,8 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
+        IOteAlreadyBookedHandler oteAlreadyBookedHandler)
     {
         _logger = logger;
 
@@ -163,6 +165,7 @@ public class ActivityController : ControllerBase
         this.deleteOnlineEventHandler = deleteOnlineEventHandler;
         this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
         this.activityFeedHandler = activityFeedHandler;
+        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
     }
 
     [Route("CreateActivity")]
@@ -3171,6 +3174,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteAlreadyBookedDates/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedDatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBookedDates(int activityId)
+    {
+        try
+        {
+            var result = await oteAlreadyBookedHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteAlreadyBookedArgs {
+                ActivityId = activityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.OteAlreadyBookedDTO>>(result.Result.OteAlreadyBookedItems);
+
+            return new JsonResult(new OteAlreadyBookedDatesResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
