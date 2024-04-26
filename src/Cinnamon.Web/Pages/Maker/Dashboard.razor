@@ -730,7 +730,7 @@
 
     public List<Activity> AppointmentActvities = new List<Activity>();
 
-    private List<GrossSales> priceData = new List<GrossSales>();
+    private List<Payouts> earningsData = new List<Payouts>();
 
     public Activity activity = new Activity();
 
@@ -811,25 +811,25 @@
                     Token = token
                 };
 
-            //Get 1 Month Earnings 
-            DateTime startDate = DateTime.Today.AddMonths(-1);
-            var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+            //Get Total Earnings 
+            var earnings = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
                 {
-                    Id = profile.Id,
-                    DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+                    Id       = profile.Id,
+                    DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+                    Status   = 2
                 }, Model.Token);
-            if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
+            if (earnings.Succeeded && earnings.Result != null && earnings.Result.IsSuccess)
             {
-                priceData = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+                earningsData = earnings.Result.Result.OrderBy(a => a.PayoutDate).Select(e =>
                 {
-                    return new GrossSales
+                    return new Payouts
                         {
-                            PurchaseDate = e.PurchaseDate.Date,
-                            Total = e.Total
+                            Date = e.PayoutDate.Date,
+                            Amount = e.Amount
                         };
                 }).ToList();
             }
-            var amount = priceData.Sum(a => a.Total);
+            var amount = earningsData.Sum(a => a.Amount);
             totalEarnings = String.Format("{0:N}", amount);
         }
         catch (Exception e)
