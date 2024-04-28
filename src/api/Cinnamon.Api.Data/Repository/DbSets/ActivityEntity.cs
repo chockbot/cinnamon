@@ -1010,18 +1010,17 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     {
         try
         {
-            string query = "with grpDates as ( " +
-                                "select tc.\"ActivityId\", tc.\"OteDateId\" " +
-                                "from public.\"OteTickets\" tc " +
-                                "where tc.\"OteDateId\" is not null and tc.\"ActivityId\" = " + activityId + " " +
-                                "group by tc.\"ActivityId\", tc.\"OteDateId\" " +
-                                "order by tc.\"ActivityId\", tc.\"OteDateId\" " +
-                           ") " +
-                           "select grp.\"ActivityId\", grp.\"OteDateId\", " +
-                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" " +
-                           "from grpDates grp " +
-                           "join public.\"OteDates\" od " +
-                               "on od.\"Id\" = grp.\"OteDateId\" ";
+            string query = "select os.\"ActivityId\", od.\"Id\" \"OteDateId\", " +
+                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+                               "count(tc.\"Id\") \"Cnt\" " +
+                           "from public.\"OteDates\" od " +
+                           "join public.\"OteSchedules\" os " +
+                               "on od.\"OteScheduleId\" = os.\"Id\" " +
+                           "left join public.\"OteTickets\" tc " +
+                               "on tc.\"OteDateId\" = od.\"Id\" " +
+                           "where os.\"ActivityId\" = " + activityId + " " +
+                           "group by os.\"ActivityId\", od.\"Id\", " +
+                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" ";
             
             IList<OteAlreadyBookDate> listResult = new List<OteAlreadyBookDate>();
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
@@ -1043,7 +1042,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             Date = Convert.ToDateTime(item["Date"]),
                             DateEnd = Convert.ToDateTime(item["DateEnd"]),
                             DateStart = Convert.ToDateTime(item["DateStart"]),
-                            OteDateId = Convert.ToInt32(item["OteDateId"])
+                            OteDateId = Convert.ToInt32(item["OteDateId"]),
+                            BookCount = Convert.ToInt32(item["Cnt"])
                         }).ToList();
                     }
                 }

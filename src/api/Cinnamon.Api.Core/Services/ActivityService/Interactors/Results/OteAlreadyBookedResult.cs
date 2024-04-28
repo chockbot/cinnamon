@@ -11,5 +11,6 @@ public class OteAlreadyBookedResult
         public DateTime Date {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+        public int BookCount {get; set;}
     }
 }
