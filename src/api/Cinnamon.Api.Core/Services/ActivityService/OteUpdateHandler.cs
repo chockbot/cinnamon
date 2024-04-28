@@ -16,15 +16,17 @@ public class OteUpdateHandler : IOteUpdateHandler
     private readonly IActivityData activityData;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IGenerateActivityHandler generateActivityHandler;
+    private readonly IOteFindByHandler oteFindByHandler;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
 
     public OteUpdateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler, 
-        IGenerateActivityHandler generateActivityHandler)
+        IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
+        this.oteFindByHandler = oteFindByHandler;
         this.recurrenceDateHelper = new();
 
         this.htmlSanitizer = new 
@@ -201,6 +203,28 @@ public class OteUpdateHandler : IOteUpdateHandler
                 }
             }
 
+            var oteByHandlerRes = await oteFindByHandler.ExecuteAsync(new OteFindByHandlerArgs {
+                Handler = handler,
+                IncludeSchedule = true
+            });
+            if(!oteByHandlerRes.Succeeded || oteByHandlerRes.Result is null)
+            {
+                return AppResult<OteUpdateResult>.CreateFailed(
+                        new ApplicationException(oteByHandlerRes.Message), oteByHandlerRes.Message);
+            }
+            var currentOteDetails = oteByHandlerRes.Result;
+            
+            bool reCreateSchedule = 
+                !currentOteDetails.Schedule.Recurrences.Equals(args.Activity.Recurrence) ||
+                currentOteDetails.Schedule.From != args.Activity.ScheduleFrom ||
+                currentOteDetails.Schedule.To != args.Activity.ScheduleTo ||
+                currentOteDetails.Schedule.RecurrenceDateEnd != (args.Activity.DurationEnd ?? args.Activity.ScheduleTo) ||
+                currentOteDetails.Schedule.RecurrenceDateStart != (args.Activity.DurationStart ?? args.Activity.ScheduleFrom) ||
+                currentOteDetails.Schedule.RepeatEvery != (args.Activity.DurationEvery ?? 0) ||
+                currentOteDetails.Schedule.SelectedDays != (args.Activity.WeekString ?? String.Empty) ||
+                currentOteDetails.Schedule.ExtraOptions != (extraOptionsForMonthlyRecurring ?? String.Empty) ||
+                currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
+                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
 
             var sortedPrice = args.Pricings.OrderBy(p => p.Price).ToList();
             var stringPrice = sortedPrice.Count > 1 ? string.Format("PHP {0} - {1}", sortedPrice.First().Price, sortedPrice.Last().Price) :
@@ -235,8 +259,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                     SelectedDays          = args.Activity.WeekString ?? String.Empty,
                     ExtraOptions          = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount    = args.Activity.EventDurationCount,
-                    EventDurationTimeUnit = args.Activity.EventDurationTimeUnit
-
+                    EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {
@@ -274,7 +297,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         VideoLink                 = p.VideoLink,
                         TicketRestriction         = p.TicketRestriction,
                     };
-                }).ToList() : null
+                }).ToList() : null,
+                RecreateSchedule = reCreateSchedule
             };
             var updateOte = await activityData.UpdateOteActivity(entity);
             if(!updateOte.Succeeded || updateOte.Result is null || !updateOte.Result.IsSuccess)
