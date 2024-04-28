@@ -1244,4 +1244,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<ActivityFeedResult>.CreateFailed(ex, "An error occured when get activity feed.");
         }
     }
+
+    public async Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/OteAlreadyBookedDates/{activityId}")
+                .GetJsonAsync<OteAlreadyBookedDatesResult>();
+
+            return AppResult<OteAlreadyBookedDatesResult>.CreateSucceeded(result, "Successfully ote already booked dates");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, "An error occured when ote already booked dates");
+        }
+    }
 }
