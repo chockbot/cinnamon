@@ -18,7 +18,8 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
         OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 
         IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents);
-    Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates);
+    Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
+        OteSchedule oteSchedule, IList<OteDate> oteDates, IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule);
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);

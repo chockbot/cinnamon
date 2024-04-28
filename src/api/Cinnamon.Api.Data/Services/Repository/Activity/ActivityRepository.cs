@@ -1894,9 +1894,11 @@ public class ActivityRepository : IActivityRepository
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit
             };
+
             var pricingsGroup = pricingDTOs.Select(p => {
                 return new OteSchedulePricingGroup
                 {
+                    Id = p.Id,
                     Description = p.Description,
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
@@ -1909,6 +1911,7 @@ public class ActivityRepository : IActivityRepository
             var dates = oteDates.Select(d => {
                 return new Entities.OteDate
                 {
+                    Id = d.Id,
                     Date = d.Date.SetKindUtc(),
                     DateEnd = d.DateEnd.SetKindUtc(),
                     DateStart = d.DateStart.SetKindUtc(),
@@ -1920,11 +1923,9 @@ public class ActivityRepository : IActivityRepository
                             MaxSlots = p.MaxSlots,
                             Price = p.Price,
                             Name = p.Name,
-                            OteSchedule = schedule,
                             OteSchedulePricingGroup = p
                         };
                     }).ToList(),
-                    OteSchedule = schedule
                 };
             }).ToList();
 
@@ -1949,7 +1950,8 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList() : null;
 
-            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule, dates);
+            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, 
+                address, schedule, dates, pricingsGroup, true);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);

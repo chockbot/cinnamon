@@ -267,7 +267,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates)
+    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, 
+        ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates,
+        IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule)
     {
         try
         {
@@ -323,6 +325,37 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
                 result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
 
+                if(recreateSchedule)
+                {
+                    this.applicationContext.OteSchedulePricings
+                        .RemoveRange(result.OteSchedule.OteSchedulePricing);
+                    this.applicationContext.OteDates
+                        .RemoveRange(result.OteSchedule.OteDates);
+                    this.applicationContext.OteSchedulePricingGroups
+                        .RemoveRange(result.OteSchedule.OteSchedulePricingGroups);
+
+                    foreach (var pricingGrp in pricingGroups)
+                    {
+                        pricingGrp.Id = 0;
+                        pricingGrp.OteSchedule = null;
+                        pricingGrp.OteScheduleId = result.OteSchedule.Id;
+                        this.applicationContext.OteSchedulePricingGroups.Add(pricingGrp);
+                    }
+
+                    foreach(var oteDate in oteDates)
+                    {
+                        oteDate.Id = 0;
+                        oteDate.OteScheduleId = result.OteSchedule.Id;
+                        foreach (var oteDatePricing in oteDate.OteSchedulePricing)
+                        {
+                            oteDatePricing.OteSchedule = null;
+                            oteDatePricing.OteScheduleId = result.OteSchedule.Id;
+                        }
+                        this.applicationContext.OteDates.Add(oteDate);
+                    }
+                }
+
+                /*** temporary commented out this code
                 // Update existing OteDates
                 foreach (var oteDate in result.OteSchedule.OteDates)
                 {
@@ -439,6 +472,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }
                 }
+                ** temporary commented out this code **/
 
                 await applicationContext.SaveChangesAsync();
             }
