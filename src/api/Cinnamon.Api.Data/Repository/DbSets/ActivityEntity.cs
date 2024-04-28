@@ -355,88 +355,64 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                     }
                 }
 
-                /*** temporary commented out this code
-                // Update existing OteDates
-                foreach (var oteDate in result.OteSchedule.OteDates)
+                if(!recreateSchedule)
                 {
-                    // Find the corresponding updated OteDate
-                    var updatedOteDate = oteDates.FirstOrDefault(d => d.Id == oteDate.Id);
-
-                    // If the updated OteDate exists, update its properties
-                    if (updatedOteDate != null)
+                    var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
+                    foreach(var price in updatedPricingList)
                     {
-                        oteDate.Date      = updatedOteDate.Date;
-                        oteDate.DateStart = updatedOteDate.DateStart;
-                        oteDate.DateEnd   = updatedOteDate.DateStart;
-                    }
-                }
-                
-                // Add new OteDates
-                foreach (var newOteDate in oteDates.Where(d => d.Id == 0))
-                {
-                    var addedOteDate = new OteDate
-                    {
-                        Date = newOteDate.Date,
-                        DateEnd = newOteDate.DateEnd,
-                        DateStart = newOteDate.DateStart
-                    };
-                    result.OteSchedule.OteDates.Add(addedOteDate);
-                }
-
-
-                var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
-                foreach(var price in updatedPricingList)
-                {
-                    var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
-                    if(priceGroup is not null)
-                    {
-                        priceGroup.Description = price.Description;
-                        priceGroup.IsAbsorbFees = price.IsAbsorbFees;
-                        priceGroup.MaxSlots = price.MaxSlots;
-                        priceGroup.Price = price.Price;
-                        priceGroup.Name = price.Name;
-
-                        var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
-                        if(priceList is not null)
+                        var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
+                        if(priceGroup is not null)
                         {
-                            foreach(var ticketPrice in priceList)
+                            priceGroup.Description = price.Description;
+                            priceGroup.IsAbsorbFees = price.IsAbsorbFees;
+                            priceGroup.MaxSlots = price.MaxSlots;
+                            priceGroup.Price = price.Price;
+                            priceGroup.Name = price.Name;
+
+                            var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
+                            if(priceList is not null)
                             {
-                                ticketPrice.Description = price.Description;
-                                ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
-                                ticketPrice.MaxSlots = price.MaxSlots;
-                                ticketPrice.Price = price.Price;
-                                ticketPrice.Name = price.Name;
+                                foreach(var ticketPrice in priceList)
+                                {
+                                    ticketPrice.Description = price.Description;
+                                    ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
+                                    ticketPrice.MaxSlots = price.MaxSlots;
+                                    ticketPrice.Price = price.Price;
+                                    ticketPrice.Name = price.Name;
+                                }
                             }
                         }
                     }
-                }
-                var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
-                var newPricingGroups = newPricingList.Select(p => {
-                    return new OteSchedulePricingGroup {
-                        Description = p.Description,
-                        IsAbsorbFees = p.IsAbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Name = p.Name,
-                        Price = p.Price,
-                        OteSchedule = result.OteSchedule
-                    };
-                });
-                foreach(var item in newPricingGroups)
-                {
-                    result.OteSchedule.OteSchedulePricingGroups.Add(item);
 
-                    foreach(var oteDate in result.OteSchedule.OteDates)
+                    var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
+                    var newPricingGroups = newPricingList.Select(p => {
+                        return new OteSchedulePricingGroup {
+                            Description = p.Description,
+                            IsAbsorbFees = p.IsAbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Name = p.Name,
+                            Price = p.Price,
+                            OteSchedule = result.OteSchedule
+                        };
+                    });
+                    
+                    foreach(var item in newPricingGroups)
                     {
-                        oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
-                            Description = item.Description,
-                            IsAbsorbFees = item.IsAbsorbFees,
-                            MaxSlots = item.MaxSlots,
-                            Name = item.Name,
-                            Price = item.Price,
-                            TicketSold = item.TicketSold,
-                            OteSchedule = result.OteSchedule,
-                            OteSchedulePricingGroup = item,
-                        });
+                        result.OteSchedule.OteSchedulePricingGroups.Add(item);
+
+                        foreach(var oteDate in result.OteSchedule.OteDates)
+                        {
+                            oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
+                                Description = item.Description,
+                                IsAbsorbFees = item.IsAbsorbFees,
+                                MaxSlots = item.MaxSlots,
+                                Name = item.Name,
+                                Price = item.Price,
+                                TicketSold = item.TicketSold,
+                                OteSchedule = result.OteSchedule,
+                                OteSchedulePricingGroup = item,
+                            });
+                        }
                     }
                 }
 
@@ -472,7 +448,6 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         result.OteSchedule.OteOnlineEvent.Add(newOnlineEvent);
                     }
                 }
-                ** temporary commented out this code **/
 
                 await applicationContext.SaveChangesAsync();
             }

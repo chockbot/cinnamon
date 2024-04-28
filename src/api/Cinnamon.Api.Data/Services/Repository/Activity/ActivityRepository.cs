@@ -1850,7 +1850,7 @@ public class ActivityRepository : IActivityRepository
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int categoryId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule)
     {
         try
         {
@@ -1951,7 +1951,7 @@ public class ActivityRepository : IActivityRepository
             }).ToList() : null;
 
             var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, 
-                address, schedule, dates, pricingsGroup, true);
+                address, schedule, dates, pricingsGroup, recreateSchedule);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);

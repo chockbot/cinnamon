@@ -18,6 +18,9 @@ public class UpdateOteActivityArgs
 
     public IList<UpdateOteDateOverride>? DateOverrides { get; set; }
 
+    [Required]
+    public bool RecreateSchedule {get; set;}
+
     public class UpdateOteActivity 
     {
         [Required]

@@ -518,7 +518,7 @@ public class ActivityController : ControllerBase
                 args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,
                 args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides, onlineEvents);
+                dateOverrides, onlineEvents, args.RecreateSchedule);
             
             if(!result.Succeeded || result.Result is null)
             {
