@@ -226,6 +226,18 @@ public class OteUpdateHandler : IOteUpdateHandler
                 currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
                 currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
 
+            
+            if(args.OteReschedules is not null)
+            {
+                foreach (var schedule in args.OteReschedules)
+                {
+                    schedule.OldDate = schedule.OldDate.Date;
+                    schedule.NewDate = schedule.NewDate.Date;
+                    schedule.DateStart = schedule.NewDate.Add(timeStart);
+                    schedule.DateEnd = schedule.DateStart.Add(timeDuration);
+                }
+            }
+
             var sortedPrice = args.Pricings.OrderBy(p => p.Price).ToList();
             var stringPrice = sortedPrice.Count > 1 ? string.Format("PHP {0} - {1}", sortedPrice.First().Price, sortedPrice.Last().Price) :
                 string.Format("PHP {0}", sortedPrice.First().Price);
@@ -298,7 +310,13 @@ public class OteUpdateHandler : IOteUpdateHandler
                         TicketRestriction         = p.TicketRestriction,
                     };
                 }).ToList() : null,
-                RecreateSchedule = reCreateSchedule
+                RecreateSchedule = reCreateSchedule,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.OteReschedule {
+                    DateEnd = s.DateEnd,
+                    DateStart = s.DateStart,
+                    NewDate = s.NewDate,
+                    OldDate = s.OldDate
+                }).ToList() : null
             };
             var updateOte = await activityData.UpdateOteActivity(entity);
             if(!updateOte.Succeeded || updateOte.Result is null || !updateOte.Result.IsSuccess)

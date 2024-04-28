@@ -12,6 +12,8 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<DateOverride>? DateOverrides { get; set; }
 
+    public IEnumerable<OteReschedule>? OteReschedules {get; set;}
+
     public class OteActivity 
     {
         public int Id {get; set;}
@@ -99,5 +101,13 @@ public class OteUpdateArgs : IInteractor
         public DateTime Date { get; set; }
         public TimeSpan TimeStart { get; set; }
         public TimeSpan TimeEnd { get; set; }
+    }
+
+    public class OteReschedule 
+    {
+        public DateTime OldDate {get; set;}
+        public DateTime NewDate {get; set;}
+        public DateTime DateStart {get; set;}
+        public DateTime DateEnd {get; set;}
     }
 }

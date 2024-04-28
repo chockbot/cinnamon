@@ -2737,7 +2737,11 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     };
-                }): null
+                }): null,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule {
+                    OldDate = s.OldDate,
+                    NewDate = s.NewDate
+                }) : null
             });
 
             if (!result.Succeeded || result.Result == null)
