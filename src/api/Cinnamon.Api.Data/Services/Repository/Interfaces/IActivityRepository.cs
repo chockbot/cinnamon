@@ -63,7 +63,7 @@ public interface IActivityRepository
         bool isPublished, string handler, int categoryId, bool comingSoon,string scheduleExtraOpt, DateTime recurrenceDateEnd,
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,
         int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule);
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false);

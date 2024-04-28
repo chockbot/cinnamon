@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Repository.Interfaces;
@@ -19,7 +20,9 @@ public interface IActivity : IGenericEntity<Activity>
         OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 
         IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents);
     Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
-        OteSchedule oteSchedule, IList<OteDate> oteDates, IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule);
+        OteSchedule oteSchedule, IList<OteDate> oteDates, IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
+        IList<OteRescheduleDTO>? oteReschedules);
+        
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);

@@ -21,6 +21,8 @@ public class UpdateOteActivityArgs
     [Required]
     public bool RecreateSchedule {get; set;}
 
+    public IList<OteReschedule>? OteReschedules {get; set;}
+
     public class UpdateOteActivity 
     {
         [Required]
@@ -153,5 +155,20 @@ public class UpdateOteActivityArgs
 
         [Required]
         public DateTime DateEnd { get; set; }
+    }
+
+    public class OteReschedule 
+    {
+        [Required]
+        public DateTime OldDate {get; set;}
+
+        [Required]
+        public DateTime NewDate {get; set;}
+
+        [Required]
+        public DateTime DateStart {get; set;}
+
+        [Required]
+        public DateTime DateEnd {get; set;}
     }
 }

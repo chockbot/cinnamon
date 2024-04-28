@@ -8,6 +8,7 @@ using System.Data;
 using AutoMapper;
 using Npgsql;
 using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -269,7 +270,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
     public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, 
         ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates,
-        IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule)
+        IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
+        IList<OteRescheduleDTO>? oteReschedules)
     {
         try
         {
@@ -412,6 +414,21 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                 OteSchedule = result.OteSchedule,
                                 OteSchedulePricingGroup = item,
                             });
+                        }
+                    }
+
+                    // update ote dates from new dates
+                    if(oteReschedules is not null)
+                    {
+                        foreach (var schedule in oteReschedules)
+                        {
+                            var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Date == schedule.OldDate);
+                            if(oteDate is not null)
+                            {
+                                oteDate.Date = schedule.NewDate.SetKindUtc();
+                                oteDate.DateStart = schedule.DateStart.SetKindUtc();
+                                oteDate.DateEnd = schedule.DateEnd.SetKindUtc();
+                            }
                         }
                     }
                 }

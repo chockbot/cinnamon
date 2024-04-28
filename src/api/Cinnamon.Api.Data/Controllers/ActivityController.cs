@@ -510,6 +510,13 @@ public class ActivityController : ControllerBase
                 };
             }).ToList() : null;
 
+            var oteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new OteRescheduleDTO {
+                DateEnd = s.DateEnd,
+                DateStart = s.DateStart,
+                NewDate = s.NewDate,
+                OldDate = s.OldDate
+            }).ToList() : null;
+
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
@@ -518,7 +525,7 @@ public class ActivityController : ControllerBase
                 args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,
                 args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides, onlineEvents, args.RecreateSchedule);
+                dateOverrides, onlineEvents, args.RecreateSchedule, oteReschedules);
             
             if(!result.Succeeded || result.Result is null)
             {
