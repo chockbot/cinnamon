@@ -53,17 +53,6 @@
     </div>
 }
 <!--Search Section-->
-<div class="wrapper search_section">
-    <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
-    <form class="search-bar" @onsubmit=SearchToExplorePage>
-        <div class="search_bar" id="search_bar">
-            <img  id="search_icon" class="search_icon mt-xl-2" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
-            <input id="search" class="search mt-xl-1" type="text" autocomplete="new-password" placeholder="Search Activity"  @oninput="OnChageInput" @bind-value="searchValue">
-            <button id="explore_button" class="explore_button" @onclick="() =>SearchToExplorePage()">
-                <span class="button_txt" >
-                @buttonLabel
-                </span>
-                <img id="search-image" class="search-image" src="images/landing-page-images/mobile-search-icon.svg" alt="search icon" width="17.639px" height="17.28px">
  <div class="top-section" style="position:relative;display:flex">
     <img class="section-1-image" alt="section-1-image" src="images/landing-page-images/landing-activity-image.png">
      <div class="provider-section">
@@ -77,36 +66,6 @@
                 <span>Join the Provider Community</span>
             </button>
         </div>
-    </form>
-    <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
-</div>
-
-<!--Section Category-->
-<div id="container-categories" class="container mt-4">
-    <div class="section-1">
-        <div id="category-section" class="categories">
-            <div class="schedule-swiper">
-                <div class="swiper-wrapper text-center justify-content-center" id="swiper-wrapper">
-                    @foreach (var category in categories)
-                    {
-                        @if(category.Category != "New")
-                        {
-                            <div id="swiper-slide" class="swiper-slide category">
-                                <div>
-                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
-                                        <img src=@category.IconPath class="img-icon text-center">
-                                        <p class="card-title">@category.Category</p>
-                                    </a>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-                <div class="swiper-scrollbar"></div>
-            </div>
-        </div>
-    </div>
-</div>
      </div>
  </div>
 
@@ -114,19 +73,15 @@
 @if (activities.Count != 0)
 {
     <div class="section-3 row">
-        <div class="featured-activities col-12 justify-content-center" id="featured-activities">
+        <div class="featured-activities col-12 justify-content-center">
             <div class="container">
-                <div class="featured-header d-flex">
-                    <p id="featured-text" class="featured-txt">Featured Activities</p>
-                    <a class="see-more" href="/explore">See all</a>
                 <div class="featured-header">
                     <p class="featured-text">Featured Activities</p>
                     <a class="see-more" href="/explore">See all</a>
                 </div>
-                <div class="row d-flex justify-content-start" id= "row">
+                <div class="row d-flex justify-content-start">
                     @foreach (var act in activities)
                     {
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6 d-flex flex-column card-activity-body explore-activity-item" style="margin-bottom:30px" id="features-activity">
                         <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
@@ -206,7 +161,7 @@
                                         }
                                         <div class="card-container">
                                             <div class="row text-start star-pulse-section">
-                                                <div class="star-section">
+                                                <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
                                                     @if (act.NumberOfReviews > 0)
                                                     {
                                                         <img src="images/expolore-rating-star.png" class="star-tag-badge" />
@@ -231,8 +186,8 @@
                                                         <span class="number-of-reviews">@($"{(numberOfStudents < 10 ? numberOfStudents.ToString() : numberOfStudents + "+")} booked")</span>
                                                     }
                                                 </div>
-                                                @*<div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                </div>*@
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                </div>
                                             </div>
                                             <div class="row text-start">
                                                 <div class="title-section">
@@ -278,8 +233,8 @@
 <!--Testimonials-->
 <div class="testimonial-section">
     <div class="custom-shape-divider-top">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" fill="none">
-            <path d="M1440 19.0923H1360C1280 19.0923 1120 19.0923 960 14.3417C800 9.23245 640 0.268906 480 0C320 0.268906 160 9.23245 80 14.3417L0 19.0923V133.826H80C160 133.826 320 133.826 480 133.826C640 133.826 800 133.826 960 133.826C1120 133.826 1280 133.826 1360 133.826H1440V19.0923Z" fill="#F3F6FC"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M1920 21.3H1813.33C1706.67 21.3 1493.33 21.3 1280 16C1066.67 10.3 853.333 0.3 640 0C426.667 0.3 213.333 10.3 106.667 16L0 21.3V149.3H106.667C213.333 149.3 426.667 149.3 640 149.3C853.333 149.3 1066.67 149.3 1280 149.3C1493.33 149.3 1706.67 149.3 1813.33 149.3H1920V21.3Z" fill="#F3F6FC" />
         </svg>
     </div>
     <div class="marketplace-wrapper">
@@ -364,8 +319,8 @@
         </div>
     </div>
     <div class="custom-shape-divider-botttom">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 153" fill="none">
-            <path d="M0 130.728H80C160 130.728 320 130.728 480 136.137C640 141.955 800 152.161 960 152.467C1120 152.161 1280 141.955 1360 136.137L1440 130.728V0.0870209H1360C1280 0.0870209 1120 0.0870209 960 0.0870209C800 0.0870209 640 0.0870209 480 0.0870209C320 0.0870209 160 0.0870209 80 0.0870209H0V130.728Z" fill="#F3F6FC"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0 145.747H106.667C213.333 145.747 426.667 145.747 640 151.782C853.333 158.272 1066.67 169.658 1280 170C1493.33 169.658 1706.67 158.272 1813.33 151.782L1920 145.747V0H1813.33C1706.67 0 1493.33 0 1280 0C1066.67 0 853.333 0 640 0C426.667 0 213.333 0 106.667 0H0V145.747Z" fill="#F3F6FC" />
         </svg>
     </div>
 </div>
@@ -538,7 +493,7 @@
         <span class="footer-appname color-primary">@Resources.App.appName</span>
         <span class="footer-text"> Copyright © @year. All rights reserved.</span>
         <div class="social-media-container">
-            <a id="fb-icon" class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
+            <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
                     <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
                 </svg>
@@ -548,12 +503,12 @@
             <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
             </svg>
             </a>*@
-            <a id="ig-icon" class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
                     <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
                 </svg>
             </a>
-            <a id="linkedin-icon" class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
                     <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
                 </svg>
