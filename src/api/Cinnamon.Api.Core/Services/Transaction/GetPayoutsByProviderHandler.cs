@@ -34,8 +34,9 @@ public class GetPayoutsByProviderHandler : IGetPayoutsByProviderHandler
         {
             var result = await payoutLogData.GetPayoutsByProvider(new Framework.ApiCommand.ApiData.PayoutLog.Request.GetPayoutsByProviderArgs
             {
-                Id = args.Id,
-                DateFrom = args.DateFrom.ToString("yyyyMMddHHmmss")
+                Id       = args.Id,
+                DateFrom = args.DateFrom.ToString("yyyyMMddHHmmss"),
+                Status   = args.Status
             });
             if (!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {
