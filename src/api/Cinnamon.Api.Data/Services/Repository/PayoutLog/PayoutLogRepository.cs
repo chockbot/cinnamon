@@ -172,11 +172,11 @@ public class PayoutLogRepository : IPayoutLogRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PayoutLogDTO>>> GetPayoutByProvider(int? id, DateTime? dateFrom)
+    public async Task<AppResult<IEnumerable<PayoutLogDTO>>> GetPayoutByProvider(int? id, DateTime? dateFrom, int status)
     {
         try
         {
-            var result = await dataStore.PayoutLog.GetPayoutByProvider(id, dateFrom);
+            var result = await dataStore.PayoutLog.GetPayoutByProvider(id, dateFrom, status);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<PayoutLogDTO>>.CreateFailed(result.Error.Exception, result.Message);

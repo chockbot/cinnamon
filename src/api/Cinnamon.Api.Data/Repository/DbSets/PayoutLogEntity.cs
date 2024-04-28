@@ -16,26 +16,26 @@ public class PayoutLogEntity : GenericEntity<PayoutLog>, IPayoutLog
         this.applicationContext = applicationContext;
     }
 
-    public async Task<AppResult<IEnumerable<PayoutLog>>> GetPayoutByProvider(int? Id, DateTime? dateFrom)
+    public async Task<AppResult<IEnumerable<PayoutLog>>> GetPayoutByProvider(int? Id, DateTime? dateFrom, int Status)
     {
         try
         {
+            string statusType = string.Empty;
             string queryFilters = string.Empty;
-
+            statusType = Status == 1 ? "initiated" : "disbursed";
             if (dateFrom.HasValue)
             {
-                queryFilters += " AND \"CreatedOn\" between @dateFrom and CURRENT_DATE + 1";
+                queryFilters += " AND \"Status\" = "+"'"+ "" + statusType + ""+"'"+ " AND \"CreatedOn\" between @dateFrom AND CURRENT_DATE + 1";
             }
 
-            string query = "SELECT \"Id\", \"PurchaseOrderId\", \"CustomerId\", \"Amount\", \"Status\", \"Remarks\", \"CreatedOn\", \"CreatedBy\", \"ChangedOn\", \"ChangedBy\", \"Payload\"\r\nFROM public.\"PayoutLogs\" " +
-                "WHERE \"CustomerId\" = "+Id+" AND \"Status\" = 1" + queryFilters;
+            string query = "SELECT \"Id\", \"PurchaseOrderId\", \"CustomerId\", \"Label\", \"Amount\", \"Status\", \"Remarks\", \"CreatedOn\", \"CreatedBy\", \"ChangedOn\", \"ChangedBy\", \"InclusivePayment\", \"Payload\"\r\n" +
+                "FROM public.\"Disbursements\" WHERE \"CustomerId\" = " + Id + "" + queryFilters;
             
             IList<PayoutLog> listResult = new List<PayoutLog>();
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = query;
                 command.CommandType = CommandType.Text;
-
                 if (dateFrom.HasValue)
                 {
                     var parameterDateFrom = new NpgsqlParameter("dateFrom", dateFrom);
@@ -57,7 +57,6 @@ public class PayoutLogEntity : GenericEntity<PayoutLog>, IPayoutLog
                             PurchaseOrderId = Convert.ToInt32(item["PurchaseOrderId"]),
                             CustomerId      = Convert.ToInt32(item["CustomerId"]),
                             Amount          = Convert.ToDecimal(item["Amount"]),
-                            Status          = Convert.ToInt32(item["Status"]),
                             CreatedOn       = Convert.ToDateTime(item["CreatedOn"]),
                         }).ToList();
                     }
