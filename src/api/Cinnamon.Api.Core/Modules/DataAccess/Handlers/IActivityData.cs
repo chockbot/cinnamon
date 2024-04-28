@@ -38,4 +38,5 @@ public interface IActivityData
     Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
+    Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);
 }

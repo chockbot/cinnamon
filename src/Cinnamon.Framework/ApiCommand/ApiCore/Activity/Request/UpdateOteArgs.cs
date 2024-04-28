@@ -15,6 +15,8 @@ public class UpdateOteArgs
 
     public IEnumerable<OteUpdateOnlineEvent>? OnlineEvents { get; set; }
 
+    public IEnumerable<OteUpdateReschedule>? OteReschedules {get; set;}
+
     public class OteUpdateActivity 
     {
         [Required]
@@ -114,4 +116,12 @@ public class UpdateOteArgs
         public string TicketRestriction { get; set; }
     }
 
+    public class OteUpdateReschedule 
+    {
+        [Required]
+        public DateTime OldDate {get; set;}
+
+        [Required]
+        public DateTime NewDate {get; set;}
+    }
 }
