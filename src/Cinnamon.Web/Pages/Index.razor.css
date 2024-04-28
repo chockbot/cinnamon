@@ -16,10 +16,10 @@ button:focus {
     position: relative;
 }
 
-.section-1-image {
-    object-fit: cover;
-    width: 100%;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
+::deep .section-1-image {
+	object-fit: cover;
+	width: 100%;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
 }
 
 .provider-section {
@@ -2501,32 +2501,28 @@ img.search_icon {
 }
 
 @media screen and (max-width: 767.98px) {
-    .landing-lg {
-        display: none;
-    }
-
-    .section-4 {
-        margin-bottom: 20%;
-    }
-
-    .top-section {
-        justify-content: center;
-    }
-
-    .section-1-image {
-        object-fit: cover;
-        width: 100%;
-        height: 400px;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
-    }
-
-    .provider-section {
-        font-size: 16px;
-        width: auto;
-        height: auto;
-        top: 20%;
-        margin: auto 5px auto 5px;
-    }
+	.landing-lg{
+		display:none;
+	}
+	.section-4 {
+		margin-bottom: 20%;
+	}
+	.top-section {
+		justify-content: center;
+	}
+	::deep .section-1-image {
+		object-fit: cover;
+		width: 100%;
+		height: 400px;
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
+	}
+	.provider-section {
+		font-size: 16px;
+		width: auto;
+		height: auto;
+		top: 20% ;
+		margin: auto 5px auto 5px;
+	}
 
     .provider-text {
         font-size: 25px;
