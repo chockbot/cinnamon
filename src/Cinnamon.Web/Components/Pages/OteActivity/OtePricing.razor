@@ -93,7 +93,7 @@
                     </p>
 
                     <Row VerticalGutter="10">
-                        @foreach (var item in dateReschedules)
+                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
                         {
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="font-20 color-black-100">
                                 • @item.NewDate.ToString("MMMM dd, yyyy")
@@ -715,7 +715,7 @@
                         </TableHeaderCell>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in dateReschedules)
+                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
                         {
                             <TableRow>
                                 <TableRowCell class="px-0">

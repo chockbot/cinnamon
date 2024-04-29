@@ -19,14 +19,17 @@ public class OteUpdateHandler : IOteUpdateHandler
     private readonly IOteFindByHandler oteFindByHandler;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
+    private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
 
     public OteUpdateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler, 
-        IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler)
+        IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler,
+        IOteAlreadyBookedHandler oteAlreadyBookedHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
+        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
         this.recurrenceDateHelper = new();
 
         this.htmlSanitizer = new 
@@ -213,6 +216,15 @@ public class OteUpdateHandler : IOteUpdateHandler
                         new ApplicationException(oteByHandlerRes.Message), oteByHandlerRes.Message);
             }
             var currentOteDetails = oteByHandlerRes.Result;
+
+            var alreadyBookedRes = await oteAlreadyBookedHandler.ExecuteAsync(new OteAlreadyBookedArgs {
+                ActivityId = currentOteDetails.Id
+            });
+            if(!alreadyBookedRes.Succeeded || alreadyBookedRes.Result is null)
+            {
+                return AppResult<OteUpdateResult>.CreateFailed(
+                        new ApplicationException(alreadyBookedRes.Message), alreadyBookedRes.Message);
+            }
             
             bool reCreateSchedule = 
                 !currentOteDetails.Schedule.Recurrences.Equals(args.Activity.Recurrence) ||
@@ -225,8 +237,15 @@ public class OteUpdateHandler : IOteUpdateHandler
                 currentOteDetails.Schedule.ExtraOptions != (extraOptionsForMonthlyRecurring ?? String.Empty) ||
                 currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
                 currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
-
             
+            bool alreadyHaveBooked = alreadyBookedRes.Result.OteAlreadyBookedItems.Any(d => d.BookCount > 0);
+
+            if(reCreateSchedule && alreadyHaveBooked)
+            {
+                return AppResult<OteUpdateResult>.CreateFailed(
+                        new ApplicationException("Can't recreate schedule aready have booked tickets."), "Can't recreate schedule aready have booked tickets.");
+            }
+
             if(args.OteReschedules is not null)
             {
                 foreach (var schedule in args.OteReschedules)
