@@ -648,6 +648,10 @@
                         VideoLink                 = s.VideoLink,
                         TicketRestriction         = s.TicketRestriction,
                     };
+                }) : null,
+                OteReschedules = schedule.BookedDates is not null ? schedule.BookedDates.Select(s => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateReschedule {
+                    NewDate = s.NewDate,
+                    OldDate = s.Date
                 }) : null
             }, token);
 
@@ -689,6 +693,13 @@
         if(!oteRes.Succeeded || oteRes.Result is null || !oteRes.Result.IsSuccess)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
+            return;
+        }
+
+        var bookedDatesRes = await activityApiHandler.OteAlreadyBookedDates(oteRes.Result.Result.Id, token);
+        if(!bookedDatesRes.Succeeded || bookedDatesRes.Result is null || !bookedDatesRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured when getting booked dates. Please try again later.", "Error");
             return;
         }
 
@@ -744,7 +755,11 @@
                     Name = p.Name
                 };
             }).ToList(),
-            TicketSold            = ote.Pricings.Sum(a => a.TicketSold)
+            TicketSold            = ote.Pricings.Sum(a => a.TicketSold),
+            BookedDates = bookedDatesRes.Result.Result.Select(d => new OtePricing.ModelData.BookedDate {
+                BookedCount = d.BookCount,
+                Date = d.Date
+            })
         });
 
         oteOnline?.SetState(new OteOnlineEvent.ModelData {
