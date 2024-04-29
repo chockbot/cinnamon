@@ -246,14 +246,19 @@ public class OteUpdateHandler : IOteUpdateHandler
                         new ApplicationException("Can't recreate schedule aready have booked tickets."), "Can't recreate schedule aready have booked tickets.");
             }
 
+            List<OteUpdateArgs.OteReschedule> reschedules = new List<OteUpdateArgs.OteReschedule>();
+
             if(args.OteReschedules is not null)
             {
                 foreach (var schedule in args.OteReschedules)
                 {
-                    schedule.OldDate = schedule.OldDate.Date;
-                    schedule.NewDate = schedule.NewDate.Date;
-                    schedule.DateStart = schedule.NewDate.Add(timeStart);
-                    schedule.DateEnd = schedule.DateStart.Add(timeDuration);
+                    var sched = new OteUpdateArgs.OteReschedule {
+                        DateEnd = schedule.NewDate.Add(timeStart).Add(timeDuration),
+                        DateStart = schedule.NewDate.Add(timeStart),
+                        NewDate = schedule.NewDate,
+                        OldDate = schedule.OldDate
+                    };
+                    reschedules.Add(sched);
                 }
             }
 
@@ -331,7 +336,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                     };
                 }).ToList() : null,
                 RecreateSchedule = reCreateSchedule,
-                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.OteReschedule {
+                OteReschedules = args.OteReschedules is not null ? reschedules.Select(s => new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.OteReschedule {
                     DateEnd = s.DateEnd,
                     DateStart = s.DateStart,
                     NewDate = s.NewDate,
