@@ -728,11 +728,14 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+        int? categoryId = null, int? starReview = null, int? experienceType = null)
     {
         try
         {
             string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+            string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
+            string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
             string searchClause = string.Empty;
             if(!string.IsNullOrEmpty(search))
             {
@@ -749,7 +752,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             "left join public.\"ActivitySummaries\" su " +
                                 "on ac.\"Id\" = su.\"ActivityId\" " +
                             "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + categoryClause + searchClause +
+                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + 
+                                categoryClause + searchClause + starReviewClause + experienceTypeClause +
                             "order by ac.\"Guid\" " +
                             "limit " + take + " offset " + skip + " ";
             

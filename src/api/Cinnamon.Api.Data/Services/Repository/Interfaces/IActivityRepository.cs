@@ -73,6 +73,7 @@ public interface IActivityRepository
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
     Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents();
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
-    Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null);
+    Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+        int? categoryId = null, int? starReview = null, int? experienceType = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
 }

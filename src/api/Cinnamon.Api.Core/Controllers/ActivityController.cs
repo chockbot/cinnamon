@@ -3135,7 +3135,9 @@ public class ActivityController : ControllerBase
                 CategoryId = args.CategoryId,
                 Search = args.Search,
                 Skip = args.Skip,
-                Take = args.Take
+                Take = args.Take,
+                ExperienceType = args.ExperienceType,
+                StarReview = args.StarReview
             });
 
             if (!result.Succeeded || result.Result is null)

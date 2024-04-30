@@ -385,6 +385,8 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex(s => s.TotalParticipants);
         modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.ReviewAccumulated);
+        modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed");
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
