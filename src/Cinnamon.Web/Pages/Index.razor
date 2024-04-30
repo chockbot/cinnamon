@@ -37,7 +37,7 @@
     <img src="images/landing-page-images/circle-2-md.png">
 </div>
 
-@if(Announcements.Count() > 0)
+@if (Announcements.Count() > 0)
 {
     <div class="announcements" style="display:@IsDisplay">
         <div class="container">
@@ -56,7 +56,7 @@
                                         @item.Description
                                     </p>
                                 </Column>
-                                @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
+                                @if (!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
                                 {
                                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
                                         <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
@@ -65,7 +65,7 @@
                                     </Column>
                                 }
                             </Row>
-                        </div>   
+                        </div>
                     }
                 </div>
             </div>
@@ -110,24 +110,24 @@
                         <div class="swiper-wrapper text-center">
                             @foreach (var category in categories)
                             {
-                                @if(category.Category != "New")
+                                @if (category.Category != "New")
                                 {
                                     <div class="swiper-slide category">
-                                    <div>
+                                        <div>
                                             <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
-                                            <img src=@category.IconPath class="img-icon text-center">
-                                            <p class="card-title">@category.Category</p>
-                                        </a>
+                                                <img src=@category.IconPath class="img-icon text-center">
+                                                <p class="card-title">@category.Category</p>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
                                 }
                             }
                         </div>
-                    <div class="swiper-scrollbar"></div>
+                        <div class="swiper-scrollbar"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </div>
 
@@ -154,43 +154,43 @@
                                                 <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                                 </a>
-                                               @* <div class="creation-section">
-                                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
-                                                    {
-                                                        <img class="creation-type" src="images/Creation-type/GA.png" />
-                                                    }
-                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
-                                                    {
-                                                        <img class="creation-type" src="images/Creation-type/OTE.png" />
-                                                    }
-                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
-                                                    {
-                                                        <img class="creation-type" src="images/Creation-type/AVA.png" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <img class="creation-type" src="images/Creation-type/SUP.png" />
-                                                    }
-                                                </div>*@
-                                                
+                                                @* <div class="creation-section">
+                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                                    {
+                                    <img class="creation-type" src="images/Creation-type/GA.png" />
+                                    }
+                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                    {
+                                    <img class="creation-type" src="images/Creation-type/OTE.png" />
+                                    }
+                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                    {
+                                    <img class="creation-type" src="images/Creation-type/AVA.png" />
+                                    }
+                                    else
+                                    {
+                                    <img class="creation-type" src="images/Creation-type/SUP.png" />
+                                    }
+                                    </div>*@
+
                                                 @*@if (act.OngoingStudents > 0)
-                                                {
-                                                    <CustomTooltip MarginLeft="-100">
-                                                        <TextContent>
-                                                            <div class="rounded-pill ongoing-section">
-                                                                <div class="active-badge" style="text-align:center">
-                                                                    <span class="pulse"></span>
-                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                </div>
-                                                            </div>
-                                                        </TextContent>
-                                                        <TooltipContent>
-                                                            <span class="color-grey-100">
-                                                                Ongoing Enrollees
-                                                            </span>
-                                                        </TooltipContent>
-                                                    </CustomTooltip>
-                                                }*@
+                                    {
+                                    <CustomTooltip MarginLeft="-100">
+                                    <TextContent>
+                                    <div class="rounded-pill ongoing-section">
+                                    <div class="active-badge" style="text-align:center">
+                                    <span class="pulse"></span>
+                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                    </div>
+                                    </div>
+                                    </TextContent>
+                                    <TooltipContent>
+                                    <span class="color-grey-100">
+                                    Ongoing Enrollees
+                                    </span>
+                                    </TooltipContent>
+                                    </CustomTooltip>
+                                    }*@
                                                 @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
                                                 {
                                                     act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
@@ -286,9 +286,9 @@
 <!--Backed By-->
 <div class="section-backed-by row text-center">
     <div class="backed-by-text col-12 d-flex justify-content-center">
-         <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+        <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
             <img src="images/landing-page-images/backed-by.webp">
-         </a>
+        </a>
     </div>
 </div>
 
@@ -299,24 +299,21 @@
             <path d="M1920 21.3H1813.33C1706.67 21.3 1493.33 21.3 1280 16C1066.67 10.3 853.333 0.3 640 0C426.667 0.3 213.333 10.3 106.667 16L0 21.3V149.3H106.667C213.333 149.3 426.667 149.3 640 149.3C853.333 149.3 1066.67 149.3 1280 149.3C1493.33 149.3 1706.67 149.3 1813.33 149.3H1920V21.3Z" fill="#F3F6FC" />
         </svg>
     </div>
-     <div class="marketplace-wrapper">
+    <div class="marketplace-wrapper">
         <div id="carouselSection5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="testimonial-wrapper">
-                        <div class="testimonial-content">
+                        <div class="testimonial-content container">
                             <div class="testimonial-image">
                                 <img src="images/landing-page-images/main-image.png">
                             </div>
                             <div class="testimonial-items">
-                                <div class="testimonial-title gap:3% ">
-                                    <img class="testimonial-quote" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
-                                    <p class="header-title">Testimonials</p>
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
                                 </div>
                                 <div class="testimonial-message">
-                                    <div class="star-rating">
-                                        <Rating Color="Color.Warning" @bind-SelectedValue="@SelectedValue" MaxValue="5" ReadOnly />
-                                    </div>
                                     <p>
                                         I can't express how grateful I am to www.cinnamon.ph for the
                                         incredible Mandarin language lessons they offer! My kids were
@@ -338,27 +335,21 @@
                                     <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
                                 </div>
                             </div>
-                            <div class="elipse">
-                                <img class="testimonial-elipse" alt="testimonial-elipse" src="images/landing-page-images/testimonial-elipse.png">
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="testimonial-wrapper">
-                        <div class="testimonial-content">
+                        <div class="testimonial-content container">
                             <div class="testimonial-image">
                                 <img src="images/landing-page-images/main-image-1.png">
                             </div>
                             <div class="testimonial-items">
                                 <div class="testimonial-title">
-                                    <img class="testimonial-quote" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
-                                    <p class="header-title">Testimonials</p>
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
                                 </div>
                                 <div class="testimonial-message">
-                                    <div class="star-rating">
-                                        <Rating Color="Color.Warning" @bind-SelectedValue="@SelectedValue" MaxValue="5" ReadOnly />
-                                    </div>
                                     <p>
                                         Cinnamon has been a game-changer in managing our kids' activities.
                                         The easy payment options, the seamless program selection process,
@@ -366,7 +357,7 @@
                                         go-to platform. I can confidently say that Cinnamon has made
                                         choosing my kids' various interest activities manageable and
                                         enjoyable, and I wholeheartedly recommend it to all parents seeking
-                                        top-notch programs and tutors for their children. Thank you, 
+                                        top-notch programs and tutors for their children. Thank you,
                                         Cinnamon!
                                     </p>
                                 </div>
@@ -379,9 +370,6 @@
                                     <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
                                 </div>
                             </div>
-                            <div class="elipse">
-                                <img class="testimonial-elipse" alt="testimonial-elipse" src="images/landing-page-images/testimonial-elipse.png">
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -391,14 +379,17 @@
                 </div>
             </div>
         </div>
-
-        
+    </div>
+    <div class="custom-shape-divider-botttom">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0 145.747H106.667C213.333 145.747 426.667 145.747 640 151.782C853.333 158.272 1066.67 169.658 1280 170C1493.33 169.658 1706.67 158.272 1813.33 151.782L1920 145.747V0H1813.33C1706.67 0 1493.33 0 1280 0C1066.67 0 853.333 0 640 0C426.667 0 213.333 0 106.667 0H0V145.747Z" fill="#F3F6FC" />
+        </svg>
     </div>
 </div>
 
 <!--Section 4-->
 <div class="section-4 row">
-   <div class="featured-activities col-12 justify-content-center">
+    <div class="featured-activities col-12 justify-content-center">
         <p class="featured-text">Built by<span style="color:var(--primary);"> alumni from</span></p>
         <div class="container">
             <div class="built-by">
@@ -408,7 +399,7 @@
                 <img class="Unionbank" alt="Unionbank" src="images/landing-page-images/Unionbank.png">
             </div>
         </div>
-   </div>
+    </div>
 </div>
 
 <!--Cinnamon Video-->
@@ -416,22 +407,20 @@
     <div class="marketplace-wrapper">
         <div class="container">
             <div class="marketplace-content">
-                <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
                 <div class="maketplace-item1">
                     <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
                 </div>
-                
                 <div class="maketplace-item2">
-                    
+                    <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
                     <div class="maketplace-item1-mobile">
                         <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
                     </div>
                     <div class="marketplace-tags">
                         <div class="cinnamon-tags">
                             <p class="cinnamon-welcome">
-                                Cinnamon is an activity learning & events 
-                                marketplace. Our main focus is to help everyone 
-                                spend their time on meaningful fun experiences by 
+                                Cinnamon is an activity learning & events
+                                marketplace. Our main focus is to help everyone
+                                spend their time on meaningful fun experiences by
                                 connecting you to people who are passionate about
                                 sharing their skills and knowledge.
                             </p>
@@ -452,7 +441,7 @@
                 <div class="landing-text landing-lg">
                     <div class="col-12 overview-cards row mx-auto">
                         <div class="search-section">
-                            <img src="images/search.png" class="how-search"/>
+                            <img src="images/search.png" class="how-search" />
                             <div class="search-content">
                                 <p class="seach-text">1. Search</p>
                                 <p class="search-description">Find experiences and activity providers according to your criteria (location, activity, learning, experience).</p>
@@ -548,7 +537,7 @@
         <div class="container">
             <div class="activity-content">
                 <img class="become-elipse" alt="become-elipse" src="images/landing-page-images/become-eclipse.png" />
-                 <div class="become">
+                <div class="become">
                     <p class="become-title">Become an Activity Provider</p>
                     <p class="become-description">
                         An Activity Provider is someone who provides experiences
@@ -558,15 +547,15 @@
                     <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
                         <span>Sign up now</span>
                     </button>
-                 </div>
+                </div>
                 <div class="become-image">
                     <img class="activity-provider" src="images/landing-page-images/activity-provider.png" />
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 </div>
-<Divider/>
+<Divider />
 <!--Footer-->
 <div class="footer">
     <div class="footer-content">
@@ -627,12 +616,12 @@
 
     int SelectedValue = 5;
 
-    private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
+    private IEnumerable<AnnouncementModel> Announcements { get; set; } = Enumerable.Empty<AnnouncementModel>();
 
     protected override async Task OnInitializedAsync()
     {
         //get activities randomly
-        FetchActivities();
+        await FetchActivities();
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
@@ -646,15 +635,15 @@
                 var args = result.Result.Result;
                 CustomerModel.Token = token;
                 CustomerModel.CustomerProfile = new CustomerProfile
-                {
-                    Birthdate = args.Birthdate,
-                    Email = args.Email,
-                    FirstName = args.FirstName,
-                    LastName = args.LastName,
-                    Id = args.Id,
-                    IsMaker = args.IsMaker,
-                    IsVerified = args.IsVerified,
-                };
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
             }
         }
         // get experience categories
@@ -684,7 +673,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await GetFavorites();
 
-            await InitAnnouncementSwiper();   
+            await InitAnnouncementSwiper();
         }
         else
         {
@@ -721,8 +710,7 @@
                 IsDeactivated = false,
                 Status = Framework.Enums.Enums.ActivityStatus.Submitted,
                 IncludeReviews = true,
-                IncludeTickets = true,
-                ForceDisable = false
+                IncludeTickets = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -774,28 +762,28 @@
                             ExperienceCreationType = r.ExperienceCreationType,
                             NumberOfTickets = r.NumberOfTickets,
                             ActivitySchedules = r.ActivitySchedules.Select(e =>
-                            {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
+                        {
+                                    return new ActivitySchedule
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        PerUnit1 = e.PerUnit1,
+                                        PerUnit2 = e.PerUnit2,
+                                        Price = e.Price,
+                                        PriceUnit1 = e.PriceUnit1,
+                                        PriceUnit2 = e.PriceUnit2,
+                                        UnitPrice = e.UnitPrice
+                                    };
+                                }).ToList(),
                             Images = r.Images.Select(i =>
-                            {
-                                return new ActivityImage
-                                {
-                                    Id = i.Id,
-                                    ImageSrc = i.ImageSrc,
-                                    Name = i.Name
-                                };
-                            }).ToList(),
+                        {
+                                    return new ActivityImage
+                                    {
+                                        Id = i.Id,
+                                        ImageSrc = i.ImageSrc,
+                                        Name = i.Name
+                                    };
+                                }).ToList(),
                             Owner = new CustomerProfile
                             {
                                 IsVerified = r.Owner.IsVerified
@@ -803,7 +791,6 @@
                         };
                 }).ToList();
             }
-            StateHasChanged();
         }
     }
 
@@ -927,17 +914,18 @@
     private async Task LoadAnnnouncements()
     {
         var result = await systemApiHandler.GetAnnouncements();
-        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            Announcements = result.Result.Result.Select(a => new AnnouncementModel {
-                ButtonLabel = a.ButtonLabel,
-                Description = a.Description,
-                HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
-                Id = a.Id,
-                Link = a.Link,
-                Status = a.Status,
-                Title = a.Title
-            });
+            Announcements = result.Result.Result.Select(a => new AnnouncementModel
+                {
+                    ButtonLabel = a.ButtonLabel,
+                    Description = a.Description,
+                    HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
+                    Id = a.Id,
+                    Link = a.Link,
+                    Status = a.Status,
+                    Title = a.Title
+                });
         }
     }
     public int RoundDownToNearestMultiple(int number)
@@ -959,12 +947,12 @@
 
     record AnnouncementModel
     {
-        public int Id {get; set;}
-        public string Title {get; set;}
-        public string Description {get; set;}
-        public string ButtonLabel {get; set;}
-        public string Link {get; set;}
-        public bool HasButtonAction {get; set;}
-        public string Status {get; set;}
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ButtonLabel { get; set; }
+        public string Link { get; set; }
+        public bool HasButtonAction { get; set; }
+        public string Status { get; set; }
     }
 }
