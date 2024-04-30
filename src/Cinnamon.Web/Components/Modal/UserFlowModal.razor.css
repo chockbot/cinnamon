@@ -7,9 +7,20 @@ button:focus {
   outline: none !important;
   box-shadow: none !important;
 }
+
 .btn-close {
   margin-right: 0.5rem;
+  background-color: #fff;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23000' d='M.293.293a1 1 0 011.414 0L8 6.586l6.293-6.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e");
 }
+
+.btn-close:hover {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23FFA942' d='M.293.293a1 1 0 011.414 0L8 6.586l6.293-6.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e");
+    background-color: #fff;
+}
+
 .user-flow-mobile{
     display: none;
 }
@@ -30,6 +41,7 @@ button:focus {
 @media screen and (max-width: 767px) and (orientation: portrait) {
     .btn-close {
         margin-right: 0px;
+        padding: 5px;
     }
     .user-flow-mobile {
         display: block;
