@@ -583,7 +583,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         {
             string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
 
-            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ad.\"PinnedLocation\", " +
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ac.\"ForceDisable\", ad.\"PinnedLocation\", " +
                                "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", " +
                                "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
                                "( " +
@@ -636,7 +636,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             Handler = item["Handler"].ToString() ?? string.Empty,
                             PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
                             RegionName = item["RegionName"].ToString() ?? string.Empty,
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            ForceDisable = Convert.ToBoolean(item["ForceDisable"])
                         }).ToList();
                     }
                 }

@@ -2951,7 +2951,8 @@ public class ActivityController : ControllerBase
                         Handler = e.Handler,
                         PinnedLocation = e.PinnedLocation,
                         RegionName = e.RegionName,
-                        Title = e.Title
+                        Title = e.Title,
+                        ForceDisable = e.ForceDisable
                     };
                 })
             });
