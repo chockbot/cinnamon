@@ -17,7 +17,7 @@
         After the event date, the one-time event will automatically deactivate in your page.
     </p>
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
-        <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="model" @ref="formValidation">
+        <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="ModelState" @ref="formValidation">
             <Validation @ref="eventNameValidation">
                 <Field class="mb-4" id="ote-event-name">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -26,7 +26,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                            Role="TextRole.Text" @bind-Text="model.EventName">
+                            Role="TextRole.Text" @bind-Text="ModelState.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
@@ -45,7 +45,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                            @bind-Text="model.Description">
+                            @bind-Text="ModelState.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
@@ -62,9 +62,9 @@
                         select category
                     </FieldLabel>
                 <FieldBody>
-                    <Select Size="Size.Medium" class="@CategoryClass" @bind-SelectedValue="model.SelectedCategory">
+                    <Select Size="Size.Medium" class="@CategoryClass" @bind-SelectedValue="ModelState.SelectedCategory">
                         <SelectItem Value="0" Disabled class="text-capitalize">--Select Category--</SelectItem>
-                        @foreach (var item in categoryItems)
+                        @foreach (var item in ModelState.categoryItems)
                         {
                             <SelectItem Value="item.Id" class="text-capitalize">@item.Name</SelectItem>
                         }
@@ -82,17 +82,13 @@
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
-    private FormModel model = new();
-    private IList<CategoryItem> categoryItems = new List<CategoryItem>();
+    [Parameter]
+    public FormModel ModelState {get; set;} = new();
+
     private Validations? formValidation;
     private Validation? eventNameValidation;
     private Validation? eventDescriptionValidation;
     private bool isNextClick = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCategory();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -127,28 +123,11 @@
         }
     }
 
-    private async Task LoadCategory()
-    {
-        var categoryRes = await activityApiHandler.GetExperienceCategories();
-        if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
-        {
-            var categories = categoryRes.Result.Result.Where(c => c.Name.ToLower() != "new");
-            foreach(var item in categories)
-            {
-                categoryItems.Add(new CategoryItem {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Selected = false
-                });
-            }
-        }
-    }
-
     public async Task<bool> FieldValid()
     {
         if(formValidation is not null)
         {
-            bool valid = await formValidation.ValidateAll() && model.SelectedCategory > 0;
+            bool valid = await formValidation.ValidateAll() && ModelState.SelectedCategory > 0;
             isNextClick = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -166,7 +145,7 @@
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if(isNextClick)
             {
-                if(model.SelectedCategory <= 0)
+                if(ModelState.SelectedCategory <= 0)
                 {
                     return $"{defaultStyle} is-invalid";
                 }
@@ -194,29 +173,26 @@
     public ModelData GetData()
     {
         ModelData data = new ModelData {
-            Category = model.SelectedCategory,
-            Description = model.Description,
-            Name = model.EventName
+            Category = ModelState.SelectedCategory,
+            Description = ModelState.Description,
+            Name = ModelState.EventName
         };
         return data;
     }
 
-    public void SetState(ModelData data)
+    public Task SetState(ModelData data)
     {
-        model.Description = data.Description;
-        model.EventName = data.Name;
-        model.SelectedCategory = data.Category;
-        StateHasChanged();
+        return Task.CompletedTask;
     }
 
-    public class ModelData 
+    public class ModelData
     {
         public string Name {get; set;}
         public string Description {get; set;}
         public int Category {get; set;}
     }
     
-    private class FormModel
+    public class FormModel
     {
         [Required(ErrorMessage = "The event name field is mandatory.")]
         [LimitWords(Max = 15, ErrorMessage = "Max words limit is 15.")]
@@ -227,9 +203,11 @@
         public string Description {get; set;} = string.Empty;
 
         public int SelectedCategory {get; set;} = 0;
+
+        public IList<CategoryItem> categoryItems = new List<CategoryItem>(); 
     }
 
-    private class CategoryItem 
+    public class CategoryItem 
     {
         public int Id {get; set;}
         public string Name {get; set;} = string.Empty;

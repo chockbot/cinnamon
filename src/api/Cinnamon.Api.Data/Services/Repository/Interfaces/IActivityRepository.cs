@@ -55,7 +55,8 @@ public interface IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
-        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
+        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, 
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,

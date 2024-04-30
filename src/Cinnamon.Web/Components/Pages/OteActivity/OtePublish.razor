@@ -179,11 +179,12 @@
         };
     }
 
-    public void SetState(ModelData data)
+    public Task SetState(ModelData data)
     {
         model.AcceptTerms = data.AcceptTerms;
         model.ComingSoon = data.ComingSoon;
         model.Publish = data.IsPublish;
+        return Task.CompletedTask;
     }
 
     private Task NavigateToTerms()

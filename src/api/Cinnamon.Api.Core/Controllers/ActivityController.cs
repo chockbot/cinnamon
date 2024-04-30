@@ -2598,6 +2598,7 @@ public class ActivityController : ControllerBase
                     Description = activity.Description,
                     EventName = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
+                    CategoryId = activity.CategoryId,
                     ExperienceTypeId = activity.ExperienceTypeId,
                     HouseNo = activity.HouseNo ?? string.Empty,
                     IsPublished = activity.IsPublished,
