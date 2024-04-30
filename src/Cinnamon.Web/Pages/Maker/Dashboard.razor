@@ -267,7 +267,7 @@
                                                         <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                                                     </div>
                                                     <div class="button-section">
-                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        <a button class="update-button bg-orange-100" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
                                                         @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
                                                         {
                                                             <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -308,7 +308,7 @@
                                                         <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                                                     </div>
                                                     <div class="button-section">
-                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        <a button class="update-button bg-orange-100" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
                                                         @if (item.Status == Enums.ActivityStatus.InProgress)
                                                         {
                                                             <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -347,7 +347,7 @@
                                                         <span> In progress</span>
                                                     </div>
                                                     <div class="button-section">
-                                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                                                        <a button class="update-button bg-orange-100" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
                                                         @if (item.Status == Enums.ActivityStatus.InProgress)
                                                         {
                                                             <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
@@ -389,13 +389,16 @@
                                                     </div>
                                                 </div>
                                                 <hr>
-                                                <div class="xp-actions">
-                                                    <div class="active">
-                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                                                        </button>
-                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
-                                                    </div>
+                                                <div class="@GetBtnActionClass(item.ForceDisable)">
+                                                    @if(!item.ForceDisable)
+                                                    {
+                                                        <div class="active">
+                                                            <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                                <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                            </button>
+                                                            <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                        </div>
+                                                    }
                                                     @if(item.ForceDisable)
                                                     {
                                                         <div class="button-section">
@@ -438,21 +441,32 @@
                                                     </div>
                                                 </div>
                                                 <hr>
-                                                <div class="xp-actions">
-                                                    <div class="active">
-                                                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                                                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                                                        </button>
-                                                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
-                                                    </div>
-                                                    <div class="button-section">
-                                                        <a button class="update-button" href="/experiences/ote/@item.Handler">Update</a>
-                                                        @if (item.Status == Enums.ActivityStatus.InProgress)
-                                                        {
-                                                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
-                                                        }
-                                                    </div>
-
+                                                <div class="@GetBtnActionClass(item.ForceDisable)">
+                                                    @if(!item.ForceDisable)
+                                                    {
+                                                        <div class="active">
+                                                            <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                                                                <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                                            </button>
+                                                            <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                                                        </div>
+                                                    }
+                                                    @if(item.ForceDisable)
+                                                    {
+                                                        <div class="button-section">
+                                                            <a button class="update-button bg-green-100" href="/maker/dashboard/expired-event/@item.Handler">Details</a>
+                                                        </div>
+                                                    }
+                                                    else 
+                                                    {
+                                                        <div class="button-section">
+                                                            <a button class="update-button bg-orange-100" href="/experiences/ote/@item.Handler">Update</a>
+                                                            @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                                                            {
+                                                                <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                                                            }
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         }
@@ -1005,6 +1019,12 @@
     public double GetPercentage()
     {
         return Math.Round(NoOfCompleted / 125 * 100);
+    }
+
+    private string GetBtnActionClass(bool forceDisable)
+    {
+        if(forceDisable) return "xp-actions justify-content-end";
+        else return "xp-actions";
     }
 
 }
