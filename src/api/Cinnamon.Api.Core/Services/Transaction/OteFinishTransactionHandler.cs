@@ -241,7 +241,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                     };
                 }),
                 TotalAmount = purchaseOrder.OverallTotal,
-                TicketDetailsLink = url
+                TicketDetailsLink = url,
+                Discount = purchaseOrder.CouponAmount
             });
             if(!notifyEmailRes.Succeeded || notifyEmailRes.Result is null)
             {

@@ -64,15 +64,14 @@ public interface IActivityRepository
         bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
-        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false);
-    
-    Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets);
-
+        bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false, bool includeTickets = false);
     Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id);
+    Task<AppResult<IEnumerable<OteSchedulePricingDTO>>> AddTicketSold(IEnumerable<OteSchedulePricingDTO> tickets);
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
     Task<AppResult<IEnumerable<ActivityDTO>>> ExpiredEvents();
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
+    Task<AppResult<bool>> DeleteTicket(int Id);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
         int? categoryId = null, int? starReview = null, int? experienceType = null);
     Task<AppResult<bool>> BatchSummaryUpdate();

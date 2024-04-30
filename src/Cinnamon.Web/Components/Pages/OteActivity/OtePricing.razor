@@ -4,9 +4,11 @@
 @using Cinnamon.Framework.Extensions.String;
 @using Cinnamon.Web.Components.Common;
 @using Cinnamon.Framework.Extensions.DateTimeExtension;
-@inject INotificationService NotificationService;
-@inject IJSRuntime JS;
-@implements IOteComponent;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject INotificationService NotificationService
+@inject IActivityApiHandler activityApiHandler
+@inject IJSRuntime JS
+@implements IOteComponent
 
 <section class="ote-pricing-wrapper">
     <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
@@ -203,7 +205,7 @@
                                 <div class="d-flex justify-content-center m-width-100">
                                     @foreach (var item in dayItems)
                                     {
-                                        <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
+                                        <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>
                                     }
                                 </div>
                             }
@@ -318,105 +320,110 @@
                 {
                     <div class="accordion-item" @key="item">
                         <h2 class="accordion-header">
-                            <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")' 
-                                class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")' 
-                                type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
+                            <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")'
+                                    class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")'
+                                    type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
                                 @item.Name
                             </button>
                         </h2>
                         <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
-                        <div class="accordion-body bg-white-200">
-                            <div class="item-form-body">
-                                <Validation>
-                                    <Field class="mb-4">
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            ticket name
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <TextEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name" >
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                                <Validation>
-                                    <Field class="mb-4">
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            admission description
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description" >
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </MemoEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                                <Row VerticalGutter="10" class="mb-2">
-                                    <Column ColumnSize="ColumnSize.Is7">
-                                        <Validation>
-                                            <Field>
-                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                    price
-                                                </FieldLabel>
-                                                <FieldBody>
-                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" 
-                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.Price">
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </NumericPicker>
-                                                </FieldBody>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is5">
-                                        <Validation>
-                                            <Field>
-                                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                    max slots
-                                                </FieldLabel>
-                                                <FieldBody>
-                                                    <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" 
-                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.MaxSlots" >
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </NumericPicker>
-                                                </FieldBody>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
-                                <Row VerticalGutter="10" class="mb-4">
-                                    <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <span class="font-14 font-weight-700 color-orange-100">
-                                                Buyer total: ₱ @(CalCulateBuyerTotal(item).ToString("#,##0.00"))
-                                            </span>
-                                            <span @onclick="() => ViewDetails(item)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
-                                                view details
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
-                                                Absorb Fees: Ticketing fees are deducted from your ticket revenue.
-                                            </Check>
-                                        </div>
-                                    </Column>
-                                </Row>
+                            <div class="accordion-body bg-white-200">
+                                <div class="item-form-body">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="item.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(item)">
+                                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                        </Button>
+                                    </div>
+                                    <Validation>
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                ticket name
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit ReadOnly="item.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation>
+                                        <Field class="mb-4">
+                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                admission description
+                                            </FieldLabel>
+                                            <FieldBody>
+                                                <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Row VerticalGutter="10" class="mb-2">
+                                        <Column ColumnSize="ColumnSize.Is7">
+                                            <Validation>
+                                                <Field>
+                                                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                        price
+                                                    </FieldLabel>
+                                                    <FieldBody>
+                                                        <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium"
+                                                                       class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.Price">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </NumericPicker>
+                                                    </FieldBody>
+                                                </Field>
+                                            </Validation>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is5">
+                                            <Validation>
+                                                <Field>
+                                                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                                                        max slots
+                                                    </FieldLabel>
+                                                    <FieldBody>
+                                                        <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium"
+                                                                       class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.MaxSlots">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </NumericPicker>
+                                                    </FieldBody>
+                                                </Field>
+                                            </Validation>
+                                        </Column>
+                                    </Row>
+                                    <Row VerticalGutter="10" class="mb-4">
+                                        <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                            <div class="d-flex justify-content-between mb-3">
+                                                <span class="font-14 font-weight-700 color-orange-100">
+                                                    Buyer total: ₱ @(CalCulateBuyerTotal(item).ToString("#,##0.00"))
+                                                </span>
+                                                <span @onclick="() => ViewDetails(item)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
+                                                    view details
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
+                                                    Absorb Fees: Ticketing fees are deducted from your ticket revenue.
+                                                </Check>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 }
             </div>
         </Validations>
     </div>
-    @if(modelPricingList.Pricings.Count > 0)
+    @if (modelPricingList.Pricings.Count > 0)
     {
         <Divider class="d-none m-d-block" />
     }
@@ -429,18 +436,30 @@
                 <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
             </h3>
             <p class="font-16 color-grey-100 text-justify">
-                Add your price range or your admission categories for every budget. From affordable offers to more premium experience. 
-                Fill up prices and max slots for every category. 
+                Create your event pricing with essential details, ensuring simplicity and clarity for organizers and attendees.
+            </p>
+            <p class="font-16 color-grey-100 text-justify">
+                Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the
+                ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be
+                deleted.
             </p>
         </div>
         <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+            <div class="col-12 d-flex justify-content-end">
+                @if (DisplayDelete)
+                {
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="modelPricing.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(modelPricing)">
+                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                    </Button>
+                }
+            </div>
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
                         ticket name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name" >
+                        <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -454,7 +473,7 @@
                         admission description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description" >
+                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description">
                             <Feedback>
                                 <ValidationError />
                             </Feedback>
@@ -470,8 +489,8 @@
                                 price
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium" 
-                                    class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium"
+                                               class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -487,8 +506,8 @@
                                 max slots
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" 
-                                    class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" >
+                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium"
+                                               class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -564,9 +583,9 @@
                 </div>
             </ModalBody>
         </ModalContent>
-    </Modal>
+        </Modal>
 
-    <Modal @ref="modalScheduleGuid">
+        <Modal @ref="modalScheduleGuid">
         <ModalContent Size="ModalSize.Large" class="border-radius-20">
             <ModalHeader class="justify-content-center pb-0">
                 <div class="d-flex justify-content-center align-items-center m-margin-top-75">
@@ -577,17 +596,20 @@
             </ModalHeader>
             <ModalBody class="color-grey-100 font-18 m-font-16">
                 <p>
-                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event, 
-                        ensuring clarity and engagement for all participants.</p>
+                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event,
+                    ensuring clarity and engagement for all participants.
+                </p>
                 <ol class="ps-4">
-                    <li class="color-black-100 font-weight-700 mb-3">Do Not Repeat:
+                    <li class="color-black-100 font-weight-700 mb-3">
+                        Do Not Repeat:
                         <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
                             <p>-Indicates that a particular event or activity should not occur again after its initial instance.</p>
                             <p class="mb-0">Sample:</p>
                             <p class="mb-0">"Special Anniversary Dinner on January 15, 2024, at 7:00 PM."</p>
                         </div>
                     </li>
-                    <li class="color-black-100 font-weight-700 mb-3">Daily:
+                    <li class="color-black-100 font-weight-700 mb-3">
+                        Daily:
                         <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
                             <p>-Daily recurrences involve events or activities that happen regularly and repeat on a daily basis.</p>
                             <p class="mb-0">Sample:</p>
@@ -599,7 +621,8 @@
                             <p class="mb-0">Recurring Daily: Monday to Friday</p>
                         </div>
                     </li>
-                    <li class="color-black-100 font-weight-700 mb-3">Weekly:
+                    <li class="color-black-100 font-weight-700 mb-3">
+                        Weekly:
                         <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
                             <p>-Weekly recurrences refer to events or activities that occur regularly and repeat every seven days.</p>
                             <p class="mb-0">Sample:</p>
@@ -611,7 +634,8 @@
                             <p class="mb-0">Recurring Weekly: Every Saturday</p>
                         </div>
                     </li>
-                    <li class="color-black-100 font-weight-700 mb-3">Monthly:
+                    <li class="color-black-100 font-weight-700 mb-3">
+                        Monthly:
                         <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
                             <p>-Monthly recurrences denote events or activities that regularly repeat every calendar month.</p>
                             <p class="mb-0">Sample: Event: Monthly Book Club Meeting</p>
@@ -625,19 +649,19 @@
                 </ol>
             </ModalBody>
         </ModalContent>
-    </Modal>
+        </Modal>
 
-    <Modal @ref="modalCalendar">
+        <Modal @ref="modalCalendar">
         <ModalContent>
             <ModalHeader class="justify-content-center">
                 <p class="m-0 color-black-100">Select the date(s) you want to assign specific hours</p>
             </ModalHeader>
             <ModalBody>
-                <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat 
-                    SelectedDates="generatedDates.Select(g => g.Date)"
-                    CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
-            </ModalBody>
-            <ModalFooter class="d-block">
+                <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat
+                          SelectedDates="generatedDates.Select(g => g.Date)"
+                          CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
+                </ModalBody>
+                <ModalFooter class="d-block">
                 <div>
                     <h3 class="font-20 text-center color-black-100">What hours will you be available?</h3>
                     <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
@@ -656,41 +680,79 @@
                         </Field>
                     </div>
                 </div>
-            </ModalFooter>
-            <ModalFooter class="justify-content-center pt-4">
+                </ModalFooter>
+                <ModalFooter class="justify-content-center pt-4">
                 <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
                     cancel
                 </Button>
                 <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
                     apply
                 </Button>
-            </ModalFooter>
+                </ModalFooter>
+                </ModalContent>
+                </Modal>
+
+                <Modal @ref="modalError">
+                <ModalContent Centered class="border-radius-15">
+            <ModalHeader class="justify-content-center pb-0">
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
+                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
+            </ModalHeader>
+            <ModalBody class="px-4">
+                <div class="color-black-100">
+                    @errorMessageAlert
+                </div>
+            </ModalBody>
         </ModalContent>
-    </Modal>
-</section>
+        </Modal>
 
-@code 
-{
+
+
+    </section>
+    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this ticket?</p>
+    </BodyContent>
+    </ConfirmDialog>
+
+    @code
+    {
     [Parameter]
-    public EventCallback OnNextClick {get; set;}
+    public EventCallback OnNextClick { get; set; }
 
     [Parameter]
-    public EventCallback OnPrevClick {get; set;}
+    public EventCallback OnPrevClick { get; set; }
 
     [Parameter]
-    public Schedule ModelState {get; set;} = new();
+    public Schedule ModelState { get; set; } = new();
+
+    [Parameter]
+    public string Token { get; set; }
+
+    [Parameter]
+    public ComponentSummary Summary { get; set; }
 
     private Pricing modelPricing = new();
+    private Pricing priceToDelete = new();
     private PricingList modelPricingList = new();
+    private PricingList existingList = new PricingList();
     private Validations? scheduleFormValidation;
     private Validations? pricingFormValidation;
     private Validations? pringListFormValidation;
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
     private bool showErrors = false;
-    private Modal? modalFeeBreakdown {get; set;}
-    private Modal? modalScheduleGuid {get; set;}
+    private string errorMessageAlert { get; set; }
+    private bool DisplayDelete = true;
+    private Modal? modalFeeBreakdown { get; set; }
+    private Modal? modalScheduleGuid { get; set; }
+    private Modal modalError { get; set; }
     private ModalTicketPricing modalTicketPricing = new();
+    private ConfirmDialog confirmDialogRef { get; set; }
     private IList<DayItem> dayItems = new List<DayItem> {
         new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
         new DayItem { Day = "M", Value = "MON", DayString = "Monday"},
@@ -701,13 +763,28 @@
         new DayItem {Day = "S", Value = "SAT", DayString = "Saturday"}
     };
     private IEnumerable<DateItem> generatedDates = Enumerable.Empty<DateItem>();
-    private Modal? modalCalendar {get; set;}
-    private Calendar? calendar {get; set;}
+    private Modal? modalCalendar { get; set; }
+    private Calendar? calendar { get; set; }
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+        }
+        else
+        {
+            if (existingList.Pricings.Count == 0)
+            {
+                AddMoreTicketPrice();
+            }
+        }
+    }
 
     private async Task NextClick()
     {
-        if(OnNextClick.HasDelegate)
+        if (OnNextClick.HasDelegate)
         {
             await OnNextClick.InvokeAsync();
         }
@@ -715,15 +792,14 @@
 
     private async Task PrevClick()
     {
-        if(OnPrevClick.HasDelegate)
+        if (OnPrevClick.HasDelegate)
         {
             await OnPrevClick.InvokeAsync();
         }
     }
-
     public async Task<bool> FieldValid()
     {
-        if(pricingFormValidation is not null && scheduleFormValidation is not null && pricingFormValidation is not null)
+        if (pricingFormValidation is not null && scheduleFormValidation is not null && pringListFormValidation is not null)
         {
             bool pricingValid = await pricingFormValidation.ValidateAll();
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
@@ -732,7 +808,7 @@
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
-            if(!valid)
+            if (!valid)
             {
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
             }
@@ -741,9 +817,9 @@
         return false;
     }
 
-    private ValidationMode FormMode 
+    private ValidationMode FormMode
     {
-        get 
+        get
         {
             return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
         }
@@ -754,13 +830,13 @@
         get
         {
             string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if(dateFromValidation is not null && showErrors)
+            if (dateFromValidation is not null && showErrors)
             {
-                if(dateFromValidation.Status == ValidationStatus.Error)
+                if (dateFromValidation.Status == ValidationStatus.Error)
                 {
                     return $"{defaultClass} is-invalid";
                 }
-                else 
+                else
                 {
                     return $"{defaultClass} is-valid";
                 }
@@ -771,21 +847,21 @@
 
     private string TimeToClass
     {
-        get 
+        get
         {
             string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if(dateToValidation is not null && showErrors)
+            if (dateToValidation is not null && showErrors)
             {
-                if(dateToValidation.Status == ValidationStatus.Error)
+                if (dateToValidation.Status == ValidationStatus.Error)
                 {
                     return $"{defaultClass} is-invalid";
                 }
-                else 
+                else
                 {
                     return $"{defaultClass} is-valid";
                 }
             }
-            return defaultClass; 
+            return defaultClass;
         }
     }
 
@@ -794,7 +870,7 @@
         get
         {
             string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
-            if(showErrors)
+            if (showErrors)
             {
                 if(string.IsNullOrEmpty(ModelState.Recurrences))
                 {
@@ -803,17 +879,6 @@
                 return $"{defaultClass} is-valid";
             }
             return defaultClass;
-        }
-    }
-
-    private async Task AddMoreTicketPrice()
-    {
-        bool priceValid = await pricingFormValidation.ValidateAll();
-        if(priceValid)
-        {
-            modelPricing.Id = modelPricingList.Pricings.Count + 1;
-            modelPricingList.Pricings.Add(modelPricing);
-            modelPricing = new();
         }
     }
 
@@ -845,32 +910,39 @@
             EventDurationCount = ModelState.EventDurationCount,
             EventDurationTimeUnit = ModelState.EventDurationTimeUnit,
 
-            ItemPrices = modelPricingList.Pricings.Select(p => {
-                return new ModelData.ItemPrice {
-                    AbsorbFees = p.AbsorbFees,
-                    MaxSlots = p.MaxSlots,
-                    Price = p.Price,
-                    Description = p.Description,
-                    Id = p.Id,
-                    Name = p.Name
-                };
-            }).ToList(),
-            DateOverrides = dateOverrides.Select(s => {
-                return new ModelData.DateOverride {
-                    Date = s.Key,
-                    TimeEnd = s.Value.TimeEnd,
-                    TimeStart = s.Value.TimeStart
-                };
-            }).ToList()
-        };
-        data.ItemPrices.Add(new ModelData.ItemPrice {
-            AbsorbFees = modelPricing.AbsorbFees,
-            MaxSlots = modelPricing.MaxSlots,
-            Price = modelPricing.Price,
-            Description = modelPricing.Description,
-            Id = modelPricing.Id,
-            Name = modelPricing.Name
-        });
+                ItemPrices = modelPricingList.Pricings.Select(p =>
+                {
+                    return new ModelData.ItemPrice
+                    {
+                        AbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                        Description = p.Description,
+                        Id = p.Id,
+                        Name = p.Name,
+                        TicketSold = p.TicketSold
+                    };
+                }).ToList(),
+                DateOverrides = dateOverrides.Select(s =>
+                {
+                    return new ModelData.DateOverride
+                    {
+                        Date = s.Key,
+                        TimeEnd = s.Value.TimeEnd,
+                        TimeStart = s.Value.TimeStart
+                    };
+                }).ToList()
+            };
+        data.ItemPrices.Add(new ModelData.ItemPrice
+            {
+                AbsorbFees = modelPricing.AbsorbFees,
+                MaxSlots = modelPricing.MaxSlots,
+                Price = modelPricing.Price,
+                Description = modelPricing.Description,
+                Id = modelPricing.Id,
+                Name = modelPricing.Name,
+                TicketSold = modelPricing.TicketSold
+            });
         return data;
     }
 
@@ -880,35 +952,54 @@
 
         // set selected days
         var days = data.WeekString.Split("|");
-        foreach(var item in dayItems)
+        foreach (var item in dayItems)
         {
             item.Selected = days.Contains(item.Value);
         }
 
-        data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
-
-        var last = data.ItemPrices.LastOrDefault();
-        if(last is not null)
+        //existing ticket
+        foreach (var item in data.ItemPrices)
         {
-            var notLast = data.ItemPrices.Where(p => p.Id != last.Id);
-            foreach(var item in notLast)
-            {
-                modelPricingList.Pricings.Add(new Pricing {
+            existingList.Pricings.Add(new Pricing
+                {
                     AbsorbFees = item.AbsorbFees,
                     Description = item.Description,
                     Id = item.Id,
                     MaxSlots = item.MaxSlots,
                     Price = item.Price,
-                    Name = item.Name
+                    Name = item.Name,
+                    TicketSold = item.TicketSold
                 });
-            }
+        }
 
+        data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
+
+        var last = data.ItemPrices.LastOrDefault();
+        if (last is not null)
+        {
+            var notLast = data.ItemPrices.Where(p => p.Id != last.Id);
+            foreach (var item in notLast)
+            {
+                modelPricingList.Pricings.Add(new Pricing
+                    {
+                        AbsorbFees = item.AbsorbFees,
+                        Description = item.Description,
+                        Id = item.Id,
+                        MaxSlots = item.MaxSlots,
+                        Price = item.Price,
+                        Name = item.Name,
+                        TicketSold = item.TicketSold,
+                        IsNew = false,
+                    });
+            }
             modelPricing.AbsorbFees = last.AbsorbFees;
             modelPricing.Description = last.Description;
             modelPricing.Id = last.Id;
             modelPricing.MaxSlots = last.MaxSlots;
             modelPricing.Price = last.Price;
             modelPricing.Name = last.Name;
+            modelPricing.TicketSold = last.TicketSold;
+            modelPricing.IsNew = false;
         }
 
         return Task.CompletedTask;
@@ -916,7 +1007,7 @@
 
     private async Task ViewDetails(Pricing ticketPricing)
     {
-        if(modalFeeBreakdown is not null)
+        if (modalFeeBreakdown is not null)
         {
             modalTicketPricing.TicketPrice = ticketPricing.Price;
             modalTicketPricing.IsAbsorbFee = ticketPricing.AbsorbFees;
@@ -926,22 +1017,27 @@
 
     private async Task CloseDetails()
     {
-        if(modalFeeBreakdown is not null)
+        if (modalFeeBreakdown is not null)
         {
             await modalFeeBreakdown.Close(CloseReason.UserClosing);
         }
     }
 
+    private async Task CloseErrorMessage()
+    {
+        await modalError.Close(CloseReason.UserClosing);
+    }
+
     private decimal CalCulateBuyerTotal(Pricing ticketPrice)
     {
-        ModalTicketPricing price = new ModalTicketPricing {IsAbsorbFee = ticketPrice.AbsorbFees, TicketPrice = ticketPrice.Price};
+        ModalTicketPricing price = new ModalTicketPricing { IsAbsorbFee = ticketPrice.AbsorbFees, TicketPrice = ticketPrice.Price };
         return price.SubTotal;
     }
 
     private string SetDayStyle(bool selected)
     {
         var style = "font-20 prevent-select cursor-pointer rounded-pill round-day me-2";
-        if(selected) return $"{style} bg-orange-100 color-white-100";
+        if (selected) return $"{style} bg-orange-100 color-white-100";
         else return style;
     }
 
@@ -959,9 +1055,9 @@
         return Task.CompletedTask;
     }
 
-    private string ScheduleMessageInfo 
+    private string ScheduleMessageInfo
     {
-        get 
+        get
         {
             string durationStart = ModelState.DurationStart.ToString("MM/dd/yyyy");
             string durationEnd = ModelState.DurationEnd.ToString("MM/dd/yyyy");
@@ -1024,12 +1120,12 @@
     private string DayStrings(IEnumerable<string> strings)
     {
         string dayString = string.Empty;
-        if(strings.Count() > 1)
+        if (strings.Count() > 1)
         {
-            dayString = string.Join(", ", strings.Take(strings.Count() -1));
+            dayString = string.Join(", ", strings.Take(strings.Count() - 1));
             dayString += " and " + strings.Last();
         }
-        else 
+        else
         {
             dayString = strings.FirstOrDefault();
         }
@@ -1039,7 +1135,7 @@
 
     private Task OnWeeklyDaySelected(DayItem item)
     {
-        if(dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
+        if (dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
         item.Selected = !item.Selected;
         return Task.CompletedTask;
     }
@@ -1092,7 +1188,7 @@
             "every-weekday" => GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
             "daily" => GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
             "weekly" => GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-            "monthly" => GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
+            "monthly" => GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection,
                 onDayDate, monthRepeat, monthDay),
             _ => GenerateNoRepeat(ModelState.DateFrom, ModelState.DateTo)
         };
@@ -1101,17 +1197,17 @@
 
     private async Task SetOverrideDates()
     {
-        if(calendar is null) return;
+        if (calendar is null) return;
 
         var dates = calendar.GetClickedDates;
-        foreach(var date in dates)
+        foreach (var date in dates)
         {
-            if(dateOverrides.ContainsKey(date.Date))
+            if (dateOverrides.ContainsKey(date.Date))
             {
                 dateOverrides[date.Date].TimeStart = ModelState.TimeStart;
                 dateOverrides[date.Date].TimeEnd = ModelState.TimeEnd;
             }
-            else 
+            else
             {
                 dateOverrides.Add(date.Date, new DateOverride {
                     Date = date.Date,
@@ -1131,53 +1227,55 @@
 
     public class ModelData
     {
-        public DateTime DateFrom {get; set;}
-        public DateTime DateTo {get; set;}
-        public string Recurrences {get; set;}
-        public IList<ItemPrice> ItemPrices {get; set;}
-        public IList<DateOverride> DateOverrides {get; set;}
+        public DateTime DateFrom { get; set; }
+        public DateTime DateTo { get; set; }
+        public string Recurrences { get; set; }
+        public IList<ItemPrice> ItemPrices { get; set; } = new List<ItemPrice>();
+        public IList<DateOverride> DateOverrides { get; set; }
 
         public DateTime? DurationStart { get; set; } = DateTime.Now;
-        public DateTime? DurationEnd {get; set;} = DateTime.Now;
-        public int? DurationEvery {get; set;}
-        public int? MonthSelection {get; set;}
-        public string? MonthRepeat {get; set;}
-        public string? MonthDay {get; set;}
-        public int? OnDayDate {get; set;}
-        public string? WeekString {get; set;}
-        public int EventDurationCount {get; set;}
-        public string EventDurationTimeUnit {get; set;}
+        public DateTime? DurationEnd { get; set; } = DateTime.Now;
+        public int? DurationEvery { get; set; }
+        public int? MonthSelection { get; set; }
+        public string? MonthRepeat { get; set; }
+        public string? MonthDay { get; set; }
+        public int? OnDayDate { get; set; }
+        public string? WeekString { get; set; }
+        public int EventDurationCount { get; set; }
+        public string EventDurationTimeUnit { get; set; }
+        public int TicketSold { get; set; }
 
-        public class ItemPrice 
+        public class ItemPrice
         {
-            public int Id {get; set;}
-            public decimal Price {get; set;}
-            public int MaxSlots {get; set;}
-            public bool AbsorbFees {get; set;}
-            public string Description {get; set;}
-            public string Name {get; set;}
+            public int Id { get; set; }
+            public decimal Price { get; set; }
+            public int MaxSlots { get; set; }
+            public bool AbsorbFees { get; set; }
+            public string Description { get; set; }
+            public string Name { get; set; }
+            public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
         }
 
-        public class DateOverride 
+        public class DateOverride
         {
-            public DateTime Date {get; set;}
-            public TimeSpan TimeStart {get; set;}
-            public TimeSpan TimeEnd {get; set;}
+            public DateTime Date { get; set; }
+            public TimeSpan TimeStart { get; set; }
+            public TimeSpan TimeEnd { get; set; }
         }
     }
 
     private class PricingList
     {
-        public IList<Pricing> Pricings {get; set;} = new List<Pricing>();
+        public IList<Pricing> Pricings { get; set; } = new List<Pricing>();
     }
 
-    public class Schedule 
+    public class Schedule
     {
         private DateTime dateFrom = DateTime.Now;
         [Required(ErrorMessage = "The date from field is mandatory.")]
         [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DateFrom 
+        public DateTime DateFrom
         {
             get
             {
@@ -1191,7 +1289,7 @@
         }
 
         [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeFrom {get; set;} = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeFrom { get; set; } = DateTime.Now.TimeOfDay;
 
         private DateTime dateTo = DateTime.Now;
         [Required(ErrorMessage = "The date to field is mandatory.")]
@@ -1201,7 +1299,8 @@
         {
             get
             {
-                dateTo = EventDurationTimeUnit switch {
+                dateTo = EventDurationTimeUnit switch
+                {
                     "hrs" => DateFrom.AddHours(EventDurationCount),
                     "days" => DateFrom.AddDays(EventDurationCount),
                     "weeks" => DateFrom.AddDays(7 * EventDurationCount),
@@ -1210,73 +1309,81 @@
                 };
                 return dateTo;
             }
-            set 
+            set
             {
                 dateTo = value;
             }
         }
 
         [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeTo {get; set;} = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeTo { get; set; } = DateTime.Now.TimeOfDay;
 
         [Required(ErrorMessage = "The recurrences field is mandatory.")]
-        public string Recurrences {get; set;} = "do-not-repeat";
+        public string Recurrences { get; set; } = "do-not-repeat";
 
         [Required(ErrorMessage = "The date to field is mandatory.")]
         [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DurationStart {get; set;} = DateTime.Now;
+        public DateTime DurationStart { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "The date to field is mandatory.")]
         [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
         [DateLessThan("DurationStart", ErrorMessage = "Invalid date range.")]
-        public DateTime DurationEnd {get; set;} = DateTime.Now;
+        public DateTime DurationEnd { get; set; } = DateTime.Now;
 
-        public int DurationEvery {get; set;} = 1;
-        public string RepeatEvery {get; set;}
+        public int DurationEvery { get; set; } = 1;
+        public string RepeatEvery { get; set; }
 
         // monthly section fields
-        public int MonthSelection {get; set;} = 1;
-        public string MonthRepeat {get; set;} = "first";
-        public string MonthDay {get; set;} = "sunday";
-        
+        public int MonthSelection { get; set; } = 1;
+        public string MonthRepeat { get; set; } = "first";
+        public string MonthDay { get; set; } = "sunday";
+
         [Range(1, 31)]
-        public int OnDayDate {get; set;} = 1;
+        public int OnDayDate { get; set; } = 1;
 
         [Range(1, int.MaxValue)]
-        public int EventDurationCount {get; set;} = 1;
-        public string EventDurationTimeUnit {get; set;} = "hrs";
-        public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
+        public int EventDurationCount { get; set; } = 1;
+        public string EventDurationTimeUnit { get; set; } = "hrs";
+        public TimeSpan EventDurationTimeStart { get; set; } = DateTime.Now.TimeOfDay;
 
         // for date override
-        public TimeSpan TimeStart {get; set;} = DateTime.Now.TimeOfDay;
-        public TimeSpan TimeEnd {get; set;} = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeStart { get; set; } = DateTime.Now.TimeOfDay;
+        public TimeSpan TimeEnd { get; set; } = DateTime.Now.TimeOfDay;
+        public int TicketSold { get; set; } = 0;
     }
 
-    public class Pricing 
+    public class Pricing
     {
         [Required(ErrorMessage = "The price field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
-        public decimal Price {get; set;}
+        public decimal Price { get; set; }
 
         [Required(ErrorMessage = "The max slots field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
-        public int MaxSlots {get; set;}
+        public int MaxSlots { get; set; }
 
         [Required(ErrorMessage = "The absorb fees field is mandatory.")]
-        public bool AbsorbFees {get; set;}
+        public bool AbsorbFees { get; set; }
 
         [Required(ErrorMessage = "The description field is mandatory.")]
-        public string Description {get; set;}
+        public string Description { get; set; }
 
         [Required(ErrorMessage = "The name field is mandatory.")]
-        public string Name {get; set;}
+        public string Name { get; set; }
+
+        public int TicketSold { get; set; }
 
         // extras
-        public bool IsOpen {get; set;} = false;
-        public int Id {get; set;}
-        public bool Valid 
+        public bool IsOpen { get; set; } = false;
+        public int Order { get; set; }
+        public int TempId { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public int Id { get; set; }
+        public bool Valid
         {
-            get{
+            get
+            {
                 return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
             }
         }
@@ -1284,56 +1391,57 @@
 
     private class ModalTicketPricing
     {
-        public decimal TicketPrice {get; set;}
-        public bool IsAbsorbFee {get; set;}
-        public decimal ServiceFee 
+        public decimal TicketPrice { get; set; }
+        public bool IsAbsorbFee { get; set; }
+        public decimal ServiceFee
         {
-            get 
+            get
             {
                 return (TicketPrice * 0.05m);
             }
         }
 
-        public decimal HandlingFee 
+        public decimal HandlingFee
         {
-            get {
+            get
+            {
                 return 15;
             }
         }
 
-        public decimal SubTotal 
+        public decimal SubTotal
         {
             get
             {
-                if(!IsAbsorbFee) return TicketPrice + ServiceFee + HandlingFee;
+                if (!IsAbsorbFee) return TicketPrice + ServiceFee + HandlingFee;
                 return TicketPrice;
             }
         }
 
-        public decimal PayoutAmount 
+        public decimal PayoutAmount
         {
-            get 
+            get
             {
-                if(!IsAbsorbFee) return TicketPrice;
+                if (!IsAbsorbFee) return TicketPrice;
 
                 return SubTotal - ServiceFee - HandlingFee;
             }
         }
     }
 
-    private record DayItem 
+    private record DayItem
     {
-        public string Day {get; set;}
-        public string Value {get; set;}
-        public string DayString {get; set;}
-        public bool Selected {get; set;}
+        public string Day { get; set; }
+        public string Value { get; set; }
+        public string DayString { get; set; }
+        public bool Selected { get; set; }
     }
 
-    private record DateOverride 
+    private record DateOverride
     {
-        public DateTime Date {get; set;}
-        public TimeSpan TimeStart {get; set;}
-        public TimeSpan TimeEnd {get; set;}
+        public DateTime Date { get; set; }
+        public TimeSpan TimeStart { get; set; }
+        public TimeSpan TimeEnd { get; set; }
     }
 
     // Date generation. Refactor this Code
@@ -1345,15 +1453,16 @@
         int daysToSkip = (repeat - 1) * 7;
 
         DateTime recurringDate = start;
-        while(recurringDate <= end)
+        while (recurringDate <= end)
         {
-            var item = new DateItem {
-                            Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(timeStart),
-                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
-                        };
+            var item = new DateItem
+                {
+                    Date = recurringDate.Date,
+                    DateStart = recurringDate.Date.Add(timeStart),
+                    DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                };
 
-            switch(recurringDate.DayOfWeek)
+            switch (recurringDate.DayOfWeek)
             {
                 case DayOfWeek.Monday:
                     generatedDates.Add(item);
@@ -1381,7 +1490,7 @@
         return generatedDates;
     }
 
-    private IEnumerable<DateItem> GenerateDaily(int repeat, DateTime start, DateTime end, 
+    private IEnumerable<DateItem> GenerateDaily(int repeat, DateTime start, DateTime end,
         TimeSpan timeDuration, TimeSpan timeStart)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
@@ -1389,14 +1498,15 @@
         int daysToSkip = repeat;
 
         DateTime recurringDate = start;
-        while(recurringDate <= end)
+        while (recurringDate <= end)
         {
-            var item = new DateItem {
-                            Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(timeStart),
-                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
-                        };
-            
+            var item = new DateItem
+                {
+                    Date = recurringDate.Date,
+                    DateStart = recurringDate.Date.Add(timeStart),
+                    DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                };
+
 
             generatedDates.Add(item);
 
@@ -1411,9 +1521,10 @@
         IDictionary<DayOfWeek, string> result = new Dictionary<DayOfWeek, string>();
         var days = selectedDays.Split("|");
 
-        foreach(var day in days)
+        foreach (var day in days)
         {
-            DayOfWeek dw = day switch {
+            DayOfWeek dw = day switch
+            {
                 "MON" => DayOfWeek.Monday,
                 "TUE" => DayOfWeek.Tuesday,
                 "WED" => DayOfWeek.Wednesday,
@@ -1423,7 +1534,7 @@
                 _ => DayOfWeek.Sunday
             };
 
-            if(!result.ContainsKey(dw))
+            if (!result.ContainsKey(dw))
             {
                 result.Add(dw, day);
             }
@@ -1432,30 +1543,31 @@
         return result;
     }
 
-    private IEnumerable<DateItem> GenerateWeekly(int repeat, DateTime start, DateTime end, 
+    private IEnumerable<DateItem> GenerateWeekly(int repeat, DateTime start, DateTime end,
         TimeSpan timeDuration, TimeSpan timeStart, string selectedDays)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
 
         int daysToSkip = (repeat - 1) * 7;
-        
+
         var dayWeeks = ToDictionaryDayWeek(selectedDays);
 
         DateTime recurringDate = start;
-        while(recurringDate <= end)
+        while (recurringDate <= end)
         {
-            var item = new DateItem {
-                            Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(timeStart),
-                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
-                        };
+            var item = new DateItem
+                {
+                    Date = recurringDate.Date,
+                    DateStart = recurringDate.Date.Add(timeStart),
+                    DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                };
 
-            if(dayWeeks.ContainsKey(recurringDate.DayOfWeek))
+            if (dayWeeks.ContainsKey(recurringDate.DayOfWeek))
             {
                 generatedDates.Add(item);
             }
 
-            if(recurringDate.DayOfWeek == DayOfWeek.Sunday)
+            if (recurringDate.DayOfWeek == DayOfWeek.Sunday)
             {
                 recurringDate = recurringDate.AddDays(daysToSkip);
             }
@@ -1466,8 +1578,8 @@
         return generatedDates;
     }
 
-    private IEnumerable<DateItem> GenerateMonthly(int repeat, DateTime start, DateTime end, 
-        TimeSpan timeDuration, TimeSpan timeStart, int monthSelection, int onTheDay, 
+    private IEnumerable<DateItem> GenerateMonthly(int repeat, DateTime start, DateTime end,
+        TimeSpan timeDuration, TimeSpan timeStart, int monthSelection, int onTheDay,
         string monthRepeat, string monthDay)
     {
         IList<DateItem> generatedDates = new List<DateItem>();
@@ -1489,7 +1601,8 @@
                         DateEnd = recurringDate.LastDayOfMonth().Date.Add(timeStart).Add(timeDuration)
                     });
                 }
-                else {
+                else
+                {
                     var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
                     if(dateStart.Date >= start.Date)
                     {
@@ -1504,9 +1617,10 @@
             }
         }
 
-        if(monthSelection == 2)
+        if (monthSelection == 2)
         {
-            DayOfWeek dw = monthDay switch {
+            DayOfWeek dw = monthDay switch
+            {
                 "monday" => DayOfWeek.Monday,
                 "tuesday" => DayOfWeek.Tuesday,
                 "wednesday" => DayOfWeek.Wednesday,
@@ -1516,7 +1630,8 @@
                 _ => DayOfWeek.Sunday
             };
 
-            int weeksToSkip = monthRepeat switch {
+            int weeksToSkip = monthRepeat switch
+            {
                 "first" => 1,
                 "second" => 2,
                 "third" => 3,
@@ -1526,22 +1641,23 @@
 
             int skipCounter = 0;
 
-            while(recurringDate <= recurringDateEnd)
+            while (recurringDate <= recurringDateEnd)
             {
                 do
                 {
-                    if(recurringDate.DayOfWeek == dw)
+                    if (recurringDate.DayOfWeek == dw)
                     {
                         skipCounter++;
                     }
 
-                    if(skipCounter == weeksToSkip)
+                    if (skipCounter == weeksToSkip)
                     {
-                        generatedDates.Add(new DateItem {
-                            Date = recurringDate.Date,
-                            DateStart = recurringDate.Date.Add(timeStart),
-                            DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
-                        });
+                        generatedDates.Add(new DateItem
+                            {
+                                Date = recurringDate.Date,
+                                DateStart = recurringDate.Date.Add(timeStart),
+                                DateEnd = recurringDate.Date.Add(timeStart).Add(timeDuration)
+                            });
                         skipCounter = 0;
                         break;
                     }
@@ -1561,20 +1677,133 @@
     {
         IList<DateItem> generatedDates = new List<DateItem>();
 
-        generatedDates.Add(new DateItem {
-            Date = scheduleFrom.Date,
-            DateStart = scheduleFrom,
-            DateEnd = scheduleTo
-        });
+        generatedDates.Add(new DateItem
+            {
+                Date = scheduleFrom.Date,
+                DateStart = scheduleFrom,
+                DateEnd = scheduleTo
+            });
 
         return generatedDates;
     }
 
-    private record DateItem 
+    private async Task AddMoreTicketPrice()
     {
-        public DateTime Date {get; set;}
-        public DateTime DateStart {get; set;}
-        public DateTime DateEnd {get; set;}
+        if (pricingFormValidation is not null)
+        {
+            bool priceValid = await pricingFormValidation.ValidateAll();
+            if (priceValid)
+            {
+                if (existingList.Pricings.Count == 0)
+                {
+                    modelPricing.TempId = 1;
+                    if (modelPricing.IsDeleted)
+                    {
+                        modelPricing.Price = 0;
+                        modelPricing.Name = string.Empty;
+                        modelPricing.Description = string.Empty;
+                        modelPricing.MaxSlots = 0;
+                        modelPricing.IsNew = true;
+                        modelPricing.IsDeleted = false;
+                    }
+                    else
+                    {
+                        existingList.Pricings.Add(modelPricing);
+                        return;
+                    }
+                }
+                modelPricingList.Pricings = existingList.Pricings;
+                int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+                int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+                existingList.Pricings.Add(new Pricing { TempId = maxId, Order = order, IsNew = true });
+                var last = existingList.Pricings.LastOrDefault();
+                if (last is not null)
+                {
+                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
+                    modelPricing = last;
+                }
+            }
+        }
+    }
+
+    private async Task DeleteClick(Pricing price)
+    {
+        priceToDelete = price;
+        //delete created online event if meron
+        if (Summary is not null)
+        {
+            var onlineTicket = Summary.OnlineData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
+            if (onlineTicket is not null)
+            {
+                errorMessageAlert = "Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.";
+                await modalError.Show();
+                return;
+            }
+        }
+        await confirmDialogRef.Open();
+    }
+
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            modelPricingList.Pricings = existingList.Pricings;
+            if (priceToDelete.TempId == 0)
+            {
+                modelPricingList.Pricings.Where(a => a.Id == priceToDelete.Id).FirstOrDefault().IsDeleted = true;
+                var deleteTicket = await activityApiHandler.DeleteTicket(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteTicketArgs
+                    {
+                        Id = priceToDelete.Id
+                    }, Token);
+                if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
+                {
+                    existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                    var last = existingList.Pricings.LastOrDefault();
+                    if (last is not null)
+                    {
+                        modelPricingList.Pricings = existingList.Pricings.Where(p => p.Id != last.Id).ToList();
+                        modelPricing = last;
+                    }
+                    else
+                    {
+                        AddMoreTicketPrice();
+                    }
+                }
+            }
+            else
+            {
+                modelPricingList.Pricings.Where(a => a.TempId == priceToDelete.TempId).FirstOrDefault().IsDeleted = true;
+                existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
+                var last = existingList.Pricings.LastOrDefault();
+                if (last is not null && last.TempId != 0)
+                {
+                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
+                    modelPricing = last;
+                }
+                else if (last is not null && last.TempId == 0)
+                {
+                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.Id != last.Id).ToList();
+                    modelPricing = last;
+                }
+                else
+                {
+                    existingList.Pricings.Clear();
+                    AddMoreTicketPrice();
+                }
+            }
+        }
+    }
+
+    private record DateItem
+    {
+        public DateTime Date { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
+    }
+
+    public class ComponentSummary
+    {
+        public OteOnlineEvent.ModelData OnlineData { get; set; }
     }
     // until here. Date generation. Refactor this Code
 }

@@ -10,7 +10,8 @@ public class OtePricingDTO
     public int MaxSlots { get; set; }
     public string Description { get; set; }
     public bool IsAbsorbFees { get; set; }
-    public int TicketSold {get; set;}
     public int Sold { get; set; }
     public int Available { get; set; }
+    public int TicketSold {get; set;}
+    public int OteSchedulePricingGroupId { get; set; }
 }

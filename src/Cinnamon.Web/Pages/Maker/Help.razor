@@ -11,130 +11,1043 @@
 <SeoMeta Title="Cinnamon Help Page" Subject="Cinnamon Help Page" Url="/maker/dashboard/help" Keywords='new List<string>{"help"}' />
 
 <div class="container container-fluid">
-    <div class="row d-flex justify-content-center">
-        <div class="row justify-content-center">
-            <div class="border-bottom app-name-section">
-                <span class="app-name d-lg-block d-md-block d-sm-none d-none">Cinnamon</span>
-            </div>
-            <label class="heading text-center">How can we help you?</label>
-            <div class="btn-section border-bottom col-lg-12 d-lg-block d-md-none d-sm-none d-none">
-                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                    <img src="/images/Dashboard Icon/faq.png" />
-                    <span class="btn-caption">Frequently Asked Questions</span>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                    <img src="/images/Dashboard Icon/terms.png" />
-                    <span class="btn-caption">Terms & Conditions</span>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                    <img src="/images/Dashboard Icon/privacy.png" />
-                    <span class="btn-caption">Privacy Policy</span>
-                </button>
-            </div>
-            <div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper text-center">
-                        <div class="swiper-slide faq">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                                <img src="/images/Dashboard Icon/faq.png" />
-                                <span class="btn-caption">Frequently Asked Questions</span>
-                            </button>
-                        </div>
-                        <div class="swiper-slide terms">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                                <img src="/images/Dashboard Icon/terms.png" />
-                                <span class="btn-caption">Terms & Conditions</span>
-                            </button>
-                        </div>
-                        <div class="swiper-slide policy">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                                <img src="/images/Dashboard Icon/privacy.png" />
-                                <span class="btn-caption">Privacy Policy</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="swiper-scrollbar"></div>
-                </div>
-            </div>
-            <div class="btn-carousel-section border-bottom d-lg-none d-md-none d-sm-block d-block">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper text-center">
-                        <div class="swiper-slide faq">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                                <img src="/images/Dashboard Icon/faq.png" />
-                                <span class="btn-caption">Frequently Asked Questions</span>
-                            </button>
-                        </div>
-                        <div class="swiper-slide terms">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                                <img src="/images/Dashboard Icon/terms.png" />
-                                <span class="btn-caption">Terms & Conditions</span>
-                            </button>
-                        </div>
-                        <div class="swiper-slide policy">
-                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                                <img src="/images/Dashboard Icon/privacy.png" />
-                                <span class="btn-caption">Privacy Policy</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="swiper-scrollbar"></div>
-                </div>
-            </div>
-          
-            @if (isFaqDisplayed)
-            {
-                <FAQ></FAQ>
-            }
-            @if (isTermsDisplayed)
-            {
-                <Terms></Terms>
-            }
-            @if (isPrivacyDisplayed)
-            {
-                <Policy></Policy>
-            }
-        </div>
-        <Contact></Contact>
-    </div>
+	<div class="row d-flex justify-content-center">
+		<div class="row justify-content-center">
+			<div class="border-bottom app-name-section">
+				<span class="app-name d-lg-block d-md-block d-sm-none d-none">Cinnamon</span>
+			</div>
+			<label class="heading text-center">How can we help you?</label>
+			<div class="btn-section border-bottom col-lg-12 d-lg-block d-md-none d-sm-none d-none">
+				<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+					<img src="/images/Dashboard Icon/faq.png" />
+					<span class="btn-caption">Frequently Asked Questions</span>
+				</button>
+				<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+					<img src="/images/Dashboard Icon/terms.png" />
+					<span class="btn-caption">Terms & Conditions</span>
+				</button>
+				<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+					<img src="/images/Dashboard Icon/privacy.png" />
+					<span class="btn-caption">Privacy Policy</span>
+				</button>
+			</div>
+			<div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
+				<div class="schedule-swiper">
+					<div class="swiper-wrapper text-center">
+						<div class="swiper-slide faq">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+								<img src="/images/Dashboard Icon/faq.png" />
+								<span class="btn-caption">Frequently Asked Questions</span>
+							</button>
+						</div>
+						<div class="swiper-slide terms">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+								<img src="/images/Dashboard Icon/terms.png" />
+								<span class="btn-caption">Terms & Conditions</span>
+							</button>
+						</div>
+						<div class="swiper-slide policy">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+								<img src="/images/Dashboard Icon/privacy.png" />
+								<span class="btn-caption">Privacy Policy</span>
+							</button>
+						</div>
+					</div>
+					<div class="swiper-scrollbar"></div>
+				</div>
+			</div>
+			<div class="btn-carousel-section border-bottom d-lg-none d-md-none d-sm-block d-block">
+				<div class="schedule-swiper">
+					<div class="swiper-wrapper text-center">
+						<div class="swiper-slide faq">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+								<img src="/images/Dashboard Icon/faq.png" />
+								<span class="btn-caption">Frequently Asked Questions</span>
+							</button>
+						</div>
+						<div class="swiper-slide terms">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+								<img src="/images/Dashboard Icon/terms.png" />
+								<span class="btn-caption">Terms & Conditions</span>
+							</button>
+						</div>
+						<div class="swiper-slide policy">
+							<button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+								<img src="/images/Dashboard Icon/privacy.png" />
+								<span class="btn-caption">Privacy Policy</span>
+							</button>
+						</div>
+					</div>
+					<div class="swiper-scrollbar"></div>
+				</div>
+			</div>
+		  
+			@if (isFaqDisplayed)
+			{
+				<div class="container p-5">
+					<div class="faq-style">
+						<div class="row">
+							<label class="heading-secondary text-center">Frequently Asked Questions</label>
+
+							<div class="col-sm-12 p-2">
+								<p class="question">What is Cinnamon?</p>
+								<p class="answer">Cinnamon is a Family Experience Marketplace where you can book activities, learnings, and events for your kids and loved ones.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">Why the name Cinnamon?</p>
+								<p class="answer">We love foods that have cinnamon! It may not be an everyday craving, but when we do want it, we almost always know where to get it. We find this similar to Family Experiences, trying out basketball, learning a new language, or biking with your child may not be everyday things, but when you need to do them, you can go to Cinnamon to get them.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">How do I book an experience?</p>
+								<p class="answer">It’s super easy! Select the experience you and your loved ones want to enjoy, read the details, and when you’re ready select the schedule that works for you, process payment, then just simply show up!</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">I’ve booked an experience. What’s next?</p>
+								<p class="answer">For online experiences, your Activity Provider will send you an email with the online meeting information. For face-to-face experience, you may go directly to the place where your experience is going to be held based on your schedule.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">Can I get a refund if I didn't like the experience?</p>
+								<p class="answer">It is our highest priority that you have a memorable experience; please tell us about it so that we can better serve you; Contact us at <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">Should my child be accompanied by a parent or guardian during the experience?</p>
+								<p class="answer">Younger kids are encouraged to have a guardian or a parent with them. Some experiences do not need a parent, but some are best experienced together.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">Something came up. I need to reschedule my child’s tutoring session. How do I do this?</p>
+								<p class="answer">If you have attended at least 1 session of your experience, you may discuss this directly with the Activity Provider. The consumption of your sessions will be based on the attendance that the Activity Provider will check or mark.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">I have an issue with the Activity Provider’s behavior. What can I do?</p>
+								<p class="answer">Activity Providers follow an onboarding process that focuses on family, safety, and learning. If the experience is not satisfactory, kindly contact us immediately, and we will conduct an investigation.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">Who are the Activity Providers?</p>
+								<p class="answer">Activity Providers are passionate individuals who want to share their skills and learnings with the next generation and with people who just want to learn. Our unique onboarding aligns our Activity Providers with our main goal, which is to connect you and your loved ones to meaningful and valuable experiences.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">As a Activity Provider, when do I get paid?</p>
+								<p class="answer">To receive payment, a completed session is a pre-requisite. In the Attendance section, make sure that you are checking the attendance of your enrollees; once completed, Cinnamon will automatically process a payout request per completed enrollee. Processing may take 2–3 business days according to bank and e-wallet policies for clearing.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">How can I be sure that the experience I purchased is not a scam?</p>
+								<p class="answer">We understand that it can be challenging to navigate the vast array of experiences available and to feel confident that you're getting a legitimate and worthwhile experience. To help ensure the trustworthiness of the experiences, we recommend choosing only those provided by our Verified Users. We also indicated in our Terms of Use that a Activity Provider should complete the experience first before they can receive payment from their customers. On the other hand, your payment on the platform ensures that a Activity Provider will receive a payment once they complete their service.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="question">I have attended my first session, where can I see my remaining sessions?</p>
+								<p class="answer">On your account page, you can view your ongoing experiences and remaining sessions. If you select VIEW, you will also see the specific dates that you have attended.</p>
+							</div>
+							<div class="col-sm-12 p-2">
+								<p class="answer">For any other concerns, you may contact us through <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a> or send us a message on Facebook.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+			@if (isTermsDisplayed)
+			{
+				<div class="container p-5">
+					<p class="heading-secondary text-center">Terms of Use between Cinnamon and Users</p>
+					<p class="heading-secondary text-center">("Cinnamon TOU”)</p>
+					<p class="terms-caption text-center">Last updated April 4, 2023</p>
+					<br />
+					<br />
+					<div class="terms-style">
+						<p class="justify">
+							<b>
+								<u>Introduction</u>
+							</b>
+						</p>
+						<p class="justify">
+							Welcome to Cinnamon.
+						</p>
+						<p class="justify">
+							Cinnamon is an activity, learning, and events marketplace. We offer both online and in-person experiences and connect customers to people who want to share their skills and passions. The Cinnamon Platform offers an online venue that enables Customers to book activity, learning and events (“Experiences”) offered by Activity Providers (“Activity Providers”).
+						</p>
+						<p class="justify">
+							Activity Providers are passionate individuals who want to share their skills and learnings to the next generation and to people who just want to learn. Our unique onboarding aligns our Activity Providers to our main goal and that is to connect you and your loved ones to experiences that matter and create value. These solutions (“Services”) are offered through our web application that can be accessed at cinnamon.ph while we would love to you support you through our dedicated channel at <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>.
+						</p>
+						<p class="justify">
+							Cinnamon is owned and operated by CINNAMON EXPERIENCE OPC., a company incorporated and registered under the laws of the Philippines, with principal business address located at Muntinlupa City, Metro Manila 1781.
+						</p>
+						<p class="justify">
+							Please read the following TOU carefully. Please be notified that it is your responsibility, as the user, customer, or prospective customer, to read the TOU in its entirety before proceeding to use this Site.
+						</p>
+						<p class="justify">
+							By interacting, interfacing, accessing, entering, or otherwise using, in whatever form, our Services, Software, and/or Website, you expressly agree to be bound by the terms herein and all other terms incorporated by reference.
+						</p>
+						<p class="justify">
+							If you do not agree to the terms and conditions stated herein, or any part thereof, please cease any use of our Services, Software, and Website immediately.
+						</p>
+						<p class="justify">
+							This TOU is effective as of April 4, 2023.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Acceptance of Terms and Conditions</u>
+							</b>
+						</p>
+						<p class="justify">
+							These Terms of Use (“TOU”) constitute a binding agreement and shall govern the relationship between Cinnamon (“Cinnamon”, “us”, “our”, or “we”) and its users (“user”, “users”, “you,” or “your”) regarding the Services, Software, and Website provided by Cinnamon to users. All Services, Software, and Website, including the Application Programming Interface (“API”) and any functionality services offered on or through the Services, Software, and Website, are provided by Cinnamon to you subject to the TOU and Cinnamon’s Privacy Policy.
+						</p>
+						<p class="justify">
+							All visitors to our site, whether registered or not, shall be classified as a “User” for the purpose of this TOU. Registered users, non-registered users, subscribers, brands,  Activity Providers, prospective Activity Providers, affiliates, and any other person or entity who avail of our Service, Software, and Website shall likewise be considered as a “User” for the purpose of this TOU. Furthermore, all persons and/or entities that use the API of any third-party website, Company, or entity and/or that use Cinnamon’s generated API access tokens to enable Integrations or Interoperations with Cinnamon’s Services, Software, and Website are hereby likewise expressly considered as a “User” for the purpose of this TOU.
+						</p>
+						<p class="justify">
+							We reiterate that by interacting, interfacing, accessing, entering, or otherwise using, in whatever form, our Services, Software, and/or Website, you agree to be bound by the terms herein and all other terms incorporated by reference.
+						</p>
+						<p class="justify">
+							Furthermore, you agree to be bound by any additional terms which we may require in connection with any individual service that you may request from us. However, in the event of any conflict between the provisions of this TOU and such additional terms, this TOU shall be controlling.
+						</p>
+						<p class="justify">
+							If you do not agree to the terms and conditions stated herein, or any part thereof, please cease any use of our services, software, and website immediately.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Service, Software, and Website</u>
+							</b>
+						</p>
+						<p class="justify">
+							This section provides our terms and conditions involving your use of our web application accessed cinnamon.ph, our support services accessed at contacting us at <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>, and our Services and Software.
+						</p>
+						<ol class="alpha-list-upper">
+							<li class="justify">
+								<b>
+									<u>Account and Account Registration</u>
+								</b>
+								<p class="justify">During the account creation or registration process, you must register with your email address.  You must provide accurate, current, and complete information during registration and keep your account information up-to-date. Following completion of the registration process and email verification, you shall be treated as the sole authorized user of your account. As such, you shall bear complete responsibility in maintaining the confidentiality and security of your registration information, email address, and all other information and activities that transpire on or within your account. </p>
+								<p class="justify">Furthermore, you agree to immediately notify Cinnamon through our email address (<a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>) of any unauthorized use of your account or any breach of security that you become aware of. You also represent and warrant that any person with access to your registration information is authorized to act as your representative for the use of our Services, Software, and Website. </p>
+								<p class="justify">Cinnamon shall not incur any liability for any loss or damage that you may incur as a result of unauthorized use of your account, breach of security, or any other use of your account, with the exception of loss or damage resulting from Cinnamon’s fraud, negligence, or misconduct. </p>
+								<p class="justify">Please be reminded that Cinnamon may hold you liable for losses incurred by Cinnamon or another party due to any unauthorized use of your account or breach of security. </p>
+								<p class="justify">By registering in our Website, you represent and warrant that you are least eighteen (18) years of age and thus, may legally enter and be bound by contracts. </p>
+								<p class="justify">You are responsibility for maintaining and updating your registration information to maintain accuracy and completeness at all times.  </p>
+								<ol class="alpha-list-lower">
+									<li class="justify">
+										<b>Activity Providers</b>
+										<p class="justify">As Activity Providers, Cinnamon, offers you the right to use the Cinnamon Platform to post the Experiences. You must undergo the onboarding process before your Experience goes live or active on the platform. You may create experiences but only verified Activity Providers will be allowed to set their experiences live or active. On-boarding process may include but is not limited to submission of a valid government ID and verified email.</p>
+										<p class="justify">
+											Your Experience must include complete and accurate information about your Experience, your price, and other terms and conditions that are relevant for the Customer. You are responsible for keeping your information and content up-to-date and accurate at all times. The terms you offer until changed are considered binding and effective.
+										</p>
+										<p class="justify">
+											You hereby agree to abide by all the terms and conditions expected of Cinnamon of its Activity Providers. You understand that Cinnamon shall not shoulder any costs associated with the Experience unless otherwise agreed to by Cinnamon in writing. You shall exert all commercially reasonable efforts to ensure the promptness and satisfactoriness of the Experiences you post on the Website.
+										</p>
+										<p class="justify">
+											For in-person activities, you shall exercise extraordinary diligence in ensuring the safety, security, health, and well-being of the Customer and other involved parties. All waivers if ever would be prepared on your side and would be your duty to get signed.  You shall timely inform the Customer of any changes in its Experiences and the details therein.
+										</p>
+										<p class="justify">
+											Cinnamon shall pay you for your corresponding fees from the experience to your designated account located in your Personal Info tab in your account page.
+										</p>
+										<p class="justify">
+											Activity Providers have the duty to check the attendance in the Check Attendance page of their enrollees to ensure completion of the offered experience. Only completed attendance per enrollee will be part of the payout schedule which is twice per week.
+										</p>
+										<p class="justify">
+											You warrant that you shall immediately pay fees, commissions, taxes, fines, and other charges that Cinnamon may impose on you. Cinnamon reserves the right to set off any fees, taxes, fines, and other charges against all funds held by Cinnamon from your Experience. You shall be responsible for all taxes and costs associated with the Experience.
+										</p>
+										<p class="justify">
+											GENERAL STATEMENT:
+										</p>
+										<ol>
+											<li class="justify">
+												<b>Disintermediation.</b>
+												<p class="justify">
+													Disintermediation shall be prohibited.
+													If a Customer previously booked an Experience through the website and they book the same Experience off-platform, this is considered as disintermediation. If  the Customer has not previously booked the Experience, this shall not be considered as disintermediation.
+												</p>
+												<p class="justify">
+													This prohibition shall survive for one year from the first booking.
+												</p>
+												<p class="justify">
+													Violation of this prohibition is currently not penalized until further changes to the TOU is made but it is highly discouraged.
+												</p>
+											</li>
+											<li class="justify">
+												<b>Prohibited Experiences</b>
+												<ol class="alpha-list-lower">
+													<li>
+														The following Experiences that Cinnamon at its sole discretion believes are directly or indirectly related to the following areas shall be prohibited in the Cinnamon Platform:
+														<ul class="list-disc">
+															<li>Violence and/or abuse</li>
+															<li>Pornography and/or activities sexual in nature</li>
+															<li>Gambling</li>
+															<li>Alcohol</li>
+															<li>All other illegal, illicit, unwholesome, and/or taboo activities </li>
+														</ul>
+													</li>
+													<li>
+														Penalties
+														<p class="justify">
+															Cinnamon reserves the right to impose penalties which may range from warnings, imposition of fines, suspension, and/or removal from the platform.
+														</p>
+
+														<p class="justify">
+															For first time minor offenses, Cinnamon may issue a warning with further offenses carrying greater weight. Cinnamon has the sole discretion to determine these offenses.
+														</p>
+													</li>
+
+												</ol>
+											</li>
+										</ol>
+										<br />
+									</li>
+									<li class="justify">
+										<b>Customer Booking</b>
+										<p class="justify">
+											When you book an Experience, you agree to read carefully the details of the Experience and abide by the stated terms and conditions of the Experience. You understand that any concerns with the Experience are the sole responsibility of the Activity Provider and that Cinnamon can only assist by acting as an intermediary with the Activity Provider. You warrant on the truthfulness of all information and representations you have made to the Activity Provider and Cinnamon.
+										</p>
+										<p class="justify">
+											Please see Refund and Cancellation Policy for concerns.
+										</p>
+										<p class="justify">
+											You agree to pay all charges for your booking including the Experience price, applicable fees like Cinnamon’s service fee, discount, taxes, and any other items identified during payment. You may opt in and avail the value added services which shall only be valid after payment of the stated fees.
+										</p>
+										<p class="justify">
+											In the event that the Customer/User causes trouble, injury or damage, Cinnamon reserves the right to impose the following:
+										</p>
+										<ol class="alpha-list-lower">
+											<li>Send a warning email on the first offense.</li>
+											<li>Ban the User for the second offense regardless whether or not there is an ongoing session and/or unused bookings.</li>
+										</ol>
+									</li>
+								</ol>
+							</li>
+							<br />
+							<li class="justify">
+								<b>
+									<u>Website Services Offered</u>
+								</b>
+								<p class="justify">
+									By interacting, interfacing, accessing, entering, or otherwise using in whatever form our Services, Software, and/or Website, you accept that these Services, Software, and/or Website, which may also include, but are not limited to, mobile applications and downloadable programs, are the sole property of Cinnamon.
+								</p>
+								<p class="justify">
+									Cinnamon’s Services, Software, and/or Website may include platforms, channels, or workspaces where Activity Providers and Registered Users can collaborate and communicate with other Activity Providers and Registered Users. We note that Activity Providers and Registered Users are solely responsible for their disclosures of personal information made in these platforms, channels, or workspaces to other Activity Providers and Registered Users.
+								</p>
+								<p class="justify">
+									Cinnamon may also offer, at its sole discretion, additional website services and/or products, and/or update, modify, or revise its current Services, Software, and/or Website. Unless provided otherwise, this TOU shall also apply to any such additional or modified services and/or products. Please be advised that your continued use of our Services, Software, and/or Website following any changes or modifications listed herein shall constitute your acceptance of such changes or modifications.
+								</p>
+								<p class="justify">
+									Cinnamon reserves the right to stop, cancel, or cease, in whatever form, offering any of above-listed Services, Software, and/or Website, at its sole discretion, with or without reason.
+								</p>
+								<p class="justify">
+									Cinnamon shall not be liable for any update, modification, revision, suspension, or discontinuance of any of its Services, Software, and/or Website.
+								</p>
+							</li>
+							<br />
+							<li class="justify">
+								<b>
+									<u>Authorized Users</u>
+								</b>
+								<p class="justify">
+									If you are using, in whatever form, our Services, Software, and/or Website, as an administrator on behalf of an organization that is a customer of Cinnamon, you represent and warrant that you possess all the required authorization from your organization. As an authorized administrator, you may designate authorized users of your organization’s account. Please note that these authorized users shall be able to access your organization’s account and perform such other actions that all users are authorized to take under this TOU.
+								</p>
+								<p class="justify">
+									Activity Providers can opt to upgrade to a premium account where they have access to special features and benefits such as improved tools in managing their team and/or their students.
+								</p>
+								<p class="justify">
+									If you are using, in whatever form, our Services, Software, and/or Website, as an employee or contract of an organization that is a customer of Cinnamon, you represent and warrant that you possess all the required authorization from your organization, and that your use of our Services, Software, and/or Website shall be limited to the extent of your authority from your organization.
+								</p>
+							</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Privacy</u>
+							</b>
+						</p>
+						<p class="justify">
+							Cinnamon may collect, use, retain, and share your personal information as you interact, interface, access, enter, or otherwise use our Services, Software, and Website, subject to the rules, requirements, and guidelines as comprehensively laid down in the Cinnamon Privacy Policy, which is found in cinnamon.ph/Policy. The Cinnamon Privacy Policy forms part of the TOU between Cinnamon and its Users.
+						</p>
+						<p class="justify">
+							Cinnamon respects, values, and protects your privacy. We strongly encourage that you visit cinnamon.ph/Policy and read our Privacy Policy on how we protect your privacy.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Intellectual Property</u>
+							</b>
+						</p>
+						<p class="justify">
+							You hereby acknowledge and agree that, except as otherwise expressly stated in this TOU, all Services, Software, and Website of Cinnamon, and any and all information, logos, images, domain names, trade names, trademarks, service marks, and other materials found and/or used on such Services, Software, and Website, including, but not limited to, object code, source code, design, layout, user interface, and look and feel of the website, are the exclusive intellectual property of Cinnamon or respective third parties and are subject to all protection provided by established intellectual property laws, including but not limited to the laws of the Philippines.
+						</p>
+						<p class="justify">
+							The name Cinnamon, the Cinnamon logo, and all other trademarks, trade names, logos, product and service names, slogans, designs, and domain names displayed or used in Cinnamon’s Services, Software, and Website are proprietary rights of Cinnamon. Using any of the foregoing for any purpose without prior, written permission from Cinnamon or its applicable licensor is strictly prohibited. Such usage includes, but is not limited to: framing or utilizing framing techniques to enclose Cinnamon’s marks or using any meta tags or any other hidden text utilizing Cinnamon’s marks.
+						</p>
+						<p class="justify">
+							Any Content which may be contained in any advertisement or information presented by and through the Service, Software, and Website, or by advertisers is likewise protected by established intellectual property laws.
+						</p>
+						<p class="justify">
+							Cinnamon’s Intellectual Property shall not be used in connection with any purpose other than performing activities on the Website and matters incidental thereto. Unless otherwise specified herein, Cinnamon’s Service, Software, and Website is strictly for your official and non-commercial usage only. Any right over the Website, Software, and Service is personal, non-transferable, and non-exclusive.
+						</p>
+						<p class="justify">
+							In connection with Software that is or will be offered by Cinnamon, you have shall have only a personal, non-transferable, and non-exclusive right and/or license to make use of the object code or our Software on a single computer. Neither you nor any third party shall be allowed to, among others, duplicate, create, modify, alter, plagiarize, reverse engineer, reverse assemble, or otherwise make an attempt to locate or discern any source code, sell, assign, sublicense, grant a security interest in, and/or otherwise transfer any such right in the Software. Furthermore, altering or changing the Software in any manner, nature or form, or using any modified version of the Software, or accessing our Software without authority, shall be strictly prohibited and punished accordingly by law.
+						</p>
+						<p class="justify">
+							You shall not access or attempt to access our Services through any means other than through the interface which is provided by Cinnamon for use in accessing our Services.
+						</p>
+						<p class="justify">
+							The following is a non-exclusive list of acts that are strictly prohibited and that shall be punished in accordance with all established intellectual property laws: altering, modifying, copying, distributing, transmitting, licensing, displaying, performing, publishing, reproducing, leasing, renting, loaning, selling, broadcasting, and creating derivative works from, transferring, or selling any Intellectual Property obtained from the Service, Software, or Website provided by Cinnamon, in whole or in part.
+						</p>
+						<p class="justify">
+							Nothing in this TOU grants you any right, title, interest, ownership of, or license to use Cinnamon’s intellectual property, or any part thereof. All rights not expressly granted to you in this TOU are reserved by Cinnamon.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Your Responsibilities and Obligations as a User</u>
+							</b>
+						</p>
+						<p class="justify">
+							By using our Website, Software, and Service, you expressly accept that all content, including but not limited to information, text, data, software, photographs, videos, music, tags, messages, whether publicly or privately posted, is the sole responsibility of the individual from whom the content originated. Cinnamon does not make any guarantee on the accuracy, integrity, or quality of any content posted, emailed, uploaded, transmitted, or otherwise made available by way of our Service, Software, and Website. Thus, you as the user are solely responsible for any such content and you expressly accept that through your interaction, interfacing, accessing, entering, or otherwise using of our Service, Software, and Website, you are exposed to any errors or omissions in any content posted, and loss or damage incurred as a result of the use of any content as described in this paragraph.
+						</p>
+						<p class="justify">
+							Furthermore, you hereby expressly agree that you are solely responsible for all content used in, within, or in connection with your account, which include, but are not limited to, any visual, written, or audible files, communications, videos, documents, photos, recordings, and other materials. Thus, we do not incur any liability to you, your customers, or any other third party for any loss or damage resulting from your use of our Service, Software, and Website.
+						</p>
+						<p class="justify">
+							You also represent and warrant to Cinnamon that you possess all the rights, licenses, and permissions required from third parties to use, reproduce, publish, and display any content that is owned by other parties. Thus, you agree to indemnify, defend, and hold Cinnamon harmless against any claims, expenses, liabilities, losses, costs, and damages, including reasonable attorney’s fees, that may be incurred by you or any other party in connection with your use of our Service, Software, and Website and any content that you provide.
+						</p>
+						<p class="justify">
+							By providing content or information to Cinnamon, you grant to Cinnamon an irrevocable, worldwide, royalty-free license, in perpetuity, to use and exploit, in any language, all or any part of the content and materials which you provided, or any derivative works developed or that can be developed from such content. These acts of providing content or information include, but are not limited to, submitting or uploading content, materials, or information for use on the Website, which include, but are not limited to photos, audio, video, graphics, software, or any other content. In this connection, please be advised that Cinnamon, at its sole discretion, may publish and distribute any such submitted content, information, or materials by any method presently existing or later developed. Furthermore, you expressly agree to waive any and all claims against Cinnamon and acknowledge that you have no recourse against us for any alleged or actual, direct or indirect infringement or misappropriation of any proprietary rights in any content that you submit to us. Finally, we will treat any content, in whatever form, that you send to us as non-confidential and non-proprietary.
+						</p>
+						<p class="justify">
+							In connection with contributions which you provide to our Service, Software, or Service, which include, but are not limited to, feedback, documents, ideas, proposals, and suggestions, you hereby represent and warrant that such contributions do not contain any type of confidential or proprietary information, that you are not bound by any obligation to ensure or maintain confidentiality, expressed or implied, in relation to such contribution, and that you have the complete right to disclose and make use of such contributions in any such manner as you may see fit. Furthermore, you acknowledge that such contributions become the sole property of Cinnamon, and that we have no obligation to provide any form of compensation or reimbursement, in any manner or nature, to you.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Prohibited Acts for Users</u>
+							</b>
+						</p>
+						<p class="justify">
+							As a User of our Service, Software, and/or Website, you are expressly prohibited from doing and/or performing, directly or indirectly, under threat of any and all applicable company, administrative and/or legal penalties, fines, sanctions, and judgments, any of the following non-exclusive acts:
+						</p>
+						<ol>
+							<li class="justify">Listing of Prohibited Experiences</li>
+							<li class="justify">
+								Using, uploading, posting, emailing, storing, transmitting, or making available in whatever way or form any content that:
+								<ol class="alpha-list-lower">
+									<li class="justify">Creates a risk of harm, loss, injury, distress, death, disability, disfigurement, or illness, in whatever way or form, to yourself, to us, or to any other third party, person, or entity,</li>
+									<li class="justify">Is unlawful, harmful, threatening, harassing, defamatory, libelous, hateful, offensive, humiliating, invasive of privacy, vulgar, or is in any other manner or form similarly objectionable,</li>
+									<li class="justify">Causes, or potentially causes, any harm in whatever form to minors and/or exploitative to minors,</li>
+									<li class="justify">Is sexually explicit, improper, or pornographic,</li>
+									<li class="justify">Directly violates, or incites or encourages any violation, in whatever manner, of conduct that violates local, federal, or international laws and regulations,</li>
+									<li class="justify">Contains illegal information or content such as insider information or trade secrets,</li>
+									<li class="justify">Infringes intellectual property rights, privacy rights, and any other personal or proprietary rights,</li>
+									<li class="justify">Contains any information that is fraudulent, misleading, deceptive, or false,</li>
+									<li class="justify">Contains any information that you are unauthorized or otherwise have no right to disclose or make available due to a contractual or fiduciary relationship, or</li>
+									<li class="justify">Any other similarly unethical, improper, or illegal content,</li>
+								</ol>
+							</li>
+							<li class="justify">Stalking, violating, or harassing, with or without intent, another individual or user of our Services, Software, and Website,</li>
+							<li class="justify">Performing any and all acts in whatever form which directly or indirectly infringes the intellectual property of Cinnamon, including its Service, Software, and Website,</li>
+							<li class="justify">Circumventing, in whatever form, any and all security measures implemented by Cinnamon or procured by Cinnamon from any other user or third party for the purpose of protecting its Service, Software, Website, and any content therein, in whole or in part. These include, but are not limited to, any attempt to test the vulnerability of any Cinnamon system or network, or breaching any security or authentication measure, and making available any code or material that interferes with any device, software, network, or service of Cinnamon,</li>
+							<li class="justify">Attempting to, or actually accessing, searching, scraping, downloading from, uploading content to, creating new links, reposts, or referrals, or other similar acts the Service, Software, and Website of Cinnamon through the use of any engine, software, tool, device, or mechanism other than that provided by Cinnamon or that are authorized and expressly allowed by Cinnamon,</li>
+							<li class="justify">Attempting to or actually infringing upon any Cinnamon Software. These include, but are not limited to, any attempt or act of deciphering, decompiling, disassembling, and reverse engineering any Cinnamon Software.</li>
+							<li class="justify">Accessing and tampering with non-public areas of the Service, Software, and Website of Cinnamon,</li>
+							<li class="justify">Sending of unsolicited and/or unauthorized spam, spam comments on posts, advertisements, advertising messages, promotional materials, emails, junk mails, chain letters, and any other form of solicitation,</li>
+							<li class="justify">Disrupting the normal flow of communications offered by our Service, Software, and Website and/or interrupting in any way the experience and ability of other users’ to participate in any real time interactions, as well as interfering with the access of any user, host, or network from our Service, Software, and Website,</li>
+							<li class="justify">Collecting or storing any personal information from any other person, entity, or organization, from our Service, Software, and Website, and</li>
+							<li class="justify">In general, any similar act that interferes, disrupts, violates, or infringes upon the Service, Software, and Website of Cinnamon as well as its computer systems and properties, or encouraging or enabling any other individual, entity, or organization to do the same.</li>
+						</ol>
+						<p class="justify">
+							The following list of prohibited acts is non-exclusive.
+						</p>
+						<p class="justify">
+							Cinnamon reserves the right to remove any Content in its Service, Software, or Website, from itself, users, or third parties, that Cinnamon believes, at its’ sole discretion, is violative of this TOU.
+						</p>
+						<p class="justify">
+							In compliance with the applicable law, Cinnamon reserves the right to use, process, retain, transfer, and/or divulge personal information of its users in accordance with the Cinnamon Privacy Policy that can be accessed here: cinnamon.ph/Policy
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Payments</u>
+							</b>
+						</p>
+						<p class="justify">
+							You hereby agree that Cinnamon may charge your credit card or bill you for all amounts due and owing for your use of our Website, Software, and Service, in accordance with any applicable plan you selected.
+						</p>
+						<p class="justify">
+							Furthermore, you agree to provide written notification to Cinnamon regarding any disputed fees within ten (10) days from the date that your account is charged for any use of our Website, Software, and Service.
+						</p>
+						<p class="justify">
+							Cinnamon reserves the right to claim interest at the highest rate allowed by law on any payment that is not received on the date it becomes due.  Cinnamon further reserves the right to suspend its Service, Software, and Website for non-payment of undisputed fees, and to recover costs and expenses incurred by it in connection with the collection of fees that are not paid when due.
+						</p>
+						<p class="justify">
+							Please note that the prices indicated in our price list are exclusive of applicable taxes or government charges that shall be borne by its Users, which include, but are not limited to, value-added tax and sales tax.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Refund and Cancellation Policy</u>
+							</b>
+						</p>
+						<p class="justify">
+							Registered Users may cancel any of their booked activity, for any reason, in our Website, Software, and Service.
+						</p>
+						<p class="justify">
+							Cinnamon’s refund policy:
+						</p>
+						<ol>
+							<li class="justify">We provide full refund for the whole amount paid for any activity booked provided that the user has not yet been marked attended in the attendance monitoring conducted by the Activity Provider.</li>
+							<li class="justify">We do not provide refund for bookings already attended without undergoing due process with the Activity Provider.</li>
+						</ol>
+						<p class="justify">
+							We reserve the right to offer refunds, discounts, credits, or other considerations in select scenarios at our sole discretion, and we are not bound to offer any such consideration we have made, we are making, or we will make, for another scenario or to any person, regardless of how similar such scenarios are.
+						</p>
+						<p class="justify">
+							In the event we offer refunds, such charges shall be net of all taxes, payment charges, and other fees that may have been incurred. You may submit any refund request to our email at <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a> or in the Refund Tab of your Account Page.
+						</p>
+						<p class="justify">
+							All refunds are in the form of website credits (“Cinnamon Credits”) that may be used for booking future Experiences through the Website. Cinnamon Credits cannot be exchanged, redeemed, assigned, sold, or otherwise transferred for cash or other forms of legal tender.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Links to third party sites</u>
+							</b>
+						</p>
+						<p class="justify">
+							Our Service, Software, and Website may contain links to third-party sites, information, materials, products, services, or content that are not owned or controlled by Cinnamon.
+						</p>
+						<p class="justify">
+							You hereby expressly agree that Cinnamon shall not be responsible and shall not have any liability, and you also expressly agree to relieve Cinnamon from any liability, that arise from your use, in whatever way or form, of any third-party sites, information, materials, products, services, or content, including content from other Users.
+						</p>
+						<p class="justify">
+							Please be informed that while Cinnamon may provide links to online advertisements in its Service, Software, and Website, we neither endorse nor affiliate with such linked sites and such linked sites do not represent the views, opinions, beliefs, and advise of Cinnamon.
+						</p>
+						<p class="justify">
+							To reiterate, please be warned in the strictest of terms that you alone are responsible for any form of use that you may perform in connection with third-party links and sites.
+						</p>
+						<p class="justify">
+							In connection with your interaction with other Users including Activity Providers availing of our Service, Software, and Website, please be advised that any dealings in whatever form you may have with any such Users are at your own risk and solely between you and such other Users. We do not incur any liability nor responsibility for such transactions.
+						</p>
+						<p class="justify">
+							Furthermore, you expressly acknowledge that Cinnamon shall not be responsible and liable, directly or indirectly, for any harm, injury, damage, or loss, in whatever form, which may result of, be caused by, or allegedly be caused by, or is in connection with, your use or reliance of our Service, Software, or Website.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Disclaimer of Warranties</u>
+							</b>
+						</p>
+						<p class="justify">
+							You hereby expressly recognize, understand, acknowledge, agree to, and accept the following:
+						</p>
+						<ol>
+							<li class="justify">That you use the Services, Software, and Website of Cinnamon at your sole risk.</li>
+							<li class="justify">That we provide our Services, Software, and Website on an “As is” and/or “As available” basis, without warranty of any kind.</li>
+							<li class="justify">That Cinnamon, its Officers, Employees, Agents, Affiliates, Representatives, or Shareholders, do not warrant and do not make any representations regarding the suitability, reliability, availability, timeliness, quality, accuracy, completeness, lack of viruses, or other harmful components, or accuracy of all information and content, in whatever type, shape or form, contained within our Service, Software, and Website for any purpose.</li>
+							<li class="justify">That Cinnamon disclaims and denies all warranties, express or implied, and conditions of merchantability, fitness for a particular purpose, workmanship, title, and non-infringement, with regard to all information and content, in whatever type, shape or form, contained within our Service, Software, and Website for any purpose.</li>
+							<li class="justify">That Cinnamon, its Officers, Employees, Agents, Affiliates, Representatives, or Shareholders, make no warranty whatsoever, express or implied, that our Service, Software, or Website will meet your requirements as a User, will meet your expectations, and will be uninterrupted, timely, secure, or error-free.</li>
+							<li class="justify">That Cinnamon, its Officers, Employees, Agents, Affiliates, Representatives, or Shareholders, make no warranty whatsoever, express or implied, that results which may be obtained from the use of our Service, Software, or Website shall be accurate or reliable, and that any errors contained in our Service, Software, or Website shall be corrected.</li>
+							<li class="justify">That Cinnamon conducted due diligence in the selection and/or onboarding of Activity Providers.</li>
+						</ol>
+						<p class="justify">
+							You also hereby acknowledge that no advice or information, in whatever shape, type, or form, that is obtained from Cinnamon or any other person, entity, individual, or organization, shall create any warranty that is not expressly stated in this TOU.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Limitation of Liability</u>
+							</b>
+						</p>
+						<p class="justify">
+							You also hereby expressly recognize, understand, acknowledge, agree to, and accept the following:
+						</p>
+						<ol>
+							<li class="justify">That your use of any content, data, information, or materials, in whatever shape, type, or form, in our service, software, and website, is at your own risk and sole responsibility. Thus, to the maximum extent allowed by law, Cinnamon shall not be liable or responsible for any damage, injury, or loss resulting from your use of Cinnamon’s Service, Software, and Website.</li>
+							<li class="justify">That Cinnamon shall incur no liability whatsoever towards you, except in case of its gross negligence of fraudulent misrepresentation.</li>
+							<li class="justify">That Cinnamon shall not be liable to you or any other person, institution, individual, or organization, for any consequential, exemplary, incidental, special, or punitive damages. These include, but are not limited to, lost profit or damages arising from your use of or inability to use Cinnamon’s Service, Software, and Website. Furthermore, you agree that any liability that Cinnamon, or its Officers, Employees, Agents, Affiliates, Representatives, or Shareholders, for any claim will be limited to the amount paid by you to Cinnamon for our Service, Software, and Website, in the previous twelve (12) months preceding the event or circumstances resulting to such claim.</li>
+							<li class="justify">That Cinnamon or its Subsidiaries, Officers, Employees, Agents, Affiliates, Representatives, Shareholders, Partners, and Licensors shall not be liable to you for any punitive, indirect, incidental, special, consequential, or exemplary damages, which include, but are not limited to, damages in connection with loss of any profits, goodwill, use, data and/or other intangible losses, with your use or inability to use our Services, Software, or Website, with your cost of procuring substitute goods and services, with any unauthorized access to or alteration of your transmissions and/or data, with any statement or conduct of any third party on our Service, Software, or Website, or any other matter which may be related to our Service, Software, or Website.</li>
+							<li class="justify">That Cinnamon shall not be liable whatsoever for damages that have not been reported to Cinnamon in writing within four (4) weeks of their occurrence, or for damages wherein you failed or were otherwise unable to take appropriate measures to limit such damages, or wherein you exacerbated in any way such damages.</li>
+							<li class="justify">That Cinnamon shall not be responsible for any information, software, products, functionalities, or content obtained through the Service, Software, or Website.</li>
+							<li class="justify">That Cinnamon shall not be responsible or liable for any trading and/or investment decisions based on information, data, publication, text, or content in any other form that is found in Cinnamon’s Service, Software, and Website. We reiterate that no content found in Cinnamon’s Service, Software, and Website is intended for trading or investing purposes.</li>
+							<li class="justify">That Cinnamon shall not be responsible for any delay or inability to use the Service, Software, or Website, or for the non-availability of our Service, Software, or Website during period maintenance operations and any unplanned suspension of access that may occur due to technical reasons or reasons beyond Cinnamon’s control.</li>
+							<li class="justify">That Cinnamon shall incur no liability for any Campaign content that is made available in whatever manner in its Service, Software, and Website, by a User or any other party, who hereby agree to bear sole responsibility and assume all risk and liability arising from any such Campaign content.</li>
+							<li class="justify">That you shall access any information or material, downloaded or otherwise obtained, through our Service, Software, and Website, by your sole discretion and at your sole risk, and thus, you waive any and all claims and causes of action in connection with any damage to your property, computer, internet access, downloading and/or displaying, as well as any loss of data that could result from such downloading or obtaining.</li>
+							<li class="justify">That Cinnamon is not liable for any damage, liability, injury, or costs resulting from epileptic symptoms or any other similar conditions that might be caused by exposure to the light patterns and backgrounds in computer screens.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Limitation of Liability in favor of Cinnamon with Respect to the Relationship Between Activity Provider and Customers.</u>
+							</b>
+						</p>
+						<p class="justify">
+							In addition to, and without prejudice to all other protection afforded to Cinnamon as established in this TOU, in whole or in part, all users, including, but not limited to, registered users, subscribers, Activity Providers, prospective  Providers, affiliates, and any other person and entity who avail of our service, software, and website shall hereby expressly recognize, understand, acknowledge, agree to, and accept the following:
+						</p>
+						<ol>
+							<li class="justify">Activity Provider and Customer are defined as follows: Activity Provider is any individual that has availed of Cinnamon’s platform and website as an activity, learning, and events marketplace through listing his/her offered Experience. Meanwhile, “Customers” is defined as individual who booked, sign-up or participated in such Experience.</li>
+							<li class="justify">That the relationship between a Activity Provider and the Customer is strictly and exclusively between the Activity Provider and the Customer, and that Cinnamon is not a party, in whatever shape, manner, or form, to the relationship between a Activity Provider and the Activity Provider’s Affiliates, except for all provisions, terms, conditions, and agreements that are strictly favorable to Cinnamon, such as but not limited to, Disclaimers of Warranties and Limitations of Liability. By way of restatement, no contractual relationship or any other relationship is established between the Customer and Cinnamon when Customers participate in any manner or form in a Activity Provider’s Experience. Thus, Cinnamon is not obligated to intervene and shall not be made a party without its express consent to any dispute, regardless of cause of action, arising between the Activity Provider and the Customer</li>
+							<li class="justify">Cinnamon shall not incur any liability whatsoever, in whatever form or manner, to any person or entity, including but not limited to the Activity Provider’s Customer, in case of any and all loss, damage, or injury that may result from the Activity Provider’s inability or failure of any kind to perform any of its obligations under this TOU, the Cinnamon Privacy Policy, and any other contract, agreement, or law.</li>
+							<li class="justify">Cinnamon shall not incur any liability whatsoever, in whatever form or manner, to any person or entity, including but not limited to the Activity Provider, in case of any and all loss, damage, or injury that may result from the Activity Provider Affiliate’s inability or failure of any kind to perform any of its obligations under this TOU, the Affiliate Marketing Program Agreement, the Cinnamon Privacy Policy, and any other contract, agreement, or law.</li>
+							<li class="justify">Cinnamon shall not incur any liability whatsoever, in whatever form or manner, to any person or entity, including but not limited to the Activity Provider and its Affiliates, in case of any and all loss, damage, injury or inability or failure of any kind to perform any of its obligations under this TOU that may result from the relationship between its Activity Provider and the Customer.</li>
+							<li class="justify">Cinnamon shall cooperate with and provide reasonable support to Customer in making and perfecting claims for insurance recovery and as to any legal proceeding associated with any claim for insurance recovery.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Release</u>
+							</b>
+						</p>
+						<p class="justify">
+							To the maximum extent allowed by law, you hereby fully and perpetually release and discharge Cinnamon and its Subsidiaries, Officers, Employees, Agents, Affiliates, Representatives, Shareholders, Partners, and Licensors from any and all claims that may arise from your use of Cinnamon Service, Software, or Website and that may be brought by you or any other party, person, individual, corporation, institution, enterprise, or organization.
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Indemnity</u>
+							</b>
+						</p>
+						<p class="justify">
+							To the maximum extent allowed by law, you hereby agree to indemnify, insure, defend, and hold Cinnamon and its Subsidiaries, Officers, Employees, Agents, Affiliates, Representatives, Shareholders, Partners, and Licensors harmless from and against any and all claims, lawsuits, causes of action, damages, or demand, which may include, but is not limited to, reasonable attorney’s fees, costs of defense or settlement, or any other damage which are related to, or may arise from, or in connection with your use of the Cinnamon’s Service, Software, or Website, or any violation of this TOU.
+						</p>
+						<p class="justify">
+							For any other case wherein the law nevertheless expressly allows recovery or liability of any kind, you hereby agree that Cinnamon shall in no event be liable for any claim exceeding One Hundred Thousand Pesos. (Php 100,000)
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Suspension or Termination of Services</u>
+							</b>
+						</p>
+						<p class="justify">
+							Users who have completed the account creation or registration process may cancel or terminate their account and associated email address at any time, by submitting a cancellation or termination request at <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+						</p>
+						<p class="justify">
+							Cinnamon reserves the right to suspend, terminate, discontinue, and limit any account, any email associated with any account, and any access to our Service, Software, or Website, without any prior written notice, without any liability and for any reason. Causes that may lead to suspension and termination include, but are not limited to:
+						</p>
+						<ol>
+							<li class="justify">Breach or violation of this TOU, other terms incorporated by reference or otherwise herein, or any other agreement between Cinnamon and its Users, including payment terms,</li>
+							<li class="justify">Request, demand, or requirement from any law enforcement or governmental agency in any country,</li>
+							<li class="justify">Should Cinnamon be required to protect its interest,</li>
+							<li class="justify">Discontinuance, alteration, or material modification to our Service, Software, or Website, in whole or in part,</li>
+							<li class="justify">Unforeseeable or unexpected technical or security issues and/or problems,</li>
+							<li class="justify">Extended periods of inactivity,</li>
+							<li class="justify">Engagement or implication of users in fraudulent and illegal activities, or</li>
+							<li class="justify">Failure to pay any charges owed by you in connection with our Service, Software, or Website.</li>
+						</ol>
+						<p class="justify">
+							Cinnamon may, upon the termination of your account, remove any access that you may have to any part or all of its Services, Software, or Website and bar any subsequent further access to such Services, Software, or Website, and deactivate or delete your account and any related data, information, and files,
+						</p>
+						<br />
+						<p class="justify">
+							<b>
+								<u>Miscellaneous Rules and Interpretation of this TOU</u>
+							</b>
+						</p>
+						<ol class="alpha-list-upper">
+							<li class="justify">
+								<b>
+									<u>Notices</u>
+								</b>
+								<p class="justify">By interacting, interfacing, accessing, entering, or otherwise using, in whatever form, our Service, Software, and/or Website, you provide your consent to receive communications from us electronically. Please be advised that Cinnamon may furnish you with notices through email, regular mail, MMS, SMS, text messaging, posting, or other forms of communication. You hereby also confirm that you have received any and all notices that would have been delivered to you and that would have been accessible by you if you access our Service, Software, and Website in an authorized manner.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>System Maintenance</u>
+								</b>
+								<p class="justify">Cinnamon reserves the right to make unavailable its Service, Software, and Website during system maintenance which shall be regularly scheduled for a set limited period each year. Cinnamon shall be responsible for providing at least five (5) days electronic notice to its users before system maintenance starts, through a commercially-feasible manner.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Use and Storage General Practices</u>
+								</b>
+								<p class="justify">Cinnamon reserves the right to set up its Storage practices, and at its sole discretion, determine, among others, the limitation on the maximum number of days that user content such as emails, messages, or posts shall be retained, the maximum number of email messages that may be sent and/or received, the maximum volume or size of any message that may be sent or received, and the maximum disk space that shall be allocated by Cinnamon in its servers in favor of its Users. Cinnamon shall not incur any liability or responsibility for removing or not maintaining storage of any data or information that we receive in connection with our Services, Software, and Website.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Advertisers</u>
+								</b>
+								<p class="justify">Cinnamon reiterates that it shall not incur any liability or responsibility for any transaction or dealing, in whatever form or manner, between its Users and any Advertisers in its Services, Software, and Website. Please be reminded that you bear the entire risk and responsibility for any consequences that may arise from such dealings or transactions with Advertisers.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>No Third-Party Beneficiaries</u>
+								</b>
+								<p class="justify">There are no third-party beneficiaries to this TOU, unless otherwise expressly provided herein.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>No right of Survivorship and Non-Transferability </u>
+								</b>
+								<p class="justify">This TOU, and all rights, licenses, and accounts granted herein, is non-transferable and shall terminate upon valid termination of such rights, licenses, and accounts in accordance with this TOU, or upon your death.</p>
+								<p class="justify">Any attempt by Users to transfer or assign any and all rights, licenses, and accounts granted herein to any other party is null and void. However, Cinnamon reserves the right to assign or delegate its rights and obligations under this TOU, in whole or in part, without the prior consent of its Users.</p>
+								<p class="justify">On the event of death, we may terminate your account and all related content therein upon our receipt of a copy of your death certificate. </p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Force Majeure</u>
+								</b>
+								<p class="justify">Neither Cinnamon or its Users shall be responsible for failure of performance of any obligation contained herein by reason of exigent circumstances that are unforeseen or, even if foreseeable, are unavoidable. These may include, but are not limited to: Acts of God, Catastrophe, Disaster, Pandemic, Conflagration, Epidemic, Labor disputes, and Acts of terrorism.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Entire Agreement</u>
+								</b>
+								<p class="justify">This TOU, including the Cinnamon Privacy Policy which can be accessed at cinnamon.ph/Policy constitute the entire agreement between Cinnamon and its Users.</p>
+								<p class="justify">This TOU supersedes any prior version that may have been published herein.</p>
+								<p class="justify">Nevertheless, you agree to be bound by any additional terms which we may require in connection with any individual service that you may request from us. However, in the event of any conflict between the provisions of this TOU and such additional terms, this TOU shall be controlling. </p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Jurisdiction and Choice of Law and Forum</u>
+								</b>
+								<p class="justify">This TOU and the relationship between Cinnamon and its Users shall be governed by the laws of the Philippines.</p>
+								<p class="justify">All claims, causes of actions, and/or disputes arising out of or in relation to this TOU or the relationship between Cinnamon and its Users shall be filed exclusively in the courts of Muntinlupa City.</p>
+								<p class="justify">Cinnamon and its Users hereby expressly agree to submit to the jurisdiction of the above-mentioned courts and to waive any objections to the propriety of the exercise of jurisdiction by such courts and to the venue in such courts.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Statute of Limitations</u>
+								</b>
+								<p class="justify">You hereby expressly accept that any claim or action arising out of or in relation to this TOU or the relationship between Cinnamon and its users must be filed within one (1) year after said claim or cause of action arose, regardless of any statute or law providing otherwise. All claims or actions not filed within the above-mentioned period shall forever be barred. </p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Severability of Terms</u>
+								</b>
+								<p class="justify">If any part or condition of this TOU is deemed invalid, void, or unenforceable, for any reason whatsoever, such part or condition shall be deemed severable and will not affect the validity and enforceability of the remaining Agreement. Any limitation or elimination of a provision or part of this Agreement shall always be executed to the minimum extent allowed by law.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Waiver of Terms</u>
+								</b>
+								<p class="justify">You hereby expressly agree that should Cinnamon fail to assert, exercise, or enforce any legal right, provision, remedy, or part of this TOU, such failure shall not constitute nor be taken as a waiver by Cinnamon of such legal right, provision, remedy, or part, and that such legal right, provision, remedy, or part, shall still be available to Cinnamon.</p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Modification</u>
+								</b>
+								<p class="justify">Cinnamon reserves the right to modify, alter, or change this TOU at any time, as we may deem fit. Cinnamon may, at its discretion, provide all its registered users and customers a copy of any succeeding version of this TOU through the email used in the Registration Process, within five (5) days before the day such TOU takes effect. </p>
+								<p class="justify">You hereby agree that your continued use our Service, Software, or Website following the effectivity of any succeeding version of this TOU shall constitute your acceptance to such succeeding version of the TOU. </p>
+							</li>
+							<li class="justify">
+								<b>
+									<u>Violations</u>
+								</b>
+								<p class="justify">Should you encounter or become aware of any and violation to this TOU, please report such violation through our following address: </p>
+								<p class="justify">Email Address: <a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a></p>
+							</li>
+						</ol>
+						<p class="justify">
+
+						</p>
+					</div>
+				</div>
+			}
+			@if (isPrivacyDisplayed)
+			{
+				<div class="container p-5">
+					<p class="heading-secondary text-center">Cinnamon Privacy Policy</p>
+					<p class="heading-secondary text-center">(“Cinnamon Privacy Policy”)</p>
+					<p class="heading text-center">Last modified – March 01, 2023</p>
+					<div class="policy-style">
+						<p class="justify">
+							Cinnamon (“we”, “us”, “our” or “Cinnamon”), as an online referral marketing software, respects, values, and protects the privacy of its Users (“you”, “your”, or “Users”).
+						</p>
+
+						<p class="justify">
+							The Cinnamon Privacy Policy (“Privacy Policy”) provides for the treatment and rules governing our collection, use, retention, and sharing of your personal information, as well as your rights with respect to your data, in accordance with established data privacy laws including Republic Act 10173 – Data Privacy Act of 2012 (“DPA”).The Privacy Policy, in particular, contains the following:
+						</p>
+						<br />
+						<ol>
+							<li class="justify">Notice of Consent,</li>
+							<li class="justify">Definition of Key Terminologies,</li>
+							<li class="justify">Information we collect from Users,</li>
+							<li class="justify">Our use for collected personal information,</li>
+							<li class="justify">Rules on Third Parties</li>
+							<li class="justify">Rules on our retention of personal information,</li>
+							<li class="justify">Rules on our Disposal of personal data or personal information,</li>
+							<li class="justify">Our protection and security for your personal information,</li>
+							<li class="justify">Your rights in relation to your personal information, and</li>
+							<li class="justify">Other rules concerning personal information.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							All visitors to our site, whether registered or not, shall be classified as a “User” for the purpose of this Cinnamon Privacy Policy. Registered users, Non-registered users, subscribers, brands, customer brands, prospective customer brands, affiliates, and any other person or entity who avail of our Service, Software, and Website shall likewise be considered as a “User” for the purpose of this Policy. Furthermore, all persons and/or entities that use the API of any third-party website, Company, or entity and/or that use Cinnamon’s generated API access tokens to enable Integrations or Interoperations with Cinnamon’s Services, Software, and Website are hereby likewise expressly considered as a “User” for the purpose of this Policy.
+						</p>
+						<p class="justify">
+							Should you have any questions, requests, or any concern regarding this Privacy Policy or our treatment of your personal information or data, please send us a message at: (<a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>).
+						</p>
+						<br />
+						<p class="justify">
+							<b><u>Notice of Consent</u></b>
+						</p>
+						<p class="justify">
+							Through your use of this Website and accessing of our Services, you consent to the collection, use, retention, and sharing of your personal information in accordance with the Privacy Policy and within the limits of data privacy laws, including DPA.
+						</p>
+						<br />
+						<p class="justify">
+							<b><u>Definitions of Key Terminologies</u></b>
+						</p>
+						<p class="justify">
+							Terms used in the Privacy Policy are defined below:
+						</p>
+						<ol>
+							<li class="justify"><b>Data Subject</b> - Data Subject, as defined in the DPA, refers to an individual whose personal information is processed.</li>
+							<li class="justify">
+								<b>Personal Information</b> - Personal Information, as defined in the DPA, is refers to any information whether recorded in a material form or not, from which the identity of an individual is apparent or can be reasonably and directly ascertained by the entity holding the information, or when put together with other information would directly and certainly identify an individual.
+								<br /><br />
+								<p class="justify">Personal information, however, does not include publicly available information or lawfully obtained, truthful information that is a matter of public concern, and deidentified or aggregate consumer information.</p>
+							</li>
+							<li class="justify">
+								<b>Sensitive Personal Information</b> – Sensitive Personal Information, as defined in DPA, information refers to personal information:
+								<ol class="numbered-list-parentheses">
+									<li class="justify">About an individual’s race, ethnic origin, marital status, age, color, and religious, philosophical or political affiliations.</li>
+									<li class="justify">About an individual’s health, education, genetic or sexual life of a person, or to any proceeding for any offense committed or alleged to have been committed by such person, the disposal of such proceedings, or the sentence of any court in such proceedings;</li>
+									<li class="justify">Issued by government agencies peculiar to an individual which includes, but not limited to, social security numbers, previous or current health records, licenses or its denials, suspension or revocation, and tax returns; and</li>
+									<li class="justify">
+										<label class="justify">Specifically established by an executive order or an act of Congress to be kept classified.</label>
+										<br /><br />
+										<p class="justify">Sensitive Personal Information likewise include the processing of biometric information for the purpose of uniquely identifying a consumer, personal information collected and analyzed concerning a consumer’s health, and personal information collected and analyzed concerning a consumer’s sex life or sexual orientation.</p>
+										<p class="justify">Sensitive Personal Information, however, does not include publicly available information or information that is lawfully made available from federal, state, or local government records.</p>
+									</li>
+								</ol>
+							</li>
+							<li class="justify"><b>Processing</b> – Processing, as defined in the DPA, means any operation or any set of operations performed upon personal information including, but not limited to, the collection, recording, organization, storage, updating or modification, retrieval, consultation, use, consolidation, blocking, erasure or destruction of data.</li>
+							<li class="justify">
+								<b>Consent</b> - Consent, as defined in the DPA, refers to any freely given, specific, informed indication of will, whereby the data subject agrees to the collection and processing of personal information about and/or relating to him or her. Consent shall be evidenced by written, electronic or recorded means. It may also be given on behalf of the data subject by an agent specifically authorized by the data subject to do so.
+								<br /><br />
+								<p class="justify">Data Subject as applied in this Policy pertains to the current and previous employees, customer personnel, partner/vendor personnel, website visitors, sub-contractors, activity providers, customers and visitors of Cinnamon.</p>
+							</li>
+							<li class="justify">
+								<b>Controller</b> - Controller, as defined in the DPA, refers to a person or organization who controls the collection, holding, processing or use of personal information, including a person or organization who instructs another person or organization to collect, hold, process, use, transfer or disclose personal information on his or her behalf. The term excludes:
+								<ol class="numbered-list-parentheses">
+									<li class="justify">A person or organization who performs such functions as instructed by another person or organization; and</li>
+									<li class="justify">An individual who collects, holds, processes or uses personal information in connection with the individual’s personal, family or household affairs;</li>
+								</ol>
+							</li>
+							<li class="justify"><b>Processor</b> – Processor, as defined in the DPA,  refers to any natural or juridical person qualified to act as such under this Act to whom a personal information controller may outsource the processing of personal data pertaining to a data subject.;</li>
+							<li class="justify"><b>Third Party</b> – Third Party, as defined by the National Privacy Commission, refer to other organizations or individuals who may be involved in the processing of personal data by a personal information controller.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>Information we collect from Users</u></b>
+						</p>
+						<p class="justify">
+							The following are the categories of personal information that we collect from Users:
+						</p>
+						<ol>
+							<li class="justify"><b>Account and Contact Data</b> – We collect the following information through our sign-up form when a user registers on our website or subscribes to one of our services: full name, birthday,gender, physical address, email address, company name, email address, mobile number, and bank account details. We may also collect images of your government-issued ID, your ID number or other verification information for identity or business confirmation. We use your contact information in providing our services, answering your requests, billing and other management purposes, and marketing and communicating purposes, and in analyzing service trends through the usage of data in aggregated/anonymized form. We note that all marketing materials we send contain an option for you to opt-out at any time. Furthermore, Cinnamon does not record or store credit information from Users, and rely on third-party PCI-DSS-compliant payment processors for credit card processing.</li>
+							<li class="justify"><b>Browser Data</b> – When a user visits our website, Cinnamon detects and store the user’s browser language and geolocation. Our servers also passively record the information sent by Users’ browsers for statistical, security, and legal purposes, including the user’s IP address, the time and date of a user’s visit, the user’s browser version and platform, and the web page that referred a user to our Site. We anonymously analyze this automatically recorded data in maintaining and improving our services.</li>
+							<li class="justify"><b>Payment Information</b> – Cinnamon collects the billing and financial information of Users that are necessary to process charges for our services which require payment. We may also receive the billing and payment information that you provide when your purchase is processed by another party, including your postal and e-mail addresses.</li>
+							<li class="justify"><b>Technical and usage information</b> – Cinnamon collects the following information when Users access our websites and use our services: certain technical information about the user’s mobile device or computer system, including IP Address and mobile device ID, and usage statistics about your interaction with our Service.</li>
+							<li class="justify"><b>Cookies and tracking</b> – Cinnamon may use cookies and similar tracking technologies on its Website, such as pixels and web beacons. Personal information sourced through these technologies are used to improve our services by providing a more personalized experience to Users.</li>
+							<li class="justify"><b>Third-party websites</b> - In order to protect our public API from abuse and misuse, we apply rate-limit tactics based only on the IP address of the visitor when our widgets and snippets are installed on third-party websites. These IP addresses are only temporarily stored and expires after one (1) minute. For the protection of our Users and our Services, Software, and Website, Cinnamon hereby reserves the right to collect and process offending IP addresses in case of abuse or misuse of our public API. Unless specified above, however, Cinnamon stresses that it does not collect, use, retain, and share personal information gathered on Services, Software, and Website that are not owned by Cinnamon.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>Our use for collected personal information</u></b>
+						</p>
+						<p class="justify">
+							We collect, use, and retain your personal information to improve our services and to enhance your customer experience.
+						</p>
+						<p class="justify">
+							In particular, the following are examples by which information we collect can be used:
+						</p>
+						<ol>
+							<li class="justify">Sharing with the activity providers called Activity Providers for those customers booking experiences. The kid' name,age and gender will be provided to the Activity Providers.</li>
+							<li class="justify">Providing, supporting, and improving our website and services, monitoring and analysis of user trends, usage, and activities in connection with our services,</li>
+							<li class="justify">Processing essential operations such as billing for purchased services,</li>
+							<li class="justify">Sending communications to Users including, but not limited to, our responses to your comments, questions, and requests to provide customer service, technical notices, updates, security alerts, support and administrative messages, and informational, marketing and promotional content on our services,</li>
+							<li class="justify">Assessing our system security and investigating system issues which may affect our services to Users,</li>
+							<li class="justify">Enforcing compliance with our terms and applicable law, meeting legal requirements, such as court orders, discovery requests, and subpoenas, as well as accounting and security requirements, and responding to lawful requests by public authorities.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>Rules on Third Parties</u></b>
+						</p>
+						<p class="justify">
+							The following are the rules governing our treatment of your personal information and data with respect to third parties such as service providers and subprocessors.
+						</p>
+						<ol class="alpha-list-upper">
+							<li class="justify">
+								<b>Consent of Users is required prior to disclosure, Exceptions</b>
+								<p>As our policy, we do not sell, rent, trade, share, or otherwise transfer the personal information and data that we collect from you to third parties outside of Cinnamon without your consent.</p>
+								<p>Notwithstanding the foregoing, we may provide personal data to third parties where we are legally mandated by law enforcement and governmental authorities, and where we are required to comply with legal processes. Furthermore, we may provide personal data to third parties, where absolutely necessary, to respond to claims asserted against us, to administer our policies and agreements with Users, for essential operations such as risk assessments, investigations, and product development, and to protect the rights, property, and safety of Cinnamon, our employees, our Users, and the members of the general public. Cinnamon may also share or disclose aggregated, anonymous, and de-identified information for research purposes and analysis of trends or statistics.</p>
+							</li>
+							<li class="justify">
+								<b>Third Parties with whom your personal information is shared</b>
+								<p>We rely and contract with third party companies, organizations, and individuals that support our Site and Services in essential operations such as software maintenance, data hosting, sending of email messages, web audience analysis, cloud hosting, and marketing and communications. As such, we share the personal information of Users to enable these third parties to perform their functions.</p>
+								<p>Third parties with whom we share your information include affiliates and vendors, legal, accounting, and other general service providers, service providers who bolster our essential operations, marketing agencies or website hosts, and third parties approved by the user, including social media sites which Users choose to link their accounts to.</p>
+								<p>Our sharing of personal data and information to third parties as enumerated above is only to the extent of what is necessary to enable them to perform their functions, is limited to the specific purpose for such sharing, and is covered by a specific data processing contract. Furthermore, Cinnamon takes stringent procedures in ensuring that these third parties are compliant with established data privacy laws, including DPA, in processing your personal information, including both not limited to, the imposition of contract obligations to the third parties that personal information we share to them can only be used for their provision of services to us.</p>
+							</li>
+							<li class="justify">
+								<b>Direct Marketing</b>
+								<p>Cinnamon does not share the personal data and information of its Users with third parties for their direct marketing purposes.</p>
+							</li>
+							<li class="justify">
+								<b>No liability for third-party websites</b>
+								<p>Cinnamon shall not be responsible and shall not be held liable for the safety of any information that Users share to third parties who are not affiliated with our Site and Services. Third parties who are not affiliated with our Site and Services include, but are not limited to, brands and other third-parties who advertise, subscribe, or otherwise use our Site but are not affiliated with us, and other websites, online services, or mobile applications that are linked by third-party Users in our Site.</p>
+							</li>
+							<li class="justify">
+								<b>Business Transfers</b>
+								<p>In cases where Cinnamon sells, transfers, or otherwise share some or all of its assets, which include the personal information and data of Users, in connection with a legitimate business transfer such as, but not limited to, a merger, acquisition, reorganization, sale of assets, or bankruptcy, Cinnamon will perform all commercially reasonable efforts to notify Users if their personal information is to be disclosed, transferred, or becomes subject to a different Privacy Policy.</p>
+							</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>Rules on our retention of personal information</u></b>
+						</p>
+						<p class="justify">
+							Cinnamon retains a user’s personal information only for the period that is reasonably necessary to accomplish the purpose for which such information was collected.
+						</p>
+						<ol>
+							<li class="justify"><b>Account and Contact Data and Payment Information</b> – we retain such personal information only until we have an ongoing legitimate business need to do so in relation to a user and whether such data is necessary to provide our service. However, we will retain user data for no longer than seven (7) years from the date of termination of contract between the user and Cinnamon, unless a longer period is provided by law or lawful orders of legal authority. We will retain financial data for no longer than eight (8) years from the date of termination of contract between the user and Cinnamon, unless a longer period is provided by law or lawful orders of legal authority.</li>
+							<li class="justify"><b>Browser Data and Technical and Usage Information, Cookies and tracking</b> – Browser data is retained for a maximum of 12 months, with the exception of cases where there is legitimate concern related to our security or performance of services. Further, Cinnamon retains audit logs for no longer than one (1) year, and other records for no longer than three (3) years, unless a longer period is provided by law or lawful orders of legal authority.</li>
+							<li class="justify"><b>Job Application Data</b> – We retain information related to job applications for up to 2 years, in order for us to contact prospective employees again for future job propositions. We retain information related to our employees for the duration of their employment contract and for a reasonable time following termination of such contract. Cinnamon, however, will retain employees’ data for no longer than eight (8) years, unless a longer period is provided by law or lawful orders of legal authority.</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>Rules on our Disposal of personal data or personal information</u></b>
+						</p>
+						<p class="justify">
+							Our disposal of Users’ personal data and information shall be governed by reasonable data security practices and shall follow the requirements of established data privacy laws.
+						</p>
+						<br />
+						<p class="justify">
+							<b><u>Our protection and security for your personal information,</u></b>
+						</p>
+						<p class="justify">
+							Cinnamon implements security procedures and employs information systems to detect security incidents that compromise the availability, authenticity, integrity, and confidentiality of stored or transmitted personal information, and to protect the personal information from unauthorized or illegal access, destruction, use, modification, or disclosure.
+						</p>
+						<p class="justify">
+							The ways that Cinnamon secures your personal information include, but are not limited to: SSL encryption in our processing of personal data, encryption of our database, usage of secure and encrypted servers, usage of E-mail One Time Password (OTP) or email verification Method for the protection of Users’ accounts, and following organizational procedures that restrict staff access to personal data and ensure data security.
+						</p>
+						<br />
+						<p class="justify">
+							<b><u>Your rights in relation to your personal information</u></b>
+						</p>
+						<p class="justify">
+							Data privacy laws including the TDA  provide for your rights as data subject as regards your personal data. In relation to our collection, use, retention, and sharing of your personal data, you have the following rights, subject to the limitations, exceptions, and requirements imposed by the law:
+						</p>
+						<p class="justify">
+							The data subject is entitled to:
+						</p>
+						<ol class="alpha-list-parentheses">
+							<li class="justify">Be informed whether personal information pertaining to him or her shall be, are being or have been processed;</li>
+							<li class="justify">
+								Be furnished the information indicated hereunder before the entry of his or her personal information into the processing system of the personal information controller, or at the next practical opportunity:
+								<ol class="numbered-list-parentheses">
+									<li class="justify">Description of the personal information to be entered into the system;</li>
+									<li class="justify">Purposes for which they are being or are to be processed;</li>
+									<li class="justify">Scope and method of the personal information processing;</li>
+									<li class="justify">The recipients or classes of recipients to whom they are or may be disclosed;</li>
+									<li class="justify">Methods utilized for automated access, if the same is allowed by the data subject, and the extent to which such access is authorized;</li>
+									<li class="justify">The identity and contact details of the personal information controller or its representative;</li>
+									<li class="justify">The period for which the information will be stored; and</li>
+									<li class="justify">The existence of their rights, i.e., to access, correction, as well as the right to lodge a complaint before the Commission.</li>
+								</ol>
+							</li>
+							<li class="justify">
+								Reasonable access to, upon demand, the following:
+								<ol class="numbered-list-parentheses">
+									<li class="justify">Contents of his or her personal information that were processed;</li>
+									<li class="justify">Sources from which personal information were obtained;</li>
+									<li class="justify">Names and addresses of recipients of the personal information;</li>
+									<li class="justify">Manner by which such data were processed;</li>
+									<li class="justify">Reasons for the disclosure of the personal information to recipients;</li>
+									<li class="justify">Information on automated processes where the data will or likely to be made as the sole basis for any decision significantly affecting or will affect the data subject;</li>
+									<li class="justify">Date when his or her personal information concerning the data subject were last accessed and modified; and</li>
+									<li class="justify">The designation, or name or identity and address of the personal information controller;</li>
+								</ol>
+							</li>
+							<li class="justify">Dispute the inaccuracy or error in the personal information and have the personal information controller correct it immediately and accordingly, unless the request is vexatious or otherwise unreasonable. If the personal information have been corrected, the personal information controller shall ensure the accessibility of both the new and the retracted information and the simultaneous receipt of the new and the retracted information by recipients thereof: Provided, That the third parties who have previously received such processed personal information shall he informed of its inaccuracy and its rectification upon reasonable request of the data subject;</li>
+							<li class="justify">Suspend, withdraw or order the blocking, removal or destruction of his or her personal information from the personal information controller’s filing system upon discovery and substantial proof that the personal information are incomplete, outdated, false, unlawfully obtained, used for unauthorized purposes or are no longer necessary for the purposes for which they were collected. In this case, the personal information controller may notify third parties who have previously received such processed personal information; and</li>
+							<li class="justify">
+								<label>Be indemnified for any damages sustained due to such inaccurate, incomplete, outdated, false, unlawfully obtained or unauthorized use of personal information.</label>
+								<br /><br />
+								<p>Cinnamon shall not discriminate against any user who exercises his or her rights as enumerated above. We shall not, among others, deny goods or services to the user, charge different prices or rates for goods or services, including through the use of discounts or other benefits or imposing penalties, provide a different level or quality of goods or services to the consumer, and suggest that the consumer will receive a different price or rate for goods or services or a different level or quality of goods or services. </p>
+							</li>
+						</ol>
+						<br />
+						<p class="justify">
+							<b><u>How to exercise your rights in relation to your personal information</u></b>
+						</p>
+						<p class="justify">
+							Should you wish to exercise any of the above-mentioned rights, please send us a message at (<a href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>).
+						</p>
+						<p class="justify">
+							We shall treat your message as valid requests once you provide sufficient information that will allow us to verify your identity as the correct person whom we collected personal data or information from, and sufficient detail as will allow us to understand, evaluate, and respond to your requests. Users may also use authorized agents to exercise their rights on their behalf.
+						</p>
+						<p class="justify">
+							We shall also follow established procedures for the exercise of rights of data subjects as stated in data privacy laws such as the DPA.
+						</p>
+						<br />
+						<p class="justify">
+							<b><u>Other rules concerning personal information.</u></b>
+						</p>
+						<ol class="alpha-list-upper">
+							<li class="justify">
+								<b>Policy on the personal information of minors</b>
+								<p>We do not willfully disregard our Users’ age when we collect, use, retain, and share personal date. Before we process the personal data of minors, the consent of their parents or legal guardians is first obtained when they book the experience on Cinnamon or absent such consent, but with a lawful basis under existing laws, rules, or regulations.</p>
+							</li>
+							<li class="justify">
+								<b>Complaints and Grievances</b>
+								<p>Please direct any concerns, complaints, or grievances about our collection, use, retention, or sharing of personal data, personal information, or sensitive personal data to our Data Protection Officer with the following contact details:</p>
+								<table class="tbl-bordered">
+									<tr>
+										<td>Name of Data Protection Officer</td>
+										<td>Andrew Pacis</td>
+									</tr>
+									<tr>
+										<td>Email ID:</td>
+										<td>support@cinnamon.ph</td>
+									</tr>
+								</table>
+								<p>You may also direct any inquiries or message to our postal address at Muntinlupa City, Metro Manila 1781.</p>
+							</li>
+							<li class="justify">
+								<b>Updates to the Privacy Policy</b>
+								<p>Cinnamon regularly updates its Privacy Policy in accordance with the requirements of established data privacy laws. We will provide Users with notice of amendments to the Privacy Policy, as required by established data privacy laws, and update the “Last modified” date as contained in the title of this Privacy Policy. We encourage you to regularly review our Privacy Policy to stay informed on our collection, use, retention, sharing, and protection of your data. </p>
+							</li>
+						</ol>
+					</div>
+				</div>
+			}
+		</div>
+		<Contact></Contact>
+	</div>
 </div>
 
 @code {
-    private bool isFaqDisplayed = false;
-    private bool isTermsDisplayed = false;
-    private bool isPrivacyDisplayed = false;
+	private bool isFaqDisplayed = false;
+	private bool isTermsDisplayed = false;
+	private bool isPrivacyDisplayed = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        isFaqDisplayed = true;
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		isFaqDisplayed = true;
+	}
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperHelpPage", ".schedule-swiper");
-        }
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperHelpPage", ".schedule-swiper");
+		}
+	}
 
-    private void NavigateToFaq()
-    {
-        isFaqDisplayed = true;
-        isTermsDisplayed = false;
-        isPrivacyDisplayed = false;
-    }
+	private void NavigateToFaq()
+	{
+		isFaqDisplayed = true;
+		isTermsDisplayed = false;
+		isPrivacyDisplayed = false;
+	}
 
-    private void NavigateToTerms()
-    {
-        isFaqDisplayed = false;
-        isTermsDisplayed = true;
-        isPrivacyDisplayed = false;
-    }
+	private void NavigateToTerms()
+	{
+		isFaqDisplayed = false;
+		isTermsDisplayed = true;
+		isPrivacyDisplayed = false;
+	}
 
-    private void NavigateToPrivacy()
-    {
-        isFaqDisplayed = false;
-        isTermsDisplayed = false;
-        isPrivacyDisplayed = true;
-    }
+	private void NavigateToPrivacy()
+	{
+		isFaqDisplayed = false;
+		isTermsDisplayed = false;
+		isPrivacyDisplayed = true;
+	}
 }

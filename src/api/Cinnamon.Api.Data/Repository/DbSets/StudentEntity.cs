@@ -462,7 +462,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							HasReview            = Convert.ToBoolean(item["HasReview"]),
 							PurchaseDate         = Convert.ToDateTime(item["PurchaseDate"]),
 							Title                = item["Title"].ToString() ?? string.Empty,
-							activitySchedule = new ActivityScheduleDTO
+							activitySchedule     = new ActivityScheduleDTO
 							{
 								Id            = Convert.ToInt32(item["ActivityScheduleId"]),
 								HasExpiration = Convert.ToInt32(item["HasExpiration"]),

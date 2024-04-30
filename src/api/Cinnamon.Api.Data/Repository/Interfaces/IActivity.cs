@@ -20,7 +20,7 @@ public interface IActivity : IGenericEntity<Activity>
         IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents);
     Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule);
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
-        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false);
+        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false, bool includeTickets = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);
     Task<AppResult<IEnumerable<OteOngoingDTO>>> CustomerOte(int customerId);
     Task<AppResult<IEnumerable<OteActivityPerDateDTO>>> OtePerDate(int? providerId);
