@@ -15,31 +15,9 @@
 <SeoMeta Title="Admin - Disbursements" Subject="Admin - Disbursements" Url="/admin/disbursements" />
 
 <section class="admin-dashboard-disbursement-wrapper">
-    <div class="top-row">
-        <div class="dropdown">
-            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                <div class="menu">
-                    <img src="images/menu.png">
-                </div>
-            </button>
-            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                @if (AuthState != null)
-                {
-                    @if (AuthState.Identity.IsAuthenticated)
-                    {
-                        <li class="dropdown-item">
-                            <Button Border="Border.Is0" Clicked="Logout">
-                                Logout
-                            </Button>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-    </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-5">
-        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Disbursements</p>
+    <div class="d-flex  mt-3 custom-flex justify-content-between">
+        <p class="verification-title">Disbursements</p>
         <div class="mt-2 mt-md-0">
         </div>
     </div>
@@ -47,16 +25,16 @@
     <div class="transactions-section mt-4">
         <div class="filters">
             <div>
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h5 for="filter-by" class="m-font-16 mb-0">Filter by</h5>
-                </div>
+                <div class="d-flex flex-column flex-md-row  mt-0 custom-flex">
+                    <div class="d-flex flex-column flex-md-row  mt-3 custom-flex">
                 <Select style="width: 300px; margin-bottom: 1rem;" TValue="Filters" 
                     name="fiter-by" id="filter-by" class="form-control m-font-12 m-width-100" @bind-SelectedValue="selectedValue">
                     <SelectItem Value="Filters.All">All</SelectItem>
                     <SelectItem Value="Filters.Email">Provider Email</SelectItem>
                     <SelectItem Value="Filters.Status">Status</SelectItem>
                 </Select>
-                <div class="filter-fields mt-3 mb-3">
+                    </div>
+                                    <div class="d-flex flex-column flex-md-row mb-3 mt-3 custom-flex">
                     @if(selectedValue == Filters.Email)
                     {
                         <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's email" Role="TextRole.Email" 
@@ -73,16 +51,26 @@
                     }
                 </div>
                 <div class="d-flex justify-content-between">
-                    <Button class="btn-primary min-width-130 font-16 mb-3 m-width-100 m-font-14" Border="Border.Is0" Clicked="SubmitFilters"
+                    <Button class="btn-primary min-width-130 font-20 mb-3 m-width-100 m-font-14" Border="Border.Is0" Clicked="SubmitFilters"
                         Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                             Please wait..
                         </LoadingTemplate>
                         <ChildContent>
-                            Submit Filter
+                            Submit
                         </ChildContent>
                     </Button>
+                </div>
+            </div>
+            <hr class="w-100" style="margin-top: 6px; margin-bottom: 12px;">
+                <div class="justify-content-between search-bar-parent">
+                     <div></div> <!--Empty div to keep search bar sa left-->
+                    <div class="searchbar-holder ml-md-auto mt-0 mt-md-0 mb-3">
+                        <div class="searchBar">
+                            <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

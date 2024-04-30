@@ -35,6 +35,24 @@ public class OtePurchaseVerification
             ";
         }
         string ticketLinkText = args.EventLocation.ToLower() == "online" ? "View Link Here!" : "View Ticket Here!";
+
+        string htmlDiscount = string.Empty;
+        if(args.Discount.HasValue)
+        {
+            htmlDiscount += $@"
+                <p
+                    style='
+                        color: #717171;
+                        font-size: 16px;
+                        margin-top: 0;
+                        margin-bottom: 10px;
+                    '
+                    >
+                    Discount: PHP {args.Discount.Value.ToString("#,##0.00")}
+                </p>
+            ";
+        }
+
         return $@"
             <div
                 style='
@@ -209,6 +227,7 @@ public class OtePurchaseVerification
                     >
                     Amount: PHP {args.SubTotal.ToString("#,##0.00")}
                     </p>
+                    {htmlDiscount}
                     <p
                     style='
                         color: #717171;
@@ -281,6 +300,7 @@ public class OtePurchaseVerification
         public decimal ServiceFee {get; set;}
         public decimal HandlingFee {get; set;}
         public decimal TotalAmount {get; set;}
+        public decimal? Discount {get; set;}
 
         public string TicketDetailsLink {get; set;}
     }

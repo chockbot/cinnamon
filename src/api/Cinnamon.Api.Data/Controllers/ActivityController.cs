@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
+using Cinnamon.Api.Data.Services.Repository.OnlineEvent;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -443,7 +444,7 @@ public class ActivityController : ControllerBase
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides, onlineEvent);
+                dateOverrides, onlineEvent, args.Activity.CategoryId);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -525,7 +526,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.FindOteByHandler(handler, args.IncludeDescription ?? false, args.IncludeAddress ?? false,
-                args.IncludeSchedule ?? false, args.IncludePricing ?? false, args.IncludeProvider ?? false, args.IncludeImages ?? false, args.IncludeOnlineEvents ?? false);
+                args.IncludeSchedule ?? false, args.IncludePricing ?? false, args.IncludeProvider ?? false, args.IncludeImages ?? false, args.IncludeOnlineEvents ?? false, args.IncludeTickets ?? false);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -539,7 +540,6 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOteActivityByHandlerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
     [Route("ote/add-ticket-solds")]
     [HttpPost]
     [ProducesResponseType(typeof(AddTicketSoldResult), StatusCodes.Status200OK)]
@@ -680,7 +680,8 @@ public class ActivityController : ControllerBase
     {
         try
         {
-            var result = await activityRepository.ActivityFeed(args.Take, args.Skip, args.Search, args.CategoryId);
+            var result = await activityRepository.ActivityFeed(args.Take, args.Skip, args.Search, 
+                args.CategoryId, args.StarReview, args.ExperienceType);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -712,6 +713,26 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("DeleteTicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.DeleteTicket(args.Id);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

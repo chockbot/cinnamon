@@ -9,15 +9,15 @@
 
 <section class="ote-event-wrapper">
     <p class="font-20 color-grey-100 text-justify m-font-16">
-        Note: A one-time event refers to a specific occurrence or happening that takes place at a 
-        designated time and location. It could be a seminar, workshop, conference, concert, 
+        Note: A one-time event refers to a specific occurrence or happening that takes place at a
+        designated time and location. It could be a seminar, workshop, conference, concert,
         or any other event that is not recurring on a regular basis.
         <br>
         <br>
         After the event date, the one-time event will automatically deactivate in your page.
     </p>
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
-        <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="model" @ref="formValidation">
+        <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="ModelState" @ref="formValidation">
             <Validation @ref="eventNameValidation">
                 <Field class="mb-4" id="ote-event-name">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -25,8 +25,8 @@
                         event name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                            Role="TextRole.Text" @bind-Text="model.EventName">
+                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5"
+                                  Role="TextRole.Text" @bind-Text="ModelState.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
@@ -44,8 +44,8 @@
                         description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                            @bind-Text="model.Description">
+                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5"
+                                  @bind-Text="ModelState.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
@@ -58,13 +58,13 @@
             </Validation>
             <Field class="mb-4" id="ote-event-category">
                 <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        @* <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span> *@
-                        select category
-                    </FieldLabel>
+                    @* <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span> *@
+                    select category
+                </FieldLabel>
                 <FieldBody>
-                    <Select Size="Size.Medium" class="@CategoryClass" @bind-SelectedValue="model.SelectedCategory">
+                    <Select Size="Size.Medium" class="@CategoryClass" @bind-SelectedValue="ModelState.SelectedCategory">
                         <SelectItem Value="0" Disabled class="text-capitalize">--Select Category--</SelectItem>
-                        @foreach (var item in categoryItems)
+                        @foreach (var item in ModelState.categoryItems)
                         {
                             <SelectItem Value="item.Id" class="text-capitalize">@item.Name</SelectItem>
                         }
@@ -77,31 +77,28 @@
     <OteRouteButtons NextButtonExtraClass="m-width-100" HavePrevious="false" OnNextClick="NextClick" />
 </section>
 
-@code 
+@code
 {
     [Parameter]
-    public EventCallback OnNextClick {get; set;}
+    public EventCallback OnNextClick { get; set; }
 
-    private FormModel model = new();
-    private IList<CategoryItem> categoryItems = new List<CategoryItem>();
+    [Parameter]
+    public FormModel ModelState {get; set;} = new();
+
     private Validations? formValidation;
     private Validation? eventNameValidation;
     private Validation? eventDescriptionValidation;
     private bool isNextClick = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCategory();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
         {
-            if(firstRender)
+            if (firstRender)
             {
                 await Task.Delay(300);
-                var minObj = new {
+                var minObj = new
+                {
                     inputSelector = "#event-name-words-input",
                     labelSelector = "#event-name-words-count",
                     labelFormat = "Max of 15 words (###/15)",
@@ -110,7 +107,8 @@
                 };
                 await JS.InvokeVoidAsync("MyLib.Utils.countWords", minObj);
 
-                var maxObj = new {
+                var maxObj = new
+                {
                     inputSelector = "#event-description-words-input",
                     labelSelector = "#event-description-words-count",
                     labelFormat = "Min of 10 words (###/10)",
@@ -127,32 +125,15 @@
         }
     }
 
-    private async Task LoadCategory()
-    {
-        var categoryRes = await activityApiHandler.GetExperienceCategories();
-        if(categoryRes.Succeeded && categoryRes.Result is not null && categoryRes.Result.IsSuccess)
-        {
-            var categories = categoryRes.Result.Result.Where(c => c.Name.ToLower() != "new");
-            foreach(var item in categories)
-            {
-                categoryItems.Add(new CategoryItem {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Selected = false
-                });
-            }
-        }
-    }
-
     public async Task<bool> FieldValid()
     {
-        if(formValidation is not null)
+        if (formValidation is not null)
         {
-            bool valid = await formValidation.ValidateAll() && model.SelectedCategory > 0;
+            bool valid = await formValidation.ValidateAll() && ModelState.SelectedCategory > 0;
             isNextClick = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
-            if(!valid)
+            if (!valid)
             {
                 await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
             }
@@ -161,12 +142,14 @@
         return false;
     }
 
-    private string CategoryClass {
-        get {
+    private string CategoryClass
+    {
+        get
+        {
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
-            if(isNextClick)
+            if (isNextClick)
             {
-                if(model.SelectedCategory <= 0)
+                if (ModelState.SelectedCategory <= 0)
                 {
                     return $"{defaultStyle} is-invalid";
                 }
@@ -178,7 +161,7 @@
 
     private async Task NextClick()
     {
-        if(OnNextClick.HasDelegate)
+        if (OnNextClick.HasDelegate)
         {
             isNextClick = true;
             await OnNextClick.InvokeAsync();
@@ -187,52 +170,52 @@
 
     private string JoinErrorMessages(IEnumerable<string>? messages)
     {
-        if(messages is null || messages.Count() == 0) return string.Empty;
+        if (messages is null || messages.Count() == 0) return string.Empty;
         return string.Join(". ", messages);
     }
 
     public ModelData GetData()
     {
-        ModelData data = new ModelData {
-            Category = model.SelectedCategory,
-            Description = model.Description,
-            Name = model.EventName
-        };
+        ModelData data = new ModelData
+            {
+                Category = ModelState.SelectedCategory,
+                Description = ModelState.Description,
+                Name = ModelState.EventName
+            };
         return data;
     }
 
-    public void SetState(ModelData data)
+    public Task SetState(ModelData data)
     {
-        model.Description = data.Description;
-        model.EventName = data.Name;
-        model.SelectedCategory = data.Category;
-        StateHasChanged();
+        return Task.CompletedTask;
     }
 
-    public class ModelData 
+    public class ModelData
     {
-        public string Name {get; set;}
-        public string Description {get; set;}
-        public int Category {get; set;}
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Category { get; set; }
     }
-    
-    private class FormModel
+
+    public class FormModel
     {
         [Required(ErrorMessage = "The event name field is mandatory.")]
         [LimitWords(Max = 15, ErrorMessage = "Max words limit is 15.")]
-        public string EventName {get; set;} = string.Empty;
+        public string EventName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The event description field is mandatory.")]
         [LimitWords(Min = 10, Max = int.MaxValue, ErrorMessage = "Minimum words limit is 10.")]
         public string Description {get; set;} = string.Empty;
 
         public int SelectedCategory {get; set;} = 0;
+
+        public IList<CategoryItem> categoryItems = new List<CategoryItem>(); 
     }
 
-    private class CategoryItem 
+    public class CategoryItem 
     {
-        public int Id {get; set;}
-        public string Name {get; set;} = string.Empty;
-        public bool Selected {get; set;}
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool Selected { get; set; }
     }
 }

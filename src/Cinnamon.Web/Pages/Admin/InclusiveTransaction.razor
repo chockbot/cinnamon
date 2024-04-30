@@ -15,91 +15,66 @@
 <SeoMeta Title="Admin - Inclusive Transactions" Subject="Admin - Inclusive Transactions" Url="/admin/inclusive-transactions" />
 
 <section class="admin-dashboard-transactions-wrapper">
-    <div class="top-row">
-        <div class="dropdown">
-            <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                <div class="menu">
-                    <img src="images/menu.png">
-                </div>
-            </button>
-            <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                @if (AuthState != null)
-                {
-                    @if (AuthState.Identity.IsAuthenticated)
-                    {
-                        <li class="dropdown-item">
-                            <Button Border="Border.Is0" Clicked="Logout">
-                                Logout
-                            </Button>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
+
+    <div class="d-flex  mt-3 custom-flex justify-content-between">
+        <p class="verification-title">Inclusive Transactions</p>
+        <a href="#" @onclick="ExportExcel" class="excel-export-text-button">
+             <span class="excel-export-text-button desktop-view">Export Excel File</span>
+            <img src="images/Dashboard Icon/excel-image-admin-new.svg" alt="Excel Icon" class="ml-2" />
+            </a>
     </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-5">
-        <p class="m-0 font-32 m-font-20 color-orange-100 font-weight-700">Inclusive Transactions</p>
-        <div class="mt-2 mt-md-0">
-        </div>
-    </div>
-
-    <div class="transactions-section mt-4">
+    <div class="transactions-section mt-0">
         <div class="filters">
             <div>
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h5 for="filter-by" class="m-font-16 mb-0">Filter by</h5>
-                    <Button Clicked="ExportExcel" class="d-block d-md-none p-0">
-                        <img src="images/excel-small-icon.png" alt="excel-icon">
-                    </Button>
-                </div>
-                <Select style="width: 300px; margin-bottom: 1rem;" TValue="Filters" 
-                    name="fiter-by" id="filter-by" class="form-control m-font-12 m-width-100" @bind-SelectedValue="selectedValue">
-                    <SelectItem Value="Filters.All">All</SelectItem>
-                    <SelectItem Value="Filters.Name">Provider Name</SelectItem>
-                    <SelectItem Value="Filters.Email">Provider Email</SelectItem>
-                    <SelectItem Value="Filters.Date">Date Purchased</SelectItem>
-                    <SelectItem Value="Filters.Status">Status</SelectItem>
-                </Select>
-                <div class="filter-fields mt-3 mb-3">
-                    @if(selectedValue == Filters.Name)
-                    {
-                        <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's first name or last name" Role="TextRole.Text" 
-                            @bind-Text="selectedFilterValues.StringField" />
-                    }
-                    else if(selectedValue == Filters.Email)
-                    {
-                        <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's email" Role="TextRole.Email" 
-                            @bind-Text="selectedFilterValues.StringField" />
-                    }
-                    else if(selectedValue == Filters.Status)
-                    {
-                        <Select style="width: 300px;" TValue="int" 
-                                class="form-control m-font-16 m-width-100" @bind-SelectedValue="selectedFilterValues.Status">
-                            <SelectItem Value="0">Processing</SelectItem>
-                            <SelectItem Value="1">Payed</SelectItem>
-                            <SelectItem Value="2">Failed</SelectItem>
-                            <SelectItem Value="3">Refunded</SelectItem>
-                            <SelectItem Value="5">Disbursed</SelectItem>
+                <div class="d-flex flex-column flex-md-row  mt-0 custom-flex">
+                    <div class="d-flex flex-column flex-md-row  mt-3 custom-flex">
+                        <Select TValue="Filters" 
+                            name="fiter-by" id="filter-by" class="form-control m-font-12 m-width-100 w-100" @bind-SelectedValue="selectedValue">
+                            <SelectItem Value="Filters.All">All</SelectItem>
+                            <SelectItem Value="Filters.Name">Provider Name</SelectItem>
+                            <SelectItem Value="Filters.Email">Provider Email</SelectItem>
+                            <SelectItem Value="Filters.Date">Date Purchased</SelectItem>
+                            <SelectItem Value="Filters.Status">Status</SelectItem>
                         </Select>
-                    }
-                    else if(selectedValue == Filters.Date)
-                    {
-                        <div style="width: 300px;" class="m-width-100">
-                            <div class="mb-3">
-                                <label class="m-font-16 text-capitalize m-width-100">from</label>
-                                <DatePicker class="m-font-12" TValue="DateTime" Placeholder="date from" Date="selectedFilterValues.DateFrom" 
-                                    DateChanged="v => selectedFilterValues.DateFrom = v" />
+                     </div>
+                    <div class="d-flex flex-column flex-md-row mb-3 mt-3 custom-flex">
+                        @if(selectedValue == Filters.Name)
+                        {
+                            <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's first name or last name" Role="TextRole.Text" 
+                                @bind-Text="selectedFilterValues.StringField" />
+                        }
+                        else if(selectedValue == Filters.Email)
+                        {
+                            <TextEdit class="m-font-16 m-width-100" style="width: 300px;" Placeholder="Provider's email" Role="TextRole.Email" 
+                                @bind-Text="selectedFilterValues.StringField" />
+                        }
+                        else if(selectedValue == Filters.Status)
+                        {
+                            <Select style="width: 300px;" TValue="int" 
+                                class="form-control m-font-16 m-width-100" @bind-SelectedValue="selectedFilterValues.Status">
+                                    <SelectItem Value="0">Processing</SelectItem>
+                                    <SelectItem Value="1">Paid</SelectItem>
+                                    <SelectItem Value="2">Failed</SelectItem>
+                                    <SelectItem Value="3">Refunded</SelectItem>
+                                    <SelectItem Value="5">Disbursed</SelectItem>
+                            </Select>
+                        }
+                        else if(selectedValue == Filters.Date)
+                        {
+                            <div style="width: 300px; gap: 10px;" class="m-width-100 d-flex justify-content-between">
+                                <div class="mb-0">
+                                    <DatePicker class="m-font-12" TValue="DateTime" Placeholder="From" Date="selectedFilterValues.DateFrom" 
+                                        DateChanged="v => selectedFilterValues.DateFrom = v" />
+                                </div>
+                                <div>
+                                    <DatePicker class="m-font-12" TValue="DateTime" Placeholder="To" Date="selectedFilterValues.DateTo" 
+                                        DateChanged="v => selectedFilterValues.DateTo = v" />
+                                </div>
                             </div>
-                            <div>
-                                <label class="m-font-16 text-capitalize m-width-100">to</label>
-                                <DatePicker class="m-font-12" TValue="DateTime" Placeholder="date to" Date="selectedFilterValues.DateTo" 
-                                    DateChanged="v => selectedFilterValues.DateTo = v" />
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="d-flex justify-content-between">
+                        }
+                    </div>
+                    <div class="d-flex justify-content-between">
                     <Button class="btn-primary min-width-130 font-20 mb-3 m-width-100 m-font-14" Border="Border.Is0" Clicked="SubmitFilters"
                         Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
                         <LoadingTemplate>
@@ -107,13 +82,19 @@
                             Please wait..
                         </LoadingTemplate>
                         <ChildContent>
-                            Submit Filter
+                            Submit
                         </ChildContent>
                     </Button>
-                    <Button Clicked="ExportExcel" class="btn-primary min-width-130 font-20 mb-3 m-d-none m-font-14" 
-                        Border="Border.Is0" Size="Size.Small" Type="ButtonType.Button">
-                        Export to Excel
-                    </Button>
+                    </div>
+                </div>
+                <hr class="w-100" style="margin-top: 6px; margin-bottom: 12px;">
+                <div class="justify-content-between search-bar-parent">
+                     <div></div> <!--Empty div to keep search bar sa left-->
+                    <div class="searchbar-holder ml-md-auto mt-0 mt-md-0 mb-3">
+                        <div class="searchBar">
+                            <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,7 +198,7 @@
                     </TableBody>
                 }
             </Table>
-            <Pagination Class="pagination-section" Style="margin-top: 50px">
+            <Pagination class="pagination-section mt-3">
                 @{
                     for (var i = 1; i <= Pagination.TotalPages; i++)
                     {
@@ -270,6 +251,7 @@
     {
         if(isFiltered)
         {
+            
             IsFetchingTransactions = true;
         }
         var result = await adminApiHandler.GetAllInclusiveTransactions(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAllInclusiveTransactionArgs {

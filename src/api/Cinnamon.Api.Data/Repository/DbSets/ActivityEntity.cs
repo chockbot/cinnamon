@@ -418,16 +418,17 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
     }
 
     public async Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
-        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false)
+        bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false, bool includeTickets = false)
     {
         try
         {
             var query = applicationContext.Activities.Where(a => a.Handler.ToLower() == handler.ToLower() && a.ExperienceCreationTypeId == 3);
 
-            if(includeAddress) query     = query.Include(a => a.Address);
-            if(includeDescription) query = query.Include(a => a.ActivityDescription);
-            if(includeProvider) query    = query.Include(a => a.Customer);
-            if(includeImages) query      = query.Include(a => a.Images);
+            if(includeAddress) query      = query.Include(a => a.Address);
+            if(includeDescription) query  = query.Include(a => a.ActivityDescription);
+            if(includeProvider) query     = query.Include(a => a.Customer);
+            if (includeImages) query      = query.Include(a => a.Images);
+            if(includeTickets) query      = query.Include(a => a.Tickets);
             if (includeOnlineEvent)query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteOnlineEvent);
             if (includeSchedule && includePricing) {
                 query = query.Include(a => a.OteSchedule).ThenInclude(a => a.OteDates);
@@ -583,7 +584,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         {
             string customerIdQuery = providerId is not null ? "and ac.\"CreatedBy\" = @providerId " : string.Empty;
 
-            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ad.\"PinnedLocation\", " +
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Description\", ac.\"Handler\", ac.\"ForceDisable\", ad.\"PinnedLocation\", " +
                                "ad.\"CityName\", ad.\"RegionName\", ac.\"ExperienceTypeId\", od.\"Date\", " +
                                "od.\"DateStart\", od.\"DateEnd\", od.\"Id\" \"DateId\", " +
                                "( " +
@@ -636,7 +637,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             Handler = item["Handler"].ToString() ?? string.Empty,
                             PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
                             RegionName = item["RegionName"].ToString() ?? string.Empty,
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            ForceDisable = Convert.ToBoolean(item["ForceDisable"])
                         }).ToList();
                     }
                 }
@@ -727,11 +729,14 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+        int? categoryId = null, int? starReview = null, int? experienceType = null)
     {
         try
         {
             string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+            string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
+            string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
             string searchClause = string.Empty;
             if(!string.IsNullOrEmpty(search))
             {
@@ -748,7 +753,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                             "left join public.\"ActivitySummaries\" su " +
                                 "on ac.\"Id\" = su.\"ActivityId\" " +
                             "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + categoryClause + searchClause +
+                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + 
+                                categoryClause + searchClause + starReviewClause + experienceTypeClause +
                             "order by ac.\"Guid\" " +
                             "limit " + take + " offset " + skip + " ";
             

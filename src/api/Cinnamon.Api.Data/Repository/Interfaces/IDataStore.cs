@@ -43,6 +43,7 @@ public interface IDataStore
     IOngoingActivityScheduleTime OngoingActivityScheduleTime { get; }
     IOteSchedule OteSchedule {get;}
     IOteSchedulePricing OteSchedulePricing {get;}
+    IOteSchedulePricingGroup OteSchedulePricingGroup { get; }
     IOteTicket OteTicket {get;}
     ITokenGenerated TokenGenerated {get;}
     IAddOns AddOns { get; }

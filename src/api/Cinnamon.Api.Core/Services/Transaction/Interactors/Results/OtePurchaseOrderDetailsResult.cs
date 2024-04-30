@@ -13,6 +13,7 @@ public class OtePurchaseOrderDetailsResult
     public decimal HandlingFee {get; set;}
     public decimal TotalPurchase {get; set;}
     public string TicketUrl {get; set;}
+    public decimal? Discount {get; set;}
 
     public class Ticket 
     {

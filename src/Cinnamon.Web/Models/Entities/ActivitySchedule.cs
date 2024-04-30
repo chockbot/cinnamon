@@ -7,7 +7,6 @@ namespace Cinnamon.Web.Models.Entities;
 
 public class ActivitySchedule 
 {
-
     public int Id {get; set;}
     public int ActivityId {get; set; }
     private string _name;

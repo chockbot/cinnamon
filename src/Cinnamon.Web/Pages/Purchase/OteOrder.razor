@@ -48,6 +48,13 @@
                                 <p class="mb-0">Amount:</p>
                                 <p class="mb-0">P @purchaseOrder.SubTotal.ToString("#,##0.00")</p>
                             </div>
+                            @if(purchaseOrder.Discount.HasValue)
+                            {
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <p class="mb-0">Disscount:</p>
+                                    <p class="mb-0">P @purchaseOrder.Discount.Value.ToString("#,##0.00")</p>
+                                </div>
+                            }
                             <div class="mb-2 d-flex justify-content-between">
                                 <p class="mb-0">Service Fee: </p>
                                 <p class="mb-0">P @purchaseOrder.HandlingFee.ToString("#,##0.00")</p>
@@ -78,9 +85,7 @@
                                         <TableRow>
                                             <TableHeaderCell class="p-2 text-center">Ticket #</TableHeaderCell>
                                             <TableHeaderCell class="p-2">Ticket</TableHeaderCell>
-                                            <TableHeaderCell class="p-2 m-d-none">Amount</TableHeaderCell>
-                                            <TableHeaderCell class="p-2 m-d-none">Fees</TableHeaderCell>
-                                            <TableHeaderCell class="p-2">Subtotal</TableHeaderCell>
+                                            <TableHeaderCell class="p-2">Amount</TableHeaderCell>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody class="font-14 color-black-100">
@@ -91,13 +96,7 @@
                                                     @FormattedId(item.Id)
                                                 </TableRowCell>
                                                 <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">@item.Name</TableRowCell>
-                                                <TableRowCell class="p-2 m-d-none" VerticalAlignment="VerticalAlignment.Middle">P @item.Price.ToString("#,##0.00")</TableRowCell>
-                                                <TableRowCell class="p-2 m-d-none" VerticalAlignment="VerticalAlignment.Middle">
-                                                    P @((purchaseOrder.ServiceFee + purchaseOrder.HandlingFee).ToString("#,##0.00"))
-                                                </TableRowCell>
-                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">
-                                                    P @((purchaseOrder.ServiceFee + purchaseOrder.HandlingFee + item.Price).ToString("#,##0.00"))
-                                                </TableRowCell>
+                                                <TableRowCell class="p-2" VerticalAlignment="VerticalAlignment.Middle">P @item.Price.ToString("#,##0.00")</TableRowCell>
                                             </TableRow>
                                         }
                                     </TableBody>

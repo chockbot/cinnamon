@@ -17,22 +17,21 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateCustomerPricingHandler updateCustomerPricingHandler;
         private readonly IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler;
         private readonly ICreateCouponHandler createCouponHandler;
+        private readonly IGetDisbursements getDisbursements;
+        private readonly IGetDisbursementDetails getDisbursementDetails;
+        private readonly IManualDisbursement manualDisbursement;
         private readonly ICreateAnnouncementHandler createAnnouncementHandler;
         private readonly IUpdateAnnouncementHandler updateAnnouncementHandler;
         private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
         private readonly IDeleteAnnouncementHandler deleteAnnouncementHandler;
-        private readonly IGetDisbursements getDisbursements;
-        private readonly IGetDisbursementDetails getDisbursementDetails;
-        private readonly IManualDisbursement manualDisbursement;
         private readonly IUpdateDynamicContentHandler updateDynamicContentHandler;
         private readonly ILogger _logger;
 
         public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
             IUpdateCustomerPricingHandler updateCustomerPricingHandler, IGetAllInclusiveTransactionHandler getAllInclusiveTransactionHandler, 
-            ICreateCouponHandler createCouponHandler, ICreateAnnouncementHandler createAnnouncementHandler,
-            IUpdateAnnouncementHandler updateAnnouncementHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
-            IDeleteAnnouncementHandler deleteAnnouncementHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
-            IManualDisbursement manualDisbursement, IUpdateDynamicContentHandler updateDynamicContentHandler)
+            ICreateCouponHandler createCouponHandler, IGetDisbursements getDisbursements, IGetDisbursementDetails getDisbursementDetails,
+            IManualDisbursement manualDisbursement, ICreateAnnouncementHandler createAnnouncementHandler,
+            IDeleteAnnouncementHandler deleteAnnouncementHandler, IUpdateDynamicContentHandler updateDynamicContentHandler)
         {
             _logger = logger;
 
@@ -40,13 +39,13 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateCustomerPricingHandler = updateCustomerPricingHandler;
             this.getAllInclusiveTransactionHandler = getAllInclusiveTransactionHandler;
             this.createCouponHandler = createCouponHandler;
+            this.getDisbursements = getDisbursements;
+            this.getDisbursementDetails = getDisbursementDetails;
+            this.manualDisbursement = manualDisbursement;
             this.createAnnouncementHandler = createAnnouncementHandler;
             this.updateAnnouncementHandler = updateAnnouncementHandler;
             this.getAnnouncementsHandler = getAnnouncementsHandler;
             this.deleteAnnouncementHandler = deleteAnnouncementHandler;
-            this.getDisbursements = getDisbursements;
-            this.getDisbursementDetails = getDisbursementDetails;
-            this.manualDisbursement = manualDisbursement;
             this.updateDynamicContentHandler = updateDynamicContentHandler;
         }
 

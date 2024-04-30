@@ -30,6 +30,7 @@ public class OteActivity
     public int Sold { get; set; }
     public int Available { get; set; }
     public string EventImage { get; set; }
+    public bool ForceDisable {get; set;}
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}
