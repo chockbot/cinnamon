@@ -13,6 +13,7 @@ experienceExcelWriter.execute = async (data) => {
   headerRow.getCell(2).value = "First Name";
   headerRow.getCell(3).value = "Last Name";
   headerRow.getCell(4).value = "Title";
+  headerRow.getCell(5).value = "Deactivated";
 
 
   // activities
@@ -23,6 +24,7 @@ experienceExcelWriter.execute = async (data) => {
     row.getCell(2).value = obj.owner.firstName;
     row.getCell(3).value = obj.owner.lastName;
     row.getCell(4).value = obj.title;
+    row.getCell(5).value = obj.isPublished ? "No" : "Yes";
   
   }
 
