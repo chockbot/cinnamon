@@ -26,8 +26,8 @@ public interface IActivityData
     Task<AppResult<CreateOteActivityResult>> CreateOteActivity(CreateOteActivityArgs args);
     Task<AppResult<UpdateOteActivityResult>> UpdateOteActivity(UpdateOteActivityArgs args);
     Task<AppResult<GetOteActivityByHandlerResult>> GetOteActivityByHandler(GetOteActivityArgs args, string handler);
-    Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args);
     Task<AppResult<GetOTEByProvideResult>> GetOTEByProvider(GetOTEByProvideArgs args);
+    Task<AppResult<AddTicketSoldResult>> AddTicketSolds(AddTicketSoldArgs args);
     Task<AppResult<CustomerOteResult>> CustomerOte(int customerId);
     Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args);
     Task<AppResult<DeleteAddOnResult>> DeleteAddOn(DeleteAddOnArgs args);
@@ -35,6 +35,7 @@ public interface IActivityData
     Task<AppResult<DeleteOnlineEventResult>> DeleteOnlineEvent(DeleteOnlineEventArgs args);
     Task<AppResult<ExpiredEventsResult>> ExpiredEvents();
     Task<AppResult<ForceDisableActivitiesResult>> ForceDisableActivities(ForceDisableActivitiesArgs args);
+    Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
     Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);

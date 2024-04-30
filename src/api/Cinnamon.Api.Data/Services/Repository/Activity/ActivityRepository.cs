@@ -13,6 +13,7 @@ using Cinnamon.Framework.Enums;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Api.Data.Extensions;
 using AutoMapper;
+using Cinnamon.Api.Data.Repository;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -1695,8 +1696,8 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit ,
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
         {
@@ -1706,7 +1707,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = experienceTypeId,
                 Price = stringPrice,
                 IsPublished = isPublished,
-                ExperienceCategoryId = 1,
+                ExperienceCategoryId = categoryId,
                 SubCategoryId = 1,
                 Handler = handler,
                 IsNew = true,
@@ -1745,7 +1746,8 @@ public class ActivityRepository : IActivityRepository
                 RepeatEvery = repeatEvery,
                 SelectedDays = selectedDays,
                 EventDurationCount = eventDurationCount,
-                EventDurationTimeUnit = eventDurationTimeUnit
+                EventDurationTimeUnit = eventDurationTimeUnit,
+                EventTicketLimit = eventTicketLimit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1848,7 +1850,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
+        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
     {
@@ -1863,7 +1865,7 @@ public class ActivityRepository : IActivityRepository
                 IsPublished = isPublished,
                 ExperienceCategoryId = categoryId,
                 Handler = handler,
-                IsComingSoon = comingSoon
+                IsComingSoon = comingSoon,
             };
 
             var activityDescription = new Entities.ActivityDescription {
@@ -1892,7 +1894,8 @@ public class ActivityRepository : IActivityRepository
                 RepeatEvery           = repeatEvery,
                 SelectedDays          = selectedDays,
                 EventDurationCount    = eventDurationCount,
-                EventDurationTimeUnit = eventDurationTimeUnit
+                EventDurationTimeUnit = eventDurationTimeUnit,
+                EventTicketLimit = ticketEventLimit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1986,12 +1989,12 @@ public class ActivityRepository : IActivityRepository
     
     public async Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, 
-        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false)
+        bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false, bool includeTickets = false)
     {
         try
         {
             var result = await dataStore.Activity.FindOteByHandler(handler, includeDescription, includeAddress, 
-                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents);
+                includeSchedule, includePricing, includeProvider, includeImages, includeOnlineEvents, includeTickets);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<OteActivityDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -2002,6 +2005,44 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<OteActivityDTO>.CreateFailed(ex, "An error occured when getting one time event by handler.");
+        }
+    }
+    public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetOTEByProvider(Id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var ote = result.Result.Select(s =>
+            {
+                var oteDTO = new OteActivityDTO
+                {
+                    Id               = s.Id,    
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    EventName        = s.Title,
+                    Description      = s.Description,
+                    Handler          = s.Handler,
+                    CityName         = s.CityName,
+                    RegionName       = s.RegionName,
+                    PinnedLocation   = s.PinnedLocation,
+                    EventImage       = s.OteSchedule.EventImage,
+                    ScheduleFrom     = s.OteSchedule.ScheduleFrom,
+                    ScheduleTo       = s.OteSchedule.ScheduleTo,
+                    Slots            = s.OteSchedule.Slots,
+                    Sold             = s.OteSchedule.Sold,
+                    Available        = s.OteSchedule.Slots - s.OteSchedule.Sold,
+                };
+                return oteDTO;
+            });
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateSucceeded(ote, "Successfully get ote activities");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
         }
     }
 
@@ -2039,45 +2080,6 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteSchedulePricingDTO>>.CreateFailed(ex, "An error occured when updating ticket sold.");
-        }
-    }
-
-    public async Task<AppResult<IEnumerable<OteActivityDTO>>> GetOTEByProvider(int Id)
-    {
-        try
-        {
-            var result = await dataStore.Activity.GetOTEByProvider(Id);
-            if (!result.Succeeded || result.Result == null)
-            {
-                return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
-            }
-            var ote = result.Result.Select(s =>
-            {
-                var oteDTO = new OteActivityDTO
-                {
-                    Id               = s.Id,    
-                    ExperienceTypeId = s.ExperienceTypeId,
-                    EventName        = s.Title,
-                    Description      = s.Description,
-                    Handler          = s.Handler,
-                    CityName         = s.CityName,
-                    RegionName       = s.RegionName,
-                    PinnedLocation   = s.PinnedLocation,
-                    EventImage       = s.OteSchedule.EventImage,
-                    ScheduleFrom     = s.OteSchedule.ScheduleFrom,
-                    ScheduleTo       = s.OteSchedule.ScheduleTo,
-                    Slots            = s.OteSchedule.Slots,
-                    Sold             = s.OteSchedule.Sold,
-                    Available        = s.OteSchedule.Slots - s.OteSchedule.Sold,
-                };
-                return oteDTO;
-            });
-            return AppResult<IEnumerable<OteActivityDTO>>.CreateSucceeded(ote, "Successfully get ote activities");
-
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<OteActivityDTO>>.CreateFailed(ex, "An error occured when getting ote activities");
         }
     }
 
@@ -2152,12 +2154,47 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting expired events.");
         }
     }
-
-    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, int? categoryId = null)
+    public async Task<AppResult<bool>> DeleteTicket(int Id)
     {
         try
         {
-            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId);
+            var oteGroupTicketResult = await dataStore.OteSchedulePricingGroup.GetByIdAsync(Id);
+            var oteGroupTicket = oteGroupTicketResult.Result;
+
+            if (oteGroupTicket == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No group ticket found with the provided ID"), "No group ticket found with the provided ID");
+            }
+            var oteTicketResult = await dataStore.OteSchedulePricing.GetPricings(oteGroupTicket.Id);
+            var oteTicket = oteTicketResult.Result;
+
+
+            if (oteTicket == null || !oteTicket.Any())
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No associated tickets found for the group ticket"), "No associated tickets found for the group ticket");
+            }
+            var associatedTicketsRemovalResult = await dataStore.OteSchedulePricing.RemoveRange(oteTicket);
+            var groupTicketRemovalResult = await dataStore.OteSchedulePricingGroup.Remove(oteGroupTicket);
+
+            if (!groupTicketRemovalResult.Succeeded || !associatedTicketsRemovalResult.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Failed to delete group ticket or associated tickets"), "Failed to delete group ticket or associated tickets");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted group ticket and associated tickets");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occurred while deleting ticket and associated tickets");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+        int? categoryId = null, int? starReview = null, int? experienceType = null)
+    {
+        try
+        {
+            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId, starReview, experienceType);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

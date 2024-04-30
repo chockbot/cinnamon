@@ -31,6 +31,9 @@ public class CreateOteActivityArgs
         public int ExperienceTypeId {get; set;}
 
         [Required]
+        public int CategoryId {get; set;}
+
+        [Required]
         public int CustomerId {get; set;}
 
         [Required]
@@ -94,6 +97,9 @@ public class CreateOteActivityArgs
 
         [Required]
         public string EventDurationTimeUnit {get; set;}
+
+        [Required]
+        public int EventTicketLimit { get; set; }
     }
 
     public class OtePricing 

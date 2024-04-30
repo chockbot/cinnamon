@@ -33,7 +33,7 @@
 
     protected override void OnInitialized()
     {
-        selectedDate = SelectedDates.FirstOrDefault();
+        selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
     }
 
     private string DisplayCalendar

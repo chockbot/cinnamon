@@ -87,6 +87,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
                         Id = a.Id,
                         IsPublished = a.IsPublished,
                         MinimumAge = a.MinimumAge,
@@ -104,7 +105,6 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         NumberOfReviews = a.NumberOfReviews,
                         Status = a.Status,
                         CreatedOn = a.CreatedOn,
-                        ExperienceCreationType = a.ExperienceCreationType,
                         ForceDisable = a.ForceDisable,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {

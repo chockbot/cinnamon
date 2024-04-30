@@ -209,8 +209,9 @@ public class TransactionController : ControllerBase
             var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
             var result = await getPayoutsByProviderHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetPayoutsByProviderArgs
             {
-                Id = args.Id,
-                DateFrom = date
+                Id       = args.Id,
+                DateFrom = date,
+                Status   = args.Status
             });
             if (!result.Succeeded || result.Result == null)
             {

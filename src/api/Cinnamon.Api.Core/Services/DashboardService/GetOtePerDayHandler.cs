@@ -60,6 +60,7 @@ public class GetOtePerDayHandler : IGetOtePerDayHandler
                         PinnedLocation = e.PinnedLocation,
                         RegionName = e.RegionName,
                         Title = e.Title,
+                        ForceDisable = e.ForceDisable
                     };
                 })
             }, "Ote per day successfully get.");

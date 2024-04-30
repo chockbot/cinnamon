@@ -24,6 +24,39 @@
   margin-bottom: 50px;
 }
 
+.verification-title {
+  color: #343D4C;
+  margin-top: 5px;  
+  font-family: Nunito;
+  font-size: 32px;
+  font-style: bold;
+  font-weight: 900;
+  line-height: normal;
+}
+
+.pagination-main {
+  margin-top: 10px;
+  display: flex !important;
+  justify-content:  end !important;
+  gap: 100px;
+}
+
+
+::deep .pagination {
+  gap: 10px;
+}
+
+::deep .page-item.active .page-link {
+  z-index: 3;
+  color: #ffffff !important;
+  background-color: #ffa942 !important;
+  border-color: #ffa942 !important;
+}
+
+::deep .page-link {
+  color: #717171 !important;
+}
+
 ::deep th.sessions-attended-header {
   text-align: center;
   vertical-align: middle;
@@ -102,4 +135,67 @@
 .form-switch .form-check-input:checked {
   background-color: var(--primary);
   border: none;
+}
+
+@media (min-width: 0px) and (max-width: 575.98px) {
+  .pagination-main {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .radio-button-texts {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 768.98px) {
+  .pagination-main {
+    display: flex !important;
+    justify-content:  end !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .custom-flex {
+    flex-direction: column !important;
+  }
+
+  .pagination-main {
+    display: flex !important;
+    justify-content:  end !important;
+  }
+
+  .radio-button-texts {
+    display: flex;
+    flex-direction: row;
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+
+
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .custom-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .radio-button-texts {
+    display: flex;
+    flex-direction: row;
+    font-size: 15px;
+  }
+
+}
+
+@media (min-width: 1200px) {
+  .custom-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
 }

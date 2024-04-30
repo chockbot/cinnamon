@@ -20,6 +20,8 @@ public class OteCreateArgs : IInteractor
 
         public int ExperienceTypeId {get; set;}
 
+        public int CategoryId {get; set;}
+
         public string HouseNo {get; set;}
 
         public string BarangayCode {get; set;}
@@ -64,6 +66,7 @@ public class OteCreateArgs : IInteractor
 
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
+        public int EventTicketLimit { get; set;}
     }
 
     public class OtePricing 

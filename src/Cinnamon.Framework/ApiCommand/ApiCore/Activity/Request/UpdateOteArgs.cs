@@ -83,6 +83,8 @@ public class UpdateOteArgs
 
         public DateTime? DurationStart { get; set; }
         public DateTime? DurationEnd { get; set; }
+
+        public int EventTicketLimit { get; set; }
     }
 
     public class OteUpdatePricing 

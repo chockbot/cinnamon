@@ -518,6 +518,8 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Ongoing");
 
+                    b.HasIndex("ReviewAccumulated");
+
                     b.HasIndex("TotalParticipants");
 
                     b.HasIndex("Ongoing", "Completed");
@@ -2055,6 +2057,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("EventDurationTimeUnit")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("EventTicketLimit")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ExtraOptions")
                         .IsRequired()

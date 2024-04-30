@@ -142,7 +142,7 @@ public class PayoutLogController : ControllerBase
         {
             DateTime From = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
-            var result = await payoutLogRepository.GetPayoutByProvider(args.Id, From);
+            var result = await payoutLogRepository.GetPayoutByProvider(args.Id, From, args.Status);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetPayoutsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

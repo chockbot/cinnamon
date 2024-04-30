@@ -14,17 +14,18 @@ public class GetAllStudentAttendanceByIdHandler: IGetAllStudentAttendanceByIdHan
 		this.studentAttendanceData = studentAttendanceData;
 	}
 
-	public AppResult<GetAllStudentAttendanceByIdResult> Execute(GetAllStudentAttendanceByIdArgs args)
-	{
-		try
-		{
-			return ExecuteAsync(args).Result;
-		}
-		catch (Exception ex)
-		{
-			return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured in GetAllStudentAttendanceByIdHandler");
-		}
-	}
+    public AppResult<GetAllStudentAttendanceByIdResult> Execute(GetAllStudentAttendanceByIdArgs args)
+    {
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured in GetAllStudentAttendanceByIdHandler");
+        }
+    }
+
 	public async Task<AppResult<GetAllStudentAttendanceByIdResult>> ExecuteAsync(GetAllStudentAttendanceByIdArgs args)
 	{
 		try

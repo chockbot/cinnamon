@@ -9,4 +9,6 @@ public class GetPayoutsByProviderArgs
     [Required]
     public string DateFrom { get; set; }
     // date format must yyyyMMddHHmmss
+    [Required]
+    public int Status { get; set; }
 }

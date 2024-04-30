@@ -296,6 +296,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                     ExtraOptions          = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
+                    EventTicketLimit      = args.Activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

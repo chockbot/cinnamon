@@ -17,9 +17,9 @@
         </label>
     </div>
     <p class="font-20 color-grey-100 text-justify m-font-16">
-        Attendees will join your online event through your virtual venue. Utilize this space to 
-        integrate your online meeting or event hosting platform and provide exclusive content. 
-        We'll direct your ticket holders to this page from your event listing and in reminder 
+        Attendees will join your online event through your virtual venue. Utilize this space to
+        integrate your online meeting or event hosting platform and provide exclusive content.
+        We'll direct your ticket holders to this page from your event listing and in reminder
         emails.
     </p>
     <div class="my-3 border-radius-10">
@@ -85,7 +85,7 @@
                                             </FieldBody>
                                         </Field>
                                     </Validation>
-                                    @if (PricingData.ItemPrices.Count != 0)
+                                    @if (StateModel.PricingData.ItemPrices.Count != 0)
                                     {
                                         <Validation>
                                             <Field class="mb-4">
@@ -96,7 +96,7 @@
                                                     <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="item.TicketRestriction">
                                                         <SelectItem Value="string.Empty" Disabled class="text-capitalize">Select Ticket Conditions</SelectItem>
                                                         <SelectItem Value='1' Disabled="@allRestrictionDisabled">All</SelectItem>
-                                                        @foreach (var item in PricingData.ItemPrices)
+                                                        @foreach (var item in StateModel.PricingData.ItemPrices)
                                                         {
                                                             <SelectItem Value="@item.Name" Disabled="@item.Disabled">@item.Name</SelectItem>
                                                         }
@@ -120,7 +120,7 @@
     }
     <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
         <Validations @ref="ticketFormValidation" Mode="FormMode" Model="modelTicketInfo">
-            @if(DisplayDelete)
+            @if (DisplayDelete)
             {
                 <div class="col-12 d-flex justify-content-end">
                     <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(modelTicketInfo)">
@@ -128,7 +128,7 @@
                     </Button>
                 </div>
             }
-            
+
             <Validation>
                 <Field class="mb-4">
                     <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
@@ -171,7 +171,7 @@
                     </FieldBody>
                 </Field>
             </Validation>
-            @if (PricingData.ItemPrices.Count != 0)
+            @if (StateModel.PricingData.ItemPrices.Count != 0)
             {
                 <Validation>
                     <Field class="mb-4">
@@ -182,7 +182,7 @@
                             <Select TValue="string" Size="Size.Medium" class="@RestrictionClass" @bind-SelectedValue="modelTicketInfo.TicketRestriction">
                                 <SelectItem Disabled Value="0">Select Ticket Conditions</SelectItem>
                                 <SelectItem Value="1" Disabled="@allRestrictionDisabled">All</SelectItem>
-                                @foreach (var item in PricingData.ItemPrices)
+                                @foreach (var item in StateModel.PricingData.ItemPrices)
                                 {
                                     <SelectItem Disabled="item.Disabled" Value="@item.Name">@item.Name</SelectItem>
                                 }
@@ -194,7 +194,7 @@
             }
             <div>
                 <Button Clicked="AddMoreTicket" Disabled="@allTicketRestrictionsSelected" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
-                    add more 
+                    add more
                 </Button>
             </div>
         </Validations>
@@ -212,16 +212,14 @@
 </ConfirmDialog>
 <HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create Online Event Page" />
 
-@code {
+@code 
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
     [Parameter]
     public EventCallback OnPrevClick { get; set; }
     [Parameter]
-    public OteLocation.ModelData LocationData { get; set; }
-
-    [Parameter]
-    public OtePricing.ModelData PricingData { get; set; }
+    public ModelState StateModel {get; set;} = new ();
 
     [Parameter]
     public string Token { get; set; }
@@ -256,14 +254,14 @@
     }
     protected override void OnParametersSet()
     {
-        if (PricingData != null)
+        if (StateModel.PricingData != null)
         {
             var listOfPricing = new List<OtePricing.ModelData.ItemPrice>();
-            foreach (var item in PricingData.ItemPrices)
+            foreach (var item in StateModel.PricingData.ItemPrices)
             {
                 listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
             }
-            PricingData = new OtePricing.ModelData
+            StateModel.PricingData = new OtePricing.ModelData
             {
                 ItemPrices = listOfPricing
             };
@@ -287,7 +285,7 @@
                         else
                         {
                             allRestrictionDisabled = true;
-                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                            StateModel.PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
                         }
                     }
                 }
@@ -315,11 +313,11 @@
     {
         if (ticketFormValidation is not null && ticketListFormValidation is not null)
         {
-            bool ticketConditionValid   = !string.IsNullOrEmpty(modelTicketInfo.TicketRestriction) && modelTicketInfo.TicketRestriction != "0";
-            bool ticketValid            = await ticketFormValidation.ValidateAll() && ticketConditionValid;
-            bool ticketConditionsValid  = modelTicketList.TicketInformations.All(ticket => !string.IsNullOrEmpty(ticket.TicketRestriction) && ticket.TicketRestriction != "0");
-            bool ticketListValid        = await ticketListFormValidation.ValidateAll() && ticketConditionsValid;
-            
+            bool ticketConditionValid = !string.IsNullOrEmpty(modelTicketInfo.TicketRestriction) && modelTicketInfo.TicketRestriction != "0";
+            bool ticketValid = await ticketFormValidation.ValidateAll() && ticketConditionValid;
+            bool ticketConditionsValid = modelTicketList.TicketInformations.All(ticket => !string.IsNullOrEmpty(ticket.TicketRestriction) && ticket.TicketRestriction != "0");
+            bool ticketListValid = await ticketListFormValidation.ValidateAll() && ticketConditionsValid;
+
             bool valid = ticketValid && ticketListValid;
 
             showErrors = true;
@@ -344,37 +342,38 @@
                 {
                     return new ModelData.TicketInfo
                     {
-                        Id                        = p.Id,
-                        Title                     = p.Title,
-                        VideoLink                 = p.VideoLink,
-                        Description               = p.Description,
-                        TicketRestriction         = p.TicketRestriction,
+                        Id = p.Id,
+                        Title = p.Title,
+                        VideoLink = p.VideoLink,
+                        Description = p.Description,
+                        TicketRestriction = p.TicketRestriction,
                     };
                 }).ToList()
             };
         data.TicketInfos.Add(new ModelData.TicketInfo
-        {
-                Id                        = modelTicketInfo.Id,
-                Title                     = modelTicketInfo.Title,
-                Description               = modelTicketInfo.Description,
-                VideoLink                 = modelTicketInfo.VideoLink,
-                TicketRestriction         = modelTicketInfo.TicketRestriction,
-        });
+            {
+                Id = modelTicketInfo.Id,
+                Title = modelTicketInfo.Title,
+                Description = modelTicketInfo.Description,
+                VideoLink = modelTicketInfo.VideoLink,
+                TicketRestriction = modelTicketInfo.TicketRestriction,
+            });
         return data;
     }
 
     public void SetState(ModelData data)
     {
         //existing ticket
-        foreach(var item in data.TicketInfos)
+        foreach (var item in data.TicketInfos)
         {
-            existingList.TicketInformations.Add(new TicketInformation {
-                Id                = item.Id,
-                Description       = item.Description,
-                Title             = item.Title,
-                VideoLink         = item.VideoLink,
-                TicketRestriction = item.TicketRestriction,
-            });
+            existingList.TicketInformations.Add(new TicketInformation
+                {
+                    Id = item.Id,
+                    Description = item.Description,
+                    Title = item.Title,
+                    VideoLink = item.VideoLink,
+                    TicketRestriction = item.TicketRestriction,
+                });
         }
         data.TicketInfos = data.TicketInfos.OrderBy(a => a.Id).ToList();
         var last = data.TicketInfos.LastOrDefault();
@@ -385,20 +384,20 @@
             {
                 modelTicketList.TicketInformations.Add(new TicketInformation
                     {
-                        Id                = item.Id,
-                        Description       = item.Description,
-                        Title             = item.Title,
-                        VideoLink         = item.VideoLink,
+                        Id = item.Id,
+                        Description = item.Description,
+                        Title = item.Title,
+                        VideoLink = item.VideoLink,
                         TicketRestriction = item.TicketRestriction,
-                        IsNew             = false,
+                        IsNew = false,
                     });
             }
-            modelTicketInfo.Id                        = last.Id;
-            modelTicketInfo.Title                     = last.Title;
-            modelTicketInfo.Description               = last.Description;
-            modelTicketInfo.TicketRestriction         = last.TicketRestriction;
-            modelTicketInfo.VideoLink                 = last.VideoLink;
-            modelTicketInfo.IsNew                     = false;
+            modelTicketInfo.Id = last.Id;
+            modelTicketInfo.Title = last.Title;
+            modelTicketInfo.Description = last.Description;
+            modelTicketInfo.TicketRestriction = last.TicketRestriction;
+            modelTicketInfo.VideoLink = last.VideoLink;
+            modelTicketInfo.IsNew = false;
         }
     }
 
@@ -425,15 +424,15 @@
             DisplayDelete = true;
         }
         modelTicketList.TicketInformations = existingList.TicketInformations;
-        int maxId                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
-        int order                          = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
-        existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true, TicketRestriction = "0"});
+        int maxId = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.TempId) + 1;
+        int order = modelTicketList.TicketInformations.Count == 0 ? 1 : modelTicketList.TicketInformations.Max(s => s.Order) + 1;
+        existingList.TicketInformations.Add(new TicketInformation { TempId = maxId, Order = order, IsNew = true, TicketRestriction = "0" });
         var last = existingList.TicketInformations.LastOrDefault();
         if (last is not null)
         {
             modelTicketList.TicketInformations = existingList.TicketInformations.Where(p => p.TempId != last.TempId).ToList();
             //Update Pricing Availability
-            foreach(var item in modelTicketList.TicketInformations)
+            foreach (var item in modelTicketList.TicketInformations)
             {
                 if (!string.IsNullOrEmpty(item.TicketRestriction))
                 {
@@ -451,7 +450,7 @@
                         else
                         {
                             allRestrictionDisabled = true;
-                            PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
+                            StateModel.PricingData.ItemPrices.Where(a => a.Name == item.TicketRestriction).FirstOrDefault().Disabled = true;
                         }
                     }
                 }
@@ -475,14 +474,14 @@
             if (ticketToDelete.TempId == 0)
             {
                 modelTicketList.TicketInformations.Where(a => a.Id == ticketToDelete.Id).FirstOrDefault().IsDeleted = true;
-                if(ticketToDelete.TicketRestriction != "1")
+                if (ticketToDelete.TicketRestriction != "1")
                 {
-                    PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                    StateModel.PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
                 }
                 var deleteTicket = await activityApiHandler.DeleteOnlineEvent(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOnlineEventArgs
-                {
-                    Id = ticketToDelete.Id
-                }, Token);
+                    {
+                        Id = ticketToDelete.Id
+                    }, Token);
                 if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
                 {
                     existingList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
@@ -516,7 +515,7 @@
                     }
                     else
                     {
-                        PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
+                        StateModel.PricingData.ItemPrices.Where(a => a.Name == ticketToDelete.TicketRestriction).FirstOrDefault().Disabled = false;
                     }
                 }
                 existingList.TicketInformations = modelTicketList.TicketInformations.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
@@ -550,7 +549,7 @@
                 if (string.IsNullOrEmpty(modelTicketInfo.TicketRestriction) || modelTicketInfo.TicketRestriction == "0")
                 {
                     return $"{defaultStyle} is-invalid";
-                        
+
                 }
                 else
                 {
@@ -562,14 +561,14 @@
     }
     private void DisableAllPrices()
     {
-        foreach (var item in PricingData.ItemPrices)
+        foreach (var item in StateModel.PricingData.ItemPrices)
         {
             item.Disabled = true;
         }
     }
     private void EnableAllPrices()
     {
-        foreach (var item in PricingData.ItemPrices)
+        foreach (var item in StateModel.PricingData.ItemPrices)
         {
             item.Disabled = false;
         }
@@ -623,5 +622,11 @@
               (string.IsNullOrEmpty(VideoLink) || VideoLink != "0");
             }
         }
+    }
+
+    public class ModelState 
+    {
+        public OteLocation.ModelData LocationData { get; set; } = new();
+        public OtePricing.ModelData PricingData { get; set; } = new();
     }
 }

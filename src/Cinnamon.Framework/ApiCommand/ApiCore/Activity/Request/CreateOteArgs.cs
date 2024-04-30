@@ -25,6 +25,9 @@ public class CreateOteArgs
         [Required]
         public int ExperienceTypeId {get; set;}
 
+        [Required]
+        public int CategoryId {get; set;}
+
         public string? HouseNo {get; set;}
 
         public string? BarangayCode {get; set;}
@@ -81,6 +84,7 @@ public class CreateOteArgs
 
         [Required]
         public string EventDurationTimeUnit {get; set;}
+        public int EventTicketLimit { get; set; }
     }
 
     public class OtePricing 

@@ -1022,6 +1022,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<OtePerDayResult>> GetOtePerDay(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOtePerDay")
+                .GetJsonAsync<OtePerDayResult>();
+
+            return AppResult<OtePerDayResult>.CreateSucceeded(result, "Successfully getting customer ote per day.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OtePerDayResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OtePerDayResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
+        }
+    }
+
     public async Task<AppResult<DeleteAddOnsResult>> DeleteAddOns(DeleteAddOnsArgs args, string token)
     {
         try
@@ -1065,27 +1086,6 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<DeleteAddOnResult>.CreateFailed(ex, "An error occurred when calling delete add-on api");
-        }
-    }
-
-    public async Task<AppResult<OtePerDayResult>> GetOtePerDay(string token)
-    {
-        try
-        {
-            var result = await flurlClient
-                .WithOAuthBearerToken(token)
-                .Request($"Activity/GetOtePerDay")
-                .GetJsonAsync<OtePerDayResult>();
-
-            return AppResult<OtePerDayResult>.CreateSucceeded(result, "Successfully getting customer ote per day.");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<OtePerDayResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<OtePerDayResult>.CreateFailed(ex, "An error occured when getting customer ote per day.");
         }
     }
 
@@ -1198,6 +1198,29 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
+        }
+    }
+
+    public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteTicket")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteTicketResult>();
+
+            return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully called delete ticket");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when calling delete ticket api");
         }
     }
 

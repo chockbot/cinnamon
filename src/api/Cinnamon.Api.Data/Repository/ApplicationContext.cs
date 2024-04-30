@@ -94,7 +94,6 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<DisbursementDetailBulk> DisbursementDetailBulks {get; set;}
     public DbSet<DisbursementBulkLog> DisbursementBulkLogs {get; set;}
     public DbSet<DisbursementManual> DisbursementManuals {get; set;}
-
     public DbSet<ChatUnreadNotification> ChatUnreadNotifications {get; set;}
 
     public DbSet<DynamicContent> DynamicContents {get; set;}
@@ -359,6 +358,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(c => c.FromUserId);
         modelBuilder.Entity<ChatUnreadNotification>()
             .HasIndex(c => c.ChatHistoryId);
+            
+        // announcements
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Status);
 
         // for ote shared link
         modelBuilder.Entity<OteSharedLink>()
@@ -373,9 +376,6 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic content
         modelBuilder.Entity<DynamicContent>()
             .HasIndex(d => d.Identifier);
-        // announcements
-        modelBuilder.Entity<Announcement>()
-            .HasIndex(a => a.Status);
 
         // for activity summary and activity
         modelBuilder.Entity<ActivitySummary>()
@@ -384,6 +384,8 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(s => s.Ongoing);
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex(s => s.TotalParticipants);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.ReviewAccumulated);
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed");
         modelBuilder.Entity<ActivitySummary>()

@@ -27,7 +27,7 @@
                     <div class="experience-content">
                         <div class="col-12 d-block justify-content-start">
                             <p class="title">Receivables from Cinnamon</p>
-                            <p class="amount">&#8369;@String.Format("{0:N}",receivables)</p>
+                            <p class="amount">&#8369;@String.Format("{0:N}",totalReceivables.Sum(t => t.Amount))</p>
                             <p class="amount-description">Complete your enrollee's attendance to automatically receive this amount in your payout account.</p>
                         </div>
                     </div>
@@ -283,6 +283,8 @@
 
     private List<Payouts> totalEarnings = new List<Payouts>();
 
+    private List<Payouts> totalReceivables = new List<Payouts>();
+
     private decimal receivables { get; set; } = 0;
 
     private string Status = "Pending";
@@ -306,6 +308,7 @@
             await FetchPayoutAccount();
             await FetchCinnamonCredits();
             await GetTotalEarnings();
+            await GetReceivables();
             await GetGrossSale();
             receivables = grossSales.Sum(g => g.Total) - totalEarnings.Sum(t => t.Amount);
 
@@ -440,11 +443,12 @@
     }
     private async Task GetTotalEarnings()
     {
-        //Get payouts by Activity Provider
+        //Get total earnings by Activity Provider
         var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
             {
                 Id       = Profile.Id,
-                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+                Status   = 2
             }, Token);
         if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
         {
@@ -458,6 +462,29 @@
             }).ToList();
         }
     }
+
+    private async Task GetReceivables()
+    {
+        //Get total receivables by Activity Provider
+        var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
+            {
+                Id       = Profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+                Status   = 1
+            }, Token);
+        if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
+        {
+            totalReceivables = payout.Result.Result.OrderBy(a => a.PayoutDate).Select(e =>
+            {
+                return new Payouts
+                    {
+                        Date = e.PayoutDate.Date,
+                        Amount = e.Amount
+                    };
+            }).ToList();
+        }
+    }
+
     private string MaskedString(string value, int count)
     {
         return new String('*', value.Length - count) + value.Substring(value.Length - count);

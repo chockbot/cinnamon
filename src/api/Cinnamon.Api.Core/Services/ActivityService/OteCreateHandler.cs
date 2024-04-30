@@ -195,6 +195,7 @@ public class OteCreateHandler : IOteCreateHandler
                     EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
                     ExperienceTypeId         = activity.ExperienceTypeId,
+                    CategoryId               = activity.CategoryId,
                     Handler                  = generateHandlerRes.Result.GeneratedHandler,
                     HouseNo                  = activity.HouseNo ?? string.Empty,
                     IsPublished              = activity.IsPublished,
@@ -213,7 +214,8 @@ public class OteCreateHandler : IOteCreateHandler
                     SelectedDays             = args.Activity.WeekString ?? String.Empty,
                     ExtraOptions             = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount       = args.Activity.EventDurationCount,
-                    EventDurationTimeUnit    = args.Activity.EventDurationTimeUnit
+                    EventDurationTimeUnit    = args.Activity.EventDurationTimeUnit,
+                    EventTicketLimit         = args.Activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
