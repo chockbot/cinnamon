@@ -142,6 +142,7 @@
 {
     public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
+    private int CountPerPage { get; set; } = 10;
     public List<Activity> activities = new List<Activity>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     private const string PREVIOUS = "previous";
@@ -172,7 +173,7 @@
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
                 PageIndex = pageIndex,
-                CountPerPage = 10,
+                CountPerPage = CountPerPage,
                 IncludeCustomer = true,
                 IncludeStudents = true,
                 SearchValue = searchValue,
@@ -355,9 +356,17 @@ LastName = r.Owner.LastName
     }
 
 
-        private async Task ExportExcel()
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.experienceExcelWriter.execute", activities);
+    private async Task ExportExcel()
+    {   
+    var originalCountPerPage = CountPerPage;
+
+    CountPerPage = Int32.MaxValue;
+
+    await GetAllActivities(1);
+
+    await jsRuntime.InvokeVoidAsync("MyLib.Utils.experienceExcelWriter.execute", activities);
+
+    CountPerPage = originalCountPerPage;
     }
 
     public async Task Clear()
