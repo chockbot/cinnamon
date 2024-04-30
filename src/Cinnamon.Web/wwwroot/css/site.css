@@ -1977,6 +1977,13 @@ input::-ms-clear {
   background-color: var(--primary);
   border-color: var(--primary);
 }
+
+/* for admin dashboard disbursement list */
+.admin-dashboard-users-wrapper .table-list .form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .admin-dashboard-users-wrapper .table-list table {
     border: 0;
@@ -2009,8 +2016,9 @@ input::-ms-clear {
     font-weight: bold;
   }
   .admin-dashboard-users-wrapper .table-list table tbody tr td:nth-child(2) {
-    padding: 0 !important;
+    padding: 0px !important; 
   }
+
   .admin-dashboard-users-wrapper
     .table-list
     table
@@ -2107,6 +2115,208 @@ input::-ms-clear {
   }
 }
 
+/* for admin dashboard announcement list */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .admin-dashboard-announcement-wrapper .table-list table {
+    border: 0;
+    width: 100% !important;
+    display: block;
+  }
+  .admin-dashboard-announcement-wrapper .table-list table tbody {
+    display: block;
+  }
+  .admin-dashboard-announcement-wrapper .table-list table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 2rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+  }
+
+  .admin-dashboard-announcement-wrapper .table-list table tbody tr td {
+    height: auto;
+  }
+  .admin-dashboard-announcement-wrapper .table-list table tbody tr td:last-child {
+    border-bottom: 0;
+  }
+  .admin-dashboard-announcement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+  }
+  .admin-dashboard-announcement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child::before {
+    content: "Title:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-announcement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+      content: "Status:  ";
+      font-weight: bold;
+  }
+
+  .admin-dashboard-announcement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    label
+    p {
+    padding: 1rem !important;
+  }
+
+  .admin-dashboard-announcement-wrapper
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(3)::before {
+    content: "Actions:  ";
+    font-weight: bold;
+}
+}
+
+
+/* for admin dashboard disbursement list */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .admin-dashboard-disbursement-wrapper .table-list table {
+    border: 0;
+    width: 100% !important;
+    display: block;
+  }
+  .admin-dashboard-disbursement-wrapper .table-list table tbody {
+    display: block;
+  }
+  .admin-dashboard-disbursement-wrapper .table-list table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 2rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+  }
+  .admin-dashboard-disbursement-wrapper .table-list table tbody tr td {
+    height: auto;
+  }
+  .admin-dashboard-disbursement-wrapper .table-list table tbody tr td:last-child {
+    border-bottom: 0;
+  }
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+  }
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child::before {
+    content: "Title:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+      content: "Email:  ";
+      font-weight: bold;
+  }
+
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    label
+    p {
+    padding: 1rem !important;
+  }
+
+  .admin-dashboard-disbursement-wrapper
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(3)::before {
+    content: "Provider Name:  ";
+    font-weight: bold;
+}
+
+.admin-dashboard-disbursement-wrapper
+.table-list
+table
+tbody
+tr
+td:nth-child(4)::before {
+  content: "Amount:  ";
+  font-weight: bold;
+}
+
+
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5) {
+    text-align: left !important;
+    display: flex;
+    align-items: center;
+  }
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5)::before {
+    content: "Status:  ";
+    font-weight: bold;
+  }
+  .admin-dashboard-disbursement-wrapper
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5)
+    .form-switch {
+    font-size: 28px;
+    margin-left: 10px;
+  }
+}
+
 /* for admin dashboard experience list */
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .admin-dashboard-activities-wrapper .table-list table {
@@ -2125,7 +2335,7 @@ input::-ms-clear {
     border-radius: 5px;
   }
   .admin-dashboard-activities-wrapper .table-list table tbody tr td {
-    height: 50px;
+    height: auto;
   }
   .admin-dashboard-activities-wrapper .table-list table tbody tr td:last-child {
     border-bottom: 0;
@@ -2148,13 +2358,14 @@ input::-ms-clear {
     content: "Email:  ";
     font-weight: bold;
   }
+
   .admin-dashboard-activities-wrapper
     .table-list
     table
     tbody
     tr
     td:nth-child(2) {
-    padding: 0 !important;
+    
   }
   .admin-dashboard-activities-wrapper
     .table-list
@@ -2166,6 +2377,7 @@ input::-ms-clear {
     p {
     padding: 1rem !important;
   }
+
   .admin-dashboard-activities-wrapper
     .table-list
     table
@@ -2640,6 +2852,7 @@ input::-ms-clear {
     td:nth-child(4) {
     padding: 0 !important;
   }
+
   .admin-dashboard-transactions-wrapper
     .table-list
     table
