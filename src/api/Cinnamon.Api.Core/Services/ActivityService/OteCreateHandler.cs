@@ -421,18 +421,21 @@ public class OteCreateHandler : IOteCreateHandler
                 if(onTheDay > recurringDate.LastDayOfMonth().Day)
                 {
                     generatedDates.Add(new DateItem {
-                        Date = recurringDate.Date,
+                        Date = recurringDate.LastDayOfMonth().Date,
                         DateStart = recurringDate.LastDayOfMonth().Date.Add(timeStart),
                         DateEnd = recurringDate.LastDayOfMonth().Date.Add(timeStart).Add(timeDuration)
                     });
                 }
                 else {
                     var dateStart = new DateTime(recurringDate.Year, recurringDate.Month, onTheDay);
-                    generatedDates.Add(new DateItem {
-                        Date = recurringDate.Date,
-                        DateStart = dateStart.Date.Add(timeStart),
-                        DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
-                    });
+                    if(dateStart.Date >= start.Date)
+                    {
+                        generatedDates.Add(new DateItem {
+                            Date = dateStart.Date,
+                            DateStart = dateStart.Date.Add(timeStart),
+                            DateEnd = dateStart.Date.Add(timeStart).Add(timeDuration)
+                        });
+                    }
                 }
                 recurringDate = recurringDate.AddMonths(monthsToSkip);
             }
