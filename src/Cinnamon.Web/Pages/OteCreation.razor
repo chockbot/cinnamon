@@ -787,8 +787,8 @@
 
     private async Task MovePrev()
     {
-        var (valid, field) = await CurrentFieldValid();
-        if(valid && field.HasPrevious && currentIndex > 0)
+        //var (valid, field) = await CurrentFieldValid();
+        if(currentIndex > 0)
         {
             SetActiveItem(--currentIndex);
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToTop");
