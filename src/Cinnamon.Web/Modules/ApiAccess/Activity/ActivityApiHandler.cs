@@ -1201,6 +1201,27 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/ActivityFeed")
+                .SetQueryParams(args)
+                .GetJsonAsync<ActivityFeedResult>();
+
+            return AppResult<ActivityFeedResult>.CreateSucceeded(result, "Successfully get activity feed.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ActivityFeedResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityFeedResult>.CreateFailed(ex, "An error occured when get activity feed.");
+        }
+    }
+
     public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
     {
         try
