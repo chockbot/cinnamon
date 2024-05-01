@@ -39,7 +39,7 @@
                                 @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
                                 {
                                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
-                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill announcement-btn">
                                             @item.ButtonLabel
                                         </a>
                                     </Column>
@@ -56,13 +56,13 @@
  <div class="top-section" style="position:relative;display:flex">
     <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="2500" ShowControls="false">
         <CarouselSlide Name="1">
-            <Image Source="images/landing-page-images/landing-activity-image.png" class="section-1-image" Text="Lights image" Display="Display.Block" Width="Width.Is100" />
+            <Image Source="images/landing-page-images/landing-activity-image.jpg" class="section-1-image" Text="Lights image"/>
         </CarouselSlide>
         <CarouselSlide Name="2">
-            <Image Source="images/landing-page-images/landing-event-image.jpg" class="section-1-image" Text="Keyboard image" Display="Display.Block" Width="Width.Is100" />
+            <Image Source="images/landing-page-images/landing-event-image.jpg" class="section-1-image" Text="Keyboard image"/>
         </CarouselSlide>
         <CarouselSlide Name="3">
-            <Image Source="images/landing-page-images/landing-research-image.jpg" class="section-1-image" Text="Road image" Display="Display.Block" Width="Width.Is100" />
+            <Image Source="images/landing-page-images/landing-research-image.jpg" class="section-1-image" Text="Road image" />
         </CarouselSlide>
     </Carousel>
      <div class="provider-section">
