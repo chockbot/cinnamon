@@ -365,7 +365,9 @@ LastName = r.Owner.LastName
         var originalCountPerPage = CountPerPage;
 
         CountPerPage = Int32.MaxValue;
-
+        
+    try
+    {
         await GetAllActivities(1);
 
         CountPerPage = originalCountPerPage;
@@ -394,9 +396,18 @@ LastName = r.Owner.LastName
                 var bytesBase64 = Convert.ToBase64String(bytes);
 
                 await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+                CountPerPage = originalCountPerPage;
+                StateHasChanged();
             }
         }
     }
+    finally
+    {
+        CountPerPage = originalCountPerPage;
+        await GetAllActivities(1);
+        StateHasChanged();
+    }
+}
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
