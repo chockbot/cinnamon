@@ -1200,7 +1200,6 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
         }
     }
-
     public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
     {
         try

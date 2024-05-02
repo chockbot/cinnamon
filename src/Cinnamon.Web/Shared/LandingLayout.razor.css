@@ -14,11 +14,15 @@
     font-weight: 700;
     background-color: transparent;
     margin-top: 0.5rem;
+    transition: transform .25s;
 }
 
     .btn-login:hover {
         color: #FFFFFF;
         background-color: #FFA942;
+    }
+    .btn-login:active {
+        transform: scale(.94);
     }
 
 .btn-help {
@@ -45,7 +49,11 @@
     margin-top: 1.2rem;
     cursor: pointer;
     text-decoration: none;
+    transition: transform .25s;
 }
+    .cinnamon-link:active {
+        transform: scale(.94);
+    }
 
     .cinnamon-link:hover {
         color: #FFA942;
@@ -65,6 +73,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+
 }
 
 main {
@@ -87,7 +96,7 @@ main {
     box-shadow: 0px 2px 12px 0px #343D4C80;
     position: sticky !important;
     top: 0;
-    z-index: 2000;
+    z-index: 1000;
 }
 
 .app-name {
@@ -96,11 +105,10 @@ main {
     font-size: 48px;
     text-decoration: none;
 }
-
-.img-icon-login {
-    width: 24px;
-    height: 24px;
-}
+    .img-icon-login {
+        width: 24px;
+        height: 24px;
+    }
 
 @media (min-width: 641px) {
     .page {
