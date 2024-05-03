@@ -146,8 +146,9 @@
         //Get payouts by Activity Provider
         var payout = await transactionApiHandler.GetPayoutsByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetPayoutsByProviderArgs
             {
-                Id = profile.Id,
-                DateFrom = startDate
+                Id       = profile.Id,
+                DateFrom = startDate,
+                Status   = 2
             }, Token);
         if (payout.Succeeded && payout.Result != null && payout.Result.IsSuccess)
         {
@@ -172,6 +173,7 @@
         await lineChart.Clear();
         await lineChart.AddDataSet(GetLineChartDataset(payoutData));
     }
+
     private LineChartDataset<Payouts> GetLineChartDataset(List<Payouts> dataset)
     {
         return new()

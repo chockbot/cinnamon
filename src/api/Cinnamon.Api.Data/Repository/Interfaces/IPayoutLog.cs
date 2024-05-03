@@ -5,5 +5,5 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 
 public interface IPayoutLog : IGenericEntity<PayoutLog> 
 {
-    Task<AppResult<IEnumerable<PayoutLog>>> GetPayoutByProvider(int? Id, DateTime? dateFrom);
+    Task<AppResult<IEnumerable<PayoutLog>>> GetPayoutByProvider(int? Id, DateTime? dateFrom, int Status);
 }

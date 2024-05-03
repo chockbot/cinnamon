@@ -568,13 +568,19 @@
                 </div>
             </div>
             <div class="row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                <div style="margin-bottom:20px;">
-                    <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                        <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
+                <div class="d-flex align-items-baseline justify-content-between">
+                    <div class="mb-5">
+                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
+                        </div>
+                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                            <label class="heading">Explore More</label>
+                        </div>
                     </div>
-                    <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                        <label class="heading">Explore More</label>
-                    </div>
+                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
+                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
+                        <span class="font-20 m-font-14 font-weight-700">Filter</span>
+                    </Button>
                 </div>
                 @foreach (var act in activityFeeds)
                 {
@@ -716,6 +722,67 @@
 
 <div id="observerTarget"></div>
 
+<Modal id="explore-filter-modal" @ref="filterModal">
+    <ModalContent Centered>
+        <ModalHeader Border="Border.Is0" class="font-24 color-black-100 font-weight-700 pb-0 m-font-16">Filter by</ModalHeader>
+        <ModalBody class="color-black-100 pt-2">
+            <div id="filter-by-type">
+                <label class="font-20 m-font-14">Type</label>
+                <div class="d-flex mt-3">
+                    <Button Clicked="() => filters.EventType = null" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == null ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
+                        <span class="font-16 m-font-14">All</span>
+                    </Button>
+                    <Button Clicked="() => filters.EventType = 2" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == 2 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
+                        <span class="font-16 m-font-14">Online</span>
+                    </Button>
+                    <Button Clicked="() => filters.EventType = 1" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
+                        <img class="me-2 filter-type-img" 
+                            src='@(filters.EventType == 1 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
+                        <span class="font-16 m-font-14">In-person</span>
+                    </Button>
+                </div>
+            </div>
+            <div id="filter-by-rating" class="mt-4">
+                <label class="font-20 m-font-14">Rating</label>
+                <div class="d-flex mt-3 flex-wrap">
+                    <Button Clicked="() => filters.StarReview = 5" class="@StarReviewBtnClass(5)">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">5 stars</span>
+                    </Button>
+                    <Button Clicked="() => filters.StarReview = 4" class="@StarReviewBtnClass(4)">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">4 stars & up</span>
+                    </Button>
+                    <Button Clicked="() => filters.StarReview = 3" class="@StarReviewBtnClass(3)">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">3 stars & up</span>
+                    </Button>
+                    <Button Clicked="() => filters.StarReview = 2" class="@StarReviewBtnClass(2)">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">2 stars & up</span>
+                    </Button>
+                    <Button Clicked="() => filters.StarReview = 1" class="@StarReviewBtnClass(1)">
+                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
+                        <span class="font-16 text-capitalize m-font-14">1 stars & up</span>
+                    </Button>
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <Button Clicked="CloseFilter" Border="Border.Is1" class="font-16 font-weight-700 px-4 m-font-14">
+                Cancel
+            </Button>
+            <Button Clicked="CustomFilters" class="font-16 bg-orange-100 color-white-100 font-weight-700 hover-color-white px-4 m-font-14">
+                Apply
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 <ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" IsFBLogin=isLoginFB />
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
@@ -795,6 +862,9 @@
 
     private List<ActivityFeed> activityFeeds = new();
     private List<ActivityFeed> popularFeeds = new();
+    private Modal? filterModal;
+
+    private Filters filters = new ();
 
     protected override async Task OnInitializedAsync()
     {
@@ -1126,7 +1196,9 @@
             CategoryId = experienceCategoryId,
             Search = searchValue,
             Skip = pageIndex,
-            Take = itemsPerPage
+            Take = itemsPerPage,
+            ExperienceType = filters.EventType,
+            StarReview = filters.StarReview
         });
 
         if (activityFeedRes.Succeeded && activityFeedRes.Result != null && activityFeedRes.Result.IsSuccess)
@@ -1155,9 +1227,9 @@
                 if (!isFromScroll)
                     activityFeeds = new();
             }
-
-            isLoading = false;
         }
+
+        isLoading = false;
     }
 
     private async Task FetchPopularActivities(int? categoryId)
@@ -1475,37 +1547,47 @@
         }
         return url;
     }
+
     public int RoundDownToNearestMultiple(int number)
     {
         int roundingFactor = IdentifyRoundingFactor(number);
         return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
     }
+
     public int IdentifyRoundingFactor(int number)
     {
         return (Math.Abs(number) >= 1000) ? 1000 :
                (Math.Abs(number) >= 100)  ? 100 :
                                             10;
     }
-    private class PopularActivitiy 
+
+    public async Task OpenFilter() => await filterModal?.Show();
+
+    public async Task CloseFilter() => await filterModal.Close(CloseReason.UserClosing);
+
+    public string StarReviewBtnClass(int star)
     {
-        public int Id {get; set;}
-        public int StudentCount {get; set;}
-        public int ReviewCount {get; set;}
-        public decimal Rating {get; set;}
-        public int OngoingStudentCount {get; set;}
-        public string Title {get ;set;} = string.Empty;
-        public int MakerId {get; set;}
-        public bool IsNew {get; set;}
-        public string Handler {get; set;} = string.Empty;
-        public int ExperienceTypeId {get; set;}
-        public string Price {get; set;} = string.Empty;
-        public string CityName {get; set;} = string.Empty;
-        public string PinnedLocation { get; set; } = string.Empty;
-        public string RegionName {get; set;} = string.Empty;
-        public string Region {get; set;} = string.Empty;
-        public string ImageSrc {get; set;} = string.Empty;
-        public bool IsFavorite {get; set;} = false;
-        public int ExperienceCreationTypeId {get; set;}
-        public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
+        if(star == filters.StarReview)
+        {
+            return "selected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+        }
+        
+        return "unselected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+    }
+
+    public async Task CustomFilters()
+    {
+        experienceCategoryId = null;
+        pageIndex = 0;
+        itemsPerPage = 20;
+
+        await Task.WhenAll(new Task[] { FetchActivities(false)});
+        await CloseFilter();
+    }
+
+    private class Filters 
+    {
+        public int? EventType {get; set;}
+        public int? StarReview {get; set;}
     }
 }

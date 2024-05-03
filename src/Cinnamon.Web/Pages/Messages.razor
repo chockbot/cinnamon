@@ -67,7 +67,7 @@
                     <table class="tbl-members">
                         @if (formerChatMembers.Count > 0)
                         {
-                            @foreach (var item in formerChatMembers.Where(c => c.FromFirstName.ToLower().Contains(addMemberSearchValue) || c.FromLastName.ToLower().Contains(addMemberSearchValue)).ToList())
+                            @foreach (var item in FileteredFormerChatMembers)
                             {
                                 <tr>
                                     <td style="width: 10%;">
@@ -146,7 +146,7 @@
         <div class="chatroom-section">
             @if (chatRooms.Count > 0)
             {
-                foreach (var chatRoom in @chatRooms.Where(c => c.FromFirstName.ToLower().Contains(searchValue) || c.FromLastName.ToLower().Contains(searchValue) || c.ChatName.ToLower().Contains(searchValue)).ToList())
+                foreach (var chatRoom in FilteredChatRooms)
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
                     <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
@@ -1608,5 +1608,32 @@
                 });
             }
         }
+    }
+
+    private IEnumerable<ChatRoom> FilteredChatRooms 
+    {
+        get 
+        {
+            if(chatRooms is null || chatRooms.Count == 0) return Enumerable.Empty<ChatRoom>();
+            
+            var trimmedSearch = searchValue.Trim().ToLower();
+            return chatRooms.Where(c => 
+                        c.FromFirstName.ToLower().Contains(trimmedSearch) || 
+                        c.FromLastName.ToLower().Contains(trimmedSearch) ||
+                        c.ChatName.ToLower().Contains(trimmedSearch));
+        }
+    }
+
+    private IEnumerable<ChatMember> FileteredFormerChatMembers
+    {
+        get 
+        {
+            if(formerChatMembers is null || formerChatMembers.Count == 0) return Enumerable.Empty<ChatMember>();
+            
+            var trimmedSearch = addMemberSearchValue.Trim().ToLower();
+            return formerChatMembers.Where(c => 
+                        c.FromFirstName.ToLower().Contains(trimmedSearch) ||
+                        c.FromLastName.ToLower().Contains(trimmedSearch) );
+        }    
     }
 }

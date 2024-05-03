@@ -20,6 +20,7 @@ public class OteCustomerPayedNotificationArgs : IInteractor
     public decimal HandlingFee {get; set;}
     public decimal TotalAmount {get; set;}
     public string TicketDetailsLink {get; set;}
+    public decimal? Discount {get; set;}
 
     public class TicketDetails 
     {

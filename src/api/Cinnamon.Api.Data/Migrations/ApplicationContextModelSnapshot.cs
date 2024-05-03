@@ -518,6 +518,8 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Ongoing");
 
+                    b.HasIndex("ReviewAccumulated");
+
                     b.HasIndex("TotalParticipants");
 
                     b.HasIndex("Ongoing", "Completed");

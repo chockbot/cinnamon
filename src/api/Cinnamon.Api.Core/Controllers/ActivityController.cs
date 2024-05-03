@@ -71,6 +71,7 @@ public class ActivityController : ControllerBase
     private readonly IOteVerificationHandler oteVerificationHandler;
     private readonly IDeleteAddOnsHandler deleteAddOnsHandler;
     private readonly IDeleteAddOnHandler deleteAddOnHandler;
+    private readonly IDeleteTicketHandler deleteTicketHandler;
     private readonly IGetOtePerDayHandler getOtePerDayHandler;
     private readonly IGenerateEventSharedLinkHandler generateEventSharedLinkHandler;
     private readonly IOteValidateSharedLinkHandler oteValidateSharedLinkHandler;
@@ -103,7 +104,7 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, IDeleteTicketHandler deleteTicketHandler)
     {
         _logger = logger;
 
@@ -162,6 +163,7 @@ public class ActivityController : ControllerBase
         this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
         this.deleteOnlineEventHandler = deleteOnlineEventHandler;
         this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
+        this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
     }
 
@@ -2598,6 +2600,7 @@ public class ActivityController : ControllerBase
                     Description = activity.Description,
                     EventName = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
+                    CategoryId = activity.CategoryId,
                     ExperienceTypeId = activity.ExperienceTypeId,
                     HouseNo = activity.HouseNo ?? string.Empty,
                     IsPublished = activity.IsPublished,
@@ -2950,7 +2953,8 @@ public class ActivityController : ControllerBase
                         Handler = e.Handler,
                         PinnedLocation = e.PinnedLocation,
                         RegionName = e.RegionName,
-                        Title = e.Title
+                        Title = e.Title,
+                        ForceDisable = e.ForceDisable
                     };
                 })
             });
@@ -3121,6 +3125,36 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [Route("DeleteTicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteTicketById([FromBody] DeleteTicketArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteTicketHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteTicketArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteTicketResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    
     [AllowAnonymous]
     [Route("ActivityFeed")]
     [HttpGet]
@@ -3133,7 +3167,9 @@ public class ActivityController : ControllerBase
                 CategoryId = args.CategoryId,
                 Search = args.Search,
                 Skip = args.Skip,
-                Take = args.Take
+                Take = args.Take,
+                ExperienceType = args.ExperienceType,
+                StarReview = args.StarReview
             });
 
             if (!result.Succeeded || result.Result is null)

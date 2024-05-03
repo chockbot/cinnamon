@@ -1,43 +1,59 @@
-﻿.footer {
+﻿/* Colors */
+:colors {
+    --primary: #ffa942;
+}
+
+
+.footer {
     height: 128px;
     width: 100%;
     margin-top: 60px;
-    margin-bottom: 120px;
-    background-color: white;
+    margin-bottom: 60px;
+    background-color: none;
     position: relative;
-}
-
-.footer-content {
-    text-align: left;
+    padding: 0;
+  }
+  
+  .footer-content {
+    text-align: center;
+    position: absolute;
     width: 100%;
     top: 10%;
-}
-.footer-appname {
-    font-family: 'Backline';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 58px;
-    line-height: 103px;
-    color: #FFA942;
-}
+    padding: 0;
+  }
+  
+  .footer-appname {
+    font-family: "Backline";
+    font-size: 1.8rem;
+  }
+  
+  .footer-text {
+    font-family: "Inter";
+    font-size: 1.1rem;
+  }
+  
+  .btn-primary {
+    border-color: #ffa942;
+  }
+  
+  .social-media-container {
+    margin: 10px 0;
+  }
 
-.footer-text {
-    font-family: 'Lora';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 20px;
-    color: #000000;
-}
 
-a{
-    text-decoration: none;
-    color: black;
-}
-a:hover {
-    color: var(--primary);
-}
 @media screen and (max-width: 767px) and (orientation: portrait) {
+    .footer {
+        margin-top: 20px;
+        margin-bottom: 50px;
+    }
+
+    .footer-content {
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        top: 10%;
+    }
+
     .footer-appname {
         font-family: 'Backline';
         font-size: 5vw;
@@ -45,9 +61,10 @@ a:hover {
 
     .footer-text {
         font-family: 'Inter';
-        font-size: 2.3vw;
+        font-size: 2vw;
     }
 }
+
 @media screen and (min-width: 768px) and (max-width: 1023px){
     .footer-appname {
         font-family: 'Backline';
