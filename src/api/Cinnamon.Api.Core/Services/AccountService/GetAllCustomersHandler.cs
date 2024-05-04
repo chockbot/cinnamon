@@ -34,7 +34,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
                 SearchValue = args.SearchValue,
                 CountPerPage = args.CountPerPage,
                 PageIndex = args.PageIndex,
-                IsOfficialPartner = args.IsOfficialPartner
+                IsOfficialPartner = args.IsOfficialPartner,
+                HasVerification = args.HasVerification
             });
             if (!result.Succeeded || result.Result == null)
             {
