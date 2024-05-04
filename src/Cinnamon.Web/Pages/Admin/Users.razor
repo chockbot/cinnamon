@@ -219,8 +219,6 @@
         }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         Pagination = result.Result.Pagination;
-
-        StateHasChanged();
     }
 
     private string ShowMenu()
