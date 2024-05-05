@@ -548,8 +548,8 @@
                         {
                             Description = p.Description,
                             IsAbsorbFees = p.AbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
+                            MaxSlots = p.MaxSlots ?? 0,
+                            Price = p.Price ?? 0m,
                             Name = p.Name
                         };
                     }),
@@ -642,8 +642,8 @@
                             Description = p.Description,
                             Id = p.Id,
                             IsAbsorbFees = p.AbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
+                            MaxSlots = p.MaxSlots ?? 0,
+                            Price = p.Price ?? 0m,
                             Name = p.Name
                         };
                     }),
