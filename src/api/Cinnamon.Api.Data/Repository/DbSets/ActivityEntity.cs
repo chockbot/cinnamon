@@ -418,17 +418,47 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                         }
                     }
 
-                    // update ote dates from new dates
+                    // update ote dates from new dates and merge existing
                     if(oteReschedules is not null)
                     {
+                        Dictionary<DateTime, OteDate> dates = new();
+
                         foreach (var schedule in oteReschedules)
                         {
                             var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Date == schedule.OldDate);
-                            if(oteDate is not null)
+                            if(oteDate is null) continue;
+
+                            if(!dates.ContainsKey(schedule.NewDate.Date))
                             {
                                 oteDate.Date = schedule.NewDate.SetKindUtc();
                                 oteDate.DateStart = schedule.DateStart.SetKindUtc();
                                 oteDate.DateEnd = schedule.DateEnd.SetKindUtc();
+
+                                dates.Add(schedule.NewDate.Date, oteDate);
+                            }
+                            else 
+                            {
+                                var existingTickets = await this.applicationContext.OteTickets
+                                                                    .Where(t => t.OteDateId == oteDate.Id).ToListAsync();
+
+                                var modifiedOteDate = dates[schedule.NewDate.Date];
+
+                                foreach(var ticket in existingTickets)
+                                {
+                                    var ticketPricing = oteDate.OteSchedulePricing.First(p => p.Id == ticket.OteSchedulePricingId);
+                                    var ticketPricingGrp = result.OteSchedule.OteSchedulePricingGroups.First(p => p.Id == ticketPricing.OteSchedulePricingGroupId);
+
+                                    var newTicketPricing = modifiedOteDate.OteSchedulePricing.First(p => p.OteSchedulePricingGroupId == ticketPricingGrp.Id);
+
+                                    ticket.OteSchedulePricingId = newTicketPricing.Id;
+                                    ticket.OteDateId = modifiedOteDate.Id;
+
+                                    newTicketPricing.TicketSold += 1;
+                                }
+
+                                var pricingSchedsToDelete = result.OteSchedule.OteSchedulePricing.Where(p => p.OteDateId == oteDate.Id);
+                                pricingSchedsToDelete.ToList().ForEach(p => applicationContext.OteSchedulePricings.Remove(p));
+                                result.OteSchedule.OteDates.Remove(oteDate);
                             }
                         }
                     }

@@ -7,12 +7,6 @@
 <section class="ote-summary-wrapper">
     @if(Summary is not null)
     {
-        var every = Summary.PricingData.DurationEvery ?? 0;
-        var dateStart = Summary.PricingData.DurationStart ?? DateTime.Now;
-        var dateEnd = Summary.PricingData.DurationEnd ?? DateTime.Now;
-        var timeStart = Summary.PricingData.DateFrom.TimeOfDay;
-        var timeDuration = Summary.PricingData.DateTo - Summary.PricingData.DateFrom;
-
         <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
             <div>
                 <h3 class="text-uppercase font-24 font-weight-700 color-orange-100 mb-2">@Summary.EventData.Name</h3>
