@@ -1285,7 +1285,8 @@ public class AccountController : ControllerBase
                 SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
                 PageIndex = args.PageIndex,
-                IsOfficialPartner = args.IsOfficialPartner
+                IsOfficialPartner = args.IsOfficialPartner,
+                HasVerification = args.HasVerification
             });
 
             if (!result.Succeeded || result.Result == null)

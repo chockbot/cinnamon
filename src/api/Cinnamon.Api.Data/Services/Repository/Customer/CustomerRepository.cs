@@ -221,12 +221,16 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified,string searchValue, 
-        int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false)
+        int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false, bool? hasVerification = false)
     {
         try
         {
             Expression<Func<Entities.Customer,bool>> filter = 
                 a => /*(isVerified.HasValue ? a.IsVerifiedBadge == 2 : true) &&*/
+                    (hasVerification.HasValue ? 
+                        (hasVerification.Value ? (a.BackIdImagePath != null && a.FrontIdImagePath != null) : 
+                            (a.BackIdImagePath == null && a.FrontIdImagePath == null) ) : 
+                        true) &&
                     (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower())) &&
                     (isOfficialPartner.HasValue && isOfficialPartner.Value ? a.IsOfficialPartner == true : true);
 

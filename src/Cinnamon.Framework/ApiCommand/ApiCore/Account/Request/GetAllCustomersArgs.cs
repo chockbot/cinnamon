@@ -14,5 +14,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Account.Request
         public string? HandlerLike { get; set; }
         public string? SearchValue { get; set; }
         public bool? IsOfficialPartner {get; set;}
+        public bool? HasVerification {get; set;}
     }
 }

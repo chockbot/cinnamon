@@ -10,5 +10,6 @@ namespace Cinnamon.Api.Core.Services.AccountService.Interactors
         public string? HandlerLike { get; set; }
         public string SearchValue { get; set; }
         public bool? IsOfficialPartner {get; set;}
+        public bool? HasVerification {get; set;}
     }
 }
