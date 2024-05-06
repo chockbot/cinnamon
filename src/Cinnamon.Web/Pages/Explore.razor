@@ -315,7 +315,7 @@
                             </div>
                         }
                     </div>
-                    <div class="swiper-scrollbar"></div>
+                    <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
             </div>
 
@@ -931,7 +931,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await LoadWelcomeDialog();
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
         await InitializeSwiper();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);

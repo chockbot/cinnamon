@@ -7,7 +7,8 @@ export function initSwiper(selector, scrollbarSelector) {
       enabled: true,
     },
     scrollbar: {
-      el: ".swiper-scrollbar",
+      el: scrollbarSelector,
+      hide: false,
     },
   });
 }
