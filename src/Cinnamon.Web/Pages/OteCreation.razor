@@ -670,7 +670,8 @@
                 }) : null,
                 OteReschedules = schedule.BookedDates is not null ? schedule.BookedDates.Select(s => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateReschedule {
                     NewDate = s.NewDate,
-                    OldDate = s.Date
+                    OldDate = s.Date,
+                    Id = s.Id
                 }) : null
             }, token);
 
@@ -769,7 +770,8 @@
             }).ToList(),
             BookedDates = bookedDatesRes.Result.Result.Select(d => new OtePricing.ModelData.BookedDate {
                 BookedCount = d.BookCount,
-                Date = d.Date
+                Date = d.Date,
+                Id = d.OteDateId
             })
         });
         scheduleModel.EventDurationTimeStart = ote.ScheduleFrom.TimeOfDay;
