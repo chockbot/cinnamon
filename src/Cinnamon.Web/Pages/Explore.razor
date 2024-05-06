@@ -299,27 +299,23 @@
     </div>
     <!--Section 1-->
     <div class="container">
-        <div class="section-1 row">
+        <div class="section-1">
             <div class="categories border-bottom">
-                <div class="row d-flex justify-content-start">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 categories-container">
-                        <div class="schedule-swiper">
-                            <div class="swiper-wrapper text-center">
-                                @foreach (var category in categories)
-                                {
-                                    <div class="swiper-slide category">
-                                        <div>
-                                        <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
-                                            <img src=@category.IconPath class="img-icon text-center">
-                                            <p class="card-title">@category.Category</p>
-                                        </a>
-                                        </div>
-                                    </div>
-                                }
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper text-center">
+                        @foreach (var category in categories)
+                        {
+                            <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
+                                        <img src=@category.IconPath class="img-icon text-center">
+                                        <p class="card-title">@category.Category</p>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="swiper-scrollbar"></div>
-                        </div>
+                        }
                     </div>
+                    <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
             </div>
 
@@ -935,7 +931,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await LoadWelcomeDialog();
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
         await InitializeSwiper();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
