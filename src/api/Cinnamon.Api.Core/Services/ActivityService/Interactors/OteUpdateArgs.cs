@@ -105,6 +105,7 @@ public class OteUpdateArgs : IInteractor
 
     public class OteReschedule 
     {
+        public int Id {get; set;}
         public DateTime OldDate {get; set;}
         public DateTime NewDate {get; set;}
         public DateTime DateStart {get; set;}

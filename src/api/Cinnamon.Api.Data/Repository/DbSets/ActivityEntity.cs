@@ -424,7 +424,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
                         foreach (var schedule in oteReschedules)
                         {
-                            var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Date == schedule.OldDate);
+                            var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Id == schedule.Id);
                             if(oteDate is null) continue;
 
                             if(!dates.ContainsKey(schedule.NewDate.Date))

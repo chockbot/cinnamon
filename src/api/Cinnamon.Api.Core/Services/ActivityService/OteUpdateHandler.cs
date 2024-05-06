@@ -256,7 +256,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         DateEnd = schedule.NewDate.Add(timeStart).Add(timeDuration),
                         DateStart = schedule.NewDate.Add(timeStart),
                         NewDate = schedule.NewDate,
-                        OldDate = schedule.OldDate
+                        OldDate = schedule.OldDate,
+                        Id = schedule.Id
                     };
                     reschedules.Add(sched);
                 }
@@ -339,7 +340,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                     DateEnd = s.DateEnd,
                     DateStart = s.DateStart,
                     NewDate = s.NewDate,
-                    OldDate = s.OldDate
+                    OldDate = s.OldDate,
+                    Id = s.Id
                 }).ToList() : null
             };
             var updateOte = await activityData.UpdateOteActivity(entity);

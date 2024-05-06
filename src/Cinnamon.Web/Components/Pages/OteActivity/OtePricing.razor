@@ -958,7 +958,8 @@
             data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
                 BookedCount = d.BookedCount,
                 Date = d.OldDate,
-                NewDate = d.NewDate
+                NewDate = d.NewDate,
+                Id = d.Id
             });
         }
         return data;
@@ -989,7 +990,8 @@
                 dateReschedules.Add(new DateReschedule {
                     BookedCount = item.BookedCount,
                     NewDate = item.Date,
-                    OldDate = item.Date
+                    OldDate = item.Date,
+                    Id = item.Id
                 });
             }
         }
@@ -1302,6 +1304,7 @@
 
         public class BookedDate 
         {
+            public int Id {get; set;}
             public DateTime Date {get; set;}
             public DateTime NewDate {get; set;}
             public int BookedCount {get; set;}
@@ -1480,6 +1483,8 @@
 
     private record DateReschedule 
     {
+        public int Id {get; set;}
+
         [Required]
         public DateTime OldDate {get; set;}
 
