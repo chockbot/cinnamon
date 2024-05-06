@@ -1,4 +1,52 @@
-﻿input:focus {
+﻿* {
+	border: red;
+	border-width: 1px;
+	border-style: solid;
+}
+/* mobile footer */
+.mobile-footer {
+    display: none;
+}
+
+.mobile-footer {
+    height: 128px;
+    width: 100%;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    background-color: none;
+    position: relative;
+    padding: 0;
+}
+
+.mobile-footer-content {
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    top: 10%;
+    padding: 0;
+}
+
+.mobile-footer-appname {
+    font-family: "Backline";
+    font-size: 1.8rem;
+}
+
+.mobile-footer-text {
+    font-family: "Inter";
+    font-size: 1.1rem;
+}
+
+.btn-primary {
+    border-color: #ffa942;
+}
+
+.social-media-container-mobile {
+    margin: 10px 0;
+}
+
+
+/* end of mobile footer*/
+input:focus {
 	outline: none !important;
 	box-shadow: none !important;
 }
@@ -661,7 +709,7 @@ img.search_icon {
 }
 
 .footer-text {
-	font-family: Montserrat;
+	font-family: Nunito;
 	font-size: 16px;
 	font-weight: 400;
 	color: #343D4C;
@@ -1415,6 +1463,11 @@ img.search_icon {
 }
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
+
+	.mobile-only {
+        display: block;
+    }
+
 	.about_us_title {
 		font-size: 24px;
 		margin-left: 4vw;
@@ -2522,6 +2575,38 @@ img.search_icon {
 }
 
 @media screen and (max-width: 767.98px) {
+	.mobile-footer {
+        display: block;
+    }
+
+	.mobile-footer {
+        margin-top: 20px;
+        margin-bottom: 0px;
+		background-color:  #F3F6FC;
+    }
+
+    .mobile-footer-content {
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        top: 10%;
+		background-color:  #F3F6FC;
+    }
+
+    .mobile-footer-appname {
+        font-family: 'Backline';
+        font-size: 8vw;
+    }
+
+    .mobile-footer-text {
+        font-family: 'Nunito';
+        font-size: 4vw;
+		
+    }
+
+	.desktop-only {
+		display: none;
+	}
 	.landing-lg {
 		display: none;
 	}
@@ -3821,3 +3906,4 @@ img.search_icon {
 	color: #279BE1;
 	font-weight: 100;
 }
+
