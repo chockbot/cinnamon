@@ -1060,50 +1060,15 @@
 
         if (currentIndex == 1)
         {
-            if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
-            {
-                await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
-                return;
-            }
-            else
-            {
-                isCreationOverviewComponentValid = true;
-            }
+            isCreationOverviewComponentValid = true;
         }
         else if (currentIndex == 2)
         {
-            if (Model.HasError = !locationComponent.IsAllFieldsValidated())
-            {
-                await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
-                return;
-            }
-            else
-            {
-                isLocationComponentValid = true;
-            }
+            isLocationComponentValid = true;
         }
         else if (currentIndex == 3)
         {
-            if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
-            {
-                if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
-                {
-                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                    return;
-                };
-            }
-            else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
-            {
-                if (Model.HasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
-                {
-                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                    return;
-                };
-            }
-            else
-            {
-                isPricingAndScheduleComponentValid = true;
-            }
+            isPricingAndScheduleComponentValid = true;
         }
         else if (currentIndex == 4)
         {
@@ -1111,17 +1076,8 @@
         }
         else if (currentIndex == 5)
         {
-            if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
-            {
-                await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
-                return;
-            }
-            else
-            {
-                isGalleryComponentValid = true;
-            }
+            isGalleryComponentValid = true;
         }
-
         currentIndex--;
 
         await Task.Delay(100);

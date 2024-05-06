@@ -26,12 +26,23 @@ should have Available dates, Selected Dates, *@
             <div class="grid-item" @key="item">
                 @if(!item.Empty)
                 {
-                    <span class="@DayClass(item.Selected, item.StrikeOut, item.Date)" @onclick="() => OnDayClick(item)">
-                        @NumberString(item.Date.Day)
-                    </span>
+                    if (item.PastDate)
+                    {
+                        <Tooltip Text="Sorry, you cannot purchase tickets for past events." Multiline=true>
+                        <span class="@DayClass(item.Selected, item.PastDate, item.StrikeOut, item.Date)" @onclick="() => OnDayClick(item)">
+                            @NumberString(item.Date.Day)
+                        </span>
+                        </Tooltip>
+                    }
+                    else
+                    {
+                        <span class="@DayClass(item.Selected, item.PastDate, item.StrikeOut, item.Date)" @onclick="() => OnDayClick(item)">
+                            @NumberString(item.Date.Day)
+                        </span>
+                    }
                 }
                 else {
-                    <span class="@DayClass(false)"></span>
+                    <span class="@DayClass(false, false)"></span>
                 }
             </div>
         }
@@ -85,24 +96,31 @@ should have Available dates, Selected Dates, *@
             }
             else
             {
-                var date = new DateTime(now.Year, now.Month, i - skipCount);
+                var currentDateTime = DateTime.UtcNow;
+                var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
                 var selected = SelectedDates.Any(a => a.Date == date.Date);
+                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a.Date <= currentDateTime);
                 calendarItems.Add(new CalendarItem {
                     Empty = false,
                     Date = date,
-                    Selected = selected,
-                    StrikeOut = StrikeOutNotSelected && !selected
+                    Selected = selected && !pastDate,
+                    StrikeOut = StrikeOutNotSelected && !selected,
+                    PastDate = pastDate
                 });
             }
         }
     }
 
-    private string DayClass(bool selected, bool strikeOut = false, DateTime? date = null)
+    private string DayClass(bool selected, bool pastdate, bool strikeOut = false, DateTime? date = null)
     {
         string result = "day prevent-select";
-        if(selected)
+        if(selected && !pastdate)
         {
             result += $" selected rounded-circle";
+        }
+        if (pastdate)
+        {
+            result += $" selected rounded-circle strike-out";
         }
         if(strikeOut)
         {
@@ -134,6 +152,10 @@ should have Available dates, Selected Dates, *@
     private async Task OnDayClick(CalendarItem item)
     {
         if (item.StrikeOut) // Check if the date is struck out
+        {
+            return; // Exit early if the date is struck out
+        }
+        if (item.PastDate)
         {
             return; // Exit early if the date is struck out
         }
@@ -209,5 +231,6 @@ should have Available dates, Selected Dates, *@
         public bool Empty {get; set;}
         public bool Selected {get; set;}
         public bool StrikeOut {get; set;}
+        public bool PastDate { get; set; }
     }
 }

@@ -443,7 +443,7 @@ public class ActivityController : ControllerBase
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
-                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
+                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, args.Activity.EventTicketLimit ,
                 dateOverrides, onlineEvent, args.Activity.CategoryId);
             
             if(!result.Succeeded || result.Result is null)
@@ -493,12 +493,40 @@ public class ActivityController : ControllerBase
                 };
             }).ToList() : null;
 
+            var dates = args.Dates.Select(d => {
+                return new OteScheduleDateDTO
+                {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart,
+                };
+            }).ToList();
+
+            var dateOverrides = args.DateOverrides is not null ? args.DateOverrides.Select(d => {
+                return new OteDateOverrideDTO
+                {
+                    Date = d.Date,
+                    DateEnd = d.DateEnd,
+                    DateStart = d.DateStart
+                };
+            }).ToList() : null;
+
+            var oteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new OteRescheduleDTO {
+                DateEnd = s.DateEnd,
+                DateStart = s.DateStart,
+                NewDate = s.NewDate,
+                OldDate = s.OldDate
+            }).ToList() : null;
+
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
                 args.Activity.BarangayCode ?? string.Empty, args.Activity.BarangayName ?? string.Empty,
                 args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
-                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,onlineEvents);
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon, args.Activity.EventTicketLimit,
+                args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
+                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
+                dateOverrides, onlineEvents, args.RecreateSchedule, oteReschedules);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -672,6 +700,26 @@ public class ActivityController : ControllerBase
             return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("DeleteTicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.DeleteTicket(args.Id);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("ActivityFeed")]
     [HttpGet]
@@ -715,24 +763,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-    [Route("DeleteTicket")]
-    [HttpPost]
-    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
+
+    [Route("OteAlreadyBooked/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBooked(int activityId)
     {
         try
         {
-            var result = await activityRepository.DeleteTicket(args.Id);
-            if (!result.Succeeded || !result.Result)
+            var result = await activityRepository.OteAlreadyBooked(activityId);
+            if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
+            return new JsonResult(new OteAlreadyBookedResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

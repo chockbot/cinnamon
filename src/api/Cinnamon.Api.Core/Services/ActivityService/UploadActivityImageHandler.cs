@@ -14,14 +14,17 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
     private readonly IUploadAzureBlob uploadAzureBlob;
     private readonly IGetOwnedActivityHandler getOwnedActivityHandler;
     private readonly IActivityImagesData activityImagesData;
+    private readonly IBatchSummaryUpdateHandler batchSummaryUpdateHandler;
 
     public UploadActivityImageHandler(IDeleteAzureBlob deleteAzureBlob, IUploadAzureBlob uploadAzureBlob,
-        IGetOwnedActivityHandler getOwnedActivityHandler, IActivityImagesData activityImagesData)
+        IGetOwnedActivityHandler getOwnedActivityHandler, IActivityImagesData activityImagesData,
+        IBatchSummaryUpdateHandler batchSummaryUpdateHandler)
     {
         this.deleteAzureBlob = deleteAzureBlob;
         this.uploadAzureBlob = uploadAzureBlob;
         this.getOwnedActivityHandler = getOwnedActivityHandler;
         this.activityImagesData = activityImagesData;
+        this.batchSummaryUpdateHandler = batchSummaryUpdateHandler;
     }
 
     public AppResult<UploadActivityImageResult> Execute(UploadActivityImageArgs args)
@@ -136,6 +139,9 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                     new ApplicationException(saveImageSrc.Result.ErrorInfo?.Message), "An error occured in UploadActivityImageHandler");
             }
             var savedImage = saveImageSrc.Result.Result;
+
+            // run update batch to update activity summary, no need to check if there is an error
+            var batchUpdateRes = await batchSummaryUpdateHandler.ExecuteAsync(new BatchSummaryUpdateArgs {});
 
             // delete previous images to azure blob and don't check if successful or not
             var deleteBlob = await deleteAzureBlob.ExecuteAsync(new AzureDeleteFilesArgs {

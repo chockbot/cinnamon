@@ -79,6 +79,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
+    private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -104,7 +105,8 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, IDeleteTicketHandler deleteTicketHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IDeleteTicketHandler deleteTicketHandler,
+        IActivityFeedHandler activityFeedHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
     {
         _logger = logger;
 
@@ -165,6 +167,7 @@ public class ActivityController : ControllerBase
         this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
         this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
+        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
     }
 
     [Route("CreateActivity")]
@@ -2624,6 +2627,7 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2697,7 +2701,21 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
+
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit,
+                   
+                    EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
@@ -2709,6 +2727,13 @@ public class ActivityController : ControllerBase
                         Name = p.Name
                     };
                 }),
+                DateOverrides = args.DateOverrides is not null ?
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteUpdateArgs.DateOverride
+                    {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    }) : null,
                 OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
                     {
@@ -2718,7 +2743,11 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     };
-                }): null
+                }): null,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule {
+                    OldDate = s.OldDate,
+                    NewDate = s.NewDate
+                }) : null
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -3125,6 +3154,7 @@ public class ActivityController : ControllerBase
         }
     }
 
+
     [Route("DeleteTicket")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status200OK)]
@@ -3154,7 +3184,8 @@ public class ActivityController : ControllerBase
             return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-    
+
+
     [AllowAnonymous]
     [Route("ActivityFeed")]
     [HttpGet]
@@ -3188,6 +3219,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteAlreadyBookedDates/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedDatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBookedDates(int activityId)
+    {
+        try
+        {
+            var result = await oteAlreadyBookedHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteAlreadyBookedArgs {
+                ActivityId = activityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.OteAlreadyBookedDTO>>(result.Result.OteAlreadyBookedItems);
+
+            return new JsonResult(new OteAlreadyBookedDatesResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

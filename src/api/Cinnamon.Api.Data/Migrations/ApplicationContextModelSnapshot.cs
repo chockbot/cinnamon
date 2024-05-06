@@ -2058,6 +2058,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("EventTicketLimit")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ExtraOptions")
                         .IsRequired()
                         .HasColumnType("text");

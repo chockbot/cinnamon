@@ -158,6 +158,7 @@
                     </PaginationLink>
                 </PaginationItem>
             </Pagination>
+             <ViewImageModal @ref="viewImageModal"></ViewImageModal>
         </div>
     </div>
 </section>
@@ -165,6 +166,8 @@
 @code {
     public bool clickButton { get; set; }
     private bool? hasVerificationRequest { get; set; }
+
+    private int CountPerPage { get; set; } = 10; 
     public ClaimsPrincipal AuthState { get; set; }
     public List<CustomerProfile> customers = new List<CustomerProfile>();
     protected ViewImageModal viewImageModal = new ViewImageModal();
@@ -193,7 +196,7 @@
     {
         var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
             {
-                CountPerPage = 10,
+                CountPerPage = CountPerPage,
                 SearchValue = searchValue,
                 PageIndex = pageIndex
             }, token);
@@ -220,6 +223,9 @@
         if (hasVerificationRequest.HasValue)
         {
             customers = customers.Where(c => c.HasVerificationRequest == (hasVerificationRequest.GetValueOrDefault() ? "Yes" : "No")).ToList();
+            Pagination = result.Result.Pagination;
+            CountPerPage = 40;
+            StateHasChanged();
         }
 
         Pagination = result.Result.Pagination;

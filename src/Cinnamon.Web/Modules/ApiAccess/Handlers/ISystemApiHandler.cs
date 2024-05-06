@@ -11,4 +11,5 @@ public interface ISystemApiHandler
     Task<AppResult<GetEventBuyerPoliciesResult>> GetEventBuyerPolicies();
     Task<AppResult<GetEventSellerPoliciesResult>> GetEventSellerPolicies();
     Task<AppResult<GetPrivacyPoliciesResult>> GetPrivacyPolicies();
+
 } 

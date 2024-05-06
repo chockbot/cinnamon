@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using static Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 
@@ -10,7 +11,11 @@ public class UpdateOteArgs
     [Required]
     public IEnumerable<OteUpdatePricing> Pricings {get; set;}
 
+    public IEnumerable<DateOverride>? DateOverrides { get; set; }
+
     public IEnumerable<OteUpdateOnlineEvent>? OnlineEvents { get; set; }
+
+    public IEnumerable<OteUpdateReschedule>? OteReschedules {get; set;}
 
     public class OteUpdateActivity 
     {
@@ -61,6 +66,25 @@ public class UpdateOteArgs
 
         [Required]
         public bool IsComingSoon {get; set;}
+        public int? DurationEvery { get; set; }
+
+        // week option field
+        public string? WeekString { get; set; }
+
+        // month option fields
+        public int? MonthSelection { get; set; }
+        public string? MonthRepeat { get; set; }
+        public string? MonthDay { get; set; }
+        public int? OnDayDate { get; set; }
+
+        [Range(1, int.MaxValue)]
+        public int EventDurationCount { get; set; }
+        public string EventDurationTimeUnit { get; set; }
+
+        public DateTime? DurationStart { get; set; }
+        public DateTime? DurationEnd { get; set; }
+
+        public int EventTicketLimit { get; set; }
     }
 
     public class OteUpdatePricing 
@@ -92,4 +116,12 @@ public class UpdateOteArgs
         public string TicketRestriction { get; set; }
     }
 
+    public class OteUpdateReschedule 
+    {
+        [Required]
+        public DateTime OldDate {get; set;}
+
+        [Required]
+        public DateTime NewDate {get; set;}
+    }
 }

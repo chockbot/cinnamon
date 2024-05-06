@@ -16,8 +16,7 @@ public class SystemController : ControllerBase
     private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
     private readonly IGetDynamicContentHandler getDynamicContentHandler;
 
-    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetAnnouncementsHandler getAnnouncementsHandler,
-        IGetDynamicContentHandler getDynamicContentHandler)
+    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetAnnouncementsHandler getAnnouncementsHandler, IGetDynamicContentHandler getDynamicContentHandler)
     {
         this.getSystemDateHandler = getSystemDateHandler;
         this.getAnnouncementsHandler = getAnnouncementsHandler;
@@ -49,43 +48,6 @@ public class SystemController : ControllerBase
             return new JsonResult(new GetServerDateResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
-
-    [AllowAnonymous]
-    [Route("GetAnnouncements")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetAnnouncementsResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAnnouncements()
-    {
-        try
-        {
-            var result = await getAnnouncementsHandler.ExecuteAsync(new Services.AdminService.Interactors.GetAnnouncementsArgs {
-                Status = "published"
-            });
-
-            if(!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetAnnouncementsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new GetAnnouncementsResult 
-                {
-                    IsSuccess = true, 
-                    Result = result.Result.Announcements.Select(a => new Framework.ApiCommand.ApiCore.DTO.Announcement.AnnouncementDTO {
-                        ButtonLabel = a.ButtonLabel,
-                        Description = a.Description,
-                        Id = a.Id,
-                        Link = a.Link,
-                        Status = a.Status,
-                        Title = a.Title
-                    })
-                } );
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetAnnouncementsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
-        }
-    }
-
     [AllowAnonymous]
     [Route("GetEventPolicies")]
     [HttpGet]
@@ -231,6 +193,42 @@ public class SystemController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPrivacyPoliciesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("GetAnnouncements")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAnnouncementsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAnnouncements()
+    {
+        try
+        {
+            var result = await getAnnouncementsHandler.ExecuteAsync(new Services.AdminService.Interactors.GetAnnouncementsArgs {
+                Status = "published"
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAnnouncementsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAnnouncementsResult 
+                {
+                    IsSuccess = true, 
+                    Result = result.Result.Announcements.Select(a => new Framework.ApiCommand.ApiCore.DTO.Announcement.AnnouncementDTO {
+                        ButtonLabel = a.ButtonLabel,
+                        Description = a.Description,
+                        Id = a.Id,
+                        Link = a.Link,
+                        Status = a.Status,
+                        Title = a.Title
+                    })
+                } );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAnnouncementsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

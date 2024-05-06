@@ -212,14 +212,14 @@
 </ConfirmDialog>
 <HowToModal @ref="howToModal" HtmlContent="@htmlString" Title="Create Online Event Page" />
 
-@code
+@code 
 {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
     [Parameter]
     public EventCallback OnPrevClick { get; set; }
     [Parameter]
-    public ModelState StateModel { get; set; } = new();
+    public ModelState StateModel {get; set;} = new ();
 
     [Parameter]
     public string Token { get; set; }
@@ -262,9 +262,9 @@
                 listOfPricing.Add(new OtePricing.ModelData.ItemPrice { Id = item.Id, Name = item.Name });
             }
             StateModel.PricingData = new OtePricing.ModelData
-                {
-                    ItemPrices = listOfPricing
-                };
+            {
+                ItemPrices = listOfPricing
+            };
             // Disable the selected item in the dropdown
             if (existingList.TicketInformations.Count != 0)
             {
@@ -624,7 +624,7 @@
         }
     }
 
-    public class ModelState
+    public class ModelState 
     {
         public OteLocation.ModelData LocationData { get; set; } = new();
         public OtePricing.ModelData PricingData { get; set; } = new();

@@ -12,7 +12,16 @@ public class UpdateOteActivityArgs
     [Required]
     public IList<UpdateOtePricing> Pricings {get; set;}
 
+    public IList<UpdateOteDate> Dates { get; set; }
+
     public IList<UpdateOteOnlineEvent>? OnlineEvents { get; set; }
+
+    public IList<UpdateOteDateOverride>? DateOverrides { get; set; }
+
+    [Required]
+    public bool RecreateSchedule {get; set;}
+
+    public IList<OteReschedule>? OteReschedules {get; set;}
 
     public class UpdateOteActivity 
     {
@@ -69,6 +78,28 @@ public class UpdateOteActivityArgs
 
         [Required]
         public bool IsComingSoon {get; set;}
+
+        public string? ExtraOptions { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime RecurrenceDateStart { get; set; }
+
+        [Required]
+        public DateTime RecurrenceDateEnd { get; set; }
+
+        [Required]
+        public int RepeatEvery { get; set; }
+
+        public string SelectedDays { get; set; } = string.Empty;
+
+        [Required]
+        public int EventDurationCount { get; set; }
+
+        [Required]
+        public string EventDurationTimeUnit { get; set; }
+
+        [Required]
+        public int EventTicketLimit { get; set; }
     }
 
     public class UpdateOtePricing 
@@ -105,5 +136,42 @@ public class UpdateOteActivityArgs
         public string TicketRestriction { get; set; }
 
         public int OteSchedulePricingGroupId { get; set; }
+    }
+    public class UpdateOteDate
+    {
+        [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+        public DateTime DateStart { get; set; }
+
+        [Required]
+        public DateTime DateEnd { get; set; }
+    }
+    public class UpdateOteDateOverride
+    {
+        [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+        public DateTime DateStart { get; set; }
+
+        [Required]
+        public DateTime DateEnd { get; set; }
+    }
+
+    public class OteReschedule 
+    {
+        [Required]
+        public DateTime OldDate {get; set;}
+
+        [Required]
+        public DateTime NewDate {get; set;}
+
+        [Required]
+        public DateTime DateStart {get; set;}
+
+        [Required]
+        public DateTime DateEnd {get; set;}
     }
 }

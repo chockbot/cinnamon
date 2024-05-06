@@ -1200,6 +1200,28 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occurred when calling generate event shared link api");
         }
     }
+    public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteTicket")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteTicketResult>();
+
+            return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully called delete ticket");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when calling delete ticket api");
+        }
+    }
 
     public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
     {
@@ -1222,26 +1244,24 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token)
+    public async Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token)
     {
         try
         {
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
-                .Request("Activity/DeleteTicket")
-                .PostJsonAsync(args)
-                .ReceiveJson<DeleteTicketResult>();
+                .Request($"Activity/OteAlreadyBookedDates/{activityId}")
+                .GetJsonAsync<OteAlreadyBookedDatesResult>();
 
-            return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully called delete ticket");
+            return AppResult<OteAlreadyBookedDatesResult>.CreateSucceeded(result, "Successfully ote already booked dates");
         }
         catch (FlurlHttpException ex)
         {
-            var error = await ex.GetResponseJsonAsync();
-            return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+            return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when calling delete ticket api");
+            return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, "An error occured when ote already booked dates");
         }
     }
 }
