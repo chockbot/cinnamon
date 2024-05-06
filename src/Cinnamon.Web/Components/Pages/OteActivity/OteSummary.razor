@@ -100,7 +100,7 @@
                 var dateStart = Summary.PricingData.DurationStart ?? DateTime.Now;
                 var dateEnd = Summary.PricingData.DurationEnd ?? DateTime.Now;;
 
-                var timeStart = dateStart.TimeOfDay;
+                var timeStart = Summary.PricingData.DateFrom.TimeOfDay;
                 var timeDuration = Summary.PricingData.DateTo - Summary.PricingData.DateFrom;
 
                 string weekString = Summary.PricingData.WeekString ?? string.Empty;
@@ -110,14 +110,25 @@
                 var monthRepeat = Summary.PricingData.MonthRepeat ?? string.Empty;
                 var monthDay = Summary.PricingData.MonthDay ?? string.Empty;
 
-                dates = Summary.PricingData.Recurrences switch {
-                    "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
-                    "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
-                    "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-                    "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
-                        onDayDate, monthRepeat, monthDay),
-                    _ => recurrenceHelper.GenerateNoRepeat(Summary.PricingData.DateFrom, Summary.PricingData.DateTo)
-                };
+                if(Summary.PricingData.BookedDates is not null && Summary.PricingData.BookedDates.Count() > 0)
+                {
+                    dates = Summary.PricingData.BookedDates.DistinctBy(d => d.NewDate).Select(d => new GenerateRecurrenceDate.DateItem {
+                        Date = d.NewDate.Date,
+                        DateStart = d.NewDate.Date.Add(timeStart),
+                        DateEnd = d.NewDate.Date.Add(timeStart).Add(timeDuration)
+                    });
+                }
+                else 
+                {
+                    dates = Summary.PricingData.Recurrences switch {
+                        "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+                        "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+                        "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
+                        "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
+                            onDayDate, monthRepeat, monthDay),
+                        _ => recurrenceHelper.GenerateNoRepeat(Summary.PricingData.DateFrom, Summary.PricingData.DateTo)
+                    };
+                }
             }
 
             return dates;
