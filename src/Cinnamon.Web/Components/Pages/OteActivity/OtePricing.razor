@@ -93,10 +93,10 @@
                     </p>
 
                     <Row VerticalGutter="10">
-                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate).DistinctBy(d => d.NewDate))
+                        @foreach (var item in RescheduleStringDates)
                         {
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="font-20 color-black-100">
-                                • @item.NewDate.ToString("MMMM dd, yyyy")
+                                • @item
                             </Column>
                         }
                     </Row>
@@ -953,7 +953,7 @@
             Name = modelPricing.Name
         });
 
-        if(rescheduleUpdated)
+        if(dateReschedules.Count > 0)
         {
             data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
                 BookedCount = d.BookedCount,
@@ -1261,6 +1261,24 @@
     {
         rescheduleUpdated = true;
         await modalReschedule?.Close(CloseReason.UserClosing);
+    }
+
+    private IEnumerable<string> RescheduleStringDates 
+    {
+        get 
+        {
+            if(rescheduleUpdated)
+            {
+                return dateReschedules
+                            .OrderBy(d => d.Id)
+                            .DistinctBy(d => d.NewDate.Date)
+                            .Select(d => d.NewDate.ToString("MMMM dd, yyyy"));
+            }
+
+            return dateReschedules
+                        .OrderBy(d => d.Id)
+                        .Select(d => d.OldDate.ToString("MMMM dd, yyyy"));
+        }
     }
 
     public class ModelData
