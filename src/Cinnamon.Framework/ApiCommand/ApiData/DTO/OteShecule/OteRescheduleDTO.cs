@@ -2,6 +2,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 public class OteRescheduleDTO 
 {
+    public int Id {get; set;}
     public DateTime OldDate {get; set;}
     public DateTime NewDate {get; set;}
     public DateTime DateStart {get; set;}

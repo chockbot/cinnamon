@@ -2746,7 +2746,8 @@ public class ActivityController : ControllerBase
                 }): null,
                 OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule {
                     OldDate = s.OldDate,
-                    NewDate = s.NewDate
+                    NewDate = s.NewDate,
+                    Id = s.Id
                 }) : null
             });
 

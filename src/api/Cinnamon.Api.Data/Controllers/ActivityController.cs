@@ -515,7 +515,8 @@ public class ActivityController : ControllerBase
                 DateEnd = s.DateEnd,
                 DateStart = s.DateStart,
                 NewDate = s.NewDate,
-                OldDate = s.OldDate
+                OldDate = s.OldDate,
+                Id = s.Id
             }).ToList() : null;
 
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,

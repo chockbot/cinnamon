@@ -95,7 +95,7 @@
                     </p>
 
                     <Row VerticalGutter="10">
-                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
+                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate).DistinctBy(d => d.NewDate))
                         {
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="font-20 color-black-100">
                                 • @item.NewDate.ToString("MMMM dd, yyyy")
@@ -304,44 +304,47 @@
         </Validations>
     </div>
 
-    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
-        <div>
-            <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                Add date overrides
-            </h3>
-            <p class="font-16 color-grey-100 text-justify">
-                Customize recurrence patterns with override dates, providing flexible scheduling control for specific instances.
-            </p>
-            <div class="text-center">
-                <Button Clicked="ViewCalendar" class="bg-transparent rounded-pill border-color-orange-100 px-5 my-4 color-orange-100 hover-color-primary">
-                    Add date override
-                </Button>
-            </div>
-            <Divider DividerType="DividerType.Dashed" class="m-0" />
+    @if(!AlreadyHaveBooked)
+    {
+        <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
             <div>
-                <Table FullWidth>
-                    <TableBody>
-                        @foreach (var item in dateOverrides)
-                        {
-                            <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
-                                <TableRowCell>
-                                    <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
-                                </TableRowCell>
-                                <TableRowCell>
-                                    <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
-                                </TableRowCell>
-                                <TableHeaderCell>
-                                    <Button Clicked="() => dateOverrides.Remove(item.Key)">
-                                        <img src="/images/ote/delete-icon.png" alt="delete">
-                                    </Button>
-                                </TableHeaderCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
+                <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                    Add date overrides
+                </h3>
+                <p class="font-16 color-grey-100 text-justify">
+                    Customize recurrence patterns with override dates, providing flexible scheduling control for specific instances.
+                </p>
+                <div class="text-center">
+                    <Button Clicked="ViewCalendar" class="bg-transparent rounded-pill border-color-orange-100 px-5 my-4 color-orange-100 hover-color-primary">
+                        Add date override
+                    </Button>
+                </div>
+                <Divider DividerType="DividerType.Dashed" class="m-0" />
+                <div>
+                    <Table FullWidth>
+                        <TableBody>
+                            @foreach (var item in dateOverrides)
+                            {
+                                <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
+                                    <TableRowCell>
+                                        <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
+                                    </TableRowCell>
+                                    <TableRowCell>
+                                        <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
+                                    </TableRowCell>
+                                    <TableHeaderCell>
+                                        <Button Clicked="() => dateOverrides.Remove(item.Key)">
+                                            <img src="/images/ote/delete-icon.png" alt="delete">
+                                        </Button>
+                                    </TableHeaderCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
     @*Ticket Limit*@
     <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
@@ -1075,7 +1078,8 @@
             data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
                 BookedCount = d.BookedCount,
                 Date = d.OldDate,
-                NewDate = d.NewDate
+                NewDate = d.NewDate,
+                Id = d.Id
             });
         }
         return data;
@@ -1090,7 +1094,8 @@
                 dateReschedules.Add(new DateReschedule {
                     BookedCount = item.BookedCount,
                     NewDate = item.Date,
-                    OldDate = item.Date
+                    OldDate = item.Date,
+                    Id = item.Id
                 });
             }
         }
@@ -1433,6 +1438,7 @@
 
         public class BookedDate 
         {
+            public int Id {get; set;}
             public DateTime Date {get; set;}
             public DateTime NewDate {get; set;}
             public int BookedCount {get; set;}
@@ -1740,6 +1746,8 @@
 
     private record DateReschedule 
     {
+        public int Id {get; set;}
+
         [Required]
         public DateTime OldDate {get; set;}
 
