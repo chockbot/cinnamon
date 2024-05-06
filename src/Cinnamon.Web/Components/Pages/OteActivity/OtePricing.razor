@@ -433,7 +433,7 @@
                                                         price
                                                     </FieldLabel>
                                                     <FieldBody>
-                                                        <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium"
+                                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
                                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.Price">
                                                             <Feedback>
                                                                 <ValidationError />
@@ -450,7 +450,7 @@
                                                         max slots
                                                     </FieldLabel>
                                                     <FieldBody>
-                                                        <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium"
+                                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
                                                                        class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.MaxSlots">
                                                             <Feedback>
                                                                 <ValidationError />
@@ -552,7 +552,7 @@
                                 price
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="decimal" Size="Size.Medium"
+                                <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
                                                class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
                                     <Feedback>
                                         <ValidationError />
@@ -569,7 +569,7 @@
                                 max slots
                             </FieldLabel>
                             <FieldBody>
-                                <NumericPicker Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium"
+                                <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
                                                class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
                                     <Feedback>
                                         <ValidationError />
@@ -882,21 +882,6 @@
     private IList<DateReschedule> dateReschedules = new List<DateReschedule>();
     private bool rescheduleUpdated = false;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-
-        }
-        else
-        {
-            if (existingList.Pricings.Count == 0)
-            {
-                AddMoreTicketPrice();
-            }
-        }
-    }
-
     private async Task NextClick()
     {
         if (OnNextClick.HasDelegate)
@@ -912,6 +897,7 @@
             await OnPrevClick.InvokeAsync();
         }
     }
+
     public async Task<bool> FieldValid()
     {
         if (pricingFormValidation is not null && scheduleFormValidation is not null && pringListFormValidation is not null)
@@ -1169,7 +1155,7 @@
     {
         if (modalFeeBreakdown is not null)
         {
-            modalTicketPricing.TicketPrice = ticketPricing.Price;
+            modalTicketPricing.TicketPrice = ticketPricing.Price ?? 0m;
             modalTicketPricing.IsAbsorbFee = ticketPricing.AbsorbFees;
             await modalFeeBreakdown.Show();
         }
@@ -1190,7 +1176,8 @@
 
     private decimal CalCulateBuyerTotal(Pricing ticketPrice)
     {
-        ModalTicketPricing price = new ModalTicketPricing { IsAbsorbFee = ticketPrice.AbsorbFees, TicketPrice = ticketPrice.Price };
+        decimal ticketPriceValue = ticketPrice.Price ?? 0m;
+        ModalTicketPricing price = new ModalTicketPricing { IsAbsorbFee = ticketPrice.AbsorbFees, TicketPrice = ticketPriceValue };
         return price.SubTotal;
     }
 
@@ -1428,8 +1415,8 @@
         public class ItemPrice
         {
             public int Id { get; set; }
-            public decimal Price { get; set; }
-            public int MaxSlots { get; set; }
+            public decimal? Price { get; set; }
+            public int? MaxSlots { get; set; }
             public bool AbsorbFees { get; set; }
             public string Description { get; set; }
             public string Name { get; set; }
@@ -1546,11 +1533,11 @@
     {
         [Required(ErrorMessage = "The price field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; } = null;
 
         [Required(ErrorMessage = "The max slots field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
-        public int MaxSlots { get; set; }
+        public int? MaxSlots { get; set; } = null;
 
         [Required(ErrorMessage = "The absorb fees field is mandatory.")]
         public bool AbsorbFees { get; set; }
@@ -1661,7 +1648,6 @@
                     else
                     {
                         existingList.Pricings.Add(modelPricing);
-                        return;
                     }
                 }
                 modelPricingList.Pricings = existingList.Pricings;
