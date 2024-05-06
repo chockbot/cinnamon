@@ -56,7 +56,7 @@
                 <OteSidebarNavigation SidebarItems="sidebarItems" />
                 <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
                 <div>
-                    @if (!(currentIndex == 4 && eventType == EventType.InPerson) && currentIndex < 5)
+                    @if (sidebarImages.Count > currentIndex)
                     {
                         <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
                         <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
