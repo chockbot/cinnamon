@@ -2,11 +2,14 @@
 @using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Web.Models.Account;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Framework.ApiCommand.ApiCore.DTO.Disbursement;
 @using static Cinnamon.Web.Models.Customer.RequestRefundModel;
 @using Cinnamon.Web.Models.Entities
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
 @inject ITransactionApiHandler transactionApiHandler
+@inject IAdminApiHandler adminApiHandler;
+@inject IDashboardApiHandler dashboardApiHandler
 
 <article class="request-refund">
     @if (Profile.IsMaker == true)
@@ -82,63 +85,104 @@
     }
     
     @*Payout History*@
-    @*<div class="payout-history">
-        <p class="payout-title">Payout History</p>
-        <div class="col-lg-8 col-md-10 col-sm-12 col-12">
-            <div class="payout-table">
-                <div class="table-list">
-                    <Table Class="payout-history-table">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHeaderCell class="th-id">
-                                    No
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-date">
-                                    Date
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-amount">
-                                    Amount
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-status">
-                                    Status
-                                </TableHeaderCell>
-
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in payouts)
-                            {
+    @if (disbursements.Count != 0)
+    {
+        <div class="payout-history">
+            <p class="payout-title">Payout History</p>
+            <div class="col-lg-6 col-md-10 col-sm-12 col-12">
+                <div class="payout-table">
+                    <div class="table-list">
+                        <Table Class="payout-history-table">
+                            <TableHeader>
                                 <TableRow>
-                                    <TableRowCell class="tr-id">
-                                        <span>@item.Id</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-date">
-                                        <span>@item.Date</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-amount">
-                                        <span>&#8369;@item.Amount</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-status">
-                                        <span class="payout-status" style="background-color:@(item.Status == true? "#4BB749" : "#F3D052")">
-                                            @if (item.Status == true)
-                                            {
-                                                Status = "Approved";
-                                            }
-                                            else
-                                            {
-                                                Status = "Pending";
-                                            }
-                                            @Status
-                                        </span>
-                                    </TableRowCell>
+                                    <TableHeaderCell class="th-id">
+                                        No
+                                    </TableHeaderCell>
+                                    <TableHeaderCell class="th-date">
+                                        Date
+                                    </TableHeaderCell>
+                                    <TableHeaderCell class="th-amount">
+                                        Amount
+                                    </TableHeaderCell>
+                                    <TableHeaderCell class="th-status">
+                                        Status
+                                    </TableHeaderCell>
+
                                 </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in disbursements)
+                                {
+                                    <TableRow>
+                                        <TableRowCell class="tr-id">
+                                            <span>@item.Id</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-date">
+                                            <span>@item.PayoutDate.ToString("yyyy-MM-dd")</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-amount">
+                                            <span>&#8369;@item.Amount</span>
+                                        </TableRowCell> 
+                                        <TableRowCell class="tr-status">
+                                            <span class="payout-status" style="background-color:@(item.Status == "disbursed" ? "#4BB749" : "#F3D052")">
+                                                @switch (item.Status)
+                                                {
+                                                    case "initiated":
+                                                        Status = "Pending";
+                                                        break;
+
+                                                    case "disbursed":
+                                                        Status = "Approved";
+                                                        break;
+
+                                                    case "pending":
+                                                        Status = "Processing";
+                                                        break;
+
+                                                    default:
+                                                        Status = "Unknown";
+                                                        break;
+                                                }
+                                                @Status
+                                            </span>
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                        <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                                <PaginationLink>
+                                    <span aria-hidden="true">«</span>
+                                </PaginationLink>
+                            </PaginationItem>
+                            @{
+                                int pagesToShow = 6;
+                                int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                                int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                                for (var i = startPage; i <= endPage; i++)
+                                {
+                                    var pageNumberAsString = i.ToString();
+                                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                            @pageNumberAsString
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                }
                             }
-                        </TableBody>
-                    </Table>
+                            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                                <PaginationLink>
+                                    <span aria-hidden="true">»</span>
+                                </PaginationLink>
+                            </PaginationItem>
+                        </Pagination>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>*@
+    }
+    
     @*Cinnamon Credits*@
     <div class="cinnamon-credits-table">
         <div class="col-lg-6 col-md-10 col-sm-12 col-12">
@@ -263,8 +307,8 @@
     </Modal>
 </article>
 
-@code
-                    {
+@code{
+
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
 
@@ -274,6 +318,8 @@
     private RequestRefundModel Model {get; set;} = new();
 
     private PayoutAccountModel PayoutAccount { get; set; }
+
+    private List<DisbursementsInformationDTO> disbursements = new();
 
     private List<PayoutHistory> payouts = new List<PayoutHistory>();
 
@@ -285,9 +331,17 @@
 
     private List<Payouts> totalReceivables = new List<Payouts>();
 
-    private decimal receivables { get; set; } = 0;
+    public const string PREVIOUS = "previous";
+    public const string NEXT = "next";
+    public int pageItems = 10;
+    public string currentPage = "1";
+    public int counterPage = 10;
+    public int count = 0;
 
-    private string Status = "Pending";
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+
+
+    private string Status { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -310,12 +364,7 @@
             await GetTotalEarnings();
             await GetReceivables();
             await GetGrossSale();
-            receivables = grossSales.Sum(g => g.Total) - totalEarnings.Sum(t => t.Amount);
-
-            @*payouts.Add(new PayoutHistory { Id = 1, Date = Convert.ToDateTime("2023-09-11").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = true});
-            payouts.Add(new PayoutHistory { Id = 2, Date = Convert.ToDateTime("2023-09-12").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
-            payouts.Add(new PayoutHistory { Id = 3, Date = Convert.ToDateTime("2023-09-13").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });
-            payouts.Add(new PayoutHistory { Id = 4, Date = Convert.ToDateTime("2023-09-14").Date.ToString("yyyy-MM-dd"), Amount = 5000, Status = false });*@
+            await GetDisbursement(1);
         }
         catch (Exception ex)
         {
@@ -483,6 +532,63 @@
                     };
             }).ToList();
         }
+    }
+
+    private async Task GetDisbursement(int pageIndex)
+    {
+        var result = await dashboardApiHandler.GetDisbursementByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetDisbursementByProviderArgs
+            {
+                ProviderId = Profile.Id,
+                CountPerPage = counterPage,
+                PageIndex = pageIndex,
+            }, Token);
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            Pagination = result.Result.Pagination;
+            disbursements = result.Result.Result.OrderBy(a => a.PayoutDate).ToList();
+        }
+    }
+
+    private bool IsActive(string page)
+       => currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1)
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+            await GetDisbursement(int.Parse(currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < Pagination.TotalPages)
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+            await GetDisbursement(int.Parse(currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetDisbursement(int.Parse(page));
     }
 
     private string MaskedString(string value, int count)
