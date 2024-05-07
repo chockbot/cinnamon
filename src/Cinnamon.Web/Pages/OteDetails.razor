@@ -659,8 +659,8 @@
                             ticketCount += count.Result.Result.Tickets.Count();
                         }
                     }
-                    ticketCount = activity.EventTicketLimit - ticketCount;
-                }
+                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit - ticketCount : 0;
+                } 
             }
         }
     }
