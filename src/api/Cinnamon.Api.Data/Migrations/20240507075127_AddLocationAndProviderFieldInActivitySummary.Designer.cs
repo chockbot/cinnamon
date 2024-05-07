@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240507075127_AddLocationAndProviderFieldInActivitySummary")]
+    partial class AddLocationAndProviderFieldInActivitySummary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2069,9 +2071,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("EventDurationTimeUnit")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("EventTicketLimit")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ExtraOptions")
                         .IsRequired()
