@@ -1,11 +1,13 @@
 ﻿@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Framework.Enums
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div class="maker-swiper-slide">
     <Div ElementId="#b-animate">
         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div class="card">
-                <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType) style="text-decoration:none;">
+                @if (Activity.Status == Enums.ActivityStatus.InProgress)
+                {
                     <img src="@GetImage()" class="image-header card-img">
                     <div class="card-img-overlay">
                         @if (Activity.OngoingStudents > 0)
@@ -18,7 +20,25 @@
                             </div>
                         }
                     </div>
-                </a>
+                }
+                else
+                {
+                    <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType) style="text-decoration:none;">
+                        <img src="@GetImage()" class="image-header card-img">
+                        <div class="card-img-overlay">
+                            @if (Activity.OngoingStudents > 0)
+                            {
+                                <div class="rounded-pill ongoing-section">
+                                    <div class="active-badge" style="text-align:center">
+                                        <span class="pulse"></span>
+                                        <span class="active-tag-label">@Activity.OngoingStudents</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </a>
+                }
+               
                 <div class="card-container">
                     <div class="row text-start star-pulse-section">
                         <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
@@ -75,8 +95,8 @@
 
     private string GetImage()
     {
-        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
-        return string.Empty;
+        string image = Activity.Images.Count > 0 ? Activity.Images[0].ImageSrc : "images/blank-placeholder.svg";
+        return image;
     }
 
     private string GetPriceLabel(Activity activity)

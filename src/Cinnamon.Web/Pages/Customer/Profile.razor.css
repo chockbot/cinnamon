@@ -212,6 +212,12 @@
     height: 25px;
 }
 @media screen and (max-width: 767px) {
+    .personal-tab-swiper .swiper-slide .tab-item.active {
+        background-color: none;
+        color: #343D4C;
+        text-decoration: underline 3px solid;
+        text-decoration-color: #FFA942;
+    }
     .edit-icon {
     text-align: right;
     margin-right: 20%;
@@ -237,6 +243,12 @@
 }
 
 @media only screen and (max-width: 576px) {
+    .personal-tab-swiper .swiper-slide .tab-item.active {
+        background-color: none;
+        color: #343D4C;
+        text-decoration: underline 3px solid;
+        text-decoration-color: #FFA942;
+    }
   .profile-banner {
     max-height: none;
     min-height: auto;
@@ -254,3 +266,463 @@
     font-size: 24px !important;
   }
 }
+
+
+
+
+/*Profile CSS*/
+.skeleton {
+    position: relative;
+}
+
+    .skeleton::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background: linear-gradient(90deg, #eee, #b6b6b6, #eee);
+        background-size: 200%;
+        animation: skeleton 2s infinite reverse;
+    }
+
+@keyframes skeleton {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+.profile-content {
+    margin-top: 3.5rem;
+}
+
+.name-section {
+    margin-top: 50px;
+}
+
+::deep .card-body {
+    margin-top: auto;
+    margin-bottom: auto;
+    flex: none;
+}
+
+.children-section {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.personal-info-section {
+    display: flex;
+    gap: 10px;
+}
+
+.personal-info-wrapper {
+    font-family: "Nunito";
+    overflow: hidden;
+}
+
+    .personal-info-wrapper p {
+        margin-bottom: 0;
+    }
+
+    .personal-info-wrapper .p-section .title {
+        font-size: 18px;
+        color: #344050;
+        font-weight: 700;
+    }
+
+    .personal-info-wrapper .p-section .details {
+        font-size: 16px;
+        color: #717171;
+        font-weight: 500;
+    }
+
+    .personal-info-wrapper .p-section .edit {
+        font-size: 14px;
+        font-weight: 700;
+        color: #717171;
+        cursor: pointer;
+        text-decoration: underline;
+        text-emphasis-position: under;
+    }
+
+::deep .payout-account-section a {
+    font-size: 14px;
+    font-weight: 700;
+    color: #343d4c;
+    cursor: pointer;
+}
+
+.about-info {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    color: #717171;
+    text-align: justify;
+    padding-right: 5px;
+}
+
+.info-item {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: justify;
+    color: #717171;
+    text-transform: capitalize;
+}
+
+.info-email {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: justify;
+    color: #717171;
+    text-transform: lowercase;
+}
+
+.main-title {
+    font-family: Nunito;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 35px;
+    color: #343d4c;
+}
+
+.title-description {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    color: #717171;
+}
+
+.alertContainer {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #dff0d8;
+    border: 1px solid #d0e9c6;
+    padding: 10px;
+    border-radius: 4px;
+    z-index: 99999;
+}
+
+.alertMessage {
+    color: #3c763d;
+    font-weight: bold;
+}
+
+.showAlert {
+    display: block !important;
+}
+
+.profile-banner {
+    position: relative;
+    max-height: 300px;
+    overflow: hidden;
+    min-height: 300px;
+    color: #343d4c;
+}
+
+::deep .card {
+    width: 350px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px 0px #00000040;
+}
+
+::deep .card-image-full {
+    height: 150px;
+    aspect-ratio: auto 150 / 150;
+    width: 150px;
+    line-height: 150px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep .figure {
+    display: flex !important;
+    justify-content: center;
+}
+
+.verified-logo img {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.badge-name {
+    margin-top: 0.8rem;
+    padding: 4px;
+    margin-right: 2rem;
+    font-family: "Nunito";
+    font-weight: bold;
+}
+
+.badges-column img {
+    vertical-align: middle;
+    width: 53px;
+    height: 53px;
+    display: flex;
+    margin-left: 2rem;
+}
+
+::deep .badges-column .card-body {
+    display: flex;
+}
+
+::deep .badges-column {
+    width: 100%;
+    background-color: #f3f6fc;
+    padding: 20px;
+    border: none;
+    align-items: center;
+}
+
+.profile-content {
+    font-family: "Nunito";
+    color: #343d4c;
+}
+
+.text-color-8080 {
+    color: #525252;
+}
+
+.edit-icon {
+    text-align: right;
+    margin-right: 3.5rem;
+    margin-top: -40px;
+}
+/* font sizes */
+.font-12 {
+    font-size: 12px !important;
+    font-family: "Nunito";
+}
+
+.font-14 {
+    font-size: 14px !important;
+    font-family: "Nunito";
+    font-weight: 400;
+    color: #717171;
+}
+
+.font-16 {
+    font-size: 16px !important;
+    font-family: "Nunito";
+}
+
+.font-18 {
+    font-size: 18px !important;
+    font-family: "Nunito";
+}
+
+.font-24 {
+    font-size: 24px !important;
+    background-color: #f3f6fc;
+    padding: 5px;
+    border-radius: 10px;
+    font-family: "Nunito";
+}
+
+.font-30 {
+    font-size: 30px !important;
+    font-family: "Nunito";
+}
+
+.profile-info-input > .form-control {
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    line-height: 0.3;
+}
+
+.profile-info-input label {
+    padding-top: 0.5rem;
+}
+
+.personal-tab-swiper .swiper-slide {
+    width: auto !important;
+}
+
+    .personal-tab-swiper .swiper-slide .tab-item {
+        padding: 0.5rem 1rem;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: capitalize;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+        .personal-tab-swiper .swiper-slide .tab-item.active {
+            background-color: none;
+            color: #343d4c;
+        }
+
+.img-pending {
+    height: 28px;
+    width: 28px;
+    left: 197px;
+    top: 491px;
+}
+
+.img-verified {
+    height: 28px;
+    width: 28px;
+    left: 3px;
+    top: 3px;
+}
+
+.span-pending {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 27px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #ffa942;
+}
+
+.span-verified {
+    font-family: "Nunito";
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 27px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #34a853;
+}
+
+.ongoing-students-label {
+    font-family: "Nunito";
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.completed-students-label {
+    font-family: "Nunito";
+    font-size: 18px;
+    font-weight: 600;
+}
+
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-copy img {
+    width: 25px;
+    height: 25px;
+}
+
+.ongoing-students {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 2rem;
+}
+
+.account-badge {
+    width: 75px;
+    height: auto;
+    margin-right: 10px;
+}
+
+@media screen and (max-width: 767px) {
+    .profile-content {
+        margin-top: 1rem;
+    }
+
+    .personal-info-section {
+        display: block;
+        gap: 30px;
+    }
+
+    .personal-info-wrapper {
+        margin-bottom: 4rem;
+    }
+
+    .edit-icon {
+        text-align: right;
+        margin-right: 20%;
+    }
+
+    .badges-column img,
+    svg {
+        margin-top: auto;
+        margin-bottom: auto;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        margin-left: 0.7rem;
+    }
+
+    ::deep .badges-column {
+        padding: 1px;
+    }
+
+    .badge-name {
+        margin-top: 2rem;
+        padding-left: 3px;
+        margin-right: 0.5rem;
+        font-family: 'Nunito';
+        font-weight: bold;
+    }
+
+    ::deep .card {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px 0px #00000040;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    ::deep .card {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px 0px #00000040;
+    }
+
+    .profile-banner {
+        max-height: none;
+        min-height: auto;
+    }
+
+    .font-16 {
+        font-size: 14px !important;
+    }
+
+    .font-24 {
+        font-size: 16px !important;
+    }
+
+    .font-30 {
+        font-size: 24px !important;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    ::deep .card {
+        width: 320px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px 0px #00000040;
+    }
+}
+
+.account-badge {
+    width: 75px;
+    height: auto;
+    margin-right: 10px;
+}
+

@@ -19,83 +19,296 @@
 <PageTitle>Your Profile | CinnamonPH</PageTitle>
 <SeoMeta Title="Your Profile" Subject="Profile" Url="/customer/profile" />
 
-@if(Model != null)
+@if (isLoading == true)
 {
-        <section class="customer-profile-details">
-            <Container>
-                <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
-                    <div class="swiper-wrapper">
-                        <div class='swiper-slide @(selectedTab == "personal-info" ? "swiper-slide-active" : "")'>
-                            <div class='tab-item @(selectedTab == "personal-info" ? "active" : "")'
-                                @onclick='() => selectedTab = "personal-info"'>
-                                personal info
-                            </div>
-                        </div>
-                        <div class='swiper-slide @(selectedTab == "experiences" ? "swiper-slide-active" : "")'>
-                            <div class='tab-item @(selectedTab == "experiences" ? "active" : "")'
-                                @onclick='() => selectedTab = "experiences"'>
-                                enrolled experiences
-                            </div>
-                        </div>
-                        @if(Model.CustomerProfile.IsMaker)
-                        {
-                            <div class='swiper-slide @(selectedTab == "maker-experience" ? "swiper-slide-active" : "")'>
-                                <div class='tab-item @(selectedTab == "maker-experience" ? "active" : "")'
-                                    @onclick='() => selectedTab = "maker-experience"'>
-                                    created experiences
-                                </div>
-                            </div>
-                        }
-                        <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
-                            <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
-                                @onclick='() => selectedTab = "request-for-refund"'>
-                                request & payments
-                            </div>
-                        </div>
-                        <div class='swiper-slide @(selectedTab == "favorite-experience" ? "swiper-slide-active" : "")'>
-                            <div class='tab-item @(selectedTab == "favorite-experience" ? "active" : "")'
-                             @onclick='() => selectedTab = "favorite-experience"'>
-                                favorites
-                            </div>
+    <section class="customer-profile-details">
+        <Container>
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                <div class="swiper-wrapper">
+                    <div class='swiper-slide'>
+                        <div class='tab-item skeleton'>
+                            personal info
                         </div>
                     </div>
-                </Div>
-                <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                    <Items>
-                        <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
-                        <Tab Name="experiences" TextTransform="TextTransform.Capitalize">enrolled experiences</Tab>    
-                         @if(Model.CustomerProfile.IsMaker)
-                            {
-                                <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
-                            }
-                        <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">refunds & payments</Tab>
-                        <Tab Name="favorite-experience" TextTransform="TextTransform.Capitalize">favorites</Tab>
-                    </Items>
-                    <Content>
-                        <TabPanel Name="personal-info">
-                            <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
-                        </TabPanel>
-                        <TabPanel Name="experiences">
-                            <Experiences Token="@Token" Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
-                        </TabPanel>
-                        @if(Model.CustomerProfile.IsMaker)
-                        {
-                            <TabPanel Name="maker-experience">
-                                <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" Profile="Model.CustomerProfile" />
-                            </TabPanel>
-                        }
-                        <TabPanel Name="request-for-refund">
-                            <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
-                        </TabPanel>
-                         <TabPanel Name="favorite-experience">
-                            <CustomerFavorite profile="Model.CustomerProfile"/>
-                        </TabPanel>
-                    </Content>
-                </Tabs>
-            </Container>
-        </section>
-        <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
+                    <div class='swiper-slid'>
+                        <div class='tab-item skeleton'>
+                            enrolled experiences
+                        </div>
+                    </div>
+                    <div class='swiper-slide'>
+                        <div class='tab-item skeleton'>
+                            created experiences
+                        </div>
+                    </div>
+                    <div class='swiper-slide'>
+                        <div class='tab-item skeleton'>
+                            request & payments
+                        </div>
+                    </div>
+                    <div class='swiper-slide'>
+                        <div class='tab-item skeleton'>
+                            favorites
+                        </div>
+                    </div>
+                </div>
+            </Div>
+            <Tabs Margin="Margin.Is3.FromTop">
+                <Items>
+                    <Tab Name="personal-info" TextTransform="TextTransform.Capitalize" class="skeleton">personal info</Tab>
+                    <Tab Name="experiences" TextTransform="TextTransform.Capitalize" class="skeleton">enrolled experiences</Tab>
+                     <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize" class="skeleton">created experiences</Tab>
+                    <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize" class="skeleton">refunds & payments</Tab>
+                    <Tab Name="favorite-experience" TextTransform="TextTransform.Capitalize" class="skeleton">favorites</Tab>
+                </Items>
+            </Tabs>
+        </Container>
+    </section>
+    <div class="container">
+        <article class="personal-info-wrapper p-3">
+            <div class="personal-info-section">
+                <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                    <section class="profile-content">
+                        <Row>
+                            <Column class="profile-column-card" ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnTablet.Is12.OnMobile">
+                                <Card class="customer-profile-card">
+                                    <CardBody Class="profile-card-body">
+                                        <button class="btn btn-copy skeleton">
+                                            <img src="images/copytoclipboard.png">
+                                        </button>
+                                        <div class="profile-pic d-flex justify-content-center">
+                                            <div class="card-image-full skeleton" style="border-radius:20px"></div>
+                                        </div>
+                                        <CardTitle TextAlignment="TextAlignment.Center">
+                                            <p class="text-capitalize fw-bold m-0 mb-1 font-30 skeleton">Juan Dela Cruz</p>
+                                            <p class="text-color-8080 my-1 font-24 skeleton">
+                                                <img class="img-verified" src="images/Badges/VERIFIED.svg" />
+                                                <span class="span-verified">Verified</span>
+                                            </p>
+                                        </CardTitle>
+                                        <div class="ongoing-students">
+                                            <p class="ongoing-students-label skeleton">Ongoing Enrollees</p>
+                                            <p class="ongoing-students-number skeleton">@MakerOngoingStudent</p>
+                                        </div>
+                                        <div class="completed-students">
+                                            <p class="completed-students-label skeleton">Completed Enrollees</p>
+                                        <p class="completed-students-number skeleton">@MakerCompletedStudent</p>
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                        </Row>
+                    </section>
+                </div>
+                <div class="col-lg-8 col-md-6 col-sm-12 col-12">
+                    <div class="p-section name-section">
+                        <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                            <div>
+                                <p class="main-title skeleton">Personal Information</p>
+                                <p class="title-description skeleton mb-4">Update your photo and personal details here.</p>
+    
+                                <p class="title mb-1 skeleton">About you</p>
+                                <p class="mb-2 text-color-8080 font-14 skeleton">Joined in 2020</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="about-info skeleton">Write anything about you ...</span>
+                                    <span class="edit skeleton">Edit</span>
+                                </Div>
+                                <Divider />
+                                <p class="title mb-1 skeleton">Legal Name</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item skeleton">Juan Dela Cruz</span>
+                                    <span class="edit skeleton">Edit</span>
+                                </Div>
+                            </div>
+                            <Divider />
+                            <div class="mt-2">
+                                <p class="title mb-1 skeleton">Date of Birth</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item skeleton">January 01, 0001</span>
+                                    <span class="edit skeleton">Edit</span>
+                                </Div>
+                            </div>
+                            <Divider />
+                            <div class="mt-2">
+                                    <p class="title mb-1 skeleton">Phone Number</p>
+                                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-item skeleton">0943*******</span>
+                                        <span class="edit skeleton">Edit</span>
+                                    </Div>
+                            </div>
+                            <Divider />
+                            <div class="mt-2">
+                                <p class="title mb-1 skeleton">Email</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <span class="info-email skeleton">juandelacruz@gmail.com</span>
+                                    <span class="edit skeleton">Edit</span>
+                                </Div>
+                            </div>
+                            <Divider />
+                            <div class="p-section ids-section">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                        <p class="title mb-1 skeleton">Government ID</p>
+                                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                            <span class="info-item skeleton">ID no. 1</span>
+                                            <span class="edit skeleton">Edit</span>
+                                        </Div>
+                                    </Column>
+                                </Row>
+                            </div>
+                                <Divider />
+                                <div class="p-section payout-account-section">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                            <p class="title mb-1 skeleton">Payout Information</p>
+                                            <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                                <span class="info-item skeleton">No Data Found</span>
+                                                <span class="edit skeleton">
+                                                    <NavLink class="edit" style="color:#717171;" href="/customer/profile/payout-account">Add</NavLink>
+                                                </span>
+                                            </Div>
+                                        </Column>
+                                    </Row>
+                                </div>
+                        </Column>
+                    </div>
+                    <Divider />
+                    <div class="p-section children-section">
+                            <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                <p class="main-title skeleton">Kids Information</p>
+                                <p class="title-description mb-4 skeleton">We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.</p>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                <p class="title mb-1 skeleton">Details</p>
+                                    <span class="edit skeleton">Edit</span>
+                                </Div>
+                                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                                    <Column>
+                                        <Row style="flex: 0 0 auto;" class="mb-2">
+                                            <Column>
+                                                <p class="info-item skeleton">Juan Dela Cruz</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-center skeleton">Male</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-end skeleton">November 2000</p>
+                                            </Column>
+                                        </Row>
+                                        <Row style="flex: 0 0 auto;" class="mb-2">
+                                            <Column>
+                                            <p class="info-item skeleton">Juan Dela Cruz</p>
+                                            </Column>
+                                            <Column>
+                                            <p class="info-item text-center skeleton">Male</p>
+                                            </Column>
+                                            <Column>
+                                            <p class="info-item text-end skeleton">November 2000</p>
+                                            </Column>
+                                        </Row>
+                                        <Row style="flex: 0 0 auto;" class="mb-2">
+                                            <Column>
+                                                <p class="info-item skeleton">Juan Dela Cruz</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-center skeleton">Male</p>
+                                            </Column>
+                                            <Column>
+                                                <p class="info-item text-end skeleton">November 2000</p>
+                                            </Column>
+                                        </Row>
+                                    </Column>
+                                </Div>
+                            </Column>
+                    </div>
+                    <Divider />
+                    <div class="p-section">
+                        <p class="main-title skeleton">Badges</p>
+                        <div class="badges-container d-flex justify-content-start pt-3">
+                            <img class="verified-logo account-badge skeleton"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
 }
+else
+{
+    <section class="customer-profile-details">
+        <Container>
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                <div class="swiper-wrapper">
+                    <div class='swiper-slide @(selectedTab == "personal-info" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "personal-info" ? "active" : "")'
+                     @onclick='() => selectedTab = "personal-info"'>
+                            personal info
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "experiences" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "experiences" ? "active" : "")'
+                     @onclick='() => selectedTab = "experiences"'>
+                            enrolled experiences
+                        </div>
+                    </div>
+                    @if (Model.CustomerProfile.IsMaker)
+                    {
+                        <div class='swiper-slide @(selectedTab == "maker-experience" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "maker-experience" ? "active" : "")'
+                     @onclick='() => selectedTab = "maker-experience"'>
+                                created experiences
+                            </div>
+                        </div>
+                    }
+                    <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
+                     @onclick='() => selectedTab = "request-for-refund"'>
+                            request & payments
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "favorite-experience" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "favorite-experience" ? "active" : "")'
+                     @onclick='() => selectedTab = "favorite-experience"'>
+                            favorites
+                        </div>
+                    </div>
+                </div>
+            </Div>
+            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
+                    <Tab Name="experiences" TextTransform="TextTransform.Capitalize">enrolled experiences</Tab>
+                    @if (Model.CustomerProfile.IsMaker)
+                    {
+                        <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                    }
+                    <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">refunds & payments</Tab>
+                    <Tab Name="favorite-experience" TextTransform="TextTransform.Capitalize">favorites</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="personal-info">
+                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
+                    </TabPanel>
+                    <TabPanel Name="experiences">
+                        <Experiences Token="@Token" Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile" />
+                    </TabPanel>
+                    @if (Model.CustomerProfile.IsMaker)
+                    {
+                        <TabPanel Name="maker-experience">
+                            <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" Profile="Model.CustomerProfile" />
+                        </TabPanel>
+                    }
+                    <TabPanel Name="request-for-refund">
+                        <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token" />
+                    </TabPanel>
+                    <TabPanel Name="favorite-experience">
+                        <CustomerFavorite profile="Model.CustomerProfile" />
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </Container>
+    </section>
+    <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
+}
+
 
 @code 
 {
@@ -121,6 +334,8 @@
 
     private string Token { get; set; }
 
+    public bool isLoading { get; set; }
+
     private Task OnSelectedTabChanged(string name)
     {
         selectedTab = name;
@@ -129,8 +344,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
         var token = user.FindFirstValue("Token");
         if(token == null)
         {
@@ -178,6 +393,7 @@
                     ExperienceTypeId = a.ExperienceTypeId,
                     Description = a.Description,
                     IsPublished = a.IsPublished,
+                    Status = a.Status,
                     Price = a.Price,
                     Title = a.Title,
                     IsNew = a.IsNew,
@@ -254,6 +470,7 @@
                     Description = a.Description,
                     IsPublished = a.IsPublished,
                     Price = a.Price,
+                    Status = a.Status,
                     Title = a.Title,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
@@ -325,6 +542,7 @@
                 };
             }).ToList();
         }
+        isLoading = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
