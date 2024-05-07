@@ -392,6 +392,10 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed");
         modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Location);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Provider);
+        modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Guid);
