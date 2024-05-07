@@ -23,7 +23,7 @@
                 }
                 else
                 {
-                    <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType) style="text-decoration:none;">
+                    <a class="button" href=@DetailsUrl(Activity.Handler, (int)Activity.ExperienceCreationType, Activity.ForceDisable) style="text-decoration:none;">
                         <img src="@GetImage()" class="image-header card-img">
                         <div class="card-img-overlay">
                             @if (Activity.OngoingStudents > 0)
@@ -112,17 +112,25 @@
         }
         return string.Empty;
     }
-    private string DetailsUrl(string handler, int xpCreationType)
+    private string DetailsUrl(string handler, int xpCreationType, bool IsForceDisabled)
     {
         string url = string.Empty;
-        if (xpCreationType == 3)
+        if (IsForceDisabled)
         {
-            url = $"explore/ote/{handler}";
+            url = $"maker/dashboard/expired-event/{handler}";
         }
-        else if (xpCreationType == 1)
+        else
         {
-            url = $"explore/{handler}";
+            if (xpCreationType == 3)
+            {
+                url = $"explore/ote/{handler}";
+            }
+            else if (xpCreationType == 1)
+            {
+                url = $"explore/{handler}";
+            }
         }
+        
         return url;
     }
 }
