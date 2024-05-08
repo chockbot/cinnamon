@@ -932,6 +932,92 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "from withTotalRatings rt " +
                                "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
                                    "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
+                                
+                               "with activities as ( " +
+                                   "select ac.\"Id\", " +
+                                       "case when ai.\"ImageLocation\" is null then '' else ai.\"ImageLocation\" end as \"ImageLocation\", " +
+                                       "Row_Number() over (partition by ac.\"Id\" order by ac.\"Id\", ai.\"Order\") as \"RowCnt\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"ActivityImages\" ai " +
+                                       "on ac.\"Id\" = ai.\"ActivityId\" " +
+                                   "where (ai.\"ImageLocation\" != '' or ai.\"ImageLocation\" is not null) " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"ImageBannerSrc\" = ac.\"ImageLocation\" " +
+                               "from activities ac " +
+                               "where ac.\"RowCnt\" = 1 and sm.\"ActivityId\" = ac.\"Id\" and " +
+                                   "( sm.\"ImageBannerSrc\" != ac.\"ImageLocation\" ); " +
+                                   
+                               "with actLocation as ( " +
+                                   "select ac.\"Id\", ac.\"ExperienceTypeId\", " +
+                                       "case " +
+                                           "when ad.\"Address1\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address1\" " +
+                                           "else '' " +
+                                       "end \"Address1\", " +
+                                       "case " +
+                                           "when ad.\"Address2\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address2\" " +
+                                           "else '' " +
+                                       "end \"Address2\", " +
+                                       "case " +
+                                           "when ad.\"District\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"District\" " +
+                                           "else '' " +
+                                       "end \"District\", " +
+                                       "case " +
+                                           "when ad.\"Subdivision\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Subdivision\" " +
+                                           "else '' " +
+                                       "end \"Subdivision\", " +
+                                       "case " +
+                                           "when ad.\"BarangayName\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"BarangayName\" " +
+                                           "else '' " +
+                                       "end \"BarangayName\", " +
+                                       "case " +
+                                           "when ad.\"CityName\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"CityName\" " +
+                                           "else '' " +
+                                       "end \"CityName\", " +
+                                       "case " +
+                                           "when ad.\"RegionName\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"RegionName\" " +
+                                           "else '' " +
+                                       "end \"RegionName\", " +
+                                       "case  " +
+                                           "when ad.\"PinnedLocation\" = '--NOTHING PROVIDED--' then '' " +
+                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"PinnedLocation\" " +
+                                           "else '' " +
+                                       "end \"PinnedLocation\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "join public.\"ActivityAddress\" ad " +
+                                       "on ad.\"ActivityId\" = ac.\"Id\" " +
+                               "), " +
+                               "combinedLocation as ( " +
+                                   "select ac.\"Id\", Trim(ac.\"Address1\" || ' ' || ac.\"Address2\" || ' ' || " +
+                                       "ac.\"District\" || ' ' || ac.\"Subdivision\" || ' ' || " +
+                                       "ac.\"BarangayName\" || ' ' || ac.\"CityName\" || ' ' || " +
+                                       "ac.\"RegionName\" || ' ' || ac.\"PinnedLocation\") \"Address\" " +
+                                   "from actLocation ac	" +
+                               ") " +
+                               "update public.\"ActivitySummaries\" su " +
+                               "set \"Location\" = ac.\"Address\" " +
+                               "from combinedLocation ac " +
+                               "where su.\"ActivityId\" = ac.\"Id\" and  " +
+                                   "(Trim(su.\"Location\") != ac.\"Address\"); " +
+
+                               "with provider as ( " +
+                                   "select ac.\"Id\", (cs.\"FirstName\" || ' ' || cs.\"LastName\") \"Provider\" " +
+                                   "from public.\"Customers\" cs " +
+                                   "join public.\"Activities\" ac " +
+                                       "on cs.\"Id\" = ac.\"CreatedBy\"	" +
+                               ") " +
+                               "update public.\"ActivitySummaries\" su " +
+                               "set \"Provider\" = pr.\"Provider\" " +
+                               "from provider pr " +
+                               "where su.\"ActivityId\" = pr.\"Id\" and su.\"Provider\" != pr.\"Provider\"; " +
+
                            "commit; ";
             
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
