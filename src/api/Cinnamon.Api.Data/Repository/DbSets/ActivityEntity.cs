@@ -831,7 +831,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 			string searchClause = string.Empty;
 			if(!string.IsNullOrEmpty(search))
 			{
-				searchClause = "and ac.\"Title\" Ilike @search ";
+				searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
 			}
 
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
@@ -857,7 +857,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
 				if(!string.IsNullOrEmpty(search))
 				{
-					var parameterSearch = new NpgsqlParameter("search", $"%{search}%");
+					var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
 					command.Parameters.Add(parameterSearch);
 				}
 
