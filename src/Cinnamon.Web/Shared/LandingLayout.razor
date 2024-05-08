@@ -6,85 +6,88 @@
 
 <PageTitle>Cinnamon</PageTitle>
 
-<div class="page app-name-section">
-    <main>
-        <div class="top-row px-4">
-            <div class="app-name col-lg-8 col-md-6 col-sm-8 col-8">
-                <a href="/explore" class="app-name">@Resources.App.appName</a>
-            </div>
-            <div class="login-button col-lg-4 col-md-6">
-                @if (isLogin)
-                {
-                    <p class="cinnamon-link" @onclick="NavigateToExplore">Explore</p>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
-                    <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
-                }
-                else
-                {
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
-                    <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
-                    <button class="btn-login" @onclick="() => signinModal.Show()">
-                        Login | Signup
-                    </button>
-                }
-            </div>
-            <div class="login-icon-sm col-sm-4 justify-content-sm-end col-4 justify-content-end text-center">
-                <div class="dropdown-mobile">
-                    <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                        <div class="burger-menu">
-                            <img src="images/landing-page-images/Menu.png">
-                        </div>
-                    </button>
-                    <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                        @if (isLogin)
-                        {
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToExplore" Text="Explore" />
-                            </li>
-                            <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog/cinnamon/">
-                                    About
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
-                                    Blogs
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToHelp" Text="Help" />
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="dropdown-item">
-                                <NavButton OnClick="() => signinModal.Show()" Text=@Resources.App.Sign />
-                            </li>
-                            <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog/cinnamon/">
-                                    About
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
-                                    Blogs
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToHelp" Text="Help" />
-                            </li>
-                        }
-                    </ul>
+<div class="page-wrapper">
+    <div class="page app-name-section">
+        <main>
+            <div class="top-row px-4">
+                <div class="app-name col-lg-8 col-md-6 col-sm-8 col-8">
+                    <a href="/explore" class="app-name">@Resources.App.appName</a>
+                </div>
+                <div class="login-button col-lg-4 col-md-6">
+                    @if (isLogin)
+                    {
+                        <p class="cinnamon-link" @onclick="NavigateToExplore">Explore</p>
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                        <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
+                    }
+                    else
+                    {
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                        <p class="cinnamon-link" @onclick="NavigateToHelp">Help</p>
+                        <button class="btn-login" @onclick="() => signinModal.Show()">
+                            Login | Signup
+                        </button>
+                    }
+                </div>
+                <div class="login-icon-sm col-sm-4 justify-content-sm-end col-4 justify-content-end text-center">
+                    <div class="dropdown-mobile">
+                        <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+                            <div class="burger-menu">
+                                <img src="images/landing-page-images/Menu.png">
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+                            @if (isLogin)
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToExplore" Text="Explore" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog/cinnamon/">
+                                        About
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
+                                        Blogs
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToHelp" Text="Help" />
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="() => signinModal.Show()" Text=@Resources.App.Sign />
+                                </li>
+                                <li class="dropdown-item">
+                                    <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog/cinnamon/">
+                                        About
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a type="button" class="btn border-0" style="text-decoration:none" href="https://cinnamon.ph/blog">
+                                        Blogs
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToHelp" Text="Help" />
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-        <article class="content">
-            @Body
-        </article>
-    </main>
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
+
 <ModalLogin @ref="signinModal" />
 @code
 {
