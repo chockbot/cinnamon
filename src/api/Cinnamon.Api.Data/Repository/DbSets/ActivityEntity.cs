@@ -8,6 +8,7 @@ using System.Data;
 using AutoMapper;
 using Npgsql;
 using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -267,7 +268,10 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         }
     }
 
-    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates)
+    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, 
+        ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates,
+        IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
+        IList<OteRescheduleDTO>? oteReschedules)
     {
         try
         {
@@ -322,91 +326,141 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                 result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
                 result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
                 result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
+                result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
 
-                // Update existing OteDates
-                foreach (var oteDate in result.OteSchedule.OteDates)
+                if(recreateSchedule)
                 {
-                    // Find the corresponding updated OteDate
-                    var updatedOteDate = oteDates.FirstOrDefault(d => d.Id == oteDate.Id);
+                    this.applicationContext.OteSchedulePricings
+                        .RemoveRange(result.OteSchedule.OteSchedulePricing);
+                    this.applicationContext.OteDates
+                        .RemoveRange(result.OteSchedule.OteDates);
+                    this.applicationContext.OteSchedulePricingGroups
+                        .RemoveRange(result.OteSchedule.OteSchedulePricingGroups);
 
-                    // If the updated OteDate exists, update its properties
-                    if (updatedOteDate != null)
+                    foreach (var pricingGrp in pricingGroups)
                     {
-                        oteDate.Date      = updatedOteDate.Date;
-                        oteDate.DateStart = updatedOteDate.DateStart;
-                        oteDate.DateEnd   = updatedOteDate.DateStart;
+                        pricingGrp.Id = 0;
+                        pricingGrp.OteSchedule = null;
+                        pricingGrp.OteScheduleId = result.OteSchedule.Id;
+                        this.applicationContext.OteSchedulePricingGroups.Add(pricingGrp);
+                    }
+
+                    foreach(var oteDate in oteDates)
+                    {
+                        oteDate.Id = 0;
+                        oteDate.OteScheduleId = result.OteSchedule.Id;
+                        foreach (var oteDatePricing in oteDate.OteSchedulePricing)
+                        {
+                            oteDatePricing.OteSchedule = null;
+                            oteDatePricing.OteScheduleId = result.OteSchedule.Id;
+                        }
+                        this.applicationContext.OteDates.Add(oteDate);
                     }
                 }
-                
-                // Add new OteDates
-                foreach (var newOteDate in oteDates.Where(d => d.Id == 0))
+
+                if(!recreateSchedule)
                 {
-                    var addedOteDate = new OteDate
+                    var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
+                    foreach(var price in updatedPricingList)
                     {
-                        Date = newOteDate.Date,
-                        DateEnd = newOteDate.DateEnd,
-                        DateStart = newOteDate.DateStart
-                    };
-                    result.OteSchedule.OteDates.Add(addedOteDate);
-                }
-
-
-                //Update Event Ticket Limit
-                result.OteSchedule.EventTicketLimit = oteSchedule.EventTicketLimit;
-
-                var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
-                foreach(var price in updatedPricingList)
-                {
-                    var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
-                    if(priceGroup is not null)
-                    {
-                        priceGroup.Description = price.Description;
-                        priceGroup.IsAbsorbFees = price.IsAbsorbFees;
-                        priceGroup.MaxSlots = price.MaxSlots;
-                        priceGroup.Price = price.Price;
-                        priceGroup.Name = price.Name;
-
-                        var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
-                        if(priceList is not null)
+                        var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
+                        if(priceGroup is not null)
                         {
-                            foreach(var ticketPrice in priceList)
+                            priceGroup.Description = price.Description;
+                            priceGroup.IsAbsorbFees = price.IsAbsorbFees;
+                            priceGroup.MaxSlots = price.MaxSlots;
+                            priceGroup.Price = price.Price;
+                            priceGroup.Name = price.Name;
+
+                            var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
+                            if(priceList is not null)
                             {
-                                ticketPrice.Description = price.Description;
-                                ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
-                                ticketPrice.MaxSlots = price.MaxSlots;
-                                ticketPrice.Price = price.Price;
-                                ticketPrice.Name = price.Name;
+                                foreach(var ticketPrice in priceList)
+                                {
+                                    ticketPrice.Description = price.Description;
+                                    ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
+                                    ticketPrice.MaxSlots = price.MaxSlots;
+                                    ticketPrice.Price = price.Price;
+                                    ticketPrice.Name = price.Name;
+                                }
                             }
                         }
                     }
-                }
-                var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
-                var newPricingGroups = newPricingList.Select(p => {
-                    return new OteSchedulePricingGroup {
-                        Description = p.Description,
-                        IsAbsorbFees = p.IsAbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Name = p.Name,
-                        Price = p.Price,
-                        OteSchedule = result.OteSchedule
-                    };
-                });
-                foreach(var item in newPricingGroups)
-                {
-                    result.OteSchedule.OteSchedulePricingGroups.Add(item);
 
-                    foreach(var oteDate in result.OteSchedule.OteDates)
+                    var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
+                    var newPricingGroups = newPricingList.Select(p => {
+                        return new OteSchedulePricingGroup {
+                            Description = p.Description,
+                            IsAbsorbFees = p.IsAbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Name = p.Name,
+                            Price = p.Price,
+                            OteSchedule = result.OteSchedule
+                        };
+                    });
+                    
+                    foreach(var item in newPricingGroups)
                     {
-                        oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
-                            Description = item.Description,
-                            IsAbsorbFees = item.IsAbsorbFees,
-                            MaxSlots = item.MaxSlots,
-                            Name = item.Name,
-                            Price = item.Price,
-                            TicketSold = item.TicketSold,
-                            OteSchedule = result.OteSchedule,
-                            OteSchedulePricingGroup = item,
-                        });
+                        result.OteSchedule.OteSchedulePricingGroups.Add(item);
+
+                        foreach(var oteDate in result.OteSchedule.OteDates)
+                        {
+                            oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
+                                Description = item.Description,
+                                IsAbsorbFees = item.IsAbsorbFees,
+                                MaxSlots = item.MaxSlots,
+                                Name = item.Name,
+                                Price = item.Price,
+                                TicketSold = item.TicketSold,
+                                OteSchedule = result.OteSchedule,
+                                OteSchedulePricingGroup = item,
+                            });
+                        }
+                    }
+
+                    // update ote dates from new dates and merge existing
+                    if(oteReschedules is not null)
+                    {
+                        Dictionary<DateTime, OteDate> dates = new();
+
+                        foreach (var schedule in oteReschedules)
+                        {
+                            var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Id == schedule.Id);
+                            if(oteDate is null) continue;
+
+                            if(!dates.ContainsKey(schedule.NewDate.Date))
+                            {
+                                oteDate.Date = schedule.NewDate.SetKindUtc();
+                                oteDate.DateStart = schedule.DateStart.SetKindUtc();
+                                oteDate.DateEnd = schedule.DateEnd.SetKindUtc();
+
+                                dates.Add(schedule.NewDate.Date, oteDate);
+                            }
+                            else 
+                            {
+                                var existingTickets = await this.applicationContext.OteTickets
+                                                                    .Where(t => t.OteDateId == oteDate.Id).ToListAsync();
+
+                                var modifiedOteDate = dates[schedule.NewDate.Date];
+
+                                foreach(var ticket in existingTickets)
+                                {
+                                    var ticketPricing = oteDate.OteSchedulePricing.First(p => p.Id == ticket.OteSchedulePricingId);
+                                    var ticketPricingGrp = result.OteSchedule.OteSchedulePricingGroups.First(p => p.Id == ticketPricing.OteSchedulePricingGroupId);
+
+                                    var newTicketPricing = modifiedOteDate.OteSchedulePricing.First(p => p.OteSchedulePricingGroupId == ticketPricingGrp.Id);
+
+                                    ticket.OteSchedulePricingId = newTicketPricing.Id;
+                                    ticket.OteDateId = modifiedOteDate.Id;
+
+                                    newTicketPricing.TicketSold += 1;
+                                }
+
+                                var pricingSchedsToDelete = result.OteSchedule.OteSchedulePricing.Where(p => p.OteDateId == oteDate.Id);
+                                pricingSchedsToDelete.ToList().ForEach(p => applicationContext.OteSchedulePricings.Remove(p));
+                                result.OteSchedule.OteDates.Remove(oteDate);
+                            }
+                        }
                     }
                 }
 
@@ -986,6 +1040,57 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
         catch (Exception ex)
         {
             return AppResult<bool>.CreateFailed(ex, "An error occured when updating summary by batch.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId)
+    {
+        try
+        {
+            string query = "select os.\"ActivityId\", od.\"Id\" \"OteDateId\", " +
+                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+                               "count(tc.\"Id\") \"Cnt\" " +
+                           "from public.\"OteDates\" od " +
+                           "join public.\"OteSchedules\" os " +
+                               "on od.\"OteScheduleId\" = os.\"Id\" " +
+                           "left join public.\"OteTickets\" tc " +
+                               "on tc.\"OteDateId\" = od.\"Id\" " +
+                           "where os.\"ActivityId\" = " + activityId + " " +
+                           "group by os.\"ActivityId\", od.\"Id\", " +
+                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" ";
+            
+            IList<OteAlreadyBookDate> listResult = new List<OteAlreadyBookDate>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new OteAlreadyBookDate {
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            Date = Convert.ToDateTime(item["Date"]),
+                            DateEnd = Convert.ToDateTime(item["DateEnd"]),
+                            DateStart = Convert.ToDateTime(item["DateStart"]),
+                            OteDateId = Convert.ToInt32(item["OteDateId"]),
+                            BookCount = Convert.ToInt32(item["Cnt"])
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateSucceeded(listResult, "Successfully get ote already booked");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already book dates.");
         }
     }
 }

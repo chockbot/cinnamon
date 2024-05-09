@@ -511,6 +511,14 @@ public class ActivityController : ControllerBase
                 };
             }).ToList() : null;
 
+            var oteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new OteRescheduleDTO {
+                DateEnd = s.DateEnd,
+                DateStart = s.DateStart,
+                NewDate = s.NewDate,
+                OldDate = s.OldDate,
+                Id = s.Id
+            }).ToList() : null;
+
             var result = await activityRepository.UpdateOteActivity(args.Activity.Id, args.Activity.EventName, args.Activity.Description,
                 args.Activity.ExperienceTypeId, args.Activity.StringPrice, args.Activity.HouseNo ?? string.Empty, args.Activity.CityNumber ?? string.Empty,
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
@@ -519,7 +527,7 @@ public class ActivityController : ControllerBase
                 args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,
                 args.Activity.EventTicketLimit, args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
-                dateOverrides, onlineEvents);
+                dateOverrides, onlineEvents, args.RecreateSchedule, oteReschedules);
             
             if(!result.Succeeded || result.Result is null)
             {
@@ -736,6 +744,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("DeleteTicket")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
@@ -754,6 +763,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteAlreadyBooked/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBooked(int activityId)
+    {
+        try
+        {
+            var result = await activityRepository.OteAlreadyBooked(activityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OteAlreadyBookedResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteAlreadyBookedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

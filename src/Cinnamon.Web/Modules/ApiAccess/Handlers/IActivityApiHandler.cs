@@ -65,4 +65,5 @@ public interface IActivityApiHandler
     Task<AppResult<UpdateSharedLinkStatusResult>> UpdateSharedLinkStatus(UpdateSharedLinkStatusArgs args, string token);
     Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
+    Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token);
 }

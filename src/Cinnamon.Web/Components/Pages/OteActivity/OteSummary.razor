@@ -1,6 +1,8 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
+@using Cinnamon.Framework.Helpers;
 @implements IOteComponent;
-@inject IJSRuntime JS;
+@inject IJSRuntime JS;  
 
 <section class="ote-summary-wrapper">
     @if(Summary is not null)
@@ -15,10 +17,15 @@
             <Divider />
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
-                <p class="font-20 color-black-100 mb-0">
-                    @Summary.PricingData.DateFrom.ToString("dd MMM yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
-                </p>
-            </div>
+                <div class="date-group">
+                @foreach (var date in GeneratedDates)
+                {
+                    <p class="font-20 color-black-100 mb-0">
+                        • @date.Date.ToString("MMMM dd, yyyy") | @date.DateStart.ToString("hh:mm tt") - @date.DateEnd.ToString("hh:mm tt")
+                    </p>
+                }
+                </div>
+            </div>  
             <Divider />
             @if(Summary.LocationData.ExperienceType == 1)
             {
@@ -57,6 +64,8 @@
 
     private bool invokingNext = false;
 
+    private GenerateRecurrenceDate recurrenceHelper = new();
+
     private async Task NextClick()
     {
         if(OnNextClick.HasDelegate)
@@ -74,10 +83,56 @@
             await OnPrevClick.InvokeAsync();
         }
     }
-
     public Task<bool> FieldValid()
     {
         return Task.Run<bool>(() => true);
+    }
+
+    private IEnumerable<GenerateRecurrenceDate.DateItem> GeneratedDates 
+    {
+        get 
+        {
+            IEnumerable<GenerateRecurrenceDate.DateItem> dates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
+            
+            if(Summary is not null && Summary.PricingData is not null)
+            {
+                var every = Summary.PricingData.DurationEvery ?? 0;
+                var dateStart = Summary.PricingData.DurationStart ?? DateTime.Now;
+                var dateEnd = Summary.PricingData.DurationEnd ?? DateTime.Now;;
+
+                var timeStart = Summary.PricingData.DateFrom.TimeOfDay;
+                var timeDuration = Summary.PricingData.DateTo - Summary.PricingData.DateFrom;
+
+                string weekString = Summary.PricingData.WeekString ?? string.Empty;
+
+                var monthSelection = Summary.PricingData.MonthSelection ?? 0;
+                var onDayDate = Summary.PricingData.OnDayDate ?? 0;
+                var monthRepeat = Summary.PricingData.MonthRepeat ?? string.Empty;
+                var monthDay = Summary.PricingData.MonthDay ?? string.Empty;
+
+                if(Summary.PricingData.BookedDates is not null && Summary.PricingData.BookedDates.Count() > 0)
+                {
+                    dates = Summary.PricingData.BookedDates.DistinctBy(d => d.NewDate).Select(d => new GenerateRecurrenceDate.DateItem {
+                        Date = d.NewDate.Date,
+                        DateStart = d.NewDate.Date.Add(timeStart),
+                        DateEnd = d.NewDate.Date.Add(timeStart).Add(timeDuration)
+                    });
+                }
+                else 
+                {
+                    dates = Summary.PricingData.Recurrences switch {
+                        "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+                        "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+                        "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
+                        "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
+                            onDayDate, monthRepeat, monthDay),
+                        _ => recurrenceHelper.GenerateNoRepeat(Summary.PricingData.DateFrom, Summary.PricingData.DateTo)
+                    };
+                }
+            }
+
+            return dates;
+        }    
     }
 
     public class ComponentSummary 

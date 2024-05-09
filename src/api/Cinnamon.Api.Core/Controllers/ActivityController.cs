@@ -79,6 +79,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteOnlineEventHandler deleteOnlineEventHandler;
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
+    private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -104,7 +105,8 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, IDeleteTicketHandler deleteTicketHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
+        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
     {
         _logger = logger;
 
@@ -165,6 +167,7 @@ public class ActivityController : ControllerBase
         this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
         this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
+        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
     }
 
     [Route("CreateActivity")]
@@ -2739,7 +2742,12 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,
                         TicketRestriction = s.TicketRestriction,
                     };
-                }): null
+                }): null,
+                OteReschedules = args.OteReschedules is not null ? args.OteReschedules.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.OteReschedule {
+                    OldDate = s.OldDate,
+                    NewDate = s.NewDate,
+                    Id = s.Id
+                }) : null
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2985,6 +2993,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("DeleteOnlineEvent")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
@@ -3209,6 +3218,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteAlreadyBookedDates/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteAlreadyBookedDatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteAlreadyBookedDates(int activityId)
+    {
+        try
+        {
+            var result = await oteAlreadyBookedHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteAlreadyBookedArgs {
+                ActivityId = activityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.Activity.OteAlreadyBookedDTO>>(result.Result.OteAlreadyBookedItems);
+
+            return new JsonResult(new OteAlreadyBookedDatesResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
