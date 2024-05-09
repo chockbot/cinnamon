@@ -802,21 +802,6 @@
     private Calendar? calendar { get; set; }
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-
-        }
-        else
-        {
-            if (existingList.Pricings.Count == 0)
-            {
-                AddMoreTicketPrice();
-            }
-        }
-    }
-
     private async Task NextClick()
     {
         if (OnNextClick.HasDelegate)
@@ -1774,7 +1759,6 @@
                     else
                     {
                         existingList.Pricings.Add(modelPricing);
-                        return;
                     }
                 }
                 modelPricingList.Pricings = existingList.Pricings;
