@@ -135,7 +135,8 @@ public class CustomerController : ControllerBase
 
             var result = applyFilters ?
                 await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, 
-                    args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike, args.IsOfficialPartner) :
+                    args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
+                    args.HandlerLike, args.IsOfficialPartner, args.HasVerification) :
                 await customerRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)

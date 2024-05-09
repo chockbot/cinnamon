@@ -32,6 +32,22 @@
                         <h3 class="font-20 font-weight-700 color-black-100 mb-5 m-font-18">Ticket Availed</h3>
                         @foreach (var item in AvailableTickets)
                         {
+                            if (ticketLimit != 0 && IsLimit)
+                            {
+                                if (ticketLimit == activity.EventTicketLimit)
+                                {
+                                    stringMaxTicket = $"Max {ticketCount} {(ticketLimit == 1 ? "ticket" : "tickets")} per customer.";
+                                }
+                                else
+                                {
+                                    stringMaxTicket = $"You can only purchase {ticketLimit} {(ticketLimit == 1 ? "ticket" : "tickets")}.";
+                                }
+
+                            }
+                            else
+                            {
+                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                            }
                             <Row @key="item" class="mb-4 align-items-center">
                                 <Column ColumnSize="ColumnSize.Is8" class="item-pricings-details">
                                     <p class="font-20 font-weight-700 color-black-100 mb-2">@item.Name</p>
@@ -61,7 +77,16 @@
                                             @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                         </span>
                                         <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select cursor-pointer">
-                                            <span class="item-action">+</span>
+                                            @if (activity.EventTicketLimit != 0)
+                                            {
+                                                <Tooltip Text="@stringMaxTicket" Multiline>
+                                                <span class="item-action">+</span>
+                                            </Tooltip>
+                                            }
+                                            else
+                                            {
+                                                <span class="item-action">+</span>
+                                            }
                                         </span>
                                     </div>
                                 </Column>
@@ -235,7 +260,18 @@
                                     <div>
                                         <p class="font-16 font-weight-700 color-black-100 mb-1 line-h-1-1">@activity.EventName</p>
                                         <p class="font-14 color-grey-100 mb-1 line-h-1-1">@ActivityLocation</p>
-                                        <p class="font-14 color-grey-100 mb-1 line-h-1-1">@activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt")</p>
+                                        @if (!string.IsNullOrEmpty(selectedDate))
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @selectedDate
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="font-14 color-grey-100 mb-1 line-h-1-1">
+                                                @activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt").ToUpper()
+                                            </p>
+                                        }
                                     </div>
                                 </div>
                                 <Divider />
@@ -498,7 +534,7 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     [Parameter, SupplyParameterFromQuery]
@@ -520,6 +556,10 @@
     private IDictionary<int, TicketInfo> selectedTickets = new Dictionary<int, TicketInfo>();
     private IEnumerable<OtePricing> AvailableTickets {get; set;} = Enumerable.Empty<OtePricing>();
     private Modal? failedModal;
+    private string selectedDate { get; set; }
+    private bool IsLimit { get; set; }
+    private int ticketLimit { get; set; }
+    private string stringMaxTicket { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -588,6 +628,8 @@
 
             activity = mapper.Map<OteActivity>(act);
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id);
+            activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
+            IsLimit = act.OteSchedule.EventTicketLimit != 0 ? true : false;
 
             // load selected tickets if any
             if(!string.IsNullOrEmpty(Ticket))
@@ -597,6 +639,8 @@
                 if(selecteds.Count > 0)
                 {
                     var ids = selecteds.First().Split("-");
+                    selectedDate = $"{ids[2]} | {ids[3]}";
+                    ticketLimit = int.Parse(ids[4]);
                     if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
                     {
                         var defaultDatePricing = activity.Pricings.FirstOrDefault(p => p.Id == v1);
@@ -923,26 +967,46 @@
 
     private Task AddSelectedTicket(OtePricing pricing)
     {
-        if(pricing.TicketSold >= pricing.MaxSlots)
+        if (pricing.TicketSold >= pricing.MaxSlots)
         {
             return Task.CompletedTask;
         }
-
-        if(selectedTickets.ContainsKey(pricing.Id))
+        if (selectedTickets.ContainsKey(pricing.Id))
         {
-            if(selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
+            if (selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
             {
                 return Task.CompletedTask;
             }
-
+            if (selectedTickets[pricing.Id].Count >= ticketLimit && IsLimit)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
+            {
+                return Task.CompletedTask;
+            }
             selectedTickets[pricing.Id].Count++;
         }
-        else {
-            selectedTickets.Add(pricing.Id, new TicketInfo {
-                Count = 1,
-                Id = pricing.Id,
-                Price = pricing.Price
-            });
+        else
+        {
+            if (ticketLimit == 0 && IsLimit)
+            {
+                return Task.CompletedTask;
+            }
+            else if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
+            {
+                return Task.CompletedTask;
+            }
+            else
+            {
+                selectedTickets.Add(pricing.Id, new TicketInfo
+                    {
+                        Count = 1,
+                        Id = pricing.Id,
+                        Price = pricing.Price,
+                    });
+            }
+
         }
         return Task.CompletedTask;
     }

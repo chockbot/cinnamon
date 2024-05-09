@@ -11,6 +11,7 @@
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
 @inject IAccountApiHandler accountApiHandler;
+@inject ITransactionApiHandler transactionApiHandler;
 @inject NavigationManager NavigationManager;
 @inject IMapper mapper;
 @inject IJSRuntime JS;
@@ -214,6 +215,23 @@
                             <div class="border-top-1-solid border-color-grey-200 p-3">
                                 @foreach (var item in AvailablePriceList)
                                 {
+                                    if (ticketCount != 0 && IsLimit)
+                                    {
+                                        if (ticketCount == activity.EventTicketLimit)
+                                        {
+                                            stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                        }
+                                        else
+                                        {
+                                            stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                        }
+                                        
+                                    }
+                                    else
+                                    {
+                                        stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                    }
+
                                     <Row @key="item" class="align-items-center mb-4">
                                         <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop" Padding="Padding.Is1.FromBottom">
                                             <p class="font-20 font-weight-700 color-black-100 mb-0">@item.Name</p>
@@ -245,9 +263,20 @@
                                                 <span class="p-1 border-right-1-solid counter-item">
                                                     @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
                                                 </span>
-                                                <span @onclick="() => AddSelectedTicket(item)" class="p-1 counter-item prevent-select">
-                                                    <span class="item-action">+</span>
+                                                <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-1 counter-item prevent-select">
+                                                    @if(activity.EventTicketLimit != 0 && currentLogin is not null)
+                                                    {
+                                                        <Tooltip Text="@stringMaxTicket" Multiline>
+                                                            <span class="item-action">+</span>
+                                                        </Tooltip>
+                                                    }
+                                                    else
+                                                    {
+                                                         <span class="item-action">+</span>
+                                                    }
+
                                                 </span>
+                                                
                                             </div>
                                         </Column> 
                                     </Row>
@@ -566,6 +595,10 @@
     public string ProfileHandler { get; set; }
     public bool showFullAbout = false;
     private DateTime selectedDateStart;
+    private IEnumerable<TicketItem> otesItems { get; set; }
+    private int ticketCount { get; set; }
+    private string stringMaxTicket { get; set; }
+    private bool IsLimit { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -606,6 +639,28 @@
                     currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
                     ProfileHandler = profileResult.Result.Result.Handler;
                 }
+                //Get the number of ticket purchased in this event
+                var ticketPurchase = await activityHandler.CustomerOte(token);
+                if (ticketPurchase.Succeeded && ticketPurchase.Result is not null && ticketPurchase.Result.IsSuccess)
+                {
+                    otesItems = ticketPurchase.Result.Result.Where(a => a.ActivityId == activity.Id).Select(t =>
+                    {
+                        return new TicketItem
+                        {
+                            EventName = t.EventTitle,
+                            PurchaseOrderId = t.PurchaseOrderId
+                        };
+                    });
+                    foreach (var item in otesItems)
+                    {
+                        var count = await transactionApiHandler.GetOtePurchaseOrder(item.PurchaseOrderId, token);
+                        if (count.Succeeded && count.Result is not null && count.Result.IsSuccess)
+                        {
+                            ticketCount += count.Result.Result.Tickets.Count();
+                        }
+                    }
+                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit - ticketCount : 0;
+                } 
             }
         }
     }
@@ -661,18 +716,22 @@
             }
 
             activity = mapper.Map<OteActivity>(act);
+            activity.Pricings         = activity.Pricings.OrderBy(t => t.Id).ToList();
+            activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
+            activity.Sold             = activity.Pricings.Sum(a => a.TicketSold);
+            activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
+            IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
 
-            activity.Pricings = activity.Pricings.OrderBy(t => t.Id).ToList();
-            activity.OteDates = activity.OteDates.OrderBy(d => d.Date);
-            activity.Sold     = activity.Pricings.Sum(a => a.TicketSold);
 
-            selectedDate = SelectedDates.FirstOrDefault();
+
+            selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
+            //selectedDate = SelectedDates.FirstOrDefault();
 
             ViewAvailableDates();
 
             // select first ticket id
             /* if(activity.Pricings.Count() > 0)
-            {
+                {
                 AddSelectedTicket(activity.Pricings.First());
             } */
         }
@@ -819,7 +878,7 @@
                 ActivityId = activity.Id,
                 CustomerId = currentLogin.Id 
             }, token);
-            
+
             await NotificationService.Success("One time event added to favorites.","Success");
         }
         else 
@@ -854,14 +913,15 @@
         string queryValue = string.Empty;
         foreach(var item in selectedTickets)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count},";
+            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()}-{ticketCount},";
         }
 
         string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
         if(currentLogin is null)
         {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
             await loginModal.Show();
-            signInReturnUrl = paymentUrl;
+            signInReturnUrl = oteDetailsUrl;
             return;
         }
 
@@ -876,29 +936,49 @@
         }
     }
 
-    private Task AddSelectedTicket(OtePricing pricing)
+    private Task AddSelectedTicket(OtePricing pricing, int limitTicket)
     {
         if(pricing.TicketSold >= pricing.MaxSlots)
         {
             return Task.CompletedTask;
         }
-
         if(selectedTickets.ContainsKey(pricing.Id))
         {
             if(selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
             {
                 return Task.CompletedTask;
             }
-
+            if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
             selectedTickets[pricing.Id].Count++;
         }
-        else {
-            selectedTickets.Add(pricing.Id, new TicketInfo {
-                Count = 1,
-                Id = pricing.Id,
-                Price = pricing.Price,
-                Name = pricing.Name
-            });
+        else 
+        {
+            if (limitTicket == 0 && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            else if(selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            else
+            {
+                selectedTickets.Add(pricing.Id, new TicketInfo
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    Name = pricing.Name
+                });
+            }
+            
         }
         return Task.CompletedTask;
     }
@@ -940,7 +1020,7 @@
             IList<DateTime> dates = new List<DateTime>();
             if(activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.Date).ToList();
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
             }
             return dates;
         }
@@ -1011,5 +1091,10 @@
         {
             NavigationManager.NavigateTo(url);
         }
+    }
+    private class TicketItem
+    {
+        public int PurchaseOrderId { get; set; }
+        public string EventName { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Repository.Interfaces;
@@ -18,7 +19,10 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<Activity>> CreateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
         OteSchedule oteSchedule, IList<OteSchedulePricingGroup> schedulePricingGroups, 
         IList<OteDate> oteDates, IList<OteDateOverride> dateOverrides, IList<OteOnlineEvent> oteOnlineEvents);
-    Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, OteSchedule oteSchedule);
+    Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, ActivityAddress address, 
+        OteSchedule oteSchedule, IList<OteDate> oteDates, IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
+        IList<OteRescheduleDTO>? oteReschedules);
+        
     Task<AppResult<Activity>> FindOteByHandler(string handler, bool includeDescription = false, bool includeAddress = false,
         bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvents = false, bool includeTickets = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetOTEByProvider(int Id);
@@ -29,4 +33,5 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search, int? categoryId,
         int? starReview = null, int? experienceType = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
+    Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId);
 }

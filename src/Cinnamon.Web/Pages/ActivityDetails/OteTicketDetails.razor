@@ -20,7 +20,7 @@
             <Container>
                 <div class="@(ticketDetails.Tickets.Count() > 1 ? "" : "ticket-info") row">
                     @foreach (var item in ticketDetails.Tickets)
-                    {   
+                    {
                         <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="mb-3">
                             <div class="ticket-box">
                                 <div class="p-3">
@@ -58,7 +58,7 @@
             </Container>
         </div>
     }
-    else
+    else 
     {
         <Container>
             <Row class="mb-4 mt-5 ticket-box">
@@ -162,6 +162,7 @@
         </Container>
     }
 }
+
 <ModalLogin @ref="signinModal" ReturnUrl="@signInReturnUrl" />
 
 @code 

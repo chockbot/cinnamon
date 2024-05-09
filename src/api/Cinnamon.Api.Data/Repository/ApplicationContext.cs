@@ -376,9 +376,6 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic content
         modelBuilder.Entity<DynamicContent>()
             .HasIndex(d => d.Identifier);
-        // announcements
-        modelBuilder.Entity<Announcement>()
-            .HasIndex(a => a.Status);
 
         // for activity summary and activity
         modelBuilder.Entity<ActivitySummary>()
@@ -391,6 +388,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(s => s.ReviewAccumulated);
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed");
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Location);
+        modelBuilder.Entity<ActivitySummary>()
+            .HasIndex(s => s.Provider);
         modelBuilder.Entity<ActivitySummary>()
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
         modelBuilder.Entity<Activity>()

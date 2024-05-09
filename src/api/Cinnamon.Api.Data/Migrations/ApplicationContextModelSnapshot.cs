@@ -500,8 +500,16 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Ongoing")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("ReviewAccumulated")
                         .HasColumnType("numeric");
@@ -516,7 +524,11 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
+                    b.HasIndex("Location");
+
                     b.HasIndex("Ongoing");
+
+                    b.HasIndex("Provider");
 
                     b.HasIndex("ReviewAccumulated");
 
@@ -2057,6 +2069,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("EventDurationTimeUnit")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("EventTicketLimit")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ExtraOptions")
                         .IsRequired()
