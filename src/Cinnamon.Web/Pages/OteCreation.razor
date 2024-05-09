@@ -541,7 +541,8 @@
                         OnDayDate = schedule.OnDayDate,
                         WeekString = schedule.WeekString,
                         EventDurationCount = schedule.EventDurationCount,
-                        EventDurationTimeUnit = schedule.EventDurationTimeUnit
+                        EventDurationTimeUnit = schedule.EventDurationTimeUnit,
+                        EventTicketLimit = schedule.EventTicketLimit    
                     },
                     Pricings = schedule.ItemPrices.Select(p =>
                     {
@@ -549,9 +550,9 @@
                         {
                             Description = p.Description,
                             IsAbsorbFees = p.AbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
-                            Name = p.Name
+                            MaxSlots     = p.MaxSlots,
+                            Price        = p.Price,
+                            Name         = p.Name
                         };
                     }),
                     DateOverrides = schedule.DateOverrides.Select(d =>
@@ -635,6 +636,7 @@
                         ScheduleFrom = schedule.DateFrom,
                         ScheduleTo = schedule.DateTo,
                         Recurrence = schedule.Recurrences,
+                        EventTicketLimit = schedule.EventTicketLimit
                     },
                     Pricings = schedule.ItemPrices.Select(p =>
                     {

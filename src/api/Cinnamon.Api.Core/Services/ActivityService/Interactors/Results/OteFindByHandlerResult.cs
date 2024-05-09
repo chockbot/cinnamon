@@ -76,6 +76,7 @@ public class OteFindByHandlerResult
         public string ExtraOptions {get; set;}
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
+        public int EventTicketLimit { get; set; }
         public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
     }
 

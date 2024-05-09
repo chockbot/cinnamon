@@ -13,6 +13,7 @@ public class OteSchedule : BaseEntity
     public string ExtraOptions {get; set;}
     public int EventDurationCount {get; set;}
     public string EventDurationTimeUnit {get; set;}
+    public int EventTicketLimit { get; set; }
 
     public virtual Activity Activity {get; set;}
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}

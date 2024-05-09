@@ -274,6 +274,7 @@
             </div>
         </Validations>
     </div>
+
     <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
         <div>
             <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -312,6 +313,39 @@
             </div>
         </div>
     </div>
+
+    @*Ticket Limit*@
+    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <Field>
+            <FieldLabel>
+                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+                    Max Ticket per Customer
+                </h3>
+            </FieldLabel>
+            <div class="ticket-limit-group">
+                <FieldBody>
+                    <RadioGroup TValue="int" Name="limit-type" CheckedValue="ModelState.IsLimit" CheckedValueChanged="CheckLimitChanged">
+                        <label for="no-limit" class="border-radius-10 prevent-select py-2 text-capitalize cursor-pointer">
+                            <Radio class="checkbox-round" ElementId="no-limit" TValue="int" Value="1">No Limit</Radio>
+                        </label>
+                        <label for="set-limit" class="border-radius-10 label-set-limit">
+                            <Radio class="checkbox-round" ElementId="set-limit" TValue="int" Value="2">Set Limit</Radio>
+                        </label>
+                    </RadioGroup>
+                    @if (ModelState.IsLimit == 2)
+                    {
+                        <label for="specify-limit" class="border-radius-10 prevent-select px-3 py-2 specific-text">Specify:</label>
+                        <NumericPicker ElementId="specify-limit" Decimals="0" ShowStepButtons="false" TValue="int" Size="Size.Medium" class="@LimitClass" @bind-Value="ModelState.EventTicketLimit">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </NumericPicker>
+                    }
+                 </FieldBody>
+            </div>
+        </Field>
+    </div>
+
     <Divider class="d-none m-d-block" />
     <div class="my-3 border-radius-10">
         <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
@@ -745,6 +779,7 @@
     private Validations? pringListFormValidation;
     private Validation? dateFromValidation;
     private Validation? dateToValidation;
+    private Validation? maxTicketLimit;
     private bool showErrors = false;
     private string errorMessageAlert { get; set; }
     private bool DisplayDelete = true;
@@ -804,7 +839,12 @@
             bool pricingValid = await pricingFormValidation.ValidateAll();
             bool scheduleValid = await scheduleFormValidation.ValidateAll();
             bool pricingListValid = await pringListFormValidation.ValidateAll();
-            bool valid = pricingValid && scheduleValid && pricingListValid;
+            bool isSetLimit = true;
+            if(ModelState.IsLimit == 2)
+            {
+                isSetLimit = ModelState.EventTicketLimit != 0;
+            }
+            bool valid = pricingValid && scheduleValid && pricingListValid && isSetLimit;
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -882,6 +922,23 @@
         }
     }
 
+    private string LimitClass
+    {
+        get
+        {
+            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
+            if(showErrors)
+            {
+                if(ModelState.EventTicketLimit == 0)
+                {
+                    return $"{defaultClass} is-invalid";
+                }
+                return $"{defaultClass} is-valid";
+            }
+            return defaultClass;
+        }
+    }
+
     public ModelData GetData()
     {
         bool isRecurrence = ModelState.Recurrences != "do-not-repeat";
@@ -909,29 +966,30 @@
             WeekString = weekString,
             EventDurationCount = ModelState.EventDurationCount,
             EventDurationTimeUnit = ModelState.EventDurationTimeUnit,
-
-                ItemPrices = modelPricingList.Pricings.Select(p =>
+            EventTicketLimit = ModelState.EventTicketLimit,
+            IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
+            ItemPrices = modelPricingList.Pricings.Select(p =>
+            {
+                return new ModelData.ItemPrice
                 {
-                    return new ModelData.ItemPrice
-                    {
-                        AbsorbFees = p.AbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Price = p.Price,
-                        Description = p.Description,
-                        Id = p.Id,
-                        Name = p.Name,
-                        TicketSold = p.TicketSold
-                    };
-                }).ToList(),
-                DateOverrides = dateOverrides.Select(s =>
+                    AbsorbFees = p.AbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Description = p.Description,
+                    Id = p.Id,
+                    Name = p.Name,
+                    TicketSold = p.TicketSold
+                };
+            }).ToList(),
+            DateOverrides = dateOverrides.Select(s =>
+            {
+                return new ModelData.DateOverride
                 {
-                    return new ModelData.DateOverride
-                    {
-                        Date = s.Key,
-                        TimeEnd = s.Value.TimeEnd,
-                        TimeStart = s.Value.TimeStart
-                    };
-                }).ToList()
+                    Date = s.Key,
+                    TimeEnd = s.Value.TimeEnd,
+                    TimeStart = s.Value.TimeStart
+                };
+            }).ToList()
             };
         data.ItemPrices.Add(new ModelData.ItemPrice
             {
@@ -1244,6 +1302,8 @@
         public int EventDurationCount { get; set; }
         public string EventDurationTimeUnit { get; set; }
         public int TicketSold { get; set; }
+        public int IsLimit { get; set; } = 1;
+        public int EventTicketLimit { get; set; }
 
         public class ItemPrice
         {
@@ -1345,6 +1405,9 @@
         public int EventDurationCount { get; set; } = 1;
         public string EventDurationTimeUnit { get; set; } = "hrs";
         public TimeSpan EventDurationTimeStart { get; set; } = DateTime.Now.TimeOfDay;
+        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
+        public int EventTicketLimit { get; set; }
+        public int IsLimit { get; set; } = 1;
 
         // for date override
         public TimeSpan TimeStart { get; set; } = DateTime.Now.TimeOfDay;
@@ -1498,6 +1561,8 @@
         int daysToSkip = repeat;
 
         DateTime recurringDate = start;
+ 
+
         while (recurringDate <= end)
         {
             var item = new DateItem
@@ -1804,6 +1869,16 @@
     public class ComponentSummary
     {
         public OteOnlineEvent.ModelData OnlineData { get; set; }
+    }
+
+    private async Task CheckLimitChanged(int type)
+    {
+        ModelState.IsLimit = type;
+        if (type == 1)
+        {
+            ModelState.EventTicketLimit = 0;
+        }
+        StateHasChanged();
     }
     // until here. Date generation. Refactor this Code
 }

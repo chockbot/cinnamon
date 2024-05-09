@@ -92,6 +92,10 @@ public class UpdateOteActivityArgs
 
         [Required]
         public string EventDurationTimeUnit { get; set; }
+
+        [Required]
+
+        public int EventTicketLimit { get; set; }
     }
 
     public class UpdateOtePricing 

@@ -1696,7 +1696,7 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
@@ -1746,7 +1746,8 @@ public class ActivityRepository : IActivityRepository
                 RepeatEvery = repeatEvery,
                 SelectedDays = selectedDays,
                 EventDurationCount = eventDurationCount,
-                EventDurationTimeUnit = eventDurationTimeUnit
+                EventDurationTimeUnit = eventDurationTimeUnit,
+                EventTicketLimit = eventTicketLimit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1849,7 +1850,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
+        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
@@ -1864,7 +1865,7 @@ public class ActivityRepository : IActivityRepository
                 IsPublished = isPublished,
                 ExperienceCategoryId = categoryId,
                 Handler = handler,
-                IsComingSoon = comingSoon
+                IsComingSoon = comingSoon,
             };
 
             var activityDescription = new Entities.ActivityDescription {
@@ -1893,7 +1894,8 @@ public class ActivityRepository : IActivityRepository
                 RepeatEvery           = repeatEvery,
                 SelectedDays          = selectedDays,
                 EventDurationCount    = eventDurationCount,
-                EventDurationTimeUnit = eventDurationTimeUnit
+                EventDurationTimeUnit = eventDurationTimeUnit,
+                EventTicketLimit      = ticketEventLimit
             };
             var pricingsGroup = pricingDTOs.Select(p => {
                 return new OteSchedulePricingGroup
