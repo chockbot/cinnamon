@@ -35,7 +35,7 @@
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-4">ticket prices</h3>
                 @foreach (var item in Summary.PricingData.ItemPrices)
                 {
-                    <p class="font-20 font-weight-700 color-green-100 mb-2">₱ @item.Price.ToString("#,###")</p>
+                    <p class="font-20 font-weight-700 color-green-100 mb-2">₱ @item.Price?.ToString("#,###")</p>
                     <p class="font-16 color-grey-100 mb-3">@item.Description</p>
                 }
             </div>
