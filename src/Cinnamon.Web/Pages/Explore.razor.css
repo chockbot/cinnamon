@@ -1,7 +1,10 @@
-﻿.cinnamon-logo {
+﻿button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.cinnamon-logo {
   display: none;
 }
-
 .top-row {
   background-color: white;
   border-bottom: 1px solid var(--lineColor);
@@ -235,17 +238,21 @@ img.img-icon-home {
 }
 
 .become {
-  width: 15rem;
-  height: 100%;
-  font-weight: 900;
-  text-align: center;
-  font-family: "Nunito";
-  font-size: 1.5vw;
+    width: 15rem;
+    height: 100%;
+    font-weight: 900;
+    text-align: center;
+    font-family: "Nunito";
+    font-size: 1.5vw;
+    transition: transform .25s;
 }
 
 .become:hover {
   color: #ffa942;
 }
+    .become:active {
+        transform: scale(.94);
+    }
 
 .input-group {
   width: 25rem;
@@ -475,20 +482,30 @@ img {
 }
 
 #btn-search {
-  background-color: #ffa942;
-  border-radius: 50%;
-  outline: none;
-  box-shadow: none;
+    background-color: #ffa942;
+    border-radius: 50%;
+    outline: none;
+    box-shadow: none;
+    transition: transform .25s;
 }
+    #btn-search:active {
+        transform: scale(.94);
+    }
 
 #btn-clear {
-  outline: none;
-  box-shadow: none;
+    outline: none;
+    box-shadow: none;
+    transition: transform .25s;
 }
-.schedule-swiper .swiper-wrapper {
-  display: flex;
-  flex-wrap: nowrap; /* Ensure items stay in a single row */
-}
+
+    #btn-clear:active {
+        transform: scale(.94);
+    }
+
+    .schedule-swiper .swiper-wrapper {
+        display: flex;
+        flex-wrap: nowrap; /* Ensure items stay in a single row */
+    }
 .schedule-swiper .swiper-slide:nth-child(3) {
   order: 3;
 }
@@ -634,14 +651,18 @@ img {
     font-size: 0.5vw;
   }
 
-  .heading {
-    font-family: "Nunito-Bold";
-    font-style: normal;
-    font-weight: 800;
-    font-size: 22px;
-    line-height: 30px;
-    color: #343d4c;
-  }
+    .heading {
+        font-family: "Nunito-Bold";
+        font-style: normal;
+        font-weight: 800;
+        font-size: 22px;
+        line-height: 30px;
+        color: #343d4c;
+        transition: transform .25s;
+    }
+        .heading:active {
+            transform: scale(.94);
+        }
 
   .active-tag-label {
     font-family: "Nunito";
@@ -657,15 +678,19 @@ img {
     font-family: "Nunito-Bold";
   }
 
-  #btnExploreMore {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 27px;
-    color: #ffffff;
-    width: 160px;
-  }
+    #btnExploreMore {
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 27px;
+        color: #ffffff;
+        width: 160px;
+        transition: transform .25s;
+    }
+        #btnExploreMore:active {
+            transform: scale(.94);
+        }
 
   .swiper-slide.category[style] {
     margin-right: 20px !important;
@@ -1966,21 +1991,25 @@ img {
     font-family: "Nunito-Bold";
   }
 
-  #btnExploreMore {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 27px;
-    color: #ffffff;
-    width: 220px;
-  }
+    #btnExploreMore {
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #ffffff;
+        width: 220px;
+        transition: transform .25s;
+    }
+        #btnExploreMore:active {
+            transform: scale(.94);
+        }
 
-  .swiper-slide.swiper-slide-popular {
-    width: 278px;
-    height: 340px;
-    border-radius: 10px;
-  }
+        .swiper-slide.swiper-slide-popular {
+            width: 278px;
+            height: 340px;
+            border-radius: 10px;
+        }
 
   .swiper-slide.swiper-slide-popular[style] {
     margin-right: 30px !important;

@@ -14,11 +14,15 @@
     font-weight: 700;
     background-color: transparent;
     margin-top: 0.5rem;
+    transition: transform .25s;
 }
 
     .btn-login:hover {
         color: #FFFFFF;
         background-color: #FFA942;
+    }
+    .btn-login:active {
+        transform: scale(.94);
     }
 
 .btn-help {
@@ -45,7 +49,11 @@
     margin-top: 1.2rem;
     cursor: pointer;
     text-decoration: none;
+    transition: transform .25s;
 }
+    .cinnamon-link:active {
+        transform: scale(.94);
+    }
 
     .cinnamon-link:hover {
         color: #FFA942;
@@ -65,7 +73,10 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    
+}
+.page-wrapper {
+    overflow:clip;
 }
 
 main {
@@ -78,24 +89,18 @@ main {
 }
 
 .top-row {
-    background-color: none;
+    background-color: white;
     border-bottom: 1px solid #D9D9D9;
     justify-content: flex-start;
     aspect-ratio: 1600/74;
     width: 100%;
     display: flex;
     align-items: center;
+    box-shadow: 0px 2px 12px 0px #343D4C80;
+    position: sticky !important;
+    top: 0;
+    z-index: 1000;
 }
-
-    .top-row ::deep a {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-    }
-
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
 
 .app-name {
     color: var(--primary);
@@ -103,11 +108,10 @@ main {
     font-size: 48px;
     text-decoration: none;
 }
-
-.img-icon-login {
-    width: 24px;
-    height: 24px;
-}
+    .img-icon-login {
+        width: 24px;
+        height: 24px;
+    }
 
 @media (min-width: 641px) {
     .page {
@@ -123,9 +127,6 @@ main {
 }
 
 @media screen and (max-width: 767px) {
-    /*    .top-row:not(.auth){
-    display: none;
-}*/
     .login-icon-sm {
         display: flex;
         gap: 10px;
@@ -206,32 +207,4 @@ main {
     .app-name {
         font-size: 3.5vw;
     }
-
-    .top-row {
-        padding: 10px 0;
-    }
-
-    /*.top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .px-4 {
-        padding-right: 0 !important;
-        padding-left: 0 !important;
-    }
-
-    .top-row {
-        padding: 5px 0;
-    }
-
-        .top-row a {
-            margin-left: 0;
-        }
-
-    .top-row {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }*/
 }

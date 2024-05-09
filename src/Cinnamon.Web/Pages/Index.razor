@@ -17,26 +17,6 @@
 <SeoMeta />
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-
-<div class="image-1-mobile">
-    <img src="images/landing-page-images/camera-mobile.png">
-</div>
-<div class="image-2-mobile">
-    <img src="images/landing-page-images/laptop-mobile.png">
-</div>
-<div class="image-3-mobile">
-    <img src="images/landing-page-images/ball-mobile.png">
-</div>
-<div class="image-4-mobile">
-    <img src="images/landing-page-images/ticket-mobile.png">
-</div>
-<div class="circle-1-md">
-    <img src="images/landing-page-images/circle-md.png">
-</div>
-<div class="circle-2-md">
-    <img src="images/landing-page-images/circle-2-md.png">
-</div>
-
 @if(Announcements.Count() > 0)
 {
     <div class="announcements" style="display:@IsDisplay">
@@ -59,7 +39,7 @@
                                 @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
                                 {
                                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
-                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill">
+                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill announcement-btn">
                                             @item.ButtonLabel
                                         </a>
                                     </Column>
@@ -72,64 +52,32 @@
         </div>
     </div>
 }
-
-<!--Section 1-->
-<div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
-    <img class="blob_1" alt="blob_1" src="images/landing-page-images/circle.png">
-    <img class="float_1" alt="float_1" src="images/landing-page-images/ball.png">
-    <main>
-        <p class="hero_title">Your family experience partner</p>
-        <p class="hero_subtitle">Activities, learnings and events for you and your loved ones.</p>
-    </main>
-    <img class="float_2" alt="float_2" src="images/landing-page-images/camera.png">
-    <img class="blob_2" alt="blob_2" src="images/landing-page-images/circle-2.png">
-</div>
-
 <!--Search Section-->
-<div class="wrapper search_section">
-    <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
-    <form class="search-bar" @onsubmit=SearchToExplorePage>
-        <div class="search_bar">
-            <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
-            <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" placeholder="Search for an activity.." @oninput="OnChageInput" @bind-value="searchValue">
-            <button class="explore_button" @onclick="() =>SearchToExplorePage()">
-                @buttonLabel
+ <div class="top-section" style="position:relative;display:flex">
+    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="2500" ShowControls="false">
+        <CarouselSlide Name="1">
+            <Image Source="images/landing-page-images/landing-activity-image.jpg" class="section-1-image" Text="Lights image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="2">
+            <Image Source="images/landing-page-images/landing-event-image.jpg" class="section-1-image" Text="Keyboard image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="3">
+            <Image Source="images/landing-page-images/landing-research-image.jpg" class="section-1-image" Text="Road image" />
+        </CarouselSlide>
+    </Carousel>
+     <div class="provider-section">
+        <p class="provider-text">We provide activities and events just for you!</p>
+        <p class="provider-sub-text">Experience new adventures and learning in your life!</p>
+        <div class="provider-buttons">
+            <button type="button" class="btn btn-browse" id="btnBrowse" @onclick="@(() => NavigateToExplorePage())">
+                <span>Browser Now!</span>
+            </button>
+            <button type="button" class="btn btn-join" id="btnJoin" @onclick="@(() => NavigateToOnboardingPage())">
+                <span>Join the Provider Community</span>
             </button>
         </div>
-    </form>
-    <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
-</div>
-
-<!--Section Category-->
-<div class="container">
-    <div class="section-1 row">
-        <div class="categories">
-            <div class="row d-flex justify-content-start">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 categories-container">
-                    <div class="schedule-swiper">
-                        <div class="swiper-wrapper text-center">
-                            @foreach (var category in categories)
-                            {
-                                @if(category.Category != "New")
-                                {
-                                    <div class="swiper-slide category">
-                                    <div>
-                                            <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => SearchByFilter(category.Id))">
-                                            <img src=@category.IconPath class="img-icon text-center">
-                                            <p class="card-title">@category.Category</p>
-                                        </a>
-                                    </div>
-                                </div>
-                                }
-                            }
-                        </div>
-                    <div class="swiper-scrollbar"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
+     </div>
+ </div>
 
 <!--Section 3-->
 @if (activities.Count != 0)
@@ -137,14 +85,14 @@
     <div class="section-3 row">
         <div class="featured-activities col-12 justify-content-center">
             <div class="container">
-                <div class="featured-header d-flex">
+                <div class="featured-header">
                     <p class="featured-text">Featured Activities</p>
-                    <a class="see-more" href="/explore">See More</a>
+                    <a class="see-more" href="/explore">See all</a>
                 </div>
                 <div class="row d-flex justify-content-start">
                     @foreach (var act in activities)
                     {
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
@@ -286,9 +234,9 @@
 <!--Backed By-->
 <div class="section-backed-by row text-center">
     <div class="backed-by-text col-12 d-flex justify-content-center">
-         <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+        <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
             <img src="images/landing-page-images/backed-by.webp">
-         </a>
+        </a>
     </div>
 </div>
 
@@ -299,87 +247,87 @@
             <path d="M1920 21.3H1813.33C1706.67 21.3 1493.33 21.3 1280 16C1066.67 10.3 853.333 0.3 640 0C426.667 0.3 213.333 10.3 106.667 16L0 21.3V149.3H106.667C213.333 149.3 426.667 149.3 640 149.3C853.333 149.3 1066.67 149.3 1280 149.3C1493.33 149.3 1706.67 149.3 1813.33 149.3H1920V21.3Z" fill="#F3F6FC" />
         </svg>
     </div>
-     <div class="marketplace-wrapper">
+    <div class="marketplace-wrapper">
         <div id="carouselSection5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <div class="testimonial-wrapper">
-                            <div class="testimonial-content container">
-                                <div class="testimonial-image">
-                                    <img src="images/landing-page-images/main-image.png">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
                                 </div>
-                                <div class="testimonial-items">
-                                    <div class="testimonial-title">
-                                        <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
-                                        <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
-                                    </div>
-                                    <div class="testimonial-message">
-                                        <p>
-                                            I can't express how grateful I am to www.cinnamon.ph for the
-                                            incredible Mandarin language lessons they offer! My kids were
-                                            initially hesitant about learning a new language, but the engaging
-                                            and interactive lessons provided by their experienced instructor have
-                                            truly made a difference. The lessons are not only educational but also
-                                            loads of fun. It's an amazing feeling to see them confidently speaking
-                                            and understanding Mandarin. Cinnamon PH has made language
-                                            learning a delightful family journey, and we can't wait to explore
-                                            more lessons on their platform!
-                                        </p>
-                                    </div>
-                                    <div class="testimonial-review">
-                                        <p class="testimonial-name">-Emman</p>
-                                        <p class="testimonial-from">Review from Facebook</p>
-                                    </div>
-                                    <div class="reviews-profile">
-                                        <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
-                                        <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
-                                    </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        I can't express how grateful I am to www.cinnamon.ph for the
+                                        incredible Mandarin language lessons they offer! My kids were
+                                        initially hesitant about learning a new language, but the engaging
+                                        and interactive lessons provided by their experienced instructor have
+                                        truly made a difference. The lessons are not only educational but also
+                                        loads of fun. It's an amazing feeling to see them confidently speaking
+                                        and understanding Mandarin. Cinnamon PH has made language
+                                        learning a delightful family journey, and we can't wait to explore
+                                        more lessons on their platform!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Emman</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
+                                    <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="testimonial-wrapper">
-                            <div class="testimonial-content container">
-                                <div class="testimonial-image">
-                                    <img src="images/landing-page-images/main-image-1.png">
-                                </div>
-                                <div class="testimonial-items">
-                                    <div class="testimonial-title">
-                                        <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
-                                        <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
-                                    </div>
-                                    <div class="testimonial-message">
-                                        <p>
-                                            Cinnamon has been a game-changer in managing our kids' activities.
-                                            The easy payment options, the seamless program selection process,
-                                            and the flexibility in choosing enrollment periods have made it our
-                                            go-to platform. I can confidently say that Cinnamon has made
-                                            choosing my kids' various interest activities manageable and
-                                            enjoyable, and I wholeheartedly recommend it to all parents seeking
-                                            top-notch programs and tutors for their children. Thank you,
-                                            Cinnamon!
-                                        </p>
-                                    </div>
-                                    <div class="testimonial-review">
-                                        <p class="testimonial-name">-Mommy Lea</p>
-                                        <p class="testimonial-from">Review from Facebook</p>
-                                    </div>
-                                    <div class="reviews-profile">
-                                        <img class="emman-profile" alt="profile-1" src="images/landing-page-images/emman-profile.png">
-                                        <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="1" aria-label="Slide 2"></button>
                     </div>
                 </div>
+                <div class="carousel-item">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image-1.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        Cinnamon has been a game-changer in managing our kids' activities.
+                                        The easy payment options, the seamless program selection process,
+                                        and the flexibility in choosing enrollment periods have made it our
+                                        go-to platform. I can confidently say that Cinnamon has made
+                                        choosing my kids' various interest activities manageable and
+                                        enjoyable, and I wholeheartedly recommend it to all parents seeking
+                                        top-notch programs and tutors for their children. Thank you,
+                                        Cinnamon!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Mommy Lea</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="emman-profile" alt="profile-1" src="images/landing-page-images/emman-profile.png">
+                                    <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                </div>
             </div>
-     </div>
+        </div>
+    </div>
     <div class="custom-shape-divider-botttom">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path d="M0 145.747H106.667C213.333 145.747 426.667 145.747 640 151.782C853.333 158.272 1066.67 169.658 1280 170C1493.33 169.658 1706.67 158.272 1813.33 151.782L1920 145.747V0H1813.33C1706.67 0 1493.33 0 1280 0C1066.67 0 853.333 0 640 0C426.667 0 213.333 0 106.667 0H0V145.747Z" fill="#F3F6FC" />
@@ -387,80 +335,52 @@
     </div>
 </div>
 
-<!--Section 4-->
-<div class="section-4 row">
-   <div class="featured-activities col-12 justify-content-center">
-        <p class="featured-text">Built by<span style="color:var(--primary);"> alumni from</span></p>
+<!--Become an Activity Provider-->
+<div class="section-6 row">
+    <div class="activity-wrapper">
         <div class="container">
-            <div class="built-by">
-                <img class="accenture" alt="accenture" src="images/landing-page-images/accenture.png">
-                <img class="Dela-Salle" alt="Dela-Salle" src="images/landing-page-images/Dela-Salle.png">
-                <img class="SAP" alt="SAP" src="images/landing-page-images/SAP.png">
-                <img class="Unionbank" alt="Unionbank" src="images/landing-page-images/Unionbank.png">
-            </div>
-        </div>
-   </div>
-</div>
-
-<!--Cinnamon Video-->
-<div class="section-marketplace">
-    <div class="marketplace-wrapper">
-        <div class="container">
-            <div class="marketplace-content">
-                <div class="maketplace-item1">
-                    <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+            <div class="activity-content">
+                <div class="become">
+                    <p class="become-title">Become an Activity Provider</p>
+                    <p class="become-description">
+                        An Activity Provider is someone who provides experiences
+                        on the Cinnamon platform. Live your passion, share your
+                        knowledge, and leave a mark on people's lives!.
+                    </p>
+                    <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
+                        <span>Sign up now</span>
+                    </button>
                 </div>
-                <div class="maketplace-item2">
-                    <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
-                    <div class="maketplace-item1-mobile">
-                        <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
-                    </div>
-                    <div class="marketplace-tags">
-                        <div class="cinnamon-tags">
-                            <p class="cinnamon-welcome">
-                                Cinnamon is an activity learning & events 
-                                marketplace. Our main focus is to help everyone 
-                                spend their time on meaningful fun experiences by 
-                                connecting you to people who are passionate about
-                                sharing their skills and knowledge.
-                            </p>
-                        </div>
-                    </div>
+                <div class="become-image">
+                    <img class="activity-provider" src="images/landing-page-images/activity-provider.png" />
                 </div>
             </div>
+            <img class="line-dot" src="images/landing-page-images/line-dot.png" />
         </div>
     </div>
 </div>
 
-<!--Section 5-->
+<!--How it Works-->
 <div class="section-5 row">
     <div class="featured-activities col-12 justify-content-center">
-        <p class="featured-text">How it<span style="color:var(--primary);"> Works</span></p>
+        <p class="featured-text">How it Works</p>
         <div class="container">
             <div class="row d-flex justify-content-start">
                 <div class="landing-text landing-lg">
-                    <div class="col-12 overview-cards row mx-auto">
-                        <div class="search-section">
-                            <img src="images/search.png" class="how-search"/>
-                            <div class="search-content">
-                                <p class="seach-text">1. Search</p>
-                                <p class="search-description">Find experiences and activity providers according to your criteria (location, activity, learning, experience).</p>
-                            </div>
-                        </div>
-                        <div class="book-section">
-                            <img src="images/book.png" class="how-book" />
-                            <div class="book-content">
-                                <p class="book-text">2. Book</p>
-                                <p class="book-description">Once you find your experience, just click book and you're all set! You can even contact the Activity Provider regarding about the experience.</p>
-                            </div>
-                        </div>
-                        <div class="attend-section">
-                            <img src="images/attend.png" class="how-attend" />
-                            <div class="attend-content">
-                                <p class="attend-text">3. Attend</p>
-                                <p class="attend-description">Enjoy the experiences you’ll find and meet people to be part of your life, growth, and wellness!</p>
-                            </div>
-                        </div>
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/search.png"
+                         Title=@Resources.App.search
+                         Text=@Resources.App.searchDescription />
+                    </div>
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/book.png"
+                         Title=@Resources.App.book
+                         Text=@Resources.App.bookDescription />
+                    </div>
+                    <div class="col-sm-4">
+                        <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                        Title=@Resources.App.attend
+                        Text=@Resources.App.attendDescription />
                     </div>
                 </div>
                 <div class="landing-text landing-md">
@@ -468,21 +388,21 @@
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="col-md-12">
-                                    <OverviewCard ImageSource="images/search.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
                                                   Title=@Resources.App.search
                                                   Text=@Resources.App.searchDescription />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-md-12">
-                                    <OverviewCard ImageSource="images/book.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
                                                   Title=@Resources.App.book
                                                   Text=@Resources.App.bookDescription />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-md-12">
-                                    <OverviewCard ImageSource="images/attend.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
                                                   Title=@Resources.App.attend
                                                   Text=@Resources.App.attendDescription />
                                 </div>
@@ -500,21 +420,21 @@
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="col-sm-12">
-                                    <OverviewCard ImageSource="images/search.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
                                                   Title=@Resources.App.search
                                                   Text=@Resources.App.searchDescription />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <OverviewCard ImageSource="images/book.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
                                                   Title=@Resources.App.book
                                                   Text=@Resources.App.bookDescription />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <OverviewCard ImageSource="images/attend.png"
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
                                                   Title=@Resources.App.attend
                                                   Text=@Resources.App.attendDescription />
                                 </div>
@@ -532,35 +452,56 @@
     </div>
 </div>
 
-<div class="section-6 row">
-    <div class="activity-wrapper">
+<!--Cinnamon Video-->
+<div class="section-marketplace">
+    <div class="marketplace-wrapper">
         <div class="container">
-            <div class="activity-content">
-                <img class="become-elipse" alt="become-elipse" src="images/landing-page-images/become-eclipse.png" />
-                 <div class="become">
-                    <p class="become-title">Become an Activity Provider</p>
-                    <p class="become-description">
-                        An Activity Provider is someone who provides experiences
-                        on the Cinnamon platform. Live your passion, share your
-                        knowledge, and leave a mark on people's lives!.
-                    </p>
-                    <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
-                        <span>Sign up now</span>
-                    </button>
-                 </div>
-                <div class="become-image">
-                    <img class="activity-provider" src="images/landing-page-images/activity-provider.png" />
+            <div class="marketplace-content">
+                <div class="maketplace-item1">
+                    <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
                 </div>
-             </div>
+                <div class="maketplace-item2">
+                    <div class="maketplace-item1-mobile">
+                        <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+                    </div>
+                    <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
+                    <div class="marketplace-tags">
+                        <div class="cinnamon-tags">
+                            <p class="cinnamon-welcome">
+                                Cinnamon is an activity learning & events
+                                marketplace. Our main focus is to help everyone
+                                spend their time on meaningful fun experiences by
+                                connecting you to people who are passionate about
+                                sharing their skills and knowledge.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<Divider/>
+
+<!--Built by alumni from-->
+<div class="section-4 row">
+   <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">Built by alumni from</p>
+        <div class="container">
+            <div class="built-by">
+                <img class="accenture" alt="accenture" src="images/landing-page-images/accenture.png">
+                <img class="Dela-Salle" alt="Dela-Salle" src="images/landing-page-images/Dela-Salle.png">
+                <img class="SAP" alt="SAP" src="images/landing-page-images/SAP.png">
+                <img class="Unionbank" alt="Unionbank" src="images/landing-page-images/Unionbank.png">
+            </div>
+        </div>
+   </div>
+</div>
+
 <!--Footer-->
 <div class="footer">
     <div class="footer-content">
         <span class="footer-appname color-primary">@Resources.App.appName</span>
-        <br />
+        <span class="footer-text"> Copyright © @year. All rights reserved.</span>
         <div class="social-media-container">
             <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
@@ -583,7 +524,6 @@
                 </svg>
             </a>
         </div>
-        <span class="footer-text"> Copyright © @year. All rights reserved.</span>
     </div>
 </div>
 
@@ -615,6 +555,8 @@
     public int experienceCategoryId = 0;
 
     int SelectedValue = 5;
+
+    private string selectedSlide = "1";
 
     private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
 
