@@ -1849,7 +1849,9 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
+        bool isPublished, string handler, int categoryId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
+        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs)
     {
         try
         {
@@ -1882,10 +1884,51 @@ public class ActivityRepository : IActivityRepository
             };
 
             var schedule = new Entities.OteSchedule {
-                From = scheduleFrom.SetKindUtc(),
-                To = scheduleTo.SetKindUtc(),
-                Recurrences = recurrence
+                From                  = scheduleFrom.SetKindUtc(),
+                To                    = scheduleTo.SetKindUtc(),
+                Recurrences           = recurrence,
+                ExtraOptions          = scheduleExtraOpt ?? String.Empty,
+                RecurrenceDateEnd     = recurrenceDateEnd.SetKindUtc(),
+                RecurrenceDateStart   = recurrenceDateStart.SetKindUtc(),
+                RepeatEvery           = repeatEvery,
+                SelectedDays          = selectedDays,
+                EventDurationCount    = eventDurationCount,
+                EventDurationTimeUnit = eventDurationTimeUnit
             };
+            var pricingsGroup = pricingDTOs.Select(p => {
+                return new OteSchedulePricingGroup
+                {
+                    Description = p.Description,
+                    IsAbsorbFees = p.IsAbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Name = p.Name,
+                    OteSchedule = schedule
+                };
+            }).ToList();
+
+            var dates = oteDates.Select(d => {
+                return new Entities.OteDate
+                {
+                    Date = d.Date.SetKindUtc(),
+                    DateEnd = d.DateEnd.SetKindUtc(),
+                    DateStart = d.DateStart.SetKindUtc(),
+                    OteSchedulePricing = pricingsGroup.Select(p => {
+                        return new OteSchedulePricing
+                        {
+                            Description = p.Description,
+                            IsAbsorbFees = p.IsAbsorbFees,
+                            MaxSlots = p.MaxSlots,
+                            Price = p.Price,
+                            Name = p.Name,
+                            OteSchedule = schedule,
+                            OteSchedulePricingGroup = p
+                        };
+                    }).ToList(),
+                    OteSchedule = schedule
+                };
+            }).ToList();
+
             schedule.OteSchedulePricing = pricingDTOs.Select(p => {
                 return new OteSchedulePricing {
                     Id = p.Id,
@@ -1907,7 +1950,7 @@ public class ActivityRepository : IActivityRepository
                 };
             }).ToList() : null;
 
-            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule);
+            var updatedRes = await this.dataStore.Activity.UpdateOteActivity(activity, activityDescription, address, schedule, dates);
             if(!updatedRes.Succeeded || updatedRes.Result is null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException(updatedRes.Message), updatedRes.Message);

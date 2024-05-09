@@ -2697,7 +2697,19 @@ public class ActivityController : ControllerBase
                     RegionName = activity.RegionName ?? string.Empty,
                     ScheduleFrom = activity.ScheduleFrom,
                     ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon
+                    IsComingSoon = activity.IsComingSoon,
+
+                    DurationEnd = activity.DurationEnd,
+                    DurationEvery = activity.DurationEvery,
+                    DurationStart = activity.DurationStart,
+                    MonthDay = activity.MonthDay,
+                    MonthRepeat = activity.MonthRepeat,
+                    MonthSelection = activity.MonthSelection,
+                    OnDayDate = activity.OnDayDate,
+                    WeekString = activity.WeekString,
+
+                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationTimeUnit = activity.EventDurationTimeUnit,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
@@ -2709,6 +2721,13 @@ public class ActivityController : ControllerBase
                         Name = p.Name
                     };
                 }),
+                DateOverrides = args.DateOverrides is not null ?
+                    args.DateOverrides.Select(d => new Services.ActivityService.Interactors.OteUpdateArgs.DateOverride
+                    {
+                        Date = d.Date,
+                        TimeEnd = d.TimeEnd,
+                        TimeStart = d.TimeStart
+                    }) : null,
                 OnlineEvents = args.OnlineEvents is not null ? args.OnlineEvents.Select(s => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OteOnlineEvent
                     {
