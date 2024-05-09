@@ -1412,7 +1412,6 @@
         public TimeSpan TimeEnd {get; set;}
     }
 
-    // <!--- Date generation. Refactor this Code
     private IEnumerable<DateItem> GenerateWeekday(int repeat, DateTime start, DateTime end, 
         TimeSpan timeDuration, TimeSpan timeStart)
     {
@@ -1649,10 +1648,14 @@
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
     }
+
     private async Task CheckLimitChanged(int type)
     {
         modelSchedule.IsLimit = type;
+        if (type == 1)
+        {
+            modelSchedule.EventTicketLimit = 0;
+        }
         StateHasChanged();
     }
-    // ---!> until here. Date generation. Refactor this Code
 }
