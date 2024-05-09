@@ -1943,15 +1943,17 @@
         }
     }
 
-    private record DateReschedule 
+    private record DateReschedule
     {
-        public int Id {get; set;}
+        public int Id { get; set; }
 
         [Required]
-        public DateTime OldDate {get; set;}
+        public DateTime OldDate { get; set; }
 
         [Required]
-        public DateTime NewDate {get; set;}
+        public DateTime NewDate { get; set; }
+
+        public int BookedCount { get; set; }
     }
 
     private record DateItem 
