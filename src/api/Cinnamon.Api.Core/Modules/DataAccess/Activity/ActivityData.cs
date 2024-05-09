@@ -529,6 +529,27 @@ public class ActivityData: IActivityData
 		}
 	}
 
+	public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("Activity/DeleteTicket")
+							.PostJsonAsync(args)
+							.ReceiveJson<DeleteTicketResult>();
+
+			return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully removed ticket.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when deleting ticket.");
+		}
+	}
+
 	public async Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args)
 	{
 		try
@@ -568,27 +589,6 @@ public class ActivityData: IActivityData
 		catch (Exception ex)
 		{
 			return AppResult<BatchSummaryUpdateResult>.CreateFailed(ex, "An error occurred when update batch summary.");
-		}
-	}
-
-	public async Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args)
-	{
-		try
-		{
-			var result = await flurlClient
-							.Request("Activity/DeleteTicket")
-							.PostJsonAsync(args)
-							.ReceiveJson<DeleteTicketResult>();
-
-			return AppResult<DeleteTicketResult>.CreateSucceeded(result, "Successfully removed ticket.");
-		}
-		catch (FlurlHttpException ex)
-		{
-			return AppResult<DeleteTicketResult>.CreateFailed(ex, ex.Message);
-		}
-		catch (Exception ex)
-		{
-			return AppResult<DeleteTicketResult>.CreateFailed(ex, "An error occurred when deleting ticket.");
 		}
 	}
 

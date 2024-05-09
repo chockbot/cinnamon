@@ -9,7 +9,8 @@ public interface ICustomerRepository
     Task<AppResult<CustomerDTO>> GetByIdAsync(int id);
     Task<AppResult<CustomerDTO>> GetByEmailAsync(string email);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isActive, string searchValue, 
-        int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false);
+        int? count, int? skip, string? handlerLike = null, 
+        bool? isOfficialPartner = false, bool? hasVerification = false);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
         string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms);

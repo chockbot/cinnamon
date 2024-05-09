@@ -25,8 +25,8 @@
                         event name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                  Role="TextRole.Text" @bind-Text="ModelState.EventName">
+                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                            Role="TextRole.Text" @bind-Text="ModelState.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
@@ -44,8 +44,8 @@
                         description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                  @bind-Text="ModelState.Description">
+                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                            @bind-Text="ModelState.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
@@ -149,7 +149,7 @@
             string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if (isNextClick)
             {
-                if (ModelState.SelectedCategory <= 0)
+                if(ModelState.SelectedCategory <= 0)
                 {
                     return $"{defaultStyle} is-invalid";
                 }
@@ -176,12 +176,11 @@
 
     public ModelData GetData()
     {
-        ModelData data = new ModelData
-            {
-                Category = ModelState.SelectedCategory,
-                Description = ModelState.Description,
-                Name = ModelState.EventName
-            };
+        ModelData data = new ModelData {
+            Category = ModelState.SelectedCategory,
+            Description = ModelState.Description,
+            Name = ModelState.EventName
+        };
         return data;
     }
 
@@ -196,7 +195,7 @@
         public string Description { get; set; }
         public int Category { get; set; }
     }
-
+    
     public class FormModel
     {
         [Required(ErrorMessage = "The event name field is mandatory.")]

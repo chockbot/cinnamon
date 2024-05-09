@@ -166,6 +166,8 @@
 @code {
     public bool clickButton { get; set; }
     private bool? hasVerificationRequest { get; set; }
+
+    private int CountPerPage { get; set; } = 10; 
     public ClaimsPrincipal AuthState { get; set; }
     public List<CustomerProfile> customers = new List<CustomerProfile>();
     protected ViewImageModal viewImageModal = new ViewImageModal();
@@ -193,38 +195,33 @@
     private async Task GetAllCustomers(int pageIndex)
     {
         var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
-            {
-                CountPerPage = 10,
-                SearchValue = searchValue,
-                PageIndex = pageIndex
-            }, token);
+        {
+            CountPerPage = 10,
+            SearchValue = searchValue,
+            PageIndex = pageIndex,
+            HasVerification = hasVerificationRequest
+        }, token);
 
         customers = result.Result.Result.Select(r => new CustomerProfile
-            {
-                Id = r.Id,
-                Email = r.Email,
-                LastName = r.LastName,
-                FirstName = r.FirstName,
-                FrontIdImagePath = r.FrontIdImagePath,
-                BackIdImagePath = r.BackIdImagePath,
-                IsVerified = r.IsVerified,
-                IsVerifiedDate = r.IsVerifiedDate,
-                IsChecked = r.IsVerified == 2,
-                IsOG = r.IsOG,
-                IsOGDate = r.IsOGDate,
-                IsOfficial = r.IsOfficial,
-                IsOfficialDate = r.IsOfficialDate,
-                IsAccountBan = r.IsAccountBan
-
-            }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
-
-        if (hasVerificationRequest.HasValue)
         {
-            customers = customers.Where(c => c.HasVerificationRequest == (hasVerificationRequest.GetValueOrDefault() ? "Yes" : "No")).ToList();
-        }
+            Id = r.Id,
+            Email = r.Email,
+            LastName = r.LastName,
+            FirstName = r.FirstName,
+            FrontIdImagePath = r.FrontIdImagePath,
+            BackIdImagePath = r.BackIdImagePath,
+            IsVerified = r.IsVerified,
+            IsVerifiedDate = r.IsVerifiedDate,
+            IsChecked = r.IsVerified == 2,
+            IsOG = r.IsOG,
+            IsOGDate = r.IsOGDate,
+            IsOfficial = r.IsOfficial,
+            IsOfficialDate = r.IsOfficialDate,
+            IsAccountBan = r.IsAccountBan
+        }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         Pagination = result.Result.Pagination;
-        }
+    }
 
     private string ShowMenu()
     {

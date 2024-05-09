@@ -10,6 +10,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IAdminApiHandler adminApiHandler;
 @inject IJSRuntime jsRuntime
+@using ClosedXML.Excel;
 
 <PageTitle>Admin - Manage Experience | CinnamonPH</PageTitle>
 <SeoMeta Title="Admin - Manage Experience" Subject="Admin - Manage Experience" Url="/admin/experiences" />
@@ -140,8 +141,10 @@
 
 @code 
 {
+    IJSObjectReference module;
     public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
+    private int CountPerPage { get; set; } = 10;
     public List<Activity> activities = new List<Activity>();
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     private const string PREVIOUS = "previous";
@@ -172,7 +175,7 @@
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
                 PageIndex = pageIndex,
-                CountPerPage = 10,
+                CountPerPage = CountPerPage,
                 IncludeCustomer = true,
                 IncludeStudents = true,
                 SearchValue = searchValue,
@@ -355,9 +358,63 @@ LastName = r.Owner.LastName
     }
 
 
-        private async Task ExportExcel()
+    private async Task ExportExcel()
+    {   
+        await Task.Delay(1000);
+
+        var originalCountPerPage = CountPerPage;
+
+        CountPerPage = Int32.MaxValue;
+        
+    try
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.experienceExcelWriter.execute", activities);
+        await GetAllActivities(1);
+
+        CountPerPage = originalCountPerPage;
+        using (var workbook = new XLWorkbook("wwwroot/Template/ExperienceList.xlsx"))
+        {
+            var worksheet = workbook.Worksheet(1);
+            int startRow = 3;
+            foreach (var item in activities)
+            {
+                worksheet.Cell(startRow, 1).Value = item.Owner.Email;
+                worksheet.Cell(startRow, 2).Value = item.Owner.FirstName;
+                worksheet.Cell(startRow, 3).Value = item.Owner.LastName;
+                worksheet.Cell(startRow, 4).Value = item.Title;
+                worksheet.Cell(startRow, 5).Value = item.IsPublished ? "No" : "Yes";
+                startRow++;
+            }
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"ExperienceList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                var bytesBase64 = Convert.ToBase64String(bytes);
+
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+                CountPerPage = originalCountPerPage;
+                StateHasChanged();
+            }
+        }
+    }
+    finally
+    {
+        CountPerPage = originalCountPerPage;
+        await GetAllActivities(1);
+        StateHasChanged();
+    }
+}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
     }
 
     public async Task Clear()

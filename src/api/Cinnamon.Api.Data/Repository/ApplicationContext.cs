@@ -376,9 +376,6 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic content
         modelBuilder.Entity<DynamicContent>()
             .HasIndex(d => d.Identifier);
-        // announcements
-        modelBuilder.Entity<Announcement>()
-            .HasIndex(a => a.Status);
 
         // for activity summary and activity
         modelBuilder.Entity<ActivitySummary>()

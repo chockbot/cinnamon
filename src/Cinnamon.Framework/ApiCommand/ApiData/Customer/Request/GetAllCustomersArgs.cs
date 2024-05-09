@@ -8,4 +8,5 @@ public class GetAllCustomersArgs
     public int? CountPerPage { get; set; }
     public string? HandlerLike {get; set;}
     public bool? IsOfficialPartner {get; set;}
+    public bool? HasVerification {get; set;}
 }

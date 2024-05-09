@@ -3155,6 +3155,7 @@ public class ActivityController : ControllerBase
         }
     }
 
+
     [Route("DeleteTicket")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status200OK)]
@@ -3184,7 +3185,8 @@ public class ActivityController : ControllerBase
             return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-    
+
+
     [AllowAnonymous]
     [Route("ActivityFeed")]
     [HttpGet]

@@ -443,7 +443,7 @@ public class ActivityController : ControllerBase
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
-                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,args.Activity.EventTicketLimit,
+                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, args.Activity.EventTicketLimit ,
                 dateOverrides, onlineEvent, args.Activity.CategoryId);
             
             if(!result.Succeeded || result.Result is null)
@@ -524,8 +524,8 @@ public class ActivityController : ControllerBase
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
                 args.Activity.BarangayCode ?? string.Empty, args.Activity.BarangayName ?? string.Empty,
                 args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
-                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon,
-                args.Activity.EventTicketLimit, args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon, args.Activity.EventTicketLimit,
+                args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
                 args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
                 dateOverrides, onlineEvents, args.RecreateSchedule, oteReschedules);
             
@@ -701,6 +701,26 @@ public class ActivityController : ControllerBase
             return new JsonResult(new ForceDisableActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("DeleteTicket")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.DeleteTicket(args.Id);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("ActivityFeed")]
     [HttpGet]
@@ -742,27 +762,6 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new BatchSummaryUpdateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
-    [Route("DeleteTicket")]
-    [HttpPost]
-    [ProducesResponseType(typeof(DeleteTicketResult), StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> DeleteAddOn([FromBody] DeleteTicketArgs args)
-    {
-        try
-        {
-            var result = await activityRepository.DeleteTicket(args.Id);
-            if (!result.Succeeded || !result.Result)
-            {
-                return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new DeleteTicketResult { IsSuccess = true, Result = result.Result });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new DeleteTicketResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
