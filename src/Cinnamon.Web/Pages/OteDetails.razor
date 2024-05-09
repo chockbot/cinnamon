@@ -1020,7 +1020,7 @@
             IList<DateTime> dates = new List<DateTime>();
             if(activity is not null)
             {
-                dates = activity.OteDates.Select(d => d.Date).ToList();
+                dates = activity.OteDates.Select(d => d.DateStart).ToList();
             }
             return dates;
         }
