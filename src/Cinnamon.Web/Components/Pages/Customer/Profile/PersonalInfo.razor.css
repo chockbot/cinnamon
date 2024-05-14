@@ -1,4 +1,10 @@
-﻿.profile-content {
+﻿::deep button {
+    transition: transform .25s;
+}
+::deep button:active {
+    transform: scale(.94);
+}
+.profile-content {
   margin-top: 3.5rem;
 }
 .name-section {
@@ -38,19 +44,25 @@
   font-weight: 500;
 }
 
-.personal-info-wrapper .p-section .edit {
-  font-size: 14px;
-  font-weight: 700;
-  color: #717171;
-  cursor: pointer;
-  text-decoration: underline;
-  text-emphasis-position: under;
-}
+    .personal-info-wrapper .p-section .edit {
+        font-size: 14px;
+        font-weight: 700;
+        color: #717171;
+        cursor: pointer;
+        text-decoration: underline;
+        text-emphasis-position: under;
+        transition: transform .25s;
+    }
+
+        .personal-info-wrapper .p-section .edit:active {
+            transform: scale(.94);
+        }
+
 ::deep .payout-account-section a {
-  font-size: 14px;
-  font-weight: 700;
-  color: #343d4c;
-  cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    color: #343d4c;
+    cursor: pointer;
 }
 .about-info {
   font-family: Nunito;

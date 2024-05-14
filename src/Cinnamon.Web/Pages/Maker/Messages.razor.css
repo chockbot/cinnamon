@@ -1,10 +1,20 @@
-﻿.messages-container {
-    margin: 40px;
-    height: 90vh;
+﻿::deep button {
+    transition: transform .25s;
+}
+
+    ::deep button:active {
+        transform: scale(.94);
+    }
+.messages-container {
+   padding: 10px;
 }
 
 .messages-section {
-    border: 1px solid #D9D9D9;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    border-left: 1px solid #D9D9D9;
+    overflow-y: scroll;
+    height: 92vh;
 }
 
 .message-title {
@@ -20,7 +30,7 @@
 }
 
 .add-message-section {
-    text-align: right;
+    text-align: right
 }
 
 .search-section {
@@ -548,8 +558,17 @@
 .personal-message-icon {
     margin-right: 25px;
     cursor: pointer;
+    transition: transform .25s;
 }
-
+    .personal-message-icon:active {
+        transform: scale(.94);
+    }
+.message-info {
+    transition: transform .25s;
+}
+    .message-info:active {
+        transform: scale(.94);
+    }
 #img-add-member {
     cursor: pointer;
 }
@@ -575,7 +594,12 @@ input[type=text] {
 #send-message {
     width: 28px;
     height: 28px;
+    transition: transform .25s;
 }
+
+    #send-message:active {
+        transform: scale(.94);
+    }
 
 .no-conversation-title {
     font-family: 'Nunito';
@@ -810,7 +834,7 @@ input[type=text] {
     }
 
     .chat-profile-section {
-        border: 1px solid #D9D9D9;
+        border-bottom: 1px solid #D9D9D9;
         padding: 25px 40px;
     }
 }
