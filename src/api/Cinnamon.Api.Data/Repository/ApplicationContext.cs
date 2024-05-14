@@ -104,6 +104,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DirectStudentSession> DirectStudentSessions {get; set;}
 
+    public DbSet<DirectStudentPayment> DirectStudentPayments {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)

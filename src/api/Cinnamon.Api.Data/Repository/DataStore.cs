@@ -128,6 +128,8 @@ public class DataStore : IDataStore
 
     public IDirectStudentSession DirectStudentSession => new DirectStudentSessionEntity(applicationContext);
 
+    public IDirectStudentPayment DirectStudentPayment => new DirectStudentPaymentEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {
