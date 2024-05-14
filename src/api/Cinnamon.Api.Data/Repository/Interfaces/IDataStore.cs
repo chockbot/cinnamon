@@ -62,6 +62,7 @@ public interface IDataStore
     IDynamicContent DynamicContent {get;}
     IActivitySummary ActivitySummary {get;}
     IDirectStudentInfo DirectStudentInfo {get;}
+    IDirectStudentSession DirectStudentSession {get;}
     
     Task EnsureMigrate();
 
