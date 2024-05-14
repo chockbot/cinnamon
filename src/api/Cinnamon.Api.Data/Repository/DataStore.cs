@@ -124,6 +124,8 @@ public class DataStore : IDataStore
 
     public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
 
+    public IDirectStudentInfo DirectStudentInfo => new DirectStudentInfoEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

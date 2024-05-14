@@ -61,6 +61,7 @@ public interface IDataStore
     IAnnouncement Announcement {get;}
     IDynamicContent DynamicContent {get;}
     IActivitySummary ActivitySummary {get;}
+    IDirectStudentInfo DirectStudentInfo {get;}
     
     Task EnsureMigrate();
 
