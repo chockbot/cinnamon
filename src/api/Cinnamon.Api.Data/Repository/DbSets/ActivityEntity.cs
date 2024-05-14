@@ -315,18 +315,18 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				result.Address.PinnedLocation = address.PinnedLocation;
 				result.Address.PostalCode     = address.PostalCode;
 
-				// enable update for ote schedule
-				result.OteSchedule.From                  = oteSchedule.From;
-				result.OteSchedule.To                    = oteSchedule.To;
-				result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
-				result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
-				result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
-				result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
-				result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
-				result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
-				result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
-				result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
-				result.OteSchedule.EventTicketLimit		 = oteSchedule.EventTicketLimit;
+                // enable update for ote schedule
+                result.OteSchedule.From                  = oteSchedule.From;
+                result.OteSchedule.To                    = oteSchedule.To;
+                result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
+                result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
+                result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
+                result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
+                result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
+                result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
+                result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
+                result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
+                result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
 
                 if(recreateSchedule)
                 {
@@ -820,19 +820,19 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
-		int? categoryId = null, int? starReview = null, int? experienceType = null)
-	{
-		try
-		{
-			string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
-			string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
-			string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
-			string searchClause = string.Empty;
-			if(!string.IsNullOrEmpty(search))
-			{
-				searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
-			}
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+        int? categoryId = null, int? starReview = null, int? experienceType = null)
+    {
+        try
+        {
+            string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+            string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
+            string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
+            string searchClause = string.Empty;
+            if(!string.IsNullOrEmpty(search))
+            {
+                searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
+            }
 
 			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
 								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
@@ -855,9 +855,9 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				command.CommandText = query;
 				command.CommandType = CommandType.Text;
 
-				if(!string.IsNullOrEmpty(search))
-				{
-					var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
+                if(!string.IsNullOrEmpty(search))
+                {
+                    var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
 					command.Parameters.Add(parameterSearch);
 				}
 
@@ -1010,19 +1010,19 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
 								   "and sm.\"TotalParticipants\" != ote.\"TotalParticipants\"; " +
 
-							   "with withTotalRatings as ( " +
-								   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
-									   "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
-								   "from public.\"Activities\" ac " +
-								   "left join public.\"Reviews\" ar " +
-									   "on ac.\"Id\" = ar.\"ActivityId\" " +
-								   "group by ac.\"Id\" " +
-							   ") " +
-							   "update public.\"ActivitySummaries\" sm " +
-							   "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
-							   "from withTotalRatings rt " +
-							   "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
-								   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
+                               "with withTotalRatings as ( " +
+                                   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
+                                       "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
+                                   "from public.\"Activities\" ac " +
+                                   "left join public.\"Reviews\" ar " +
+                                       "on ac.\"Id\" = ar.\"ActivityId\" " +
+                                   "group by ac.\"Id\" " +
+                               ") " +
+                               "update public.\"ActivitySummaries\" sm " +
+                               "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
+                               "from withTotalRatings rt " +
+                               "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
+                                   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
                                 
                                "with activities as ( " +
                                    "select ac.\"Id\", " +
@@ -1107,14 +1107,14 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                "update public.\"ActivitySummaries\" su " +
                                "set \"Provider\" = pr.\"Provider\" " +
                                "from provider pr " +
-                               "where su.\"ActivityId\" = pr.\"Id\" and su.\"Provider\" != pr.\"Provider\"; " + 
-                               
-						   "commit; ";
-			
-			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-			{
-				command.CommandText = query;
-				command.CommandType = CommandType.Text;
+                               "where su.\"ActivityId\" = pr.\"Id\" and su.\"Provider\" != pr.\"Provider\"; " +
+
+                           "commit; ";
+            
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
 
 				applicationContext.Database.OpenConnection();
 

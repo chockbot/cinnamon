@@ -99,6 +99,7 @@ public class UpdateOteActivityArgs
         public string EventDurationTimeUnit { get; set; }
 
         [Required]
+
         public int EventTicketLimit { get; set; }
     }
 

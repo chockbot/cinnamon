@@ -1696,7 +1696,7 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit ,
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
@@ -1895,7 +1895,7 @@ public class ActivityRepository : IActivityRepository
                 SelectedDays          = selectedDays,
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
-                EventTicketLimit = ticketEventLimit
+                EventTicketLimit      = ticketEventLimit
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
