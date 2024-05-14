@@ -16,6 +16,8 @@ using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcemen
 using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicContent;
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
+using DirectStudentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
+using DirectStudentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DirectStudent.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -105,5 +107,14 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentAlias.DynamicContentDTO, DynamicContent>();
         CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
+
+        // direct student mappings
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudent, DirectStudentAlias.DirectStudentDTO>()
+            .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.CreateDirectStudentInfo))
+            .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.CreateDirectStudentPayment))
+            .ForMember(d => d.DirectStudentSession, o => o.MapFrom(o => o.CreateDirectStudentSession));
     }
 }

@@ -1,10 +1,9 @@
-using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
 using Cinnamon.Framework.Common;
 
-namespace Cinnamon.Api.Data.Repository.Interfaces;
+namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
-public interface IDirectStudentInfo : IGenericEntity<DirectStudentInfo>
+public interface IDirectStudentRepository 
 {
     Task<AppResult<IEnumerable<DirectStudentDTO>>> CreateDirectStudents(IEnumerable<DirectStudentDTO> directStudents);
 }
