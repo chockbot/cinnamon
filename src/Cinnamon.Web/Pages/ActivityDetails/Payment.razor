@@ -138,18 +138,16 @@
                                     <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-3">@(Model.Activity.AddOns.Count > 1 ? "Add-ons" : "Add-on")</h5>
                                     @foreach (var addOn in Model.Activity.AddOns.OrderBy(a => a.Order).ToList())
                                     {
-                                        <div class="col-lg-6 col-md-8 col-sm-12 col-12 add-ons-section">
-                                            <div class="prevent-select color-grey-100 font-16 d-flex border-color-grey-200">
-                                                <div class="w-100 p-2">@addOn.Name</div>
-                                                <div @onclick="() =>SubtractAddOns(addOn)"
-                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                        <div class="add-ons-section">
+                                            <div class="prevent-select">
+                                                <div class="addon-name">@addOn.Name</div>
+                                                <div @onclick="() =>SubtractAddOns(addOn)" class="addon-operation">
                                                     -
                                                 </div>
-                                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-grey-100">
+                                                <div class="addon-count">
                                                     @addOn.AddOnCount
                                                 </div>
-                                                <div @onclick="() =>AddAddOns(addOn)"
-                                                     class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                                <div @onclick="() =>AddAddOns(addOn)" class="addon-operation">
                                                     +
                                                 </div>
                                             </div>
