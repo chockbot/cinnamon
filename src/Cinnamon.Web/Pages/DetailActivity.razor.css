@@ -4,6 +4,17 @@
 a {
   text-decoration: none;
 }
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+::deep button {
+    transition: transform .25s;
+}
+
+    ::deep button:active {
+        transform: scale(.94);
+    }
 .cinnamon-video {
     border-radius: 16px;
     background-color: black;
@@ -784,13 +795,17 @@ hr {
 }
 
 .view-profile {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  text-decoration-line: underline;
-  color: #4285f4;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    text-decoration-line: underline;
+    color: #4285f4;
+    transition: transform .25s;
 }
+    .view-profile:active {
+        transform: scale(.94);
+    }
 
 .profile-badges {
   display: flex;
