@@ -1,3 +1,9 @@
+::deep button {
+    transition: transform .25s;
+}
+    ::deep button:active {
+        transform: scale(.94);
+    }
 .header {
   display: flex;
   justify-content: end;
@@ -186,7 +192,9 @@ p {
     height: 20px;
     margin-top: 15px;
 }
-
+.m-manual-icon{
+    display:none;
+}
 .btn-add-manual {
     font-family: Nunito;
     font-size: 16px;
@@ -196,12 +204,17 @@ p {
     border: 1px solid #343D4C;
     border-radius: 49px;
     padding: 9px 20px 9px 20px;
+    transition: transform .25s;
 }
     .btn-add-manual:hover {
-        background-color: var(--primary);
+        background-color: #4BB749;
         color: white;
         border: none;
     }
+    .btn-add-manual:active {
+        transform: scale(.94);
+    }
+
 .profile-details {
     display: flex;
 }
@@ -666,25 +679,38 @@ hr {
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .m-manual-icon{
+        display: none;
+    }
     ::deep .personal-tab-swiper .swiper-slide .tab-item.active {
         background-color: white;
         color: #343d4c;
         text-decoration: underline 3px solid #ffa942;
         text-underline-position: under;
     }
+
   .dashboard-tab {
     margin: 0;
+    border:none;
   }
-
-  .dashboard-wrapper {
-    display: block;
-    margin-right: 0;
-    margin-left: 0;
-  }
-
-  .experience-box {
-    margin-bottom: 1rem;
-  }
+    .profile-wrapper {
+        border-top: none;
+        border-right: none;
+        border-left: none;
+        border-radius: 0;
+    }
+    .manual-student-wrapper {
+        border-top: none;
+        border-right: none;
+        border-left: none;
+        border-radius: 0;
+    }
+    .faqs-wrapper {
+        border: none;
+    }
+    .experience-box {
+        margin-bottom: 1rem;
+    }
 
   .announcement {
     margin-right: 0px;
@@ -733,14 +759,11 @@ hr {
   .user-information {
     display: block;
   }
-  .dashboard-details-tab {
-    margin-top: 1rem;
-    padding: 0;
-    margin-left: -10px;
-  }
-  ::deep .dashboard-details-tab .tab-content > .active {
-    border: none;
-  }
+    .dashboard-details-tab {
+        margin-top: 1rem;
+        padding: 0;
+        margin-left: -10px;
+    }
 }
 
 /* For Mobile Portrait View */
@@ -980,6 +1003,52 @@ hr {
     .profile-wrapper {
         margin-top: 1rem;
     }
+
+    .manual-student-wrapper{
+        padding: 10px;
+        border-top: none;
+        border-right:none;
+        border-left: none;
+        border-radius: 0;
+    }
+
+    .faqs-wrapper {
+        padding: 10px;
+    }
+
+    .manual-text {
+        font-family: Nunito;
+        font-size: 16px;
+        color: #343D4C;
+    }
+    .manual-sub-text {
+        font-family: Nunito;
+        font-size: 14px;
+        color: #343D4C;
+    }
+    .manual-number {
+        font-family: Nunito;
+        font-size: 32px;
+        font-weight: 700;
+        color: #717171;
+    }
+    .manual-icon {
+       display: none;
+    }
+    .m-manual-icon{
+        display: block;
+        width: 17px;
+        height:20px;
+        margin-top: 15px;
+    }
+    .btn-add-manual {
+        
+    }
+
+        .btn-add-manual:hover {
+            background-color: #4BB749;
+            color: white;
+        }
 
     ::deep .dashboard-details-tab .tab-content > .active {
         border: none;
