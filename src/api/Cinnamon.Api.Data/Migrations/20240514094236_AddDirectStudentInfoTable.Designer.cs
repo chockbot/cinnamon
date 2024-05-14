@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240514094236_AddDirectStudentInfoTable")]
+    partial class AddDirectStudentInfoTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1305,101 +1307,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ProviderId");
 
                     b.ToTable("DirectStudentInfos");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DirectStudentPayment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DirectStudentSessionId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DirectStudentSessionId");
-
-                    b.ToTable("DirectStudentPayments");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DirectStudentSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DirectStudentInfoId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("NumberOfSessions")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SessionsAttended")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StudentNo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("DirectStudentInfoId");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.ToTable("DirectStudentSessions");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Disbursement", b =>
@@ -3555,28 +3462,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DirectStudentPayment", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.DirectStudentSession", "DirectStudentSession")
-                        .WithMany()
-                        .HasForeignKey("DirectStudentSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DirectStudentSession");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DirectStudentSession", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.DirectStudentInfo", "DirectStudentInfo")
-                        .WithMany()
-                        .HasForeignKey("DirectStudentInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DirectStudentInfo");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DisbursementDetail", b =>

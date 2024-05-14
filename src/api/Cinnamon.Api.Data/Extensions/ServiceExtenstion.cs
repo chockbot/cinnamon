@@ -82,6 +82,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IAnnouncementRepository, Services.Repository.Announcement.AnnouncementRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDynamicContnetRepository, Services.Repository.DynamicContent.DynamicContentRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOnlineEventRepository, Services.Repository.OnlineEvent.OnlineEventRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IDirectStudentRepository, Services.Repository.DirectStudent.DirectStudentRepository>();
 
         return services;
     }
