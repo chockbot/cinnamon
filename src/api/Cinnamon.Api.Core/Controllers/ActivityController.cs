@@ -105,8 +105,8 @@ public class ActivityController : ControllerBase
         IDeleteAddOnHandler deleteAddOnHandler, IGetOtePerDayHandler getOtePerDayHandler, 
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
-        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IDeleteTicketHandler deleteTicketHandler,
-        IActivityFeedHandler activityFeedHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
+        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
     {
         _logger = logger;
 
@@ -2714,7 +2714,6 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                   
                     EventTicketLimit = activity.EventTicketLimit
                 },
                 Pricings = args.Pricings.Select(p => {
@@ -2994,6 +2993,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new OtePerDayResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("DeleteOnlineEvent")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteOnlineEventResult), StatusCodes.Status200OK)]
