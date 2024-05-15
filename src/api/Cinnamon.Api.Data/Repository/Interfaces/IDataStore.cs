@@ -64,6 +64,7 @@ public interface IDataStore
     IDirectStudentInfo DirectStudentInfo {get;}
     IDirectStudentSession DirectStudentSession {get;}
     IDirectStudentPayment DirectStudentPayment {get;}
+    IDirectStudentAttendance DirectStudentAttendance {get;}
     
     Task EnsureMigrate();
 
