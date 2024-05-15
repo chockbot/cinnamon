@@ -30,27 +30,29 @@ public class DashboardController : ControllerBase
     private readonly IGetTicketDetailsHandler getTicketDetailsHandler;
     private readonly IUpdateOTETicketHandler updateOTETicketHandler;
     private readonly IGetDisbursementByProviderId getDisbursementByProviderId;
+    private readonly IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
         IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler,
-        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId)
+        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId, IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler)
     {
-        this.getActivitySchedulesHandler        = getActivitySchedulesHandler;
-        this.getCurrentDateAttendanceHandler    = getCurrentDateAttendanceHandler;
-        this.updateStudentAttendanceHandler     = updateStudentAttendanceHandler;
-        this.getStudentAttendanceHandler        = getStudentAttendanceHandler;
-        this.getAllStudentAttendanceByIdHandler = getAllStudentAttendanceByIdHandler;
-        this.createStudentAttendanceHandler     = createStudentAttendanceHandler;
-        this.updateAttendanceHandler            = updateAttendanceHandler;
-        this.getAllBadgesHandler                = getAllBadgesHandler;
-        this.getAllStudentsAttendanceHandler    = getAllStudentsAttendanceHandler;
-        this.getCompletedStudentsHandler        = getCompletedStudentsHandler;
-        this.getOTEByProviderHandler            = getOTEByProviderHandler;
-        this.getOTEByActivityIdHandler          = getOTEByActivityIdHandler;
-        this.getTicketDetailsHandler            = getTicketDetailsHandler;
-        this.updateOTETicketHandler             = updateOTETicketHandler;
-        this.getDisbursementByProviderId        = getDisbursementByProviderId;
+        this.getActivitySchedulesHandler          = getActivitySchedulesHandler;
+        this.getCurrentDateAttendanceHandler      = getCurrentDateAttendanceHandler;
+        this.updateStudentAttendanceHandler       = updateStudentAttendanceHandler;
+        this.getStudentAttendanceHandler          = getStudentAttendanceHandler;
+        this.getAllStudentAttendanceByIdHandler   = getAllStudentAttendanceByIdHandler;
+        this.createStudentAttendanceHandler       = createStudentAttendanceHandler;
+        this.updateAttendanceHandler              = updateAttendanceHandler;
+        this.getAllBadgesHandler                  = getAllBadgesHandler;
+        this.getAllStudentsAttendanceHandler      = getAllStudentsAttendanceHandler;
+        this.getCompletedStudentsHandler          = getCompletedStudentsHandler;
+        this.getOTEByProviderHandler              = getOTEByProviderHandler;
+        this.getOTEByActivityIdHandler            = getOTEByActivityIdHandler;
+        this.getTicketDetailsHandler              = getTicketDetailsHandler;
+        this.updateOTETicketHandler               = updateOTETicketHandler;
+        this.getDisbursementByProviderId          = getDisbursementByProviderId;
+        this.getEnrolledStudentsByProviderHandler = getEnrolledStudentsByProviderHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -685,6 +687,57 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetEnrolledStudentsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsByProviderResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEnrolledStudentsByProvider([FromQuery] GetEnrolledStudentsByProviderArgs args)
+    {
+        try
+        {
+            var result = await getEnrolledStudentsByProviderHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetEnrolledStudentsByProviderArgs
+            {
+                CountPerPage = args.CountPerPage,
+                PageIndex    = args.PageIndex,
+                ProviderId   = args.ProviderId,
+                SearchBy     = args.SearchBy ?? 0,
+                SearchValue  = args.SearchValue ?? string.Empty
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetEnrolledStudentsByProviderResult
+            {
+                IsSuccess = true,
+                ErrorInfo = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result = result.Result.EnrolledStudentsList.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentDTO
+                    {
+                        Id                  = s.Id,
+                        ActivityId          = s.ActivityId,
+                        Name                = s.Name,
+                        Remarks             = s.Remarks,
+                        ScheduleId          = s.ScheduleId,
+                        SessionsAttended    = s.SessionsAttended,
+                        NumberOfSessions    = s.NumberOfSessions,
+                        StudentNo           = s.StudentNo,
+                        ActivityName        = s.ActivityTitle,
+                        ExpirationEndDate   = s.ExpirationEndDate,
+                        ExpirationStartDate = s.ExpirationStartDate,
+                        HasExpiration       = s.HasExpiration,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledStudentsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

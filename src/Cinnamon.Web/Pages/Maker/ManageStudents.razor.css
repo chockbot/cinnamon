@@ -2,6 +2,38 @@
     outline: none !important;
     box-shadow: none !important;
 }
+::deep .page-item {
+    margin-left: 5px;
+}
+
+    ::deep .page-item:first-child .page-link {
+        border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
+    }
+
+    ::deep .page-item:last-child .page-link {
+        border-top-right-radius: 50px;
+        border-bottom-right-radius: 50px;
+    }
+
+::deep .page-link {
+    background-color: #ffffff;
+    color: #343D4C;
+    border: 1px solid #F1F1F1;
+    border-radius: 50px;
+    font-size: 13px;
+    font-family: 'Nunito';
+}
+
+    ::deep .page-link:hover {
+        background-color: var(--primary);
+        color: #FFFFFF;
+    }
+
+::deep .page-item.active .page-link {
+    background-color: var(--primary);
+    border: 1px solid #F1F1F1;
+}
 .expired-session {
     color: white;
     font-size: 12px;

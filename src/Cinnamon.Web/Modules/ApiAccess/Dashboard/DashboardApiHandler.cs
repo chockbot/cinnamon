@@ -343,4 +343,26 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<GetDisbursementByProviderResult>.CreateFailed(ex, "An error occurred when getting disbursement details api");
         }
     }
+
+    public async Task<AppResult<GetEnrolledStudentsByProviderResult>> GetEnrolledStudentsByProvider(GetEnrolledStudentsByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetEnrolledStudentsByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEnrolledStudentsByProviderResult>();
+
+            return AppResult<GetEnrolledStudentsByProviderResult>.CreateSucceeded(result, "Successfully getting enrolled students api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolledStudentsByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolledStudentsByProviderResult>.CreateFailed(ex, "An error occurred when getting enrolled students api");
+        }
+    }
 }

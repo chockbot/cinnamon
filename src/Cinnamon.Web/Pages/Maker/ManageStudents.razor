@@ -115,7 +115,7 @@
                                             }
                                             else
                                             {
-                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
+                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && item.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && item.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
                                                 {
                                                     <p>@item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy") <span class="expired-session">Expired</span></p>
                                                 }
@@ -163,6 +163,29 @@
                             }
                         </TableBody>
                     </Table>
+                    <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                            <PaginationLink>
+                                <span aria-hidden="true">«</span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        @{
+                            for (var i = 1; i <= Pagination.TotalPages; i++)
+                            {
+                                var pageNumberAsString = i.ToString();
+                                <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                    <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                        @pageNumberAsString
+                                    </PaginationLink>
+                                </PaginationItem>
+                            }
+                        }
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                            <PaginationLink>
+                                <span aria-hidden="true">»</span>
+                            </PaginationLink>
+                        </PaginationItem>
+                    </Pagination>
                 </div>
             </div>
         </section>
@@ -243,6 +266,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 @if (Model.showSuccessMessage)
 {
     <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -263,6 +287,12 @@
     private GetStudent students = new GetStudent();
     string token = string.Empty;
     private bool isLoading = false;
+    public const string PREVIOUS = "previous";
+    public const string NEXT = "next";
+    public int UserId { get; set; }
+    public int SearchBy { get; set; } = 0;
+    public string SearchValue { get; set; } = string.Empty;
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
     protected override async Task OnInitializedAsync()
     {
         try
@@ -283,13 +313,17 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+            else
+            {
+                UserId = result.Result.Result.Id;
+            }
             if (!result.Result.Result.IsMaker)
             {
                 // should not able to access the page
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            await GetStudents();
+            await GetStudents(1);
         }
         catch (Exception)
         {
@@ -333,44 +367,21 @@
         loadingIndicator.Hide();
     }
 
-    private void OnSeachByValueChange(int selectedId)
+    private async Task OnSeachByValueChange(int selectedId)
     {
-        loadingIndicator.Show();
-        Model.searchBy = selectedId;
-        switch (Model.searchBy)
-        {
-            case 0:
-                Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
-                break;
-            case 1:
-                Model.isDisplay = true;
-                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
-                break;
-            case 2:
-                Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
-                break;
-            case 3:
-                Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.HasExpiration == 0) 
-                || (a.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                || (a.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue) 
-                || (a.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-                || (a.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-                && a.ExpirationDateEnd != DateTime.MinValue).ToList();
-                break;
-            default:
-                Model.isDisplay = true;
-                break;
-        }
-        loadingIndicator.Hide();
+        await loadingIndicator.Show();
+        SearchBy = selectedId;
+        await GetStudents(1);
+        await loadingIndicator.Hide();
     }
 
-    private void TextSearchChanged(string search)
+    private async Task TextSearchChanged(string search)
     {
-        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).
-        OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
+        await loadingIndicator.Show();
+        SearchValue = search;
+        SearchBy = 1;
+        await GetStudents(1);
+        await loadingIndicator.Hide();
     }
 
     private async void SaveChanges(int Id, int StudentNo)
@@ -402,7 +413,7 @@
             Model.students.Clear();
             studentAttendances.Clear();
             students.item.Clear();
-            await GetStudents();
+            await GetStudents(0);
             //Hide Loading
             await HideLoading();
             //Hide Modal
@@ -411,101 +422,38 @@
         }
     }
 
-    private async Task GetStudents()
+    private async Task GetStudents(int pageIndex)
     {
         await loadingIndicator.Show();
-        //Get Owned Activities
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-            {
-                IncludeAtivitySchedules = true
-            }, token);
-        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-            {
-                // map only required fields
-                return new Activity
-                    {
-                        ActivityId = a.ActivityId,
-                        IsPublished = a.IsPublished,
-                        Title = a.Title
-                    };
-            }).ToList();
 
-            foreach (var activityResult in activityRes.Result.Result)
-            {
-                foreach (var activitySchedule in activityResult.ActivitySchedules)
-                {
-                    Model.activitySchedules.Add(new ActivitySchedule
-                        {
-                            Id = activitySchedule.Id,
-                            IsActiveSchedule = activitySchedule.IsActiveSchedule,
-                            ActivityId = activityResult.ActivityId,
-                            Name = activitySchedule.Name,
-                            DateTime = activitySchedule.DateTime,
-                            UnitPrice = activitySchedule.UnitPrice,
-                            PerUnit1 = activitySchedule.PerUnit1,
-                            PerUnit2 = activitySchedule.PerUnit2,
-                            PriceUnit1 = activitySchedule.PriceUnit1,
-                            PriceUnit2 = activitySchedule.PriceUnit2,
-                            Price = activitySchedule.Price,
-                            IsSetSession = activitySchedule.IsSetSession,
-                            SessionName = activitySchedule.SessionName,
-                            HasExpiration = activitySchedule.HasExpiration,
-                            StartDate = activitySchedule.StartDate
-                        });
-                }
-            }
-        }
-        //Get Enrolled Experience
-        foreach (var item in Model.activities)
+        //Get Enrolled Students
+        var result = await dashboardApiHandler.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetEnrolledStudentsByProviderArgs
         {
-            var student = await ongoingApiHandler.GetEnrolledStudents(item.ActivityId);
-            if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+            ProviderId   = UserId,
+            CountPerPage = 20,
+            PageIndex    = pageIndex,
+            SearchBy     = SearchBy,
+            SearchValue  = SearchValue
+        }, token);
+        Model.manageStudents = result.Result.Result.Select(s =>
+        {
+            return new ManageStudentsData
             {
-                Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-                {
-                    return new Students
-                        {
-                            ActivityId = a.ActivityId,
-                            CustomerId = a.CustomerId,
-                            Id = a.Id,
-                            Name = a.Name,
-                            NumberOfSessions = a.NumberOfSessions,
-                            Remarks = a.Remarks,
-                            ScheduleId = a.ScheduleId,
-                            SessionsAttended = a.SessionsAttended,
-                            Status = a.Status,
-                            StudentNo = a.StudentNo,
-                            ExpirationDateEnd = a.ExpirationEndDate,
-                            ExpirationDateStart = a.ExpirationStartDate
-                        };
-                }).ToList();
-            }
-            students.item.AddRange(Model.students);
-        }
-        var query = from item in students.item
-                    join item1 in Model.activities on item.ActivityId equals item1.ActivityId
-                    orderby item.Id
-                    select new ManageStudentsData
-                        {
-                            Id = item.Id,
-                            ActivityId = item.ActivityId,
-                            Title = item1.Title,
-                            CustomerId = item.CustomerId,
-                            Name = item.Name,
-                            NumberOfSessions = item.NumberOfSessions,
-                            SessionsAttended = item.SessionsAttended,
-                            Remarks = item.Remarks,
-                            StudentNo = item.StudentNo,
-                            Status = item.Status,
-                            ScheduleId = item.ScheduleId,
-                            ExpirationDateEnd = item.ExpirationDateEnd,
-                            ExpirationDateStart = item.ExpirationDateStart,
-                            HasExpiration = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault().HasExpiration
-                        };
-        //List DataGrid Content
-        Model.manageStudents = query.ToList();
+                Id                  = s.Id,
+                ActivityId          = s.ActivityId,
+                ScheduleId          = s.ScheduleId,
+                Name                = s.Name,
+                Title               = s.Title,
+                StudentNo           = s.StudentNo,
+                Remarks             = s.Remarks,
+                SessionsAttended    = s.SessionsAttended,
+                NumberOfSessions    = s.NumberOfSessions,
+                ExpirationDateStart = s.ExpirationStartDate,
+                ExpirationDateEnd   = s.ExpirationEndDate,
+                HasExpiration       = s.HasExpiration
+            }; 
+        }).ToList();
+        Pagination = result.Result.Pagination;
         Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
         //Get Student Attendance
         foreach (var item in Model.FilteredStudents)
@@ -519,15 +467,15 @@
 
             if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
             {
-                var result = attendance.Result.Result;
+                var lastAttendance = attendance.Result.Result;
                 studnetAttendance = new StudentAttendance
                     {
-                        Id = result.Id,
-                        Date = result.Date,
-                        IsPresent = result.IsPresent,
-                        StudentId = result.StudentId,
-                        ScheduleId = result.ScheduleId,
-                        ActivityId = result.ActivityId
+                        Id         = lastAttendance.Id,
+                        Date       = lastAttendance.Date,
+                        IsPresent  = lastAttendance.IsPresent,
+                        StudentId  = lastAttendance.StudentId,
+                        ScheduleId = lastAttendance.ScheduleId,
+                        ActivityId = lastAttendance.ActivityId
                     };
                 studentAttendances.Add(studnetAttendance);
             }
@@ -605,6 +553,48 @@
         isLoading = false;
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private bool IsActive(string page)
+       => Model.currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return Model.currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return Model.currentPage.Equals(Model.pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt > 1)
+        {
+            Model.currentPage = (currentPageAsInt - 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt < Model.pageItems)
+        {
+            Model.currentPage = (currentPageAsInt + 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        Model.currentPage = page;
+        await GetStudents(int.Parse(page));
     }
 }
 

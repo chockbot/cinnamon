@@ -5,6 +5,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.StudentAttendance;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Data;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
@@ -557,4 +558,89 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
 		}
 	}
+
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int? count, int? skip)
+	{
+        try
+        {
+            int limitCount = count.HasValue ? count.Value : int.MaxValue;
+            int skipCount = skip.HasValue ? skip.Value : 0;
+            string whereClause = string.Empty;
+			if (providerId.HasValue)
+			{
+                whereClause += "WHERE a.\"CreatedBy\" = @providerId";
+            }
+            switch (searchBy)
+			{
+				case 0:
+                    whereClause += " ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
+                    break;
+                case 1:
+					whereClause += " AND b.\"Name\" ILIKE '%' ||"+"'"+searchValue +"'"+"|| '%' ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
+					break;
+				case 2: whereClause += " AND (b.\"SessionsAttended\" < b.\"NumberOfSessions\" AND (b.\"ExpirationDateEnd\" >= CURRENT_DATE OR b.\"ExpirationDateEnd\" = '-infinity'))";
+					break;
+				case 3: whereClause += " AND ((b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND c.\"HasExpiration\" = 0) \r\n" +
+						"OR((c.\"HasExpiration\" = 1 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
+						"(c.\"HasExpiration\" = 2 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
+						"(c.\"HasExpiration\" = 2 AND b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND b.\"ExpirationDateEnd\" != '-infinity')));";
+					break;
+				default:
+					break;
+			}
+
+			string query = "SELECT a.\"Id\", a.\"Title\",  a.\"CreatedBy\", b.\"Id\" as \"StudentId\",\r\n" +
+				"b.\"Name\", b.\"NumberOfSessions\", b.\"SessionsAttended\", b.\"StudentNo\",\r\n" +
+				"b.\"Remarks\", b.\"ExpirationDateEnd\", b.\"ExpirationDateStart\", c.\"Id\" as \"ScheduleId\", c.\"HasExpiration\"\r\n" +
+				"FROM public.\"Activities\" as a \r\n" +
+				"JOIN public.\"Students\" as b ON b.\"ActivityId\" = a.\"Id\"\r\n" +
+				"JOIN public.\"ActivitySchedules\" as c ON \"c\".\"Id\" = b.\"ScheduleId\"\r\n" +
+                "" + whereClause + ";";
+            IList <StudentDTO> listResult = new List<StudentDTO>();
+
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = System.Data.CommandType.Text;
+                if (providerId.HasValue)
+                {
+                    var parameterCustomerId = new NpgsqlParameter("providerId", providerId.Value);
+                    command.Parameters.Add(parameterCustomerId);
+                }
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+                        //Get Enrolled Student List
+                        listResult = dt.AsEnumerable().Select(item => new StudentDTO
+                        {
+                            Id                  = Convert.ToInt32(item["StudentId"]),
+                            ActivityId          = Convert.ToInt32(item["Id"]),
+                            ScheduleId          = Convert.ToInt32(item["ScheduleId"]),
+                            Name                = item["Name"].ToString() ?? string.Empty,
+                            NumberOfSessions    = Convert.ToInt32(item["NumberOfSessions"]),
+                            SessionsAttended    = Convert.ToInt32(item["SessionsAttended"]),
+                            ActivityTitle       = item["Title"].ToString() ?? string.Empty,
+                            StudentNo           = item["StudentNo"].ToString() ?? string.Empty,
+                            Remarks             = item["Remarks"].ToString() ?? string.Empty,
+							ExpirationEndDate   = Convert.ToDateTime(item["ExpirationDateEnd"]),
+							ExpirationStartDate = Convert.ToDateTime(item["ExpirationDateStart"]),
+							HasExpiration       = Convert.ToInt32(item["HasExpiration"]),
+
+                        }).Skip(skipCount).Take(limitCount).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
+        }
+    }
 }
