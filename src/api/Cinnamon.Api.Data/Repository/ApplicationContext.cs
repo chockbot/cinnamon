@@ -106,6 +106,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DirectStudentPayment> DirectStudentPayments {get; set;}
 
+    public DbSet<DirectStudentAttendance> DirectStudentAttendances {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -412,6 +414,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex(s => s.ActivityId);
         modelBuilder.Entity<DirectStudentSession>()
             .HasIndex(s => s.ScheduleId);
+
+        // for direct student attendance
+        modelBuilder.Entity<DirectStudentAttendance>()
+            .HasIndex("Date", "DirectStudentSessionId");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
