@@ -21,9 +21,8 @@
 
 @if(Model != null)
 {
-<LoadingIndicator @ref=loadingIndicator>
-        <section class="mt-5 maker-dashboard">
-            <div class="header">
+<section class="mt-5 maker-dashboard">
+    <div class="header">
 
                 <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
 
@@ -55,7 +54,8 @@
 
                 </div>
             </div>
-            <div class="student-attendance-section">
+    <LoadingIndicator @ref=loadingIndicator>
+        <div class="student-attendance-section">
                 <div class="table-list">
                     <Table @ref="tableStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                     <TableHeader>
@@ -188,8 +188,9 @@
                     </Pagination>
                 </div>
             </div>
-        </section>
     </LoadingIndicator>
+</section>
+
     
 <Modal @ref="modalRef">
     <ModalContent Centered Size="ModalSize.Small">
@@ -323,6 +324,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+            await GetActivities();
             await GetStudents(1);
         }
         catch (Exception)
@@ -350,6 +352,7 @@
     {
         return modalRefViewSchedule.Hide();
     }
+
     private void OnFilterValueChanged(int activityId)
     {
         loadingIndicator.Show();
@@ -369,19 +372,35 @@
 
     private async Task OnSeachByValueChange(int selectedId)
     {
-        await loadingIndicator.Show();
         SearchBy = selectedId;
-        await GetStudents(1);
-        await loadingIndicator.Hide();
+        switch (SearchBy)
+        {
+            case 0:
+                Model.isDisplay = false;
+                await GetStudents(1);
+                break;
+            case 1:
+                Model.isDisplay = true;
+                break;
+            case 2:
+                Model.isDisplay = false;
+                await GetStudents(1);
+                break;
+            case 3:
+                Model.isDisplay = false;
+                await GetStudents(1);
+                break;
+            default:
+                Model.isDisplay = true;
+                break;
+        }
     }
 
     private async Task TextSearchChanged(string search)
     {
-        await loadingIndicator.Show();
         SearchValue = search;
         SearchBy = 1;
         await GetStudents(1);
-        await loadingIndicator.Hide();
     }
 
     private async void SaveChanges(int Id, int StudentNo)
@@ -424,8 +443,6 @@
 
     private async Task GetStudents(int pageIndex)
     {
-        await loadingIndicator.Show();
-
         //Get Enrolled Students
         var result = await dashboardApiHandler.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetEnrolledStudentsByProviderArgs
         {
@@ -443,7 +460,7 @@
                 ActivityId          = s.ActivityId,
                 ScheduleId          = s.ScheduleId,
                 Name                = s.Name,
-                Title               = s.Title,
+                Title               = s.ActivityName,
                 StudentNo           = s.StudentNo,
                 Remarks             = s.Remarks,
                 SessionsAttended    = s.SessionsAttended,
@@ -456,6 +473,7 @@
         Pagination = result.Result.Pagination;
         Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
         //Get Student Attendance
+        await loadingIndicator.Show();
         foreach (var item in Model.FilteredStudents)
         {
             var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
@@ -481,6 +499,27 @@
             }
         }
         await loadingIndicator.Hide();
+    }
+
+    private async Task GetActivities()
+    {
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+            {
+                IncludeAtivitySchedules = true
+            }, token);
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title
+                    };
+            }).ToList();
+        }
     }
 
     private void SortByName()
