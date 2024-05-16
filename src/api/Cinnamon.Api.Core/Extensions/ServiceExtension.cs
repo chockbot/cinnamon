@@ -64,6 +64,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IDirectStudentData, Modules.DataAccess.DirectStudent.DirectStudentData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
