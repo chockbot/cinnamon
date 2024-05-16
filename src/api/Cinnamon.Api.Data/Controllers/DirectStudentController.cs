@@ -1,3 +1,4 @@
+using System.Globalization;
 using AutoMapper;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
@@ -13,11 +14,14 @@ namespace Cinnamon.Api.Data.Controllers;
 public class DirectStudentController : ControllerBase
 {
     private readonly IDirectStudentRepository directStudentRepository;
+    private readonly IDirectStudentAttendanceRepository directStudentAttendanceRepository;
     private readonly IMapper mapper;
 
-    public DirectStudentController(IDirectStudentRepository directStudentRepository, IMapper mapper)
+    public DirectStudentController(IDirectStudentRepository directStudentRepository, 
+        IDirectStudentAttendanceRepository directStudentAttendanceRepository, IMapper mapper)
     {
         this.directStudentRepository = directStudentRepository;
+        this.directStudentAttendanceRepository = directStudentAttendanceRepository;
         this.mapper = mapper;
     }
 
@@ -41,6 +45,54 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateDirectStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
+    [Route("Attendance")]
+    [ProducesResponseType(typeof(StudentAttendanceResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentAttendance([FromQuery] StudentAttendanceArgs args)
+    {
+        try
+        {
+            DateTime? date = null;
+            if(!string.IsNullOrEmpty(args.Date))
+            {
+                date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            
+            var result = await directStudentAttendanceRepository.GetAllAsync(
+                args.CountPerPage, (args.PageIndex -1) * args.CountPerPage, date, args.IsIncludeStudent, 
+                args.ActivityIds, args.ScheduleIds); 
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new StudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
+            }
+            
+            var totalCountRes = await directStudentAttendanceRepository
+                .GetAllAsync(null, null, date, args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds);
+            if(!totalCountRes.Succeeded || totalCountRes.Result is null)
+            {
+                return new JsonResult(new StudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = totalCountRes.Message}});    
+            }
+
+            var totalRecords = totalCountRes.Result.Count();
+            return new JsonResult(new StudentAttendanceResult {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
+                                    (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
