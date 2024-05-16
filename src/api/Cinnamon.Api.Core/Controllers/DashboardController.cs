@@ -127,7 +127,8 @@ public class DashboardController : ControllerBase
                             StudentNo = s.StudentNo,
                             StudentId = s.StudentId,
                             ExpirationEndDate = s.ExpirationDateEnd,
-                            ExpirationStartDate = s.ExpirationDateStart
+                            ExpirationStartDate = s.ExpirationDateStart,
+                            StudentType = s.StudentType
                         };
                     })
                 }
