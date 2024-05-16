@@ -109,6 +109,7 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
 
         // direct student mappings
+        CreateMap<DirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
