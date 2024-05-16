@@ -88,33 +88,6 @@ public class DirectStudentController : ControllerBase
         }
     }
 
-    [HttpPost]
-    [Route("Attendance/Bulk")]
-    [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
-    {
-        try
-        {
-            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.CreateStudentAttendances);
-
-            var result = await directStudentAttendanceRepository.CreateDirectStudentAttendances(dtos);
-            if(!result.Succeeded || result.Result is null)
-            {
-                return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new CreateStudentAttendanceResult {
-                IsSuccess = true,
-                Result = result.Result
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [HttpGet]
     [Route("Attendance")]
     [ProducesResponseType(typeof(StudentAttendanceResult), StatusCodes.Status202Accepted)]
@@ -160,6 +133,33 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new StudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [HttpPost]
+    [Route("Attendance/Bulk")]
+    [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
+    {
+        try
+        {
+            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.CreateStudentAttendances);
+
+            var result = await directStudentAttendanceRepository.CreateDirectStudentAttendances(dtos);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateStudentAttendanceResult {
+                IsSuccess = true,
+                Result = result.Result
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
