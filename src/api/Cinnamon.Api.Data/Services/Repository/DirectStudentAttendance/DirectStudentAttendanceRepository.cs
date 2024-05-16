@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using AutoMapper;
 using Cinnamon.Api.Data.Extensions;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.StudentAttendance;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
@@ -11,10 +13,39 @@ namespace Cinnamon.Api.Data.Services.Repository.DirectStudent;
 public class DirectStudentAttendanceRepository : IDirectStudentAttendanceRepository
 {
     private readonly IDataStore dataStore;
+    private readonly IMapper mapper;
 
-    public DirectStudentAttendanceRepository(IDataStore dataStore)
+    public DirectStudentAttendanceRepository(IDataStore dataStore, IMapper mapper)
     {
         this.dataStore = dataStore;
+        this.mapper = mapper;
+    }
+
+    public async Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> CreateDirectStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances)
+    {
+        try
+        {
+            var entities = mapper.Map<IEnumerable<Entities.DirectStudentAttendance>>(attendances);
+
+            // set kind utc of the date
+            foreach (var item in entities)
+            {
+                item.Date = item.Date.Date.SetKindUtc();
+            }
+
+            var result = await dataStore.DirectStudentAttendance.AddRange(entities);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(result.Result);
+            return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateSucceeded(dtos, "Successfully create student attendance.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateFailed(ex, "An error occured when creating student attendances.");
+        }
     }
 
     public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, DateTime? date = null, 

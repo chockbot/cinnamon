@@ -117,5 +117,8 @@ public class MappingProfile : Profile
             .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.CreateDirectStudentInfo))
             .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.CreateDirectStudentPayment))
             .ForMember(d => d.DirectStudentSession, o => o.MapFrom(o => o.CreateDirectStudentSession));
+        CreateMap<DirectStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
+        CreateMap<DirectStudentAlias.DirectStudentAttendanceDTO, DirectStudentAttendance>();
+        CreateMap<DirectStudentReqAlias.CreateStudentAttendanceArgs.CreateStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
     }
 }
