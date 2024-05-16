@@ -115,42 +115,49 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
             var studentsDontHaveAttendance = students.Where(s => !attendances.Any(at => at.StudentId == s.Id));
             var directStudentsDontHaveAttendance = directStudents.Where(s => !directStudentAttendance.Any(at => at.StudentId == s.Id));
 
-            bool createStudentsDontHaveAttendance = studentsDontHaveAttendance.Count() > 0 && directStudentsDontHaveAttendance.Count() > 0 && args.ForceCreate;
+            bool createStudentsDontHaveAttendance = (studentsDontHaveAttendance.Count() > 0 || directStudentsDontHaveAttendance.Count() > 0) && args.ForceCreate;
 
             // don't have entries yet, then need to create attendance
             if(createStudentsDontHaveAttendance)
             {
                 // create student attendance
                 DateTime date = DateTime.Now.Date;
-                var studentsToCreate = studentsDontHaveAttendance.Select(s => {
-                    return new Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs.StudentAttendaceDetails {
-                        Date = date,
-                        IsPresent = false,
-                        StudentId = s.Id
-                    };
-                });
 
-                var createStudentAttendance = await studentAttendanceData.CreateManyStudentAttendance(new Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs {
-                    StudentAttendaces = studentsToCreate
-                });
-                if(!createStudentAttendance.Succeeded || createStudentAttendance.Result == null || !createStudentAttendance.Result.IsSuccess)
+                if(studentsDontHaveAttendance.Count() > 0)
                 {
-                    return AppResult<GetStudentAttendanceResult>.CreateFailed(
-                        new ApplicationException(createStudentAttendance.Result?.ErrorInfo?.Message), createStudentAttendance.Message);
+                    var studentsToCreate = studentsDontHaveAttendance.Select(s => {
+                        return new Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs.StudentAttendaceDetails {
+                            Date = date,
+                            IsPresent = false,
+                            StudentId = s.Id
+                        };
+                    });
+
+                    var createStudentAttendance = await studentAttendanceData.CreateManyStudentAttendance(new Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs {
+                        StudentAttendaces = studentsToCreate
+                    });
+                    if(!createStudentAttendance.Succeeded || createStudentAttendance.Result == null || !createStudentAttendance.Result.IsSuccess)
+                    {
+                        return AppResult<GetStudentAttendanceResult>.CreateFailed(
+                            new ApplicationException(createStudentAttendance.Result?.ErrorInfo?.Message), createStudentAttendance.Message);
+                    }
                 }
-
-                var directStudentsCreateAttendanceRes = await directStudentData.CreateStudentAttendance(new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateStudentAttendanceArgs {
-                    CreateStudentAttendances = directStudentsDontHaveAttendance.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateStudentAttendanceArgs.CreateStudentAttendance {
-                        Date = date,
-                        IsPresent = false,
-                        DirectStudentSessionId = s.Id
-                    })
-                });
-                if(!directStudentsCreateAttendanceRes.Succeeded || directStudentsCreateAttendanceRes.Result is null || 
-                    !directStudentsCreateAttendanceRes.Result.IsSuccess)
+                
+                if(directStudentsDontHaveAttendance.Count() > 0)
                 {
-                    return AppResult<GetStudentAttendanceResult>.CreateFailed(
-                        new ApplicationException(directStudentsCreateAttendanceRes.Result?.ErrorInfo?.Message), directStudentsCreateAttendanceRes.Message);
+                    var directStudentsCreateAttendanceRes = await directStudentData.CreateStudentAttendance(new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateStudentAttendanceArgs {
+                        CreateStudentAttendances = directStudentsDontHaveAttendance.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateStudentAttendanceArgs.CreateStudentAttendance {
+                            Date = date,
+                            IsPresent = false,
+                            DirectStudentSessionId = s.Id
+                        })
+                    });
+                    if(!directStudentsCreateAttendanceRes.Succeeded || directStudentsCreateAttendanceRes.Result is null || 
+                        !directStudentsCreateAttendanceRes.Result.IsSuccess)
+                    {
+                        return AppResult<GetStudentAttendanceResult>.CreateFailed(
+                            new ApplicationException(directStudentsCreateAttendanceRes.Result?.ErrorInfo?.Message), directStudentsCreateAttendanceRes.Message);
+                    }
                 }
 
                 // fetch again student attendance
