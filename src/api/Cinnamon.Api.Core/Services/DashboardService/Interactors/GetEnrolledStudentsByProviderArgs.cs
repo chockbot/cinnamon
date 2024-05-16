@@ -8,4 +8,5 @@ public class GetEnrolledStudentsByProviderArgs : IInteractor
     public int ProviderId { get; set; }
     public string SearchValue { get; set; }
     public int SearchBy { get; set; }
+    public int ActivityId { get; set; }
 }

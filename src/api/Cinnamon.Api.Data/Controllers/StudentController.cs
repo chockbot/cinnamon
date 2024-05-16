@@ -421,7 +421,7 @@ public class StudentController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
-                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId, args.SearchValue ?? string.Empty, args.SearchBy ?? 0 , args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId, args.SearchValue ?? string.Empty, args.SearchBy ?? 0 , args.ActivityId ?? 0, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
                 await studentRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -431,7 +431,7 @@ public class StudentController : ControllerBase
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
-                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId,args.SearchValue ?? string.Empty , args.SearchBy ?? 0, null, null) :
+                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId,args.SearchValue ?? string.Empty , args.SearchBy ?? 0, args.ActivityId ?? 0, null, null) :
                 await studentRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)

@@ -559,7 +559,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int activityId, int? count, int? skip)
 	{
         try
         {
@@ -578,14 +578,19 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                 case 1:
 					whereClause += " AND b.\"Name\" ILIKE '%' ||"+"'"+searchValue +"'"+"|| '%' ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
 					break;
-				case 2: whereClause += " AND (b.\"SessionsAttended\" < b.\"NumberOfSessions\" AND (b.\"ExpirationDateEnd\" >= CURRENT_DATE OR b.\"ExpirationDateEnd\" = '-infinity'))";
+				case 2: 
+					whereClause += " AND (b.\"SessionsAttended\" < b.\"NumberOfSessions\" AND (b.\"ExpirationDateEnd\" >= CURRENT_DATE OR b.\"ExpirationDateEnd\" = '-infinity'))";
 					break;
-				case 3: whereClause += " AND ((b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND c.\"HasExpiration\" = 0) \r\n" +
+				case 3: 
+					whereClause += " AND ((b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND c.\"HasExpiration\" = 0) \r\n" +
 						"OR((c.\"HasExpiration\" = 1 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
 						"(c.\"HasExpiration\" = 2 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
 						"(c.\"HasExpiration\" = 2 AND b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND b.\"ExpirationDateEnd\" != '-infinity')));";
 					break;
-				default:
+				case 4:
+                    whereClause += " AND a.\"Id\" = "+ activityId + " ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
+					break;
+                default:
 					break;
 			}
 

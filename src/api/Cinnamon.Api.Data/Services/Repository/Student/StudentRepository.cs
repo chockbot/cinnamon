@@ -569,11 +569,11 @@ public class StudentRepository: IStudentRepository
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudentsByProvider(int? providerId, string searchValue, int searchBy, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudentsByProvider(int? providerId, string searchValue, int searchBy, int activityId, int? count, int? skip)
 	{
 		try
 		{
-			var result = await dataStore.Student.GetEnrolledStudents(providerId, searchValue, searchBy, count, skip);
+			var result = await dataStore.Student.GetEnrolledStudents(providerId, searchValue, searchBy, activityId, count, skip);
 			if (!result.Succeeded || result.Result == null)
 			{
 				return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);

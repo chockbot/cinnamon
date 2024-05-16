@@ -15,5 +15,5 @@ public interface IStudent : IGenericEntity<Student>
     Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
     Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentById(int customerId);
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolleeMasterList(int providerId, int? count, int? skip);
-    Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int? count, int? skip);
+    Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int activityId, int? count, int? skip);
 }

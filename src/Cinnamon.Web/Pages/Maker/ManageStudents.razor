@@ -3,6 +3,7 @@
 @using Cinnamon.Web.Models.Dashboard
 @using System.Security.Claims
 @using System.Globalization
+@using Cinnamon.Framework.Enums
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Models.Maker
@@ -23,37 +24,39 @@
 {
 <section class="mt-5 maker-dashboard">
     <div class="header">
+        <h3 class="text-capitalize fw-bold header-title" style="color:#343D4C;">Manage Students</h3>
+    </div>
+    <div class="header-filters-section">
+        <div class="header-filters">
+                <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
+                    <SelectItem Value="0">Search By</SelectItem>
+                    <SelectItem Value="1">Name</SelectItem>
+                    <SelectItem Value="2">Ongoing</SelectItem>
+                    <SelectItem Value="3">Completed</SelectItem>
 
-                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
-
-                <div class="header-filters">
-                    <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
-                        <SelectItem Value="0">Search By</SelectItem>
-                        <SelectItem Value="1">Name</SelectItem>
-                        <SelectItem Value="2">Ongoing</SelectItem>
-                        <SelectItem Value="3">Completed</SelectItem>
-
-                    </Select>
-                    @if (Model.isDisplay == true)
+                </Select>
+                @if (Model.isDisplay == true)
+                {
+                    <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                }
+                <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                    <SelectItem Value="0">Select Experience</SelectItem>
+                    @foreach (var item in Model.activities.OrderBy(a => a.Title))
                     {
-                        <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                        <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
                     }
-                    <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                        <SelectItem Value="0">Select Experience</SelectItem>
-                        @foreach (var item in Model.activities.OrderBy(a => a.Title))
-                        {
-                            <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
-                        }
-                    </Select>
-                    @if (Model.selectedFilter != 0)
-                    {
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
-                            View Schedule
-                        </Button>
-                    }
-
-                </div>
-            </div>
+                </Select>
+                @*@if (Model.selectedFilter != 0)
+                {
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
+                        View Schedule
+                    </Button>
+                }*@
+        </div>
+        <div class="add-enrollee">
+            <button class="btn-enrollee" @onclick="@(() => NavigateToEnrolleeMasterlist())">Enrollee Masterlist</button>
+        </div> 
+    </div>
     <LoadingIndicator @ref=loadingIndicator>
         <div class="student-attendance-section">
                 <div class="table-list">
@@ -353,21 +356,19 @@
         return modalRefViewSchedule.Hide();
     }
 
-    private void OnFilterValueChanged(int activityId)
+    private async Task OnFilterValueChanged(int activityId)
     {
-        loadingIndicator.Show();
         Model.selectedFilter = activityId;
         if (Model.selectedFilter == 0)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
+            SearchBy = 0;
+            await GetStudents(1);
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
-
-            activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
+            SearchBy = 4;
+            await GetStudents(1);
         }
-        loadingIndicator.Hide();
     }
 
     private async Task OnSeachByValueChange(int selectedId)
@@ -450,7 +451,8 @@
             CountPerPage = 20,
             PageIndex    = pageIndex,
             SearchBy     = SearchBy,
-            SearchValue  = SearchValue
+            SearchValue  = SearchValue,
+            ActivityId   = Model.selectedFilter
         }, token);
         Model.manageStudents = result.Result.Result.Select(s =>
         {
@@ -505,11 +507,12 @@
     {
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
             {
-                IncludeAtivitySchedules = true
+                IncludeAtivitySchedules = true,
+                IsActive = true
             }, token);
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
-            Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            Model.activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderBy(a => a.ActivityId).Select(a =>
             {
                 // map only required fields
                 return new Activity
@@ -634,6 +637,11 @@
     {
         Model.currentPage = page;
         await GetStudents(int.Parse(page));
+    }
+
+    private void NavigateToEnrolleeMasterlist()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
     }
 }
 

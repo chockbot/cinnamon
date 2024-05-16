@@ -32,10 +32,11 @@ public class GetEnrolledStudentsByProviderHandler : IGetEnrolledStudentsByProvid
             var result = await studentData.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiData.Student.Request.GetEnrolledStudentsArgs
             {
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex,
-                ProviderId = args.ProviderId,
-                SearchBy = args.SearchBy,
-                SearchValue = args.SearchValue
+                PageIndex    = args.PageIndex,
+                ProviderId   = args.ProviderId,
+                SearchBy     = args.SearchBy,
+                SearchValue  = args.SearchValue,
+                ActivityId   = args.ActivityId
             });
             if (!result.Succeeded || result.Result == null)
             {

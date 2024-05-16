@@ -704,7 +704,8 @@ public class DashboardController : ControllerBase
                 PageIndex    = args.PageIndex,
                 ProviderId   = args.ProviderId,
                 SearchBy     = args.SearchBy ?? 0,
-                SearchValue  = args.SearchValue ?? string.Empty
+                SearchValue  = args.SearchValue ?? string.Empty,
+                ActivityId   = args.ActivityId ?? 0
             });
             if (!result.Succeeded || result.Result == null)
             {
