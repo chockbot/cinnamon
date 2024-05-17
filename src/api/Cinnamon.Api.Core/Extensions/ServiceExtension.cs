@@ -181,6 +181,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteUpdateSharedLinkStatusHandler, Services.ActivityService.OteUpdateSharedLinkStatusHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteTicketHandler, Services.ActivityService.DeleteTicketHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteAlreadyBookedHandler, Services.ActivityService.OteAlreadyBookedHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteTicketBookedCountHandler, Services.ActivityService.OteTicketBookedCountHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

@@ -204,4 +204,25 @@ public class OteTicketData : IOteTicketData
             return AppResult<UpdateSharedLinkStatusResult>.CreateFailed(ex, "An error occured when posting update shared link status.");
         }
     }
+
+	public async Task<AppResult<CountBookedTicketsResult>> CountBookedTickets(CountBookedTicketsArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"OteTicket/CountBookedTickets")
+							.SetQueryParams(args)
+							.GetJsonAsync<CountBookedTicketsResult>();
+
+			return AppResult<CountBookedTicketsResult>.CreateSucceeded(result, "Successfully get ticket booked count.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<CountBookedTicketsResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<CountBookedTicketsResult>.CreateFailed(ex, "An error occured when getting ticket booked count.");
+		}
+	}
 }

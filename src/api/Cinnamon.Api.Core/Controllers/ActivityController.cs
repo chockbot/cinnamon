@@ -80,6 +80,7 @@ public class ActivityController : ControllerBase
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -106,7 +107,8 @@ public class ActivityController : ControllerBase
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
-        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
+        IOteTicketBookedCountHandler oteTicketBookedCountHandler)
     {
         _logger = logger;
 
@@ -168,6 +170,7 @@ public class ActivityController : ControllerBase
         this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
     }
 
     [Route("CreateActivity")]
@@ -3250,6 +3253,33 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteBookedCount")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteBookedCountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteBookedCount([FromQuery] OteBookedCountArgs args)
+    {
+        try
+        {
+            var result = await oteTicketBookedCountHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteTicketBookedCountArgs {
+                ActivityId = args.ActivityId
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
+            }
+
+            return new JsonResult(new OteBookedCountResult
+            {
+                IsSuccess = true,
+                Result = result.Result.BookedCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
