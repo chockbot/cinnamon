@@ -101,54 +101,34 @@
                 </TableBody>
             </Table>
         <div class="pagination-main">
-        <Pagination>
-            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                <PaginationLink Style="border-radius: 50%;">
-                    <span aria-hidden="true">«</span>
+<Pagination>
+    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+        <PaginationLink Style="border-radius: 50px; font-size: 13px;">
+            <span aria-hidden="true">«</span>
+        </PaginationLink>
+    </PaginationItem>
+@{
+    var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
+    var startPage = Math.Max(1, Math.Min(int.Parse(currentPage) - 2, lastPage - 3));
+
+    for (var i = startPage; i <= Math.Min(startPage + 3, lastPage); i++)
+    {
+        var pageNumberAsString = i.ToString();
+        <div class="pagination-item">
+            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50px; font-size: 13px;">
+                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50px; font-size: 13px;">
+                    @pageNumberAsString
                 </PaginationLink>
-                </PaginationItem>
-                @{
-                var startPage = Math.Max(1, int.Parse(currentPage) - 1);
-                var endPage = Math.Min(Pagination.TotalPages.GetValueOrDefault(int.MaxValue), int.Parse(currentPage));
-                var lastPage = Pagination.TotalPages.GetValueOrDefault(int.MaxValue);
-
-                for (var i = startPage; i <= endPage; i++)
-                {
-                    var pageNumberAsString = i.ToString();
-                    <div class="pagination-item">
-                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
-                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
-                            @pageNumberAsString
-                        </PaginationLink>
-                    </PaginationItem>
-                </div>
-                }
-
-                if (endPage < lastPage - 1)
-                {
-                    <PaginationItem Disabled="true" Style="border-radius: 50%;">
-                        <PaginationLink Style="border-radius: 50%;">...</PaginationLink>
-                    </PaginationItem>
-                }
-
-                if (lastPage > endPage)
-                {
-                    var pageNumberAsString = lastPage.ToString();
-                    <div class="pagination-item">
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)" Style="border-radius: 50%;">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="border-radius: 50%;">
-                                @pageNumberAsString
-                            </PaginationLink>
-                        </PaginationItem>
-                    </div>
-                }
-                }
-                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50%;">
-                    <PaginationLink Style="border-radius: 50%;">
-                        <span aria-hidden="true">»</span>
-                    </PaginationLink>
-                </PaginationItem>
-            </Pagination>
+            </PaginationItem>
+        </div>
+    }
+}
+    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next" Style="border-radius: 50px; font-size: 13px;">
+        <PaginationLink Style="border-radius: 50px; font-size: 13px;">
+            <span aria-hidden="true">»</span>
+        </PaginationLink>
+    </PaginationItem>
+</Pagination>
         </div>
             <ViewImageModal @ref="viewImageModal"></ViewImageModal>
         </div>
