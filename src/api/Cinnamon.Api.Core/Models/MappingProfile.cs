@@ -2,6 +2,7 @@ using AutoMapper;
 using DataDto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+using DirectStudentResults = Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 using TransactionResults = Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 
 namespace Cinnamon.Api.Core.Models;
@@ -59,5 +60,11 @@ public class MappingProfile : Profile
         // for ote already booked dates
         CreateMap<DataDto.Activity.OteAlreadyBookDate, ActivityResults.OteAlreadyBookedResult.OteAlreadyBooked>();
         CreateMap<ActivityResults.OteAlreadyBookedResult.OteAlreadyBooked, CoreDto.Activity.OteAlreadyBookedDTO>();
+
+
+        //for direct students
+        CreateMap<DataDto.DirectStudent.DirectStudentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent, CoreDto.DirectStudents.DirectStudentsDTO>();
+
     }
 }
