@@ -6,4 +6,5 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface IOteDateRepository 
 {
     Task<AppResult<OteDateDTO>> GetOteDateById(int id);
+    Task<AppResult<IEnumerable<OteDateDTO>>> GetOteDate (int activityId, DateTime? from, DateTime? to);
 }
