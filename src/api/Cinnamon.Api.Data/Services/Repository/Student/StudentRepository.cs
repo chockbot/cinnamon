@@ -568,4 +568,40 @@ public class StudentRepository: IStudentRepository
 			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting enrollee master list");
 		}
 	}
+
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudentsByProvider(int? providerId, string searchValue, int searchBy, int activityId, int? count, int? skip)
+	{
+		try
+		{
+			var result = await dataStore.Student.GetEnrolledStudents(providerId, searchValue, searchBy, activityId, count, skip);
+			if (!result.Succeeded || result.Result == null)
+			{
+				return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+			}
+			var students = result.Result.Select(s => {
+				var studentDto = new StudentDTO
+				{
+					Id                  = s.Id,
+					ActivityId          = s.ActivityId,
+					ScheduleId          = s.ScheduleId,
+					Name                = s.Name,
+					NumberOfSessions    = s.NumberOfSessions,
+					SessionsAttended    = s.SessionsAttended,
+					ActivityTitle       = s.ActivityTitle,
+					StudentNo           = s.StudentNo,
+					Remarks             = s.Remarks,
+					ExpirationEndDate   = s.ExpirationEndDate,
+					ExpirationStartDate = s.ExpirationStartDate,
+					HasExpiration       = s.HasExpiration
+				};
+				return studentDto;
+			});
+
+			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get enrolled students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting enrolled students list");
+		}
+	}
 }

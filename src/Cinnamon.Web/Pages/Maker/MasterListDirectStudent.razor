@@ -1,0 +1,113 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/managestudents/enrollee-masterlist"
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@using System.Globalization;
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler;
+
+<div class="mt-5 enrollee-materlist-wrapper">
+    <div class="header">
+        <div class="title-section">
+            <button class="back-button" @onclick="@(() => NavigateToManageStudents())"><img src="images/Dashboard/back-icon.png"></button>
+            <p class="back-text">Enrollee Masterlist (Direct Students)</p>
+        </div>
+        <div class="search-section">
+            <button class="btn-add" @onclick="@(() => NavigateToAddDirectStudent())">Add Direct Students</button>
+            <TextEdit Placeholder="Search" class="search-bar"></TextEdit>
+        </div>
+    </div>
+    <LoadingIndicator @ref=loadingIndicator>
+        <div class="direct-student-section">
+            <div class="table-list">
+                <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell class="name-header">
+                                <label class="sotring-column">
+                                    Name
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="age-header">
+                                <label class="sotring-column">
+                                    Age
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="gender-header">
+                                <label class="sotring-column">
+                                    Gender
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="action-header">
+                                <label class="sotring-column">
+                                   Action
+                                </label>
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                            <TableRow>
+                                <TableRowCell class="name-body">Sample Name</TableRowCell>
+                                <TableRowCell class="age-body">16</TableRowCell>
+                                <TableRowCell class="gender-body">
+                                     Female
+                                </TableRowCell>
+                                <TableRowCell class="update">
+                                    <Button Color="Color.Primary" Border="Border.Is0"class="btn-update">
+                                        Update
+                                    </Button>
+                                </TableRowCell>
+                            </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    </LoadingIndicator>
+</div>
+@code {
+    public Table tableDirectStudents;
+    LoadingIndicator loadingIndicator;
+    private string token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.Message.ToString();
+        }
+
+    }
+    private void NavigateToManageStudents()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    }
+    private void NavigateToAddDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
+    }
+}

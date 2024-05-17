@@ -672,6 +672,7 @@
             </div>
         @*Profile and Faqs*@
         <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
+
             <div class="col-12 profile-wrapper">
                 <div class="col-lg-5 justify-content-lg-start col-md-6 justify-content-md-start col-sm-12 justify-content-sm-center col-12 justify-content-center profile-details">
                     <div class="profile-pic">
@@ -698,29 +699,42 @@
                     </div>
                     @if(cnt == 1)
                     {
-                        <p class="badge-text">Completed 10 students.</p>
+                        <p class="badge-text">Gain 10 purchases.</p>
                     }
                     else if (cnt == 2)
                     {
-                        <p class="badge-text">Completed 25 students & received 10 reviews.</p>
+                        <p class="badge-text">Gain 25 purchases & 10 reviews from activities.</p>
                     }
                     else if (cnt == 3)
                     {
-                        <p class="badge-text">Completed 100 students & received 25 reviews.</p>
+                        <p class="badge-text">Gain 100 purchases & 25 reviews from activities.</p>
                     }
                     else
                     {
                         @if(NoOfCompleted == 0)
                         {
-                            <p class="badge-text">No completed students & reviews yet.</p> 
-                            
+                            <p class="badge-text">No gain purchases & reviews yet.</p>
+
                         }
                         else
                         {
-                            <p class="badge-text">Completed @NoOfCompleted students & received @NoOfReviews reviews.</p>
+                            <p class="badge-text">Gain @NoOfCompleted purchases & @NoOfReviews reviews from activities.</p>
                         }   
                     }
                 </div>
+            </div>
+
+            <div class="manual-student-wrapper">
+                <p class="manual-text">Manually Added Students</p>
+                <div class="manual-count-section">
+                    <div class="manual-count">
+                        <p class="manual-number">15</p>
+                        <img class="manual-icon" src="images/Dashboard/manual-icon.png"/>
+                        <img class="m-manual-icon" src="images/Dashboard/m-manual-icon.png">
+                    </div>
+                    <button class="btn-add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Students</button>
+                </div>
+                <p class="manual-sub-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
             </div>
 
             <div class="faqs-wrapper">
@@ -752,6 +766,7 @@
                     </div>
                     <p><a class="link-question" @onclick="() => NavigateToHelp()">More information here.</a></p>
                 </div>
+
         </div>
     </div>
 }
@@ -1043,6 +1058,10 @@
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/maker/dashboard/help");
+    }
+    private void NavigateToDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
     }
 
     public double GetPercentage()
