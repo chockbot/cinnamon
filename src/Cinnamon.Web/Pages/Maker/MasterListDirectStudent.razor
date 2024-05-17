@@ -20,7 +20,7 @@
             <p class="back-text">Enrollee Masterlist (Direct Students)</p>
         </div>
         <div class="search-section">
-            <button class="btn-add">Add Direct Students</button>
+            <button class="btn-add" @onclick="@(() => NavigateToAddDirectStudent())">Add Direct Students</button>
             <TextEdit Placeholder="Search" class="search-bar"></TextEdit>
         </div>
     </div>
@@ -105,5 +105,9 @@
     private void NavigateToManageStudents()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    }
+    private void NavigateToAddDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
     }
 }

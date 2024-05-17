@@ -101,7 +101,6 @@
                     <TableBody>
                         @foreach (var item in Model.FilteredStudents)
                             {
-                                var schedule = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
                                 <TableRow>
                                     <TableRowCell class="name-body">@item.Name</TableRowCell>
                                     <TableRowCell class="completion-date-body">
@@ -424,15 +423,6 @@
         }
         else
         {
-            Model.FilteredStudents.Clear();
-            Model.activities.Clear();
-            Model.activitySchedules.Clear();
-            Model.manageStudents.Clear();
-            Model.activitySchedules.Clear();
-            Model.studentAttendances.Clear();
-            Model.students.Clear();
-            studentAttendances.Clear();
-            students.item.Clear();
             await GetStudents(0);
             //Hide Loading
             await HideLoading();

@@ -732,7 +732,7 @@
                         <img class="manual-icon" src="images/Dashboard/manual-icon.png"/>
                         <img class="m-manual-icon" src="images/Dashboard/m-manual-icon.png">
                     </div>
-                    <button class="btn-add-manual">Add Students</button>
+                    <button class="btn-add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Students</button>
                 </div>
                 <p class="manual-sub-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
             </div>
@@ -1058,6 +1058,10 @@
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/maker/dashboard/help");
+    }
+    private void NavigateToDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
     }
 
     public double GetPercentage()
