@@ -135,6 +135,19 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         }
     }
 
+    public async Task<AppResult<int>> Count(Expression<Func<TTarget, bool>> expression)
+    {
+        try
+        {
+            var result = await applicationContext.Set<TTarget>().Where(expression).CountAsync();
+            return AppResult<int>.CreateSucceeded(result, "Successfully count entities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<int>.CreateFailed(ex, "An error occured when counting the entities.");
+        }
+    } 
+
     public async Task<AppResult<TTarget>> Remove(TTarget entity)
     {
         try

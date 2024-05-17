@@ -254,4 +254,21 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<OteSharedLinkDTO>.CreateFailed(ex, "An error occured when updating shared link status.");
         }
     }
+
+    public async Task<AppResult<int>> CountBookedTickets(int activityId)
+    {
+        try
+        {
+            Expression<Func<Entities.OteTicket, bool>> filter = 
+                a => a.ActivityId == activityId;
+
+            var result = await dataStore.OteTicket.Count(filter);
+
+            return AppResult<int>.CreateSucceeded(result.Result, "Successfully count booked tickets.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<int>.CreateFailed(ex, "An error occured when counting the booked tickets.");
+        }
+    }
 }

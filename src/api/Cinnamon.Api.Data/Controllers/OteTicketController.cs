@@ -258,4 +258,25 @@ public class OteTicketController : ControllerBase
             return new JsonResult(new UpdateSharedLinkStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CountBookedTickets")]
+    [HttpGet]
+    [ProducesResponseType(typeof(CountBookedTicketsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CountBookedTickets([FromQuery] CountBookedTicketsArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.CountBookedTickets(args.ActivityId);
+            if(!result.Succeeded)
+            {
+                return new JsonResult(new CountBookedTicketsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CountBookedTicketsResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CountBookedTicketsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
