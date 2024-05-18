@@ -66,4 +66,5 @@ public interface IActivityApiHandler
     Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token);
+    Task<AppResult<OteScheduleDatesResult>> OteScheduleDates(OteScheduleDatesArgs args, string token);
 }
