@@ -93,6 +93,8 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
                 }
             }
 
+            query = query.OrderBy(o => o.Id);
+
             var result = await query.FirstOrDefaultAsync();
 
             if(result == null)
