@@ -59,5 +59,9 @@ public class MappingProfile : Profile
         // for ote already booked dates
         CreateMap<DataDto.Activity.OteAlreadyBookDate, ActivityResults.OteAlreadyBookedResult.OteAlreadyBooked>();
         CreateMap<ActivityResults.OteAlreadyBookedResult.OteAlreadyBooked, CoreDto.Activity.OteAlreadyBookedDTO>();
+
+        // fote ote schedule dates
+        CreateMap<DataDto.OteDate.OteDateDTO, ActivityResults.OteScheduleDatesResult.OteDateSchedule>();
+        CreateMap<ActivityResults.OteScheduleDatesResult.OteDateSchedule, CoreDto.Activity.OteScheduleDateDTO>();
     }
 }
