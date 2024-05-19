@@ -379,6 +379,7 @@
     </div>
 
     <Divider class="d-none m-d-block" />
+
     <div class="my-3 border-radius-10">
         <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
             <div class="accordion" id="pricings-accordion">
@@ -489,10 +490,12 @@
             </div>
         </Validations>
     </div>
+
     @if (modelPricingList.Pricings.Count > 0)
     {
         <Divider class="d-none m-d-block" />
     }
+
     <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
         <div class="mb-4">
             <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -607,6 +610,7 @@
             </div>
         </Validations>
     </div>
+
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 
     <Modal @ref="modalFeeBreakdown">
@@ -649,9 +653,9 @@
                 </div>
             </ModalBody>
         </ModalContent>
-        </Modal>
+    </Modal>
 
-        <Modal @ref="modalScheduleGuid">
+    <Modal @ref="modalScheduleGuid">
         <ModalContent Size="ModalSize.Large" class="border-radius-20">
             <ModalHeader class="justify-content-center pb-0">
                 <div class="d-flex justify-content-center align-items-center m-margin-top-75">
@@ -715,9 +719,9 @@
                 </ol>
             </ModalBody>
         </ModalContent>
-        </Modal>
+    </Modal>
 
-        <Modal @ref="modalCalendar">
+    <Modal @ref="modalCalendar">
         <ModalContent>
             <ModalHeader class="justify-content-center">
                 <p class="m-0 color-black-100">Select the date(s) you want to assign specific hours</p>
@@ -770,67 +774,68 @@
                 </div>
             </ModalBody>
         </ModalContent>
-        </Modal>
+    </Modal>
 
-        <Modal @ref="modalReschedule">
-            <ModalContent Centered>
-                <ModalHeader class="justify-content-center">
-                    <p class="font-weight-700 m-0 color-black-100">Reschedule Event </p>
-                </ModalHeader>
-                <ModalBody class="pt-0">
-                    <Divider class="mt-0 mb-3" />
-                    <Table Borderless>
-                        <TableHeader>
-                            <TableHeaderCell class="color-black-100">
-                                Current Date
-                            </TableHeaderCell>
-                            <TableHeaderCell>
-                                
-                            </TableHeaderCell>
-                            <TableHeaderCell class="color-black-100">
-                                New Date
-                            </TableHeaderCell>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
-                            {
-                                <TableRow>
-                                    <TableRowCell class="px-0">
-                                        <DateEdit Disabled class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="item.OldDate">
-                                        </DateEdit>
-                                    </TableRowCell>
-                                    <TableRowCell VerticalAlignment="VerticalAlignment.Middle" class="text-center px-3">
-                                        <img src="images/icons/date-to.png" alt="icon">
-                                    </TableRowCell>
-                                    <TableRowCell class="px-0">
-                                        <DateEdit class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="item.NewDate">
-                                        </DateEdit>
-                                    </TableRowCell>
-                                </TableRow>   
-                            }
-                        </TableBody>
-                    </Table>
-                    <div class="text-end">
-                        <Button Clicked="UpdateReschedule" class="px-4 font-16 bg-orange-100 color-white-100 hover-color-white">
-                            Update
-                        </Button>
-                    </div>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
-    </section>
+    <Modal @ref="modalReschedule">
+        <ModalContent Centered>
+            <ModalHeader class="justify-content-center">
+                <p class="font-weight-700 m-0 color-black-100">Reschedule Event </p>
+            </ModalHeader>
+            <ModalBody class="pt-0">
+                <Divider class="mt-0 mb-3" />
+                <Table Borderless>
+                    <TableHeader>
+                        <TableHeaderCell class="color-black-100">
+                            Current Date
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            
+                        </TableHeaderCell>
+                        <TableHeaderCell class="color-black-100">
+                            New Date
+                        </TableHeaderCell>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
+                        {
+                            <TableRow>
+                                <TableRowCell class="px-0">
+                                    <DateEdit Disabled class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                        TValue="DateTime" @bind-Date="item.OldDate">
+                                    </DateEdit>
+                                </TableRowCell>
+                                <TableRowCell VerticalAlignment="VerticalAlignment.Middle" class="text-center px-3">
+                                    <img src="images/icons/date-to.png" alt="icon">
+                                </TableRowCell>
+                                <TableRowCell class="px-0">
+                                    <DateEdit class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                        TValue="DateTime" @bind-Date="item.NewDate">
+                                    </DateEdit>
+                                </TableRowCell>
+                            </TableRow>   
+                        }
+                    </TableBody>
+                </Table>
+                <div class="text-end">
+                    <Button Clicked="UpdateReschedule" class="px-4 font-16 bg-orange-100 color-white-100 hover-color-white">
+                        Update
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 
-    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
-               OnConfirmationChanged="ConfirmDeleteChanged">
+</section>
+
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+           OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
         <p class="m-0">Confirm Action</p>
     </HeaderContent>
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-    </ConfirmDialog>
+</ConfirmDialog>
 
 @code
 {
