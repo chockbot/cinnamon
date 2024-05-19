@@ -396,6 +396,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Guid);
+
+        // for ote date
+        modelBuilder.Entity<OteDate>()
+            .HasIndex(d => d.Date);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
