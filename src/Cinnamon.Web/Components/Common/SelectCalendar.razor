@@ -11,7 +11,8 @@
     </div>
     <div class="@DisplayCalendar">
         <Calendar ViewOnly="ViewOnly" StrikeOutNotSelected="StrikeOutNotSelected" 
-            SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate" />
+            SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="CurrentDate"
+            OnNextMonthChanged="OnNextMonthChanged" OnPreviousMonthChanged="OnPreviousMonthChanged" />
     </div>
 </div>
 
@@ -30,6 +31,11 @@
 
     private bool displayCalendar {get; set;}
     private DateTime? selectedDate;
+
+    [Parameter]
+    public EventCallback<Calendar.CalendarCurrentMonth> OnPreviousMonthChanged {get; set;}
+    [Parameter]
+    public EventCallback<Calendar.CalendarCurrentMonth> OnNextMonthChanged {get; set;}
 
     protected override void OnInitialized()
     {

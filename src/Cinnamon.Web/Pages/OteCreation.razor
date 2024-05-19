@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Components.Pages.OteActivity;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
@@ -71,7 +72,8 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token" 
+                        OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
                 </div>
                 <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
                     <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
@@ -717,10 +719,26 @@
             return;
         }
 
-        var bookedDatesRes = await activityApiHandler.OteAlreadyBookedDates(oteRes.Result.Result.Id, token);
-        if(!bookedDatesRes.Succeeded || bookedDatesRes.Result is null || !bookedDatesRes.Result.IsSuccess)
+        var scheduleBookedRes = await activityApiHandler.OteBookedCount(new Framework.ApiCommand.ApiCore.Activity.Request.OteBookedCountArgs {
+            ActivityId = oteRes.Result.Result.Id
+        }, token);
+        if(!scheduleBookedRes.Succeeded || scheduleBookedRes.Result is null || !scheduleBookedRes.Result.IsSuccess)
         {
-            await NotificationService.Error("An error occured when getting booked dates. Please try again later.", "Error");
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+            return;
+        }
+        var firstScheduleDate = scheduleBookedRes.Result.Result.FirstSchedule.Date;
+        var from = firstScheduleDate.FirstDayOfMonth().ToString("yyyyMMdd");
+        var to = firstScheduleDate.LastDayOfMonth().ToString("yyyyMMdd");
+
+        var scheduleDatesRes = await activityApiHandler.OteScheduleDates(new Framework.ApiCommand.ApiCore.Activity.Request.OteScheduleDatesArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            From = from,
+            To = to
+        }, token);
+        if(!scheduleDatesRes.Succeeded || scheduleDatesRes.Result is null || !scheduleDatesRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
             return;
         }
 
@@ -768,11 +786,11 @@
                     TicketSold = totalTicketsSold
                 };
             }).ToList(),
-            BookedDates = bookedDatesRes.Result.Result.Select(d => new OtePricing.ModelData.BookedDate {
-                BookedCount = d.BookCount,
-                Date = d.Date,
-                Id = d.OteDateId
-            })
+            BookedDates = scheduleDatesRes.Result.Result.Select(s => new OtePricing.ModelData.BookedDate {
+                Date = s.Date,
+                Id = s.Id,
+                NewDate = s.Date
+            }).ToList()
         });
         scheduleModel.EventDurationTimeStart = ote.ScheduleFrom.TimeOfDay;
         scheduleModel.DateFrom = ote.ScheduleFrom;
@@ -790,6 +808,8 @@
         scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
         scheduleModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
         scheduleModel.IsLimit = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
+        scheduleModel.TotalBookedCount = scheduleBookedRes.Result.Result.BookedCount;
+        scheduleModel.ActivityId = ote.Id;
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;
