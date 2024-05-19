@@ -72,7 +72,8 @@
                     <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token" 
+                        OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
                 </div>
                 <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
                     <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
@@ -808,6 +809,7 @@
         scheduleModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
         scheduleModel.IsLimit = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
         scheduleModel.TotalBookedCount = scheduleBookedRes.Result.Result.BookedCount;
+        scheduleModel.ActivityId = ote.Id;
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;

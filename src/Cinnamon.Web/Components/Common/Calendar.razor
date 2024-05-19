@@ -60,9 +60,9 @@ should have Available dates, Selected Dates, *@
     [Parameter]
     public EventCallback<DateTime> OnSelectedDate {get; set;}
     [Parameter]
-    public EventCallback<CalendarCurrentMonth>? OnPreviousMonthChanged {get; set;}
+    public EventCallback<CalendarCurrentMonth> OnPreviousMonthChanged {get; set;}
     [Parameter]
-    public EventCallback<CalendarCurrentMonth>? OnNextMonthChanged {get; set;}
+    public EventCallback<CalendarCurrentMonth> OnNextMonthChanged {get; set;}
     [Parameter]
     public bool StrikeOutNotSelected {get; set;}
     [Parameter]
@@ -82,7 +82,7 @@ should have Available dates, Selected Dates, *@
         LoadCalendarItems();
     }
 
-    private void LoadCalendarItems()
+    public void LoadCalendarItems()
     {
         calendarItems.Clear();
         var now = activeDate;
@@ -198,7 +198,7 @@ should have Available dates, Selected Dates, *@
         return $"0{number}";
     }
 
-    private Task NextMonthClick()
+    private async Task NextMonthClick()
     {
         if(activeDate != DateTime.MaxValue)
         {
@@ -206,19 +206,17 @@ should have Available dates, Selected Dates, *@
             activeDate = date;
 
             LoadCalendarItems();
-            if(OnNextMonthChanged.HasValue && OnNextMonthChanged.Value.HasDelegate)
+            if(OnNextMonthChanged.HasDelegate)
             {
-                OnNextMonthChanged.Value.InvokeAsync(new CalendarCurrentMonth {
+                await OnNextMonthChanged.InvokeAsync(new CalendarCurrentMonth {
                     Month = date.Month,
                     Year = date.Year
                 });
             }
         }
-
-        return Task.CompletedTask;
     }
 
-    private Task PrevMonthClick()
+    private async Task PrevMonthClick()
     {
         if(activeDate.Date != DateTime.MinValue)
         {
@@ -226,16 +224,14 @@ should have Available dates, Selected Dates, *@
             activeDate = date;
 
             LoadCalendarItems();
-            if(OnPreviousMonthChanged.HasValue && OnPreviousMonthChanged.Value.HasDelegate)
+            if(OnPreviousMonthChanged.HasDelegate)
             {
-                OnPreviousMonthChanged.Value.InvokeAsync(new CalendarCurrentMonth {
+               await OnPreviousMonthChanged.InvokeAsync(new CalendarCurrentMonth {
                     Month = date.Month,
                     Year = date.Year
                 });
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public Task LoadDates(IEnumerable<DateTime> dates, DateTime? currentDate = null)
