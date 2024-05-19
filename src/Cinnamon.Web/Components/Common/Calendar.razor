@@ -60,6 +60,10 @@ should have Available dates, Selected Dates, *@
     [Parameter]
     public EventCallback<DateTime> OnSelectedDate {get; set;}
     [Parameter]
+    public EventCallback<CalendarCurrentMonth>? OnPreviousMonthChanged {get; set;}
+    [Parameter]
+    public EventCallback<CalendarCurrentMonth>? OnNextMonthChanged {get; set;}
+    [Parameter]
     public bool StrikeOutNotSelected {get; set;}
     [Parameter]
     public bool UnHighlightLoadedDates {get; set;}
@@ -198,9 +202,19 @@ should have Available dates, Selected Dates, *@
     {
         if(activeDate != DateTime.MaxValue)
         {
-            activeDate = activeDate.AddMonths(1);
+            var date = activeDate.AddMonths(1);
+            activeDate = date;
+
             LoadCalendarItems();
+            if(OnNextMonthChanged.HasValue && OnNextMonthChanged.Value.HasDelegate)
+            {
+                OnNextMonthChanged.Value.InvokeAsync(new CalendarCurrentMonth {
+                    Month = date.Month,
+                    Year = date.Year
+                });
+            }
         }
+
         return Task.CompletedTask;
     }
 
@@ -208,9 +222,19 @@ should have Available dates, Selected Dates, *@
     {
         if(activeDate.Date != DateTime.MinValue)
         {
-            activeDate = activeDate.AddMonths(-1);
+            var date = activeDate.AddMonths(-1);
+            activeDate = date;
+
             LoadCalendarItems();
+            if(OnPreviousMonthChanged.HasValue && OnPreviousMonthChanged.Value.HasDelegate)
+            {
+                OnPreviousMonthChanged.Value.InvokeAsync(new CalendarCurrentMonth {
+                    Month = date.Month,
+                    Year = date.Year
+                });
+            }
         }
+
         return Task.CompletedTask;
     }
 
@@ -232,5 +256,11 @@ should have Available dates, Selected Dates, *@
         public bool Selected {get; set;}
         public bool StrikeOut {get; set;}
         public bool PastDate { get; set; }
+    }
+
+    public class CalendarCurrentMonth 
+    {
+        public int Month {get; set;}
+        public int Year {get; set;}
     }
 }
