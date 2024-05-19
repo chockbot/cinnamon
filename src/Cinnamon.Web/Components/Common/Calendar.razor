@@ -60,6 +60,10 @@ should have Available dates, Selected Dates, *@
     [Parameter]
     public EventCallback<DateTime> OnSelectedDate {get; set;}
     [Parameter]
+    public EventCallback<CalendarCurrentMonth> OnPreviousMonthChanged {get; set;}
+    [Parameter]
+    public EventCallback<CalendarCurrentMonth> OnNextMonthChanged {get; set;}
+    [Parameter]
     public bool StrikeOutNotSelected {get; set;}
     [Parameter]
     public bool UnHighlightLoadedDates {get; set;}
@@ -78,7 +82,7 @@ should have Available dates, Selected Dates, *@
         LoadCalendarItems();
     }
 
-    private void LoadCalendarItems()
+    public void LoadCalendarItems()
     {
         calendarItems.Clear();
         var now = activeDate;
@@ -194,24 +198,40 @@ should have Available dates, Selected Dates, *@
         return $"0{number}";
     }
 
-    private Task NextMonthClick()
+    private async Task NextMonthClick()
     {
         if(activeDate != DateTime.MaxValue)
         {
-            activeDate = activeDate.AddMonths(1);
+            var date = activeDate.AddMonths(1);
+            activeDate = date;
+
             LoadCalendarItems();
+            if(OnNextMonthChanged.HasDelegate)
+            {
+                await OnNextMonthChanged.InvokeAsync(new CalendarCurrentMonth {
+                    Month = date.Month,
+                    Year = date.Year
+                });
+            }
         }
-        return Task.CompletedTask;
     }
 
-    private Task PrevMonthClick()
+    private async Task PrevMonthClick()
     {
         if(activeDate.Date != DateTime.MinValue)
         {
-            activeDate = activeDate.AddMonths(-1);
+            var date = activeDate.AddMonths(-1);
+            activeDate = date;
+
             LoadCalendarItems();
+            if(OnPreviousMonthChanged.HasDelegate)
+            {
+               await OnPreviousMonthChanged.InvokeAsync(new CalendarCurrentMonth {
+                    Month = date.Month,
+                    Year = date.Year
+                });
+            }
         }
-        return Task.CompletedTask;
     }
 
     public Task LoadDates(IEnumerable<DateTime> dates, DateTime? currentDate = null)
@@ -232,5 +252,11 @@ should have Available dates, Selected Dates, *@
         public bool Selected {get; set;}
         public bool StrikeOut {get; set;}
         public bool PastDate { get; set; }
+    }
+
+    public class CalendarCurrentMonth 
+    {
+        public int Month {get; set;}
+        public int Year {get; set;}
     }
 }

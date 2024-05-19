@@ -418,6 +418,10 @@ public class ApplicationContext : IdentityDbContext
         // for direct student attendance
         modelBuilder.Entity<DirectStudentAttendance>()
             .HasIndex("Date", "DirectStudentSessionId");
+
+        // for ote date
+        modelBuilder.Entity<OteDate>()
+            .HasIndex(d => d.Date);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
