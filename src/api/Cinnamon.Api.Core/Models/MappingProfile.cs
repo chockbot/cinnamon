@@ -63,8 +63,19 @@ public class MappingProfile : Profile
 
 
         //for direct students
-        CreateMap<DataDto.DirectStudent.DirectStudentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent>();
-        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent, CoreDto.DirectStudents.DirectStudentsDTO>();
-
+        CreateMap<DataDto.DirectStudent.DirectStudentInfoDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentInfo>();
+        CreateMap<DataDto.DirectStudent.DirectStudentSessionDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentSession>();
+        CreateMap<DataDto.DirectStudent.DirectStudentPaymentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentPayment>();
+        CreateMap<DataDto.DirectStudent.DirectStudentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent>()
+            .ForMember(d => d.CreateDirectStudentInfo, o => o.MapFrom(o => o.DirectStudentInfo))
+            .ForMember(d => d.CreateDirectStudentSession, o => o.MapFrom(o => o.DirectStudentSession))
+            .ForMember(d => d.CreateDirectStudentPayment, o => o.MapFrom(o => o.DirectStudentPayment));
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentInfo, CoreDto.DirectStudents.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentSession, CoreDto.DirectStudents.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentPayment, CoreDto.DirectStudents.DirectStudentPaymentDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent, CoreDto.DirectStudents.DirectStudentsDTO>()
+            .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.CreateDirectStudentInfo))
+            .ForMember(d => d.DirectStudentSession, o =>  o.MapFrom(o => o.CreateDirectStudentSession))
+            .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.CreateDirectStudentPayment));
     }
 }

@@ -754,6 +754,7 @@ public class DashboardController : ControllerBase
     [Route("CreateDirectStudents")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateDirectStudentsResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateDirectStudents([FromBody] CreateDirectStudentsArgs args)
     {
         try
@@ -777,7 +778,7 @@ public class DashboardController : ControllerBase
                             ActivityId       = s.CreateDirectStudentSession.ActivityId,
                             Name             = s.CreateDirectStudentSession.Name,
                             NumberOfSessions = s.CreateDirectStudentSession.NumberOfSessions,
-                            Remarks          = s.CreateDirectStudentSession.Remarks,
+                            Remarks          = s.CreateDirectStudentSession.Remarks ?? string.Empty,
                             ScheduleId       = s.CreateDirectStudentSession.ScheduleId,
                             SessionsAttended = s.CreateDirectStudentSession.SessionsAttended,
                             Status           = s.CreateDirectStudentSession.Status,
