@@ -78,4 +78,35 @@ public class OteDateRepository : IOteDateRepository
             return AppResult<IEnumerable<OteDateDTO>>.CreateFailed(ex, "An error occured when getting ote dates.");
         }
     }
+
+    public async Task<AppResult<OteDateDTO>> GetFirstOteDate (int activityId)
+    {
+        try
+        {
+            Expression<Func<Entities.OteDate, bool>> filter = 
+                d => (d.OteSchedule.ActivityId == activityId);
+
+            var includes = new List<Expression<Func<Entities.OteDate, object>>>();
+            includes.Add(d => d.OteSchedule);
+
+            var result = await dataStore.OteDate.FindFirstAsync(filter, includes);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteDateDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            var oteDate = result.Result;
+
+            return AppResult<OteDateDTO>.CreateSucceeded(new OteDateDTO {
+                Date = oteDate.Date,
+                DateEnd = oteDate.DateEnd,
+                DateStart = oteDate.DateStart,
+                Id = oteDate.Id,
+                ScheduleId = oteDate.OteScheduleId
+            }, "Successfully get first ote date");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteDateDTO>.CreateFailed(ex, "An error occured when getting first ote date.");
+        }
+    }
 }

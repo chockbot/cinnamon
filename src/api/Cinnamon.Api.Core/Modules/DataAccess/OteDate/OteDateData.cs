@@ -57,4 +57,25 @@ public class OTeDateData : IOteDateData
 			return AppResult<GetOteDateResult>.CreateFailed(ex, "An error occured when getting ote dates.");
 		}
     }
+
+	public async Task<AppResult<GetFirstResult>> GetFirst(GetFirstArgs args)
+    {
+        try
+		{
+			var result = await flurlClient
+							.Request($"OteDate/GetFirst")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetFirstResult>();
+
+			return AppResult<GetFirstResult>.CreateSucceeded(result, "Successfully getting ote dates.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetFirstResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetFirstResult>.CreateFailed(ex, "An error occured when getting ote dates.");
+		}
+    }
 }

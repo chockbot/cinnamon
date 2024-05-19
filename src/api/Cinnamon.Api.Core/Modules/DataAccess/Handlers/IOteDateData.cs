@@ -9,4 +9,6 @@ public interface IOteDateData
     Task<AppResult<GetOteDateByIdResult>> GetOteDate(int activityId);
 
     Task<AppResult<GetOteDateResult>> GetOteDate(GetOteDateArgs args);
+
+    Task<AppResult<GetFirstResult>> GetFirst(GetFirstArgs args);
 }

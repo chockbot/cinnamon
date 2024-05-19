@@ -77,4 +77,28 @@ public class OteDateController : ControllerBase
             return new JsonResult(new GetOteDateByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetFirst")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetFirstResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFirst([FromQuery] GetFirstArgs args)
+    {
+        try
+        {
+            var result = await this.oteDateRepository.GetFirstOteDate(args.ActivityId);
+            if(!result.Succeeded || result.Result is null) 
+            {
+                return new JsonResult(new GetFirstResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetFirstResult {
+                IsSuccess = true,
+                Result = result.Result
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetFirstResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
