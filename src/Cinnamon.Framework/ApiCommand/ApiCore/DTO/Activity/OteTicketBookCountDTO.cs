@@ -1,12 +1,11 @@
-namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
-public class OteTicketBookedCountResult 
+public class OteTicketBookCountDTO
 {
     public int BookedCount {get; set;}
+    public BookFirstScheduleDTO FirstSchedule {get; set;}
 
-    public FirstScheduleDate FirstOteDate {get; set;}
-
-    public class FirstScheduleDate 
+    public class BookFirstScheduleDTO 
     {
         public int Id {get; set;}
         public int ScheduleId {get; set;}

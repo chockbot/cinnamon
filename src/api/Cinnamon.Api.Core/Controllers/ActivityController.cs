@@ -3275,10 +3275,12 @@ public class ActivityController : ControllerBase
                 return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
             }
 
+            var mappedResult = mapper.Map<OteTicketBookCountDTO>(result.Result);
+
             return new JsonResult(new OteBookedCountResult
             {
                 IsSuccess = true,
-                Result = result.Result.BookedCount,
+                Result = mappedResult,
             });
         }
         catch (Exception ex)
