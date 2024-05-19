@@ -19,4 +19,5 @@ public interface IGenericEntity<TTarget> where TTarget : BaseEntity
     Task<AppResult<IEnumerable<TTarget>>> RemoveRange(IEnumerable<TTarget> entities);
     Task<AppResult<TTarget>> Update(TTarget entity);
     Task<AppResult<IEnumerable<TTarget>>> UpdateRange(IEnumerable<TTarget> entities);
+    Task<AppResult<int>> Count(Expression<Func<TTarget, bool>> expression);
 }

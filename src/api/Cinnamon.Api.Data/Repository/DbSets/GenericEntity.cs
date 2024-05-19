@@ -55,7 +55,11 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<TTarget>().Where(expression).Skip(skipCount).Take(limitCount);
+            var query = applicationContext.Set<TTarget>()
+                            .Where(expression)
+                            .OrderBy(o => o.Id)
+                            .Skip(skipCount)
+                            .Take(limitCount);
 
             if(includes != null)
             {
@@ -88,6 +92,8 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
                     query = query.Include(include);
                 }
             }
+
+            query = query.OrderBy(o => o.Id);
 
             var result = await query.FirstOrDefaultAsync();
 
@@ -134,6 +140,19 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
             return AppResult<TTarget>.CreateFailed(ex, "An error occured when getting the entity by id");
         }
     }
+
+    public async Task<AppResult<int>> Count(Expression<Func<TTarget, bool>> expression)
+    {
+        try
+        {
+            var result = await applicationContext.Set<TTarget>().Where(expression).CountAsync();
+            return AppResult<int>.CreateSucceeded(result, "Successfully count entities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<int>.CreateFailed(ex, "An error occured when counting the entities.");
+        }
+    } 
 
     public async Task<AppResult<TTarget>> Remove(TTarget entity)
     {

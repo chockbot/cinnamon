@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using System.Globalization;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -80,6 +82,8 @@ public class ActivityController : ControllerBase
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
+    private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -106,7 +110,8 @@ public class ActivityController : ControllerBase
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
-        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
+        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler)
     {
         _logger = logger;
 
@@ -168,6 +173,8 @@ public class ActivityController : ControllerBase
         this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
+        this.oteScheduleDatesHandler = oteScheduleDatesHandler;
     }
 
     [Route("CreateActivity")]
@@ -3250,6 +3257,78 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteBookedCount")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteBookedCountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteBookedCount([FromQuery] OteBookedCountArgs args)
+    {
+        try
+        {
+            var result = await oteTicketBookedCountHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteTicketBookedCountArgs {
+                ActivityId = args.ActivityId
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
+            }
+
+            var mappedResult = mapper.Map<OteTicketBookCountDTO>(result.Result);
+
+            return new JsonResult(new OteBookedCountResult
+            {
+                IsSuccess = true,
+                Result = mappedResult,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteScheduleDates")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteScheduleDatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteScheduleDates([FromQuery] OteScheduleDatesArgs args)
+    {
+        try
+        {
+            DateTime? dateFrom = null;
+            if(!string.IsNullOrEmpty(args.From))
+            {
+                dateFrom = DateTime.ParseExact(args.From, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+
+            DateTime? dateTo = null;
+            if(!string.IsNullOrEmpty(args.To))
+            {
+                dateTo = DateTime.ParseExact(args.To, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            
+            var result = await oteScheduleDatesHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteScheduleDatesArgs {
+                ActivityId = args.ActivityId,
+                DateFrom = dateFrom,
+                DateTo = dateTo
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
+            }
+
+            var mappedResult = mapper.Map<IEnumerable<OteScheduleDateDTO>>(result.Result.OteDateSchedules);
+
+            return new JsonResult(new OteScheduleDatesResult
+            {
+                IsSuccess = true,
+                Result = mappedResult,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
