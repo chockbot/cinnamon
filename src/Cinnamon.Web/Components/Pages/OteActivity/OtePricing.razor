@@ -1076,7 +1076,6 @@
         if(dateReschedules.Count > 0)
         {
             data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
-                BookedCount = d.BookedCount,
                 Date = d.OldDate,
                 NewDate = d.NewDate,
                 Id = d.Id
@@ -1092,7 +1091,6 @@
             foreach (var item in data.BookedDates)
             {
                 dateReschedules.Add(new DateReschedule {
-                    BookedCount = item.BookedCount,
                     NewDate = item.Date,
                     OldDate = item.Date,
                     Id = item.Id
@@ -1384,7 +1382,9 @@
     {
         get 
         {
-            return dateReschedules.Any(d => d.BookedCount > 0);
+            if(ModelState is null) return false;
+
+            return ModelState.TotalBookedCount > 0;
         }
     }
 
@@ -1551,6 +1551,10 @@
         public TimeSpan TimeStart { get; set; } = DateTime.Now.TimeOfDay;
         public TimeSpan TimeEnd { get; set; } = DateTime.Now.TimeOfDay;
         public int TicketSold { get; set; } = 0;
+
+
+        // extra options
+        public int TotalBookedCount {get; set;}
     }
 
     public class Pricing
@@ -1765,8 +1769,6 @@
 
         [Required]
         public DateTime NewDate { get; set; }
-
-        public int BookedCount { get; set; }
     }
 
     private record DateItem 
