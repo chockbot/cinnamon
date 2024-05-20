@@ -57,7 +57,6 @@ public class CreateDirectStudentsArgs
         [Required]
         public int SessionsAttended {get; set;}
 
-        [Required]
         public string Remarks {get; set;}
 
         [Required]

@@ -2,6 +2,7 @@ using AutoMapper;
 using DataDto = Cinnamon.Framework.ApiCommand.ApiData.DTO;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+using DirectStudentResults = Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 using TransactionResults = Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 
 namespace Cinnamon.Api.Core.Models;
@@ -67,5 +68,22 @@ public class MappingProfile : Profile
         CreateMap<ActivityResults.OteTicketBookedCountResult.FirstScheduleDate, CoreDto.Activity.OteTicketBookCountDTO.BookFirstScheduleDTO>();
         CreateMap<ActivityResults.OteTicketBookedCountResult, CoreDto.Activity.OteTicketBookCountDTO>()
             .ForMember(d => d.FirstSchedule, o => o.MapFrom(s => s.FirstOteDate));
+
+
+        //for direct students
+        CreateMap<DataDto.DirectStudent.DirectStudentInfoDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentInfo>();
+        CreateMap<DataDto.DirectStudent.DirectStudentSessionDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentSession>();
+        CreateMap<DataDto.DirectStudent.DirectStudentPaymentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentPayment>();
+        CreateMap<DataDto.DirectStudent.DirectStudentDTO, DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent>()
+            .ForMember(d => d.CreateDirectStudentInfo, o => o.MapFrom(o => o.DirectStudentInfo))
+            .ForMember(d => d.CreateDirectStudentSession, o => o.MapFrom(o => o.DirectStudentSession))
+            .ForMember(d => d.CreateDirectStudentPayment, o => o.MapFrom(o => o.DirectStudentPayment));
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentInfo, CoreDto.DirectStudents.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentSession, CoreDto.DirectStudents.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudentPayment, CoreDto.DirectStudents.DirectStudentPaymentDTO>();
+        CreateMap<DirectStudentResults.CreateDirectStudentsResult.CreateDirectStudent, CoreDto.DirectStudents.DirectStudentsDTO>()
+            .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.CreateDirectStudentInfo))
+            .ForMember(d => d.DirectStudentSession, o =>  o.MapFrom(o => o.CreateDirectStudentSession))
+            .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.CreateDirectStudentPayment));
     }
 }

@@ -22,6 +22,7 @@ public class StudentDTO
     public DateTime ExpirationEndDate { get; set; }
     public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     public bool HasReview { get; set; }
+    public int HasExpiration { get; set; }
     public string ActivityName { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }

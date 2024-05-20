@@ -21,4 +21,6 @@ public interface IDashboardApiHandler
     Task<AppResult<GetTicketDetailsResult>> GetTicketDetails(GetTicketDetailsArgs args, string token);
     Task<AppResult<UpdateOTETicketResult>> UpdateOTETicket(UpdateOTETicketArgs args, string token);
     Task<AppResult<GetDisbursementByProviderResult>> GetDisbursementByProvider(GetDisbursementByProviderArgs args, string token);
+    Task<AppResult<GetEnrolledStudentsByProviderResult>> GetEnrolledStudentsByProvider(GetEnrolledStudentsByProviderArgs args, string token);
+    Task<AppResult<CreateDirectStudentsResult>> CreateDirectStudents(CreateDirectStudentsArgs args, string token);
 } 

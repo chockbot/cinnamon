@@ -265,4 +265,25 @@ public class StudentData: IStudentData
 			return AppResult<GetEnrolleeMasterListResult>.CreateFailed(ex, "An error occurred when getting enrollee master list by provider id api");
 		}
 	}
+
+    public async Task<AppResult<GetEnrolledStudentsResult>> GetEnrolledStudentsByProvider(GetEnrolledStudentsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Student/GetEnrolledStudentsByProvider")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetEnrolledStudentsResult>();
+
+            return AppResult<GetEnrolledStudentsResult>.CreateSucceeded(result, "Successfully getting get enrolled students list by provider id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolledStudentsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolledStudentsResult>.CreateFailed(ex, "An error occurred when getting enrolled students by provider id api");
+        }
+    }
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using Cinnamon.Api.Core.Services.Disbursement.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
@@ -5,8 +6,11 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Badges;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DirectStudents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -30,27 +34,33 @@ public class DashboardController : ControllerBase
     private readonly IGetTicketDetailsHandler getTicketDetailsHandler;
     private readonly IUpdateOTETicketHandler updateOTETicketHandler;
     private readonly IGetDisbursementByProviderId getDisbursementByProviderId;
+    private readonly IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler;
+    private readonly ICreateDirectStudentsHandler createDirectStudentsHandler;
+    private readonly IMapper mapper;
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
         ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
         IGetCompletedStudentsHandler getCompletedStudentsHandler, IGetOTEByProviderHandler getOTEByProviderHandler, IGetOTEByActivityIdHandler getOTEByActivityIdHandler, IGetTicketDetailsHandler getTicketDetailsHandler,
-        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId)
+        IUpdateOTETicketHandler updateOTETicketHandler, IGetDisbursementByProviderId getDisbursementByProviderId, IGetEnrolledStudentsByProviderHandler getEnrolledStudentsByProviderHandler, ICreateDirectStudentsHandler createDirectStudentsHandler, IMapper mapper)
     {
-        this.getActivitySchedulesHandler        = getActivitySchedulesHandler;
-        this.getCurrentDateAttendanceHandler    = getCurrentDateAttendanceHandler;
-        this.updateStudentAttendanceHandler     = updateStudentAttendanceHandler;
-        this.getStudentAttendanceHandler        = getStudentAttendanceHandler;
-        this.getAllStudentAttendanceByIdHandler = getAllStudentAttendanceByIdHandler;
-        this.createStudentAttendanceHandler     = createStudentAttendanceHandler;
-        this.updateAttendanceHandler            = updateAttendanceHandler;
-        this.getAllBadgesHandler                = getAllBadgesHandler;
-        this.getAllStudentsAttendanceHandler    = getAllStudentsAttendanceHandler;
-        this.getCompletedStudentsHandler        = getCompletedStudentsHandler;
-        this.getOTEByProviderHandler            = getOTEByProviderHandler;
-        this.getOTEByActivityIdHandler          = getOTEByActivityIdHandler;
-        this.getTicketDetailsHandler            = getTicketDetailsHandler;
-        this.updateOTETicketHandler             = updateOTETicketHandler;
-        this.getDisbursementByProviderId        = getDisbursementByProviderId;
+        this.getActivitySchedulesHandler          = getActivitySchedulesHandler;
+        this.getCurrentDateAttendanceHandler      = getCurrentDateAttendanceHandler;
+        this.updateStudentAttendanceHandler       = updateStudentAttendanceHandler;
+        this.getStudentAttendanceHandler          = getStudentAttendanceHandler;
+        this.getAllStudentAttendanceByIdHandler   = getAllStudentAttendanceByIdHandler;
+        this.createStudentAttendanceHandler       = createStudentAttendanceHandler;
+        this.updateAttendanceHandler              = updateAttendanceHandler;
+        this.getAllBadgesHandler                  = getAllBadgesHandler;
+        this.getAllStudentsAttendanceHandler      = getAllStudentsAttendanceHandler;
+        this.getCompletedStudentsHandler          = getCompletedStudentsHandler;
+        this.getOTEByProviderHandler              = getOTEByProviderHandler;
+        this.getOTEByActivityIdHandler            = getOTEByActivityIdHandler;
+        this.getTicketDetailsHandler              = getTicketDetailsHandler;
+        this.updateOTETicketHandler               = updateOTETicketHandler;
+        this.getDisbursementByProviderId          = getDisbursementByProviderId;
+        this.getEnrolledStudentsByProviderHandler = getEnrolledStudentsByProviderHandler;
+        this.createDirectStudentsHandler          = createDirectStudentsHandler;
+        this.mapper = mapper;
     }
 
     [Route("GetActivitySchedules")]
@@ -686,6 +696,116 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetDisbursementByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetEnrolledStudentsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsByProviderResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEnrolledStudentsByProvider([FromQuery] GetEnrolledStudentsByProviderArgs args)
+    {
+        try
+        {
+            var result = await getEnrolledStudentsByProviderHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetEnrolledStudentsByProviderArgs
+            {
+                CountPerPage = args.CountPerPage,
+                PageIndex    = args.PageIndex,
+                ProviderId   = args.ProviderId,
+                SearchBy     = args.SearchBy ?? 0,
+                SearchValue  = args.SearchValue ?? string.Empty,
+                ActivityId   = args.ActivityId ?? 0
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetEnrolledStudentsByProviderResult
+            {
+                IsSuccess = true,
+                ErrorInfo = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result = result.Result.EnrolledStudentsList.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentDTO
+                    {
+                        Id                  = s.Id,
+                        ActivityId          = s.ActivityId,
+                        Name                = s.Name,
+                        Remarks             = s.Remarks,
+                        ScheduleId          = s.ScheduleId,
+                        SessionsAttended    = s.SessionsAttended,
+                        NumberOfSessions    = s.NumberOfSessions,
+                        StudentNo           = s.StudentNo,
+                        ActivityName        = s.ActivityTitle,
+                        ExpirationEndDate   = s.ExpirationEndDate,
+                        ExpirationStartDate = s.ExpirationStartDate,
+                        HasExpiration       = s.HasExpiration,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledStudentsByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateDirectStudents")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateDirectStudentsResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateDirectStudents([FromBody] CreateDirectStudentsArgs args)
+    {
+        try
+        {
+            var result = await createDirectStudentsHandler.ExecuteAsync(new Services.DashboardService.Interactors.CreateDirectStudentsArgs
+            {
+                CreateDirectStudents = args.CreateDirectStudents.Select(s =>
+                {
+                    return new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudent
+                    {
+                        CreateDirectStudentInfo = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentInfo
+                        {
+                            BirthMonth = s.CreateDirectStudentInfo.BirthMonth,
+                            BirthYear  = s.CreateDirectStudentInfo.BirthYear,
+                            Gender     = s.CreateDirectStudentInfo.Gender,
+                            Name       = s.CreateDirectStudentInfo.Name,
+                            ProviderId = s.CreateDirectStudentInfo.ProviderId
+                        },
+                        CreateDirectStudentSession = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentSession
+                        {
+                            ActivityId       = s.CreateDirectStudentSession.ActivityId,
+                            Name             = s.CreateDirectStudentSession.Name,
+                            NumberOfSessions = s.CreateDirectStudentSession.NumberOfSessions,
+                            Remarks          = s.CreateDirectStudentSession.Remarks ?? string.Empty,
+                            ScheduleId       = s.CreateDirectStudentSession.ScheduleId,
+                            SessionsAttended = s.CreateDirectStudentSession.SessionsAttended,
+                            Status           = s.CreateDirectStudentSession.Status,
+                            StudentNo        = s.CreateDirectStudentSession.StudentNo
+                        },
+                        CreateDirectStudentPayment = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentPayment
+                        {
+                            Amount = s.CreateDirectStudentPayment.Amount,
+                        }
+                    };
+                }).ToList()
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateDirectStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResult = mapper.Map<IEnumerable<CoreDto.DirectStudents.DirectStudentsDTO>>(result.Result.CreateDirectStudents);
+
+            return new JsonResult(new CreateDirectStudentsResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateDirectStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
