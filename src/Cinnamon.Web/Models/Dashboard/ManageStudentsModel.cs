@@ -41,4 +41,8 @@ public class ManageStudentsModel
     public int jerseyNumber;
 
     public int Id;
+
+    public int pageItems = 20;
+
+    public string currentPage = "1";
 }

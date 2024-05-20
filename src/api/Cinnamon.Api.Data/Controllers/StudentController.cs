@@ -366,7 +366,7 @@ public class StudentController : ControllerBase
 
     [Route("GetEnrolleeMasterList")]
     [HttpGet]
-    [ProducesResponseType(typeof(GetEnrolledStudentsResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetEnrolleeMasterListResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEnrolleeMasterList([FromQuery] GetEnrolleeMasterListArgs args)
     {
         try
@@ -378,12 +378,60 @@ public class StudentController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetEnrolleeMasterListResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
                 await studentRepository.GetEnrolleeMasterList(args.ProviderId, null, null) :
+                await studentRepository.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetEnrolleeMasterListResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetEnrolleeMasterListResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolleeMasterListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetEnrolledStudentsByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEnrolledStudentsByProvider([FromQuery] GetEnrolledStudentsArgs args)
+    {
+        try
+        {
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId, args.SearchValue ?? string.Empty, args.SearchBy ?? 0 , args.ActivityId ?? 0, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await studentRepository.GetAllAsync();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ProviderId != 0 ?
+                await studentRepository.GetEnrolledStudentsByProvider(args.ProviderId,args.SearchValue ?? string.Empty , args.SearchBy ?? 0, args.ActivityId ?? 0, null, null) :
                 await studentRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
