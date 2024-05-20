@@ -738,8 +738,9 @@
                 <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat
                           SelectedDates="generatedDates.Select(g => g.Date)"
                           CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
-                </ModalBody>
-                <ModalFooter class="d-block">
+            </ModalBody>
+
+            <ModalFooter class="d-block">
                 <div>
                     <h3 class="font-20 text-center color-black-100">What hours will you be available?</h3>
                     <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
@@ -758,24 +759,27 @@
                         </Field>
                     </div>
                 </div>
-                </ModalFooter>
-                <ModalFooter class="justify-content-center pt-4">
+            </ModalFooter>
+            
+            <ModalFooter class="justify-content-center pt-4">
                 <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
                     cancel
                 </Button>
                 <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
                     apply
                 </Button>
-                </ModalFooter>
-                </ModalContent>
-                </Modal>
+            </ModalFooter>
 
-                <Modal @ref="modalError">
-                <ModalContent Centered class="border-radius-15">
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalError">
+        <ModalContent Centered class="border-radius-15">
             <ModalHeader class="justify-content-center pb-0">
                 <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
                 <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
             </ModalHeader>
+            
             <ModalBody class="px-4">
                 <div class="color-black-100">
                     @errorMessageAlert
@@ -786,11 +790,73 @@
 
     <Modal @ref="modalReschedule">
         <ModalContent Centered>
+            
             <ModalHeader class="justify-content-center">
                 <p class="font-weight-700 m-0 color-black-100">Reschedule Event </p>
             </ModalHeader>
+
             <ModalBody class="pt-0">
-                <Divider class="mt-0 mb-3" />
+                @* <Divider class="mt-0 mb-3" /> *@
+                <Row HorizontalGutter="20">
+                    <Column ColumnSize="ColumnSize.Is8">
+                        @if(viewReschedules.Count > 0)
+                        {
+                            <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
+                                <Calendar @ref="rescheduleCalendar" CurrentDate="viewReschedules.First().NewDate" Flat 
+                                    SelectedDates="viewReschedules.Select(s => s.NewDate)" ViewOnly 
+                                    OnNextMonthChanged="OnCurrentMonthChangedCalendarView" 
+                                    OnPreviousMonthChanged="OnCurrentMonthChangedCalendarView" />
+                            </div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <div>
+                            <p class="text-capitalize font-16 color-black-100 mb-2 font-weight-700">select date range</p>
+
+                            <Validations @ref="scheduleFilterValidation" Mode="ValidationMode.Manual" Model="scheduleFilter">
+                                <Validation>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-12 text-capitalize color-grey-100 mb-1 m-font-10">
+                                            From
+                                        </FieldLabel>
+                                        <FieldBody>
+                                            <DateEdit class="font-16 border-radius-10 field-width m-font-12 m-border-radius-5 color-grey-100" 
+                                                Size="Size.ExtraSmall" 
+                                                TValue="DateTime" @bind-Date="scheduleFilter.DateFrom">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </DateEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                                <Validation>
+                                    <Field>
+                                        <FieldLabel class="font-12 text-capitalize color-grey-100 mb-1 m-font-10">
+                                            To
+                                        </FieldLabel>
+                                        <FieldBody>
+                                            <DateEdit class="font-16 border-radius-10 field-width m-font-12 m-border-radius-5 color-grey-100" 
+                                                Size="Size.ExtraSmall" 
+                                                TValue="DateTime" @bind-Date="scheduleFilter.DateTo">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </DateEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            </Validations>
+
+                            <Button Clicked="FilterDateSchedule" class="font-16 bg-grey-200 color-grey-100 px-3 py-1 mt-3 w-100">
+                                Search
+                            </Button>
+                        </div>
+                    </Column>
+                </Row>
+
+                <Divider class="my-4" />
+
                 <Table Borderless>
                     <TableHeader>
                         <TableHeaderCell class="color-black-100">
@@ -804,11 +870,12 @@
                         </TableHeaderCell>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
+                        @foreach (var item in filteredSchedules.OrderBy(d => d.OldDate))
                         {
                             <TableRow>
                                 <TableRowCell class="px-0">
-                                    <DateEdit Disabled class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                    <DateEdit Disabled class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" 
+                                        Size="Size.ExtraSmall" 
                                         TValue="DateTime" @bind-Date="item.OldDate">
                                     </DateEdit>
                                 </TableRowCell>
@@ -816,7 +883,8 @@
                                     <img src="images/icons/date-to.png" alt="icon">
                                 </TableRowCell>
                                 <TableRowCell class="px-0">
-                                    <DateEdit class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
+                                    <DateEdit class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" 
+                                        Size="Size.ExtraSmall" 
                                         TValue="DateTime" @bind-Date="item.NewDate">
                                     </DateEdit>
                                 </TableRowCell>
@@ -825,7 +893,7 @@
                     </TableBody>
                 </Table>
                 <div class="text-end">
-                    <Button Clicked="UpdateReschedule" class="px-4 font-16 bg-orange-100 color-white-100 hover-color-white">
+                    <Button Clicked="UpdateReschedule" class="px-3 py-1 font-16 bg-orange-100 color-white-100 hover-color-white">
                         Update
                     </Button>
                 </div>
@@ -842,11 +910,11 @@
                     @onclick="() => seeScheduleCalendarModal.Close(CloseReason.UserClosing)" />
             </ModalHeader>
             <ModalBody class="pt-0">
-                @if(dateReschedules.Count > 0)
+                @if(viewSchedules.Count > 0)
                 {
                     <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
-                        <Calendar @ref="seeScheduleCalendar" CurrentDate="dateReschedules.First().NewDate" Flat 
-                            SelectedDates="dateReschedules.Select(s => s.NewDate)" ViewOnly 
+                        <Calendar @ref="seeScheduleCalendar" CurrentDate="viewSchedules.First().NewDate" Flat 
+                            SelectedDates="viewSchedules.Select(s => s.NewDate)" ViewOnly 
                             OnNextMonthChanged="OnCurrentMonthChanged" 
                             OnPreviousMonthChanged="OnCurrentMonthChanged" />
                     </div>
@@ -917,11 +985,20 @@
     private Calendar? calendar { get; set; }
     private Dictionary<DateTime, DateOverride> dateOverrides = new();
     private GenerateRecurrenceDate recurrenceHelper = new();
-    private IList<DateReschedule> dateReschedules = new List<DateReschedule>();
+    private List<DateReschedule> viewSchedules = new();
+    private List<DateReschedule> viewReschedules = new();
+    private List<DateReschedule> filteredSchedules = new();
+    private Dictionary<int, DateReschedule> appliedSchedules = new();
+
     private bool rescheduleUpdated = false;
 
     private Modal? seeScheduleCalendarModal;
     private Calendar? seeScheduleCalendar;
+
+    private Calendar? rescheduleCalendar;
+
+    private ScheduleFilter scheduleFilter = new();
+    private Validations? scheduleFilterValidation;
 
     private async Task NextClick()
     {
@@ -1111,9 +1188,9 @@
                 TicketSold = modelPricing.TicketSold
             });
         
-        if(dateReschedules.Count > 0)
+        if(appliedSchedules.Count > 0)
         {
-            data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
+            data.BookedDates = appliedSchedules.Values.Select(d => new ModelData.BookedDate {
                 Date = d.OldDate,
                 NewDate = d.NewDate,
                 Id = d.Id
@@ -1128,7 +1205,13 @@
         {
             foreach (var item in data.BookedDates)
             {
-                dateReschedules.Add(new DateReschedule {
+                viewReschedules.Add(new DateReschedule {
+                    NewDate = item.Date,
+                    OldDate = item.Date,
+                    Id = item.Id
+                });
+
+                viewSchedules.Add(new DateReschedule {
                     NewDate = item.Date,
                     OldDate = item.Date,
                     Id = item.Id
@@ -1428,26 +1511,23 @@
 
     private async Task UpdateReschedule()
     {
-        rescheduleUpdated = true;
-        await modalReschedule?.Close(CloseReason.UserClosing);
-    }
-
-    private IEnumerable<string> RescheduleStringDates 
-    {
-        get 
+        foreach (var item in filteredSchedules)
         {
-            if(rescheduleUpdated)
+            if(appliedSchedules.ContainsKey(item.Id))
             {
-                return dateReschedules
-                            .OrderBy(d => d.Id)
-                            .DistinctBy(d => d.NewDate.Date)
-                            .Select(d => d.NewDate.ToString("MMMM dd, yyyy"));
+                var appliedSchedule = appliedSchedules[item.Id];
+                appliedSchedule.NewDate = item.NewDate;
             }
-
-            return dateReschedules
-                        .OrderBy(d => d.Id)
-                        .Select(d => d.OldDate.ToString("MMMM dd, yyyy"));
+            else 
+            {
+                appliedSchedules.Add(item.Id, new DateReschedule {
+                    Id = item.Id,
+                    NewDate = item.NewDate,
+                    OldDate = item.OldDate
+                });
+            }
         }
+        await modalReschedule?.Close(CloseReason.UserClosing);
     }
 
     public class ModelData
@@ -1990,10 +2070,33 @@
     {
         var from = new DateTime(value.Year, value.Month, 1);
         var to = from.LastDayOfMonth();
-        await LoadScheduleDates(from, to);
+
+        var dateItems = await LoadScheduleDates(from, to);
+        if(dateItems.Count() > 0)
+        {
+            viewSchedules.Clear();
+            viewSchedules.AddRange(dateItems);
+
+            seeScheduleCalendar.LoadCalendarItems();
+        }
     }
 
-    private async Task LoadScheduleDates(DateTime from, DateTime to)
+    private async Task OnCurrentMonthChangedCalendarView(Calendar.CalendarCurrentMonth value)
+    {
+        var from = new DateTime(value.Year, value.Month, 1);
+        var to = from.LastDayOfMonth();
+
+        var dateItems = await LoadScheduleDates(from, to);
+        if(dateItems.Count() > 0)
+        {
+            viewReschedules.Clear();
+            viewReschedules.AddRange(dateItems);
+            
+            rescheduleCalendar.LoadCalendarItems();
+        }
+    }
+
+    private async Task<IEnumerable<DateReschedule>> LoadScheduleDates(DateTime from, DateTime to)
     {
         try
         {
@@ -2004,21 +2107,35 @@
             }, Token);
             if(result.Succeeded && result.Result is not null && result.Result.Result.Count() > 0)
             {
-                dateReschedules.Clear();
-                foreach (var date in result.Result.Result)
-                {
-                    dateReschedules.Add(new DateReschedule {
-                        Id = date.Id,
-                        NewDate = date.Date,
-                        OldDate = date.Date
-                    });
-                }
-                seeScheduleCalendar?.LoadCalendarItems();
+                return result.Result.Result.Select(d => new DateReschedule {
+                    Id = d.Id,
+                    NewDate = d.Date,
+                    OldDate = d.Date
+                });
             }
+
+            return Enumerable.Empty<DateReschedule>();
         }
         catch (Exception ex)
         {
-            await NotificationService.Error("An error occured. Please try again.", "Error");
+            return Enumerable.Empty<DateReschedule>();
+        }
+    }
+
+    private async Task FilterDateSchedule()
+    {
+        if(scheduleFilterValidation is not null && await scheduleFilterValidation.ValidateAll())
+        {
+            var items = await LoadScheduleDates(scheduleFilter.DateFrom, scheduleFilter.DateTo);
+            filteredSchedules.Clear();
+            foreach (var item in items)
+            {
+                if(appliedSchedules.ContainsKey(item.Id))
+                {
+                    item.NewDate = appliedSchedules[item.Id].NewDate;
+                }
+                filteredSchedules.Add(item);
+            }
         }
     }
 
@@ -2048,5 +2165,14 @@
             ModelState.EventTicketLimit = 0;
         }
         StateHasChanged();
+    }
+
+    private class ScheduleFilter 
+    {
+        [Required]
+        public DateTime DateFrom {get; set;} = DateTime.Now.FirstDayOfMonth();
+
+        [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
+        public DateTime DateTo {get; set;} = DateTime.Now.LastDayOfMonth();
     }
 }
