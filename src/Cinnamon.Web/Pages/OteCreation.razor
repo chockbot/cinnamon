@@ -82,7 +82,7 @@
                     <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(DisplaySummarySection ? "d-block" : "d-none")'>
-                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Summary="summary" OnPrevClick="MovePrev" />
+                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Token="@token" Summary="summary" OnPrevClick="MovePrev" />
                 </div>
                 <div class='@(DisplayPublishSection ? "d-block" : "d-none")'>
                     <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
@@ -165,7 +165,7 @@
                 await LoadComponentState();
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             NavigationManager.NavigateTo("explore");
         }
@@ -841,6 +841,15 @@
                 Order = i.Order
             };
         }).ToList());
+
+        await oteSummary?.SetState(scheduleDatesRes.Result.Result.Select(
+            d => new OteSummary.BookedDate {
+                Date = d.Date,
+                Id = d.Id,
+                NewDate = d.Date
+            }),
+            oteRes.Result.Result.Id
+        );
 
         await otePublish?.SetState(new OtePublish.ModelData
             {
