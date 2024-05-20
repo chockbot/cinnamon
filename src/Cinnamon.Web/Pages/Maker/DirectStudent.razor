@@ -58,35 +58,55 @@
                                         </TextEdit>
                                     </div>
                                 </Validation>
-
                                 <div class="mt-3 other-info">
-                                    <div class="student-gender">
-                                        <p class="student-name">Gender</p>
-                                        <Select TValue="string" @bind-SelectedValue="student.Gender" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
-                                            @foreach (var item in genders)
-                                            {
-                                                <SelectItem Value="@item">@item</SelectItem>
-                                            }
-                                        </Select>
-                                    </div>
-                                    <div class="student-birth-month">
-                                        <p class="student-name">Birth Month</p>
-                                        <Select TValue="string" @bind-SelectedValue="student.BirthMonth" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
-                                            @foreach (var item in months)
-                                            {
-                                                <SelectItem Value="@item">@item</SelectItem>
-                                            }
-                                        </Select>
-                                    </div>
+                                    <Validation Validator="ValidationRule.IsSelected">
+                                        <div class="student-gender">
+                                            <p class="student-name">Gender</p>
+                                            <Select TValue="string" @bind-SelectedValue="student.Gender" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
+                                                <ChildContent>
+                                                    @foreach (var item in genders)
+                                                    {
+                                                        <SelectItem Value="@item">@item</SelectItem>
+                                                    }
+                                                </ChildContent>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </Select>
+                                        </div>
+                                    </Validation>
+                                    <Validation Validator="ValidationRule.IsSelected">
+                                        <div class="student-birth-month">
+                                            <p class="student-name">Birth Month</p>
+                                            <Select TValue="string" @bind-SelectedValue="student.BirthMonth" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
+                                                <ChildContent>
+                                                    @foreach (var item in months)
+                                                    {
+                                                        <SelectItem Value="@item">@item</SelectItem>
+                                                    }
+                                                </ChildContent>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </Select>
+                                        </div>
+                                    </Validation>
+                                    <Validation Validator="ValidationRule.IsSelected">
                                     <div class="student-birth-year">
                                         <p class="student-name">Year</p>
                                         <Select TValue="int" @bind-SelectedValue="student.BirthYear" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
-                                            @foreach (var item in years)
-                                            {
-                                                <SelectItem Value="@item">@item</SelectItem>
-                                            }
+                                            <ChildContent>
+                                                @foreach (var item in years)
+                                                {
+                                                    <SelectItem Value="@item">@item</SelectItem>
+                                                }
+                                            </ChildContent>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
                                         </Select>
                                     </div>
+                                    </Validation>
                                 </div>
                             </div>
                             <div class="activity-section col-lg-12 col-md-12 col-sm-12 col-12">
@@ -94,24 +114,30 @@
                                 <div class="mt-3 class-section">
                                     <p class="student-name">Class</p>
                                     <Select TValue="int" @bind-SelectedValue="student.ActivityId" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15" @onchange="OnFilterValueChanged">
-                                        <SelectItem Value="0">Select Experience</SelectItem>
+                                        <SelectItem>Select Experience</SelectItem>
                                         @foreach (var item in activities)
                                         {
                                             <SelectItem Value="item.ActivityId">@item.Title</SelectItem>
                                         }
                                     </Select>
-                                    <div class="invalid-feedback">The class is mandatory.</div>
                                 </div>
-                                <div class="mt-3 schedule-section">
-                                    <p class="student-name">Class/Schedule</p>
-                                    <Select TValue="int" @bind-SelectedValue="student.ScheduleId" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
-                                        <SelectItem>Select Schedule</SelectItem>
-                                        @foreach (var item in schedules)
-                                        {
-                                            <SelectItem Value="@item.Id">@item.Name</SelectItem>
-                                        }
-                                    </Select>
-                                </div>
+                                <Validation Validator="ValidationRule.IsSelected">
+                                    <div class="mt-3 schedule-section">
+                                        <p class="student-name">Class/Schedule</p>
+                                        <Select TValue="int" @bind-SelectedValue="student.ScheduleId" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
+                                           <ChildContent>
+                                           <SelectItem>Select Schedule</SelectItem>
+                                           @foreach (var item in schedules)
+                                           {
+                                               <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                                           }
+                                           </ChildContent>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </Select>
+                                    </div>
+                                </Validation>
                                 <Validation>
                                     <div class="mt-3 mb-5 payment-section">
                                         <p class="student-name">Payment</p>
@@ -127,9 +153,8 @@
                     </div>
                 </div>
             </Validations>
-            
-        }
 
+        }
     </div>
     <Divider class="divider" />
     <div class="btn-action col-lg-4 col-md-8 col-sm-12 col-12">
@@ -179,7 +204,7 @@
             months.Add("december");
 
             // Initialize with one default student
-            AddMoreStudent();
+            students.Add(new Student { Id = students.Count + 1 });
 
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             token = user.FindFirstValue("Token");
@@ -272,67 +297,72 @@
         NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
     }
 
-    private void AddMoreStudent()
+    private async Task AddMoreStudent()
     {
-        students.Add(new Student { Id = students.Count + 1 });
+        if(studentListFormValidation is not null)
+        {
+            bool studentValid = await studentListFormValidation.ValidateAll();
+            if (studentValid)
+            {
+                students.Add(new Student { Id = students.Count + 1 });
+            }
+        }
+
     }
 
     private async void SaveStudents()
     {
-        bool isFieldValid = await FieldValid();
-        if (isFieldValid)
+        try
         {
-            foreach (var item in students)
-            {
-                try
+            var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
                 {
-                    var schedule = scheduleList.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
-                    var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
-                        {
-                            CreateDirectStudents = students.Select(s =>
-                            {
-                                return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
-                                {
-                                    CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
-                                    {
-                                        BirthMonth = s.BirthMonth,
-                                        BirthYear = s.BirthYear,
-                                        Gender = s.Gender,
-                                        Name = s.Name,
-                                        ProviderId = userID
-                                    },
-                                    CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
-                                    {
-                                        ActivityId = schedule.ActivityId,
-                                        Name = s.Name,
-                                        NumberOfSessions = schedule.PerUnit2,
-                                        SessionsAttended = 0,
-                                        Remarks = string.Empty,
-                                        StudentNo = "0",
-                                        ScheduleId = schedule.Id,
-                                        Status = "ACTIVE"
-                                    },
-                                    CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
-                                    {
-                                        Amount = s.Payment ?? 0
-                                    }
-                                };
-                            })
-                        }, token);
-                    if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+                    CreateDirectStudents = students.Select(s =>
                     {
-                        throw new ApplicationException(result.Message);
-                    }
-                    await NotificationService.Success("Success! You created new student", "Success");
-                    //Clear student list
-                    students.Clear();
-                }
-                catch (Exception)
-                {
-                    await NotificationService.Error("An error occured when creating direct student.", "Error");
-                }
+                        var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
+                        return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
+                        {
+                            CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
+                            {
+                                BirthMonth = s.BirthMonth,
+                                BirthYear = s.BirthYear,
+                                Gender = s.Gender,
+                                Name = s.Name,
+                                ProviderId = userID
+                            },
+                            CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
+                            {
+                                ActivityId = schedule.ActivityId,
+                                Name = s.Name,
+                                NumberOfSessions = schedule.PerUnit2,
+                                SessionsAttended = 0,
+                                Remarks = string.Empty,
+                                StudentNo = "0",
+                                ScheduleId = schedule.Id,
+                                Status = "ACTIVE"
+                            },
+                            CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
+                            {
+                                Amount = s.Payment ?? 0
+                            }
+                        };
+                    })
+                }, token);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
             }
+            await NotificationService.Success("Success! You created new student", "Success");
         }
+        catch (Exception)
+        {
+            await NotificationService.Error("An error occured when creating direct student.", "Error");
+        }
+        //Clear student list
+        students.Clear();
+        schedules.Clear();
+        // Initialize with one default student
+        students.Add(new Student { Id = students.Count + 1 , ActivityId = 0});
+        StateHasChanged();
     }
 
     private ValidationMode FormMode
@@ -387,8 +417,9 @@
         [Required(ErrorMessage = "Schedule is required")]
         public int ScheduleId { get; set; }
 
-        [Range(1, double.MaxValue, ErrorMessage = "Payment must be a positive number")]
-        public decimal? Payment { get; set; }
+        [Required(ErrorMessage = "The payment field is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "The payment field is required.")]
+        public decimal? Payment { get; set; } = null;
 
         public bool Valid
         {
