@@ -1,7 +1,11 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
 @using Cinnamon.Framework.Extensions.DateTimeExtension;
+@using Cinnamon.Web.Components.Common;
 @using Cinnamon.Framework.Helpers;
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @implements IOteComponent;
+@inject IActivityApiHandler activityApiHandler
 @inject IJSRuntime JS;  
 
 <section class="ote-summary-wrapper">
@@ -18,12 +22,15 @@
             <div>
                 <h3 class="text-capitalize font-24 font-weight-700 color-orange-100 mb-2">Date & Time</h3>
                 <div class="date-group">
-                @foreach (var date in GeneratedDates)
-                {
-                    <p class="dates-text">
-                        • @date.Date.ToString("MMMM dd, yyyy") | @Summary.PricingData.DateFrom.ToString("hh:mm tt")
-                    </p>
-                }
+                    @if(scheduleDates.Count > 0)
+                    {
+                        <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
+                            <Calendar @ref="summaryCalendar" CurrentDate="scheduleDates.First().NewDate" Flat 
+                                SelectedDates="scheduleDates.Select(s => s.NewDate)" ViewOnly 
+                                OnNextMonthChanged="OnCurrentMonthChanged" 
+                                OnPreviousMonthChanged="OnCurrentMonthChanged" />
+                        </div>
+                    }
                 </div>
             </div>  
             <Divider />
@@ -60,11 +67,20 @@
     public EventCallback OnPrevClick {get; set;}
 
     [Parameter]
-    public ComponentSummary Summary {get; set;}
+    public ComponentSummary Summary {get; set;} = new ();
+
+    [Parameter]
+    public string Token {get; set;}
 
     private bool invokingNext = false;
 
     private GenerateRecurrenceDate recurrenceHelper = new();
+
+    private Calendar? summaryCalendar;
+
+    private List<DateSchedule> scheduleDates = new();
+    
+    private int activityId = 0;
 
     private async Task NextClick()
     {
@@ -83,56 +99,90 @@
             await OnPrevClick.InvokeAsync();
         }
     }
+
     public Task<bool> FieldValid()
     {
         return Task.Run<bool>(() => true);
     }
 
-    private IEnumerable<GenerateRecurrenceDate.DateItem> GeneratedDates 
+    public Task SetState(IEnumerable<BookedDate> bookedDates, int activityId)
     {
-        get 
+        this.activityId = activityId;
+        foreach (var item in bookedDates)
         {
-            IEnumerable<GenerateRecurrenceDate.DateItem> dates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
-            
-            if(Summary is not null && Summary.PricingData is not null)
+            scheduleDates.Add(new DateSchedule {
+                Id = item.Id,
+                NewDate = item.Date,
+                OldDate = item.Date
+            });
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task OnCurrentMonthChanged(Calendar.CalendarCurrentMonth value)
+    {
+        var from = new DateTime(value.Year, value.Month, 1);
+        var to = from.LastDayOfMonth();
+
+        Dictionary<int, DateSchedule> dates = new();
+        if(Summary is not null && Summary.PricingData is not null && Summary.PricingData.BookedDates is not null)
+        {
+            foreach (var item in Summary.PricingData.BookedDates)
             {
-                var every = Summary.PricingData.DurationEvery ?? 0;
-                var dateStart = Summary.PricingData.DurationStart ?? DateTime.Now;
-                var dateEnd = Summary.PricingData.DurationEnd ?? DateTime.Now;;
-
-                var timeStart = Summary.PricingData.DateFrom.TimeOfDay;
-                var timeDuration = Summary.PricingData.DateTo - Summary.PricingData.DateFrom;
-
-                string weekString = Summary.PricingData.WeekString ?? string.Empty;
-
-                var monthSelection = Summary.PricingData.MonthSelection ?? 0;
-                var onDayDate = Summary.PricingData.OnDayDate ?? 0;
-                var monthRepeat = Summary.PricingData.MonthRepeat ?? string.Empty;
-                var monthDay = Summary.PricingData.MonthDay ?? string.Empty;
-
-                if(Summary.PricingData.BookedDates is not null && Summary.PricingData.BookedDates.Count() > 0)
+                if(!dates.ContainsKey(item.Id))
                 {
-                    dates = Summary.PricingData.BookedDates.DistinctBy(d => d.NewDate).Select(d => new GenerateRecurrenceDate.DateItem {
-                        Date = d.NewDate.Date,
-                        DateStart = d.NewDate.Date.Add(timeStart),
-                        DateEnd = d.NewDate.Date.Add(timeStart).Add(timeDuration)
+                    dates.Add(item.Id, new DateSchedule {
+                        Id = item.Id,
+                        NewDate = item.NewDate,
+                        OldDate = item.Date
                     });
                 }
-                else 
+            }
+        }
+
+        var dateItems = await LoadScheduleDates(from, to);
+        if(dateItems.Count() > 0)
+        {
+            scheduleDates.Clear();
+            
+            foreach (var item in dateItems)
+            {
+                if(dates.ContainsKey(item.Id))
                 {
-                    dates = Summary.PricingData.Recurrences switch {
-                        "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
-                        "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
-                        "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-                        "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
-                            onDayDate, monthRepeat, monthDay),
-                        _ => recurrenceHelper.GenerateNoRepeat(Summary.PricingData.DateFrom, Summary.PricingData.DateTo)
-                    };
+                    var date = dates[item.Id];
+                    item.NewDate = date.NewDate;
                 }
+                scheduleDates.Add(item);
             }
 
-            return dates;
-        }    
+            summaryCalendar.LoadCalendarItems();
+        }
+    }
+
+    private async Task<IEnumerable<DateSchedule>> LoadScheduleDates(DateTime from, DateTime to)
+    {
+        try
+        {
+            var result = await activityApiHandler.OteScheduleDates(new Framework.ApiCommand.ApiCore.Activity.Request.OteScheduleDatesArgs {
+                ActivityId = activityId,
+                From = from.ToString("yyyyMMdd"),
+                To = to.ToString("yyyyMMdd")
+            }, Token);
+            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess && result.Result.Result.Count() > 0)
+            {
+                return result.Result.Result.Select(d => new DateSchedule {
+                    Id = d.Id,
+                    NewDate = d.Date,
+                    OldDate = d.Date
+                });
+            }
+
+            return Enumerable.Empty<DateSchedule>();
+        }
+        catch (Exception ex)
+        {
+            return Enumerable.Empty<DateSchedule>();
+        }
     }
 
     public class ComponentSummary 
@@ -142,5 +192,26 @@
         public OtePricing.ModelData PricingData {get; set;}
         public OtePublish.ModelData PublishData {get; set;}
         public OteOnlineEvent.ModelData OnlineData { get; set; }
+
+        // extra options
+        public IEnumerable<BookedDate> BookedDates {get; set;}
+    }
+
+    public class BookedDate 
+    {
+        public int Id {get; set;}
+        public DateTime Date {get; set;}
+        public DateTime NewDate {get; set;}
+    }
+
+    private class DateSchedule
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public DateTime OldDate { get; set; }
+
+        [Required]
+        public DateTime NewDate { get; set; }
     }
 }

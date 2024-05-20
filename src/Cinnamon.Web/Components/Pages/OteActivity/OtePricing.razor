@@ -2105,7 +2105,7 @@
                 From = from.ToString("yyyyMMdd"),
                 To = to.ToString("yyyyMMdd")
             }, Token);
-            if(result.Succeeded && result.Result is not null && result.Result.Result.Count() > 0)
+            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess && result.Result.Result.Count() > 0)
             {
                 return result.Result.Result.Select(d => new DateReschedule {
                     Id = d.Id,
