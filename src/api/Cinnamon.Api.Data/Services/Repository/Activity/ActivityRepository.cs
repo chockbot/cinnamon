@@ -884,7 +884,6 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
-            if (includeStudents) includes.Add(a => a.Students);
             if (includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
@@ -1049,18 +1048,41 @@ public class ActivityRepository : IActivityRepository
                     ProfileImg = customer.ProfilePath
                 };
             }
-            // student
-            if (includeStudents && activity.Students != null)
+
+            // ongoing and completed students count
+            if (includeStudents)
             {
-                var students = activity.Students;
-                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-                                                              && a.ExpirationDateEnd != DateTime.MinValue);
-                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                int ongoingStudentsCount = 0;
+                int completedStudentsCount = 0;
+
+                var ongoingStudentsRes = await dataStore.Student.OngoingStudentCount(activity.Id);
+                if(ongoingStudentsRes.Succeeded)
+                {
+                    ongoingStudentsCount += ongoingStudentsRes.Result;
+                }
+
+                var completedStudentRes = await dataStore.Student.CompletedStudentCount(activity.Id);
+                if(completedStudentRes.Succeeded)
+                {
+                    completedStudentsCount += completedStudentRes.Result;
+                }
+
+                var directStudentOngoingCountRes = await dataStore.DirectStudentSession.OngoingStudentCount(activity.Id);
+                if(directStudentOngoingCountRes.Succeeded)
+                {
+                    ongoingStudentsCount += directStudentOngoingCountRes.Result;
+                }
+
+                var directStudentCompletedCountRes = await dataStore.DirectStudentSession.CompletedStudentCount(activity.Id);
+                if(directStudentCompletedCountRes.Succeeded)
+                {
+                    completedStudentsCount += directStudentCompletedCountRes.Result;
+                }
+
+                activityDTO.CompletedStudents = completedStudentsCount;
+                activityDTO.OngoingStudents = ongoingStudentsCount;
             }
+
             if (includeAddOns.HasValue && includeAddOns.Value && activity.AddOns != null)
             {
                 var addOns = activity.AddOns;
