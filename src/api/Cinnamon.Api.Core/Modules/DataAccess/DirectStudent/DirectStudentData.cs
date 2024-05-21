@@ -100,4 +100,25 @@ public class DirectStudentData : IDirectStudentData
             return AppResult<CreateStudentAttendanceResult>.CreateFailed(ex, "An error occured when posting create direct students attendance api.");
         }
     }
+
+    public async Task<AppResult<UpdateStudentAttendanceBulkResult>> UpdateStudentAttendance(UpdateStudentAttendanceBulkArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("DirectStudent/Attendance/Update/Bulk")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdateStudentAttendanceBulkResult>();
+            return AppResult<UpdateStudentAttendanceBulkResult>.CreateSucceeded(result, "Successfully posting update direct students attendance api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateStudentAttendanceBulkResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateStudentAttendanceBulkResult>.CreateFailed(ex, "An error occured when posting update direct students attendance api.");
+        }
+    }
 }
