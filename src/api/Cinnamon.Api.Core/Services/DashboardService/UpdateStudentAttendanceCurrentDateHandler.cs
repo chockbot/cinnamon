@@ -38,6 +38,7 @@ public class UpdateStudentAttendanceCurrentDateHandler : IUpdateStudentAttendanc
                         IsPresent = s.IsPresent,
                         ScheduleId = s.ScheduleId,
                         StudentId = s.StudentId,
+                        StudentType = s.StudentType
                     };
                 })
             });

@@ -163,7 +163,8 @@ public class DashboardController : ControllerBase
                         ActivityId = s.ActivityId,
                         IsPresent = s.IsPresent,
                         ScheduleId = s.ScheduleId,
-                        StudentId = s.StudentId
+                        StudentId = s.StudentId,
+                        StudentType = s.StudentType
                     };
                 })
             });
