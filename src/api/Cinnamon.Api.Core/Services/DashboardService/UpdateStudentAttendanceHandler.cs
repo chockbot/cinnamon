@@ -11,11 +11,14 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
 {
     private readonly IGetOwnedActivitiesHandler getOwnedActivitiesHandler;
     private readonly IStudentAttendanceData studentAttendanceData;
+    private readonly IDirectStudentData directStudentData;
 
-    public UpdateStudentAttendanceHandler(IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IStudentAttendanceData studentAttendanceData)
+    public UpdateStudentAttendanceHandler(IGetOwnedActivitiesHandler getOwnedActivitiesHandler, 
+        IStudentAttendanceData studentAttendanceData, IDirectStudentData directStudentData)
     {
         this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
         this.studentAttendanceData = studentAttendanceData;
+        this.directStudentData = directStudentData;
     }
 
     public AppResult<UpdateStudentAttendanceResult> Execute(UpdateStudentAttendanceArgs args)
@@ -46,7 +49,6 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
                 ActivityIds = activityScheduleIds.Result.Select(i => i.Value),
                 ScheduleIds  = activityScheduleIds.Result.Select(i => i.Key),
                 Date = args.Date.ToString("yyyyMMdd"),
-                IsIncludeStudent = true
             });
             if(!studentsData.Succeeded || studentsData.Result == null || !studentsData.Result.IsSuccess)
             {
@@ -57,7 +59,8 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
             // update only enrolled students associated in the activity and schedule
             // convert to dictionary for faster search
             var studentToDictionary = studentsData.Result.Result.ToDictionary(s => s.StudentId);
-            var filteredStudents = args.Students.Where(s => studentToDictionary.ContainsKey(s.StudentId));
+            var filteredStudents = args.Students.Where(s => studentToDictionary.ContainsKey(s.StudentId) && 
+                                    s.StudentType == Framework.Enums.StudentType.Cinnamon);
 
             var updateStudentRes = await studentAttendanceData.UpdateAttendance(new Framework.ApiCommand.ApiData.StudentAttendance.Request.UpdateAttendanceArgs {
                 Date = args.Date,
@@ -73,6 +76,46 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
                 return AppResult<UpdateStudentAttendanceResult>.CreateFailed(
                     new ApplicationException(updateStudentRes.Result?.ErrorInfo?.Message), updateStudentRes.Message);
             }
+
+            // for manual students need to update
+            var directStudentsAttendance = await directStudentData.StudentAttendance(new Framework.ApiCommand.ApiData.DirectStudent.Request.StudentAttendanceArgs {
+                ActivityIds = activityScheduleIds.Result.Select(i => i.Value),
+                ScheduleIds = activityScheduleIds.Result.Select(i => i.Key),
+                Date = args.Date.ToString("yyyyMMdd"),
+            });
+            if(!directStudentsAttendance.Succeeded || directStudentsAttendance.Result == null || !directStudentsAttendance.Result.IsSuccess)
+            {
+                return AppResult<UpdateStudentAttendanceResult>.CreateFailed(
+                    new ApplicationException(directStudentsAttendance.Result?.ErrorInfo?.Message), directStudentsAttendance.Message);
+            }
+
+            // update only enrolled students associated in the activity and schedule
+            // convert to dictionary for faster search
+            var directStudentToDictionary = directStudentsAttendance.Result.Result.ToDictionary(s => s.StudentId);
+            var directFilteredStudents = args.Students.Where(s => directStudentToDictionary.ContainsKey(s.StudentId) && 
+                                            s.StudentType == Framework.Enums.StudentType.Manual);
+
+            var updateDirectStudentRes = await directStudentData.UpdateStudentAttendance(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateStudentAttendanceBulkArgs {
+                Date = args.Date.Date,
+                StudentAttendances = directFilteredStudents.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateStudentAttendanceBulkArgs.UpdateStudentAttendance {
+                    DirectStudentSessionId = s.StudentId,
+                    IsPresent = s.IsPresent
+                })
+            });
+            if(!updateDirectStudentRes.Succeeded || updateDirectStudentRes.Result is null || !updateDirectStudentRes.Result.IsSuccess)
+            {
+                return AppResult<UpdateStudentAttendanceResult>.CreateFailed(
+                    new ApplicationException(updateDirectStudentRes.Result?.ErrorInfo?.Message), updateDirectStudentRes.Message);
+            }
+
+            var updatedStudents = updateStudentRes.Result.Result.Select(s => {
+                return new UpdateStudentAttendanceResult.UpdatedStudentDetails {
+                    ActivityId = s.Student.ActivityId,
+                    IsPresent = s.IsPresent,
+                    ScheduleId = s.Student.ScheduleId,
+                    StudentId = s.StudentId
+                };
+            }).ToList();
 
             return AppResult<UpdateStudentAttendanceResult>.CreateSucceeded(new UpdateStudentAttendanceResult {
                 StudentAttendaces = updateStudentRes.Result.Result.Select(s => {

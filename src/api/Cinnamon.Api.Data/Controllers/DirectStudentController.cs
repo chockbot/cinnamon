@@ -162,4 +162,31 @@ public class DirectStudentController : ControllerBase
             return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [HttpPost]
+    [Route("Attendance/Update/Bulk")]
+    [ProducesResponseType(typeof(UpdateStudentAttendanceBulkResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateStudentAttendance([FromBody] UpdateStudentAttendanceBulkArgs args)
+    {
+        try
+        {
+            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.StudentAttendances);
+
+            var result = await directStudentAttendanceRepository.UpdateStudentAttendances(dtos, args.Date);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateStudentAttendanceBulkResult {
+                IsSuccess = true,
+                Result = result.Result
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

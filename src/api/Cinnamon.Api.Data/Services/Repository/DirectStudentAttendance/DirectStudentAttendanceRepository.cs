@@ -103,4 +103,24 @@ public class DirectStudentAttendanceRepository : IDirectStudentAttendanceReposit
             return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when getting all direct student attendance.");
         }   
     }
+
+    public async Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> UpdateStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances, DateTime date)
+    {
+        try
+        {
+            var entities = mapper.Map<IEnumerable<Entities.DirectStudentAttendance>>(attendances);
+
+            var result = await dataStore.DirectStudentAttendance.UpdateStudentAttendance(entities, date.SetKindUtc());
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateSucceeded(attendances, "Successfully update direct student attendance.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DirectStudentAttendanceDTO>>.CreateFailed(ex, "An error occured when updating direct student attendance.");
+        }
+    }
 }

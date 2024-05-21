@@ -300,17 +300,19 @@
     private async void ProcessCheckUncheckAll(object? sender, ElapsedEventArgs e)
     {
         checkUncheckAllTimer.Stop();
-        // call update attendance api without waiting
-        await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+
+        var updatedResult = await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
             Students = Model.FilteredAttendance.Select(s => {
                 return new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
                     ActivityId = s.ActivityId,
                     IsPresent = s.IsPresent,
                     ScheduleId = s.ScheduleId,
-                    StudentId = s.StudentId
+                    StudentId = s.StudentId,
+                    StudentType = s.StudentType
                 };
             })
         }, Model.Token);
+        
         //Session Expiration
         foreach (var item in Model.FilteredAttendance)
         {
@@ -358,7 +360,8 @@
                         NumberOfSessions = s.NumberOfSessions,
                         SessionsAttended = s.SessionsAttended,
                         ExpirationDateEnd = s.ExpirationEndDate,
-                        ExpirationDateStart = s.ExpirationStartDate
+                        ExpirationDateStart = s.ExpirationStartDate,
+                        StudentType = s.StudentType
                     };
                 }));
             }
@@ -437,7 +440,8 @@
                     ActivityId = studentAttendance.ActivityId,
                     IsPresent = studentAttendance.IsPresent,
                     ScheduleId = studentAttendance.ScheduleId,
-                    StudentId = studentAttendance.StudentId
+                    StudentId = studentAttendance.StudentId,
+                    StudentType = studentAttendance.StudentType
                 },
             }
         }, Model.Token);

@@ -1,3 +1,4 @@
+using Cinnamon.Framework.Enums;
 using Cinnamon.Web.Models.Entities;
 
 namespace Cinnamon.Web.Models.Dashboard;
@@ -51,6 +52,7 @@ public class AttendanceModel
         public int SessionsAttended {get; set;}
         public DateTime ExpirationDateStart { get; set; }
         public DateTime ExpirationDateEnd { get; set; }
+        public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     }
     public class Activity
     {

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 
@@ -19,5 +20,8 @@ public class UpdateStudentAttendnaceArgs
 
         [Required]
         public int SessionAttended { get; set; }
+
+        [Required]
+        public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     }
 }
