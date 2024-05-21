@@ -1058,13 +1058,25 @@ public class ActivityRepository : IActivityRepository
                 var ongoingStudentsRes = await dataStore.Student.OngoingStudentCount(activity.Id);
                 if(ongoingStudentsRes.Succeeded)
                 {
-                    ongoingStudentsCount = ongoingStudentsRes.Result;
+                    ongoingStudentsCount += ongoingStudentsRes.Result;
                 }
 
                 var completedStudentRes = await dataStore.Student.CompletedStudentCount(activity.Id);
                 if(completedStudentRes.Succeeded)
                 {
-                    completedStudentsCount = completedStudentRes.Result;
+                    completedStudentsCount += completedStudentRes.Result;
+                }
+
+                var directStudentOngoingCountRes = await dataStore.DirectStudentSession.OngoingStudentCount(activity.Id);
+                if(directStudentOngoingCountRes.Succeeded)
+                {
+                    ongoingStudentsCount += directStudentOngoingCountRes.Result;
+                }
+
+                var directStudentCompletedCountRes = await dataStore.DirectStudentSession.CompletedStudentCount(activity.Id);
+                if(directStudentCompletedCountRes.Succeeded)
+                {
+                    completedStudentsCount += directStudentCompletedCountRes.Result;
                 }
 
                 activityDTO.CompletedStudents = completedStudentsCount;
