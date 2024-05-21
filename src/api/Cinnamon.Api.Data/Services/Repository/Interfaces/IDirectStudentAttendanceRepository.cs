@@ -10,4 +10,6 @@ public interface IDirectStudentAttendanceRepository
         bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null);
 
     Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> CreateDirectStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances);
+
+    Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> UpdateStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances, DateTime date);
 }
