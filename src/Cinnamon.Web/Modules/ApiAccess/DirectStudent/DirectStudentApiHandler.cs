@@ -52,6 +52,7 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
         }
         catch (FlurlHttpException ex)
         {
+            var errorResult = await ex.GetResponseJsonAsync();
             return AppResult<UpdateStudentResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
