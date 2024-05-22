@@ -54,13 +54,32 @@ public class DirectStudentRepository : IDirectStudentRepository
 
 			var dtos = mapper.Map<IEnumerable<DirectStudentSessionDTO>>(result.Result);
 
-			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateSucceeded(dtos, "Successfully get direct students.");
-		}
-		catch (Exception ex)
-		{
-			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct students.");
-		}
-	}
+            return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateSucceeded(dtos, "Successfully get direct students.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct students.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int providerId, int? count, int? skip)
+    {
+        try
+        {
+            var result = await dataStore.DirectStudentInfo.FindAsync(s => s.ProviderId == providerId, count, skip);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dtos = mapper.Map<IEnumerable<DirectStudentInfoDTO>>(result.Result);
+            return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateSucceeded(dtos, "Successfully get direct students info.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(ex, "An error occured when getting direct students info");
+        }
+    }
 
 	public async Task<AppResult<IEnumerable<DirectStudentPaymentDTO>>> GetStudentPaymentByProvider(int? providerId, DateTime? dateFrom)
 	{

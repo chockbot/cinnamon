@@ -279,6 +279,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Disbursement.Handlers.IManualDisbursement, Services.Disbursement.ManualDisbursement>();
         services.AddTransient<Services.Disbursement.Handlers.IGetDisbursementByProviderId, Services.Disbursement.GetDisbursementByProviderId>();
 
+        // direct students services
+        services.AddTransient<Services.DirectStudentService.Handlers.IDirectStudentsInfoHandler, Services.DirectStudentService.DirectStudentsInfoHandler>();
+
         return services;
     }
 }

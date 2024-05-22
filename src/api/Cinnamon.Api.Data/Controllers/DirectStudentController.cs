@@ -90,6 +90,47 @@ public class DirectStudentController : ControllerBase
     }
 
     [HttpGet]
+    [Route("Infos")]
+    [ProducesResponseType(typeof(StudentInfosResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentInfos([FromQuery] StudentInfosArgs args)
+    {
+        try
+        {
+            var result = await directStudentRepository.GetDirectStudentsInfo(args.ProviderId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
+            }
+            
+            var totalCountRes = await directStudentRepository
+                .GetDirectStudentsInfo(args.ProviderId, null, null);
+                
+            if(!totalCountRes.Succeeded || totalCountRes.Result is null)
+            {
+                return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = totalCountRes.Message}});    
+            }
+
+            var totalRecords = totalCountRes.Result.Count();
+            return new JsonResult(new StudentInfosResult {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
+                                    (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    } 
+
+    [HttpGet]
     [Route("Attendance")]
     [ProducesResponseType(typeof(StudentAttendanceResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

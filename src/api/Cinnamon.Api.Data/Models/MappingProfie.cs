@@ -123,5 +123,6 @@ public class MappingProfile : Profile
         CreateMap<DirectStudentAlias.DirectStudentAttendanceDTO, DirectStudentAttendance>();
         CreateMap<DirectStudentReqAlias.CreateStudentAttendanceArgs.CreateStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
         CreateMap<DirectStudentReqAlias.UpdateStudentAttendanceBulkArgs.UpdateStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
+        CreateMap<DirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
     }
 }
