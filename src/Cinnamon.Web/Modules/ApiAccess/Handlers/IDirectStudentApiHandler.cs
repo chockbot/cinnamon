@@ -1,0 +1,10 @@
+using Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Response;
+using Cinnamon.Framework.Common;
+
+namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
+
+public interface IDirectStudentApiHandler 
+{
+    Task<AppResult<DirectStudentInfoReult>> GetActivitySchedules(DirectStudentInfoArgs args, string token);
+}
