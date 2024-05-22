@@ -307,7 +307,7 @@
     </Modal>
 </article>
 
-@code{
+                    @code{
 
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
@@ -326,6 +326,8 @@
     private IList<Requested> requestedRefunds = new List<Requested>();
 
     private List<GrossSales> grossSales = new List<GrossSales>();
+
+    private List<GrossSales> directSales = new List<GrossSales>();
 
     private List<Payouts> totalEarnings = new List<Payouts>();
 
@@ -483,12 +485,31 @@
             grossSales = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
             {
                 return new GrossSales
-                    {
-                        PurchaseDate = e.PurchaseDate,
-                        Total = e.Total
-                    };
+                {
+                    PurchaseDate = e.PurchaseDate,
+                    Total = e.Total
+                };
             }).ToList();
         }
+        //Get direct student sales by Activity Provider
+        var directGross = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+        {
+            ProviderId = Profile.Id,
+            DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+        }, Token);
+        if (directGross.Succeeded && directGross.Result != null && directGross.Result.IsSuccess)
+        {
+            directSales = directGross.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSales
+                {
+                    PurchaseDate = e.CreatedOn,
+                    Total = e.Amount
+                };
+            }).ToList();
+        }
+        //Merge Sales
+        grossSales.AddRange(directSales);
     }
     private async Task GetTotalEarnings()
     {
