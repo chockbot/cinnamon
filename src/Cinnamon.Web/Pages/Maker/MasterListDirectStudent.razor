@@ -6,12 +6,12 @@
 @using Cinnamon.Web.Models.Maker;
 @using System.Globalization;
 @using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DirectStudents;
+@inject IDirectStudentApiHandler directStudentApiHandler;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject IAccountApiHandler accountApiHandler
-@inject IActivityApiHandler activityApiHandler
-@inject IOngoingActivitiesHandler ongoingApiHandler
-@inject IDashboardApiHandler dashboardApiHandler;
+@inject INotificationService NotificationService;
+@attribute [Authorize]
 
 <div class="mt-5 enrollee-materlist-wrapper">
     <div class="header">
@@ -24,57 +24,62 @@
             <TextEdit Placeholder="Search" class="search-bar"></TextEdit>
         </div>
     </div>
-    <LoadingIndicator @ref=loadingIndicator>
-        <div class="direct-student-section">
-            <div class="table-list">
-                <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-                    <TableHeader>
+    <div class="direct-student-section">
+        <div class="table-list">
+            <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell class="name-header">
+                            <label class="sotring-column">
+                                Name
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="age-header">
+                            <label class="sotring-column">
+                                Age
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="gender-header">
+                            <label class="sotring-column">
+                                Gender
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="action-header">
+                            <label class="sotring-column">
+                               Action
+                            </label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in directStudents)
+                    {
                         <TableRow>
-                            <TableHeaderCell class="name-header">
-                                <label class="sotring-column">
-                                    Name
-                                </label>
-                            </TableHeaderCell>
-                            <TableHeaderCell class="age-header">
-                                <label class="sotring-column">
-                                    Age
-                                </label>
-                            </TableHeaderCell>
-                            <TableHeaderCell class="gender-header">
-                                <label class="sotring-column">
-                                    Gender
-                                </label>
-                            </TableHeaderCell>
-                            <TableHeaderCell class="action-header">
-                                <label class="sotring-column">
-                                   Action
-                                </label>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                            <TableRow>
-                                <TableRowCell class="name-body">Sample Name</TableRowCell>
-                                <TableRowCell class="age-body">16</TableRowCell>
-                                <TableRowCell class="gender-body">
-                                     Female
-                                </TableRowCell>
-                                <TableRowCell class="update">
-                                    <Button Color="Color.Primary" Border="Border.Is0"class="btn-update">
-                                        Update
-                                    </Button>
-                                </TableRowCell>
-                            </TableRow>
-                    </TableBody>
-                </Table>
-            </div>
+                            <TableRowCell class="name-body">@item.Name</TableRowCell>
+                            <TableRowCell class="age-body">@item.Age</TableRowCell>
+                            <TableRowCell class="gender-body text-capitalize">@item.Gender</TableRowCell>
+                            <TableRowCell class="update">
+                                <Button Color="Color.Primary" Border="Border.Is0"class="btn-update">
+                                    Update
+                                </Button>
+                            </TableRowCell>
+                        </TableRow>   
+                    }
+                </TableBody>
+            </Table>
         </div>
-    </LoadingIndicator>
+    </div>
 </div>
-@code {
+
+@code 
+{
     public Table tableDirectStudents;
-    LoadingIndicator loadingIndicator;
+
     private string token = string.Empty;
+
+    private List<DirectStudentInfoDTO> directStudents = new();
+
+    private int currentPage = 1, countPerPage = 10;
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,13 +93,8 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-            {
-                // an error occured
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
+
+            await LoadDirectStudents();
         }
         catch (Exception ex)
         {
@@ -102,10 +102,32 @@
         }
 
     }
+
+    private async Task LoadDirectStudents()
+    {
+        try
+        {
+            var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
+                CountPerPage = countPerPage,
+                PageIndex = currentPage
+            }, token);
+
+            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+            {
+                directStudents.AddRange(result.Result.Result);
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
     private void NavigateToManageStudents()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
+
     private void NavigateToAddDirectStudent()
     {
         NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
