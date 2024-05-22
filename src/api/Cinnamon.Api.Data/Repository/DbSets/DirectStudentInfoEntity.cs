@@ -2,6 +2,7 @@ using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
 using Cinnamon.Framework.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -58,6 +59,60 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
         catch (Exception ex)
         {
             return AppResult<IEnumerable<DirectStudentDTO>>.CreateFailed(ex, "An error occured when creating direct students.");
+        }
+    }
+
+    public async Task<AppResult<DirectStudentInfo>> UpdateDirectStudent(DirectStudentInfo directStudent, 
+        DirectStudentSession directStudentSession, DirectStudentPayment directStudentPayment)
+    {
+        try
+        {
+            var student = await applicationContext.DirectStudentInfos
+                                    .Where(s => s.Id == directStudent.Id)
+                                    .FirstOrDefaultAsync();
+            
+            if(student is null)
+            {
+                return AppResult<DirectStudentInfo>.CreateFailed(new ApplicationException("Unable to find direct student."), "Unable to find direct student.");
+            }
+
+            var studentSession = await applicationContext.DirectStudentSessions
+                                    .Where(s => s.DirectStudentInfoId == student.Id)
+                                    .FirstOrDefaultAsync();
+            
+            if(studentSession is null)
+            {
+                return AppResult<DirectStudentInfo>.CreateFailed(new ApplicationException("Unable to find direct student."), "Unable to find direct student.");
+            }
+
+            var studentPayment = await applicationContext.DirectStudentPayments
+                                        .Where(p => p.DirectStudentSessionId == studentSession.Id)
+                                        .FirstOrDefaultAsync();
+            
+            if(studentPayment is null)
+            {
+                return AppResult<DirectStudentInfo>.CreateFailed(
+                    new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
+            }
+
+            student.BirthMonth = directStudent.BirthMonth;
+            student.BirthYear = directStudent.BirthYear;
+            student.Gender = directStudent.Gender;
+            student.Name = directStudent.Name;
+            
+            studentSession.ActivityId = directStudentSession.ActivityId;
+            studentSession.ScheduleId = directStudentSession.ScheduleId;
+
+            studentPayment.Amount = directStudentPayment.Amount;
+
+
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<DirectStudentInfo>.CreateSucceeded(student, "Direct student successfully updated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DirectStudentInfo>.CreateFailed(ex, "An error occured when updating direct student.");
         }
     }
 }

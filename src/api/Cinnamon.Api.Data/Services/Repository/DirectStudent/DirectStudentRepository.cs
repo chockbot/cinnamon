@@ -99,4 +99,26 @@ public class DirectStudentRepository : IDirectStudentRepository
 			return AppResult<IEnumerable<DirectStudentPaymentDTO>>.CreateFailed(ex, "An error occured when getting direct students payment.");
 		}
 	}
+
+	public async Task<AppResult<DirectStudentDTO>> UpdateDirectStudent(DirectStudentDTO directStudent)
+	{
+		try
+		{
+			var student = mapper.Map<Entities.DirectStudentInfo>(directStudent.DirectStudentInfo);
+			var studentSessions = mapper.Map<Entities.DirectStudentSession>(directStudent.DirectStudentSession);
+			var studentPayment = mapper.Map<Entities.DirectStudentPayment>(directStudent.DirectStudentPayment);
+
+			var result = await dataStore.DirectStudentInfo.UpdateDirectStudent(student, studentSessions, studentPayment);
+			if(!result.Succeeded || result.Result is null)
+			{
+				return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			return AppResult<DirectStudentDTO>.CreateSucceeded(directStudent, "Successfully update direct student.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when updating direct student.");
+		}
+	}
 }

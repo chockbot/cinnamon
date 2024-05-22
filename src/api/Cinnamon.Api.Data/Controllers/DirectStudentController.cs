@@ -24,6 +24,7 @@ public class DirectStudentController : ControllerBase
         this.directStudentAttendanceRepository = directStudentAttendanceRepository;
         this.mapper = mapper;
     }
+
     [HttpPost]
     [ProducesResponseType(typeof(CreateDirectStudentsResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -86,6 +87,31 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetDirectStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route(":id")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateDirectStudentResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateDirectStudent([FromBody] UpdateDirectStudentArgs args, int id)
+    {
+        try
+        {
+            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudents);
+            dto.DirectStudentInfo.Id = id;
+
+            var result = await directStudentRepository.UpdateDirectStudent(dto);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateDirectStudentResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -235,6 +261,7 @@ public class DirectStudentController : ControllerBase
             return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [HttpGet]
     [Route("GetDirectStudentsPayment")]
     [ProducesResponseType(typeof(GetDirectStudentsPaymentResult), StatusCodes.Status202Accepted)]
