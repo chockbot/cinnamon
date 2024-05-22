@@ -7,4 +7,7 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 public interface IDirectStudentInfo : IGenericEntity<DirectStudentInfo>
 {
     Task<AppResult<IEnumerable<DirectStudentDTO>>> CreateDirectStudents(IEnumerable<DirectStudentDTO> directStudents);
+
+    Task<AppResult<DirectStudentInfo>> UpdateDirectStudent(DirectStudentInfo directStudent, 
+        DirectStudentSession directStudentSession, DirectStudentPayment directStudentPayment);
 }

@@ -15,12 +15,15 @@ namespace Cinnamon.Api.Core.Controllers;
 public class DirectStudentsController : ControllerBase 
 {
     private readonly IDirectStudentsInfoHandler directStudentsInfoHandler;
+    private readonly IUpdateDirectStudentHandler updateDirectStudentHandler;
     private readonly IMapper mapper;
 
-    public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper)
+    public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
+        IUpdateDirectStudentHandler updateDirectStudentHandler)
     {
         this.directStudentsInfoHandler = directStudentsInfoHandler;
         this.mapper = mapper;
+        this.updateDirectStudentHandler = updateDirectStudentHandler;
     }
 
     [HttpGet]
@@ -48,6 +51,41 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DirectStudentInfoReult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateStudent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateStudentResult), StatusCodes.Status200OK)]   
+    public async Task<IActionResult> UpdateStudent([FromQuery] UpdateStudentArgs args, int id)
+    {
+        try
+        {
+            var result = await updateDirectStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                BirthMonth = args.BirthMonth,
+                BirthYear = args.BirthYear,
+                Gender = args.Gender,
+                Name = args.Name,
+                ScheduleId = args.ScheduleId,
+                StudentId = args.StudentId
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateStudentResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            var mapped = mapper.Map<DirectStudentInfoDTO>(result.Result);
+
+            return new JsonResult(new UpdateStudentResult {
+                IsSuccess = true,
+                Result = mapped
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateStudentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
