@@ -15,4 +15,6 @@ public interface IDirectStudentData
     Task<AppResult<CreateStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args);
 
     Task<AppResult<UpdateStudentAttendanceBulkResult>> UpdateStudentAttendance(UpdateStudentAttendanceBulkArgs args);
+
+    Task<AppResult<GetDirectStudentsPaymentResult>> GetDirectStudentsPayments(GetDirectStudentsPaymentArgs args);
 }

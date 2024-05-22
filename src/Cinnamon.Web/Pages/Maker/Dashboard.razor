@@ -785,6 +785,8 @@
 
     private List<GrossSales> salesData = new List<GrossSales>();
 
+    private List<GrossSales> directSalesData = new List<GrossSales>();
+
     public Activity activity = new Activity();
 
     private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
@@ -887,8 +889,28 @@
                         };
                 }).ToList();
             }
-            var amount = salesData.Sum(a => a.Total);
-            totalSales = String.Format("{0:N}", amount);
+            //Get Total Earning in Direct Students
+            var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+            }, Model.Token);
+            if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
+            {
+                directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+                {
+                    return new GrossSales
+                    {
+                        PurchaseDate = e.CreatedOn,
+                        Total = e.Amount
+                    };
+                }).ToList();
+            }
+            var amount       = salesData.Sum(a => a.Total);
+            var directAmount = directSalesData.Sum(a => a.Total);
+            //Overall Total Earnings
+            var totalAmount = amount + directAmount;
+            totalSales = String.Format("{0:N}", totalAmount);
         }
         catch (Exception e)
         {
