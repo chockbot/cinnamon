@@ -20,24 +20,6 @@
                 <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
                     <div class="experience-content">
                         <div class="col-12 d-block justify-content-start">
-                            <p class="title">Gross Sales</p>
-                            @if(directSales.Count != 0)
-                            {
-                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
-                                <p class="amount-description">This is the sales for your activities/events and direct students.</p>
-                            }
-                            else
-                            {
-                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
-                                <p class="amount-description">This is the sales for your activities/events.</p>
-                            }
-                            
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
-                    <div class="experience-content">
-                        <div class="col-12 d-block justify-content-start">
                             <p class="title">Receivables from Cinnamon</p>
                             <p class="amount">&#8369;@String.Format("{0:N}",totalReceivables.Sum(t => t.Amount))</p>
                             <p class="amount-description">Complete your enrollee's attendance to automatically receive this amount in your payout account.</p>
@@ -50,6 +32,24 @@
                             <p class="title">Total Earnings</p>
                             <p class="amount">&#8369;@String.Format("{0:N}",totalEarnings.Sum(t => t.Amount))</p>
                             <p class="amount-description">This is the total credited amount to your account.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-block justify-content-start">
+                            <p class="title">Gross Sales</p>
+                            @if (directSales.Count != 0)
+                            {
+                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
+                                <p class="amount-description">This is your sales from Cinnamon and Direct students.</p>
+                            }
+                            else
+                            {
+                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
+                                <p class="amount-description">This is the sales from Cinnamon.</p>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -316,7 +316,7 @@
     </Modal>
 </article>
 
-                    @code{
+@code{
 
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }

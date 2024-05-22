@@ -6,6 +6,7 @@
 @using Cinnamon.Web.Models.Maker
 @using System.Globalization
 @using Cinnamon.Web.Components.Pages
+@using Cinnamon.Web.Components
 @using Cinnamon.Framework.Enums
 @using System.ComponentModel.DataAnnotations;
 @inject IJSRuntime JS;
@@ -59,7 +60,7 @@
                                     </div>
                                 </Validation>
                                 <div class="mt-3 other-info">
-                                    <Validation Validator="ValidationRule.IsSelected">
+                                    <Validation Validator="ValidationRule.IsNotEmpty">
                                         <div class="student-gender">
                                             <p class="student-name">Gender</p>
                                             <Select TValue="string" @bind-SelectedValue="student.Gender" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
@@ -75,7 +76,7 @@
                                             </Select>
                                         </div>
                                     </Validation>
-                                    <Validation Validator="ValidationRule.IsSelected">
+                                    <Validation Validator="ValidationRule.IsNotEmpty">
                                         <div class="student-birth-month">
                                             <p class="student-name">Birth Month</p>
                                             <Select TValue="string" @bind-SelectedValue="student.BirthMonth" Size="Size.Default" class="form-select border-10 text-capitalize color-black-100 font-15">
@@ -162,6 +163,15 @@
         <button class="btn-save" @onclick="SaveStudents">Save</button>
     </div>
 </div>
+ <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Done" DeclineLabel="Cancel"
+               OnConfirmationChanged="ConfirmSaveChanges">
+    <HeaderContent>
+        <p class="m-0">Confirm Adding Students</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to add thes students?(@students.Count())</p>
+    </BodyContent>
+</ConfirmDialog>
 
 @code {
     private string token = string.Empty;
@@ -176,6 +186,7 @@
     private IList<Student> students = new List<Student>();
     private Validations? studentListFormValidation;
     private bool showErrors = false;
+    private ConfirmDialog confirmDialogRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -312,7 +323,12 @@
 
     private async void SaveStudents()
     {
-        try
+        await confirmDialogRef.Open();
+    }
+
+    private async Task ConfirmSaveChanges(bool value)
+    {
+        if (value)
         {
             var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
                 {
@@ -351,18 +367,17 @@
             {
                 throw new ApplicationException(result.Message);
             }
-            await NotificationService.Success("Success! You created new student", "Success");
+            else
+            {
+                await NotificationService.Success("Success! You created new student", "Success");
+                //Clear student list
+                students.Clear();
+                schedules.Clear();
+                // Initialize with one default student
+                students.Add(new Student { Id = students.Count + 1, ActivityId = 0 });
+                StateHasChanged();
+            }
         }
-        catch (Exception)
-        {
-            await NotificationService.Error("An error occured when creating direct student.", "Error");
-        }
-        //Clear student list
-        students.Clear();
-        schedules.Clear();
-        // Initialize with one default student
-        students.Add(new Student { Id = students.Count + 1 , ActivityId = 0});
-        StateHasChanged();
     }
 
     private ValidationMode FormMode
@@ -403,13 +418,13 @@
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Gender is required")]
-        public string Gender { get; set; }
+        public string Gender { get; set; } = "Male";
 
         [Required(ErrorMessage = "Birth Month is required")]
-        public string BirthMonth { get; set; }
+        public string BirthMonth { get; set; } = "January";
 
         [Range(1900, 2100, ErrorMessage = "Year must be between 1900 and 2100")]
-        public int BirthYear { get; set; }
+        public int BirthYear { get; set; } = DateTime.UtcNow.Year;
 
         [Required(ErrorMessage = "Class is required")]
         public int ActivityId { get; set; }
