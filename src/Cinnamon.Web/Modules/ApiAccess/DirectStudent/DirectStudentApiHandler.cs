@@ -16,13 +16,13 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
 
-    public async Task<AppResult<DirectStudentInfoReult>> GetActivitySchedules(DirectStudentInfoArgs args, string token)
+    public async Task<AppResult<DirectStudentInfoReult>> DirectStudents(DirectStudentInfoArgs args, string token)
     {
         try
         {
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
-                .Request("DirectStudent")
+                .Request("DirectStudents")
                 .SetQueryParams(args)
                 .GetJsonAsync<DirectStudentInfoReult>();
 

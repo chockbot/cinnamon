@@ -6,5 +6,5 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 
 public interface IDirectStudentApiHandler 
 {
-    Task<AppResult<DirectStudentInfoReult>> GetActivitySchedules(DirectStudentInfoArgs args, string token);
+    Task<AppResult<DirectStudentInfoReult>> DirectStudents(DirectStudentInfoArgs args, string token);
 }
