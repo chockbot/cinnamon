@@ -102,9 +102,9 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             
             studentSession.ActivityId = directStudentSession.ActivityId;
             studentSession.ScheduleId = directStudentSession.ScheduleId;
+            studentSession.Name = directStudent.Name;
 
             studentPayment.Amount = directStudentPayment.Amount;
-
 
             await applicationContext.SaveChangesAsync();
 

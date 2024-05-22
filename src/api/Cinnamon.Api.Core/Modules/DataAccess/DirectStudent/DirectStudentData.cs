@@ -164,12 +164,12 @@ public class DirectStudentData : IDirectStudentData
         }
     }
 
-    public async Task<AppResult<UpdateDirectStudentResult>> UpdateDirectStudent(UpdateDirectStudentArgs args, int studentId)
+    public async Task<AppResult<UpdateDirectStudentResult>> UpdateDirectStudent(UpdateDirectStudentArgs args)
     {
         try
         {
             var result = await flurlClient
-                            .Request($"DirectStudent/{studentId}")
+                            .Request($"DirectStudent/UpdateDirectStudent")
                             .PostJsonAsync(args)
                             .ReceiveJson<UpdateDirectStudentResult>();
             return AppResult<UpdateDirectStudentResult>.CreateSucceeded(result, "Successfully posting update direct students api");

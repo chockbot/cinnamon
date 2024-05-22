@@ -57,7 +57,7 @@ public class DirectStudentsController : ControllerBase
     [Route("UpdateStudent")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateStudentResult), StatusCodes.Status200OK)]   
-    public async Task<IActionResult> UpdateStudent([FromQuery] UpdateStudentArgs args, int id)
+    public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentArgs args)
     {
         try
         {

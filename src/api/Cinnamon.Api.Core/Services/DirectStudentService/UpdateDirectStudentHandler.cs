@@ -33,7 +33,8 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                         BirthMonth = args.BirthMonth,
                         BirthYear = args.BirthYear,
                         Gender = args.Gender,
-                        Name = args.Name
+                        Name = args.Name,
+                        Id = args.StudentId
                     },
                     UpdateDirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
                         Amount = args.Amount
@@ -44,7 +45,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                         Name = args.Name
                     }
                 }
-            }, args.StudentId);
+            });
 
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
