@@ -59,7 +59,8 @@
                             <TableRowCell class="age-body">@item.Age</TableRowCell>
                             <TableRowCell class="gender-body text-capitalize">@item.Gender</TableRowCell>
                             <TableRowCell class="update">
-                                <Button Color="Color.Primary" Border="Border.Is0"class="btn-update">
+                                <Button Clicked="() => NavigateToAddDirectStudentUpdate(item.Id)" 
+                                    Color="Color.Primary" Border="Border.Is0"class="btn-update">
                                     Update
                                 </Button>
                             </TableRowCell>
@@ -131,5 +132,10 @@
     private void NavigateToAddDirectStudent()
     {
         NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
+    }
+
+    private void NavigateToAddDirectStudentUpdate(int id)
+    {
+        NavigationManager.NavigateTo($"/maker/dashboard/enrollee-masterlist/direct-student/{id}");
     }
 }

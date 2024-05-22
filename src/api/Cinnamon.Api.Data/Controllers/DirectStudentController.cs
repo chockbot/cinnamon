@@ -98,7 +98,7 @@ public class DirectStudentController : ControllerBase
     {
         try
         {
-            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudents);
+            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudentData);
             dto.DirectStudentInfo.Id = id;
 
             var result = await directStudentRepository.UpdateDirectStudent(dto);

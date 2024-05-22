@@ -44,7 +44,7 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
         {
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
-                .Request($"DirectStudents/{args.StudentId}")
+                .Request($"DirectStudents/UpdateStudent")
                 .PostJsonAsync(args)
                 .ReceiveJson<UpdateStudentResult>();
 

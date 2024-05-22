@@ -54,7 +54,7 @@ public class DirectStudentsController : ControllerBase
         }
     }
 
-    [Route(":id")]
+    [Route("UpdateStudent")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateStudentResult), StatusCodes.Status200OK)]   
     public async Task<IActionResult> UpdateStudent([FromQuery] UpdateStudentArgs args, int id)
@@ -69,7 +69,7 @@ public class DirectStudentsController : ControllerBase
                 Gender = args.Gender,
                 Name = args.Name,
                 ScheduleId = args.ScheduleId,
-                StudentId = id
+                StudentId = args.StudentId
             });
             if(!result.Succeeded || result.Result is null)
             {
