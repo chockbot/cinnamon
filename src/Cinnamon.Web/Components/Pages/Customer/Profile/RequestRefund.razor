@@ -21,8 +21,17 @@
                     <div class="experience-content">
                         <div class="col-12 d-block justify-content-start">
                             <p class="title">Gross Sales</p>
-                            <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
-                            <p class="amount-description">This is the sales for your activities/events.</p>
+                            @if(directSales.Count != 0)
+                            {
+                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
+                                <p class="amount-description">This is the sales for your activities/events and direct students.</p>
+                            }
+                            else
+                            {
+                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
+                                <p class="amount-description">This is the sales for your activities/events.</p>
+                            }
+                            
                         </div>
                     </div>
                 </div>
@@ -508,8 +517,6 @@
                 };
             }).ToList();
         }
-        //Merge Sales
-        grossSales.AddRange(directSales);
     }
     private async Task GetTotalEarnings()
     {
