@@ -90,31 +90,6 @@ public class DirectStudentController : ControllerBase
         }
     }
 
-    [Route(":id")]
-    [HttpPost]
-    [ProducesResponseType(typeof(UpdateDirectStudentResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateDirectStudent([FromBody] UpdateDirectStudentArgs args, int id)
-    {
-        try
-        {
-            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudentData);
-            dto.DirectStudentInfo.Id = id;
-
-            var result = await directStudentRepository.UpdateDirectStudent(dto);
-            if (!result.Succeeded || result.Result is null)
-            {
-                return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-
-            return new JsonResult(new UpdateDirectStudentResult { IsSuccess = true, Result = result.Result });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
     [HttpGet]
     [Route("Infos")]
     [ProducesResponseType(typeof(StudentInfosResult), StatusCodes.Status202Accepted)]
@@ -153,6 +128,30 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateDirectStudent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateDirectStudentResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateDirectStudent([FromBody] UpdateDirectStudentArgs args)
+    {
+        try
+        {
+            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudentData);
+
+            var result = await directStudentRepository.UpdateDirectStudent(dto);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateDirectStudentResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     } 
 

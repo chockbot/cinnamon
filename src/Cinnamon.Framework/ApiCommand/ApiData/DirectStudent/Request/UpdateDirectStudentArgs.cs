@@ -20,7 +20,10 @@ public class UpdateDirectStudentArgs
     }
 
     public class UpdateDirectStudentInfo 
-    {   
+    {
+        [Required]
+        public int Id {get; set;}
+        
         [Required]
         public string Name {get; set;}
 
@@ -44,20 +47,6 @@ public class UpdateDirectStudentArgs
 
         [Required]
         public string Name {get; set;}
-
-        [Required]
-        public string StudentNo {get; set;}
-
-        [Required]
-        public int NumberOfSessions {get; set;}
-
-        [Required]
-        public int SessionsAttended {get; set;}
-
-        public string Remarks {get; set;}
-
-        [Required]
-        public string Status {get; set;}
     }
 
     public class UpdateDirectStudentPayment 
