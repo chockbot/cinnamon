@@ -19,4 +19,6 @@ public interface IDirectStudentData
     Task<AppResult<StudentInfosResult>> StudentInfos(StudentInfosArgs args);
 
     Task<AppResult<GetDirectStudentsPaymentResult>> GetDirectStudentsPayments(GetDirectStudentsPaymentArgs args);
+
+    Task<AppResult<UpdateDirectStudentResult>> UpdateDirectStudent(UpdateDirectStudentArgs args, int studentId);
 }
