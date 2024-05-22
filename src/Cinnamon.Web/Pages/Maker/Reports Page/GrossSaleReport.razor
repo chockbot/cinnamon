@@ -57,13 +57,14 @@
 
 @code {
     private LineChart<GrossSale> lineChart;
-    private List<GrossSale> priceData    = new List<GrossSale>();
-    private string backgroundColors      = ChartColor.FromRgba(255, 255, 255, 0.2f);
-    private string borderColors          = ChartColor.FromRgba(255, 169, 66, 1);
-    private string pointBorderColor      = ChartColor.FromRgba(75, 183, 73, 1);
-    private string pointHoverBorderColor = ChartColor.FromRgba(52, 61, 76, 1);
-    private CustomerProfile profile      = new CustomerProfile();
-    private string Token                 = string.Empty;
+    private List<GrossSale> priceData       = new List<GrossSale>();
+    private List<GrossSale> directPriceData = new List<GrossSale>();
+    private string backgroundColors         = ChartColor.FromRgba(255, 255, 255, 0.2f);
+    private string borderColors             = ChartColor.FromRgba(255, 169, 66, 1);
+    private string pointBorderColor         = ChartColor.FromRgba(75, 183, 73, 1);
+    private string pointHoverBorderColor    = ChartColor.FromRgba(52, 61, 76, 1);
+    private CustomerProfile profile         = new CustomerProfile();
+    private string Token                    = string.Empty;
     LineChartOptions lineChartOptions    = new()
     {
         Parsing = new ChartParsing
@@ -72,6 +73,7 @@
             YAxisKey = "count",
         },
     };
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -108,6 +110,7 @@
             e.Message.ToString();
         }
     }
+
     private async Task UpdateChatDataset(string dateRange)
     {
         DateTime startDate;
@@ -143,6 +146,7 @@
 
 
     }
+
     private async Task PlotLineChartData(string startDate)
     {
         //Get gross sale by Activity Provider
@@ -162,6 +166,25 @@
                     };
             }).ToList();
         }
+        //Get Direct Sales by Activity Provider
+        var directGross = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = startDate
+            }, Token);
+        if (directGross.Succeeded && directGross.Result != null && directGross.Result.IsSuccess)
+        {
+            directPriceData = directGross.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSale
+                    {
+                        Sector = e.CreatedOn.Date,
+                        Count = e.Amount
+                    };
+            }).ToList();
+        }
+        //Merge Sales
+        priceData.AddRange(directPriceData);
         // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
         priceData = priceData
             .GroupBy(item => item.Sector)
@@ -171,26 +194,29 @@
                     Count = group.Sum(item => item.Count)
                 })
             .ToList();
+
         await lineChart.Clear();
         await lineChart.AddDataSet(GetLineChartDataset(priceData));
     }
+
     private LineChartDataset<GrossSale> GetLineChartDataset(List<GrossSale> dataset)
     {
         return new()
-            {
-                Label = "Gross Sale Report",
-                Data = dataset,
-                BackgroundColor = backgroundColors, // line chart can only have one color
-                BorderColor = borderColors,
-                Fill = true,
-                PointRadius = 5,
-                BorderWidth = 1,
-                PointBorderColor = backgroundColors,
-                PointBackgroundColor = pointBorderColor,
-                PointHoverBackgroundColor = pointHoverBorderColor,
-                CubicInterpolationMode = "monotone",
-            };
+        {
+            Label = "Gross Sale",
+            Data = dataset,
+            BackgroundColor = backgroundColors, // line chart can only have one color
+            BorderColor = borderColors,
+            Fill = true,
+            PointRadius = 5,
+            BorderWidth = 1,
+            PointBorderColor = backgroundColors,
+            PointBackgroundColor = pointBorderColor,
+            PointHoverBackgroundColor = pointHoverBorderColor,
+            CubicInterpolationMode = "monotone",
+        };
     }
+
     public class GrossSale
     {
         public DateTime Sector { get; set; }
@@ -200,6 +226,7 @@
         public string Sector1 { get { return Sector.ToString("MM/dd/yy"); } }
 
     }
+
     private void NavigateToManageReports()
     {
         NavigationManager.NavigateTo("/maker/dashboard/reports");
