@@ -10,4 +10,6 @@ public interface IDirectStudentRepository
     Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> GetDirectStudents(int? count, int? skip, int? activityId, int? scheduleId, string? status);
 
     Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int providerId, int? count, int? skip);
+
+    Task<AppResult<IEnumerable<DirectStudentPaymentDTO>>> GetStudentPaymentByProvider(int? providerId, DateTime? dateFrom);
 }

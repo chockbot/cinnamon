@@ -61,7 +61,14 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Sales</p>
-                                <p class="amount">&#8369;@totalSales</p>
+                                @if(directSalesData.Count != 0)
+                                {
+                                    <p class="amount">&#8369;@totalSales + @totalDirectSales</p>
+                                }
+                                else
+                                {
+                                    <p class="amount">&#8369;@totalSales</p>
+                                }
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -69,7 +76,15 @@
                         </div>
                         <div class="col-12 d-flex">
                             <div class="col-8 d-flex justify-content-start">
-                                <p class="description">Total sales from all activities</p>
+                                @if(directSalesData.Count != 0)
+                                {
+                                    <p class="description">From Cinnamon & Direct students</p>
+                                }
+                                else
+                                {
+                                   <p class="description">From Cinnamon</p> 
+                                }
+                                
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <a class="earnings-link" href="/maker/dashboard/grosssale">View sales</a>
@@ -728,7 +743,7 @@
                 <p class="manual-text">Manually Added Students</p>
                 <div class="manual-count-section">
                     <div class="manual-count">
-                        <p class="manual-number">15</p>
+                        <p class="manual-number">@directSalesData.Count()</p>
                         <img class="manual-icon" src="images/Dashboard/manual-icon.png"/>
                         <img class="m-manual-icon" src="images/Dashboard/m-manual-icon.png">
                     </div>
@@ -785,6 +800,8 @@
 
     private List<GrossSales> salesData = new List<GrossSales>();
 
+    private List<GrossSales> directSalesData = new List<GrossSales>();
+
     public Activity activity = new Activity();
 
     private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
@@ -816,6 +833,8 @@
     private string badgeName2 = "Epic";
 
     private string totalSales { get; set; }
+
+    private string totalDirectSales { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -887,8 +906,28 @@
                         };
                 }).ToList();
             }
-            var amount = salesData.Sum(a => a.Total);
+            //Get Total Earning in Direct Students
+            var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+            }, Model.Token);
+            if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
+            {
+                directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+                {
+                    return new GrossSales
+                    {
+                        PurchaseDate = e.CreatedOn,
+                        Total = e.Amount
+                    };
+                }).ToList();
+            }
+            var amount       = salesData.Sum(a => a.Total);
+            var directAmount = directSalesData.Sum(a => a.Total);
+            //Overall Total Earnings
             totalSales = String.Format("{0:N}", amount);
+            totalDirectSales = String.Format("{0:N}", directAmount);
         }
         catch (Exception e)
         {
