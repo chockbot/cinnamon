@@ -40,13 +40,14 @@
                         <div class="col-12 d-block justify-content-start">
                             <p class="title">Gross Sales</p>
                             @if (directSales.Count != 0)
-                            {
-                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
+                            { 
+                                <p class="amount">&#8369;@String.Format("{0:N}",totalSales)</p>
+                                <p class="amount-description">@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
                                 <p class="amount-description">This is your sales from Cinnamon and Direct students.</p>
                             }
                             else
                             {
-                                <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
+                                <p class="amount">&#8369;@String.Format("{0:N}",totalSales)</p>
                                 <p class="amount-description">This is the sales from Cinnamon.</p>
                             }
 
@@ -316,7 +317,7 @@
     </Modal>
 </article>
 
-@code{
+                    @code{
 
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
@@ -341,6 +342,8 @@
     private List<Payouts> totalEarnings = new List<Payouts>();
 
     private List<Payouts> totalReceivables = new List<Payouts>();
+
+    private decimal totalSales { get; set; } = 0;
 
     public const string PREVIOUS = "previous";
     public const string NEXT = "next";
@@ -517,6 +520,8 @@
                 };
             }).ToList();
         }
+        //Get Total Amount
+        totalSales = grossSales.Sum(a => a.Total) + directSales.Sum(a => a.Total);
     }
     private async Task GetTotalEarnings()
     {

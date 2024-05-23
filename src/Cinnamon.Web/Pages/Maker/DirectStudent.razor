@@ -30,7 +30,7 @@
         @foreach (var student in students)
         {
             var isLastItem = student.Equals(students.Last());
-            <Validations @ref="studentListFormValidation" Model="students" Mode="ValidationMode.Auto">
+            <Validations @ref="studentListFormValidation" Model="students" Mode="ValidationMode.Manual">
                 <div class="accordion-item col-lg-4 col-md-8 col-sm-12 col-12">
                     <div class="accordion-header" id="heading-@student.Id">
                         <button class="accordion-button @(isLastItem ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@student.Id" aria-expanded="@isLastItem.ToString().ToLower()" aria-controls="collapse-@student.Id">
@@ -339,7 +339,15 @@
 
     private async void SaveStudents()
     {
-        await confirmDialogRef.Open();
+        bool isValid = await FieldValid();
+        if (isValid)
+        {
+            await confirmDialogRef.Open();
+        }
+        else
+        {
+            await NotificationService.Error("Please fill out all the information to proceed.");
+        }
     }
 
     private async Task ConfirmSaveChanges(bool value)
