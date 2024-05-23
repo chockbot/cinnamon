@@ -47,6 +47,11 @@
                     </div>
                     <div id="collapse-@student.Id" class="accordion-collapse collapse @(isLastItem ? "show" : "")" aria-labelledby="heading-@student.Id">
                         <div class="accordion-body">
+                            <div class="col-12 d-flex justify-content-end">
+                                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="() => DeleteClick(student)">
+                                    <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                                </Button>
+                            </div>
                             <div class="information-section col-lg-12 col-md-12 col-sm-12 col-12">
                                 <Validation>
                                     <div class="student-info">
@@ -169,7 +174,16 @@
         <p class="m-0">Confirm Adding Students</p>
     </HeaderContent>
     <BodyContent>
-        <p class="m-0">Are you sure you want to add thes students?(@students.Count())</p>
+        <p class="m-0">Are you sure you want to add these students?(@students.Count())</p>
+    </BodyContent>
+</ConfirmDialog>
+<ConfirmDialog @ref="confirmDeleteDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this student?</p>
     </BodyContent>
 </ConfirmDialog>
 
@@ -182,11 +196,13 @@
     private IList<Activity> activities = new List<Activity>();
     private IList<ActivitySchedule> scheduleList = new List<ActivitySchedule>();
     private IList<ActivitySchedule> schedules = new List<ActivitySchedule>();
+    private Student studentToDelete = new();
     private Student student = new Student();
     private IList<Student> students = new List<Student>();
     private Validations? studentListFormValidation;
     private bool showErrors = false;
     private ConfirmDialog confirmDialogRef { get; set; }
+    private ConfirmDialog confirmDeleteDialogRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -387,7 +403,29 @@
             return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
         }
     }
-
+    private async Task DeleteClick(Student item)
+    {
+        studentToDelete = item;
+        await confirmDeleteDialogRef.Open();
+    }
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            if (students.Count == 1)
+            {
+                students.Remove(studentToDelete);
+                students.Add(new Student { Id = students.Count + 1, ActivityId = 0 });
+                await NotificationService.Success("You successfully deleted student!", "Success");
+            }
+            else
+            {
+                students.Remove(studentToDelete);
+                await NotificationService.Success("You successfully deleted student!", "Success");
+            }
+            
+        }
+    }
     public async Task<bool> FieldValid()
     {
         if (studentListFormValidation is not null)
