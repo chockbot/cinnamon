@@ -42,7 +42,8 @@
                             @if (directSales.Count != 0)
                             { 
                                 <p class="amount">&#8369;@String.Format("{0:N}",totalSales)</p>
-                                <p class="amount-description">@String.Format("{0:N}", grossSales.Sum(a => a.Total)) + @String.Format("{0:N}", directSales.Sum(a => a.Total))</p>
+                                <p class="amount-description">@String.Format("{0:N}", grossSales.Sum(a => a.Total)) - Cinnamon Students</p>
+                                <p class="amount-description">@String.Format("{0:N}", directSales.Sum(a => a.Total)) - Manually Added Students</p>
                                 <p class="amount-description">This is your sales from Cinnamon and Direct students.</p>
                             }
                             else
