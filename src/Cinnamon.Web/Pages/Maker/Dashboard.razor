@@ -61,13 +61,11 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Sales</p>
+                                <p class="amount">&#8369;@overAllTotal</p>
                                 @if(directSalesData.Count != 0)
                                 {
-                                    <p class="amount">&#8369;@totalSales + @totalDirectSales</p>
-                                }
-                                else
-                                {
-                                    <p class="amount">&#8369;@totalSales</p>
+                                    <p class="description">@totalSales - Cinnamon Students</p>
+                                    <p class="description">@totalDirectSales - Manually Added Students</p>
                                 }
                             </div>
                             <div class="col-4 d-flex justify-content-end">
@@ -78,11 +76,11 @@
                             <div class="col-8 d-flex justify-content-start">
                                 @if(directSalesData.Count != 0)
                                 {
-                                    <p class="description">From Cinnamon & Direct students</p>
+                                    
                                 }
                                 else
                                 {
-                                   <p class="description">From Cinnamon</p> 
+                                   <p class="description">This is you sales from Cinnamon.</p> 
                                 }
                                 
                             </div>
@@ -142,7 +140,12 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Sales</p>
-                                <p class="amount">&#8369;@totalSales</p>
+                                <p class="amount">&#8369;@overAllTotal</p>
+                                @if (directSalesData.Count != 0)
+                                {
+                                    <p class="description">@totalSales - Cinnamon Students</p>
+                                    <p class="description">@totalDirectSales - Manually Added Students</p>
+                                }
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -150,7 +153,15 @@
                         </div>
                         <div class="col-12 d-flex">
                             <div class="col-8 d-flex justify-content-start">
-                                <p class="description">Total sales from all activities</p>
+                                @if (directSalesData.Count != 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <p class="description">From Cinnamon</p>
+                                }
+
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <a class="earnings-link" href="/maker/dashboard/grosssale">View sales</a>
@@ -836,6 +847,8 @@
 
     private string totalDirectSales { get; set; }
 
+    private string overAllTotal { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -925,9 +938,11 @@
             }
             var amount       = salesData.Sum(a => a.Total);
             var directAmount = directSalesData.Sum(a => a.Total);
+            var total        = amount + directAmount;
             //Overall Total Earnings
-            totalSales = String.Format("{0:N}", amount);
+            totalSales       = String.Format("{0:N}", amount);
             totalDirectSales = String.Format("{0:N}", directAmount);
+            overAllTotal     = String.Format("{0:N}", total);
         }
         catch (Exception e)
         {
