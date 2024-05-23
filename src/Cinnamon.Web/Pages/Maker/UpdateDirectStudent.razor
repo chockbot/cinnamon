@@ -265,6 +265,7 @@
     {
         if (int.TryParse(e.Value.ToString(), out int selectedValue))
         {
+            student.ActivityId = selectedValue;
             if (selectedValue != 0)
             {
                 schedules = scheduleList.Where(a => a.ActivityId == selectedValue).ToList();
@@ -306,7 +307,7 @@
                 Gender = student.Gender,
                 Name = student.Name,
                 ScheduleId = student.ScheduleId,
-                StudentId = student.ScheduleId,
+                StudentId = StudentId,
             }, token);
 
             await NotificationService.Success("Success! Student updated.", "Success");
