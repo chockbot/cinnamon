@@ -559,59 +559,119 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, int searchBy, int activityId, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, 
+		int searchBy, int activityId, int? count, int? skip)
 	{
         try
         {
-            int limitCount = count.HasValue ? count.Value : int.MaxValue;
+			int limitCount = count.HasValue ? count.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
-            string whereClause = string.Empty;
-			if (providerId.HasValue)
+
+			string dateString = DateTime.Now.ToString("yyyy-MM-dd");
+			string studentWhereClause = "where 1=1 ";
+			string directStudentWhereClause = "where 1=1 ";
+			string orderClause = "order by allStd.\"SessionsAttended\" >= allStd.\"NumberOfSessions\", allStd.\"LastAttendance\" ";
+
+			if(providerId.HasValue) 
 			{
-                whereClause += "WHERE a.\"CreatedBy\" = @providerId";
-            }
-            switch (searchBy)
-			{
-				case 0:
-                    whereClause += " ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
-                    break;
-                case 1:
-					whereClause += " AND b.\"Name\" ILIKE '%' ||"+"'"+searchValue +"'"+"|| '%' ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
-					break;
-				case 2: 
-					whereClause += " AND (b.\"SessionsAttended\" < b.\"NumberOfSessions\" AND (b.\"ExpirationDateEnd\" >= CURRENT_DATE OR b.\"ExpirationDateEnd\" = '-infinity'))";
-					break;
-				case 3: 
-					whereClause += " AND ((b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND c.\"HasExpiration\" = 0) \r\n" +
-						"OR((c.\"HasExpiration\" = 1 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
-						"(c.\"HasExpiration\" = 2 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR \r\n" +
-						"(c.\"HasExpiration\" = 2 AND b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND b.\"ExpirationDateEnd\" != '-infinity')));";
-					break;
-				case 4:
-                    whereClause += " AND a.\"Id\" = "+ activityId + " ORDER BY b.\"SessionsAttended\" >= b.\"NumberOfSessions\", b.\"ExpirationDateStart\"";
-					break;
-                default:
-					break;
+				studentWhereClause += "and a.\"CreatedBy\" = @providerId ";
+				directStudentWhereClause += "and di.\"ProviderId\" = @providerId ";
 			}
 
-			string query = "SELECT a.\"Id\", a.\"Title\",  a.\"CreatedBy\", b.\"Id\" as \"StudentId\",\r\n" +
-				"b.\"Name\", b.\"NumberOfSessions\", b.\"SessionsAttended\", b.\"StudentNo\",\r\n" +
-				"b.\"Remarks\", b.\"ExpirationDateEnd\", b.\"ExpirationDateStart\", c.\"Id\" as \"ScheduleId\", c.\"HasExpiration\"\r\n" +
-				"FROM public.\"Activities\" as a \r\n" +
-				"JOIN public.\"Students\" as b ON b.\"ActivityId\" = a.\"Id\"\r\n" +
-				"JOIN public.\"ActivitySchedules\" as c ON \"c\".\"Id\" = b.\"ScheduleId\"\r\n" +
-                "" + whereClause + ";";
+			if(activityId > 0)
+			{
+				studentWhereClause += "and a.\"Id\" = @activityId ";
+				directStudentWhereClause += "and ac.\"Id\" = @activityId ";
+			}
+
+			switch(searchBy)
+			{
+				case 1:
+					studentWhereClause += "and b.\"Name\" Ilike @search ";
+					directStudentWhereClause += "and ds.\"Name\" Ilike @search ";
+					break;
+				case 2:
+					studentWhereClause += "and (b.\"SessionsAttended\" < b.\"NumberOfSessions\" and " +
+											"(Date(b.\"ExpirationDateEnd\") >= Date('" + dateString +"') OR b.\"ExpirationDateEnd\" = '-infinity')) ";
+					directStudentWhereClause += "and ds.\"NumberOfSessions\" > ds.\"SessionsAttended\" ";
+					break;
+				case 3:
+					studentWhereClause += "and ((b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND c.\"HasExpiration\" = 0) " +
+											"OR((c.\"HasExpiration\" = 1 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR " +
+											"(c.\"HasExpiration\" = 2 AND b.\"ExpirationDateEnd\" < CURRENT_DATE AND b.\"ExpirationDateStart\" != '-infinity')OR " +
+											"(c.\"HasExpiration\" = 2 AND b.\"SessionsAttended\" >= b.\"NumberOfSessions\" AND b.\"ExpirationDateEnd\" != '-infinity'))) ";
+					directStudentWhereClause += "and ds.\"NumberOfSessions\" <= ds.\"SessionsAttended\" ";
+					break;
+			}
+            
+			string query = "with cinnamonStd as " +
+						   "( " +
+								"select b.\"Id\" as \"StudentId\", a.\"Title\", " +
+									"b.\"Name\", b.\"NumberOfSessions\", b.\"SessionsAttended\", b.\"StudentNo\", " +
+									"b.\"Remarks\", b.\"ExpirationDateEnd\", b.\"ExpirationDateStart\", c.\"HasExpiration\", " +
+									"Row_Number() over (partition by b.\"Id\" order by b.\"Id\", sa.\"Date\" desc) as \"RowCnt\", " +
+									"sa.\"Date\" \"LastAttendance\", a.\"Id\" \"ActivityId\", c.\"Id\" \"ScheduleId\", 0 \"StudentType\" " +
+								"from public.\"Activities\" as a " +
+								"join public.\"Students\" as b ON b.\"ActivityId\" = a.\"Id\" " +
+								"join public.\"ActivitySchedules\" as c ON \"c\".\"Id\" = b.\"ScheduleId\" " +
+								"left join public.\"StudentAttendances\" sa " +
+									"on sa.\"StudentId\" = b.\"Id\" " + studentWhereClause +
+						    "), " +
+							"directStd as " +
+							"( " +
+								"select ds.\"Id\" \"StudentId\", ac.\"Title\", " +
+									"ds.\"Name\", ds.\"NumberOfSessions\", ds.\"SessionsAttended\", " +
+									"ds.\"StudentNo\", ds.\"Remarks\", '-infinity'::timestamp \"ExpirationDateEnd\", " +
+									"'-infinity'::timestamp \"ExpirationDateStart\", 0 \"HasExpiration\", " +
+									"Row_Number() over (partition by ds.\"Id\" order by ds.\"Id\", da.\"Date\" desc) as \"RowCnt\", " +
+									"da.\"Date\" \"LastAttendance\", ac.\"Id\" \"ActivityId\", ds.\"ScheduleId\", 1 \"StudentType\" " +
+								"from public.\"Activities\" as ac " +
+								"join public.\"DirectStudentSessions\" ds " +
+									"on ac.\"Id\" = ds.\"ActivityId\" " +
+								"join public.\"DirectStudentInfos\" di " +
+									"on di.\"Id\" = ds.\"DirectStudentInfoId\" " +
+								"left join public.\"DirectStudentAttendances\" da " +
+									"on da.\"DirectStudentSessionId\" = ds.\"Id\" " + directStudentWhereClause +
+							"), " +
+							"allStd as " +
+							"( " +
+								"select * " +
+								"from cinnamonStd " +
+								"where cinnamonStd.\"RowCnt\" = 1 " +
+								"union all " +
+								"select * " +
+								"from directStd " +
+								"where directStd.\"RowCnt\" = 1 " +
+							") " +
+							"select * " +
+							"from allStd " + orderClause +
+							"offset " + skipCount + " limit " + limitCount + " ";
+
             IList <StudentDTO> listResult = new List<StudentDTO>();
 
             using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = query;
                 command.CommandType = System.Data.CommandType.Text;
+
                 if (providerId.HasValue)
                 {
                     var parameterCustomerId = new NpgsqlParameter("providerId", providerId.Value);
                     command.Parameters.Add(parameterCustomerId);
                 }
+
+				if(activityId > 0)
+				{
+					var parameterActivityId = new NpgsqlParameter("activityId", activityId);
+					command.Parameters.Add(parameterActivityId);
+				}
+
+				if(searchBy == 1)
+				{
+					var parameterSearch = new NpgsqlParameter("search", $"%{searchValue.Trim()}%");
+					command.Parameters.Add(parameterSearch);
+				}
+
                 applicationContext.Database.OpenConnection();
 
                 using (var dr = await command.ExecuteReaderAsync())
@@ -620,11 +680,12 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                     {
                         var dt = new DataTable();
                         dt.Load(dr);
+						
                         //Get Enrolled Student List
                         listResult = dt.AsEnumerable().Select(item => new StudentDTO
                         {
                             Id                  = Convert.ToInt32(item["StudentId"]),
-                            ActivityId          = Convert.ToInt32(item["Id"]),
+                            ActivityId          = Convert.ToInt32(item["ActivityId"]),
                             ScheduleId          = Convert.ToInt32(item["ScheduleId"]),
                             Name                = item["Name"].ToString() ?? string.Empty,
                             NumberOfSessions    = Convert.ToInt32(item["NumberOfSessions"]),
@@ -635,8 +696,11 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							ExpirationEndDate   = Convert.ToDateTime(item["ExpirationDateEnd"]),
 							ExpirationStartDate = Convert.ToDateTime(item["ExpirationDateStart"]),
 							HasExpiration       = Convert.ToInt32(item["HasExpiration"]),
-
-                        }).Skip(skipCount).Take(limitCount).ToList();
+							LastAttendance 		= item["LastAttendance"] != DBNull.Value ? 
+													Convert.ToDateTime(item["LastAttendance"]) : DateTime.MinValue,
+							StudentType			= Convert.ToInt32(item["StudentType"]) == 0 ? 
+													Framework.Enums.StudentType.Cinnamon : Framework.Enums.StudentType.Manual
+                        }).ToList();
                     }
                 }
             }

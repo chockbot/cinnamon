@@ -46,12 +46,6 @@
                         <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
                     }
                 </Select>
-                @*@if (Model.selectedFilter != 0)
-                {
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
-                        View Schedule
-                    </Button>
-                }*@
         </div>
         <div class="add-enrollee">
             <button class="btn-enrollee" @onclick="@(() => NavigateToEnrolleeMasterlist())">Enrollee Masterlist</button>
@@ -107,13 +101,7 @@
                                         <center>
                                             @if (item.SessionsAttended >= item.NumberOfSessions)
                                             {
-                                                var result = studentAttendances.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                                                && s.ActivityId == item.ActivityId).LastOrDefault();
-                                                if (result != null)
-                                                {
-                                                    @result.Date.ToString("MMMM dd, yyyy")
-                                                    ;
-                                                }
+                                                @item.LastAttendance.ToString("MMMM dd, yyyy")
                                             }
                                             else
                                             {
@@ -126,10 +114,8 @@
                                                     string ongoing = "Ongoing";
                                                     @ongoing
                                                 }
-
                                             }
                                         </center>
-
                                     </TableRowCell>
                                     <TableRowCell class="progress-body">
                                         <center>
@@ -277,7 +263,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@code {
+
+@code 
+{
 
     private ManageStudentsModel Model { get; set; } = new();
     LoadingIndicator loadingIndicator;
@@ -285,9 +273,6 @@
     public Modal modalRefViewSchedule;
     public Table tableStudents;
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
-    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private StudentAttendance studnetAttendance = new StudentAttendance();
-    private GetStudent students = new GetStudent();
     string token = string.Empty;
     private bool isLoading = false;
     public const string PREVIOUS = "previous";
@@ -296,6 +281,7 @@
     public int SearchBy { get; set; } = 0;
     public string SearchValue { get; set; } = string.Empty;
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -326,6 +312,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+
             await GetActivities();
             await GetStudents(1);
         }
@@ -336,20 +323,24 @@
         }
 
     }
+
     public void ViewAttendence(ManageStudentsData data)
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + data.Id);
     }
+
     private void ShowModal(ManageStudentsData data)
     {
         modalRef.Show();
         Int32.TryParse(data.StudentNo, out Model.jerseyNumber);
         Model.Id = data.Id;
     }
+
     private Task HideModal()
     {
         return modalRef.Hide();
     }
+    
     private Task HideViewScheduleModal()
     {
         return modalRefViewSchedule.Hide();
@@ -444,6 +435,7 @@
             SearchValue  = SearchValue,
             ActivityId   = Model.selectedFilter
         }, token);
+
         Model.manageStudents = result.Result.Result.Select(s =>
         {
             return new ManageStudentsData
@@ -459,38 +451,14 @@
                 NumberOfSessions    = s.NumberOfSessions,
                 ExpirationDateStart = s.ExpirationStartDate,
                 ExpirationDateEnd   = s.ExpirationEndDate,
-                HasExpiration       = s.HasExpiration
+                HasExpiration       = s.HasExpiration,
+                LastAttendance      = s.LastAttendance,
+                StudentType         = s.StudentType
             }; 
         }).ToList();
-        Pagination = result.Result.Pagination;
-        Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
-        //Get Student Attendance
-        await loadingIndicator.Show();
-        foreach (var item in Model.FilteredStudents)
-        {
-            var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
-                {
-                    Id = item.Id,
-                    ActivityId = item.ActivityId,
-                    ScheduleId = item.ScheduleId
-                }, token);
 
-            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            {
-                var lastAttendance = attendance.Result.Result;
-                studnetAttendance = new StudentAttendance
-                    {
-                        Id         = lastAttendance.Id,
-                        Date       = lastAttendance.Date,
-                        IsPresent  = lastAttendance.IsPresent,
-                        StudentId  = lastAttendance.StudentId,
-                        ScheduleId = lastAttendance.ScheduleId,
-                        ActivityId = lastAttendance.ActivityId
-                    };
-                studentAttendances.Add(studnetAttendance);
-            }
-        }
-        await loadingIndicator.Hide();
+        Pagination = result.Result.Pagination;
+        Model.FilteredStudents = Model.manageStudents;
     }
 
     private async Task GetActivities()
