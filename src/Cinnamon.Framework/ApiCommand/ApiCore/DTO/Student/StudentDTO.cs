@@ -20,6 +20,7 @@ public class StudentDTO
     public DateTime PurchaseDate { get; set; }
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
+    public DateTime LastAttendance {get; set;}
     public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     public bool HasReview { get; set; }
     public int HasExpiration { get; set; }

@@ -721,6 +721,7 @@ public class DashboardController : ControllerBase
             {
                 return new JsonResult(new GetEnrolledStudentsByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
+
             return new JsonResult(new GetEnrolledStudentsByProviderResult
             {
                 IsSuccess = true,
@@ -742,6 +743,8 @@ public class DashboardController : ControllerBase
                         ExpirationEndDate   = s.ExpirationEndDate,
                         ExpirationStartDate = s.ExpirationStartDate,
                         HasExpiration       = s.HasExpiration,
+                        LastAttendance      = s.LastAttendance,
+                        StudentType         = s.StudentType
                     };
                 })
             });

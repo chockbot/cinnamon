@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Web.Models.Entities;
+﻿using Cinnamon.Framework.Enums;
+
+namespace Cinnamon.Web.Models.Entities;
 
 public class ManageStudentsData
 {
@@ -16,4 +18,6 @@ public class ManageStudentsData
     public DateTime ExpirationDateStart { get; set; }
     public DateTime ExpirationDateEnd { get; set; }
     public int HasExpiration { get; set; }
+    public DateTime LastAttendance {get; set;}
+    public StudentType StudentType {get; set;}
 }

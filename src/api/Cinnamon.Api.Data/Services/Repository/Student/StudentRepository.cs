@@ -578,24 +578,7 @@ public class StudentRepository: IStudentRepository
 			{
 				return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
 			}
-			var students = result.Result.Select(s => {
-				var studentDto = new StudentDTO
-				{
-					Id                  = s.Id,
-					ActivityId          = s.ActivityId,
-					ScheduleId          = s.ScheduleId,
-					Name                = s.Name,
-					NumberOfSessions    = s.NumberOfSessions,
-					SessionsAttended    = s.SessionsAttended,
-					ActivityTitle       = s.ActivityTitle,
-					StudentNo           = s.StudentNo,
-					Remarks             = s.Remarks,
-					ExpirationEndDate   = s.ExpirationEndDate,
-					ExpirationStartDate = s.ExpirationStartDate,
-					HasExpiration       = s.HasExpiration
-				};
-				return studentDto;
-			});
+			var students = result.Result;
 
 			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get enrolled students");
 		}

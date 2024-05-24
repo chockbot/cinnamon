@@ -1,5 +1,8 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.Enums;
+
 namespace Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
+
 public class GetEnrolledStudentsByProviderResult
 {
     public ErrorInfo? ErrorInfo { get; set; }
@@ -21,5 +24,7 @@ public class GetEnrolledStudentsByProviderResult
         public DateTime ExpirationEndDate { get; set; }
         public int HasExpiration { get; set; }
         public string ActivityTitle { get; set; }
+        public DateTime LastAttendance {get; set;}
+        public StudentType StudentType {get; set;}
     }
 }

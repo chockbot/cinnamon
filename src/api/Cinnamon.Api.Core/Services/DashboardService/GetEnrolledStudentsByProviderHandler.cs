@@ -5,6 +5,7 @@ using Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Core.Services.DashboardService;
+
 public class GetEnrolledStudentsByProviderHandler : IGetEnrolledStudentsByProviderHandler
 {
     private readonly IStudentData studentData;
@@ -65,7 +66,9 @@ public class GetEnrolledStudentsByProviderHandler : IGetEnrolledStudentsByProvid
                         ActivityTitle       = e.ActivityTitle,
                         ExpirationEndDate   = e.ExpirationEndDate,
                         ExpirationStartDate = e.ExpirationStartDate,
-                        HasExpiration       = e.HasExpiration
+                        HasExpiration       = e.HasExpiration,
+                        LastAttendance      = e.LastAttendance,
+                        StudentType         = e.StudentType
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
