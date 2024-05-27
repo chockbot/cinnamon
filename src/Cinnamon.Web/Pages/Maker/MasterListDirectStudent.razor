@@ -21,7 +21,7 @@
         </div>
         <div class="search-section">
             <button class="btn-add" @onclick="@(() => NavigateToAddDirectStudent())">Add Direct Students</button>
-            <TextEdit Placeholder="Search" class="search-bar"></TextEdit>
+            <TextEdit Placeholder="Search" class="search-bar" TextChanged="@TextSearchChanged"></TextEdit>
         </div>
     </div>
     <div class="direct-student-section">
@@ -82,6 +82,8 @@
 
     private int currentPage = 1, countPerPage = int.MaxValue;
 
+    public string SearchValue { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -106,11 +108,14 @@
 
     private async Task LoadDirectStudents()
     {
+       
         try
         {
+            directStudents.Clear();
             var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
                 CountPerPage = countPerPage,
-                PageIndex = currentPage
+                PageIndex = currentPage,
+                SearchValue = SearchValue 
             }, token);
 
             if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
@@ -122,6 +127,11 @@
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
+    }
+    private async Task TextSearchChanged(string search)
+    {
+        SearchValue = search;
+        await LoadDirectStudents();
     }
 
     private void NavigateToManageStudents()
