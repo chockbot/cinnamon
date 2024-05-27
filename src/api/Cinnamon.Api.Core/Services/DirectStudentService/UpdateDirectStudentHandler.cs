@@ -27,6 +27,14 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
     {
         try
         {
+            var minYear = DateTime.Now.Year - 4;
+
+            if(args.BirthYear.HasValue && args.BirthYear.Value > minYear)
+            {
+                return AppResult<UpdateDirectStudentResult>.CreateFailed(
+                    new ApplicationException("Students must be at least 4 years old."), "Students must be at least 4 years old.");
+            }
+
             var result = await directStudentData.UpdateDirectStudent(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs {
                 UpdateDirectStudentData = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudent {
                     UpdateDirectStudentInfo = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
