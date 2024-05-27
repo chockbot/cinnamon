@@ -14,6 +14,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IDirectStudentApiHandler directStudentApiHandler;
 @using Blazorise.DataGrid
 @attribute [Authorize]
 
@@ -189,7 +190,8 @@
         <ModalBody>
             <Label Visibility="Visibility.Invisible">@Model.Id</Label>
             <input type="number" class="form-control" placeholder="Enter Number" required max="999" min="0" maxlength="3" @bind="@Model.jerseyNumber" onkeypress="if(this.value.length > 2) return false;" />
-            <Button Color="Color.Primary" TextColor="TextColor.White" Width="Width.Is100" Size="Size.Large" Border="Border.Is0" Type="ButtonType.Submit" Loading="isLoading" Clicked="() => SaveChanges(Model.Id, Model.jerseyNumber)">
+            <Button Color="Color.Primary" TextColor="TextColor.White" Width="Width.Is100" Size="Size.Large" Border="Border.Is0" Type="ButtonType.Submit" Loading="isLoading" 
+                Clicked="() => SaveChanges(Model.Id, Model.jerseyNumber, Model.StudentType)">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                     Saving
@@ -334,6 +336,7 @@
         modalRef.Show();
         Int32.TryParse(data.StudentNo, out Model.jerseyNumber);
         Model.Id = data.Id;
+        Model.StudentType = data.StudentType;
     }
 
     private Task HideModal()
@@ -394,33 +397,47 @@
         await GetStudents(1);
     }
 
-    private async void SaveChanges(int Id, int StudentNo)
+    private async void SaveChanges(int Id, int StudentNo, StudentType studentType)
     {
-        //Show Loading
         await ShowLoading();
 
         var result = string.Format("{0:00}", StudentNo);
-        var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+
+        if(studentType == StudentType.Cinnamon)
+        {
+            var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
             {
                 Id = Id,
                 StudentNo = result
             });
-        if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
-        {
-            Model.errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
-            Model.showErrorMessage = true;
-            StateHasChanged();
-            return;
+
+            if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+            {
+                Model.errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
+                Model.showErrorMessage = true;
+            }
         }
-        else
+
+        if(studentType == StudentType.Manual)
         {
-            await GetStudents(0);
-            //Hide Loading
-            await HideLoading();
-            //Hide Modal
-            await HideModal();
-            StateHasChanged();
+            var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                StudentId = Id,
+                StudentNo = result
+            }, token);
+
+            if (!updateRes.Succeeded || updateRes.Result == null || !updateRes.Result.IsSuccess)
+            {
+                Model.errorMessage = updateRes.Result?.ErrorInfo?.Message ?? updateRes.Message;
+                Model.showErrorMessage = true;
+            }
         }
+
+        await HideModal();
+        await HideLoading();
+
+        await GetStudents(1);
+
+        StateHasChanged();
     }
 
     private async Task GetStudents(int pageIndex)

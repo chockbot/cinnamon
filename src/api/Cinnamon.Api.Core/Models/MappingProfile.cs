@@ -81,5 +81,6 @@ public class MappingProfile : Profile
 
         CreateMap<DataDto.DirectStudent.DirectStudentInfoDTO, DirectStudentResult.DirectStudentsInfoResult.DirectStudentInfo>();
         CreateMap<DirectStudentResult.DirectStudentsInfoResult.DirectStudentInfo, CoreDto.DirectStudents.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentResult.UpdateDirectStudentResult, CoreDto.DirectStudents.DirectStudentInfoDTO>();
     }
 }

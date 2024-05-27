@@ -42,7 +42,10 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     UpdateDirectStudentSession = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
                         ActivityId = args.ActivityId,
                         ScheduleId = args.ScheduleId,
-                        Name = args.Name
+                        Name = args.Name,
+                        NumberOfSessions = args.NumberOfSessions,
+                        Remarks = args.Remarks,
+                        StudentNo = args.StudentNo
                     }
                 }
             });
@@ -53,14 +56,14 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
             }
 
             return AppResult<UpdateDirectStudentResult>.CreateSucceeded(new UpdateDirectStudentResult {
-                ActivityId = args.ActivityId,
-                Amount = args.Amount,
-                BirthMonth = args.BirthMonth,
-                BirthYear = args.BirthYear,
-                Gender = args.Gender,
+                ActivityId = args.ActivityId ?? 0,
+                Amount = args.Amount ?? 0,
+                BirthMonth = args.BirthMonth ?? string.Empty,
+                BirthYear = args.BirthYear ?? 0,
+                Gender = args.Gender ?? string.Empty,
                 Id = args.StudentId,
-                Name = args.Name,
-                ScheduleId = args.ScheduleId
+                Name = args.Name ?? string.Empty,
+                ScheduleId = args.ScheduleId ?? 0
             }, "Successfully update student id");
         }
         catch (Exception ex)

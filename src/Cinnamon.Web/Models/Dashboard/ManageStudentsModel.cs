@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Cinnamon.Web.Models.Entities;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Web.Models.Dashboard;
 
@@ -45,4 +46,6 @@ public class ManageStudentsModel
     public int pageItems = 20;
 
     public string currentPage = "1";
+
+    public StudentType StudentType {get; set;} = StudentType.Cinnamon;
 }

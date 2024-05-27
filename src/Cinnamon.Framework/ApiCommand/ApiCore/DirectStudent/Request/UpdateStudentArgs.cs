@@ -7,24 +7,23 @@ public class UpdateStudentArgs
     [Required]
     public int StudentId {get; set;}
 
-    [Required]
-    public string Name {get; set;}
+    public string? Name {get; set;}
 
-    [Required]
-    public string Gender {get; set;}
+    public string? Gender {get; set;}
 
-    [Required]
-    public string BirthMonth {get; set;}
+    public string? BirthMonth {get; set;}
 
-    [Required]
-    public int BirthYear {get; set;}
+    public int? BirthYear {get; set;}
 
-    [Required]
-    public int ActivityId {get; set;}
+    public int? ActivityId {get; set;}
 
-    [Required]
-    public int ScheduleId {get; set;}
+    public int? ScheduleId {get; set;}
 
-    [Required]
-    public decimal Amount {get; set;}
+    public string? StudentNo {get; set;}
+
+    public string? Remarks {get; set;}
+
+    public decimal? Amount {get; set;}
+
+    public int? NumberOfSessions {get; set;}
 }
