@@ -372,38 +372,39 @@
         if (value)
         {
             var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
+            {
+                CreateDirectStudents = students.Select(s =>
                 {
-                    CreateDirectStudents = students.Select(s =>
+                    var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
+                    return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
                     {
-                        var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
-                        return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
+                        CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
                         {
-                            CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
-                            {
-                                BirthMonth = s.BirthMonth,
-                                BirthYear = s.BirthYear,
-                                Gender = s.Gender,
-                                Name = s.Name,
-                                ProviderId = userID
-                            },
-                            CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
-                            {
-                                ActivityId = schedule.ActivityId,
-                                Name = s.Name,
-                                NumberOfSessions = schedule.PerUnit2,
-                                SessionsAttended = 0,
-                                Remarks = string.Empty,
-                                StudentNo = "0",
-                                ScheduleId = schedule.Id,
-                                Status = "ACTIVE"
-                            },
-                            CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
-                            {
-                                Amount = s.Payment ?? 0
-                            }
-                        };
-                    })
-                }, token);
+                            BirthMonth = s.BirthMonth,
+                            BirthYear = s.BirthYear,
+                            Gender = s.Gender,
+                            Name = s.Name,
+                            ProviderId = userID
+                        },
+                        CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
+                        {
+                            ActivityId = schedule.ActivityId,
+                            Name = s.Name,
+                            NumberOfSessions = schedule.PerUnit2,
+                            SessionsAttended = 0,
+                            Remarks = string.Empty,
+                            StudentNo = "0",
+                            ScheduleId = schedule.Id,
+                            Status = "ACTIVE"
+                        },
+                        CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
+                        {
+                            Amount = s.Payment ?? 0
+                        }
+                    };
+                })
+            }, token);
+
             if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
                 throw new ApplicationException(result.Message);
@@ -411,12 +412,7 @@
             else
             {
                 await NotificationService.Success("Success! You created new student", "Success");
-                //Clear student list
-                students.Clear();
-                schedules.Clear();
-                // Initialize with one default student
-                students.Add(new Student { Id = students.Count + 1, ActivityId = 0 });
-                StateHasChanged();
+                NavigationManager.NavigateTo("maker/dashboard/managestudents/enrollee-masterlist");
             }
         }
     }
