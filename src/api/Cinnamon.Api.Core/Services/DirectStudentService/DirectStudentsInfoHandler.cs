@@ -57,7 +57,22 @@ public class DirectStudentsInfoHandler : IDirectStudentsInfoHandler
             }
 
             return AppResult<DirectStudentsInfoResult>.CreateSucceeded(
-                new DirectStudentsInfoResult {DirectStudentInfos = result}, "Successfully get direct students info.");
+                new DirectStudentsInfoResult {
+                    DirectStudentInfos = result ,
+                    ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
+                    {
+                        Code        = directStudentsInfoRes?.Result?.ErrorInfo?.Code,
+                        Description = directStudentsInfoRes?.Result?.ErrorInfo?.Description,
+                        Message     = directStudentsInfoRes?.Result?.ErrorInfo?.Message
+                    },
+                    Pagination = new Framework.ApiCommand.ApiCore.Pagination
+                    {
+                        PageIndex    = directStudentsInfoRes.Result.Pagination.PageIndex,
+                        PerPage      = directStudentsInfoRes.Result.Pagination.PerPage,
+                        TotalPages   = directStudentsInfoRes.Result.Pagination.TotalPages,
+                        TotalRecords = directStudentsInfoRes.Result.Pagination.TotalRecords
+                    }
+                }, "Successfully get direct students info.");
         }
         catch (Exception ex)
         {

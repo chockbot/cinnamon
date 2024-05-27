@@ -45,8 +45,10 @@ public class DirectStudentsController : ControllerBase
             var mapped = mapper.Map<IEnumerable<DirectStudentInfoDTO>>(result.Result.DirectStudentInfos);
 
             return new JsonResult(new DirectStudentInfoReult {
-                IsSuccess = true,
-                Result = mapped
+                IsSuccess  = true,
+                ErrorInfo  = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result     = mapped
             });
         }
         catch (Exception ex)

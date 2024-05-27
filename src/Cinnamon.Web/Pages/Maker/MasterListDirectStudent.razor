@@ -7,6 +7,7 @@
 @using System.Globalization;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DirectStudents;
+@using Cinnamon.Framework.ApiCommand.ApiCore
 @inject IDirectStudentApiHandler directStudentApiHandler;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
@@ -24,9 +25,11 @@
             <TextEdit Placeholder="Search" class="search-bar" TextChanged="@TextSearchChanged"></TextEdit>
         </div>
     </div>
-    <div class="direct-student-section">
-        <div class="table-list">
-            <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+    @if (directStudents.Count != 0)
+    {
+        <div class="direct-student-section">
+            <div class="table-list">
+                <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell class="name-header">
@@ -46,30 +49,58 @@
                         </TableHeaderCell>
                         <TableHeaderCell class="action-header">
                             <label class="sotring-column">
-                               Action
+                                Action
                             </label>
                         </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     @foreach (var item in directStudents)
-                    {
-                        <TableRow>
-                            <TableRowCell class="name-body">@item.Name</TableRowCell>
-                            <TableRowCell class="age-body">@item.Age</TableRowCell>
-                            <TableRowCell class="gender-body text-capitalize">@item.Gender</TableRowCell>
-                            <TableRowCell class="update">
-                                <Button Clicked="() => NavigateToAddDirectStudentUpdate(item.Id)" 
-                                    Color="Color.Primary" Border="Border.Is0"class="btn-update">
-                                    Update
-                                </Button>
-                            </TableRowCell>
-                        </TableRow>   
+                        {
+                            <TableRow>
+                                <TableRowCell class="name-body">@item.Name</TableRowCell>
+                                <TableRowCell class="age-body">@item.Age</TableRowCell>
+                                <TableRowCell class="gender-body text-capitalize">@item.Gender</TableRowCell>
+                                <TableRowCell class="update">
+                                    <Button Clicked="() => NavigateToAddDirectStudentUpdate(item.Id)"
+                                    Color="Color.Primary" Border="Border.Is0" class="btn-update">
+                                        Update
+                                    </Button>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+                <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                        <PaginationLink>
+                            <span aria-hidden="true">&laquo;</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                    @{
+                        int pagesToShow = 6;
+                        int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                        int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                        for (var i = startPage; i <= endPage; i++)
+                        {
+                            var pageNumberAsString = i.ToString();
+                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                    @pageNumberAsString
+                                </PaginationLink>
+                            </PaginationItem>
+                        }
                     }
-                </TableBody>
-            </Table>
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                        <PaginationLink>
+                            <span aria-hidden="true">&raquo;</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                </Pagination>
+            </div>
         </div>
-    </div>
+    }
 </div>
 
 @code 
@@ -80,9 +111,17 @@
 
     private List<DirectStudentInfoDTO> directStudents = new();
 
-    private int currentPage = 1, countPerPage = int.MaxValue;
+    public string currentPage = "1";
 
     public string SearchValue { get; set; } = string.Empty;
+
+    public const string PREVIOUS = "previous";
+
+    public const string NEXT = "next";
+
+    public int counterPage = 10;
+
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,8 +135,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-
-            await LoadDirectStudents();
+            await LoadDirectStudents(1);
         }
         catch (Exception ex)
         {
@@ -106,21 +144,21 @@
 
     }
 
-    private async Task LoadDirectStudents()
+    private async Task LoadDirectStudents(int pageIndex)
     {
-       
         try
         {
             directStudents.Clear();
             var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
-                CountPerPage = countPerPage,
-                PageIndex = currentPage,
-                SearchValue = SearchValue 
+                CountPerPage = counterPage,
+                PageIndex    = pageIndex,
+                SearchValue  = SearchValue 
             }, token);
 
             if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
             {
                 directStudents.AddRange(result.Result.Result);
+                Pagination = result.Result.Pagination;
             }
         }
         catch (System.Exception)
@@ -128,10 +166,54 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
+
     private async Task TextSearchChanged(string search)
     {
         SearchValue = search;
-        await LoadDirectStudents();
+        directStudents.Clear();
+        await LoadDirectStudents(1);
+    }
+
+    private bool IsActive(string page)
+      => currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(counterPage.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1)
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+            await LoadDirectStudents(int.Parse(currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < Pagination.TotalPages)
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+            await LoadDirectStudents(int.Parse(currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await LoadDirectStudents(int.Parse(page));
     }
 
     private void NavigateToManageStudents()
