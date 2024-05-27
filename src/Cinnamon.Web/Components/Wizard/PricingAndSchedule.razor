@@ -669,7 +669,7 @@
 
     private string RequiredCheck(int? value)
     {
-        if (Model.HasError && (value == null || value.Value == 0))
+        if (Model.HasError && (value == null || value.Value <= 0))
         {
             return "invalid";
         }
@@ -678,13 +678,14 @@
 
     private string RequiredCheck(Decimal? value)
     {
-        if (Model.HasError && (value == null || value == 0))
+        if (Model.HasError && (value == null || value <= 0))
         {
             return "invalid";
         }
 
         return "";
     }
+
 
     public bool IsAllFieldsValidated()
     {

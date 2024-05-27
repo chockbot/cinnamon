@@ -180,46 +180,6 @@
             }
         </div>
     </div>
-
-    @*<div class="row mb-4 mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-                Session Expiration
-            </label>
-        </div>
-        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-        </div>
-        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-2 toggle-expiration">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="Model.Activity.IsSetSession">
-                </div>
-            </div>
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1 dropdown-expiration">
-                <label class="set-exp">Set Expiration:</label>
-                @if (Model.Activity.IsSetSession == false)
-                {
-                    <select class="form-control session-period" @bind="Model.Activity.SessionName" disabled="true">
-                        <option disabled selected>Select Period</option>
-                        @foreach (var sessionPeriod in Model.SessionPeriods)
-                        {
-                            <option value="@sessionPeriod">@sessionPeriod</option>
-                        }
-                    </select>
-                }
-                else
-                {
-                    <select class="form-control session-period" @bind="Model.Activity.SessionName">
-                        <option disabled selected>Select Period</option>
-                        @foreach (var sessionPeriod in Model.SessionPeriods)
-                        {
-                            <option value="@sessionPeriod">@sessionPeriod</option>
-                        }
-                    </select>
-                }
-            </div>
-        </div>
-    </div>*@
 </div>
 
 @code 
