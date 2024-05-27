@@ -348,6 +348,7 @@ private async Task Previous()
     private async Task CheckboxChanged(bool? hasVerification)
     {
         hasVerificationRequest = hasVerification;
+        currentPage = "1";
         await GetAllCustomers(1);
     }
 }
