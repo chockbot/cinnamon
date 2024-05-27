@@ -95,12 +95,12 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
             }
 
-            student.BirthMonth = directStudent.BirthMonth;
-            student.BirthYear = directStudent.BirthYear;
-            student.Gender = directStudent.Gender;
-            student.Name = directStudent.Name;
+            student.BirthMonth = directStudent.BirthMonth ?? student.BirthMonth;
+            student.BirthYear = directStudent.BirthYear == 0 ? student.BirthYear : directStudent.BirthYear;
+            student.Gender = directStudent.Gender ?? student.Gender;
+            student.Name = directStudent.Name ?? student.Name;
             
-            studentSession.ActivityId = directStudentSession.ActivityId;
+            studentSession.ActivityId = directStudentSession.ActivityId == 0 ;
             studentSession.ScheduleId = directStudentSession.ScheduleId;
             studentSession.Name = directStudent.Name;
 
