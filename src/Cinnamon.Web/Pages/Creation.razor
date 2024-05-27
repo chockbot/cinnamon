@@ -685,12 +685,16 @@
     private async Task OnNextClick(int index = 0)
     {
         displayError = false;
-        
+
         // for submit action
         if (index == 0 && currentIndex == 7)
         {
             await loadingIndicator.Show();
-            if (!GeneralPublishPage.Validate()) return;
+            if (!GeneralPublishPage.Validate())
+            {
+                await loadingIndicator.Hide();
+                return;
+            }
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
@@ -801,6 +805,7 @@
             {
                 errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
                 ShowErrorMessage = true;
+                await loadingIndicator.Hide();
                 StateHasChanged();
                 return;
             }

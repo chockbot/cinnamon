@@ -899,7 +899,11 @@
         if(index == 0 && currentIndex == 7)
         {
             await loadingIndicator.Show();
-            if (!GeneralPublishPage.Validate()) return;
+            if (!GeneralPublishPage.Validate())
+            {
+                await loadingIndicator.Hide();
+                return;
+            }
 
             isLoading = true;
             StateHasChanged();
@@ -1017,6 +1021,7 @@
             {
                 errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
                 showErrorMessage = true;
+                await loadingIndicator.Hide();
                 StateHasChanged();
                 return;
             }
