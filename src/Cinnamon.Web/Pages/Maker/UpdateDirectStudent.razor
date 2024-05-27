@@ -166,8 +166,9 @@
             // gender
             genders.Add("male");
             genders.Add("female");
-            // years
-            for (int i = 1900; i <= DateTime.Now.Year; i++)
+            // minimum years
+            var minYear = DateTime.Now.Year - 4;
+            for (int i = 1900; i <= minYear; i++)
             {
                 years.Add(i);
             }

@@ -33,6 +33,14 @@ public class CreateDirectStudentsHandler : ICreateDirectStudentsHandler
     {
         try
         {
+            var minYear = DateTime.Now.Year - 4;
+
+            if(args.CreateDirectStudents.Any(s => s.CreateDirectStudentInfo.BirthYear > minYear))
+            {
+                return AppResult<CreateDirectStudentsResult>.CreateFailed(
+                    new ApplicationException("Students must be at least 4 years old."), "Students must be at least 4 years old.");
+            }
+
             var result = await directStudentData.CreateDirectStudents(new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateDirectStudentsArgs
             {
                 CreateDirectStudents = args.CreateDirectStudents.Select(s =>
