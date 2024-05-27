@@ -100,11 +100,14 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             student.Gender = directStudent.Gender ?? student.Gender;
             student.Name = directStudent.Name ?? student.Name;
             
-            studentSession.ActivityId = directStudentSession.ActivityId == 0 ;
-            studentSession.ScheduleId = directStudentSession.ScheduleId;
-            studentSession.Name = directStudent.Name;
+            studentSession.ActivityId = directStudentSession.ActivityId == 0 ? studentSession.ActivityId : directStudentSession.ActivityId;
+            studentSession.ScheduleId = directStudentSession.ScheduleId == 0 ? studentSession.ScheduleId : directStudentSession.ScheduleId;
+            studentSession.Name = directStudent.Name ?? studentSession.Name;
+            studentSession.NumberOfSessions = directStudentSession.NumberOfSessions == 0 ? studentSession.NumberOfSessions : directStudentSession.NumberOfSessions;
+            studentSession.Remarks = directStudentSession.Remarks ?? studentSession.Remarks;
+            studentSession.StudentNo = directStudentSession.StudentNo ?? studentSession.StudentNo;
 
-            studentPayment.Amount = directStudentPayment.Amount;
+            studentPayment.Amount = directStudentPayment.Amount == 0 ? studentPayment.Amount : directStudentPayment.Amount;
 
             await applicationContext.SaveChangesAsync();
 
