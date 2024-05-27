@@ -69,7 +69,10 @@ public class DirectStudentsController : ControllerBase
                 Gender = args.Gender,
                 Name = args.Name,
                 ScheduleId = args.ScheduleId,
-                StudentId = args.StudentId
+                StudentId = args.StudentId,
+                NumberOfSessions = args.NumberOfSessions,
+                Remarks = args.Remarks,
+                StudentNo = args.StudentNo
             });
             if(!result.Succeeded || result.Result is null)
             {
