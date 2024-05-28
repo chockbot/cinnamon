@@ -20,24 +20,24 @@
 
 @if (Model != null)
 {
-    <div id="regForm" class="shadow-lg">
-
-        <div class="progress-bar-section">
-            <p class="progress-details">
-                IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
-            </p>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-        </div>
-
-        <div class="experience-heading-section row">
-            <div class="col-lg-9">
-                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                    LET’S CREATE YOUR EXPERIENCE!
+    <div class="xp-ote-page-wrapper">
+        <Container>
+            <div class="progress-bar-section">
+                <p class="progress-details">
+                    IN PROGRESS: Step @currentIndex of 7 <span id="loader" class=""></span>
                 </p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
             </div>
-            <div class="col-lg-3 save-later-button-section">
+        </Container>
+       
+         <Container>
+            <div class="experience-heading-section d-flex justify-content-between">
+            <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                LET’S CREATE YOUR EXPERIENCE!
+            </p>
+            <div class="save-later-button-section">
                 <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
                     <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
                         <LoadingTemplate>
@@ -51,8 +51,7 @@
             </div>
         </div>
 
-
-        <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
             <div class="row">
                 <div class="col-1 prev-button-section">
                     @if (currentIndex > 1)
@@ -111,7 +110,7 @@
             </div>
         </div>
 
-        <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
             <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
@@ -122,8 +121,8 @@
             </Button>
         </div>
 
-        <div class="row">
-            <div class="col-lg-4 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            <div class="d-flex justify-content-between">
+            <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
                         Overview
@@ -234,8 +233,8 @@
                 <div class="display-error" style="display:@(displayError ? "block" : "none")">
                     You must fill in the required fields to publish an activity
                 </div>
-                <div class="dashed-divider col-lg-7"></div>
-                <div class="guide-section col-lg-7 text-center">
+                <div class="dashed-divider"></div>
+                <div class="guide-section text-center">
                     <label class="guide-title @(currentIndex != 7 ? "d-block" : "d-none")">
                         How it will look like
                     </label>
@@ -276,7 +275,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="">
                 <div class="tab-content-section">
                     <EditForm Model="Model.Activity" id="form-cretion">
                         <div class='tab @(currentIndex == 1 ? "show" : "")'>
@@ -317,13 +316,13 @@
                     </EditForm>
                 </div>
                 <div class="button-container">
-                    <div class="row">
+                   
                         @if (currentIndex > 1)
                         {
-                            <div class="col-lg-6 col-6">
+                            <div class="">
                                 <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
                             </div>
-                            <div class="col-lg-6 col-6">
+                            <div class="">
                                 @if(currentIndex == 7)
                                 {
                                     <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
@@ -343,7 +342,6 @@
                                     </ChildContent>
                                 </Button>
                                 }
-                                
                             </div>
                         }
                         else
@@ -359,12 +357,11 @@
                                 </Button>
                             </div>
                         }
-                    </div>
                 </div>
             </div>
         </div>
+        </Container>
     </div>
-
     <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -685,12 +682,16 @@
     private async Task OnNextClick(int index = 0)
     {
         displayError = false;
-        
+
         // for submit action
         if (index == 0 && currentIndex == 7)
         {
             await loadingIndicator.Show();
-            if (!GeneralPublishPage.Validate()) return;
+            if (!GeneralPublishPage.Validate())
+            {
+                await loadingIndicator.Hide();
+                return;
+            }
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
@@ -801,6 +802,7 @@
             {
                 errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
                 ShowErrorMessage = true;
+                await loadingIndicator.Hide();
                 StateHasChanged();
                 return;
             }

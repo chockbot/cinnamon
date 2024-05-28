@@ -33,6 +33,7 @@
     </Div>
     @if (Activity.ExperienceTypeId == 1)
     {
+        string address = string.IsNullOrEmpty(Activity.PinnedLocation) ? $"{@Activity.Address1 + ", " + Activity.BarangayName + ", " + Activity.CityName + ", " + Activity.RegionName}" : Activity.PinnedLocation;
         <Divider />
         <div class="experience-location margin-botton-3rem m-margin-bottom-10">
             <h3 class="text-capitalize text-orange-100 font-family-nunito
@@ -40,7 +41,7 @@
                 Location
             </h3>
             <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
-                Place: @Activity.Address1, @Activity.Subdivision, @Activity.BarangayName, @Activity.CityName, @Activity.RegionName
+                Place: @address
             </p>
             @* <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p> *@
         </div>
