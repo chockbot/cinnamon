@@ -16,14 +16,16 @@ public class DirectStudentsController : ControllerBase
 {
     private readonly IDirectStudentsInfoHandler directStudentsInfoHandler;
     private readonly IUpdateDirectStudentHandler updateDirectStudentHandler;
+    private readonly IDirectStudentHandler directStudentHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
-        IUpdateDirectStudentHandler updateDirectStudentHandler)
+        IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler)
     {
         this.directStudentsInfoHandler = directStudentsInfoHandler;
         this.mapper = mapper;
         this.updateDirectStudentHandler = updateDirectStudentHandler;
+        this.directStudentHandler = directStudentHandler;
     }
 
     [HttpGet]
@@ -54,6 +56,36 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DirectStudentInfoReult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(DirectStudentResult), StatusCodes.Status200OK)]   
+    public async Task<IActionResult> Index(int id)
+    {
+        try
+        {
+            var result = await directStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.DirectStudentArgs {
+                StudentId = id
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new DirectStudentResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new DirectStudentResult {
+                IsSuccess = true,
+                Result = new DirectStudentDTO {
+                    DirectStudentInfo = mapper.Map<DirectStudentInfoDTO>(result.Result.DirectStudentInfoResult),
+                    DirectStudentPayment = mapper.Map<DirectStudentPaymentDTO>(result.Result.DirectStudentPaymentResult),
+                    DirectStudentSession = mapper.Map<DirectStudentSessionDTO>(result.Result.DirectStudentSessionResult)
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DirectStudentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 

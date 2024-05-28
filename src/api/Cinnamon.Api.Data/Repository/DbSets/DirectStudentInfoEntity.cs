@@ -118,4 +118,62 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             return AppResult<DirectStudentInfo>.CreateFailed(ex, "An error occured when updating direct student.");
         }
     }
+
+    public async Task<AppResult<DirectStudentDTO>> DirecStudentInfo(int studentId)
+    {
+        try
+        {
+            var student = await applicationContext.DirectStudentInfos.FirstAsync(s => s.Id == studentId);
+            if(student is null)
+            {
+                return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException("Unable to locate student."), "Unable to locate student.");
+            }
+
+            var studentSession = await applicationContext.DirectStudentSessions.FirstAsync(s => s.DirectStudentInfoId == student.Id);
+            if(studentSession is null)
+            {
+                return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException("Unable to locate student session."), "Unable to locate student session.");
+            }
+
+            var studentPayment = await applicationContext.DirectStudentPayments.FirstAsync(s => s.DirectStudentSessionId == studentSession.Id);
+            if(studentPayment is null)
+            {
+                return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException("Unable to locate student payment."), "Unable to locate student payment.");                
+            }
+
+            var directStudentInfo = new DirectStudentDTO {
+                DirectStudentInfo = new DirectStudentInfoDTO {
+                    BirthMonth = student.BirthMonth,
+                    BirthYear = student.BirthYear,
+                    Gender = student.Gender,
+                    Id = student.Id,
+                    Name = student.Name,
+                    ProviderId = student.ProviderId
+                },
+                DirectStudentPayment = new DirectStudentPaymentDTO {
+                    Amount = studentPayment.Amount,
+                    DirectStudentSessionId = studentPayment.DirectStudentSessionId,
+                    Id = studentPayment.Id
+                },
+                DirectStudentSession = new DirectStudentSessionDTO {
+                    ActivityId = studentSession.ActivityId,
+                    DirectStudentInfoId = studentSession.DirectStudentInfoId,
+                    Id = studentSession.Id,
+                    Name = studentSession.Name,
+                    NumberOfSessions = studentSession.NumberOfSessions,
+                    Remarks = studentSession.Remarks,
+                    ScheduleId = studentSession.ScheduleId,
+                    SessionsAttended = studentSession.SessionsAttended,
+                    Status = studentSession.Status,
+                    StudentNo = studentSession.StudentNo
+                }
+            };
+
+            return AppResult<DirectStudentDTO>.CreateSucceeded(directStudentInfo, "Successfully get direct student info.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when getting direct student info.");
+        }
+    }
 }

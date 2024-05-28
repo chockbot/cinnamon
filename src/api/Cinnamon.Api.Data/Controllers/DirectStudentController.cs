@@ -131,6 +131,31 @@ public class DirectStudentController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("Infos/{id}")]
+    [ProducesResponseType(typeof(DirectStudentInfoResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DirectStudentInfo(int id)
+    {
+        try
+        {
+            var result = await directStudentRepository.DirectStudentInfo(id);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new DirectStudentInfoResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
+            }
+
+            return new JsonResult(new DirectStudentInfoResult {
+                Result = result.Result,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DirectStudentInfoResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
     [Route("UpdateDirectStudent")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateDirectStudentResult), StatusCodes.Status202Accepted)]

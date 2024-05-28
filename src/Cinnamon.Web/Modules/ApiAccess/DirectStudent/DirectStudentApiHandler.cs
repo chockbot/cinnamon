@@ -60,4 +60,25 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
             return AppResult<UpdateStudentResult>.CreateFailed(ex, "An error occured when update direct students api");
         }
     }
+
+    public async Task<AppResult<DirectStudentResult>> DirectStudent(int studentId, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/{studentId}")
+                .GetJsonAsync<DirectStudentResult>();
+
+            return AppResult<DirectStudentResult>.CreateSucceeded(result, "Successfully getting direct student api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DirectStudentResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DirectStudentResult>.CreateFailed(ex, "An error occured when getting direct student api");
+        }
+    }
 }
