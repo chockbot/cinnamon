@@ -99,7 +99,7 @@
             <label for="category" class="form-control-label label-top-margin">Category</label>
             <select id="create-activity-category" @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
                 <option value="0">--Select Category--</option>
-                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new" && e.Category.ToLower() != "event"))
                 {
                     <option value="@cat.Id">@cat.Category</option>
                 }
@@ -178,6 +178,7 @@
         if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
         if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
         if (Model.Activity.ExperienceCategoryId <= 0) return false;
+        if (Model.Activity.SubCategoryId <= 0) return false;
 
         return true;
     }

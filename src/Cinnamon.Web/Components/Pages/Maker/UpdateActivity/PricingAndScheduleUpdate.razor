@@ -2372,7 +2372,7 @@
 
     private string RequiredCheck(int? value)
     {
-        if (Model.ExperienceHasError && (value == null || value.Value == 0))
+        if (Model.ExperienceHasError && (value == null || value.Value <= 0))
         {
             return "invalid";
         }
@@ -2381,7 +2381,7 @@
 
     private string RequiredCheck(Decimal? value)
     {
-        if (Model.ExperienceHasError && (value == null || value == 0))
+        if (Model.ExperienceHasError && (value == null || value <= 0))
         {
             return "invalid";
         }
