@@ -23,28 +23,27 @@
 <PageTitle>Update Experience | CinnamonPH</PageTitle>
 <SeoMeta Title="Update Experience" Subject="Update Experience" Url="/maker/update-activity" />
 
-<div id="regForm" class="shadow-lg">
+<div class="xp-ote-page-wrapper">
     @if(Model != null)
     {
         <input type="hidden" @bind="Model.Activity.ActivityId" id="activity-id" />
         <input type="hidden" value="@Model.Activity.ActivityStatus" id="activity-status" />
-
-        <div class="progress-bar-section">
-            <p class="progress-details">
-                IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
-            </p>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-        </div>
-
-        <div class="experience-heading-section row">
-            <div class="col-lg-9">
-                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                    UPDATE YOUR EXPERIENCE!
+         <Container>
+            <div class="progress-bar-section">
+                <p class="progress-details">
+                    IN PROGRESS: Step @currentIndex of 7 <span id="loader" class=""></span>
                 </p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
             </div>
-            <div class="col-lg-3 save-later-button-section">
+        </Container>
+        <Container>
+        <div class="experience-heading-section  d-flex justify-content-between">
+            <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                UPDATE YOUR EXPERIENCE!
+            </p>
+            <div class="save-later-button-section">
                 <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
                     @if (Model.Activity.Status == ActivityStatus.InProgress)
                     {
@@ -134,8 +133,8 @@
             }
         </div>
 
-        <div class="row">
-            <div class="col-lg-4 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            <div class="d-flex justify-content-between">
+            <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
                         Overview
@@ -215,8 +214,8 @@
                         }
                     </a>
                 </div>
-                   <div class="dashed-divider col-lg-7"></div>
-                <div class="guide-section col-lg-7 text-center">
+                   <div class="dashed-divider"></div>
+                <div class="guide-section text-center">
                     <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
                         How it will look like
                     </label>
@@ -257,7 +256,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="">
                 <div class="tab-content-section">
                     <EditForm Model="Model.Activity" id="form-cretion">
                         <div class='tab @(currentIndex == 1 ? "show" : "")'>
@@ -298,13 +297,12 @@
                     </EditForm>
                 </div>
                 <div class="button-container">
-                    <div class="row">
-                        @if (currentIndex > 1)
+                    @if (currentIndex > 1)
                         {
-                            <div class="col-lg-6 col-6">
+                            <div class="">
                                 <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
                             </div>
-                            <div class="col-lg-6 col-6">
+                            <div class="">
                                 @if (currentIndex == 7)
                                 {
                                     <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
@@ -326,7 +324,7 @@
                                 }
                             </div>
                         }
-                        else
+                    else
                         {
                             <div class="col-lg-12 col-12">
                                 <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
@@ -339,10 +337,10 @@
                                 </Button>
                             </div>
                         }
-                    </div>
                 </div>
             </div>
         </div>
+        </Container>
 
     }
 </div>
