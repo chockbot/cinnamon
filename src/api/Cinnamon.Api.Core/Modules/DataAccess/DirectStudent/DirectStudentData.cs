@@ -184,4 +184,24 @@ public class DirectStudentData : IDirectStudentData
             return AppResult<UpdateDirectStudentResult>.CreateFailed(ex, "An error occured when posting update direct students api");
         }
     }
+
+    public async Task<AppResult<DirectStudentInfoResult>> DirectStudentInfo(int studentId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"DirectStudent/Infos/{studentId}")
+                            .GetJsonAsync<DirectStudentInfoResult>();
+            return AppResult<DirectStudentInfoResult>.CreateSucceeded(result, "Successfully get direct student info.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<DirectStudentInfoResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DirectStudentInfoResult>.CreateFailed(ex, "An error occured when get direct student info.");
+        }
+    }
 }
