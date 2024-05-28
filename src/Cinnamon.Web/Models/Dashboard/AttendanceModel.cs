@@ -6,7 +6,7 @@ namespace Cinnamon.Web.Models.Dashboard;
 public class AttendanceModel 
 {
     public List<Schedule> Schedules {get; set;} = new();
-    public List<StudentAttendance> Attendances {get; set;} = new();
+    public Dictionary<string,StudentAttendance> Attendances {get; set;} = new();
     public List<StudentAttendance> FilteredAttendance {get; set;} = new();
     public List<Activity> Activities { get; set;} = new();
     public bool IsShowErrorMessage {get; set;}
