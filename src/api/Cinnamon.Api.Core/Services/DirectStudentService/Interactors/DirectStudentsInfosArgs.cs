@@ -6,4 +6,5 @@ public class DirectStudentsInfosArgs : IInteractor
 {
     public int PageIndex {get; set;}
     public int PageCount {get; set;}
+    public string? SearchValue { get; set; }
 }

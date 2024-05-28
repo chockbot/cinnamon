@@ -27,14 +27,15 @@ public class DirectStudentsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(DirectStudentInfoReult), StatusCodes.Status200OK)]   
+    [ProducesResponseType(typeof(DirectStudentInfoReult), StatusCodes.Status200OK)]
     public async Task<IActionResult> Index([FromQuery] DirectStudentInfoArgs args)
     {
         try
         {
             var result = await directStudentsInfoHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.DirectStudentsInfosArgs {
-                PageCount = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageCount   = args.CountPerPage,
+                PageIndex   = args.PageIndex,
+                SearchValue = args.SearchValue ?? string.Empty
             });
             if(!result.Succeeded || result.Result is null)
             {
@@ -44,8 +45,10 @@ public class DirectStudentsController : ControllerBase
             var mapped = mapper.Map<IEnumerable<DirectStudentInfoDTO>>(result.Result.DirectStudentInfos);
 
             return new JsonResult(new DirectStudentInfoReult {
-                IsSuccess = true,
-                Result = mapped
+                IsSuccess  = true,
+                ErrorInfo  = result.Result.ErrorInfo,
+                Pagination = result.Result.Pagination,
+                Result     = mapped
             });
         }
         catch (Exception ex)

@@ -9,4 +9,5 @@ public class StudentInfosArgs
 
     [Required]
     public int ProviderId {get; set;}
+    public string? SearchValue { get; set; }
 }
