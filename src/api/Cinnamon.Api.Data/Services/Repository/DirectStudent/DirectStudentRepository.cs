@@ -121,4 +121,22 @@ public class DirectStudentRepository : IDirectStudentRepository
 			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when updating direct student.");
 		}
 	}
+
+	public async Task<AppResult<DirectStudentDTO>> DirectStudentInfo(int studentId)
+	{
+		try
+		{
+			var result = await dataStore.DirectStudentInfo.DirecStudentInfo(studentId);
+			if(!result.Succeeded || result.Result is null)
+			{
+				return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			return AppResult<DirectStudentDTO>.CreateSucceeded(result.Result, "Successfully get direct student info.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when getting direct student info.");
+		}
+	}
 }
