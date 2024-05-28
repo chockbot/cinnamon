@@ -106,7 +106,7 @@
                     <p class="student-name m-font-14">Class</p>
                     <Select TValue="int" @bind-SelectedValue="student.ActivityId" Size="Size.Default" 
                         class="form-select border-10 text-capitalize color-black-100 font-15 m-font-12" @onchange="OnFilterValueChanged">
-                        <SelectItem>Select Experience</SelectItem>
+                        <SelectItem Value="0" Disabled>Select Experience</SelectItem>
                         @foreach (var item in activities)
                         {
                             <SelectItem Value="item.ActivityId">@item.Title</SelectItem>
@@ -119,7 +119,7 @@
                         <Select TValue="int" @bind-SelectedValue="student.ScheduleId" Size="Size.Default" 
                             class="form-select border-10 text-capitalize color-black-100 font-15 m-font-12">
                            <ChildContent>
-                           <SelectItem>Select Schedule</SelectItem>
+                           <SelectItem Value="0" Disabled>Select Schedule</SelectItem>
                            @foreach (var item in schedules)
                            {
                                <SelectItem Value="@item.Id">@item.Name</SelectItem>
@@ -269,16 +269,18 @@
         {
             if (selectedValue > 0)
             {
+                student.ActivityId = selectedValue;
                 await LoadSchedules(selectedValue);
+                student.ScheduleId = 0;
             }
         }
     }
 
-    private Task LoadSchedules(int scheduleId)
+    private Task LoadSchedules(int activityId)
     {
-        if(scheduleId > 0)
+        if(activityId > 0)
         {
-            schedules = scheduleList.Where(a => a.ActivityId == scheduleId).ToList();
+            schedules = scheduleList.Where(a => a.ActivityId == activityId).ToList();
         }
         return Task.CompletedTask;
     }
