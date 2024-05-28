@@ -340,37 +340,55 @@
     private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
     {
         schedule.IsSelected = !schedule.IsSelected;
+
         if(schedule.IsSelected)
         {
             var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
                 ActivityId = schedule.ActivityId,
                 ScheduleId = schedule.ScheduleId
             }, Model.Token);
+
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Attendances.AddRange(result.Result.Result.Where(a => a.ExpirationEndDate >= DateTime.Now.Date || a.ExpirationEndDate == DateTime.MinValue).Select(s =>
+                var attendances = result.Result.Result
+                                    .Where(a => a.ExpirationEndDate >= DateTime.Now.Date || a.ExpirationEndDate == DateTime.MinValue)
+                                    .Select(s => new AttendanceModel.StudentAttendance {
+                                        ActivityName = schedule.ActivityTitle,
+                                        IsPresent = s.IsPresent,
+                                        Name = s.Name,
+                                        StudentId = s.StudentId,
+                                        ActivityId = schedule.ActivityId,
+                                        ScheduleId = schedule.ScheduleId,
+                                        NumberOfSessions = s.NumberOfSessions,
+                                        SessionsAttended = s.SessionsAttended,
+                                        ExpirationDateEnd = s.ExpirationEndDate,
+                                        ExpirationDateStart = s.ExpirationStartDate,
+                                        StudentType = s.StudentType
+                                    });
+                
+                foreach (var item in attendances)
                 {
-                    return new AttendanceModel.StudentAttendance {
-                        ActivityName = schedule.ActivityTitle,
-                        IsPresent = s.IsPresent,
-                        Name = s.Name,
-                        StudentId = s.StudentId,
-                        ActivityId = schedule.ActivityId,
-                        ScheduleId = schedule.ScheduleId,
-                        NumberOfSessions = s.NumberOfSessions,
-                        SessionsAttended = s.SessionsAttended,
-                        ExpirationDateEnd = s.ExpirationEndDate,
-                        ExpirationDateStart = s.ExpirationStartDate,
-                        StudentType = s.StudentType
-                    };
-                }));
+                    string key = $"{item.StudentId}-{item.StudentType}-{item.ActivityId}-{item.ScheduleId}";
+                    if(!Model.Attendances.ContainsKey(key))
+                    {
+                        Model.Attendances.Add(key, item);
+                    }
+                }
             }
         }
         else 
         {
-            Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
+            var attendanceKeyToRemove = Model.Attendances
+                                            .Where(a => a.Value.ActivityId == schedule.ActivityId && a.Value.ScheduleId == schedule.ScheduleId)
+                                            .Select(a => a.Key);
+
+            foreach (var key in attendanceKeyToRemove)
+            {
+                Model.Attendances.Remove(key);
+            }
         }
-        Model.FilteredAttendance = Model.Attendances;
+
+        Model.FilteredAttendance = Model.Attendances.Select(a => a.Value).ToList();
     }
 
     private async Task CheckUnCheckExperience(AttendanceModel.Activity activity)
@@ -482,12 +500,12 @@
     {
         if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
         {
-            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.Name).ToList();
+            Model.FilteredAttendance = Model.Attendances.Select(a => a.Value).OrderBy(s => s.Name).ToList();
             Model.IsSortNameAsc = false;
         }
         else 
         {
-            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.Name).ToList();
+            Model.FilteredAttendance = Model.Attendances.Select(a => a.Value).OrderByDescending(s => s.Name).ToList();
             Model.IsSortNameAsc = true;
         }
     }
@@ -496,12 +514,20 @@
     {
         if(!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
         {
-            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.ActivityName).ToList();
+            Model.FilteredAttendance = Model.Attendances
+                                        .Select(a => a.Value)
+                                        .OrderBy(s => s.ActivityName)
+                                        .ToList();
+
             Model.IsSortExperienceAsc = false;
         }
         else 
         {
-            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.ActivityName).ToList();
+            Model.FilteredAttendance = Model.Attendances
+                                        .Select(a => a.Value)
+                                        .OrderByDescending(s => s.ActivityName)
+                                        .ToList();
+
             Model.IsSortExperienceAsc = true;
         }
     }
@@ -510,19 +536,30 @@
     {
         if(!Model.IsSortPresentAsc.HasValue || Model.IsSortPresentAsc.Value)
         {
-            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.IsPresent).ToList();
+            Model.FilteredAttendance = Model.Attendances
+                                        .Select(a => a.Value)
+                                        .OrderBy(s => s.IsPresent)
+                                        .ToList();
+
             Model.IsSortPresentAsc = false;
         }
         else 
         {
-            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.IsPresent).ToList();
+            Model.FilteredAttendance = Model.Attendances
+                                        .Select(a => a.Value)
+                                        .OrderByDescending(s => s.IsPresent)
+                                        .ToList();
+
             Model.IsSortPresentAsc = true;
         }
     }
 
     private void TextSearchChanged(string search)
     {
-        Model.FilteredAttendance = Model.Attendances.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+        Model.FilteredAttendance = Model.Attendances
+                                    .Select(a => a.Value)
+                                    .ToList()
+                                    .FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
     }
 
     private int GetSessionPercentage(double numberSessions, double sessionsAttended)
