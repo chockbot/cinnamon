@@ -206,6 +206,8 @@
             await GetActivities();
 
             await LoadStudent();
+
+            await LoadSchedules(student.ActivityId);
         }
         catch (Exception ex)
         {
@@ -261,20 +263,24 @@
         }
     }
 
-    private void OnFilterValueChanged(ChangeEventArgs e)
+    private async Task OnFilterValueChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value.ToString(), out int selectedValue))
         {
-            student.ActivityId = selectedValue;
-            if (selectedValue != 0)
+            if (selectedValue > 0)
             {
-                schedules = scheduleList.Where(a => a.ActivityId == selectedValue).ToList();
-            }
-            else
-            {
-                schedules = scheduleList; 
+                await LoadSchedules(selectedValue);
             }
         }
+    }
+
+    private Task LoadSchedules(int scheduleId)
+    {
+        if(scheduleId > 0)
+        {
+            schedules = scheduleList.Where(a => a.ActivityId == scheduleId).ToList();
+        }
+        return Task.CompletedTask;
     }
 
     private void NavigateToEnrolleeMasterlist()
@@ -317,25 +323,26 @@
 
     private async Task LoadStudent()
     {
-        var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
-            CountPerPage = int.MaxValue,
-            PageIndex = 1
-        }, token);
+        var result = await directStudentApiHandler.DirectStudent(StudentId, token);
 
-        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
         {
-            var studentToUpdate = result.Result.Result.FirstOrDefault(s => s.Id == StudentId);
-            if(studentToUpdate is not null)
-            {
-                student = new Student {
-                    BirthMonth = studentToUpdate.BirthMonth,
-                    BirthYear = studentToUpdate.BirthYear,
-                    Gender = studentToUpdate.Gender,
-                    Name = studentToUpdate.Name,
-                    Id = studentToUpdate.Id
-                };
-            }
+            await NotificationService.Error(result.Result?.ErrorInfo?.Message ?? result.Message, "Error");
+            NavigateToEnrolleeMasterlist();
+            return;
         }
+
+        var studentToUpdate = result.Result.Result;
+        student = new Student {
+            BirthMonth = studentToUpdate.DirectStudentInfo.BirthMonth,
+            BirthYear = studentToUpdate.DirectStudentInfo.BirthYear,
+            Gender = studentToUpdate.DirectStudentInfo.Gender,
+            Name = studentToUpdate.DirectStudentInfo.Name,
+            Id = studentToUpdate.DirectStudentInfo.Id,
+            ActivityId = studentToUpdate.DirectStudentSession.ActivityId,
+            Payment = studentToUpdate.DirectStudentPayment.Amount,
+            ScheduleId = studentToUpdate.DirectStudentSession.ScheduleId
+        };
     }
 
     public class Student

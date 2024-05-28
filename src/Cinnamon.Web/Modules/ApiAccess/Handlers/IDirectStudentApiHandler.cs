@@ -9,4 +9,6 @@ public interface IDirectStudentApiHandler
     Task<AppResult<DirectStudentInfoReult>> DirectStudents(DirectStudentInfoArgs args, string token);
 
     Task<AppResult<UpdateStudentResult>> UpdateStudent(UpdateStudentArgs args, string token);
+
+    Task<AppResult<DirectStudentResult>> DirectStudent(int studentId, string token);
 }
