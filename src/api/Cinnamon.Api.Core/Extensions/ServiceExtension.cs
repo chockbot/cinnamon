@@ -282,6 +282,7 @@ public static class ServiceExtenstion
         // direct students services
         services.AddTransient<Services.DirectStudentService.Handlers.IDirectStudentsInfoHandler, Services.DirectStudentService.DirectStudentsInfoHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IUpdateDirectStudentHandler, Services.DirectStudentService.UpdateDirectStudentHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IDirectStudentHandler, Services.DirectStudentService.DirectStudentHandler>();
 
         return services;
     }
