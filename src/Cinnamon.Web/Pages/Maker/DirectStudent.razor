@@ -182,6 +182,61 @@
             <button class="btn-save" @onclick="SaveStudents">Save</button>
         </div>
     </div>
+
+    <Modal @ref="confirmPeriodModal" class="modal-purchase-confirmation">
+        <ModalContent>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
+            </ModalHeader>
+            <ModalBody>
+                <fieldset>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                        checked='@(periodConfirmation.SelectedPeriod == "currentperiod")' 
+                                        value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@periodConfirmation.DurationLeft</span> to use this.</p>
+                                </Column>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                        checked='@(periodConfirmation.SelectedPeriod == "nextperiod")'  
+                                        value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@periodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                    <Button Loading="periodConfirmation.IsSubmitting" 
+                        Disabled="periodConfirmation.IsSubmitting || string.IsNullOrEmpty(periodConfirmation.SelectedPeriod)" 
+                        class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Proceed
+                        </ChildContent>
+                    </Button>
+                    @if(periodConfirmation.IsShowError && !periodConfirmation.IsApplied)
+                    {
+                        <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                    }
+                </fieldset>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </div>
 
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Done" DeclineLabel="Cancel"
@@ -215,12 +270,14 @@
     private IList<ActivitySchedule> scheduleList = new List<ActivitySchedule>();
     private IList<ActivitySchedule> schedules = new List<ActivitySchedule>();
     private Student studentToDelete = new();
-    private Student student = new Student();
     private IList<Student> students = new List<Student>();
     private Validations? studentListFormValidation;
     private bool showErrors = false;
     private ConfirmDialog confirmDialogRef { get; set; }
     private ConfirmDialog confirmDeleteDialogRef { get; set; }
+
+    private Modal? confirmPeriodModal;
+    private PeriodConfirmation periodConfirmation = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -250,7 +307,7 @@
             months.Add("december");
 
             // Initialize with one default student
-            students.Add(new Student { Id = students.Count + 1 });
+            students.Add(new Student { Id = students.Count + 1, BirthYear = years[years.Count - 18] });
 
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             token = user.FindFirstValue("Token");
@@ -277,13 +334,15 @@
             ex.Message.ToString();
         }
     }
+
     private async Task GetActivities()
     {
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-            {
-                IncludeAtivitySchedules = true,
-                IsActive = true
-            }, token);
+        {
+            IncludeAtivitySchedules = true,
+            IsActive = true
+        }, token);
+
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
             activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderBy(a => a.ActivityId).Select(a =>
@@ -297,28 +356,29 @@
                     };
             }).ToList();
         }
+
         foreach (var activityResult in activityRes.Result.Result)
         {
             foreach (var activitySchedule in activityResult.ActivitySchedules)
             {
                 scheduleList.Add(new ActivitySchedule
-                    {
-                        Id = activitySchedule.Id,
-                        IsActiveSchedule = activitySchedule.IsActiveSchedule,
-                        ActivityId = activityResult.ActivityId,
-                        Name = activitySchedule.Name,
-                        DateTime = activitySchedule.DateTime,
-                        UnitPrice = activitySchedule.UnitPrice,
-                        PerUnit1 = activitySchedule.PerUnit1,
-                        PerUnit2 = activitySchedule.PerUnit2,
-                        PriceUnit1 = activitySchedule.PriceUnit1,
-                        PriceUnit2 = activitySchedule.PriceUnit2,
-                        Price = activitySchedule.Price,
-                        IsSetSession = activitySchedule.IsSetSession,
-                        SessionName = activitySchedule.SessionName,
-                        HasExpiration = activitySchedule.HasExpiration,
-                        StartDate = activitySchedule.StartDate
-                    });
+                {
+                    Id = activitySchedule.Id,
+                    IsActiveSchedule = activitySchedule.IsActiveSchedule,
+                    ActivityId = activityResult.ActivityId,
+                    Name = activitySchedule.Name,
+                    DateTime = activitySchedule.DateTime,
+                    UnitPrice = activitySchedule.UnitPrice,
+                    PerUnit1 = activitySchedule.PerUnit1,
+                    PerUnit2 = activitySchedule.PerUnit2,
+                    PriceUnit1 = activitySchedule.PriceUnit1,
+                    PriceUnit2 = activitySchedule.PriceUnit2,
+                    Price = activitySchedule.Price,
+                    IsSetSession = activitySchedule.IsSetSession,
+                    SessionName = activitySchedule.SessionName,
+                    HasExpiration = activitySchedule.HasExpiration,
+                    StartDate = activitySchedule.StartDate
+                });
             }
         }
     }
@@ -369,54 +429,58 @@
         }
     }
 
-    private async Task ConfirmSaveChanges(bool value)
+    private async Task AddDirectStudents()
     {
-        if (value)
+        var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
         {
-            var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
+            CreateDirectStudents = students.Select(s =>
             {
-                CreateDirectStudents = students.Select(s =>
+                var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
+                return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
                 {
-                    var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
-                    return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
+                    CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
                     {
-                        CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
-                        {
-                            BirthMonth = s.BirthMonth,
-                            BirthYear = s.BirthYear,
-                            Gender = s.Gender,
-                            Name = s.Name,
-                            ProviderId = userID
-                        },
-                        CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
-                        {
-                            ActivityId = schedule.ActivityId,
-                            Name = s.Name,
-                            NumberOfSessions = schedule.PerUnit2,
-                            SessionsAttended = 0,
-                            Remarks = string.Empty,
-                            StudentNo = "0",
-                            ScheduleId = schedule.Id,
-                            Status = "ACTIVE"
-                        },
-                        CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
-                        {
-                            Amount = s.Payment ?? 0
-                        }
-                    };
-                })
-            }, token);
+                        BirthMonth = s.BirthMonth,
+                        BirthYear = s.BirthYear,
+                        Gender = s.Gender,
+                        Name = s.Name,
+                        ProviderId = userID
+                    },
+                    CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
+                    {
+                        ActivityId = schedule.ActivityId,
+                        Name = s.Name,
+                        NumberOfSessions = schedule.PerUnit2,
+                        SessionsAttended = 0,
+                        Remarks = string.Empty,
+                        StudentNo = "0",
+                        ScheduleId = schedule.Id,
+                        Status = "ACTIVE"
+                    },
+                    CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
+                    {
+                        Amount = s.Payment ?? 0
+                    }
+                };
+            })
+        }, token);
 
-            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
-            {
-                throw new ApplicationException(result.Message);
-            }
-            else
-            {
-                await NotificationService.Success("Success! You created new student", "Success");
-                NavigationManager.NavigateTo("maker/dashboard/managestudents/enrollee-masterlist");
-            }
+        if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            throw new ApplicationException(result.Message);
         }
+        else
+        {
+            await NotificationService.Success("Success! You created new student", "Success");
+            NavigationManager.NavigateTo("maker/dashboard/managestudents/enrollee-masterlist");
+        }
+    }
+
+    private Task ConfirmSaveChanges(bool value)
+    {
+        if (!value) return Task.CompletedTask;
+
+        return AddDirectStudents();
     }
 
     private ValidationMode FormMode
@@ -478,6 +542,36 @@
         await JS.InvokeVoidAsync("MyLib.Utils.navigation.back");
     }
 
+    private Task CloseConfirmationModal()
+    {
+        periodConfirmation.SelectedPeriod = string.Empty;
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            periodConfirmation.SelectedPeriod = period;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ConfirmProceedClick()
+    {
+        if(string.IsNullOrEmpty(periodConfirmation.SelectedPeriod))
+        {
+            periodConfirmation.IsShowError = true;
+        }
+        else 
+        {
+            periodConfirmation.IsSubmitting = true;
+            await AddDirectStudents();
+            periodConfirmation.IsSubmitting = false;
+            await CloseConfirmationModal();
+        }
+    }
+
     public class Student
     {
 
@@ -517,6 +611,18 @@
                        Payment != 0;
             }
         }
+    }
 
+    private class PeriodConfirmation 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
     }
 }
