@@ -5,8 +5,8 @@
 @using Cinnamon.Web.Models.Entities
 @inject GoogleDriveService googleDriveService
 @inject IConfiguration Configuration
+@using Blazorise.LoadingIndicator;
 
-<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
 <div class="top-row px-4">
     <div class="container">
@@ -47,7 +47,7 @@
                                     </div>
                                 }
                             </div>
-                            <div class="swiper-scrollbar"></div>
+                             <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,6 @@ else
 {
     <div class="text-center loaded-text">You're all caught up!</div>
 }
-</LoadingIndicator>
 @code {
     public string searchValue = string.Empty;
     public List<File> MaterialList = new List<File>();
@@ -120,7 +119,7 @@ else
             Categories.Add(new Category { Id = "1g87sISAjzsyjoLQy44OWgP_hWeDi1IPR", Name = "Plants",            Image = "images/materials-categories/plants.png" });
             Categories.Add(new Category { Id = "1gfxmRfWZz43LiFZrcxrs94BdYIPxeRlr", Name = "Science Worksheet", Image = "images/materials-categories/science.png" });
             Categories.Add(new Category { Id = "1cnkXQOyV-P-NtsdB8v6OFacH3WUUyTjX", Name = "Things",            Image = "images/materials-categories/things.png" });
-            Categories.Add(new Category { Id = "1uOmXk83VV-gYSWcrdcUDu5kondiyGzxV", Name = "Numbers",           Image = "images/materials-categories/numbers.png" });
+            Categories.Add(new Category { Id = "1uOmXk83VV-gYSWcrdcUDu5kondiyGzxV", Name = "Numbers",           Image = "images/materials-categorieZs/numbers.png" });
             await LoadFiles();
         }
         catch (Exception ex)
@@ -135,7 +134,7 @@ else
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Materials Page");
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
         await InitializeSwiper();
     }
     private async Task InitializeSwiper()
