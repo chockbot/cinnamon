@@ -11,6 +11,7 @@ public class CreateDirectStudentsHandler : ICreateDirectStudentsHandler
 {
     private readonly IDirectStudentData directStudentData;
     private readonly IMapper mapper;
+    
     public CreateDirectStudentsHandler(IDirectStudentData directStudentData, IMapper mapper)
     {
         this.mapper            = mapper;
