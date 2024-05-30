@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Components.Pages
 @using Cinnamon.Web.Components
 @using Cinnamon.Framework.Enums
+@using Cinnamon.Framework.Helpers;
 @using System.ComponentModel.DataAnnotations;
 @inject IJSRuntime JS;
 @inject INotificationService NotificationService;
@@ -183,8 +184,9 @@
         </div>
     </div>
 
-    <Modal @ref="confirmPeriodModal" class="modal-purchase-confirmation">
-        <ModalContent>
+    <Modal @ref="confirmPeriodModal" class="modal-purchase-confirmation"
+        Closing="OnModalClosing">
+        <ModalContent Centered>
             <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
                 <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
                 <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
@@ -196,12 +198,12 @@
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is1">
                                     <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
-                                        checked='@(periodConfirmation.SelectedPeriod == "currentperiod")' 
+                                        checked='@(selectedStudent.PeriodConfirmation.SelectedPeriod == "currentperiod")' 
                                         value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is11">
                                     <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
-                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@periodConfirmation.DurationLeft</span> to use this.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@selectedStudent.PeriodConfirmation.DurationLeft</span> to use this.</p>
                                 </Column>
                             </Row>
                         </Column>
@@ -209,18 +211,18 @@
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is1">
                                     <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
-                                        checked='@(periodConfirmation.SelectedPeriod == "nextperiod")'  
+                                        checked='@(selectedStudent.PeriodConfirmation.SelectedPeriod == "nextperiod")'  
                                         value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is11">
                                     <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
-                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@periodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@selectedStudent.PeriodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
                                 </Column>
                             </Row>
                         </Column>
                     </Row>
-                    <Button Loading="periodConfirmation.IsSubmitting" 
-                        Disabled="periodConfirmation.IsSubmitting || string.IsNullOrEmpty(periodConfirmation.SelectedPeriod)" 
+                    <Button Loading="selectedStudent.PeriodConfirmation.IsSubmitting" 
+                        Disabled="selectedStudent.PeriodConfirmation.IsSubmitting || string.IsNullOrEmpty(selectedStudent.PeriodConfirmation.SelectedPeriod)" 
                         class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
@@ -229,7 +231,7 @@
                             Proceed
                         </ChildContent>
                     </Button>
-                    @if(periodConfirmation.IsShowError && !periodConfirmation.IsApplied)
+                    @if(selectedStudent.PeriodConfirmation.IsShowError && !selectedStudent.PeriodConfirmation.IsApplied)
                     {
                         <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
                     }
@@ -277,7 +279,8 @@
     private ConfirmDialog confirmDeleteDialogRef { get; set; }
 
     private Modal? confirmPeriodModal;
-    private PeriodConfirmation periodConfirmation = new();
+    private Student selectedStudent = new();
+    private bool finalSubmit = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -408,12 +411,59 @@
         if(studentListFormValidation is not null)
         {
             bool studentValid = await studentListFormValidation.ValidateAll();
+
             if (studentValid)
             {
-                students.Add(new Student { Id = students.Count + 1 });
+                var lastStudent = students.Last();
+                
+                if(lastStudent is null) {
+                    await NotificationService.Error("An error occured. Please try again later.", "Error");
+                    return;
+                }
+                selectedStudent = lastStudent;
+
+                var selectedSched = scheduleList.FirstOrDefault(s => s.Id == lastStudent.ScheduleId);
+                if(selectedSched is null)
+                {
+                    await NotificationService.Error("An error occured. Please try again later.", "Error");
+                    return;
+                }
+
+                if(selectedSched.HasExpiration == 1)
+                {
+                    await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+
+                    await confirmPeriodModal.Show();
+                }
+                else 
+                {
+                    students.Add(new Student { Id = students.Count + 1 });
+                }
             }
         }
+    }
 
+    private Task PeriodCalculation(DateTime dateStart, string sessionName)
+    {
+        var datePeriod = DateNextPeriod.CreateRecurring(dateStart, sessionName);
+        DateTime periodStart = datePeriod.PeriodStart;
+        // to set the last time of the day
+        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+
+        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+        DateTime now = DateTime.Now;
+
+        int daysLeft = (periodEnd - now).Days;
+        int hours = (periodEnd - now).Hours;
+        string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+        selectedStudent.PeriodConfirmation.DaysLeft = Math.Abs((now - periodEnd).Days);
+        selectedStudent.PeriodConfirmation.DurationLeft = durationLeft;
+        selectedStudent.PeriodConfirmation.NextPeriod = nextPeriod;
+        selectedStudent.PeriodConfirmation.IsApplied = false;
+        selectedStudent.PeriodConfirmation.IsShowError = false;
+
+        return Task.CompletedTask;
     }
 
     private async void SaveStudents()
@@ -421,7 +471,31 @@
         bool isValid = await FieldValid();
         if (isValid)
         {
-            await confirmDialogRef.Open();
+            var lastStudent = students.Last();
+                
+            if(lastStudent is null) {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+            selectedStudent = lastStudent;
+
+            var selectedSched = scheduleList.FirstOrDefault(s => s.Id == lastStudent.ScheduleId);
+            if(selectedSched is null)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            if(selectedSched.HasExpiration == 1)
+            {
+                finalSubmit = true;
+                await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+                await confirmPeriodModal.Show();
+            }
+            else
+            {
+                await confirmDialogRef.Open();
+            }
         }
         else
         {
@@ -544,7 +618,8 @@
 
     private Task CloseConfirmationModal()
     {
-        periodConfirmation.SelectedPeriod = string.Empty;
+        finalSubmit = false;
+        selectedStudent.PeriodConfirmation.SelectedPeriod = string.Empty;
         return confirmPeriodModal.Close(CloseReason.UserClosing);
     }
 
@@ -552,29 +627,38 @@
     {
         if(period == "currentperiod" || period == "nextperiod")
         {
-            periodConfirmation.SelectedPeriod = period;
+            selectedStudent.PeriodConfirmation.SelectedPeriod = period;
         }
         return Task.CompletedTask;
     }
 
     private async Task ConfirmProceedClick()
     {
-        if(string.IsNullOrEmpty(periodConfirmation.SelectedPeriod))
+        if(string.IsNullOrEmpty(selectedStudent.PeriodConfirmation.SelectedPeriod))
         {
-            periodConfirmation.IsShowError = true;
+            selectedStudent.PeriodConfirmation.IsShowError = true;
         }
         else 
         {
-            periodConfirmation.IsSubmitting = true;
-            await AddDirectStudents();
-            periodConfirmation.IsSubmitting = false;
+            if(!finalSubmit)
+            {
+                selectedStudent.PeriodConfirmation.IsSubmitting = true;
+                selectedStudent.PeriodConfirmation.IsSubmitting = false;
+
+                students.Add(new Student { Id = students.Count + 1 });
+            }
+
+            if(finalSubmit)
+            {
+                await confirmDialogRef.Open();
+            }
+
             await CloseConfirmationModal();
         }
     }
 
-    public class Student
+    private class Student
     {
-
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
@@ -611,6 +695,14 @@
                        Payment != 0;
             }
         }
+
+        public PeriodConfirmation PeriodConfirmation {get; set;} = new();
+    }
+
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        e.Cancel = (e.CloseReason == CloseReason.FocusLostClosing || e.CloseReason == CloseReason.EscapeClosing);
+        return Task.CompletedTask;
     }
 
     private class PeriodConfirmation 
