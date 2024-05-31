@@ -264,7 +264,6 @@
 @code 
 {
     private string token = string.Empty;
-    private int userID { get; set; }
     private IList<string> genders = new List<string>();
     private IList<int> years = new List<int>();
     private IList<string> months = new List<string>();
@@ -320,15 +319,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-            {
-                // an error occurred
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
-            //Get User Id 
-            userID = result.Result.Result.Id;
+            
             // Get Activities
             await GetActivities();
         }
@@ -437,7 +428,8 @@
                 }
                 else 
                 {
-                    students.Add(new Student { Id = students.Count + 1 });
+                    var minYear = DateTime.Now.Year - 4;
+                    students.Add(new Student { Id = students.Count + 1, BirthYear = minYear - 18 });
                 }
             }
         }
@@ -518,18 +510,15 @@
                         BirthYear = s.BirthYear,
                         Gender = s.Gender,
                         Name = s.Name,
-                        ProviderId = userID
                     },
                     CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
                     {
                         ActivityId = schedule.ActivityId,
                         Name = s.Name,
-                        NumberOfSessions = schedule.PerUnit2,
-                        SessionsAttended = 0,
                         Remarks = string.Empty,
-                        StudentNo = "0",
                         ScheduleId = schedule.Id,
-                        Status = "ACTIVE"
+                        Status = "ACTIVE",
+                        Period = s.PeriodConfirmation.SelectedPeriod
                     },
                     CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
                     {
@@ -541,7 +530,7 @@
 
         if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
         {
-            throw new ApplicationException(result.Message);
+            await NotificationService.Error("An error occured. Please try again.", "Error");
         }
         else
         {
@@ -619,7 +608,6 @@
     private Task CloseConfirmationModal()
     {
         finalSubmit = false;
-        selectedStudent.PeriodConfirmation.SelectedPeriod = string.Empty;
         return confirmPeriodModal.Close(CloseReason.UserClosing);
     }
 
@@ -645,7 +633,8 @@
                 selectedStudent.PeriodConfirmation.IsSubmitting = true;
                 selectedStudent.PeriodConfirmation.IsSubmitting = false;
 
-                students.Add(new Student { Id = students.Count + 1 });
+                var minYear = DateTime.Now.Year - 4;
+                students.Add(new Student { Id = students.Count + 1, BirthYear = minYear - 18 });
             }
 
             if(finalSubmit)
