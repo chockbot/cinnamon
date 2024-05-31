@@ -1,3 +1,4 @@
+using Cinnamon.Api.Data.Extensions;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
@@ -40,6 +41,8 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     SessionsAttended = student.DirectStudentSession.SessionsAttended,
                     Status = student.DirectStudentSession.Status,
                     StudentNo = student.DirectStudentSession.StudentNo,
+                    ExpirationDateEnd = student.DirectStudentSession.ExpirationDateEnd.SetKindUtc(),
+                    ExpirationDateStart = student.DirectStudentSession.ExpirationDateStart.SetKindUtc()
                 };
 
                 var studentPayment = new DirectStudentPayment {
