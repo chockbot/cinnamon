@@ -10,7 +10,13 @@
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
 }
+::deep button {
+    transition: transform .25s;
+}
 
+    ::deep button:active {
+        transform: scale(.94);
+    }
 ::deep .page-item:last-child .page-link {
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
