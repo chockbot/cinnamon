@@ -62,11 +62,15 @@ public class DirectStudentRepository : IDirectStudentRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int providerId, int? count, int? skip)
+    public async Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int providerId, string? name, int? count, int? skip)
     {
         try
         {
-            var result = await dataStore.DirectStudentInfo.FindAsync(s => s.ProviderId == providerId, count, skip);
+			Expression<Func<Entities.DirectStudentInfo, bool>> filter =
+				filter => (filter.ProviderId == providerId) &&
+						  (!string.IsNullOrEmpty(name) ? filter.Name.ToLower().Contains(name.ToLower()) : true);
+
+            var result = await dataStore.DirectStudentInfo.FindAsync(filter, count, skip);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
