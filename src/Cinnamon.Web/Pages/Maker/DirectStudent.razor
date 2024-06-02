@@ -541,6 +541,7 @@
                         BirthYear = s.BirthYear,
                         Gender = s.Gender,
                         Name = s.Name,
+                        Id = s.DBId
                     },
                     CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
                     {
@@ -716,7 +717,7 @@
             var currentStudent = students.Last();
             if(currentStudent is null) return modalStudentSearch.Close(CloseReason.UserClosing);
 
-            currentStudent.Id = student.Id;
+            currentStudent.DBId = student.Id;
             currentStudent.Name = student.Name;
             currentStudent.BirthMonth = student.BirthMonth;
             currentStudent.BirthYear = student.BirthYear;
@@ -728,6 +729,8 @@
 
     private class Student
     {
+        public int DBId {get; set;}
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]

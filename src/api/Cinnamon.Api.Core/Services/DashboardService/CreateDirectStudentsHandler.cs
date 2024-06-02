@@ -123,7 +123,8 @@ public class CreateDirectStudentsHandler : ICreateDirectStudentsHandler
                         BirthYear = student.CreateDirectStudentInfo.BirthYear,
                         Gender = student.CreateDirectStudentInfo.Gender,
                         Name = student.CreateDirectStudentInfo.Name,
-                        ProviderId = profile.Id
+                        ProviderId = profile.Id,
+                        Id = student.CreateDirectStudentInfo.Id
                     },
                     CreateDirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment {
                         Amount = student.CreateDirectStudentPayment.Amount

@@ -774,6 +774,7 @@ public class DashboardController : ControllerBase
                             BirthYear  = s.CreateDirectStudentInfo.BirthYear,
                             Gender     = s.CreateDirectStudentInfo.Gender,
                             Name       = s.CreateDirectStudentInfo.Name,
+                            Id         = s.CreateDirectStudentInfo.Id
                         },
                         CreateDirectStudentSession = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentSession
                         {

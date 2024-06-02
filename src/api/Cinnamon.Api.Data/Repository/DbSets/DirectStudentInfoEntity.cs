@@ -23,36 +23,64 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
         {
             foreach (var student in directStudents)
             {
-                var studentInfo = new DirectStudentInfo {
-                    BirthMonth = student.DirectStudentInfo.BirthMonth,
-                    BirthYear = student.DirectStudentInfo.BirthYear,
-                    Gender = student.DirectStudentInfo.Gender,
-                    Name = student.DirectStudentInfo.Name,
-                    ProviderId = student.DirectStudentInfo.ProviderId
-                };
+                if(student.DirectStudentInfo.Id == 0)
+                {
+                        var studentInfo = new DirectStudentInfo {
+                        BirthMonth = student.DirectStudentInfo.BirthMonth,
+                        BirthYear = student.DirectStudentInfo.BirthYear,
+                        Gender = student.DirectStudentInfo.Gender,
+                        Name = student.DirectStudentInfo.Name,
+                        ProviderId = student.DirectStudentInfo.ProviderId,
+                        Id = student.DirectStudentInfo.Id
+                    };
 
-                var studentSession = new DirectStudentSession {
-                    ActivityId = student.DirectStudentSession.ActivityId,
-                    DirectStudentInfo = studentInfo,
-                    Name = student.DirectStudentSession.Name,
-                    NumberOfSessions = student.DirectStudentSession.NumberOfSessions,
-                    ScheduleId = student.DirectStudentSession.ScheduleId,
-                    Remarks = student.DirectStudentSession.Remarks,
-                    SessionsAttended = student.DirectStudentSession.SessionsAttended,
-                    Status = student.DirectStudentSession.Status,
-                    StudentNo = student.DirectStudentSession.StudentNo,
-                    ExpirationDateEnd = student.DirectStudentSession.ExpirationDateEnd.SetKindUtc(),
-                    ExpirationDateStart = student.DirectStudentSession.ExpirationDateStart.SetKindUtc()
-                };
+                    var studentSession = new DirectStudentSession {
+                        ActivityId = student.DirectStudentSession.ActivityId,
+                        DirectStudentInfo = studentInfo,
+                        Name = student.DirectStudentSession.Name,
+                        NumberOfSessions = student.DirectStudentSession.NumberOfSessions,
+                        ScheduleId = student.DirectStudentSession.ScheduleId,
+                        Remarks = student.DirectStudentSession.Remarks,
+                        SessionsAttended = student.DirectStudentSession.SessionsAttended,
+                        Status = student.DirectStudentSession.Status,
+                        StudentNo = student.DirectStudentSession.StudentNo,
+                        ExpirationDateEnd = student.DirectStudentSession.ExpirationDateEnd.SetKindUtc(),
+                        ExpirationDateStart = student.DirectStudentSession.ExpirationDateStart.SetKindUtc()
+                    };
 
-                var studentPayment = new DirectStudentPayment {
-                    Amount = student.DirectStudentPayment.Amount,
-                    DirectStudentSession = studentSession,
-                };
+                    var studentPayment = new DirectStudentPayment {
+                        Amount = student.DirectStudentPayment.Amount,
+                        DirectStudentSession = studentSession,
+                    };
 
-                applicationContext.DirectStudentInfos.Add(studentInfo);
-                applicationContext.DirectStudentSessions.Add(studentSession);
-                applicationContext.DirectStudentPayments.Add(studentPayment);
+                    applicationContext.DirectStudentInfos.Add(studentInfo);
+                    applicationContext.DirectStudentSessions.Add(studentSession);
+                    applicationContext.DirectStudentPayments.Add(studentPayment);
+                }
+                else 
+                {
+                    var studentSession = new DirectStudentSession {
+                        ActivityId = student.DirectStudentSession.ActivityId,
+                        DirectStudentInfoId = student.DirectStudentInfo.Id,
+                        Name = student.DirectStudentSession.Name,
+                        NumberOfSessions = student.DirectStudentSession.NumberOfSessions,
+                        ScheduleId = student.DirectStudentSession.ScheduleId,
+                        Remarks = student.DirectStudentSession.Remarks,
+                        SessionsAttended = student.DirectStudentSession.SessionsAttended,
+                        Status = student.DirectStudentSession.Status,
+                        StudentNo = student.DirectStudentSession.StudentNo,
+                        ExpirationDateEnd = student.DirectStudentSession.ExpirationDateEnd.SetKindUtc(),
+                        ExpirationDateStart = student.DirectStudentSession.ExpirationDateStart.SetKindUtc()
+                    };
+
+                    var studentPayment = new DirectStudentPayment {
+                        Amount = student.DirectStudentPayment.Amount,
+                        DirectStudentSession = studentSession,
+                    };
+
+                    applicationContext.DirectStudentSessions.Add(studentSession);
+                    applicationContext.DirectStudentPayments.Add(studentPayment);
+                }
             }
 
             await applicationContext.SaveChangesAsync();
