@@ -22,6 +22,9 @@ public class CreateDirectStudentsArgs
     public class CreateDirectStudentInfo
     {
         [Required]
+        public int Id {get; set;}
+
+        [Required]
         public string Name { get; set; }
 
         [Required]
