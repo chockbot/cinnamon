@@ -40,7 +40,8 @@ public class DirectStudentsInfoHandler : IDirectStudentsInfoHandler
             var directStudentsInfoRes = await directStudentData.StudentInfos(new Framework.ApiCommand.ApiData.DirectStudent.Request.StudentInfosArgs {
                 CountPerPage = args.PageCount,
                 PageIndex = args.PageIndex,
-                ProviderId = providerProfileRes.Result.Id
+                ProviderId = providerProfileRes.Result.Id,
+                Name = args.SearchName
             });
             if(!directStudentsInfoRes.Succeeded || directStudentsInfoRes.Result is null || !directStudentsInfoRes.Result.IsSuccess)
             {

@@ -36,7 +36,8 @@ public class DirectStudentsController : ControllerBase
         {
             var result = await directStudentsInfoHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.DirectStudentsInfosArgs {
                 PageCount = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex = args.PageIndex,
+                SearchName = args.SearchName
             });
             if(!result.Succeeded || result.Result is null)
             {
