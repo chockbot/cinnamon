@@ -16,6 +16,8 @@ public class CreateDirectStudentsArgs : IInteractor
 
     public class CreateDirectStudentInfo
     {
+        public int Id {get; set;}
+        
         public string Name { get; set; }
 
         public string Gender { get; set; }
