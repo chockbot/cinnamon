@@ -251,13 +251,15 @@
             <ModalBody class="px-4">
                 <p class="font-16 color-grey-400 text-center">Add students that you have already listed before.</p>
                 <TextEdit TextChanged="SearchStudent" Placeholder="Search" class="font-16"/>
-                <ListGroup style="max-height: 300px; min-height: 300px;" class="mt-3" Scrollable
-                    Mode="ListGroupMode.Selectable" @bind-SelectedItem="searchInfo.SelectedStudentId">
-                    @foreach (var item in searchInfo.StudentInfos)
-                    {
-                        <ListGroupItem Name='@item.Id.ToString()'>@item.Name</ListGroupItem>   
-                    }
-                </ListGroup>
+                <div class="mt-3 search-items-container">
+                    <ListGroup class="search-list-grp-container"
+                        Mode="ListGroupMode.Selectable" @bind-SelectedItem="searchInfo.SelectedStudentId">
+                        @foreach (var item in searchInfo.StudentInfos)
+                        {
+                            <ListGroupItem Name='@item.Id.ToString()'>@item.Name</ListGroupItem>   
+                        }
+                    </ListGroup>
+                </div>
                 <div class="text-end mt-3">
                     <Button class="bg-grey-300" Clicked="() => modalStudentSearch.Close(CloseReason.UserClosing)">Cancel</Button>
                     <Button Clicked="SelectSearchedStudent" class="bg-green-100 color-white-100">
