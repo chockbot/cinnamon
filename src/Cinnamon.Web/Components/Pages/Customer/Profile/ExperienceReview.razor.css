@@ -6,7 +6,13 @@ button:focus {
     outline: none !important;
     box-shadow: none !important;
 }
+::deep button {
+    transition: transform .25s;
+}
 
+    ::deep button:active {
+        transform: scale(.94);
+    }
 .experience-review-wrapper {
     font-family: "Nunito";
     overflow: hidden;

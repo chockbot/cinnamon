@@ -1,5 +1,15 @@
 ﻿.messages-container {
 }
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+::deep button {
+    transition: transform .25s;
+}
+::deep button:active {
+    transform: scale(.94);
+}
 .messages-section {
   border-right: 1px solid #d9d9d9;
   height: 90vh;
@@ -379,7 +389,8 @@
 }
 
 .attachment-name {
-  margin-top: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   font-family: "Nunito";
   font-style: normal;
   font-weight: 700;
@@ -491,7 +502,6 @@
 }
 
 .profile-settings-section {
-  position: absolute;
   bottom: 10px;
 }
 
@@ -547,13 +557,28 @@
 }
 
 .personal-message-icon {
-  margin-right: 25px;
-  cursor: pointer;
+    margin-right: 25px;
+    cursor: pointer;
+    transition: transform .25s;
+}
+    .personal-message-icon:active {
+        transform: scale(.94);
+    }
+.message-info {
+    transition: transform .25s;
+    cursor: pointer;
+}
+    .message-info:active {
+        transform: scale(.94);
+    }
+#img-add-member {
+    cursor: pointer;
+    transition: transform .25s;
 }
 
-#img-add-member {
-  cursor: pointer;
-}
+    #img-add-member:active {
+        transform: scale(.94);
+    }
 
 .tbl-members {
   width: 100%;
@@ -574,9 +599,14 @@ input[type="text"] {
 }
 
 #send-message {
-  width: 28px;
-  height: 28px;
+    width: 28px;
+    height: 28px;
+    transition: transform .25s;
 }
+
+    #send-message:active {
+        transform: scale(.94);
+    }
 
 .no-conversation-title {
   font-family: "Nunito";
@@ -697,7 +727,8 @@ input[type="text"] {
 }
 
 .sidebar-messages {
-  width: 300px;
+  width: 350px;
+  padding: 20px;
 }
 
 .center-messages {
