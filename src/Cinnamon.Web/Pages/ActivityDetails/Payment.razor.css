@@ -1,24 +1,90 @@
 ﻿* {
   font-family: "Nunito";
 }
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+::deep button {
+    transition: transform .25s;
+}
+    ::deep button:active {
+        transform: scale(.94);
+    }
 .button-back{
     border: none;
     width: 50px;
     height: 40px;
     background-color: transparent;
 }
-::deep button:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
+
 ::deep input:focus {
     outline: none !important;
     box-shadow: none !important;
 }
 .add-ons-section .prevent-select {
+    color: grey;
+    display: inline-flex;
     border: 1px solid #D9D9D9;
+}
+.button-back {
+    border: none;
+    width: 50px;
+    height: 40px;
+    background-color: transparent;
+    transition: transform .25s;
+}
+
+    .button-back:active {
+        transform: scale(.94);
+    }
+.prevent-select > div {
+    border-right: 1px solid #D9D9D9;
+}
+
+    .prevent-select > div:last-child {
+        border-right: none;
+    }
+
+.addon-operation {
+    cursor: pointer;
+}
+
+.addon-name {
+    min-width: 250px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.addon-operation {
+    width: 50px;
+    text-align: center;
+    color: rgb(255, 169, 66) !important;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.addon-count {
+    width: 50px;
+    text-align: center;
+    padding: 10px;
+}
+
+.add-ons-section .prevent-select {
     margin-bottom: 1rem;
     border-radius: 3px;
+}
+.addon-button .activity-title {
+    padding-top: 12px;
+}
+
+.addon-button {
+    width: auto;
+    height: auto;
+    border-radius: 30px;
+    color: #343D4C;
+    background-color: #F3F6FCDE;
+    border: none;
 }
 .selected-schedule{
     justify-content: space-between;
