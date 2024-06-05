@@ -84,7 +84,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                 numberOfSessions = schedule.PerUnit2;
             }
 
-            var result = await directStudentData.UpdateDirectStudent(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs {
+                var result = await directStudentData.UpdateDirectStudent(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs {
                 UpdateDirectStudentData = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudent {
                     UpdateDirectStudentInfo = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
                         BirthMonth = args.BirthMonth,
@@ -120,7 +120,8 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                 Gender = args.Gender ?? string.Empty,
                 Id = args.StudentId,
                 Name = args.Name ?? string.Empty,
-                ScheduleId = args.ScheduleId ?? 0
+                ScheduleId = args.ScheduleId ?? 0,
+                Remarks = args.Remarks ?? string.Empty,
             }, "Successfully update student id");
         }
         catch (Exception ex)

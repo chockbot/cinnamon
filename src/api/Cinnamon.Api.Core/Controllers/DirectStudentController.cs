@@ -95,17 +95,17 @@ public class DirectStudentsController : ControllerBase
         try
         {
             var result = await updateDirectStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs {
-                ActivityId = args.ActivityId,
-                Amount = args.Amount,
-                BirthMonth = args.BirthMonth,
-                BirthYear = args.BirthYear,
-                Gender = args.Gender,
-                Name = args.Name,
-                ScheduleId = args.ScheduleId,
-                StudentId = args.StudentId,
+                ActivityId       = args.ActivityId,
+                Amount           = args.Amount,
+                BirthMonth       = args.BirthMonth,
+                BirthYear        = args.BirthYear,
+                Gender           = args.Gender,
+                Name             = args.Name,
+                ScheduleId       = args.ScheduleId,
+                StudentId        = args.StudentId,
                 NumberOfSessions = args.NumberOfSessions,
-                Remarks = args.Remarks,
-                StudentNo = args.StudentNo
+                Remarks          = args.Remarks,
+                StudentNo        = args.StudentNo
             });
             if(!result.Succeeded || result.Result is null)
             {

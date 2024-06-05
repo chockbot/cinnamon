@@ -104,6 +104,7 @@ public class DirectStudentAttendanceRepository : IDirectStudentAttendanceReposit
         }   
     }
 
+
     public async Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> UpdateStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances, DateTime date)
     {
         try
