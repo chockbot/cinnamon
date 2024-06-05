@@ -49,15 +49,6 @@
                     <img src="images/Home.png" class="img-icon-home">
                 </a>
             </div>
-            <form class="search-bar" @onsubmit=Search>
-                <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                    <div class="input-group-append border-0">
-                        <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                        <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
-                    </div>
-                </div>
-            </form>
         </div>
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end dropdown-section">
@@ -300,7 +291,7 @@
 
     <!--Section 1-->
     <div class="container">
-                <div class="col-lg-6 d-flex justify-content-end col-md-8 d-flex justify-content-center col-sm-10 d-flex flex-row justify-content-start col-11 d-flex flex-row justify-content-start">
+                <div class="justify-content-center">
             <form class="search-bar" @onsubmit=Search>
                 <div class="input-group border rounded-pill p-1">
                     <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
@@ -479,7 +470,7 @@
                                                                     <div class="title-section">
                                                                         <div>
                                                                             <Tooltip Multiline=true Text=@act.Title>
-                                                                                <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                                                <h4 class="card-title1 mb-0">@act.ExperienceTypeId</h4>
                                                                             </Tooltip>
                                                                             @if (act.ExperienceTypeId == 1)
                                                                             {
