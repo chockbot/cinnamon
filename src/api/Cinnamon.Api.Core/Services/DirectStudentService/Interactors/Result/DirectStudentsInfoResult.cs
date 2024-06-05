@@ -1,7 +1,10 @@
+using Cinnamon.Framework.ApiCommand.ApiCore;
 namespace Cinnamon.Api.Core.Services.DirectStudentService.Interactors.Results;
 
 public class DirectStudentsInfoResult
 {
+    public ErrorInfo? ErrorInfo { get; set; }
+    public Pagination? Pagination { get; set; }
     public IEnumerable<DirectStudentInfo> DirectStudentInfos { get; set; }
 
     public class DirectStudentInfo

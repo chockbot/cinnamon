@@ -98,16 +98,14 @@ public class DirectStudentController : ControllerBase
     {
         try
         {
-            var result = await directStudentRepository.GetDirectStudentsInfo(args.ProviderId, args.Name, args.CountPerPage, 
-                (args.PageIndex - 1) * args.CountPerPage);
-
+            var result = await directStudentRepository.GetDirectStudentsInfo(args.ProviderId, args.SearchValue ?? string.Empty, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage);
             if(!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
             }
             
             var totalCountRes = await directStudentRepository
-                .GetDirectStudentsInfo(args.ProviderId, args.Name, null, null);
+                .GetDirectStudentsInfo(args.ProviderId,args.SearchValue ?? string.Empty, null, null);
                 
             if(!totalCountRes.Succeeded || totalCountRes.Result is null)
             {
@@ -180,7 +178,7 @@ public class DirectStudentController : ControllerBase
         {
             return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
-    } 
+    }
 
     [HttpGet]
     [Route("Attendance")]

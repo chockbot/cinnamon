@@ -4,6 +4,5 @@ public class DirectStudentInfoArgs
 {
     public int PageIndex {get; set;}
     public int CountPerPage {get; set;}
-
-    public string? SearchName {get; set;}
+    public string? SearchValue { get; set; }
 }

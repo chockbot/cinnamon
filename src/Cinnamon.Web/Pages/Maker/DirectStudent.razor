@@ -689,7 +689,7 @@
             var studentsRes = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
                 CountPerPage = 15,
                 PageIndex = 1,
-                SearchName = value
+                SearchValue = value
             }, token);
 
             if(studentsRes.Succeeded && studentsRes.Result is not null && studentsRes.Result.IsSuccess)
