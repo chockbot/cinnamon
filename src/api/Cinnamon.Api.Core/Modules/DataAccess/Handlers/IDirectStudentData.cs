@@ -10,6 +10,8 @@ public interface IDirectStudentData
 
     Task<AppResult<GetDirectStudentsResult>> GetDirectStudents(GetDirectStudentsArgs args);
 
+    Task<AppResult<GetDirectStudentByIdResult>> GetDirectStudentsById(GetDirectStudentByIdArgs args);
+
     Task<AppResult<StudentAttendanceResult>> StudentAttendance(StudentAttendanceArgs args);
 
     Task<AppResult<CreateStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args);

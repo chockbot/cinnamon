@@ -228,137 +228,137 @@ public class DirectStudentController : ControllerBase
         }
     }
 
-    //[HttpGet]
-    //[Route("Attendance")]
-    //[ProducesResponseType(typeof(StudentAttendanceResult), StatusCodes.Status202Accepted)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> StudentAttendance([FromQuery] StudentAttendanceArgs args)
-    //{
-    //    try
-    //    {
-    //        DateTime? date = null;
-    //        if (!string.IsNullOrEmpty(args.Date))
-    //        {
-    //            date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
-    //        }
+    [HttpGet]
+    [Route("Attendance")]
+    [ProducesResponseType(typeof(StudentAttendanceResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentAttendance([FromQuery] StudentAttendanceArgs args)
+    {
+        try
+        {
+            DateTime? date = null;
+            if (!string.IsNullOrEmpty(args.Date))
+            {
+                date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
 
-    //        var result = await directStudentAttendanceRepository.GetAllAsync(
-    //            args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, date, args.IncludeStudent,
-    //            args.ActivityIds, args.ScheduleIds);
-    //        if (!result.Succeeded || result.Result is null)
-    //        {
-    //            return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            var result = await directStudentAttendanceRepository.GetAllAsync(
+                args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, date, args.IncludeStudent,
+                args.ActivityIds, args.ScheduleIds);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        var totalCountRes = await directStudentAttendanceRepository
-    //            .GetAllAsync(null, null, date, args.IncludeStudent, args.ActivityIds, args.ScheduleIds);
-    //        if (!totalCountRes.Succeeded || totalCountRes.Result is null)
-    //        {
-    //            return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = totalCountRes.Message } });
-    //        }
+            var totalCountRes = await directStudentAttendanceRepository
+                .GetAllAsync(null, null, date, args.IncludeStudent, args.ActivityIds, args.ScheduleIds);
+            if (!totalCountRes.Succeeded || totalCountRes.Result is null)
+            {
+                return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = totalCountRes.Message } });
+            }
 
-    //        var totalRecords = totalCountRes.Result.Count();
-    //        return new JsonResult(new StudentAttendanceResult
-    //        {
-    //            Result = result.Result,
-    //            IsSuccess = true,
-    //            Pagination = new Pagination
-    //            {
-    //                PageIndex = args.PageIndex,
-    //                PerPage = args.CountPerPage,
-    //                TotalRecords = totalRecords,
-    //                TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
-    //                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
-    //            }
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            var totalRecords = totalCountRes.Result.Count();
+            return new JsonResult(new StudentAttendanceResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                    (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
-    //[HttpPost]
-    //[Route("Attendance/Bulk")]
-    //[ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status202Accepted)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
-    //{
-    //    try
-    //    {
-    //        var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.CreateStudentAttendances);
+    [HttpPost]
+    [Route("Attendance/Bulk")]
+    [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
+    {
+        try
+        {
+            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.CreateStudentAttendances);
 
-    //        var result = await directStudentAttendanceRepository.CreateDirectStudentAttendances(dtos);
-    //        if (!result.Succeeded || result.Result is null)
-    //        {
-    //            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            var result = await directStudentAttendanceRepository.CreateDirectStudentAttendances(dtos);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        return new JsonResult(new CreateStudentAttendanceResult
-    //        {
-    //            IsSuccess = true,
-    //            Result = result.Result
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new CreateStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = result.Result
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
-    //[HttpPost]
-    //[Route("Attendance/Update/Bulk")]
-    //[ProducesResponseType(typeof(UpdateStudentAttendanceBulkResult), StatusCodes.Status202Accepted)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> UpdateStudentAttendance([FromBody] UpdateStudentAttendanceBulkArgs args)
-    //{
-    //    try
-    //    {
-    //        var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.StudentAttendances);
+    [HttpPost]
+    [Route("Attendance/Update/Bulk")]
+    [ProducesResponseType(typeof(UpdateStudentAttendanceBulkResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateStudentAttendance([FromBody] UpdateStudentAttendanceBulkArgs args)
+    {
+        try
+        {
+            var dtos = mapper.Map<IEnumerable<DirectStudentAttendanceDTO>>(args.StudentAttendances);
 
-    //        var result = await directStudentAttendanceRepository.UpdateStudentAttendances(dtos, args.Date);
-    //        if (!result.Succeeded || result.Result is null)
-    //        {
-    //            return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            var result = await directStudentAttendanceRepository.UpdateStudentAttendances(dtos, args.Date);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        return new JsonResult(new UpdateStudentAttendanceBulkResult
-    //        {
-    //            IsSuccess = true,
-    //            Result = result.Result
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new UpdateStudentAttendanceBulkResult
+            {
+                IsSuccess = true,
+                Result = result.Result
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateStudentAttendanceBulkResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
-    //[HttpGet]
-    //[Route("GetDirectStudentsPayment")]
-    //[ProducesResponseType(typeof(GetDirectStudentsPaymentResult), StatusCodes.Status202Accepted)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> GetDirectStudentsPayment([FromQuery] GetDirectStudentsPaymentArgs args)
-    //{
-    //    try
-    //    {
-    //        DateTime From = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+    [HttpGet]
+    [Route("GetDirectStudentsPayment")]
+    [ProducesResponseType(typeof(GetDirectStudentsPaymentResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetDirectStudentsPayment([FromQuery] GetDirectStudentsPaymentArgs args)
+    {
+        try
+        {
+            DateTime From = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
-    //        var result = await directStudentRepository.GetStudentPaymentByProvider(args.ProviderId, From);
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new GetDirectStudentsPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
+            var result = await directStudentRepository.GetStudentPaymentByProvider(args.ProviderId, From);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetDirectStudentsPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
-    //        return new JsonResult(new GetDirectStudentsPaymentResult
-    //        {
-    //            Result = result.Result,
-    //            IsSuccess = true,
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new GetDirectStudentsPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
+            return new JsonResult(new GetDirectStudentsPaymentResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDirectStudentsPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
