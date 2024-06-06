@@ -14,4 +14,6 @@ public class UpdateDirectStudentResult
 
     public string Remarks { get; set; }
     public decimal Amount {get; set;}
+
+    public int SessionAttended { get; set; }
 }

@@ -210,7 +210,7 @@ public class DirectStudentData : IDirectStudentData
         try
         {
             var result = await flurlClient
-                            .Request("GetStudentAttendanceById")
+                            .Request($"DirectStudent/GetStudentAttendanceById")
                             .SetQueryParams(args)
                             .GetJsonAsync<GetDirectStudentByIdResult>();
             return AppResult<GetDirectStudentByIdResult>.CreateSucceeded(result, "Successfully get direct students api.");

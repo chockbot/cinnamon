@@ -1,5 +1,4 @@
 ﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Modules.DataAccess.StudentAttendance;
 using Cinnamon.Api.Core.Services.DirectStudentService.Handlers;
 using Cinnamon.Api.Core.Services.DirectStudentService.Interactors;
 using Cinnamon.Api.Core.Services.DirectStudentService.Interactors.Result;

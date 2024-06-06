@@ -6,6 +6,7 @@
 @using Cinnamon.Web.Models.Maker;
 @using System.Globalization;
 @using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -184,6 +185,7 @@
     public bool                     disableButtonRight  { get; set; } = false;
     public bool                     disableButtonLeft   { get; set; } = false;
     LoadingIndicator                loadingIndicator;
+    public StudentType studentType { get; set; } = StudentType.Manual;
 
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
@@ -218,22 +220,22 @@
         //Get Student Attendance Details
         switch (Type)
         {
-            case "Cinnamon":
+                case "Cinnamon":
                 var result = await ongoingApiHandler.GetOngoingActivityById(Id);
                 if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                 {
                     student = new Students
-                            {
-                                Id = result.Result.Result.Id,
-                                CustomerId = result.Result.Result.CustomerId,
-                                Name = result.Result.Result.Name,
-                                Remarks = result.Result.Result.Remarks,
-                                ActivityId = result.Result.Result.ActivityId,
-                                ScheduleId = result.Result.Result.ScheduleId,
-                                NumberOfSessions = result.Result.Result.NumberOfSessions,
-                                SessionsAttended = result.Result.Result.SessionsAttended,
-                                NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
-                            };
+                    {
+                        Id                   = result.Result.Result.Id,
+                        CustomerId           = result.Result.Result.CustomerId,
+                        Name                 = result.Result.Result.Name,
+                        Remarks              = result.Result.Result.Remarks,
+                        ActivityId           = result.Result.Result.ActivityId,
+                        ScheduleId           = result.Result.Result.ScheduleId,
+                        NumberOfSessions     = result.Result.Result.NumberOfSessions,
+                        SessionsAttended     = result.Result.Result.SessionsAttended,
+                        NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
+                    };
                 }
                 //Get Parent Name
                 var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
@@ -245,8 +247,8 @@
                         LastName = customer.Result.Result.LastName
                     };
                 }
-            break;
-            case "Manual":
+                break;
+                case "Manual":
                 var resultDirect = await directStudentApiHandler.DirectStudent(Id, token);
                 if (resultDirect.Succeeded && resultDirect.Result != null && resultDirect.Result.IsSuccess)
                 {
@@ -267,9 +269,9 @@
                 //Get Parent Name
                 profile.FirstName = "Juan";
                 profile.LastName = "Dela Cruz";
-            break;
+                break;
             default:
-            break;
+                break;
         }
         //Get Student Attendance
         await GetStudentAttendances();
@@ -344,41 +346,41 @@
             {
                 case "Cinnamon":
                     var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                     {
-                         Id = Id,
-                         Remarks = remarksLocalState,
-                     });
+                             {
+                                 Id = Id,
+                                 Remarks = remarksLocalState,
+                             });
 
                     if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                     {
                         student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
                     }
-                break;
+                    break;
                 case "Manual":
                     var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
-                    {
-                        StudentId = Id,
-                        Remarks = remarksLocalState
-                     }, Token);
+                            {
+                                StudentId = Id,
+                                Remarks = remarksLocalState
+                             }, Token);
 
                     if (updateRes.Succeeded && updateRes.Result != null && updateRes.Result.IsSuccess)
                     {
                         student.Remarks = string.IsNullOrEmpty(updateRes.Result.Result.Remarks) ? string.Empty : updateRes.Result.Result.Remarks;
                     }
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
-            
+
         }
         isEditRemarks = false;
     }
+
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
         try
         {
             await loadingIndicator.Show();
-
             studentAttendance.IsPresent = !studentAttendance.IsPresent;
             if (studentAttendance.IsPresent)
             {
@@ -390,53 +392,59 @@
                 studentAttendance.SessionsAttended -= 1;
                 studentAttendance.NumberOfBackTracking += 1;
             }
-            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
-                                            {
-                                                Id = studentAttendance.Id,
-                                                Date = studentAttendance.Date,
-                                                IsPresent = studentAttendance.IsPresent
-                                            }, token);
-
-            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+            //Check if Cinnamon or Manual Student
+            if(Type == "Manual")
             {
-                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                                        {
-                                            Id = studentAttendance.StudentId,
-                                            SessionsAttended = studentAttendance.SessionsAttended,
-                                            NumberOfBacktracking = studentAttendance.NumberOfBackTracking
-                                        });
+               
             }
-            //Get Schedule Details
-            var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
-
-            //Set Session Expiration
-            if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+            else
             {
-                //Get student attendance
-                await GetStudentAttendances();
-                //Check if first attendance
-                switch (studentAttendances.Count)
+                var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+                        {
+                            Id = studentAttendance.Id,
+                            Date = studentAttendance.Date,
+                            IsPresent = studentAttendance.IsPresent
+                        }, token);
+                if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
                 {
-                    case 0:
-                        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                                            {
-                                                Id = studentAttendance.StudentId,
-                                                ExpirationStartDate = DateTime.MinValue,
-                                                ExpirationEndDate = DateTime.MinValue
-                                            });
-                        break;
-                    default:
-                        //Get earliest attendance date
-                        DateTime earliestDate = studentAttendances.Min(a => a.Date);
-                        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                                {
-                                    Id = studentAttendance.StudentId,
-                                    ScheduleId = studentAttendance.ScheduleId,
-                                    SessionName = schedule.SessionName,
-                                    ExpirationStartDate = earliestDate,
-                                    ExpirationEndDate = DateTime.UtcNow
-                                });
-                        break;
+                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                SessionsAttended = studentAttendance.SessionsAttended,
+                                NumberOfBacktracking = studentAttendance.NumberOfBackTracking
+                            });
+                }
+                //Get Schedule Details
+                var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
+                //Set Session Expiration
+                if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+                {
+                    //Get student attendance
+                    await GetStudentAttendances();
+                    //Check if first attendance
+                    switch (studentAttendances.Count)
+                    {
+                        case 0:
+                            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                                    {
+                                        Id = studentAttendance.StudentId,
+                                        ExpirationStartDate = DateTime.MinValue,
+                                        ExpirationEndDate = DateTime.MinValue
+                                    });
+                            break;
+                        default:
+                            //Get earliest attendance date
+                            DateTime earliestDate = studentAttendances.Min(a => a.Date);
+                            await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                                    {
+                                        Id = studentAttendance.StudentId,
+                                        ScheduleId = studentAttendance.ScheduleId,
+                                        SessionName = schedule.SessionName,
+                                        ExpirationStartDate = earliestDate,
+                                        ExpirationEndDate = DateTime.UtcNow
+                                    });
+                            break;
+                    }
                 }
             }
             await OnInitializedAsync();
@@ -461,27 +469,27 @@
                 case "Cinnamon":
                     if (student.NumberOfBacktracking != 0)
                     {
-                    var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+                        var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                             {
                                 AttendanceDate = presentDate,
                                 IsPresent = true,
                                 StudentId = student.Id,
                             }, token);
-                    if (create.Succeeded && create.Result.IsSuccess)
-                    {
-                        //Update Session Attended and Backtracking
-                        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                                {
-                                    Id = student.Id,
-                                    SessionsAttended = student.SessionsAttended + 1,
-                                    NumberOfBacktracking = student.NumberOfBacktracking - 1
-                                });
-                        student.SessionsAttended = result.Result.Result.SessionsAttended;
-                        student.ExpirationDateStart = result.Result.Result.ExpirationStartDate;
-                        //Get Schedule Details
-                        var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
-                        //Set Session Expiration
-                        if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+                        if (create.Succeeded && create.Result.IsSuccess)
+                        {
+                            //Update Session Attended and Backtracking
+                            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = student.Id,
+                                SessionsAttended = student.SessionsAttended + 1,
+                                NumberOfBacktracking = student.NumberOfBacktracking - 1
+                            });
+                            student.SessionsAttended = result.Result.Result.SessionsAttended;
+                            student.ExpirationDateStart = result.Result.Result.ExpirationStartDate;
+                            //Get Schedule Details
+                            var schedules = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
+                            //Set Session Expiration
+                            if (schedules != null && schedules.IsSetSession == true && schedules.HasExpiration == 2)
                         {
                             //Check if first attendance
                             if (student.SessionsAttended == 1 || (student.ExpirationDateStart > presentDate && student.ExpirationDateStart != DateTime.MinValue))
@@ -491,7 +499,7 @@
                                         {
                                             Id = student.Id,
                                             ScheduleId = student.ScheduleId,
-                                            SessionName = schedule.SessionName,
+                                            SessionName = schedules.SessionName,
                                             ExpirationStartDate = presentDate,
                                             ExpirationEndDate = student.ExpirationDateEnd
                                         });
@@ -500,10 +508,10 @@
                             StateHasChanged();
                             await loadingIndicator.Hide();
                         }
-                    }
-                    await OnInitializedAsync();
-                    StateHasChanged();
-                    await loadingIndicator.Hide();
+                        }
+                        await OnInitializedAsync();
+                        StateHasChanged();
+                        await loadingIndicator.Hide();
                     }
                     else
                     {
@@ -512,12 +520,40 @@
                         await ShowModal();
                         await loadingIndicator.Hide();
                     }
-                break;
+                    break;
                 case "Manual":
-
-                break;
-            default:
-                break;
+                    //Create Attendance
+                    List<Students> studentAttendance = new List<Students>();
+                    studentAttendance.Add(student);
+                    var createDirect = await directStudentApiHandler.CreateDirectStudentAttendance(new Framework.ApiCommand.ApiCore.DirectStudent.Request.CreateDirectStudentAttendanceArgs{
+                        CreateStudentAttendances = studentAttendance.Select(s =>
+                        {
+                            return new Framework.ApiCommand.ApiCore.DirectStudent.Request.CreateDirectStudentAttendanceArgs.CreateStudentAttendance
+                            {
+                                DirectStudentSessionId = s.Id,
+                                Date                   = presentDate,
+                                IsPresent              = true
+                            };
+                        })
+                    }, token);
+                    if(createDirect.Succeeded && createDirect.Result.IsSuccess)
+                    {
+                        //Update Session Attended and Backtracking
+                        var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
+                        {
+                            StudentId = Id,
+                            SessionsAttended = student.SessionsAttended + 1,
+                        }, Token);
+                        student.SessionsAttended = updateRes.Result.Result.SessionAttended;
+                        //Get Schedule Details
+                        var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
+                    }
+                    await OnInitializedAsync();
+                    StateHasChanged();
+                    await loadingIndicator.Hide();
+                    break;
+                 default:
+                    break;
             }
         }
         catch (Exception ex)
@@ -533,41 +569,65 @@
         switch (Type)
         {
             case "Cinnamon":
-                var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-                        {
-                            StudentId = student.Id,
-                            ActivityId = student.ActivityId,
-                            ScheduleId = student.ScheduleId,
-                        }, Token);
-                if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+            var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = student.Id,
+                ActivityId = student.ActivityId,
+                ScheduleId = student.ScheduleId,
+            }, Token);
+            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+            {
+                studentAttendances = attendance.Result.Result.Select(a =>
                 {
-                    studentAttendances = attendance.Result.Result.Select(a =>
-                    {
-                        return new StudentAttendance
-                                {
-                                    Id = a.Id,
-                                    Date = a.Date,
-                                    IsPresent = a.IsPresent,
-                                    ActivityId = a.ActivityId,
-                                    NumberOfSessions = a.NumberOfSessions,
-                                    SessionsAttended = a.SessionsAttended,
-                                    ScheduleId = a.ScheduleId,
-                                    StudentId = a.StudentId,
-                                    NumberOfBackTracking = a.NumberOfBacktracking
-                                };
-                    }).ToList();
-                    studentAttendances = studentAttendances.Where(s => s.IsPresent).ToList();
-                }
-                //Create Calendar Month
-                await CreateMonth();
+                    return new StudentAttendance
+                        {
+                            Id = a.Id,
+                            Date = a.Date,
+                            IsPresent = a.IsPresent,
+                            ActivityId = a.ActivityId,
+                            NumberOfSessions = a.NumberOfSessions,
+                            SessionsAttended = a.SessionsAttended,
+                            ScheduleId = a.ScheduleId,
+                            StudentId = a.StudentId,
+                            NumberOfBackTracking = a.NumberOfBacktracking
+                        };
+                }).ToList();
+                studentAttendances = studentAttendances.Where(s => s.IsPresent).ToList();
+            }
+            //Create Calendar Month
+            await CreateMonth();
             break;
             case "Manual":
-                
+            var directAttendance = await directStudentApiHandler.GetDirectStudentById(new Framework.ApiCommand.ApiCore.DirectStudent.Request.GetDirectStudentByIdArgs
+            {
+                StudentId = student.Id,
+                ActivityId = student.ActivityId,
+                ScheduleId = student.ScheduleId,
+            }, Token);
+            if (directAttendance.Succeeded && directAttendance.Result != null && directAttendance.Result.IsSuccess)
+            {
+                studentAttendances = directAttendance.Result.Result.Select(a =>
+                {
+                    return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        NumberOfBackTracking = a.NumberOfBacktracking
+                    };
+                }).ToList();
+                //Create Calendar Month
+                await CreateMonth();
+            }
             break;
             default:
-                break;
+            break;
         }
-        
     }
 
     public async Task GetActivitySchedules()
