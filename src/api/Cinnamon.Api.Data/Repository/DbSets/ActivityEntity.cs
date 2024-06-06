@@ -937,13 +937,15 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 											"join public.\"Students\" st " +
 												"on ac.\"Id\" = st.\"ActivityId\" " +
 											"where (st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
-												"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
-													"and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
+													"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date(' " + dateString + "') " +
+														"and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
 											"group by ac.\"Id\" " +
 											"union all " +
 											"select ds.\"Id\", Count(ds.\"Id\") \"Ongoing\" " +
 											"from public.\"DirectStudentSessions\" ds " +
-											"where ds.\"NumberOfSessions\" > ds.\"SessionsAttended\" " +
+											"where (ds.\"SessionsAttended\" < ds.\"NumberOfSessions\" and ds.\"ExpirationDateEnd\" = '-infinity') or " +
+													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
+														"and ds.\"SessionsAttended\" < ds.\"NumberOfSessions\") " +
 											"group by ds.\"Id\" " +
 										") as \"grpstd\" " +
 								   "group by grpstd.\"ActivityId\" " +
@@ -962,12 +964,13 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 											"join public.\"Students\" st " +
 												"on ac.\"Id\" = st.\"ActivityId\" " +
 											"where (st.\"SessionsAttended\" >= st.\"NumberOfSessions\") or " +
-												"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date('" + dateString + "') ) " +
+													"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
 											"group by ac.\"Id\" " +
 											"union all " +
 											"select ds.\"Id\", Count(ds.\"Id\") \"Completed\" " +
 											"from public.\"DirectStudentSessions\" ds " +
-											"where ds.\"NumberOfSessions\" <= ds.\"SessionsAttended\" " +
+											"where (ds.\"SessionsAttended\" >= ds.\"NumberOfSessions\") or " +
+													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
 											"group by ds.\"Id\" " +
 										") as \"grpstd\" " +
 									"group by grpstd.\"ActivityId\" " +
