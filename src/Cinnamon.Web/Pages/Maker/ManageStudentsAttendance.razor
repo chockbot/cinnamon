@@ -220,51 +220,51 @@
         //Get Student Attendance Details
         switch (Type)
         {
-                case "Cinnamon":
+            case "Cinnamon":
                 var result = await ongoingApiHandler.GetOngoingActivityById(Id);
                 if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                 {
                     student = new Students
-                    {
-                        Id                   = result.Result.Result.Id,
-                        CustomerId           = result.Result.Result.CustomerId,
-                        Name                 = result.Result.Result.Name,
-                        Remarks              = result.Result.Result.Remarks,
-                        ActivityId           = result.Result.Result.ActivityId,
-                        ScheduleId           = result.Result.Result.ScheduleId,
-                        NumberOfSessions     = result.Result.Result.NumberOfSessions,
-                        SessionsAttended     = result.Result.Result.SessionsAttended,
-                        NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
-                    };
+                        {
+                            Id                   = result.Result.Result.Id,
+                            CustomerId           = result.Result.Result.CustomerId,
+                            Name                 = result.Result.Result.Name,
+                            Remarks              = result.Result.Result.Remarks,
+                            ActivityId           = result.Result.Result.ActivityId,
+                            ScheduleId           = result.Result.Result.ScheduleId,
+                            NumberOfSessions     = result.Result.Result.NumberOfSessions,
+                            SessionsAttended     = result.Result.Result.SessionsAttended,
+                            NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
+                        };
                 }
                 //Get Parent Name
                 var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
                 if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
                 {
                     profile = new CustomerProfile
-                    {
-                        FirstName = customer.Result.Result.FirstName,
-                        LastName = customer.Result.Result.LastName
-                    };
+                        {
+                            FirstName = customer.Result.Result.FirstName,
+                            LastName = customer.Result.Result.LastName
+                        };
                 }
                 break;
-                case "Manual":
+            case "Manual":
                 var resultDirect = await directStudentApiHandler.DirectStudent(Id, token);
                 if (resultDirect.Succeeded && resultDirect.Result != null && resultDirect.Result.IsSuccess)
                 {
                     var studentToUpdate = resultDirect.Result.Result;
                     student = new Students
-                    {
-                        Id = studentToUpdate.DirectStudentInfo.Id,
-                        Gender = studentToUpdate.DirectStudentInfo.Gender,
-                        Name = studentToUpdate.DirectStudentInfo.Name,
-                        ActivityId = studentToUpdate.DirectStudentSession.ActivityId,
-                        ScheduleId = studentToUpdate.DirectStudentSession.ScheduleId,
-                        NumberOfSessions = studentToUpdate.DirectStudentSession.NumberOfSessions,
-                        SessionsAttended = studentToUpdate.DirectStudentSession.SessionsAttended,
-                        Remarks = studentToUpdate.DirectStudentSession.Remarks
+                        {
+                            Id = studentToUpdate.DirectStudentInfo.Id,
+                            Gender = studentToUpdate.DirectStudentInfo.Gender,
+                            Name = studentToUpdate.DirectStudentInfo.Name,
+                            ActivityId = studentToUpdate.DirectStudentSession.ActivityId,
+                            ScheduleId = studentToUpdate.DirectStudentSession.ScheduleId,
+                            NumberOfSessions = studentToUpdate.DirectStudentSession.NumberOfSessions,
+                            SessionsAttended = studentToUpdate.DirectStudentSession.SessionsAttended,
+                            Remarks = studentToUpdate.DirectStudentSession.Remarks
 
-                    };
+                        };
                 }
                 //Get Parent Name
                 profile.FirstName = "Juan";
@@ -346,10 +346,10 @@
             {
                 case "Cinnamon":
                     var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                             {
-                                 Id = Id,
-                                 Remarks = remarksLocalState,
-                             });
+                                 {
+                                     Id = Id,
+                                     Remarks = remarksLocalState,
+                                 });
 
                     if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
                     {
@@ -358,10 +358,10 @@
                     break;
                 case "Manual":
                     var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
-                            {
-                                StudentId = Id,
-                                Remarks = remarksLocalState
-                             }, Token);
+                                {
+                                    StudentId = Id,
+                                    Remarks = remarksLocalState
+                                 }, Token);
 
                     if (updateRes.Succeeded && updateRes.Result != null && updateRes.Result.IsSuccess)
                     {
@@ -395,7 +395,34 @@
             //Check if Cinnamon or Manual Student
             if(Type == "Manual")
             {
-               
+                List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+                studentAttendances.Add(studentAttendance);
+                var updatedDirect = await directStudentApiHandler.UpdateDirectStudentAttendance(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateDirectStudentAttendanceArgs
+                {
+                    Date = presentDate,
+                    Students = studentAttendances.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateDirectStudentAttendanceArgs.StudentDetails
+                        {
+                            StudentId  = s.StudentId,
+                            ActivityId = s.ActivityId,
+                            ScheduleId = s.ScheduleId,
+                            IsPresent  = s.IsPresent
+                        };
+                    })
+                }, token);
+                if (updatedDirect.Succeeded && updatedDirect.Result != null && updatedDirect.Result.IsSuccess)
+                {
+                    //Update Session Attended and Backtracking
+                    var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
+                    {
+                        StudentId = studentAttendance.StudentId,
+                        SessionsAttended = studentAttendance.SessionsAttended,
+                    }, Token);
+                    student.SessionsAttended = updateRes.Result.Result.SessionAttended;
+                    //Get Schedule Details
+                    var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
+                }
             }
             else
             {

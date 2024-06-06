@@ -20,11 +20,13 @@ public class DirectStudentsController : ControllerBase
     private readonly IDirectStudentHandler directStudentHandler;
     private readonly IGetDirectStudentByIdHandler getDirectStudentByIdHandler;
     private readonly ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler;
+    private readonly IUpdateStudentAttendanceHandler updateStudentAttendanceHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
         IUpdateDirectStudentHandler updateDirectStudentHandler,IDirectStudentHandler directStudentHandler,
-        IGetDirectStudentByIdHandler getDirectStudentByIdHandler,ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler)
+        IGetDirectStudentByIdHandler getDirectStudentByIdHandler,ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler,
+        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler)
     {
         this.directStudentsInfoHandler            = directStudentsInfoHandler;
         this.mapper                               = mapper;
@@ -32,6 +34,7 @@ public class DirectStudentsController : ControllerBase
         this.directStudentHandler                 = directStudentHandler;
         this.getDirectStudentByIdHandler          = getDirectStudentByIdHandler;
         this.createDirectStudentAttendanceHandler = createDirectStudentAttendanceHandler;
+        this.updateStudentAttendanceHandler       = updateStudentAttendanceHandler;
     }
 
     [HttpGet]
@@ -182,7 +185,6 @@ public class DirectStudentsController : ControllerBase
         }
     }
 
-    [AllowAnonymous]
     [Route("CreateDirectAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateDirectStudentAttendanceResult), StatusCodes.Status200OK)]
@@ -216,6 +218,52 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("UpdateDirectAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateDirectStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateDirectStudentAttendance([FromBody] UpdateDirectStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await updateStudentAttendanceHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateStudentAttendanceArgs
+            {
+                Date = args.Date,
+                Students = args.Students.Select(s =>
+                {
+                    return new Services.DirectStudentService.Interactors.UpdateStudentAttendanceArgs.StudentDetails
+                    {
+                        ActivityId = s.ActivityId,
+                        IsPresent = s.IsPresent,
+                        ScheduleId = s.ScheduleId,
+                        StudentId = s.StudentId
+                    };
+                })
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateDirectStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.DirectStudents.DirectStudentAttendanceDTO
+                    {
+                        Date                   = s.Date,  
+                        IsPresent              = s.IsPresent,
+                        DirectStudentSessionId = s.StudentId
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

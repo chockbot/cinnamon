@@ -53,6 +53,7 @@ public class GetDirectStudentByIdHandler : IGetDirectStudentByIdHandler
                         Status               = s.Student.Status,
                         StudentName          = s.Student.Name,
                         StudentNo            = s.Student.StudentNo,
+                        ScheduleId           = s.Student.ScheduleId,
                         AttendanceDate       = s.Date,
                         Id                   = s.Id,
                         Remarks              = s.Student.Remarks,

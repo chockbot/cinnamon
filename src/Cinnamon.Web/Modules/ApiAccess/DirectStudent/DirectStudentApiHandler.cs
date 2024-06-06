@@ -126,4 +126,27 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
             return AppResult<CreateDirectStudentAttendanceResult>.CreateFailed(ex, "An error occured when creating direct student attendance api");
         }
     }
+
+    public async Task<AppResult<UpdateDirectStudentAttendanceResult>> UpdateDirectStudentAttendance(UpdateDirectStudentAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/UpdateDirectAttendance")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateDirectStudentAttendanceResult>();
+
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateSucceeded(result, "Successfully updated direct student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var errorResult = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateFailed(ex, "An error occured when updating direct student attendance api");
+        }
+    }
 }
