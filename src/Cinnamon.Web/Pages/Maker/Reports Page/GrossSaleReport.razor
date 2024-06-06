@@ -65,12 +65,12 @@
     </div>
     @if (SelectedType == 0)
     {
-        <div class="total-sales">
+        <div class="total-sales mb-5">
             <p class="title">Total Accumulated Sales - @SelectedRange</p>
             <div class="total-breakdown">
-                <p class="cinnamon-sale">Cinnamon Students - &#8369;@CinnamonSale</p>
-                <p class="direct-sale">Manual Added Students - &#8369;@DirectSale</p>
-                <p class="total-amount-sales">Total - &#8369;@priceData.Sum(a=>a.Count)</p>
+                <p class="cinnamon-sale">Cinnamon Students - &#8369; @CinnamonSale.ToString("#,##0.00")</p>
+                <p class="direct-sale">Manual Added Students - &#8369; @DirectSale.ToString("#,##0.00")</p>
+                <p class="total-amount-sales">Total - &#8369; @priceData.Sum(a=>a.Count).ToString("#,##0.00")</p>
             </div>
         </div>
     }
