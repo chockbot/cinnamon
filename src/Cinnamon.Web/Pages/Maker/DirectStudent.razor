@@ -20,19 +20,192 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IDirectStudentApiHandler directStudentApiHandler;
 
-<div class="direct-students-wrapper">
-    <div class="header">
-        <div class="title-section">
-            <button class="back-button" @onclick="GoToPrev">
+<Container class="direct-students-wrapper pb-4">
+    <div class="header mb-3">
+        <div class="title-section align-items-center">
+            <button class="back-button m-0 p-0" @onclick="GoToPrev">
                 <img src="images/Dashboard/back-icon.png">
             </button>
-            <p class="back-text m-font-20">Add Direct Students</p>
+            <p class="back-text font-20 m-font-18 font-weight-900 mb-0">Add Direct Students</p>
         </div>
     </div>
 
-    <p class="text-description">You can add students to your class who haven't enrolled on the platform yet, but have a record with you or students who are not enrolled on the platform and will be directly added by you (Activity Provider) for using the platform.</p>
+    <p class="text-description font-16 m-font-12 mb-4 mb-md-5">
+        You can add students to your class who haven't enrolled on the platform yet, 
+        but have a record with you or students who are not enrolled on the platform 
+        and will be directly added by you (Activity Provider) for using the platform.
+    </p>
     
-    <div class="direct-students-container mt-4">
+    <Row>
+        <Column class="student-info-grp" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+            <Validations @ref="studentListFormValidation" Model="selectedStudent" Mode="ValidationMode.Manual">
+                <div class="color-black-100">
+                    <div class="d-flex justify-content-between align-items-baseline">
+                        <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">student information</p>
+                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete">
+                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
+                        </Button>
+                    </div>
+
+                    <Row class="mb-3">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Name</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <div class="input-group">
+                                            <TextEdit @bind-Text="selectedStudent.Name" class="font-16 m-font-12" Size="Size.Small" 
+                                                Placeholder="Juan Dela Cruz Jr." />
+                                            <Button Clicked="() => modalStudentSearch.Show()" 
+                                                class="bg-green-100 color-white-100 text-capitalize font-16 m-font-12">
+                                                view student list
+                                            </Button>
+                                        </div>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+
+                    <Row class="mb-4 mb-md-5" VerticalGutter="20">
+                        <Column class="pe-auto pe-md-0" ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Gender</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <Select @bind-SelectedValue="selectedStudent.Gender" 
+                                            class="form-select text-capitalize font-16 m-font-12" Size="Size.Small" TValue="string">
+                                            <SelectItem Value='"male"'>male</SelectItem>
+                                            <SelectItem Value='"female"'>female</SelectItem>
+                                        </Select>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                        <Column class="pe-auto pe-md-0" ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Birth Month</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <Select @bind-SelectedValue="selectedStudent.BirthMonth" 
+                                            class="form-select text-capitalize font-16 m-font-12" Size="Size.Small" TValue="string">
+                                            <SelectItem Value='"january"'>january</SelectItem>
+                                            <SelectItem Value='"february"'>february</SelectItem>
+                                            <SelectItem Value='"march"'>march</SelectItem>
+                                            <SelectItem Value='"april"'>april</SelectItem>
+                                            <SelectItem Value='"may"'>may</SelectItem>
+                                            <SelectItem Value='"june"'>june</SelectItem>
+                                            <SelectItem Value='"july"'>july</SelectItem>
+                                            <SelectItem Value='"august"'>august</SelectItem>
+                                            <SelectItem Value='"september"'>september</SelectItem>
+                                            <SelectItem Value='"october"'>october</SelectItem>
+                                            <SelectItem Value='"november"'>november</SelectItem>
+                                            <SelectItem Value='"december"'>december</SelectItem>
+                                        </Select>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Year</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <Select @bind-SelectedValue="selectedStudent.BirthYear" 
+                                            class="form-select text-capitalize font-16 m-font-12" Size="Size.Small" TValue="int">
+                                            @foreach (var year in years)
+                                            {
+                                                <SelectItem Value="year">@year</SelectItem>    
+                                            }
+                                        </Select>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+
+                    <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">activity information</p>
+
+                    <Row class="mb-3">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <Select @bind-SelectedValue="selectedStudent.ActivityId" 
+                                            class="form-select text-capitalize font-16 m-font-12" Size="Size.Small" TValue="int"
+                                            @onchange="OnFilterValueChanged" >
+                                            <ChildContent>
+                                                <SelectItem Value='0' selected Disabled>select experience</SelectItem>
+                                                @foreach (var item in activities)
+                                                {
+                                                    <SelectItem Value="item.ActivityId">@item.Title</SelectItem>
+                                                }
+                                            </ChildContent>
+                                        </Select>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+
+                    <Row class="mb-3">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class/Schedule</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <Select @bind-SelectedValue="selectedStudent.ScheduleId" 
+                                            class="form-select text-capitalize font-16 m-font-12" Size="Size.Small" TValue="int">
+                                            <ChildContent>
+                                                <SelectItem Value='0' selected Disabled>select schedule</SelectItem>
+                                                @foreach (var item in schedules)
+                                                {
+                                                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                                                }
+                                            </ChildContent>
+                                        </Select>
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+
+                    <Row class="mb-3">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment</FieldLabel>
+                                <FieldBody>
+                                    <Validation>
+                                        <NumericPicker @bind-Value="selectedStudent.Payment" TValue="decimal?" ShowStepButtons="false" Decimals="0" 
+                                            Placeholder="Amount" Size="Size.Small" class="font-16 m-font-12" />
+                                    </Validation>
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+
+                    <div class="btn-action mt-4">
+                        <Button class="font-16 m-font-12 bg-white-200" Clicked="AddMoreStudent">Add More</Button>
+                        <Button class="font-16 m-font-12 bg-orange-100 color-white-100 hover-color-white px-4" 
+                            Clicked="SaveStudents">Save</Button>
+                    </div>
+                </div>
+            </Validations>
+        </Column>
+        <Column class="selected-student-grp" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+            <div class="list-grp-added-students-container">
+                <ListGroup class="added-student-list-grp"
+                    Mode="ListGroupMode.Selectable" Border="Border.Is0">
+                    <ListGroupItem class="font-16 m-font-12" Name='Dexter1'>Dexter Echalico</ListGroupItem>
+                    <ListGroupItem class="font-16 m-font-12" Name='Dexter2'>Alvin Acas</ListGroupItem>
+                    <ListGroupItem class="font-16 m-font-12" Name='Dexter3'>Jay Dela Gracia</ListGroupItem>
+                </ListGroup>
+            </div>
+        </Column>
+    </Row>
+
+    @* <div class="direct-students-container mt-4">
         @foreach (var student in students)
         {
             var isLastItem = student.Equals(students.Last());
@@ -183,7 +356,7 @@
             <button class="btn-add" @onclick="AddMoreStudent">Add More</button>
             <button class="btn-save" @onclick="SaveStudents">Save</button>
         </div>
-    </div>
+    </div> *@
 
     <Modal @ref="confirmPeriodModal" class="modal-purchase-confirmation"
         Closing="OnModalClosing">
@@ -244,59 +417,61 @@
     <Modal @ref="modalStudentSearch">
         <ModalContent Centered>
             <ModalHeader class="justify-content-center">
-                <p class="font-16 m-0 font-weight-700">Direct Student List</p>
+                <p class="font-16 m-font-12 m-0 font-weight-700">Direct Student List</p>
                 <button type="button" style="top: 27px; right: 25px;" class="btn-close position-absolute" 
                     @onclick="() => modalStudentSearch.Close(CloseReason.UserClosing)" />
             </ModalHeader>
             <ModalBody class="px-4">
-                <p class="font-16 color-grey-400 text-center">Add students that you have already listed before.</p>
-                <TextEdit TextChanged="SearchStudent" Placeholder="Search" class="font-16"/>
+                <p class="font-16 m-font-12 color-grey-400 text-center">Add students that you have already listed before.</p>
+                <TextEdit TextChanged="SearchStudent" Placeholder="Search" Size="Size.Small" class="font-16 m-font-12"/>
                 <div class="mt-3 search-items-container">
                     <ListGroup class="search-list-grp-container"
                         Mode="ListGroupMode.Selectable" @bind-SelectedItem="searchInfo.SelectedStudentId">
                         @foreach (var item in searchInfo.StudentInfos)
                         {
-                            <ListGroupItem Name='@item.Id.ToString()'>@item.Name</ListGroupItem>   
+                            <ListGroupItem class="font-16 m-font-12" Name='@item.Id.ToString()'>@item.Name</ListGroupItem>   
                         }
                     </ListGroup>
                 </div>
                 <div class="text-end mt-3">
-                    <Button class="bg-grey-300" Clicked="() => modalStudentSearch.Close(CloseReason.UserClosing)">Cancel</Button>
-                    <Button Clicked="SelectSearchedStudent" class="bg-green-100 color-white-100">
+                    <Button class="bg-grey-300 font-16 m-font-12" 
+                        Clicked="() => modalStudentSearch.Close(CloseReason.UserClosing)">
+                        Cancel
+                    </Button>
+                    <Button Clicked="SelectSearchedStudent" 
+                        class="bg-green-100 color-white-100 font-16 m-font-12">
                         Select
                     </Button>
                 </div>
             </ModalBody>
         </ModalContent>
     </Modal>
-</div>
 
-<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Done" DeclineLabel="Cancel"
+    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Done" DeclineLabel="Cancel"
                OnConfirmationChanged="ConfirmSaveChanges">
-    <HeaderContent>
-        <p class="m-0">Confirm Adding Students</p>
-    </HeaderContent>
-    <BodyContent>
-        <p class="m-0">Are you sure you want to add these students?(@students.Count())</p>
-    </BodyContent>
-</ConfirmDialog>
+        <HeaderContent>
+            <p class="m-0">Confirm Adding Students</p>
+        </HeaderContent>
+        <BodyContent>
+            <p class="m-0">Are you sure you want to add these students?(@students.Count())</p>
+        </BodyContent>
+    </ConfirmDialog>
 
-<ConfirmDialog @ref="confirmDeleteDialogRef" AcceptLabel="Yes" DeclineLabel="No"
-               OnConfirmationChanged="ConfirmDeleteChanged">
-    <HeaderContent>
-        <p class="m-0">Confirm Action</p>
-    </HeaderContent>
-    <BodyContent>
-        <p class="m-0">Are you sure you want to remove this student?</p>
-    </BodyContent>
-</ConfirmDialog>
+    <ConfirmDialog @ref="confirmDeleteDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+                OnConfirmationChanged="ConfirmDeleteChanged">
+        <HeaderContent>
+            <p class="m-0">Confirm Action</p>
+        </HeaderContent>
+        <BodyContent>
+            <p class="m-0">Are you sure you want to remove this student?</p>
+        </BodyContent>
+    </ConfirmDialog>
+</Container>
 
 @code 
 {
     private string token = string.Empty;
-    private IList<string> genders = new List<string>();
     private IList<int> years = new List<int>();
-    private IList<string> months = new List<string>();
     private IList<Activity> activities = new List<Activity>();
     private IList<ActivitySchedule> scheduleList = new List<ActivitySchedule>();
     private IList<ActivitySchedule> schedules = new List<ActivitySchedule>();
@@ -314,33 +489,21 @@
     private Modal? modalStudentSearch;
     private SearchInfo searchInfo = new();
 
+    protected override void OnInitialized()
+    {
+        // minimum years
+        var maxYear = DateTime.Now.Year - 4;
+        var minYear = DateTime.Now.Year - 100;
+        for (int i = minYear; i <= maxYear; i++)
+        {
+            years.Add(i);
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
-        {
-            // gender
-            genders.Add("male");
-            genders.Add("female");
-            // minimum years
-            var minYear = DateTime.Now.Year - 4;
-            for (int i = 1900; i <= minYear; i++)
-            {
-                years.Add(i);
-            }
-            // months
-            months.Add("january");
-            months.Add("february");
-            months.Add("march");
-            months.Add("april");
-            months.Add("may");
-            months.Add("june");
-            months.Add("july");
-            months.Add("august");
-            months.Add("september");
-            months.Add("october");
-            months.Add("november");
-            months.Add("december");
-
+        {   
             // Initialize with one default student
             students.Add(new Student { Id = students.Count + 1, BirthYear = years[years.Count - 18] });
 
@@ -747,28 +910,15 @@
         [Range(1900, 2100, ErrorMessage = "Year must be between 1900 and 2100")]
         public int BirthYear { get; set; } = DateTime.UtcNow.Year;
 
-        [Required(ErrorMessage = "Class is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "Class is required")]
         public int ActivityId { get; set; }
 
-        [Required(ErrorMessage = "Schedule is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "Schedule is required")]
         public int ScheduleId { get; set; }
 
         [Required(ErrorMessage = "The payment field is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "The payment field is required.")]
         public decimal? Payment { get; set; } = null;
-
-        public bool Valid
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(Name) &&
-                       !string.IsNullOrEmpty(Gender) &&
-                       !string.IsNullOrEmpty(BirthMonth) &&
-                       ActivityId != 0 &&
-                       ScheduleId != 0 &&
-                       Payment != 0;
-            }
-        }
 
         public PeriodConfirmation PeriodConfirmation {get; set;} = new();
     }
