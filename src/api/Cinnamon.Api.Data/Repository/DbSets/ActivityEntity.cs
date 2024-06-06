@@ -221,7 +221,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
 								TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
 								TotalReviews = Convert.ToInt32(item["TotalReviews"])
-							}
+							},
 						}).ToList();
 					}
 				}

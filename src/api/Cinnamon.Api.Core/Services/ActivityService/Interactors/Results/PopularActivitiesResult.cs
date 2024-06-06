@@ -15,6 +15,8 @@ public class PopularActivitiesResult
         public bool IsNew {get; set;}
         public Location Address {get; set;}
         public Summary SummaryDetails {get; set;}
+
+        public DateTime? StartDate {get; set;}
     }
 
     public class Location 

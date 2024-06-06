@@ -13,6 +13,8 @@ public class ActivityFeed
     public Location Address {get; set;}
     public Summary SummaryDetails {get; set;}
 
+    public DateTime? StartDate {get; set;}
+
     public class Location 
     {
         public string City {get; set;}
