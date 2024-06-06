@@ -48,18 +48,34 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     }
 
     public async Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, 
-        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null)
+        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null,
+        Expression<Func<TTarget, object>>? orderBy = null, Expression<Func<TTarget, object>>? orderByDesc = null)
     {
         try
         {
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<TTarget>()
-                            .Where(expression)
-                            .OrderBy(o => o.Id)
-                            .Skip(skipCount)
-                            .Take(limitCount);
+            var query = applicationContext.Set<TTarget>().Where(expression);
+
+            // default order by
+            if(orderBy is null && orderByDesc is null)
+            {
+                query = query.OrderBy(t => t.Id);
+            }
+
+            if(orderByDesc is not null && orderBy is null)
+            {
+                query = query.OrderByDescending(orderByDesc);
+            }
+
+            // priority this one if there is orderbydesd and orderby
+            if(orderBy is not null)
+            {
+                query = query.OrderBy(orderBy);
+            }
+
+            query = query.Skip(skipCount).Take(limitCount);
 
             if(includes != null)
             {

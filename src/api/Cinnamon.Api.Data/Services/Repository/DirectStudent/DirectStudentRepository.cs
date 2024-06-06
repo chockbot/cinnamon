@@ -70,7 +70,9 @@ public class DirectStudentRepository : IDirectStudentRepository
 		   (providerId.HasValue ? s.ProviderId == providerId.Value : true) &&
 		   (!string.IsNullOrEmpty(searchValue) ? s.Name.ToLower().Contains(searchValue.ToLower()) : true);
 
-			var result = await dataStore.DirectStudentInfo.FindAsync(filter, count, skip);
+		   Expression<Func<Entities.DirectStudentInfo, object>> orderByDesc = orderBy => orderBy.CreatedOn;
+
+			var result = await dataStore.DirectStudentInfo.FindAsync(filter, count, skip, orderByDesc: orderByDesc);
 
 			if (!result.Succeeded || result.Result is null)
 			{
