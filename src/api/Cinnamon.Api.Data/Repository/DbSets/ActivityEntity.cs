@@ -941,12 +941,12 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 														"and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
 											"group by ac.\"Id\" " +
 											"union all " +
-											"select ds.\"Id\", Count(ds.\"Id\") \"Ongoing\" " +
+											"select ds.\"ActivityId\", Count(ds.\"ActivityId\") \"Ongoing\" " +
 											"from public.\"DirectStudentSessions\" ds " +
 											"where (ds.\"SessionsAttended\" < ds.\"NumberOfSessions\" and ds.\"ExpirationDateEnd\" = '-infinity') or " +
 													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
 														"and ds.\"SessionsAttended\" < ds.\"NumberOfSessions\") " +
-											"group by ds.\"Id\" " +
+											"group by ds.\"ActivityId\" " +
 										") as \"grpstd\" " +
 								   "group by grpstd.\"ActivityId\" " +
 							   ") " +
@@ -967,11 +967,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 													"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
 											"group by ac.\"Id\" " +
 											"union all " +
-											"select ds.\"Id\", Count(ds.\"Id\") \"Completed\" " +
+											"select ds.\"ActivityId\", Count(ds.\"ActivityId\") \"Completed\" " +
 											"from public.\"DirectStudentSessions\" ds " +
 											"where (ds.\"SessionsAttended\" >= ds.\"NumberOfSessions\") or " +
 													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
-											"group by ds.\"Id\" " +
+											"group by ds.\"ActivityId\" " +
 										") as \"grpstd\" " +
 									"group by grpstd.\"ActivityId\" " +
 							   ") " +
