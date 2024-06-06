@@ -232,7 +232,7 @@ public class DirectStudentController : ControllerBase
 
     [HttpPost]
     [Route("Attendance/Bulk")]
-    [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(CreateDirectStudentAttendanceResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
     {
@@ -243,10 +243,10 @@ public class DirectStudentController : ControllerBase
             var result = await directStudentAttendanceRepository.CreateDirectStudentAttendances(dtos);
             if (!result.Succeeded || result.Result is null)
             {
-                return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new CreateStudentAttendanceResult
+            return new JsonResult(new CreateDirectStudentAttendanceResult
             {
                 IsSuccess = true,
                 Result = result.Result
@@ -254,7 +254,7 @@ public class DirectStudentController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
