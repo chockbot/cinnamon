@@ -408,6 +408,8 @@ public class ApplicationContext : IdentityDbContext
         // for direct student info
         modelBuilder.Entity<DirectStudentInfo>()
             .HasIndex(s => s.ProviderId);
+        modelBuilder.Entity<DirectStudentInfo>()
+            .HasIndex(s => s.CreatedOn);
         
         // for direct student session
         modelBuilder.Entity<DirectStudentSession>()
