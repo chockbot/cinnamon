@@ -55,7 +55,10 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<TTarget>().Where(expression).Skip(skipCount).Take(limitCount);
+            var query = applicationContext.Set<TTarget>().Where(expression)
+                                                            .OrderByDescending(t => t.CreatedOn)
+                                                            .Skip(skipCount)
+                                                            .Take(limitCount);
 
             if(includes != null)
             {
