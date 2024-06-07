@@ -17,7 +17,7 @@ public class DirectStudentController : ControllerBase
     private readonly IDirectStudentAttendanceRepository directStudentAttendanceRepository;
     private readonly IMapper mapper;
 
-    public DirectStudentController(IDirectStudentRepository directStudentRepository, 
+    public DirectStudentController(IDirectStudentRepository directStudentRepository,
         IDirectStudentAttendanceRepository directStudentAttendanceRepository, IMapper mapper)
     {
         this.directStudentRepository = directStudentRepository;
@@ -101,33 +101,35 @@ public class DirectStudentController : ControllerBase
             var result = await directStudentRepository.GetDirectStudentsInfo(args.ProviderId, args.SearchValue ?? string.Empty, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage);
             if(!result.Succeeded || result.Result is null)
             {
-                return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
+                return new JsonResult(new StudentInfosResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
-            
+
             var totalCountRes = await directStudentRepository
                 .GetDirectStudentsInfo(args.ProviderId,args.SearchValue ?? string.Empty, null, null);
                 
             if(!totalCountRes.Succeeded || totalCountRes.Result is null)
             {
-                return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = totalCountRes.Message}});    
+                return new JsonResult(new StudentInfosResult { ErrorInfo = new ErrorInfo { Message = totalCountRes.Message } });
             }
 
             var totalRecords = totalCountRes.Result.Count();
-            return new JsonResult(new StudentInfosResult {
+            return new JsonResult(new StudentInfosResult
+            {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Pagination {
+                Pagination = new Pagination
+                {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
                     TotalRecords = totalRecords,
-                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
                                     (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
                 }
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new StudentInfosResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+            return new JsonResult(new StudentInfosResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -140,19 +142,20 @@ public class DirectStudentController : ControllerBase
         try
         {
             var result = await directStudentRepository.DirectStudentInfo(id);
-            if(!result.Succeeded || result.Result is null)
+            if (!result.Succeeded || result.Result is null)
             {
-                return new JsonResult(new DirectStudentInfoResult {ErrorInfo = new ErrorInfo {Message = result.Message}});    
+                return new JsonResult(new DirectStudentInfoResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new DirectStudentInfoResult {
+            return new JsonResult(new DirectStudentInfoResult
+            {
                 Result = result.Result,
                 IsSuccess = true
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new DirectStudentInfoResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+            return new JsonResult(new DirectStudentInfoResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -177,6 +180,49 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
+    [Route("GetStudentAttendanceById")]
+    [ProducesResponseType(typeof(GetDirectStudentByIdResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetStudentAttendanceById([FromQuery] GetDirectStudentByIdArgs args)
+    {
+        try
+        {
+            var result = await directStudentAttendanceRepository.GetStudentById(args.StudentId,
+                args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IncludeStudent,
+                args.ActivityIds, args.ScheduleIds);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetDirectStudentByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var totalCountRes = await directStudentAttendanceRepository.GetStudentById(args.StudentId, null, null, args.IncludeStudent, args.ActivityIds, args.ScheduleIds);
+            if (!totalCountRes.Succeeded || totalCountRes.Result is null)
+            {
+                return new JsonResult(new GetDirectStudentByIdResult { ErrorInfo = new ErrorInfo { Message = totalCountRes.Message } });
+            }
+
+            var totalRecords = totalCountRes.Result.Count();
+            return new JsonResult(new GetDirectStudentByIdResult
+            {
+                Result = result.Result, 
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                    (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 

@@ -135,6 +135,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             studentSession.ScheduleId = directStudentSession.ScheduleId == 0 ? studentSession.ScheduleId : directStudentSession.ScheduleId;
             studentSession.Name = directStudent.Name ?? studentSession.Name;
             studentSession.NumberOfSessions = directStudentSession.NumberOfSessions == 0 ? studentSession.NumberOfSessions : directStudentSession.NumberOfSessions;
+            studentSession.SessionsAttended = directStudentSession.SessionsAttended == 0 ? studentSession.SessionsAttended : directStudentSession.SessionsAttended;
             studentSession.Remarks = directStudentSession.Remarks ?? studentSession.Remarks;
             studentSession.StudentNo = directStudentSession.StudentNo ?? studentSession.StudentNo;
 

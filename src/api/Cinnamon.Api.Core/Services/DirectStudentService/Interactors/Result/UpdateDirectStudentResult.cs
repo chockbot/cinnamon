@@ -12,5 +12,8 @@ public class UpdateDirectStudentResult
     public int ActivityId {get; set;}
     public int ScheduleId {get; set;}
 
+    public string Remarks { get; set; }
     public decimal Amount {get; set;}
+
+    public int SessionAttended { get; set; }
 }
