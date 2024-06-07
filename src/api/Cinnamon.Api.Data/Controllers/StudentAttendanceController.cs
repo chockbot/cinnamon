@@ -9,7 +9,7 @@ namespace Cinnamon.Api.Data.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class StudentAttendanceController : ControllerBase 
+public class StudentAttendanceController : ControllerBase
 {
     private readonly IStudentAttendanceRepository studentAttendanceRepository;
 
@@ -47,15 +47,15 @@ public class StudentAttendanceController : ControllerBase
         try
         {
             DateTime? date = null;
-            if(!string.IsNullOrEmpty(args.Date))
+            if (!string.IsNullOrEmpty(args.Date))
             {
                 date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
 
             var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) || 
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
+                await studentAttendanceRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
                     date, args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
                 await studentAttendanceRepository.GetAllAsync();
 
@@ -65,9 +65,9 @@ public class StudentAttendanceController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) || 
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAllAsync(null,null) :
+                await studentAttendanceRepository.GetAllAsync(null, null) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
@@ -95,7 +95,7 @@ public class StudentAttendanceController : ControllerBase
             return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-    
+
     [Route("CreateStudentAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status201Created)]
@@ -125,8 +125,10 @@ public class StudentAttendanceController : ControllerBase
     {
         try
         {
-            var result = await studentAttendanceRepository.Create(args.StudentAttendaces.Select(s => {
-                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.CreateManyAttendanceDTO {
+            var result = await studentAttendanceRepository.Create(args.StudentAttendaces.Select(s =>
+            {
+                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.CreateManyAttendanceDTO
+                {
                     Date = s.Date,
                     IsPresent = s.IsPresent,
                     StudentId = s.StudentId
@@ -175,8 +177,10 @@ public class StudentAttendanceController : ControllerBase
     {
         try
         {
-            var result = await studentAttendanceRepository.Update(args.StudentAttendaces.Select(s => {
-                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.UpdateManyStudentDTO {
+            var result = await studentAttendanceRepository.Update(args.StudentAttendaces.Select(s =>
+            {
+                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.UpdateManyStudentDTO
+                {
                     Date = s.Date,
                     Id = s.AttendanceId,
                     IsPresent = s.IsPresent
@@ -203,8 +207,10 @@ public class StudentAttendanceController : ControllerBase
     {
         try
         {
-            var result = await studentAttendanceRepository.UpdateAttendance(args.StudentAttendaces.Select(s => {
-                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.UpdateAttendanceDTO {
+            var result = await studentAttendanceRepository.UpdateAttendance(args.StudentAttendaces.Select(s =>
+            {
+                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.UpdateAttendanceDTO
+                {
                     StudentId = s.StudentId,
                     IsPresent = s.IsPresent
                 };
@@ -239,7 +245,7 @@ public class StudentAttendanceController : ControllerBase
             var result =
                 args.Id != 0 || args.ActivityId != 0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAttendanceByIdAsync(args.Id,args.ActivityId,args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
+                await studentAttendanceRepository.GetAttendanceByIdAsync(args.Id, args.ActivityId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
                     date, args.IsIncludeStudent, args.ScheduleIds) :
                 await studentAttendanceRepository.GetAllAsync();
 
@@ -249,9 +255,9 @@ public class StudentAttendanceController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.Id != 0 || args.ActivityId !=0|| args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+            var all = args.Id != 0 || args.ActivityId != 0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAttendanceByIdAsync(0,0, null, null) :
+                await studentAttendanceRepository.GetAttendanceByIdAsync(0, 0, null, null) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
@@ -297,7 +303,7 @@ public class StudentAttendanceController : ControllerBase
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetCompletedStudents(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
+                await studentAttendanceRepository.GetCompletedStudents(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
