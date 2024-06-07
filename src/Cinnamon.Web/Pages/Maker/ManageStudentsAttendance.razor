@@ -494,8 +494,8 @@
             switch (Type)
             {
                 case "Cinnamon":
-                    if (student.NumberOfBacktracking != 0)
-                    {
+                    @*if (student.NumberOfBacktracking != 0)
+                    {*@
                         var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                             {
                                 AttendanceDate = presentDate,
@@ -539,14 +539,14 @@
                         await OnInitializedAsync();
                         StateHasChanged();
                         await loadingIndicator.Hide();
-                    }
+                    @*}
                     else
                     {
                         IsShowErrorMessage = true;
                         ErrorMessage = "You can only adjust attendance up to half of the total offered sessions.";
                         await ShowModal();
                         await loadingIndicator.Hide();
-                    }
+                    }*@
                     break;
                 case "Manual":
                     //Create Attendance
