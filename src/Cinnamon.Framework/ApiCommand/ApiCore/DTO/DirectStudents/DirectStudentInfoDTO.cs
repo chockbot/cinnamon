@@ -9,4 +9,6 @@ public class DirectStudentInfoDTO
     public string BirthMonth {get; set;}
     public int BirthYear {get; set;}
     public int Age {get; set;}
+    public string Remarks { get; set; }
+    public int SessionAttended { get; set; }
 }

@@ -10,4 +10,6 @@ public interface IDirectStudentInfo : IGenericEntity<DirectStudentInfo>
 
     Task<AppResult<DirectStudentInfo>> UpdateDirectStudent(DirectStudentInfo directStudent, 
         DirectStudentSession directStudentSession, DirectStudentPayment directStudentPayment);
+    
+    Task<AppResult<DirectStudentDTO>> DirecStudentInfo(int studentId);
 }

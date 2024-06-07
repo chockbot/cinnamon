@@ -54,32 +54,40 @@ public class DirectStudentRepository : IDirectStudentRepository
 
 			var dtos = mapper.Map<IEnumerable<DirectStudentSessionDTO>>(result.Result);
 
-            return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateSucceeded(dtos, "Successfully get direct students.");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct students.");
-        }
-    }
+			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateSucceeded(dtos, "Successfully get direct students.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct students.");
+		}
+	}
 
-    public async Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int providerId, int? count, int? skip)
-    {
-        try
-        {
-            var result = await dataStore.DirectStudentInfo.FindAsync(s => s.ProviderId == providerId, count, skip);
-            if(!result.Succeeded || result.Result is null)
-            {
-                return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
-            }
+	public async Task<AppResult<IEnumerable<DirectStudentInfoDTO>>> GetDirectStudentsInfo(int? providerId, string? searchValue, int? count, int? skip)
+	{
+		try
+		{
+			Expression<Func<Entities.DirectStudentInfo, bool>> filter = s =>
+		   (providerId.HasValue ? s.ProviderId == providerId.Value : true) &&
+		   (!string.IsNullOrEmpty(searchValue) ? s.Name.ToLower().Contains(searchValue.ToLower()) : true);
 
-            var dtos = mapper.Map<IEnumerable<DirectStudentInfoDTO>>(result.Result);
-            return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateSucceeded(dtos, "Successfully get direct students info.");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(ex, "An error occured when getting direct students info");
-        }
-    }
+		   Expression<Func<Entities.DirectStudentInfo, object>> orderByDesc = orderBy => orderBy.CreatedOn;
+
+			var result = await dataStore.DirectStudentInfo.FindAsync(filter, count, skip, orderByDesc: orderByDesc);
+
+			if (!result.Succeeded || result.Result is null)
+			{
+				return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			var dtos = mapper.Map<IEnumerable<DirectStudentInfoDTO>>(result.Result);
+			return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateSucceeded(dtos, "Successfully got direct students info.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DirectStudentInfoDTO>>.CreateFailed(ex, "An error occurred when getting direct students info.");
+		}
+	}
+
 
 	public async Task<AppResult<IEnumerable<DirectStudentPaymentDTO>>> GetStudentPaymentByProvider(int? providerId, DateTime? dateFrom)
 	{
@@ -119,6 +127,24 @@ public class DirectStudentRepository : IDirectStudentRepository
 		catch (Exception ex)
 		{
 			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when updating direct student.");
+		}
+	}
+
+	public async Task<AppResult<DirectStudentDTO>> DirectStudentInfo(int studentId)
+	{
+		try
+		{
+			var result = await dataStore.DirectStudentInfo.DirecStudentInfo(studentId);
+			if(!result.Succeeded || result.Result is null)
+			{
+				return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			return AppResult<DirectStudentDTO>.CreateSucceeded(result.Result, "Successfully get direct student info.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when getting direct student info.");
 		}
 	}
 }

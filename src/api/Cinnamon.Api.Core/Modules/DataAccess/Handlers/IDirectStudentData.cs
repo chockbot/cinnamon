@@ -10,9 +10,11 @@ public interface IDirectStudentData
 
     Task<AppResult<GetDirectStudentsResult>> GetDirectStudents(GetDirectStudentsArgs args);
 
+    Task<AppResult<GetDirectStudentByIdResult>> GetDirectStudentsById(GetDirectStudentByIdArgs args);
+
     Task<AppResult<StudentAttendanceResult>> StudentAttendance(StudentAttendanceArgs args);
 
-    Task<AppResult<CreateStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args);
+    Task<AppResult<CreateDirectStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args);
 
     Task<AppResult<UpdateStudentAttendanceBulkResult>> UpdateStudentAttendance(UpdateStudentAttendanceBulkArgs args);
 
@@ -21,4 +23,6 @@ public interface IDirectStudentData
     Task<AppResult<GetDirectStudentsPaymentResult>> GetDirectStudentsPayments(GetDirectStudentsPaymentArgs args);
 
     Task<AppResult<UpdateDirectStudentResult>> UpdateDirectStudent(UpdateDirectStudentArgs args);
+
+    Task<AppResult<DirectStudentInfoResult>> DirectStudentInfo(int studentId);
 }

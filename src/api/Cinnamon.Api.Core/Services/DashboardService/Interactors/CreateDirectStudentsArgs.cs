@@ -16,8 +16,8 @@ public class CreateDirectStudentsArgs : IInteractor
 
     public class CreateDirectStudentInfo
     {
-        public int ProviderId { get; set; }
-
+        public int Id {get; set;}
+        
         public string Name { get; set; }
 
         public string Gender { get; set; }
@@ -35,15 +35,11 @@ public class CreateDirectStudentsArgs : IInteractor
 
         public string Name { get; set; }
 
-        public string StudentNo { get; set; }
-
-        public int NumberOfSessions { get; set; }
-
-        public int SessionsAttended { get; set; }
-
         public string? Remarks { get; set; }
 
         public string Status { get; set; }
+
+        public string? Period {get; set;}
     }
 
     public class CreateDirectStudentPayment

@@ -1340,6 +1340,8 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedOn");
+
                     b.HasIndex("ProviderId");
 
                     b.ToTable("DirectStudentInfos");
@@ -1403,6 +1405,12 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<int>("DirectStudentInfoId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpirationDateEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpirationDateStart")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()

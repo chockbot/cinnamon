@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.Interactor;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Api.Core.Services.DashboardService.Interactors;
 

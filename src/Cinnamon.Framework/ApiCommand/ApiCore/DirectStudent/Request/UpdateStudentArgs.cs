@@ -26,4 +26,6 @@ public class UpdateStudentArgs
     public decimal? Amount {get; set;}
 
     public int? NumberOfSessions {get; set;}
+
+    public int? SessionsAttended { get; set; }
 }

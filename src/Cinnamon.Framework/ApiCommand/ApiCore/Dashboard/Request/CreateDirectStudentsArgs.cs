@@ -22,7 +22,7 @@ public class CreateDirectStudentsArgs
     public class CreateDirectStudentInfo
     {
         [Required]
-        public int ProviderId { get; set; }
+        public int Id {get; set;}
 
         [Required]
         public string Name { get; set; }
@@ -48,19 +48,12 @@ public class CreateDirectStudentsArgs
         [Required]
         public string Name { get; set; }
 
-        [Required]
-        public string StudentNo { get; set; }
-
-        [Required]
-        public int NumberOfSessions { get; set; }
-
-        [Required]
-        public int SessionsAttended { get; set; }
-
         public string Remarks { get; set; }
 
         [Required]
         public string Status { get; set; }
+
+        public string? Period {get; set;}
     }
 
     public class CreateDirectStudentPayment

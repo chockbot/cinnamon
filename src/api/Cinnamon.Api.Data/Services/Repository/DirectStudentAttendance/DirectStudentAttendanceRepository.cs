@@ -104,6 +104,63 @@ public class DirectStudentAttendanceRepository : IDirectStudentAttendanceReposit
         }   
     }
 
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetStudentById(int? studentId, int? count, int? skip, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.DirectStudentAttendance, object>>>();
+            if (includeStudent.HasValue && includeStudent.Value)
+            {
+                includes.Add(s => s.DirectStudentSession);
+            }
+            Expression<Func<Entities.DirectStudentAttendance, bool>> filter =
+                s => (studentId.HasValue ? s.DirectStudentSessionId == studentId.Value : true) &&
+                    (activityIds != null ? activityIds.Contains(s.DirectStudentSession.ActivityId) : true) &&
+                    (scheduleIds != null ? scheduleIds.Contains(s.DirectStudentSession.ScheduleId) : true) && 
+                    (s.IsPresent == true);
+
+            var result = await dataStore.DirectStudentAttendance.FindAsync(filter, count, skip, includes);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            var studentAttendances = result.Result;
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s => {
+                var studentAttendance = new StudentAttendanceDTO
+                {
+                    Date = s.Date,
+                    Id = s.Id,
+                    IsPresent = s.IsPresent,
+                    StudentId = s.DirectStudentSessionId
+                };
+
+                if (includeStudent.HasValue && includeStudent.Value)
+                {
+                    var studentSession = s.DirectStudentSession;
+                    studentAttendance.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
+                    {
+                        ActivityId       = studentSession.ActivityId,
+                        Id               = studentSession.Id,
+                        Name             = studentSession.Name,
+                        NumberOfSessions = studentSession.NumberOfSessions,
+                        Remarks          = studentSession.Remarks,
+                        ScheduleId       = studentSession.ScheduleId,
+                        SessionsAttended = studentSession.SessionsAttended,
+                        Status           = studentSession.Status,
+                        StudentNo        = studentSession.StudentNo,
+                    };
+                }
+
+                return studentAttendance;
+            }), "Sucessfully get direct students attendance.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when direct student attendance.");
+        }
+    }
+
     public async Task<AppResult<IEnumerable<DirectStudentAttendanceDTO>>> UpdateStudentAttendances(IEnumerable<DirectStudentAttendanceDTO> attendances, DateTime date)
     {
         try

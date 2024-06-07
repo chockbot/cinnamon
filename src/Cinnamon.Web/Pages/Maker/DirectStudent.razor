@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Components.Pages
 @using Cinnamon.Web.Components
 @using Cinnamon.Framework.Enums
+@using Cinnamon.Framework.Helpers;
 @using System.ComponentModel.DataAnnotations;
 @inject IJSRuntime JS;
 @inject INotificationService NotificationService;
@@ -17,6 +18,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IDirectStudentApiHandler directStudentApiHandler;
 
 <div class="direct-students-wrapper">
     <div class="header">
@@ -61,11 +63,11 @@
                                     <div class="student-info">
                                         <p class="student-info-title m-font-18">Student Information</p>
                                         <p class="student-name m-font-14">Name</p>
-                                        <TextEdit @bind-Text="student.Name" Placeholder="Ex: Juan Dela Cruz Jr." class="text-box m-font-12">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
+                                        <div class="input-group">
+                                            <TextEdit @bind-Text="student.Name" Placeholder="Ex: Juan Dela Cruz Jr." class="text-box m-font-12">
+                                            </TextEdit>
+                                            <Button Clicked="() => modalStudentSearch.Show()" class="bg-green-100 color-white-100">+</Button>
+                                        </div>
                                     </div>
                                 </Validation>
                                 <Row class="mt-3 flex-wrap" HorizontalGutter="10" VerticalGutter="10">
@@ -182,6 +184,91 @@
             <button class="btn-save" @onclick="SaveStudents">Save</button>
         </div>
     </div>
+
+    <Modal @ref="confirmPeriodModal" class="modal-purchase-confirmation"
+        Closing="OnModalClosing">
+        <ModalContent Centered>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
+            </ModalHeader>
+            <ModalBody>
+                <fieldset>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                        checked='@(selectedStudent.PeriodConfirmation.SelectedPeriod == "currentperiod")' 
+                                        value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@selectedStudent.PeriodConfirmation.DurationLeft</span> to use this.</p>
+                                </Column>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                        checked='@(selectedStudent.PeriodConfirmation.SelectedPeriod == "nextperiod")'  
+                                        value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@selectedStudent.PeriodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                    <Button Loading="selectedStudent.PeriodConfirmation.IsSubmitting" 
+                        Disabled="selectedStudent.PeriodConfirmation.IsSubmitting || string.IsNullOrEmpty(selectedStudent.PeriodConfirmation.SelectedPeriod)" 
+                        class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Proceed
+                        </ChildContent>
+                    </Button>
+                    @if(selectedStudent.PeriodConfirmation.IsShowError && !selectedStudent.PeriodConfirmation.IsApplied)
+                    {
+                        <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                    }
+                </fieldset>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalStudentSearch">
+        <ModalContent Centered>
+            <ModalHeader class="justify-content-center">
+                <p class="font-16 m-0 font-weight-700">Direct Student List</p>
+                <button type="button" style="top: 27px; right: 25px;" class="btn-close position-absolute" 
+                    @onclick="() => modalStudentSearch.Close(CloseReason.UserClosing)" />
+            </ModalHeader>
+            <ModalBody class="px-4">
+                <p class="font-16 color-grey-400 text-center">Add students that you have already listed before.</p>
+                <TextEdit TextChanged="SearchStudent" Placeholder="Search" class="font-16"/>
+                <div class="mt-3 search-items-container">
+                    <ListGroup class="search-list-grp-container"
+                        Mode="ListGroupMode.Selectable" @bind-SelectedItem="searchInfo.SelectedStudentId">
+                        @foreach (var item in searchInfo.StudentInfos)
+                        {
+                            <ListGroupItem Name='@item.Id.ToString()'>@item.Name</ListGroupItem>   
+                        }
+                    </ListGroup>
+                </div>
+                <div class="text-end mt-3">
+                    <Button class="bg-grey-300" Clicked="() => modalStudentSearch.Close(CloseReason.UserClosing)">Cancel</Button>
+                    <Button Clicked="SelectSearchedStudent" class="bg-green-100 color-white-100">
+                        Select
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </div>
 
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Done" DeclineLabel="Cancel"
@@ -207,7 +294,6 @@
 @code 
 {
     private string token = string.Empty;
-    private int userID { get; set; }
     private IList<string> genders = new List<string>();
     private IList<int> years = new List<int>();
     private IList<string> months = new List<string>();
@@ -215,12 +301,18 @@
     private IList<ActivitySchedule> scheduleList = new List<ActivitySchedule>();
     private IList<ActivitySchedule> schedules = new List<ActivitySchedule>();
     private Student studentToDelete = new();
-    private Student student = new Student();
     private IList<Student> students = new List<Student>();
     private Validations? studentListFormValidation;
     private bool showErrors = false;
     private ConfirmDialog confirmDialogRef { get; set; }
     private ConfirmDialog confirmDeleteDialogRef { get; set; }
+
+    private Modal? confirmPeriodModal;
+    private Student selectedStudent = new();
+    private bool finalSubmit = false;
+
+    private Modal? modalStudentSearch;
+    private SearchInfo searchInfo = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -250,7 +342,7 @@
             months.Add("december");
 
             // Initialize with one default student
-            students.Add(new Student { Id = students.Count + 1 });
+            students.Add(new Student { Id = students.Count + 1, BirthYear = years[years.Count - 18] });
 
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             token = user.FindFirstValue("Token");
@@ -260,15 +352,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-            {
-                // an error occurred
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
-            //Get User Id 
-            userID = result.Result.Result.Id;
+            
             // Get Activities
             await GetActivities();
         }
@@ -277,13 +361,15 @@
             ex.Message.ToString();
         }
     }
+
     private async Task GetActivities()
     {
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-            {
-                IncludeAtivitySchedules = true,
-                IsActive = true
-            }, token);
+        {
+            IncludeAtivitySchedules = true,
+            IsActive = true
+        }, token);
+
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
             activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderBy(a => a.ActivityId).Select(a =>
@@ -297,28 +383,29 @@
                     };
             }).ToList();
         }
+
         foreach (var activityResult in activityRes.Result.Result)
         {
             foreach (var activitySchedule in activityResult.ActivitySchedules)
             {
                 scheduleList.Add(new ActivitySchedule
-                    {
-                        Id = activitySchedule.Id,
-                        IsActiveSchedule = activitySchedule.IsActiveSchedule,
-                        ActivityId = activityResult.ActivityId,
-                        Name = activitySchedule.Name,
-                        DateTime = activitySchedule.DateTime,
-                        UnitPrice = activitySchedule.UnitPrice,
-                        PerUnit1 = activitySchedule.PerUnit1,
-                        PerUnit2 = activitySchedule.PerUnit2,
-                        PriceUnit1 = activitySchedule.PriceUnit1,
-                        PriceUnit2 = activitySchedule.PriceUnit2,
-                        Price = activitySchedule.Price,
-                        IsSetSession = activitySchedule.IsSetSession,
-                        SessionName = activitySchedule.SessionName,
-                        HasExpiration = activitySchedule.HasExpiration,
-                        StartDate = activitySchedule.StartDate
-                    });
+                {
+                    Id = activitySchedule.Id,
+                    IsActiveSchedule = activitySchedule.IsActiveSchedule,
+                    ActivityId = activityResult.ActivityId,
+                    Name = activitySchedule.Name,
+                    DateTime = activitySchedule.DateTime,
+                    UnitPrice = activitySchedule.UnitPrice,
+                    PerUnit1 = activitySchedule.PerUnit1,
+                    PerUnit2 = activitySchedule.PerUnit2,
+                    PriceUnit1 = activitySchedule.PriceUnit1,
+                    PriceUnit2 = activitySchedule.PriceUnit2,
+                    Price = activitySchedule.Price,
+                    IsSetSession = activitySchedule.IsSetSession,
+                    SessionName = activitySchedule.SessionName,
+                    HasExpiration = activitySchedule.HasExpiration,
+                    StartDate = activitySchedule.StartDate
+                });
             }
         }
     }
@@ -348,12 +435,60 @@
         if(studentListFormValidation is not null)
         {
             bool studentValid = await studentListFormValidation.ValidateAll();
+
             if (studentValid)
             {
-                students.Add(new Student { Id = students.Count + 1 });
+                var lastStudent = students.Last();
+                
+                if(lastStudent is null) {
+                    await NotificationService.Error("An error occured. Please try again later.", "Error");
+                    return;
+                }
+                selectedStudent = lastStudent;
+
+                var selectedSched = scheduleList.FirstOrDefault(s => s.Id == lastStudent.ScheduleId);
+                if(selectedSched is null)
+                {
+                    await NotificationService.Error("An error occured. Please try again later.", "Error");
+                    return;
+                }
+
+                if(selectedSched.HasExpiration == 1)
+                {
+                    await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+
+                    await confirmPeriodModal.Show();
+                }
+                else 
+                {
+                    var minYear = DateTime.Now.Year - 4;
+                    students.Add(new Student { Id = students.Count + 1, BirthYear = minYear - 18 });
+                }
             }
         }
+    }
 
+    private Task PeriodCalculation(DateTime dateStart, string sessionName)
+    {
+        var datePeriod = DateNextPeriod.CreateRecurring(dateStart, sessionName);
+        DateTime periodStart = datePeriod.PeriodStart;
+        // to set the last time of the day
+        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+
+        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+        DateTime now = DateTime.Now;
+
+        int daysLeft = (periodEnd - now).Days;
+        int hours = (periodEnd - now).Hours;
+        string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+        selectedStudent.PeriodConfirmation.DaysLeft = Math.Abs((now - periodEnd).Days);
+        selectedStudent.PeriodConfirmation.DurationLeft = durationLeft;
+        selectedStudent.PeriodConfirmation.NextPeriod = nextPeriod;
+        selectedStudent.PeriodConfirmation.IsApplied = false;
+        selectedStudent.PeriodConfirmation.IsShowError = false;
+
+        return Task.CompletedTask;
     }
 
     private async void SaveStudents()
@@ -361,7 +496,31 @@
         bool isValid = await FieldValid();
         if (isValid)
         {
-            await confirmDialogRef.Open();
+            var lastStudent = students.Last();
+                
+            if(lastStudent is null) {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+            selectedStudent = lastStudent;
+
+            var selectedSched = scheduleList.FirstOrDefault(s => s.Id == lastStudent.ScheduleId);
+            if(selectedSched is null)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            if(selectedSched.HasExpiration == 1)
+            {
+                finalSubmit = true;
+                await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+                await confirmPeriodModal.Show();
+            }
+            else
+            {
+                await confirmDialogRef.Open();
+            }
         }
         else
         {
@@ -369,54 +528,56 @@
         }
     }
 
-    private async Task ConfirmSaveChanges(bool value)
+    private async Task AddDirectStudents()
     {
-        if (value)
+        var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
         {
-            var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
+            CreateDirectStudents = students.Select(s =>
             {
-                CreateDirectStudents = students.Select(s =>
+                var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
+                return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
                 {
-                    var schedule = scheduleList.Where(a => a.Id == s.ScheduleId).FirstOrDefault();
-                    return new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudent
+                    CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
                     {
-                        CreateDirectStudentInfo = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentInfo
-                        {
-                            BirthMonth = s.BirthMonth,
-                            BirthYear = s.BirthYear,
-                            Gender = s.Gender,
-                            Name = s.Name,
-                            ProviderId = userID
-                        },
-                        CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
-                        {
-                            ActivityId = schedule.ActivityId,
-                            Name = s.Name,
-                            NumberOfSessions = schedule.PerUnit2,
-                            SessionsAttended = 0,
-                            Remarks = string.Empty,
-                            StudentNo = "0",
-                            ScheduleId = schedule.Id,
-                            Status = "ACTIVE"
-                        },
-                        CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
-                        {
-                            Amount = s.Payment ?? 0
-                        }
-                    };
-                })
-            }, token);
+                        BirthMonth = s.BirthMonth,
+                        BirthYear = s.BirthYear,
+                        Gender = s.Gender,
+                        Name = s.Name,
+                        Id = s.DBId
+                    },
+                    CreateDirectStudentSession = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentSession
+                    {
+                        ActivityId = schedule.ActivityId,
+                        Name = s.Name,
+                        Remarks = string.Empty,
+                        ScheduleId = schedule.Id,
+                        Status = "ACTIVE",
+                        Period = s.PeriodConfirmation.SelectedPeriod
+                    },
+                    CreateDirectStudentPayment = new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment
+                    {
+                        Amount = s.Payment ?? 0
+                    }
+                };
+            })
+        }, token);
 
-            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
-            {
-                throw new ApplicationException(result.Message);
-            }
-            else
-            {
-                await NotificationService.Success("Success! You created new student", "Success");
-                NavigationManager.NavigateTo("maker/dashboard/managestudents/enrollee-masterlist");
-            }
+        if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured. Please try again.", "Error");
         }
+        else
+        {
+            await NotificationService.Success("Success! You created new student", "Success");
+            NavigationManager.NavigateTo("maker/dashboard/managestudents/enrollee-masterlist");
+        }
+    }
+
+    private Task ConfirmSaveChanges(bool value)
+    {
+        if (!value) return Task.CompletedTask;
+
+        return AddDirectStudents();
     }
 
     private ValidationMode FormMode
@@ -478,8 +639,99 @@
         await JS.InvokeVoidAsync("MyLib.Utils.navigation.back");
     }
 
-    public class Student
+    private Task CloseConfirmationModal()
     {
+        finalSubmit = false;
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            selectedStudent.PeriodConfirmation.SelectedPeriod = period;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task ConfirmProceedClick()
+    {
+        if(string.IsNullOrEmpty(selectedStudent.PeriodConfirmation.SelectedPeriod))
+        {
+            selectedStudent.PeriodConfirmation.IsShowError = true;
+        }
+        else 
+        {
+            if(!finalSubmit)
+            {
+                selectedStudent.PeriodConfirmation.IsSubmitting = true;
+                selectedStudent.PeriodConfirmation.IsSubmitting = false;
+
+                var minYear = DateTime.Now.Year - 4;
+                students.Add(new Student { Id = students.Count + 1, BirthYear = minYear - 18 });
+            }
+
+            if(finalSubmit)
+            {
+                await confirmDialogRef.Open();
+            }
+
+            await CloseConfirmationModal();
+        }
+    }
+
+    private async Task SearchStudent(string value)
+    {
+        try
+        {
+            searchInfo.StudentInfos.Clear();
+
+            var studentsRes = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
+                CountPerPage = 15,
+                PageIndex = 1,
+                SearchValue = value
+            }, token);
+
+            if(studentsRes.Succeeded && studentsRes.Result is not null && studentsRes.Result.IsSuccess)
+            {
+                searchInfo.StudentInfos.AddRange(studentsRes.Result.Result.Select(s => new Student {
+                    Id = s.Id,
+                    Name = s.Name,
+                    BirthMonth = s.BirthMonth,
+                    BirthYear = s.BirthYear,
+                    Gender = s.Gender
+                }));
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again.", "Error");
+        }
+    }
+
+    private Task SelectSearchedStudent()
+    {
+        if(!string.IsNullOrEmpty(searchInfo.SelectedStudentId) && int.TryParse(searchInfo.SelectedStudentId, out int studentId))
+        {
+            var student = searchInfo.StudentInfos.FirstOrDefault(s => s.Id == studentId);
+            if(student is null) return modalStudentSearch.Close(CloseReason.UserClosing);
+
+            var currentStudent = students.Last();
+            if(currentStudent is null) return modalStudentSearch.Close(CloseReason.UserClosing);
+
+            currentStudent.DBId = student.Id;
+            currentStudent.Name = student.Name;
+            currentStudent.BirthMonth = student.BirthMonth;
+            currentStudent.BirthYear = student.BirthYear;
+            currentStudent.Gender = student.Gender;
+        }
+
+        return modalStudentSearch.Close(CloseReason.UserClosing);
+    }
+
+    private class Student
+    {
+        public int DBId {get; set;}
 
         public int Id { get; set; }
 
@@ -518,5 +770,33 @@
             }
         }
 
+        public PeriodConfirmation PeriodConfirmation {get; set;} = new();
+    }
+
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        e.Cancel = (e.CloseReason == CloseReason.FocusLostClosing || e.CloseReason == CloseReason.EscapeClosing);
+        return Task.CompletedTask;
+    }
+
+    private class PeriodConfirmation 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
+    }
+
+    private class SearchInfo 
+    {
+        public string SearchValue {get; set;}
+        public List<Student> StudentInfos {get; set;} = new();
+
+        public string SelectedStudentId {get; set;} 
     }
 }

@@ -7,6 +7,20 @@
 	outline: none;
 	box-shadow: none;
 }
+
+.categories .swiper-slide:hover img {
+	filter: brightness(0) invert(1);
+}
+
+.swiper-slide:hover,
+.categories .swiper-slide:hover,
+.carousel-list:hover {
+	color: #fff;
+	background-color: #ffa942;
+	border-radius: 5px;
+	text-align: center;
+	cursor: pointer;
+}
 .swiper-scrollbar {
 	display: none;
 }
@@ -166,9 +180,9 @@ button:focus {
 .categories-container {
 	display: flex;
 	justify-content: center;
-	border: 1px solid #D9D9D9;
 	margin-bottom: 1rem;
 	border-radius: 20px;
+	border: none;
 }
 
 .schedule-swiper .swiper-wrapper {
@@ -265,6 +279,9 @@ button:focus {
 }
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+	.categories-container {
+		border: none;
+	}
 	.card-img.img-fluid {
 		width: 160.04px;
 		height: 210.78px;
@@ -315,6 +332,9 @@ button:focus {
 		height: 261.78px;
 		border-radius: 10px;
 	}
+	#explore-category-scrollbar {
+		display: block;
+	}
 	
 	.card-title1 {
 		font-family: "Nunito";
@@ -362,11 +382,6 @@ button:focus {
 	.card-img-overlay {
 		height: 340px;
 	}
-	/*.categories .swiper-slide.category {
-		display: flex;
-		justify-content: space-evenly;
-		width: 100%;*/ /*tied up with margin-left of .categories .schedule-swiper*/
-	/*}*/
 }
 
 @media screen and (max-width: 767.98px) {
@@ -391,6 +406,9 @@ button:focus {
 	.search-section {
 		display: block;
 	}
+	#explore-category-scrollbar {
+		display: block;
+	}
 }
 
 @media screen and (min-width:768px) and (max-width:991px) {
@@ -408,5 +426,22 @@ button:focus {
 		height: 250.78px;
 		border-radius: 10px;
 	}
+	::deep .categories-container {
+		border: none;
+		justify-content: start;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

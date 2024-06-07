@@ -22,6 +22,9 @@ public class CreateDirectStudentsArgs
     public class CreateDirectStudentInfo 
     {
         [Required]
+        public int Id {get; set;}
+
+        [Required]
         public int ProviderId {get; set;}
         
         [Required]
@@ -61,6 +64,10 @@ public class CreateDirectStudentsArgs
 
         [Required]
         public string Status {get; set;}
+
+        public DateTime? ExpirationDateStart {get; set;}
+        
+        public DateTime? ExpirationDateEnd { get; set; }
     }
 
     public class CreateDirectStudentPayment 
