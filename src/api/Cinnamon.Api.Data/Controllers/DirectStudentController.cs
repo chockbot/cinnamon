@@ -313,4 +313,33 @@ public class DirectStudentController : ControllerBase
             return new JsonResult(new GetDirectStudentsPaymentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [HttpGet]
+    [Route("Sessions/{studentId}")]
+    [ProducesResponseType(typeof(StudentSessionsResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args, int studentId)
+    {
+        try
+        {
+            bool ongoing = args.SessionStatus?.ToLower() == "ongoing";
+            bool completed = args.SessionStatus?.ToLower() == "completed";
+
+            var result = await directStudentRepository.StudentSessions(studentId, ongoing, completed);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new StudentSessionsResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
