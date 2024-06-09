@@ -225,4 +225,25 @@ public class DirectStudentData : IDirectStudentData
             return AppResult<GetDirectStudentByIdResult>.CreateFailed(ex, "An error occured when get direct students api.");
         }
     }
+
+    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"DirectStudent/Sessions/{studentId}")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<StudentSessionsResult>();
+            return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully get direct student sessions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, "An error occured when get direct student sessions.");
+        }
+    }
 }

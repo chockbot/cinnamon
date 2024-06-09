@@ -147,4 +147,24 @@ public class DirectStudentRepository : IDirectStudentRepository
 			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when getting direct student info.");
 		}
 	}
+
+	public async Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int studentId, bool ongoing, bool completed)
+	{
+		try
+		{
+			var result = await dataStore.DirectStudentSession.StudentSessions(studentId, ongoing, completed);
+			if(!result.Succeeded || result.Result is null)
+			{
+				return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			var mappedResult = mapper.Map<IEnumerable<DirectStudentSessionDTO>>(result.Result);
+
+			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateSucceeded(mappedResult, "Successfully get direct student sessions.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct student sessions.");
+		}
+	}
 }
