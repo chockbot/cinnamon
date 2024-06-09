@@ -17,15 +17,18 @@ public class DirectStudentsController : ControllerBase
     private readonly IDirectStudentsInfoHandler directStudentsInfoHandler;
     private readonly IUpdateDirectStudentHandler updateDirectStudentHandler;
     private readonly IDirectStudentHandler directStudentHandler;
+    private readonly IStudentSessionsHandler studentSessionsHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
-        IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler)
+        IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler,
+        IStudentSessionsHandler studentSessionsHandler)
     {
         this.directStudentsInfoHandler = directStudentsInfoHandler;
         this.mapper = mapper;
         this.updateDirectStudentHandler = updateDirectStudentHandler;
         this.directStudentHandler = directStudentHandler;
+        this.studentSessionsHandler = studentSessionsHandler;
     }
 
     [HttpGet]
@@ -86,6 +89,35 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DirectStudentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("{id}/Sessions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(StudentSessionsResult), StatusCodes.Status200OK)]   
+    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args, int id)
+    {
+        try
+        {
+            var result = await studentSessionsHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.StudentSessionsArgs {
+                SessionStatus = args.SessionStatus,
+                StudentId = id
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new StudentSessionsResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            var mappedResult = mapper.Map<IEnumerable<DirectStudentSessionDTO>>(result.Result.DirectStudentSessions);
+
+            return new JsonResult(new StudentSessionsResult {
+                IsSuccess = true,
+                Result = mappedResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentSessionsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 
