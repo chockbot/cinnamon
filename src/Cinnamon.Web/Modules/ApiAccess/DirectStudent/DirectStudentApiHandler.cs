@@ -81,4 +81,26 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
             return AppResult<DirectStudentResult>.CreateFailed(ex, "An error occured when getting direct student api");
         }
     }
+
+    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/{studentId}/Sessions")
+                .SetQueryParams(args)
+                .GetJsonAsync<StudentSessionsResult>();
+
+            return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully getting direct student sessions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, "An error occured when getting direct student sessions.");
+        }
+    }
 }

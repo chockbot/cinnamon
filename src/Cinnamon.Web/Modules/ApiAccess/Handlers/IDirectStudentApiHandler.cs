@@ -11,4 +11,6 @@ public interface IDirectStudentApiHandler
     Task<AppResult<UpdateStudentResult>> UpdateStudent(UpdateStudentArgs args, string token);
 
     Task<AppResult<DirectStudentResult>> DirectStudent(int studentId, string token);
+
+    Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId, string token);
 }
