@@ -138,14 +138,14 @@ public class DirectStudentsController : ControllerBase
         try
         {
             var result = await updateDirectStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs {
-                DirectStudentInfo = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
+                DirectStudentInfo = args.DirectStudentInfo is null ? null : new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
                     BirthMonth = args.DirectStudentInfo.BirthMonth,
                     BirthYear = args.DirectStudentInfo.BirthYear,
                     Gender = args.DirectStudentInfo.Gender,
                     Name = args.DirectStudentInfo.Name,
                     StudentId = args.DirectStudentInfo.StudentId
                 },
-                DirectStudentSessions = args.DirectStudentSessions.Select(s => new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                DirectStudentSessions = args.DirectStudentSessions is null ? null : args.DirectStudentSessions.Select(s => new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentSession {
                     ActivityId = s.ActivityId,
                     Id = s.Id,
                     Name = s.Name,
@@ -154,7 +154,7 @@ public class DirectStudentsController : ControllerBase
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,
-                    StudentPayment = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                    StudentPayment = s.StudentPayment is null ? null : new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
                         Amount = s.StudentPayment?.Amount
                     }
                 })

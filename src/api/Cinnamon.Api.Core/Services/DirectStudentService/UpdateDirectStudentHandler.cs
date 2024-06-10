@@ -33,20 +33,23 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
     {
         try
         {
-            var minYear = DateTime.Now.Year - 4;
-
-            if(args.DirectStudentInfo.BirthYear.HasValue && args.DirectStudentInfo.BirthYear.Value > minYear)
+            if(args.DirectStudentInfo is not null)
             {
-                return AppResult<UpdateDirectStudentResult>.CreateFailed(
-                    new ApplicationException("Students must be at least 4 years old."), "Students must be at least 4 years old.");
-            }
+                var minYear = DateTime.Now.Year - 4;
 
-            var directStudentRes = await directStudentHandler.ExecuteAsync(new DirectStudentArgs {
-                StudentId = args.DirectStudentInfo.StudentId
-            });
-            if(!directStudentRes.Succeeded || directStudentRes.Result is null)
-            {
-                return AppResult<UpdateDirectStudentResult>.CreateFailed(new ApplicationException(directStudentRes.Message), directStudentRes.Message);
+                if(args.DirectStudentInfo.BirthYear.HasValue && args.DirectStudentInfo.BirthYear.Value > minYear)
+                {
+                    return AppResult<UpdateDirectStudentResult>.CreateFailed(
+                        new ApplicationException("Students must be at least 4 years old."), "Students must be at least 4 years old.");
+                }
+
+                var directStudentRes = await directStudentHandler.ExecuteAsync(new DirectStudentArgs {
+                    StudentId = args.DirectStudentInfo.StudentId
+                });
+                if(!directStudentRes.Succeeded || directStudentRes.Result is null)
+                {
+                    return AppResult<UpdateDirectStudentResult>.CreateFailed(new ApplicationException(directStudentRes.Message), directStudentRes.Message);
+                }
             }
 
             var profleRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
@@ -58,53 +61,56 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
 
             Dictionary<int, ActivityService.Interactors.Results.GetActivityResult> fetchActivities = new ();
 
-            foreach (var session in args.DirectStudentSessions)
+            if(args.DirectStudentSessions is not null)
             {
-                if(session.ActivityId.HasValue && session.ScheduleId.HasValue)
+                foreach (var session in args.DirectStudentSessions)
                 {
-                    if(!fetchActivities.ContainsKey(session.ActivityId.Value))
+                    if(session.ActivityId.HasValue && session.ScheduleId.HasValue)
                     {
-                        var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                            ActivityId = session.ActivityId ?? 0,
-                            IncludeAtivitySchedules = true,
-                            IncludeCustomer = true
-                        });
-                        if(!activityRes.Succeeded || activityRes.Result is null)
+                        if(!fetchActivities.ContainsKey(session.ActivityId.Value))
                         {
-                            return AppResult<UpdateDirectStudentResult>.CreateFailed( new ApplicationException(activityRes.Message), activityRes.Message);
+                            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
+                                ActivityId = session.ActivityId ?? 0,
+                                IncludeAtivitySchedules = true,
+                                IncludeCustomer = true
+                            });
+                            if(!activityRes.Succeeded || activityRes.Result is null)
+                            {
+                                return AppResult<UpdateDirectStudentResult>.CreateFailed( new ApplicationException(activityRes.Message), activityRes.Message);
+                            }
+
+                            fetchActivities.Add(session.ActivityId.Value, activityRes.Result);
                         }
 
-                        fetchActivities.Add(session.ActivityId.Value, activityRes.Result);
+                        var activity = fetchActivities[session.ActivityId.Value];
+
+                        if(profile.Id != activity.Owner?.Id)
+                        {
+                            return AppResult<UpdateDirectStudentResult>.CreateFailed( 
+                                new ApplicationException("Action not allowed. Invalid request."), "Action not allowed. Invalid request.");
+                        }
+
+                        var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == session.ScheduleId);
+                        if(schedule is null)
+                        {
+                            return AppResult<UpdateDirectStudentResult>.CreateFailed( 
+                                new ApplicationException("Action not allowed. Invalid request."), "Action not allowed. Invalid request.");
+                        }
+
+                        session.NumberOfSessions = schedule.PerUnit2;
                     }
-
-                    var activity = fetchActivities[session.ActivityId.Value];
-
-                    if(profile.Id != activity.Owner?.Id)
-                    {
-                        return AppResult<UpdateDirectStudentResult>.CreateFailed( 
-                            new ApplicationException("Action not allowed. Invalid request."), "Action not allowed. Invalid request.");
-                    }
-
-                    var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == session.ScheduleId);
-                    if(schedule is null)
-                    {
-                        return AppResult<UpdateDirectStudentResult>.CreateFailed( 
-                            new ApplicationException("Action not allowed. Invalid request."), "Action not allowed. Invalid request.");
-                    }
-
-                    session.NumberOfSessions = schedule.PerUnit2;
                 }
             }
 
             var result = await directStudentData.UpdateDirectStudent(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs {
-                UpdateStudentInfo = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
+                UpdateStudentInfo = args.DirectStudentInfo is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
                     BirthMonth = args.DirectStudentInfo.BirthMonth,
                     BirthYear = args.DirectStudentInfo.BirthYear,
                     Gender = args.DirectStudentInfo.Gender,
                     Id = args.DirectStudentInfo.StudentId,
                     Name = args.DirectStudentInfo.Name
                 },
-                UpdateStudentSessions = args.DirectStudentSessions.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                UpdateStudentSessions = args.DirectStudentSessions is null ? null : args.DirectStudentSessions.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
                     ActivityId = s.ActivityId,
                     Id = s.Id,
                     Name = s.Name,
@@ -113,7 +119,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,
-                    DirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                    DirectStudentPayment = s.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
                         Amount = s.StudentPayment?.Amount,
                     },
                 })
@@ -123,13 +129,14 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
             {
                 return AppResult<UpdateDirectStudentResult>.CreateFailed(new ApplicationException(result.Result?.ErrorInfo?.Message), result.Message);
             }
+            var updated = result.Result.Result;
 
             return AppResult<UpdateDirectStudentResult>.CreateSucceeded(new UpdateDirectStudentResult {
-                BirthMonth = args.DirectStudentInfo.BirthMonth ?? string.Empty,
-                BirthYear = args.DirectStudentInfo.BirthYear ?? 0,
-                Gender = args.DirectStudentInfo.Gender ?? string.Empty,
-                Id = args.DirectStudentInfo.StudentId,
-                Name = args.DirectStudentInfo.Name ?? string.Empty,
+                BirthMonth = updated.BirthMonth,
+                BirthYear = updated.BirthYear,
+                Gender = updated.Gender,
+                Id = updated.Id,
+                Name = updated.Name,
             }, "Successfully update student id");
         }
         catch (Exception ex)
