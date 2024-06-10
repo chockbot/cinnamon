@@ -1,3 +1,212 @@
+.create-title {
+    color: #343D4C;
+    font-size: 20px;
+    font-family: Nunito;
+    font-weight: 700;
+    word-wrap: break-word
+}
+.custom-control-label{
+
+}
+::deep .prevent-select {
+    padding: 16px 24px 16px 20px;
+}
 .round-padding {
-  padding: 1px 9px;
+    padding: 1px 9px;
+}
+.iframe-search-modal {
+    margin-top: 24px;
+    border-radius: 16px;
+    border: 3px solid #FFF;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%), #FFF;
+}
+.textedit-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.textedit-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Prevents the icon from blocking clicks on the input */
+}
+
+.textedit-container .font-18 {
+    padding-left: 35px; /* Adjust padding to make space for the icon */
+}
+::deep .textedit {
+    padding-left: 35px; /* Adjust padding to make space for the icon */
+}
+.clear-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #ccc;
+    padding: 0;
+    pointer-events: auto;
+}
+    .clear-button:hover {
+        color: #000;
+    }
+
+/*Gallery*/
+.round-padding {
+    padding: 1px 9px;
+}
+
+.how-to-guide {
+    gap: 5px;
+}
+
+.guide-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.how-to-text {
+    font-size: 14px;
+    text-decoration: underline;
+    color: #34A853;
+    font-family: 'Nunito';
+    font-weight: bold;
+}
+
+.empty-image-container {
+    height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #343d4c;
+}
+
+.empty-supporting-container {
+    width: 540px;
+    height: 350px;
+}
+
+#error-message-container {
+    width: 100%;
+    background-color: #ffd8d8;
+    border: 1px solid #ffb2b2;
+    color: #f25151;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 1399px) {
+    .empty-image-container {
+        height: 390px;
+    }
+}
+
+@media only screen and (max-width: 1199px) {
+    .empty-image-container {
+        height: 335px;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .empty-image-container {
+        height: 235px;
+    }
+
+    .supporting-photos-container {
+        width: 100%;
+    }
+
+    .empty-supporting-container {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .empty-image-container {
+        height: 592px;
+    }
+
+    .empty-supporting-container {
+        width: 100%;
+        height: 330px;
+    }
+
+    .supporting-images-container-wrapper .how-to-text {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 483px) {
+    .empty-image-container {
+        height: 500px;
+    }
+
+    .empty-supporting-container {
+        height: 270px;
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    .empty-image-container {
+        height: 450px;
+    }
+
+    .empty-supporting-container {
+        height: 230px;
+    }
+}
+
+@media only screen and (max-width: 380px) {
+    .empty-image-container {
+        height: 400px;
+    }
+
+    .empty-supporting-container {
+        height: 200px;
+    }
+}
+
+@media only screen and (max-width: 335px) {
+    .empty-image-container {
+        height: 350px;
+    }
+
+    .empty-supporting-container {
+        height: 150px;
+    }
+}
+
+@media only screen and (max-width: 300px) {
+    .empty-image-container {
+        height: 300px;
+    }
+}
+
+#public-details-page, #private-details-page, #coming-soon, ::deep #type-online, ::deep #type-in-person {
+    font-size: 18px;
+}
+    #public-details-page:checked, #private-details-page:checked, #coming-soon:checked {
+        background-color: var(--primary);
+        border: none;
+    }
+::deep.prevent-select {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+}
+.form-check-label {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
 }
