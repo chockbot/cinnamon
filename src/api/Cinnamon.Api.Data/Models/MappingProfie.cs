@@ -110,6 +110,7 @@ public class MappingProfile : Profile
 
         // direct student mappings
         CreateMap<DirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
@@ -128,10 +129,6 @@ public class MappingProfile : Profile
         CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
         CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
         CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
-        CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudent, DirectStudentAlias.DirectStudentDTO>()
-            .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.UpdateDirectStudentInfo))
-            .ForMember(d => d.DirectStudentSession, o => o.MapFrom(o => o.UpdateDirectStudentSession))
-            .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.UpdateDirectStudentPayment));
         
         CreateMap<DirectStudentAlias.DirectStudentInfoDTO, DirectStudentInfo>();
         CreateMap<DirectStudentAlias.DirectStudentSessionDTO, DirectStudentSession>();

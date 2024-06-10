@@ -128,9 +128,14 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
                                    ") ";
             }
 
-            var query = "select * " +
+            var query = "select ds.\"Id\" \"SessionId\", ds.\"DirectStudentInfoId\", ds.\"ActivityId\", ds.\"ScheduleId\", " +
+                            "ds.\"Name\", ds.\"StudentNo\", ds.\"NumberOfSessions\", ds.\"SessionsAttended\", ds.\"Remarks\", " +
+                            "ds.\"Status\", ds.\"ExpirationDateStart\", ds.\"ExpirationDateEnd\", dp.\"Id\" \"PaymentId\", " +
+                            "dp.\"Amount\" " +
                         "from public.\"DirectStudentSessions\" ds " +
-                        "where \"DirectStudentInfoId\" = @studentId " + whereClause;
+                        "join public.\"DirectStudentPayments\" dp " +
+                            "on ds.\"Id\" = dp.\"DirectStudentSessionId\" " +
+                        "where ds.\"DirectStudentInfoId\" = @studentId " + whereClause;
 
             var result = new List<DirectStudentSession>();
 
@@ -154,14 +159,18 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
                             DirectStudentInfoId = Convert.ToInt32(item["DirectStudentInfoId"]),
                             ExpirationDateEnd = Convert.ToDateTime(item["ExpirationDateEnd"]),
                             ExpirationDateStart = Convert.ToDateTime(item["ExpirationDateStart"]),
-                            Id = Convert.ToInt32(item["Id"]),
+                            Id = Convert.ToInt32(item["SessionId"]),
                             Name = item["Name"].ToString() ?? string.Empty,
                             NumberOfSessions = Convert.ToInt32(item["NumberOfSessions"]),
                             Remarks = item["Remarks"].ToString() ?? string.Empty,
                             ScheduleId = Convert.ToInt32(item["ScheduleId"]),
                             SessionsAttended = Convert.ToInt32(item["SessionsAttended"]),
                             Status = item["Status"].ToString() ?? string.Empty,
-                            StudentNo = item["StudentNo"].ToString() ?? string.Empty
+                            StudentNo = item["StudentNo"].ToString() ?? string.Empty,
+                            DirectStudentPayment = new DirectStudentPayment {
+                                Amount = Convert.ToDecimal(item["Amount"]),
+                                Id = Convert.ToInt32(item["PaymentId"])
+                            }
                         }));
                     }
                 }

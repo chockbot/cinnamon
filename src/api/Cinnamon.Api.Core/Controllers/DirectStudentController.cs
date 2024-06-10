@@ -18,25 +18,26 @@ public class DirectStudentsController : ControllerBase
     private readonly IDirectStudentsInfoHandler directStudentsInfoHandler;
     private readonly IUpdateDirectStudentHandler updateDirectStudentHandler;
     private readonly IDirectStudentHandler directStudentHandler;
+    private readonly IStudentSessionsHandler studentSessionsHandler;
     private readonly IGetDirectStudentByIdHandler getDirectStudentByIdHandler;
     private readonly ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler;
     private readonly IUpdateStudentAttendanceHandler updateStudentAttendanceHandler;
-    private readonly IStudentSessionsHandler studentSessionsHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
-        IUpdateDirectStudentHandler updateDirectStudentHandler,IDirectStudentHandler directStudentHandler,
-        IGetDirectStudentByIdHandler getDirectStudentByIdHandler,ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler,
-        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler, IStudentSessionsHandler studentSessionsHandler)
+        IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler,
+        IStudentSessionsHandler studentSessionsHandler, IGetDirectStudentByIdHandler getDirectStudentByIdHandler,
+        ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler,
+        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler)
     {
-        this.directStudentsInfoHandler            = directStudentsInfoHandler;
-        this.mapper                               = mapper;
-        this.updateDirectStudentHandler           = updateDirectStudentHandler;
-        this.directStudentHandler                 = directStudentHandler;
-        this.getDirectStudentByIdHandler          = getDirectStudentByIdHandler;
+        this.directStudentsInfoHandler = directStudentsInfoHandler;
+        this.mapper = mapper;
+        this.updateDirectStudentHandler = updateDirectStudentHandler;
+        this.directStudentHandler = directStudentHandler;
+        this.studentSessionsHandler = studentSessionsHandler;
+        this.getDirectStudentByIdHandler = getDirectStudentByIdHandler;
         this.createDirectStudentAttendanceHandler = createDirectStudentAttendanceHandler;
-        this.updateStudentAttendanceHandler       = updateStudentAttendanceHandler;
-        this.studentSessionsHandler               = studentSessionsHandler;
+        this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
     }
 
     [HttpGet]
@@ -137,19 +138,26 @@ public class DirectStudentsController : ControllerBase
         try
         {
             var result = await updateDirectStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs {
-                ActivityId       = args.ActivityId,
-                Amount           = args.Amount,
-                BirthMonth       = args.BirthMonth,
-                BirthYear        = args.BirthYear,
-                Gender           = args.Gender,
-                Name             = args.Name,
-                ScheduleId       = args.ScheduleId,
-                StudentId        = args.StudentId,
-                NumberOfSessions = args.NumberOfSessions,
-                SessionsAttended = args.SessionsAttended,
-                Remarks          = args.Remarks,
-                StudentNo        = args.StudentNo,
-
+                DirectStudentInfo = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
+                    BirthMonth = args.DirectStudentInfo.BirthMonth,
+                    BirthYear = args.DirectStudentInfo.BirthYear,
+                    Gender = args.DirectStudentInfo.Gender,
+                    Name = args.DirectStudentInfo.Name,
+                    StudentId = args.DirectStudentInfo.StudentId
+                },
+                DirectStudentSessions = args.DirectStudentSessions.Select(s => new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    SessionsAttended = s.SessionsAttended,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    StudentNo = s.StudentNo,
+                    StudentPayment = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                        Amount = s.StudentPayment?.Amount
+                    }
+                })
             });
             if(!result.Succeeded || result.Result is null)
             {

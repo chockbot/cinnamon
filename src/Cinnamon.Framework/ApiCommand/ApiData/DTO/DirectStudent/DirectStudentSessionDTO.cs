@@ -14,4 +14,6 @@ public class DirectStudentSessionDTO
     public string Status {get; set;}
     public DateTime ExpirationDateStart {get; set;}
     public DateTime ExpirationDateEnd { get; set; }
+
+    public DirectStudentPaymentDTO DirectStudentPayment {get; set;}
 }

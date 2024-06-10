@@ -5,19 +5,10 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DirectStudent.Request;
 public class UpdateDirectStudentArgs 
 {
     [Required]
-    public UpdateDirectStudent UpdateDirectStudentData {get; set;}
+    public UpdateDirectStudentInfo UpdateStudentInfo {get; set;}
 
-    public class UpdateDirectStudent
-    {
-        [Required]
-        public UpdateDirectStudentInfo UpdateDirectStudentInfo {get; set;}
-
-        [Required]
-        public UpdateDirectStudentSession UpdateDirectStudentSession {get; set;}
-
-        [Required]
-        public UpdateDirectStudentPayment UpdateDirectStudentPayment {get; set;}
-    }
+    [Required]
+    public IEnumerable<UpdateDirectStudentSession> UpdateStudentSessions {get; set;}
 
     public class UpdateDirectStudentInfo 
     {
@@ -35,6 +26,9 @@ public class UpdateDirectStudentArgs
 
     public class UpdateDirectStudentSession 
     {
+        [Required]
+        public int Id {get; set;}
+
         public int? ActivityId {get; set;}
 
         public int? ScheduleId {get; set;}
@@ -48,10 +42,14 @@ public class UpdateDirectStudentArgs
         public string? StudentNo {get; set;}
 
         public string? Remarks {get; set;}
+
+        public UpdateDirectStudentPayment? DirectStudentPayment {get; set;}
     }
 
     public class UpdateDirectStudentPayment 
     {
+        public int Id {get; set;}
+
         public decimal? Amount {get; set;}
     }
 }

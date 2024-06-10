@@ -82,6 +82,28 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
         }
     }
 
+    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/{studentId}/Sessions")
+                .SetQueryParams(args)
+                .GetJsonAsync<StudentSessionsResult>();
+
+            return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully getting direct student sessions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentSessionsResult>.CreateFailed(ex, "An error occured when getting direct student sessions.");
+        }
+    }
+
     public async Task<AppResult<GetDirectStudentByIdResult>> GetDirectStudentById(GetDirectStudentByIdArgs args, string token)
     {
         try
@@ -147,28 +169,6 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
         catch (Exception ex)
         {
             return AppResult<UpdateDirectStudentAttendanceResult>.CreateFailed(ex, "An error occured when updating direct student attendance api");
-        }
-    }
-
-    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId, string token)
-    {
-        try
-        {
-            var result = await flurlClient
-                .WithOAuthBearerToken(token)
-                .Request($"DirectStudents/{studentId}/Sessions")
-                .SetQueryParams(args)
-                .GetJsonAsync<StudentSessionsResult>();
-
-            return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully getting direct student sessions.");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<StudentSessionsResult>.CreateFailed(ex, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return AppResult<StudentSessionsResult>.CreateFailed(ex, "An error occured when getting direct student sessions.");
         }
     }
 }
