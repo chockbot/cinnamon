@@ -167,9 +167,10 @@ public class DirectStudentController : ControllerBase
     {
         try
         {
-            var dto = mapper.Map<DirectStudentDTO>(args.UpdateDirectStudentData);
+            var info = mapper.Map<DirectStudentInfoDTO>(args.UpdateStudentInfo);
+            var sessions = mapper.Map<IEnumerable<DirectStudentSessionDTO>>(args.UpdateStudentSessions);
 
-            var result = await directStudentRepository.UpdateDirectStudent(dto);
+            var result = await directStudentRepository.UpdateDirectStudent(info, sessions);
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new UpdateDirectStudentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

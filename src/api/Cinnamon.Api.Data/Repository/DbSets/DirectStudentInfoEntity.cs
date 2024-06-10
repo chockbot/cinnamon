@@ -93,8 +93,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
         }
     }
 
-    public async Task<AppResult<DirectStudentInfo>> UpdateDirectStudent(DirectStudentInfo directStudent, 
-        DirectStudentSession directStudentSession, DirectStudentPayment directStudentPayment)
+    public async Task<AppResult<DirectStudentInfo>> UpdateDirectStudent(DirectStudentInfo directStudent, IEnumerable<DirectStudentSession> sessions)
     {
         try
         {
@@ -107,39 +106,48 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                 return AppResult<DirectStudentInfo>.CreateFailed(new ApplicationException("Unable to find direct student."), "Unable to find direct student.");
             }
 
-            var studentSession = await applicationContext.DirectStudentSessions
-                                    .Where(s => s.DirectStudentInfoId == student.Id)
-                                    .FirstOrDefaultAsync();
-            
-            if(studentSession is null)
-            {
-                return AppResult<DirectStudentInfo>.CreateFailed(new ApplicationException("Unable to find direct student."), "Unable to find direct student.");
-            }
-
-            var studentPayment = await applicationContext.DirectStudentPayments
-                                        .Where(p => p.DirectStudentSessionId == studentSession.Id)
-                                        .FirstOrDefaultAsync();
-            
-            if(studentPayment is null)
-            {
-                return AppResult<DirectStudentInfo>.CreateFailed(
-                    new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
-            }
-
             student.BirthMonth = directStudent.BirthMonth ?? student.BirthMonth;
             student.BirthYear = directStudent.BirthYear == 0 ? student.BirthYear : directStudent.BirthYear;
             student.Gender = directStudent.Gender ?? student.Gender;
             student.Name = directStudent.Name ?? student.Name;
-            
-            studentSession.ActivityId = directStudentSession.ActivityId == 0 ? studentSession.ActivityId : directStudentSession.ActivityId;
-            studentSession.ScheduleId = directStudentSession.ScheduleId == 0 ? studentSession.ScheduleId : directStudentSession.ScheduleId;
-            studentSession.Name = directStudent.Name ?? studentSession.Name;
-            studentSession.NumberOfSessions = directStudentSession.NumberOfSessions == 0 ? studentSession.NumberOfSessions : directStudentSession.NumberOfSessions;
-            studentSession.SessionsAttended = directStudentSession.SessionsAttended == 0 ? studentSession.SessionsAttended : directStudentSession.SessionsAttended;
-            studentSession.Remarks = directStudentSession.Remarks ?? studentSession.Remarks;
-            studentSession.StudentNo = directStudentSession.StudentNo ?? studentSession.StudentNo;
 
-            studentPayment.Amount = directStudentPayment.Amount == 0 ? studentPayment.Amount : directStudentPayment.Amount;
+            var sessionsIds = sessions.Select(s => s.Id);
+            var studentSessions = await applicationContext.DirectStudentSessions
+                                    .Where(s => sessionsIds.Contains(s.Id))
+                                    .ToListAsync();
+            
+            if(studentSessions is null)
+            {
+                return AppResult<DirectStudentInfo>.CreateFailed(new ApplicationException("Unable to find direct student."), "Unable to find direct student.");
+            }
+
+            foreach(var sessionToUpdate in studentSessions)
+            {
+                var studentPayment = await applicationContext.DirectStudentPayments
+                                        .Where(p => p.DirectStudentSessionId == sessionToUpdate.Id)
+                                        .FirstOrDefaultAsync();
+
+                if(studentPayment is null)
+                {
+                    return AppResult<DirectStudentInfo>.CreateFailed(
+                        new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
+                }
+
+                var session = sessions.FirstOrDefault(s => s.Id == sessionToUpdate.Id);
+
+                if(session is not null)
+                {
+                    studentPayment.Amount = session.DirectStudentPayment.Amount == 0 ? studentPayment.Amount : session.DirectStudentPayment.Amount;
+
+                    sessionToUpdate.ActivityId = session.ActivityId == 0 ? sessionToUpdate.ActivityId : session.ActivityId;
+                    sessionToUpdate.ScheduleId = session.ScheduleId == 0 ? sessionToUpdate.ScheduleId : session.ScheduleId;
+                    sessionToUpdate.Name = session.Name ?? sessionToUpdate.Name;
+                    sessionToUpdate.NumberOfSessions = session.NumberOfSessions == 0 ? sessionToUpdate.NumberOfSessions : session.NumberOfSessions;
+                    sessionToUpdate.SessionsAttended = session.SessionsAttended == 0 ? sessionToUpdate.SessionsAttended : session.SessionsAttended;
+                    sessionToUpdate.Remarks = session.Remarks ?? sessionToUpdate.Remarks;
+                    sessionToUpdate.StudentNo = session.StudentNo ?? sessionToUpdate.StudentNo;
+                }
+            }
 
             await applicationContext.SaveChangesAsync();
 

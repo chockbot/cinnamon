@@ -158,7 +158,8 @@
         </ModalContent>
     </Modal>
 }
-@code {
+@code 
+{
     [Parameter]
     public int Id { get; set; }
     [Parameter]
@@ -187,9 +188,7 @@
     LoadingIndicator                loadingIndicator;
     public StudentType studentType { get; set; } = StudentType.Manual;
 
-    @functions {
-        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
-    }
+    string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -357,15 +356,17 @@
                     }
                     break;
                 case "Manual":
-                    var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
-                                {
-                                    StudentId = Id,
-                                    Remarks = remarksLocalState
-                                 }, Token);
-
+                    var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                        DirectStudentSessions = new List<Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession>{
+                            new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                                Id = Id,
+                                Remarks = remarksLocalState
+                            }
+                        }
+                    }, Token);
                     if (updateRes.Succeeded && updateRes.Result != null && updateRes.Result.IsSuccess)
                     {
-                        student.Remarks = string.IsNullOrEmpty(updateRes.Result.Result.Remarks) ? string.Empty : updateRes.Result.Result.Remarks;
+                        student.Remarks = remarksLocalState;
                     }
                     break;
                 default:
@@ -414,12 +415,16 @@
                 if (updatedDirect.Succeeded && updatedDirect.Result != null && updatedDirect.Result.IsSuccess)
                 {
                     //Update Session Attended and Backtracking
-                    var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
-                    {
-                        StudentId = studentAttendance.StudentId,
-                        SessionsAttended = studentAttendance.SessionsAttended,
+                    var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                        DirectStudentSessions = new List<Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession>{
+                            new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                                Id = studentAttendance.StudentId,
+                                SessionsAttended = studentAttendance.SessionsAttended
+                            }
+                        }
                     }, Token);
-                    student.SessionsAttended = updateRes.Result.Result.SessionAttended;
+
+                    student.SessionsAttended = studentAttendance.SessionsAttended;
                     //Get Schedule Details
                     var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
                 }
@@ -566,12 +571,15 @@
                     if(createDirect.Succeeded && createDirect.Result.IsSuccess)
                     {
                         //Update Session Attended and Backtracking
-                        var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs
-                        {
-                            StudentId = Id,
-                            SessionsAttended = student.SessionsAttended + 1,
+                        var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                            DirectStudentSessions = new List<Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession>{
+                                new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                                    Id = Id,
+                                    SessionsAttended = student.SessionsAttended + 1
+                                }
+                            }
                         }, Token);
-                        student.SessionsAttended = updateRes.Result.Result.SessionAttended;
+                        student.SessionsAttended = student.SessionsAttended + 1;
                         //Get Schedule Details
                         var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
                     }

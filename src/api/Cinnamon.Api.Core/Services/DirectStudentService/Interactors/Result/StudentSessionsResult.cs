@@ -16,5 +16,13 @@ public class StudentSessionsResult
         public int SessionsAttended {get; set;}
         public string Remarks {get; set;}
         public string Status {get; set;}
+
+        public DirectStudentSessionPayment DirectStudentPayment {get; set;}
+    }
+
+    public class DirectStudentSessionPayment 
+    {
+        public int Id {get; set;}
+        public decimal Amount {get; set;}
     }
 }

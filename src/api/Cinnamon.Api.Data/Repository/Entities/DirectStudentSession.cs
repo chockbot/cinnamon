@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class DirectStudentSession : BaseEntity
@@ -15,4 +17,7 @@ public class DirectStudentSession : BaseEntity
     public DateTime ExpirationDateEnd { get; set; }
 
     public virtual DirectStudentInfo DirectStudentInfo {get; set;}
+
+    [NotMapped]
+    public virtual DirectStudentPayment DirectStudentPayment {get; set;}
 }

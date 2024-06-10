@@ -534,6 +534,12 @@
 
     private async Task AddDirectStudents()
     {
+        // add current selected to student in list if not existed
+        if(!students.ContainsKey(selectedStudent.Id))
+        {
+            students.Add(selectedStudent.Id, selectedStudent);
+        }
+
         var result = await dashboardApiHandler.CreateDirectStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateDirectStudentsArgs
         {
             CreateDirectStudents = students.Select(dic =>

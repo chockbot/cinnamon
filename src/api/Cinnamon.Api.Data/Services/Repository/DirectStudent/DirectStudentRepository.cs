@@ -108,25 +108,24 @@ public class DirectStudentRepository : IDirectStudentRepository
 		}
 	}
 
-	public async Task<AppResult<DirectStudentDTO>> UpdateDirectStudent(DirectStudentDTO directStudent)
+	public async Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO studentInfo, IEnumerable<DirectStudentSessionDTO> sessions)
 	{
 		try
 		{
-			var student = mapper.Map<Entities.DirectStudentInfo>(directStudent.DirectStudentInfo);
-			var studentSessions = mapper.Map<Entities.DirectStudentSession>(directStudent.DirectStudentSession);
-			var studentPayment = mapper.Map<Entities.DirectStudentPayment>(directStudent.DirectStudentPayment);
+			var student = mapper.Map<Entities.DirectStudentInfo>(studentInfo);
+			var studentSessions = mapper.Map<IEnumerable<Entities.DirectStudentSession>>(sessions);
 
-			var result = await dataStore.DirectStudentInfo.UpdateDirectStudent(student, studentSessions, studentPayment);
+			var result = await dataStore.DirectStudentInfo.UpdateDirectStudent(student, studentSessions);
 			if(!result.Succeeded || result.Result is null)
 			{
-				return AppResult<DirectStudentDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+				return AppResult<DirectStudentInfoDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
 			}
 
-			return AppResult<DirectStudentDTO>.CreateSucceeded(directStudent, "Successfully update direct student.");
+			return AppResult<DirectStudentInfoDTO>.CreateSucceeded(studentInfo, "Successfully update direct student.");
 		}
 		catch (Exception ex)
 		{
-			return AppResult<DirectStudentDTO>.CreateFailed(ex, "An error occured when updating direct student.");
+			return AppResult<DirectStudentInfoDTO>.CreateFailed(ex, "An error occured when updating direct student.");
 		}
 	}
 

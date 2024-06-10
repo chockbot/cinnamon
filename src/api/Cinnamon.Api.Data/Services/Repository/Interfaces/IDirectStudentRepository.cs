@@ -13,7 +13,7 @@ public interface IDirectStudentRepository
 
     Task<AppResult<IEnumerable<DirectStudentPaymentDTO>>> GetStudentPaymentByProvider(int? providerId, DateTime? dateFrom);
 
-    Task<AppResult<DirectStudentDTO>> UpdateDirectStudent(DirectStudentDTO directStudent);
+    Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO studentInfo, IEnumerable<DirectStudentSessionDTO> sessions);
 
     Task<AppResult<DirectStudentDTO>> DirectStudentInfo(int studentId);
 
