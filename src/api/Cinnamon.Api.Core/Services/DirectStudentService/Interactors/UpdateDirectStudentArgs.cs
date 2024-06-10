@@ -4,9 +4,9 @@ namespace Cinnamon.Api.Core.Services.DirectStudentService.Interactors;
 
 public class UpdateDirectStudentArgs : IInteractor 
 {
-    public UpdateDirectStudentInfo DirectStudentInfo {get; set;}
+    public UpdateDirectStudentInfo? DirectStudentInfo {get; set;}
     
-    public IEnumerable<UpdateDirectStudentSession> DirectStudentSessions {get; set;}
+    public IEnumerable<UpdateDirectStudentSession>? DirectStudentSessions {get; set;}
 
     public class UpdateDirectStudentInfo 
     {
