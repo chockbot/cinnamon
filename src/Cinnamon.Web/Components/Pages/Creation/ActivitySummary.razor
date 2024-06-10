@@ -29,7 +29,7 @@
             }
         </Div>
         <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 my-3 m-font-size-18 experience-title">@Activity.Title</h3>
-        <p class="font-size-20 font-family-nunito m-font-size-12 experience-description">@Activity.Description</p>
+        <p class="font-size-20 font-family-nunito m-font-size-12 experience-description color-black-100">@Activity.Description</p>
     </Div>
     @if (Activity.ExperienceTypeId == 1)
     {
@@ -219,7 +219,7 @@
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Customer Requirements
         </h3>
-        <p>
+        <p class="color-black-100">
             @if (string.IsNullOrEmpty(Activity.CustomerBringWithThem))
             {
                 @("N/A")
@@ -244,7 +244,7 @@
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Class Policies
         </h3>
-        <p>
+        <p class="color-black-100">
             @if (string.IsNullOrEmpty(Activity.ClassPolicies))
             {
                 @("N/A")
