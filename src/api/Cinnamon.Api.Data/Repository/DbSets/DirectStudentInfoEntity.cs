@@ -128,21 +128,24 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
 
                 foreach(var sessionToUpdate in studentSessions)
                 {
-                    var studentPayment = await applicationContext.DirectStudentPayments
-                                            .Where(p => p.DirectStudentSessionId == sessionToUpdate.Id)
-                                            .FirstOrDefaultAsync();
-
-                    if(studentPayment is null)
-                    {
-                        return AppResult<DirectStudentInfo>.CreateFailed(
-                            new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
-                    }
-
                     var session = sessions.FirstOrDefault(s => s.Id == sessionToUpdate.Id);
 
                     if(session is not null)
                     {
-                        studentPayment.Amount = session.DirectStudentPayment.Amount == 0 ? studentPayment.Amount : session.DirectStudentPayment.Amount;
+                        if(session.DirectStudentPayment is not null)
+                        {
+                            var studentPayment = await applicationContext.DirectStudentPayments
+                                            .Where(p => p.DirectStudentSessionId == sessionToUpdate.Id)
+                                            .FirstOrDefaultAsync();
+
+                            if(studentPayment is null)
+                            {
+                                return AppResult<DirectStudentInfo>.CreateFailed(
+                                    new ApplicationException("Unable to find direct student payment."), "Unable to find direct student payment.");
+                            }
+
+                            studentPayment.Amount = session.DirectStudentPayment.Amount == 0 ? studentPayment.Amount : session.DirectStudentPayment.Amount;
+                        }
 
                         sessionToUpdate.ActivityId = session.ActivityId == 0 ? sessionToUpdate.ActivityId : session.ActivityId;
                         sessionToUpdate.ScheduleId = session.ScheduleId == 0 ? sessionToUpdate.ScheduleId : session.ScheduleId;

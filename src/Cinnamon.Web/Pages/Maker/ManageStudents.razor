@@ -421,8 +421,11 @@
         if(studentType == StudentType.Manual)
         {
             var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
-                DirectStudentInfo = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentInfo {
-                    StudentId = Id,
+                DirectStudentSessions = new List<Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession> {
+                    new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                        Id = Id,
+                        StudentNo = result
+                    },
                 }
             }, token);
 
