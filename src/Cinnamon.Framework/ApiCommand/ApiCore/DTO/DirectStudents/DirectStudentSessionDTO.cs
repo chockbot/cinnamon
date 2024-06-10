@@ -12,4 +12,6 @@ public class DirectStudentSessionDTO
     public int SessionsAttended {get; set;}
     public string Remarks {get; set;}
     public string Status {get; set;}
+
+    public DirectStudentPaymentDTO DirectStudentPayment {get; set;}
 }
