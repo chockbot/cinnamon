@@ -463,7 +463,8 @@
                     ScheduleId = s.ScheduleId,
                     StudentPayment = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentPayment {
                         Amount = s.Amount
-                    }
+                    },
+                    Period = s.PeriodConfirmation.SelectedPeriod
                 })
             }, token);
 

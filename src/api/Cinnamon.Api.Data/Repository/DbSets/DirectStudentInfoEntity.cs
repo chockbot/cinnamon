@@ -154,6 +154,9 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                         sessionToUpdate.SessionsAttended = session.SessionsAttended == 0 ? sessionToUpdate.SessionsAttended : session.SessionsAttended;
                         sessionToUpdate.Remarks = session.Remarks ?? sessionToUpdate.Remarks;
                         sessionToUpdate.StudentNo = session.StudentNo ?? sessionToUpdate.StudentNo;
+                        
+                        sessionToUpdate.ExpirationDateEnd = session.ExpirationDateEnd;
+                        sessionToUpdate.ExpirationDateStart = session.ExpirationDateStart;
                     }
                 }
             }

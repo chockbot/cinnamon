@@ -41,6 +41,10 @@ public class UpdateDirectStudentArgs
 
         public string? Remarks {get; set;}
 
+        public DateTime? ExpirationDateStart {get; set;}
+        
+        public DateTime? ExpirationDateEnd { get; set; }
+
         public UpdateDirectStudentPayment? DirectStudentPayment {get; set;}
     }
 
