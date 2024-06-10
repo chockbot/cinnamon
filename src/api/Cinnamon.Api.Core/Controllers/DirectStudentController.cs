@@ -129,17 +129,25 @@ public class DirectStudentsController : ControllerBase
         try
         {
             var result = await updateDirectStudentHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs {
-                ActivityId = args.ActivityId,
-                Amount = args.Amount,
-                BirthMonth = args.BirthMonth,
-                BirthYear = args.BirthYear,
-                Gender = args.Gender,
-                Name = args.Name,
-                ScheduleId = args.ScheduleId,
-                StudentId = args.StudentId,
-                NumberOfSessions = args.NumberOfSessions,
-                Remarks = args.Remarks,
-                StudentNo = args.StudentNo
+                DirectStudentInfo = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentInfo {
+                    BirthMonth = args.DirectStudentInfo.BirthMonth,
+                    BirthYear = args.DirectStudentInfo.BirthYear,
+                    Gender = args.DirectStudentInfo.Gender,
+                    Name = args.DirectStudentInfo.Name,
+                    StudentId = args.DirectStudentInfo.StudentId
+                },
+                DirectStudentSessions = args.DirectStudentSessions.Select(s => new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    StudentNo = s.StudentNo,
+                    StudentPayment = new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                        Amount = s.StudentPayment?.Amount
+                    }
+                })
             });
             if(!result.Succeeded || result.Result is null)
             {

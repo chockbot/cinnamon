@@ -421,8 +421,9 @@
         if(studentType == StudentType.Manual)
         {
             var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
-                StudentId = Id,
-                StudentNo = result
+                DirectStudentInfo = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentInfo {
+                    StudentId = Id,
+                }
             }, token);
 
             if (!updateRes.Succeeded || updateRes.Result == null || !updateRes.Result.IsSuccess)

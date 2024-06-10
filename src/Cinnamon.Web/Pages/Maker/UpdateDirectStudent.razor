@@ -426,13 +426,19 @@
         NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
     }
 
+    /**
     private async Task SaveStudents()
     {
-        /**
         try
         {
             bool fieldsValid = await studentValidation?.ValidateAll();
-            if(!fieldsValid) return;
+            bool activitiesFieldsValid = await enrolledActivitiesValidation?.ValidateAll();
+
+            if(!fieldsValid || !activitiesFieldsValid)
+            {
+                await NotificationService.Error("Please double check required fields and try again", "Error");
+                return;
+            }
 
             var result = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
                 ActivityId = student.ActivityId,
@@ -458,8 +464,8 @@
         {
             await NotificationService.Error("An error occured when updating direct student.", "Error");
         }
-        **/
     }
+    **/
 
     private async Task LoadStudent()
     {

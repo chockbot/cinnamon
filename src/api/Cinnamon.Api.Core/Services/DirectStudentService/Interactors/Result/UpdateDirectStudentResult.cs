@@ -8,9 +8,4 @@ public class UpdateDirectStudentResult
     public string Gender {get; set;}
     public string BirthMonth {get; set;}
     public int BirthYear {get; set;}
-
-    public int ActivityId {get; set;}
-    public int ScheduleId {get; set;}
-
-    public decimal Amount {get; set;}
 }
