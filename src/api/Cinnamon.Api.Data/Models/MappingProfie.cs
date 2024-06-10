@@ -110,6 +110,7 @@ public class MappingProfile : Profile
 
         // direct student mappings
         CreateMap<DirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
         CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
