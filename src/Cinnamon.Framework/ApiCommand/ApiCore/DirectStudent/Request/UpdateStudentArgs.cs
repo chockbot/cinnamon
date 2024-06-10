@@ -30,6 +30,7 @@ public class UpdateStudentArgs
         public int? ActivityId {get; set;}
         public int? ScheduleId {get; set;}
         public int? NumberOfSessions {get; set;}
+        public int? SessionsAttended { get; set; }
         public string? StudentNo {get; set;}
         public string? Remarks {get; set;}
 

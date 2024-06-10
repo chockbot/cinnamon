@@ -109,6 +109,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     Id = s.Id,
                     Name = s.Name,
                     NumberOfSessions = s.NumberOfSessions,
+                    SessionsAttended = s.SessionsAttended,
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,

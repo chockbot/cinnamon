@@ -143,6 +143,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     sessionToUpdate.ScheduleId = session.ScheduleId == 0 ? sessionToUpdate.ScheduleId : session.ScheduleId;
                     sessionToUpdate.Name = session.Name ?? sessionToUpdate.Name;
                     sessionToUpdate.NumberOfSessions = session.NumberOfSessions == 0 ? sessionToUpdate.NumberOfSessions : session.NumberOfSessions;
+                    sessionToUpdate.SessionsAttended = session.SessionsAttended == 0 ? sessionToUpdate.SessionsAttended : session.SessionsAttended;
                     sessionToUpdate.Remarks = session.Remarks ?? sessionToUpdate.Remarks;
                     sessionToUpdate.StudentNo = session.StudentNo ?? sessionToUpdate.StudentNo;
                 }

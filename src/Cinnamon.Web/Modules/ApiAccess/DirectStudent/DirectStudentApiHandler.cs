@@ -103,4 +103,72 @@ public class DirectStudentApiHandler : IDirectStudentApiHandler
             return AppResult<StudentSessionsResult>.CreateFailed(ex, "An error occured when getting direct student sessions.");
         }
     }
+
+    public async Task<AppResult<GetDirectStudentByIdResult>> GetDirectStudentById(GetDirectStudentByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/GetStudentAttendanceById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetDirectStudentByIdResult>();
+
+            return AppResult<GetDirectStudentByIdResult>.CreateSucceeded(result, "Successfully getting direct students api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetDirectStudentByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDirectStudentByIdResult>.CreateFailed(ex, "An error occured when getting direct students api");
+        }
+    }
+
+    public async Task<AppResult<CreateDirectStudentAttendanceResult>> CreateDirectStudentAttendance(CreateDirectStudentAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/CreateDirectAttendance")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateDirectStudentAttendanceResult>();
+
+            return AppResult<CreateDirectStudentAttendanceResult>.CreateSucceeded(result, "Successfully created direct student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var errorResult = await ex.GetResponseJsonAsync();
+            return AppResult<CreateDirectStudentAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateDirectStudentAttendanceResult>.CreateFailed(ex, "An error occured when creating direct student attendance api");
+        }
+    }
+
+    public async Task<AppResult<UpdateDirectStudentAttendanceResult>> UpdateDirectStudentAttendance(UpdateDirectStudentAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"DirectStudents/UpdateDirectAttendance")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateDirectStudentAttendanceResult>();
+
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateSucceeded(result, "Successfully updated direct student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var errorResult = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateDirectStudentAttendanceResult>.CreateFailed(ex, "An error occured when updating direct student attendance api");
+        }
+    }
 }

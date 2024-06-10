@@ -94,5 +94,8 @@ public class MappingProfile : Profile
         CreateMap<DataDto.DirectStudent.DirectStudentPaymentDTO, DirectStudentResult.StudentSessionsResult.DirectStudentSessionPayment>();
         CreateMap<DirectStudentResult.StudentSessionsResult.DirectStudentSession, CoreDto.DirectStudents.DirectStudentSessionDTO>();
         CreateMap<DirectStudentResult.StudentSessionsResult.DirectStudentSessionPayment, CoreDto.DirectStudents.DirectStudentPaymentDTO>();
+
+        CreateMap<DataDto.DirectStudent.DirectStudentAttendanceDTO, DirectStudentResult.CreateDirectStudentAttendanceResult.CreateStudentAttendance>();
+        CreateMap<DirectStudentResult.CreateDirectStudentAttendanceResult.CreateStudentAttendance, CoreDto.DirectStudents.DirectStudentAttendanceDTO>();
     }
 }

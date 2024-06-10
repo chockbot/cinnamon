@@ -4,6 +4,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DirectStudents;
+using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,17 +19,25 @@ public class DirectStudentsController : ControllerBase
     private readonly IUpdateDirectStudentHandler updateDirectStudentHandler;
     private readonly IDirectStudentHandler directStudentHandler;
     private readonly IStudentSessionsHandler studentSessionsHandler;
+    private readonly IGetDirectStudentByIdHandler getDirectStudentByIdHandler;
+    private readonly ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler;
+    private readonly IUpdateStudentAttendanceHandler updateStudentAttendanceHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
         IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler,
-        IStudentSessionsHandler studentSessionsHandler)
+        IStudentSessionsHandler studentSessionsHandler, IGetDirectStudentByIdHandler getDirectStudentByIdHandler,
+        ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler,
+        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler)
     {
         this.directStudentsInfoHandler = directStudentsInfoHandler;
         this.mapper = mapper;
         this.updateDirectStudentHandler = updateDirectStudentHandler;
         this.directStudentHandler = directStudentHandler;
         this.studentSessionsHandler = studentSessionsHandler;
+        this.getDirectStudentByIdHandler = getDirectStudentByIdHandler;
+        this.createDirectStudentAttendanceHandler = createDirectStudentAttendanceHandler;
+        this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
     }
 
     [HttpGet]
@@ -141,6 +150,7 @@ public class DirectStudentsController : ControllerBase
                     Id = s.Id,
                     Name = s.Name,
                     NumberOfSessions = s.NumberOfSessions,
+                    SessionsAttended = s.SessionsAttended,
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,
@@ -164,6 +174,137 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateStudentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("GetStudentAttendanceById")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDirectStudentByIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDirectStudentById([FromQuery] GetDirectStudentByIdArgs args)
+    {
+        try
+        {
+            var result = await getDirectStudentByIdHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.GetDirectStudentByIdArgs
+            {
+                StudentId = args.StudentId,
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetDirectStudentByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetDirectStudentByIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
+                    {
+                        ActivityId = s.ActivityId,
+                        Date = s.AttendanceDate,
+                        Id = s.Id,
+                        IsPresent = s.IsPresent,
+                        Name = s.StudentName,
+                        NumberOfSessions = s.NumberOfSessions,
+                        Remarks = s.Remarks,
+                        ScheduleId = s.ScheduleId,
+                        SessionsAttended = s.SessionsAttended,
+                        Status = s.Status,
+                        StudentNo = s.StudentNo,
+                        StudentId = s.StudentId,
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    [Route("CreateDirectAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateDirectStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateAttendance([FromBody] CreateDirectStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await createDirectStudentAttendanceHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.CreateDirectStudentAttendanceArgs
+            {
+                CreateDirectStudentsAttendance = args.CreateStudentAttendances.Select(s =>
+                {
+                    return new Services.DirectStudentService.Interactors.CreateDirectStudentAttendanceArgs.CreateStudentAttendance
+                    {
+                        AttendanceDate = s.Date,
+                        IsPresent      = s.IsPresent,
+                        StudentId      = s.DirectStudentSessionId
+                    };
+                }).ToList()
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResult = mapper.Map<IEnumerable<CoreDto.DirectStudents.DirectStudentAttendanceDTO>>(result.Result.CreateDirectStudentsAttendance);
+            return new JsonResult(new CreateDirectStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = mapResult
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("UpdateDirectAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateDirectStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateDirectStudentAttendance([FromBody] UpdateDirectStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await updateStudentAttendanceHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.UpdateStudentAttendanceArgs
+            {
+                Date = args.Date,
+                Students = args.Students.Select(s =>
+                {
+                    return new Services.DirectStudentService.Interactors.UpdateStudentAttendanceArgs.StudentDetails
+                    {
+                        ActivityId = s.ActivityId,
+                        IsPresent = s.IsPresent,
+                        ScheduleId = s.ScheduleId,
+                        StudentId = s.StudentId
+                    };
+                })
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateDirectStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.DirectStudents.DirectStudentAttendanceDTO
+                    {
+                        Date                   = s.Date,  
+                        IsPresent              = s.IsPresent,
+                        DirectStudentSessionId = s.StudentId
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

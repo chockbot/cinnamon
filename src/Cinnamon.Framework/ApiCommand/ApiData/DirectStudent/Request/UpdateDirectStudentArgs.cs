@@ -37,6 +37,8 @@ public class UpdateDirectStudentArgs
 
         public int? NumberOfSessions {get; set;}
 
+        public int? SessionsAttended { get; set; }
+
         public string? StudentNo {get; set;}
 
         public string? Remarks {get; set;}

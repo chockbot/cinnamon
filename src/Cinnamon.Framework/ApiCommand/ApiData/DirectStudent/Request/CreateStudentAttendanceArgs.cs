@@ -10,7 +10,7 @@ public class CreateStudentAttendanceArgs
     public class CreateStudentAttendance 
     {
         [Required]
-        public int DirectStudentSessionId {get; set;}
+        public int DirectStudentSessionId { get; set;}
 
         [Required]
         public bool IsPresent {get; set;}
