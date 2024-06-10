@@ -81,7 +81,7 @@
            Location
         </FieldLabel>
         <div id="event-type" class="d-flex mb-3 m-margin-bottom-30">
-        <RadioGroup TValue="int" Name="experience-type" CheckedValue="ModelState.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
+        <RadioGroup TValue="int" Name="experience-type" CheckedValue="@ModelState.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
             <p class="font-20 d-none m-d-block color-black-100 mb-1">Type of experience</p>
             <label for="type-online" class="bg-white-100 border-radius-10 prevent-select me-4
                 text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200 m-margin-right-5">
@@ -111,9 +111,26 @@
                                     </clipPath>
                                 </defs>
                             </svg>
-                            <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
-                                      id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
-                                      class="@PinnedClass" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation" />
+                            @if(ModelState.SelectedType == 1)
+                            {
+                                <Validations Mode="ValidationMode.Manual" Model="ModelState">
+                                    <Validation>
+                                        <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
+                                                  id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                                  class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation">
+                                        </TextEdit>
+                                    </Validation>
+                                </Validations>
+                                
+                                
+                            }
+                            else
+                            {
+                                <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
+                                          id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                          class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation" />
+                            }
+
                             <button type="button" class="clear-button" @onclick="ClearTextEdit">✖</button>
                         </div>
                     </Column>
@@ -180,24 +197,24 @@
             </Column>
         </Row>
         <Divider />
-        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+        <FieldLabel class="font-20 text-capitalize color-black-100 mb-3 m-font-18">
             Display Preferrence
         </FieldLabel>
-        <div class="mb-4">
+        <div class="mb-2">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="public-details-page" checked="@(!ModelState.Publish)" @onchange="@(()=>CheckboxChanged(2))" value="2">
+                <input class="form-check-input" type="radio" name="display-type" id="public-details-page" checked="@ModelState.IsPublic" @onchange="@(()=>CheckboxChanged(2))" value="2">
                 <label class="form-check-label" for="public-details-page">
                     Public
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@(!ModelState.Publish)" @onchange="@(()=>CheckboxChanged(2))" value="3">
+                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@ModelState.IsPrivate" @onchange="@(()=>CheckboxChanged(2))" value="3">
                 <label class="form-check-label" for="private-details-page">
                     Private
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@ModelState.ComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
+                <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@ModelState.IsComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
                 <label class="form-check-label" for="coming-soon">
                     Display a Coming Soon Page
                 </label>
@@ -310,33 +327,42 @@
         }
 
         //Location
-        if (ModelState.SelectedType == 2)
+        if (ModelState.SelectedType == 1)
         {
-            return true;
+            bool validPinnedLocation = ModelState.SelectedType == 1 && !string.IsNullOrEmpty(ModelState.PinnedLocation);
+            StateHasChanged();
+            await Task.Delay(300);
+            if (!validPinnedLocation)
+            {
+                message += "<li>Location is required.</li>";
+                errorMessage = message;
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+                return false;
+            }
         }
-        if (ModelState.SelectedType == 1 && string.IsNullOrEmpty(ModelState.PinnedLocation))
+        //Display Preferrence
+        bool validPrefference = ModelState.IsPrivate || ModelState.IsPublic || ModelState.IsComingSoon;
+        if (!validPrefference)
         {
+            message += "<li>Location is required.</li>";
+            errorMessage = message;
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
             return false;
         }
-        else
+        //Event Details
+        if (formValidation is not null)
         {
-            if (formValidation is not null)
+            bool valid = await formValidation.ValidateAll();
+            isNextClick = true;
+            StateHasChanged();
+            await Task.Delay(300); // add delay to populate is-invalid class
+            if (!valid)
             {
-                bool valid = await formValidation.ValidateAll() && ModelState.SelectedCategory > 0 && !string.IsNullOrEmpty(ModelState.Region.Code)
-                    && !string.IsNullOrEmpty(ModelState.City.Code) && !string.IsNullOrEmpty(ModelState.Barangay.Code);
-                isNextClick = true;
-                StateHasChanged();
-                await Task.Delay(300); // add delay to populate is-invalid class
-                if (!valid)
-                {
-                    await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
-                }
-                return valid;
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
             }
-            return false;
+            return valid;
         }
-
+        return false;
     }
 
     private string CategoryClass
@@ -509,22 +535,6 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
-    private string PinnedClass
-    {
-        get
-        {
-            string defaultStyle = "textedit font-16 text-capitalize border-radius-10 m-font-16 m-border-radius-5";
-            if (showErrors)
-            {
-                if (string.IsNullOrEmpty(ModelState.PinnedLocation))
-                {
-                    return $"{defaultStyle} is-invalid";
-                }
-                return $"{defaultStyle} is-valid";
-            }
-            return defaultStyle;
-        }
-    }
     private string RegionClass
     {
         get
@@ -628,7 +638,7 @@
             RegionCode     = ModelState.Region.Code,
             RegionName     = ModelState.Region.Name,
             ComingSoon     = ModelState.ComingSoon,
-            IsPublish      = ModelState.Publish
+            IsPublish      = ModelState.Publish,
         };
         return data;
     }
@@ -731,6 +741,10 @@
         public bool IsPublish { get; set; }
         public bool ComingSoon { get; set; }
         public IList<ImageItem> images { get; set; }
+        //Display Preferrence
+        public bool IsPublic => IsPublish && !ComingSoon;
+        public bool IsPrivate => !IsPublish && !ComingSoon;
+        public bool IsComingSoon => IsPublish && ComingSoon;
     }
 
     public class FormModel
@@ -771,6 +785,14 @@
         public bool ComingSoon { get; set; } = false;
 
         public IList<CategoryItem> categoryItems = new List<CategoryItem>(); 
+
+        public IList<ImageItem> imageItems = new List<ImageItem>();
+
+        //Display Preferrence
+        public bool IsPublic { get; set; } = true;
+        public bool IsPrivate { get; set; }
+        public bool IsComingSoon { get; set; }
+
     }
 
     public class CategoryItem 
@@ -931,12 +953,12 @@
     {
         if (val == 3)
         {
-            ModelState.Publish = false;
+            ModelState.Publish = true;
             ModelState.ComingSoon = (val == 1) ? true : false;
         }
         else if (val == 2)
         {
-            ModelState.Publish = true;
+            ModelState.Publish = false;
             ModelState.ComingSoon = (val == 1) ? true : false;
         }
         else

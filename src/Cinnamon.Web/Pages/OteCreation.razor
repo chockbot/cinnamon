@@ -750,22 +750,46 @@
         var ote = oteRes.Result.Result;
 
         // set event details
-        oteId = ote.Id;
-        eventModel.SelectedCategory = ote.CategoryId;
-        eventModel.Description = ote.Description;
-        eventModel.EventName = ote.EventName;
+        oteId                        = ote.Id;
+        eventModel.SelectedCategory  = ote.CategoryId;
+        eventModel.Description       = ote.Description;
+        eventModel.EventName         = ote.EventName;
+        await oteEvent?.SetState(new OteEvent.ModelData
+        {
+            BarangayCode   = ote.BarangayCode,
+            BarangayName   = ote.BarangayName,
+            CityCode       = ote.CityNumber,
+            CityName       = ote.CityName,
+            HouseNo        = ote.HouseNo, 
+            PinnedLocation = ote.PinnedLocation,
+            PostalCode     = ote.PostalCode,
+            RegionCode     = ote.RegionCode,
+            RegionName     = ote.RegionName,
+            IsPublish      = ote.IsPublished,
+            ComingSoon     = ote.IsComingSoon,
+            ExperienceType = ote.ExperienceTypeId,
+            images = ote.Images.Select(i =>
+                {
+                    return new OteEvent.ImageItem
+                    {
+                        Id = i.Id,
+                        ImageSrc = i.ImageSrc,
+                        Order = i.Order
+                    };
+                }).ToList()
+        });
 
         await oteLocation?.SetState(new OteLocation.ModelData {
-            BarangayCode = ote.BarangayCode,
-            BarangayName = ote.BarangayName,
-            CityCode = ote.CityNumber,
-            CityName = ote.CityName,
+            BarangayCode   = ote.BarangayCode,
+            BarangayName   = ote.BarangayName,
+            CityCode       = ote.CityNumber,
+            CityName       = ote.CityName,
             ExperienceType = ote.ExperienceTypeId,
-            HouseNo = ote.HouseNo,
+            HouseNo        = ote.HouseNo,
             PinnedLocation = ote.PinnedLocation,
-            PostalCode = ote.PostalCode,
-            RegionCode = ote.RegionCode,
-            RegionName = ote.RegionName
+            PostalCode     = ote.PostalCode,
+            RegionCode     = ote.RegionCode,
+            RegionName     = ote.RegionName
         });
 
         // set ote schedules state and parameters
