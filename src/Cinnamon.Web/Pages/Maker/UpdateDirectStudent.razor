@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Components.Pages
 @using Cinnamon.Framework.Enums
 @using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Framework.Helpers;
 @inject IJSRuntime JS;
 @inject INotificationService NotificationService;
 @inject NavigationManager NavigationManager
@@ -126,7 +127,7 @@
                                                 <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class</FieldLabel>
                                                 <FieldBody>
                                                     <Validation>
-                                                        <Select @bind-SelectedValue="item.ActivityId"
+                                                        <Select @bind-SelectedValue="item.ActivityId" @onchange="e => OnFilterValueChanged(e, item)"
                                                             class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int"
                                                             >
                                                             <ChildContent>
@@ -147,7 +148,7 @@
                                                 <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class/Schedule</FieldLabel>
                                                 <FieldBody>
                                                     <Validation>
-                                                        <Select @bind-SelectedValue="item.ScheduleId"
+                                                        <Select @bind-SelectedValue="item.ScheduleId" @onchange="e => SelectedScheduleChanged(e, item)"
                                                             class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int">
                                                             <ChildContent>
                                                                 <SelectItem Value='0' selected Disabled>select schedule</SelectItem>
@@ -264,6 +265,62 @@
             </div>
         </Column>
     </Row>
+
+    <Modal @ref="confirmPeriodModal" class="modal-period-confirmation"
+        Closing="OnModalClosing">
+        <ModalContent Centered>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                <button type="button" style="top: 20px; right: 20px;" class="btn-close position-absolute" @onclick="CancelConfirmationModal" />
+            </ModalHeader>
+            <ModalBody>
+                <fieldset>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                        checked='@(currentSelectedActivity.PeriodConfirmation.SelectedPeriod == "currentperiod")' 
+                                        value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@currentSelectedActivity.PeriodConfirmation.DurationLeft</span> to use this.</p>
+                                </Column>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                        checked='@(currentSelectedActivity.PeriodConfirmation.SelectedPeriod == "nextperiod")'  
+                                        value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@currentSelectedActivity.PeriodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                    <Button Loading="currentSelectedActivity.PeriodConfirmation.IsSubmitting" 
+                        Disabled="currentSelectedActivity.PeriodConfirmation.IsSubmitting || string.IsNullOrEmpty(currentSelectedActivity.PeriodConfirmation.SelectedPeriod)" 
+                        class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Proceed
+                        </ChildContent>
+                    </Button>
+                    @if(currentSelectedActivity.PeriodConfirmation.IsShowError && !currentSelectedActivity.PeriodConfirmation.IsApplied)
+                    {
+                        <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                    }
+                </fieldset>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 </Container>
 
 @code 
@@ -281,6 +338,8 @@
     private List<EnrolledActivity> ongoingActivities = new();
     private List<EnrolledActivity> completedActivities = new();
     private Validations? enrolledActivitiesValidation;
+    private Modal? confirmPeriodModal;
+    private EnrolledActivity currentSelectedActivity = new();
 
     protected override void OnInitialized()
     {
@@ -342,7 +401,10 @@
                     scheduleList.Add(new ActivitySchedule {
                         ActivityId = item.ActivityId,
                         Id = sched.Id,
-                        Name = sched.Name
+                        Name = sched.Name,
+                        HasExpiration = sched.HasExpiration,
+                        SessionName = sched.SessionName,
+                        StartDate = sched.StartDate
                     });
                 }
             }
@@ -461,7 +523,107 @@
         }
     }
 
-    public class Student
+    private Task OnFilterValueChanged(ChangeEventArgs e, EnrolledActivity activity)
+    {
+        if (int.TryParse(e.Value.ToString(), out int selectedValue))
+        {
+            if (selectedValue != 0)
+            {
+                activity.ActivityId = selectedValue;
+                activity.ScheduleId = 0;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        e.Cancel = (e.CloseReason == CloseReason.FocusLostClosing || e.CloseReason == CloseReason.EscapeClosing);
+        return Task.CompletedTask;
+    }
+
+    private Task CancelConfirmationModal()
+    {
+        // to reset selected schedule and empty selected period to trigger validate again
+        currentSelectedActivity.PeriodConfirmation.SelectedPeriod = string.Empty;
+        currentSelectedActivity.ScheduleId = 0;
+        currentSelectedActivity.PrevScheduleId = -1;
+
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            currentSelectedActivity.PeriodConfirmation.SelectedPeriod = period;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task ConfirmProceedClick()
+    {
+        if(string.IsNullOrEmpty(currentSelectedActivity.PeriodConfirmation.SelectedPeriod))
+        {
+            currentSelectedActivity.PeriodConfirmation.IsShowError = true;
+            return Task.CompletedTask;
+        }
+        
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private async Task SelectedScheduleChanged(ChangeEventArgs e, EnrolledActivity activity)
+    {
+        if(int.TryParse(e.Value.ToString(), out int selectedValue))
+        {
+            var selectedSched = GetActivitySchedules(activity.ActivityId).FirstOrDefault(s => s.Id == selectedValue);
+            if(selectedSched is null)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            activity.ScheduleId = selectedValue;
+            currentSelectedActivity = activity;
+
+            if(selectedSched.HasExpiration == 1)
+            {
+                if(currentSelectedActivity.ScheduleId != currentSelectedActivity.PrevScheduleId)
+                {
+                    await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+                    await confirmPeriodModal.Show();
+                }
+            }
+
+            currentSelectedActivity.PrevScheduleId = selectedValue;
+        }
+    }
+
+    private Task PeriodCalculation(DateTime dateStart, string sessionName)
+    {
+        var datePeriod = DateNextPeriod.CreateRecurring(dateStart, sessionName);
+        DateTime periodStart = datePeriod.PeriodStart;
+        // to set the last time of the day
+        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+
+        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+        DateTime now = DateTime.Now;
+
+        int daysLeft = (periodEnd - now).Days;
+        int hours = (periodEnd - now).Hours;
+        string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+        currentSelectedActivity.PeriodConfirmation.DaysLeft = Math.Abs((now - periodEnd).Days);
+        currentSelectedActivity.PeriodConfirmation.DurationLeft = durationLeft;
+        currentSelectedActivity.PeriodConfirmation.NextPeriod = nextPeriod;
+        currentSelectedActivity.PeriodConfirmation.IsApplied = false;
+        currentSelectedActivity.PeriodConfirmation.IsShowError = false;
+
+        return Task.CompletedTask;
+    }
+
+    private class Student
     {
         public int Id { get; set; }
 
@@ -488,10 +650,26 @@
         [Range(1, int.MaxValue, ErrorMessage = "Schedule is required")]
         public int ScheduleId {get; set;}
 
+        [Range(1, int.MaxValue, ErrorMessage = "The payment field is required.")]
         public decimal Amount {get; set;}
 
 
         // extra fields
         public string ActivityName {get; set;}
+        public PeriodConfirmation PeriodConfirmation {get; set;} = new();
+        public int PrevScheduleId {get; set;} = -1;
+    }
+
+    private class PeriodConfirmation 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
     }
 }
