@@ -1264,4 +1264,48 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, "An error occured when ote already booked dates");
         }
     }
+
+    public async Task<AppResult<OteScheduleDatesResult>> OteScheduleDates(OteScheduleDatesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/OteScheduleDates")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteScheduleDatesResult>();
+
+            return AppResult<OteScheduleDatesResult>.CreateSucceeded(result, "Successfully get ote schedule dates.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteScheduleDatesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteScheduleDatesResult>.CreateFailed(ex, "An error occured when ote schedule dates.");
+        }
+    }
+
+    public async Task<AppResult<OteBookedCountResult>> OteBookedCount(OteBookedCountArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/OteBookedCount")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteBookedCountResult>();
+
+            return AppResult<OteBookedCountResult>.CreateSucceeded(result, "Successfully get ote schedule dates.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteBookedCountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteBookedCountResult>.CreateFailed(ex, "An error occured when ote schedule dates.");
+        }
+    }
 }
