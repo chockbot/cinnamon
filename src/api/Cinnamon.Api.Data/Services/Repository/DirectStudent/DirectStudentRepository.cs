@@ -108,7 +108,7 @@ public class DirectStudentRepository : IDirectStudentRepository
 		}
 	}
 
-	public async Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO studentInfo, IEnumerable<DirectStudentSessionDTO> sessions)
+	public async Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO? studentInfo, IEnumerable<DirectStudentSessionDTO>? sessions)
 	{
 		try
 		{
