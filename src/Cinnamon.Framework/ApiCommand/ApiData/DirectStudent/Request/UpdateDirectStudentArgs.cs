@@ -4,11 +4,9 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DirectStudent.Request;
 
 public class UpdateDirectStudentArgs 
 {
-    [Required]
-    public UpdateDirectStudentInfo UpdateStudentInfo {get; set;}
+    public UpdateDirectStudentInfo? UpdateStudentInfo {get; set;}
 
-    [Required]
-    public IEnumerable<UpdateDirectStudentSession> UpdateStudentSessions {get; set;}
+    public IEnumerable<UpdateDirectStudentSession>? UpdateStudentSessions {get; set;}
 
     public class UpdateDirectStudentInfo 
     {

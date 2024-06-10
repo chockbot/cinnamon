@@ -108,7 +108,7 @@ public class DirectStudentRepository : IDirectStudentRepository
 		}
 	}
 
-	public async Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO studentInfo, IEnumerable<DirectStudentSessionDTO> sessions)
+	public async Task<AppResult<DirectStudentInfoDTO>> UpdateDirectStudent(DirectStudentInfoDTO? studentInfo, IEnumerable<DirectStudentSessionDTO>? sessions)
 	{
 		try
 		{
@@ -121,7 +121,9 @@ public class DirectStudentRepository : IDirectStudentRepository
 				return AppResult<DirectStudentInfoDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
 			}
 
-			return AppResult<DirectStudentInfoDTO>.CreateSucceeded(studentInfo, "Successfully update direct student.");
+			var mappedResult = mapper.Map<DirectStudentInfoDTO>(result.Result);
+
+			return AppResult<DirectStudentInfoDTO>.CreateSucceeded(mappedResult, "Successfully update direct student.");
 		}
 		catch (Exception ex)
 		{
