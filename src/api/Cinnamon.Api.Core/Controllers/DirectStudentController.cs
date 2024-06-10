@@ -154,6 +154,7 @@ public class DirectStudentsController : ControllerBase
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,
+                    Period = s.Period,
                     StudentPayment = s.StudentPayment is null ? null : new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
                         Amount = s.StudentPayment?.Amount
                     }

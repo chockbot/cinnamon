@@ -31,6 +31,7 @@ public class UpdateStudentArgs
         public int? SessionsAttended { get; set; }
         public string? StudentNo {get; set;}
         public string? Remarks {get; set;}
+        public string? Period {get; set;}
 
         public UpdateDirectStudentPayment? StudentPayment {get; set;}
     }

@@ -5,6 +5,7 @@ using Cinnamon.Api.Core.Services.DirectStudentService.Handlers;
 using Cinnamon.Api.Core.Services.DirectStudentService.Interactors;
 using Cinnamon.Api.Core.Services.DirectStudentService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Helpers;
 
 namespace Cinnamon.Api.Core.Services.DirectStudentService;
 
@@ -52,6 +53,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                 }
             }
 
+            var studentSesssions = new List<Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession>();
             if(args.DirectStudentSessions is not null)
             {
                 var profleRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
@@ -97,7 +99,68 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                                 new ApplicationException("Action not allowed. Invalid request."), "Action not allowed. Invalid request.");
                         }
 
-                        session.NumberOfSessions = schedule.PerUnit2;
+                        // skip schedule expired computation that has expiration but don't have selected period
+                        if(schedule.HasExpiration == 1 && string.IsNullOrEmpty(session.Period))
+                        {
+                            studentSesssions.Add(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                                ActivityId = session.ActivityId,
+                                Id = session.Id,
+                                Name = session.Name,
+                                NumberOfSessions = schedule.PerUnit2,
+                                Remarks = session.Remarks,
+                                ScheduleId = session.ScheduleId,
+                                StudentNo = session.StudentNo,
+                                SessionsAttended = session.SessionsAttended,
+                                DirectStudentPayment = session.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                                    Amount = session.StudentPayment.Amount
+                                }
+                            });
+                            continue;
+                        }
+
+                        //Check if Schedule has Start Expiration Date
+                        DateTime endExpiration = DateTime.MinValue;
+                        DateTime startExpiration = schedule.StartDate ?? DateTime.MinValue;
+
+                        if(schedule.HasExpiration == 1 && schedule.IsSetSession && 
+                            !(session.Period == "currentperiod" || session.Period == "nextperiod")) 
+                        {
+                            return AppResult<UpdateDirectStudentResult>.CreateFailed(
+                                new ApplicationException("Selected schedule has expired session. Please choose a valid period."), "Selected schedule has expired session. Please choose a valid period.");
+                        }
+
+                        if (schedule.HasExpiration == 1 && schedule.IsSetSession)
+                        {
+                            var datePeriod = DateNextPeriod.CreateRecurring(startExpiration, schedule.SessionName);
+
+                            if(session.Period == "currentperiod")
+                            {
+                                startExpiration = datePeriod.PeriodStart.Date;
+                                endExpiration = datePeriod.PeriodEnd;
+                            }
+                            else if (session.Period == "nextperiod")
+                            {
+                                datePeriod.NextPeriod();
+                                startExpiration = datePeriod.PeriodStart.Date;
+                                endExpiration = datePeriod.PeriodEnd;
+                            }
+                        }
+
+                        studentSesssions.Add(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                            ActivityId = session.ActivityId,
+                            Id = session.Id,
+                            Name = session.Name,
+                            NumberOfSessions = schedule.PerUnit2,
+                            Remarks = session.Remarks,
+                            ScheduleId = session.ScheduleId,
+                            SessionsAttended = session.SessionsAttended,
+                            StudentNo = session.StudentNo,
+                            ExpirationDateEnd = endExpiration,
+                            ExpirationDateStart = startExpiration,
+                            DirectStudentPayment = session.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                                Amount = session.StudentPayment.Amount,    
+                            }
+                        });
                     }
                 }
             }
@@ -110,19 +173,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     Id = args.DirectStudentInfo.StudentId,
                     Name = args.DirectStudentInfo.Name
                 },
-                UpdateStudentSessions = args.DirectStudentSessions is null ? null : args.DirectStudentSessions.Select(s => new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
-                    ActivityId = s.ActivityId,
-                    Id = s.Id,
-                    Name = s.Name,
-                    NumberOfSessions = s.NumberOfSessions,
-                    SessionsAttended = s.SessionsAttended,
-                    Remarks = s.Remarks,
-                    ScheduleId = s.ScheduleId,
-                    StudentNo = s.StudentNo,
-                    DirectStudentPayment = s.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
-                        Amount = s.StudentPayment?.Amount,
-                    },
-                })
+                UpdateStudentSessions = studentSesssions
             });
 
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
