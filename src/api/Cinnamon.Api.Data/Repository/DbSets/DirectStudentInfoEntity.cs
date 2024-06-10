@@ -111,8 +111,9 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             student.Gender = directStudent.Gender ?? student.Gender;
             student.Name = directStudent.Name ?? student.Name;
 
+            var sessionsIds = sessions.Select(s => s.Id);
             var studentSessions = await applicationContext.DirectStudentSessions
-                                    .Where(s => sessions.Any(a => a.Id == s.Id))
+                                    .Where(s => sessionsIds.Contains(s.Id))
                                     .ToListAsync();
             
             if(studentSessions is null)

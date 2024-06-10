@@ -17,7 +17,7 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IDirectStudentApiHandler directStudentApiHandler;
 
-<Container class="update-direct-students-wrapper">
+<Container class="update-direct-students-wrapper pb-4">
     <div class="header mb-3">
         <div class="title-section align-items-center">
             <button class="back-button m-0 p-0" @onclick="GoToPrev">
@@ -259,8 +259,14 @@
     <Row class="mt-4">
         <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
             <div class="text-end">
-                <Button class="px-4 text-capitalize font-16 m-font-12 bg-orange-100 color-white-100 hover-color-white">
-                    Save
+                <Button Disabled="submitting" Loading="submitting" Clicked="SaveStudents"
+                    class="px-4 text-capitalize font-16 m-font-12 bg-orange-100 color-white-100 hover-color-white">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please Wait..
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save Changes
+                    </ChildContent>
                 </Button>
             </div>
         </Column>
@@ -340,6 +346,7 @@
     private Validations? enrolledActivitiesValidation;
     private Modal? confirmPeriodModal;
     private EnrolledActivity currentSelectedActivity = new();
+    private bool submitting = false;
 
     protected override void OnInitialized()
     {
@@ -426,7 +433,6 @@
         NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
     }
 
-    /**
     private async Task SaveStudents()
     {
         try
@@ -440,16 +446,31 @@
                 return;
             }
 
+            submitting = true;
+
             var result = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
-                ActivityId = student.ActivityId,
-                Amount = student.Payment ?? 0,
-                BirthMonth = student.BirthMonth,
-                BirthYear = student.BirthYear,
-                Gender = student.Gender,
-                Name = student.Name,
-                ScheduleId = student.ScheduleId,
-                StudentId = StudentId,
+                DirectStudentInfo = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentInfo {
+                    BirthMonth = student.BirthMonth,
+                    BirthYear = student.BirthYear,
+                    Gender = student.Gender,
+                    Name = student.Name,
+                    StudentId = student.Id
+                },
+                DirectStudentSessions = ongoingActivities.Select(s => new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    Name = student.Name,
+                    ScheduleId = s.ScheduleId,
+                    StudentPayment = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentPayment {
+                        Amount = s.Amount
+                    }
+                })
             }, token);
+
+            submitting = false;
+
+            await studentValidation?.ClearAll();
+            await enrolledActivitiesValidation?.ClearAll();
 
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
@@ -465,7 +486,6 @@
             await NotificationService.Error("An error occured when updating direct student.", "Error");
         }
     }
-    **/
 
     private async Task LoadStudent()
     {
@@ -501,7 +521,7 @@
 
         if(sessionsRes.Succeeded && sessionsRes.Result is not null && sessionsRes.Result.IsSuccess)
         {
-            ongoingActivities.AddRange(sessionsRes.Result.Result.Select(s => new EnrolledActivity {
+            ongoingActivities.AddRange(sessionsRes.Result.Result.OrderByDescending(s => s.Id).Select(s => new EnrolledActivity {
                 ActivityId = s.ActivityId,
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
                 Amount = s.DirectStudentPayment.Amount,
@@ -519,7 +539,7 @@
 
         if(sessionsRes.Succeeded && sessionsRes.Result is not null && sessionsRes.Result.IsSuccess)
         {
-            completedActivities.AddRange(sessionsRes.Result.Result.Select(s => new EnrolledActivity {
+            completedActivities.AddRange(sessionsRes.Result.Result.OrderByDescending(s => s.Id).Select(s => new EnrolledActivity {
                 ActivityId = s.ActivityId,
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
                 Amount = s.DirectStudentPayment.Amount,

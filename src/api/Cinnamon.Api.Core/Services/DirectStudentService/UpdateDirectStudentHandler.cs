@@ -112,7 +112,7 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     StudentNo = s.StudentNo,
-                    UpdateDirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                    DirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
                         Amount = s.StudentPayment?.Amount,
                     },
                 })

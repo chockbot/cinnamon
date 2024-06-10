@@ -41,7 +41,7 @@ public class UpdateDirectStudentArgs
 
         public string? Remarks {get; set;}
 
-        public UpdateDirectStudentPayment? UpdateDirectStudentPayment {get; set;}
+        public UpdateDirectStudentPayment? DirectStudentPayment {get; set;}
     }
 
     public class UpdateDirectStudentPayment 
