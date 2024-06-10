@@ -18,7 +18,7 @@
             <table>
                 <tr>
                     <td>
-                        <label for="title" class="form-control-label right-margin">Type of experience</label>
+                        <label for="title" class="form-control-label right-margin font-20 m-font-18">Type of experience</label>
                     </td>
                     <td>
                         <img src="images/experience-creation/info-icon.svg" id="info-experience-type" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-2.svg" />
@@ -28,13 +28,13 @@
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="experience-type" id="online" @onchange="@(()=>CheckboxChanged(2))" value="2">
-            <label class="form-check-label" for="online">
+            <label class="form-check-label color-black-100 font-18 m-font-16" for="online">
                 Online
             </label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="experience-type" id="in-person" checked @onchange="@(()=>CheckboxChanged(1))" value="1">
-            <label class="form-check-label" for="in-person">
+            <label class="form-check-label color-black-100 font-18 m-font-16" for="in-person">
                 In-person
             </label>
         </div>
@@ -45,7 +45,7 @@
                         <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">3</label>
                     </td>
                     <td>
-                        <label for="description" class="form-control-label label-top-margin">Where is your experience located?</label>
+                        <label for="description" class="form-control-label label-top-margin font-20 m-font-18">Where is your experience located?</label>
                     </td>
                     <td class="in-person-section">
                         <small class="form-text text-muted sub-details pull-right label-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">*(required if in-person)</small>
@@ -55,11 +55,11 @@
             <small class="form-text text-muted sub-details d-xl-none d-lg-none d-md-none d-sm-none d-block">*(required if in-person)</small>
             <div class="row">
                 <div class="col col-lg-12">
-                    <label for="title" class="form-control-label label-top-margin">House No.</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18">House No.</label>
                     <input type="text" id="house-number" @bind="Model.Activity.Address1" class="form-control @RequiredCheck(Model.Activity.Address1)" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
                 </div>
                 <div class="col col-lg-12">
-                    <label for="title" class="form-control-label label-top-margin">Region</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Region</label>
                     <select id="region" class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                         <option value="">--Select Region/State--</option>
                         @foreach (var region in regionList)
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Town/City</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Town/City</label>
             <select id="city" class="form-control @RequiredCheck(Model.Activity.City)" @onchange="GetBarangaysByCity" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                 <option value="">--Select City--</option>
                 @foreach (var city in cityList)
@@ -81,7 +81,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Barangay</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Barangay</label>
             <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                 <option value="">--Select Barangay--</option>
                 @foreach (var barangay in barangayList)
@@ -91,11 +91,11 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Postal Code</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Postal Code</label>
             <input type="text" id="postal-code" @bind="Model.Activity.PostalCode" class="form-control" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">
                 Where you’ll be
             </label>
             @{
@@ -109,7 +109,7 @@
 
                 </div>
                 <div class="col-lg-4">
-                    <button id="button-addon3" type="button" class="btn btn-primary border-0" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">Confirm Location</button>
+                    <button id="button-addon3" type="button" class="btn btn-primary border-0 font-20 m-font-18" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">Confirm Location</button>
                 </div>
             </div>
         </div>

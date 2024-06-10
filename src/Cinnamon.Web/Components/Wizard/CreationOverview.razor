@@ -67,7 +67,7 @@
                         <label class="field-number d-none d-sm-block d-md-block d-lg-block d-xl-block">1</label>
                     </td>
                     <td class="td-field-title">
-                        <label for="title" class="form-control-label right-margin">Title</label>
+                        <label for="title" class="form-control-label right-margin font-20 m-font-18">Title</label>
                     </td>
                     <td class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
                         <label>How to do this</label>
@@ -86,7 +86,7 @@
                         <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">2</label>
                     </td>
                     <td class="td-field-title">
-                        <label for="title" class="form-control-label label-top-margin right-margin">Description</label>
+                        <label for="title" class="form-control-label label-top-margin right-margin font-20 m-font-18">Description</label>
                     </td>
                 </tr>
             </table>
@@ -95,7 +95,7 @@
             <small class="form-text text-muted sub-details pull-right" id="label-description-editor"></small>
         </div>
         <div class="col col-12">
-            <label for="category" class="form-control-label label-top-margin">Category</label>
+            <label for="category" class="form-control-label label-top-margin font-20 m-font-18">Category</label>
             <select id="create-activity-category" @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
                 <option value="0">--Select Category--</option>
                 @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new" && e.Category.ToLower() != "event"))
@@ -105,7 +105,7 @@
             </select>
         </div>
         <div class="col col-12">
-            <label for="sub-category" class="form-control-label label-top-margin">Sub Category</label>
+            <label for="sub-category" class="form-control-label label-top-margin font-20 m-font-18">Sub Category</label>
             @if (Model.Activity.ExperienceCategoryId != 0)
             {
                 <select id="create-activity-sub-category" @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
