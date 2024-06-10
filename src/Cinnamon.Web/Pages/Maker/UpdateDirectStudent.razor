@@ -436,7 +436,7 @@
             ongoingActivities.AddRange(sessionsRes.Result.Result.Select(s => new EnrolledActivity {
                 ActivityId = s.ActivityId,
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
-                Amount = 0,
+                Amount = s.DirectStudentPayment.Amount,
                 ScheduleId = s.ScheduleId,
                 Id = s.Id
             }));
@@ -454,7 +454,7 @@
             completedActivities.AddRange(sessionsRes.Result.Result.Select(s => new EnrolledActivity {
                 ActivityId = s.ActivityId,
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
-                Amount = 0,
+                Amount = s.DirectStudentPayment.Amount,
                 ScheduleId = s.ScheduleId,
                 Id = s.Id
             }));
