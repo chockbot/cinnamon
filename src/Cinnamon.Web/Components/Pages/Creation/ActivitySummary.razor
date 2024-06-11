@@ -4,7 +4,7 @@
 @inject IJSRuntime jsRuntime;
 
 <div class="activity-summary-wrapper col-lg-12 col-12">
-    <label for="title" class="form-control-label label-top-margin">Review Your Experience</label>
+    <label for="title" class="form-control-label label-top-margin mb-2 font-24 m-font-20">Review Your Experience</label>
     <Div class="experience-title" Margin="Margin.Is4.OnY">
         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center" class="location-category" style="display: flex; align-items: center; justify-content: left;">
             @if (Activity.ExperienceTypeId == 1)
@@ -28,8 +28,8 @@
                 </span>
             }
         </Div>
-        <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 my-3 m-font-size-18 experience-title">@Activity.Title</h3>
-        <p class="font-size-20 font-family-nunito m-font-size-12 experience-description color-black-100">@Activity.Description</p>
+        <h3 class="font-family-nunito font-weight-700 text-orange-100 my-3 experience-title font-24 m-font-20">@Activity.Title</h3>
+        <p class="font-family-nunito experience-description color-black-100 font-20 m-font-18">@Activity.Description</p>
     </Div>
     @if (Activity.ExperienceTypeId == 1)
     {
@@ -37,10 +37,10 @@
         <Divider />
         <div class="experience-location margin-botton-3rem m-margin-bottom-10">
             <h3 class="text-capitalize text-orange-100 font-family-nunito
-                font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+                font-weight-700 margin-botton-1rem m-margin-bottom-10 font-24 m-font-20">
                 Location
             </h3>
-            <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            <p class="ont-family-nunito font-weight-400 mb-1 font-20 m-font-18 color-black-100">
                 Place: @address
             </p>
             @* <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p> *@
@@ -48,7 +48,7 @@
     }
     <Divider />
     <div class="experience-schedules margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-weight-700 margin-botton-1rem font-24 m-font-20 m-margin-bottom-10">
             Pricing & Schedule
         </h3>
         <div class="schedule-desktop">
@@ -64,7 +64,7 @@
                             <div class="schedule-detail w-100 rounded-5">
                                     <div class="schedule-header d-flex" style="border-top-left-radius:10px;border-top-right-radius:10px">
                                         <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
-                                            <p>@activeSchedule.ElementAt(x).Name</p>
+                                            <p class="font-20 m-font-18">@activeSchedule.ElementAt(x).Name</p>
                                         </div>
                                     </div>
                                     <hr>
@@ -215,11 +215,11 @@
     <Divider />
 
     <div class="experience-provide">
-        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-weight-700
+            margin-botton-1rem m-margin-bottom-10 font-24 m-font-20">
             Customer Requirements
         </h3>
-        <p class="color-black-100">
+        <p class="color-black-100 font-20 m-font-18">
             @if (string.IsNullOrEmpty(Activity.CustomerBringWithThem))
             {
                 @("N/A")
@@ -240,11 +240,11 @@
     <Divider />
 
     <div class="experience-provide">
-        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-weight-700
+            margin-botton-1rem m-margin-bottom-10 font-24 m-font-20">
             Class Policies
         </h3>
-        <p class="color-black-100">
+        <p class="color-black-100 font-20 m-font-18">
             @if (string.IsNullOrEmpty(Activity.ClassPolicies))
             {
                 @("N/A")

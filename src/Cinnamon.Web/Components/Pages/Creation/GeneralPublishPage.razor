@@ -6,14 +6,14 @@
 
 <section class="ote-publish-wrapper">
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
-        <h3 class="font-24 font-weight-700 color-black-100 text-center">Your activity is almost ready!</h3>
+        <h3 class="font-weight-700 color-black-100 text-center font-24 m-font-20">Your activity is almost ready!</h3>
         <Divider />
         <div>
-            <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
+            <p class="font-weight-700 color-black-100 font-20 m-font-18">Here are some important things you need to know:</p>
             <Row HorizontalGutter="20" VerticalGutter="20">
                 <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                     <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
-                        <p class="mb-4 font-20 font-weight-700 color-black-100">
+                        <p class="mb-4 font-weight-700 color-black-100 font-20 m-font-18">
                             What’s gonna happen
                             <br>
                             when someone
@@ -29,7 +29,7 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                     <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
-                        <p class="mb-3 font-20 font-weight-700 color-black-100">
+                        <p class="mb-3 font-weight-700 color-black-100 font-20 m-font-18">
                             How will I get paid
                             <br>
                             from my activity?
@@ -42,19 +42,19 @@
                     </div>
                 </Column>
             </Row>
-            <p class="mt-4 mb-5 font-20 font-weight-700 color-black-100">Final setup:</p>
+            <p class="mt-4 mb-5font-weight-700 color-black-100 font-20 m-font-18">Final setup:</p>
             <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 m-font-size-12">
                 <input type="hidden" value="@Activity.IsPublishedDescription" id="activity-is-published" />
                 <button class="check-button" type="button" @onclick=TogglePublishActivity>
                     <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="color-black-100">Activate your activity now</span>
+                    <span class="color-black-100 font-18 m-font-16">Activate your activity now</span>
                 </button>
             </div>
             <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
                 <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                     <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
                         <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        <span class="color-black-100">
+                        <span class="color-black-100 font-18 m-font-16">
                             I understand that I need that to check and complete the attendance of my customers
                             in the CHECK ATTENDANCE section so that I can receive the payment.
                         </span>
@@ -67,7 +67,7 @@
                     </span>
                     <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
                         <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        <span>
+                        <span class="color-black-100 font-18 m-font-16">
                             Yes, I understand
                         </span>
                     </button>

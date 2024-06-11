@@ -12,13 +12,13 @@
     </ul>
 </div>
 
-<div class="location-section color-black-100">
+<div class="location-section color-black-100 border-radius-10">
     <div class="row">
         <div class="form-group">
             <table>
                 <tr>
                     <td>
-                        <label for="title" class="form-control-label right-margin font-20 m-font-18">Type of experience</label>
+                        <label for="title" class="form-control-label right-margin font-20 m-font-18 mb-1">Type of experience</label>
                     </td>
                     <td>
                         <img src="images/experience-creation/info-icon.svg" id="info-experience-type" class="d-xl-none d-lg-none d-md-none d-sm-none d-block" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-2.svg" />
@@ -55,11 +55,11 @@
             <small class="form-text text-muted sub-details d-xl-none d-lg-none d-md-none d-sm-none d-block">*(required if in-person)</small>
             <div class="row">
                 <div class="col col-lg-12">
-                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18">House No.</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">House No.</label>
                     <input type="text" id="house-number" @bind="Model.Activity.Address1" class="form-control @RequiredCheck(Model.Activity.Address1)" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
                 </div>
                 <div class="col col-lg-12">
-                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Region</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Region</label>
                     <select id="region" class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                         <option value="">--Select Region/State--</option>
                         @foreach (var region in regionList)
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Town/City</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Town/City</label>
             <select id="city" class="form-control @RequiredCheck(Model.Activity.City)" @onchange="GetBarangaysByCity" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                 <option value="">--Select City--</option>
                 @foreach (var city in cityList)
@@ -81,7 +81,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Barangay</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Barangay</label>
             <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                 <option value="">--Select Barangay--</option>
                 @foreach (var barangay in barangayList)
@@ -91,11 +91,11 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">Postal Code</label>
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Postal Code</label>
             <input type="text" id="postal-code" @bind="Model.Activity.PostalCode" class="form-control" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin font-20 m-font-18">
+            <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">
                 Where you’ll be
             </label>
             @{
@@ -103,7 +103,7 @@
                 <iframe id="mapframe" height="373" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal w-100"></iframe>
             }
 
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col-lg-8">
                     <input type="text" placeholder="Search Your Location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control pinned-location" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
 
