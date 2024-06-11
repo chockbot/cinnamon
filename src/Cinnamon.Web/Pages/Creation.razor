@@ -317,24 +317,23 @@
                             </EditForm>
                         </div>
                         <div class="button-container">
-                        
-                                @if (currentIndex > 1)
-                                {
-                                    <div class="">
-                                        <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
-                                    </div>
-                                    <div class="">
-                                        @if(currentIndex == 7)
-                                        {
-                                            <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
-                                                <ChildContent>
-                                                    @(currentIndex == 7 ? "Publish" : "Next")
-                                                </ChildContent>
-                                            </Button>
-                                        }
-                                        else
-                                        {
-                                            <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                            @if (currentIndex > 1)
+                            {
+                                <div class="">
+                                    <button type="button" class="btn-back font-20 m-font-18" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                                </div>
+                                <div class="">
+                                    @if(currentIndex == 7)
+                                    {
+                                        <Button Border="Border.Is0" class="btn-primary font-20 m-font-18" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
+                                            <ChildContent>
+                                                @(currentIndex == 7 ? "Publish" : "Next")
+                                            </ChildContent>
+                                        </Button>
+                                    }
+                                    else
+                                    {
+                                        <Button Border="Border.Is0" class="btn-primary font-20 m-font-18" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
                                             <LoadingTemplate>
                                                 <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
                                             </LoadingTemplate>
@@ -342,22 +341,22 @@
                                                 @(currentIndex == 7 ? "Publish" : "Next")
                                             </ChildContent>
                                         </Button>
-                                        }
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-lg-12 col-12">
-                                        <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                                            <LoadingTemplate>
-                                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                                            </LoadingTemplate>
-                                            <ChildContent>
-                                                @(currentIndex == 7 ? "Publish" : "Next")
-                                            </ChildContent>
-                                        </Button>
-                                    </div>
-                                }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-12 col-12">
+                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                        <LoadingTemplate>
+                                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                        </LoadingTemplate>
+                                        <ChildContent>
+                                            @(currentIndex == 7 ? "Publish" : "Next")
+                                        </ChildContent>
+                                    </Button>
+                                </div>
+                            }
                         </div>
                     </div>
                 </Column>
