@@ -28,7 +28,8 @@
     {
         <input type="hidden" @bind="Model.Activity.ActivityId" id="activity-id" />
         <input type="hidden" value="@Model.Activity.ActivityStatus" id="activity-status" />
-         <Container>
+        
+        <Container>
             <div class="progress-bar-section">
                 <p class="progress-details">
                     IN PROGRESS: Step @currentIndex of 7 <span id="loader" class=""></span>
@@ -38,310 +39,312 @@
                 </div>
             </div>
         </Container>
+
         <Container>
-        <div class="experience-heading-section  d-flex justify-content-between">
-            <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                UPDATE YOUR EXPERIENCE!
-            </p>
-            <div class="save-later-button-section">
-                <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                    @if (Model.Activity.Status == ActivityStatus.InProgress)
-                    {
-                        <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                            <LoadingTemplate>
-                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                            </LoadingTemplate>
-                            <ChildContent>
-                                Save for Later
-                            </ChildContent>
-                        </Button>
-                    }
+            <div class="experience-heading-section  d-flex justify-content-between">
+                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    UPDATE YOUR EXPERIENCE!
+                </p>
+                <div class="save-later-button-section">
+                    <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                        @if (Model.Activity.Status == ActivityStatus.InProgress)
+                        {
+                            <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Save for Later
+                                </ChildContent>
+                            </Button>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
-            <div class="row">
-                <div class="col-1 prev-button-section">
-                    @if (currentIndex > 1)
-                    {
-                        <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
-                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
-                        </button>
-                    }
-                </div>
-                <div class="col-10 text-center">
-                    @if (currentIndex == 1)
-                    {
-                        <label class="experience-progress-label">
-                            Overview
-                        </label>
-                    }
-                    else if (currentIndex == 2)
-                    {
-                        <label class="experience-progress-label">
-                            Location
-                        </label>
-                    }
-                    else if (currentIndex == 3)
-                    {
-                        <label class="experience-progress-label">
-                            Pricing & Schedule
-                        </label>
-                    }
-                    else if (currentIndex == 4)
-                    {
-                        <label class="experience-progress-label">
-                            Requirements
-                        </label>
-                    }
-                    else if (currentIndex == 5)
-                    {
-                        <label class="experience-progress-label">
-                            Gallery
-                        </label>
-                    }
-                    else if (currentIndex == 6 || currentIndex == 7)
-                    {
-                        <label class="experience-progress-label">
-                            Publish
-                        </label>
-                    }
-                </div>
-                <div class="col-1 next-button-section">
-                    @if (currentIndex < 7)
-                    {
-                       <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
-                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-
-         <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
-            @if (Model.Activity.Status == ActivityStatus.InProgress)
-            {
-                <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                    <LoadingTemplate>
-                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                    </LoadingTemplate>
-                    <ChildContent>
-                        Save for Later
-                    </ChildContent>
-                </Button>
-            }
-        </div>
-
-            <div class="d-flex justify-content-between">
-            <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
-                        Overview
+            <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
+                <div class="row">
+                    <div class="col-1 prev-button-section">
+                        @if (currentIndex > 1)
+                        {
+                            <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
+                                <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
+                            </button>
+                        }
+                    </div>
+                    <div class="col-10 text-center">
                         @if (currentIndex == 1)
                         {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            <label class="experience-progress-label">
+                                Overview
+                            </label>
                         }
-                        else
+                        else if (currentIndex == 2)
                         {
-                            if (isCreationOverviewComponentValid)
-                            {
-                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
-                            }
+                            <label class="experience-progress-label">
+                                Location
+                            </label>
                         }
-                    </a>
-                    <a class="nav-link @(currentIndex == 2 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(2)">
-                        Location
-                        @if (currentIndex == 2)
+                        else if (currentIndex == 3)
                         {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            <label class="experience-progress-label">
+                                Pricing & Schedule
+                            </label>
                         }
-                        else
+                        else if (currentIndex == 4)
                         {
-                            if (isLocationComponentValid)
-                            {
-                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
-                            }
+                            <label class="experience-progress-label">
+                                Requirements
+                            </label>
                         }
-                    </a>
-                    <a class="nav-link @(currentIndex == 3 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(3)">
-                        Pricing & Schedule
-                        @if (currentIndex == 3)
+                        else if (currentIndex == 5)
                         {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            <label class="experience-progress-label">
+                                Gallery
+                            </label>
                         }
-                        else
+                        else if (currentIndex == 6 || currentIndex == 7)
                         {
-                            if (isPricingAndScheduleComponentValid)
-                            {
-                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
-                            }
+                            <label class="experience-progress-label">
+                                Publish
+                            </label>
                         }
-                    </a>
-                    <a class="nav-link @(currentIndex == 4 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(4)">
-                        Requirements
-                        @if (currentIndex == 4)
-                        {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
-                        }
-                        else
-                        {
-                            if (isOptionalDetailsComponentValid)
-                            {
-                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
-                            }
-                        }
-                    </a>
-                    <a class="nav-link @(currentIndex == 5 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(5)">
-                        Gallery
-                        @if (currentIndex == 5)
-                        {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
-                        }
-                        else
-                        {
-                            if (isGalleryComponentValid)
-                            {
-                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
-                            }
-                        }
-                    </a>
-                    <a class="nav-link @(currentIndex == 7 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(7)">
-                        Publish
-                        @if (currentIndex == 7)
-                        {
-                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
-                        }
-                    </a>
-                </div>
-                   <div class="dashed-divider"></div>
-                <div class="guide-section text-center">
-                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
-                        How it will look like
-                    </label>
-                    <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
-                        <div class="row">
-                            <div class="creation-guide-step-1 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                                <img src="images/experience-creation/creation-guide-step-1.svg" alt="check-icon" />
-                            </div>
-                        </div>
                     </div>
-                    <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                        <div class="row">
-                            <div class="creation-guide-step-3 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                                <img src="images/experience-creation/creation-guide-step-2.svg" alt="check-icon" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
-                        <div class="row">
-                            <div class="creation-guide-step-4 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                                <img src="images/experience-creation/creation-guide-step-3.svg" alt="check-icon" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
-                        <div class="row">
-                            <div class="creation-guide-step-5 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                                <img src="images/experience-creation/creation-guide-step-4.svg" alt="check-icon" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
-                        <div class="row">
-                            <div class="creation-guide-step-6 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                                <img src="images/experience-creation/creation-guide-step-5.svg" alt="check-icon" />
-                            </div>
-                        </div>
+                    <div class="col-1 next-button-section">
+                        @if (currentIndex < 7)
+                        {
+                        <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
+                                <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
-            <div class="">
-                <div class="tab-content-section">
-                    <EditForm Model="Model.Activity" id="form-cretion">
-                        <div class='tab @(currentIndex == 1 ? "show" : "")'>
-                            <CreationOverviewUpdate @ref="creationOverviewComponent" Model="Model"></CreationOverviewUpdate>
-                        </div>
 
-                        <div class='tab @(currentIndex == 2 ? "show" : "")'>
-                            <LocationUpdate @ref="locationComponent" Model="Model" />
-                        </div>
-
-                        <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                            @if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
-                            {
-                                <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
-                            }
-                            else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
-                            {
-                                <PricingAndScheduleAppointmentUpdate @ref="pricingAndScheduleAppointmentComponent" Model="Model" />
-                            }
-                        </div>
-
-                        <div class='tab @(currentIndex == 4 ? "show" : "")'>
-                            <OptionalDetailsUpdate @ref="optionalDetailsComponent" Model="Model" />
-                        </div>
-
-                        <div class='tab @(currentIndex == 5 ? "show" : "")'>
-                            <GalleryUpdate @ref="galleryComponent" Model="Model" />
-                        </div>
-
-                        <div class='tab @(currentIndex == 6 ? "show" : "")'>
-                            <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
-                        </div>
-                        <div class='tab @(currentIndex ==  7 ? "show" : "")'>
-                            <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
-                                <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
-                            </LoadingIndicator>
-                        </div>
-                    </EditForm>
-                </div>
-                <div class="button-container">
-                    @if (currentIndex > 1)
-                        {
-                            <div class="">
-                                <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
-                            </div>
-                            <div class="">
-                                @if (currentIndex == 7)
-                                {
-                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
-                                        <ChildContent>
-                                            @(currentIndex == 7 ? "Publish" : "Next")
-                                        </ChildContent>
-                                    </Button>
-                                }
-                                else
-                                {
-                                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                                        <LoadingTemplate>
-                                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                                        </LoadingTemplate>
-                                        <ChildContent>
-                                            @(currentIndex == 7 ? "Publish" : "Next")
-                                        </ChildContent>
-                                    </Button>
-                                }
-                            </div>
-                        }
-                    else
-                        {
-                            <div class="col-lg-12 col-12">
-                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                                    <LoadingTemplate>
-                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                                    </LoadingTemplate>
-                                    <ChildContent>
-                                        @(currentIndex == 7 ? "Publish" : "Next")
-                                    </ChildContent>
-                                </Button>
-                            </div>
-                        }
-                </div>
+            <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
+                @if (Model.Activity.Status == ActivityStatus.InProgress)
+                {
+                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Save for Later
+                        </ChildContent>
+                    </Button>
+                }
             </div>
-        </div>
+
+            <Row>
+                <Column class="d-none d-md-block col-left" ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
+                            Overview
+                            @if (currentIndex == 1)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (isCreationOverviewComponentValid)
+                                {
+                                    <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                                }
+                            }
+                        </a>
+                        <a class="nav-link @(currentIndex == 2 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(2)">
+                            Location
+                            @if (currentIndex == 2)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (isLocationComponentValid)
+                                {
+                                    <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                                }
+                            }
+                        </a>
+                        <a class="nav-link @(currentIndex == 3 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(3)">
+                            Pricing & Schedule
+                            @if (currentIndex == 3)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (isPricingAndScheduleComponentValid)
+                                {
+                                    <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                                }
+                            }
+                        </a>
+                        <a class="nav-link @(currentIndex == 4 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(4)">
+                            Requirements
+                            @if (currentIndex == 4)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (isOptionalDetailsComponentValid)
+                                {
+                                    <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                                }
+                            }
+                        </a>
+                        <a class="nav-link @(currentIndex == 5 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(5)">
+                            Gallery
+                            @if (currentIndex == 5)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                            else
+                            {
+                                if (isGalleryComponentValid)
+                                {
+                                    <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                                }
+                            }
+                        </a>
+                        <a class="nav-link @(currentIndex == 7 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(7)">
+                            Publish
+                            @if (currentIndex == 7)
+                            {
+                                <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
+                            }
+                        </a>
+                    </div>
+                    <div class="dashed-divider"></div>
+                    <div class="guide-section text-center">
+                        <label class="guide-title color-black-100 font-24 m-font-20 @(currentIndex != 6 ? "d-block" : "d-none")">
+                            How it will look like
+                        </label>
+                        <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                            <div class="row">
+                                <div class="creation-guide-step-1 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                    <img src="images/experience-creation/creation-guide-step-1.svg" alt="check-icon" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                            <div class="row">
+                                <div class="creation-guide-step-3 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                    <img src="images/experience-creation/creation-guide-step-2.svg" alt="check-icon" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                            <div class="row">
+                                <div class="creation-guide-step-4 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                    <img src="images/experience-creation/creation-guide-step-3.svg" alt="check-icon" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                            <div class="row">
+                                <div class="creation-guide-step-5 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                    <img src="images/experience-creation/creation-guide-step-4.svg" alt="check-icon" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                            <div class="row">
+                                <div class="creation-guide-step-6 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                    <img src="images/experience-creation/creation-guide-step-5.svg" alt="check-icon" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Column>
+                <Column class="col-right" ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop">
+                    <div class="">
+                        <div class="tab-content-section">
+                            <EditForm Model="Model.Activity" id="form-cretion">
+                                <div class='tab @(currentIndex == 1 ? "show" : "")'>
+                                    <CreationOverviewUpdate @ref="creationOverviewComponent" Model="Model"></CreationOverviewUpdate>
+                                </div>
+
+                                <div class='tab @(currentIndex == 2 ? "show" : "")'>
+                                    <LocationUpdate @ref="locationComponent" Model="Model" />
+                                </div>
+
+                                <div class='tab @(currentIndex == 3 ? "show" : "")'>
+                                    @if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+                                    {
+                                        <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
+                                    }
+                                    else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                    {
+                                        <PricingAndScheduleAppointmentUpdate @ref="pricingAndScheduleAppointmentComponent" Model="Model" />
+                                    }
+                                </div>
+
+                                <div class='tab @(currentIndex == 4 ? "show" : "")'>
+                                    <OptionalDetailsUpdate @ref="optionalDetailsComponent" Model="Model" />
+                                </div>
+
+                                <div class='tab @(currentIndex == 5 ? "show" : "")'>
+                                    <GalleryUpdate @ref="galleryComponent" Model="Model" />
+                                </div>
+
+                                <div class='tab @(currentIndex == 6 ? "show" : "")'>
+                                    <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
+                                </div>
+                                <div class='tab @(currentIndex ==  7 ? "show" : "")'>
+                                    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+                                        <GeneralPublishPage @ref="GeneralPublishPage" Activity="Model.Activity" />
+                                    </LoadingIndicator>
+                                </div>
+                            </EditForm>
+                        </div>
+                        <div class="button-container">
+                            @if (currentIndex > 1)
+                                {
+                                    <div class="">
+                                        <button type="button" class="btn-back font-20 m-font-18" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                                    </div>
+                                    <div class="">
+                                        @if (currentIndex == 7)
+                                        {
+                                            <Button Border="Border.Is0" class="btn-primary font-20 m-font-18" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn">
+                                                <ChildContent>
+                                                    @(currentIndex == 7 ? "Publish" : "Next")
+                                                </ChildContent>
+                                            </Button>
+                                        }
+                                        else
+                                        {
+                                            <Button Border="Border.Is0" class="btn-primary font-20 m-font-18" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                                <LoadingTemplate>
+                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                                </LoadingTemplate>
+                                                <ChildContent>
+                                                    @(currentIndex == 7 ? "Publish" : "Next")
+                                                </ChildContent>
+                                            </Button>
+                                        }
+                                    </div>
+                                }
+                            else
+                                {
+                                    <div class="col-lg-12 col-12">
+                                        <Button Border="Border.Is0" class="btn-primary font-20 m-font-18" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                            <LoadingTemplate>
+                                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                            </LoadingTemplate>
+                                            <ChildContent>
+                                                @(currentIndex == 7 ? "Publish" : "Next")
+                                            </ChildContent>
+                                        </Button>
+                                    </div>
+                                }
+                        </div>
+                    </div>
+                </Column>
+            </Row>
         </Container>
-
     }
 </div>
 
@@ -349,7 +352,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <label class="guide-title text-center">
+                <label class="guide-title text-center color-black-100 font-24 m-font-20">
                     How it will look like
                 </label>
                 <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
