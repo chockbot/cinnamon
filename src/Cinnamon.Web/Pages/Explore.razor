@@ -32,6 +32,8 @@
     <ExtraMeta>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
         <title>Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</title>
     </ExtraMeta>
 </SeoMeta>
@@ -50,15 +52,6 @@
                     <img src="images/Home.png" class="img-icon-home">
                 </a>
             </div>
-            <form class="search-bar" @onsubmit=Search>
-                <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                    <div class="input-group-append border-0">
-                        <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                        <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
-                    </div>
-                </div>
-            </form>
         </div>
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end dropdown-section">
@@ -298,6 +291,79 @@
             </div>
         </div>
     </div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="header-info">
+                <h1 class="header-info-text">Skip the FOMO: Secure Your Tickets Now!</h1>
+            </div>
+        </div>
+    </div>
+    <!-- Search Bar -->
+    <div class="search-bar-container">
+    <form class="search-bar" @onsubmit=Search>
+        <div class="input-group p-1">
+            <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                <div class="input-group-append border-0">
+                    <button type="button" @onclick="Search" class="btn btn-link text-success">
+                        <img src="images/explore-page-images/search-icon-explore.png" alt="search-icon" />
+                    </button>
+                </div>
+        </div>
+         </form>
+    </div>
+   
+    <!-- End of Search Bar -->
+    <!-- End of Header -->
+    @if(!IsSearchPerformed)
+    {
+    <div class="container">
+    <div class="upcoming-events">
+        <div class="upcoming-events-container">
+            <div class="upcoming-events-info">
+                <h1 class="upcoming-events-info-text">Upcoming Events</h1>
+            </div>
+        </div>
+    </div>
+    </div>
+    } else {
+    <div class="container">
+    <div class="upcoming-events">
+        <div class="upcoming-events-container">
+            <div class="upcoming-events-info">
+                <p class="upcoming-events-info-text">Search Results</p>
+                <h1 class="upcoming-events-info-text">"@searchValue"</h1>
+            </div>
+        </div>
+    </div>
+    </div>
+    }
+    <!-- New Announcement Like Cards -->
+
+    @if (!IsSearchPerformed)
+    {
+    <div class="container">
+        <div class="sub-header">
+            <div class="sub-header-container">
+                <div class="sub-header-image">
+                    <img src="images/explore-page-images/sub-header-event.png" alt="sub-header-image" />
+                </div>
+                <div class="event-organizer-invite-card">
+                    <div class="event-organizer-info">
+                        <p class="event-organizer-info-title">Be an Event Organizer!</p>
+                        <p class="event-organizer-info-sub-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                    </div>
+                    <div class="event-organizer-join">
+                        <p class="event-organizer-join-title">Join Our Team!</p>
+                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- End of New Announcement Like Cards -->
     <!--Section 1-->
     <div class="container">
         <div class="section-1">
@@ -374,7 +440,7 @@
                     </div>
                 </div>
             </div>
-            @if (string.IsNullOrEmpty(searchValue) && popularFeeds.Count > 0)
+           @* @if (string.IsNullOrEmpty(searchValue) && popularFeeds.Count > 0)
             {
                 <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
                     <div class="row d-flex justify-content-start">
@@ -510,7 +576,7 @@
                         </div>
                     </div>
                 </div>
-            }
+            } *@
         </div>
         <!--Section 2-->
         <div class="section-2-lg row">
@@ -569,7 +635,7 @@
                 </div>
             </div>
             <div class="row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                <div class="d-flex align-items-baseline justify-content-between">
+                @* <div class="d-flex align-items-baseline justify-content-between">
                     <div class="mb-5">
                         <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                             <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
@@ -582,10 +648,10 @@
                         <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
                         <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
                     </Button>
-                </div>
+                </div> *@
                 @foreach (var act in activityFeeds)
                 {
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                         <Div ElementId="#b-animate">
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
@@ -699,7 +765,7 @@
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
                                                 <button class="card-title-button">
-                                                    Buy Tickets
+                                                    <span>Buy Tickets</span>
                                                 </button>
                                             </a>
                                         </div>
@@ -714,11 +780,11 @@
                                     </div>
                                 </div>
                             </Animate>
-                        </Div>
+                        </Div>  
                     </div>
                 }
                 <div class="align-items-center" style="text-align:center;">
-                    <button type="button" class="btn btn-primary border-0" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
+                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
                         @if (showOverlayPopularActivities)
                         {
                             <div class="spinner-border" role="status">
@@ -727,7 +793,7 @@
                         }
                         else
                         {
-                            <span>Explore More</span>
+                            <span>Discover More...</span>
                         }
                     </button>
                     @if (hasNoMoreRecords)
@@ -742,23 +808,21 @@
     <div class="sub-footer">
         <div class="section-3">
             <div class="sub-footer-container">
-                <div class="sub-footer-image">
-                    <img src="images/explore-page-images/pexels-explore.png" />
-                </div>
+                <div class="sub-footer-image"></div>
                 <div class="sub-footer-info">
                     <p class="sub-footer-title">Connect with Us on Social Media!</p>
-                    <div class="sub-footer-media">
-                        <img src="images/explore-page-images/facebook.png" />
-                        <img src="images/explore-page-images/linkedin.png" />
-                        <img src="images/explore-page-images/tiktok.png" />
-                        <img src="images/explore-page-images/instagram.png" />
-                        <img src="images/explore-page-images/youtube.png" />
-                    </div>
-                    <div class="sub-footer-text">
-                        <p>1. Faster Sign-up: Ditch the forms, connect with social media to pre-fill info and buy tickets quicker.</p>
-                        <p>2. Never Miss Out: Get notified about events your friends are interested in, so you don't miss the hottest happenings.</p>
-                        <p>3. Connect with the Organizer: Ask questions directly through social media and stay updated with the latest event info.</p>
-                    </div>
+                        <div class="sub-footer-media">
+                            <i class="fab fa-facebook"></i>
+                            <i class="fab fa-linkedin"></i>
+                            <i class="fab fa-tiktok"></i>
+                            <i class="fab fa-instagram"></i>
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <div class="sub-footer-text">
+                            <p>1. Faster Sign-up: Ditch the forms, connect with social media to pre-fill info and buy tickets quicker.</p>
+                            <p>2. Never Miss Out: Get notified about events your friends are interested in, so you don't miss the hottest happenings.</p>
+                            <p>3. Connect with the Organizer: Ask questions directly through social media and stay updated with the latest event info.</p>
+                        </div>
                 </div>
             </div>
         </div
@@ -766,19 +830,21 @@
     <!--Footer-->
     <div class="footer">
         <div class="section-4">
-            <div class="footer-container align-items">
+            <div class="footer-container align-items-footer">
                 <div class="footer-info">
                     <p>Automate and simplify your Events Planning operations with easy and 
                        secure options with Cinnamon!</p>
                 </div>
-                <div class="footer-nav">
-                    <a href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a href="https://cinnamon.ph/blog/">Blogs</a>
-                    <a href="#" @onclick="NavigateToHelp">Help</a>
-                </div>
-                <div class="footer-support-email">
-                    <img src="images/explore-page-images/mail-icon.png" />
-                    <p>support@cinnamon.ph</p>
+                <div class="footer-text-media-container">
+                    <div class="footer-nav">
+                        <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                        <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
+                        <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                    </div>
+                    <div class="footer-support-email">
+                        <i class="far fa-envelope"></i>
+                        <p>support@cinnamon.ph</p>
+                    </div>
                 </div>
             </div>
             <div class="line-container">
@@ -792,12 +858,49 @@
                     <p>Copyright © 2023. All rights reserved.</p>   
                 </div>
                 <div class="footer-final-social-media">
-                    <img src="images/explore-page-images/facebook-footer.png" />
-                    <img src="images/explore-page-images/linkedin-footer.png" />
-                    <img src="images/explore-page-images/tiktok-footer.png" />
-                    <img src="images/explore-page-images/instagram-footer.png" />
-                    <img src="images/explore-page-images/youtube-footer.png" />
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-linkedin"></i>
+                    <i class="fab fa-tiktok"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-youtube"></i>
                 </div> 
+            </div>
+            <!-- For tablet view -->
+            <div class="footer-final-tablet">
+                <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="images/explore-page-images/cinnamon-footer.png" />
+                </div>
+                <div class="footer-copyright">
+                    <p>Copyright © 2023. All rights reserved.</p>   
+                </div>
+                </div>
+                <div class="footer-final-social-media">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-linkedin"></i>
+                    <i class="fab fa-tiktok"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-youtube"></i>
+                </div> 
+            </div> 
+            <!-- end of tablet view -->
+            <!-- For Mobile view -->
+            <div class="footer-final-mobile">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <img src="images/explore-page-images/cinnamon-footer.png" />
+                    </div>
+                    <div class="footer-final-social-media">
+                        <i class="fab fa-facebook"></i>
+                        <i class="fab fa-linkedin"></i>
+                        <i class="fab fa-tiktok"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div> 
+                </div>
+                <div class="footer-copyright">
+                    <p>Copyright © 2023. All rights reserved.</p>   
+                </div>
             </div> 
         </div>
     </div>
@@ -885,6 +988,8 @@
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
 
+    bool IsSearchPerformed { get; set; } = false;
+    string SearchQuery { get; set; }
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
     public ExperienceType exptype = new ExperienceType();
@@ -1332,6 +1437,11 @@
         }
         showOverlayPopularActivities = false;
     }
+    
+    void UpdateSearchQuery(ChangeEventArgs e)
+    {
+        SearchQuery = e.Value.ToString();
+    }
 
     public async Task Search()
     {
@@ -1339,6 +1449,8 @@
         pageIndex = 0;
         itemsPerPage = 20;
         await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
+
+        IsSearchPerformed = true;
     }
 
     public async Task Filter(int id)
