@@ -4,11 +4,30 @@
 
 }
 
+.card-img.img-fluid {
+  width: 380px;
+  height: 398px;
+  border-radius: 10px 10px 0px 0px;
+  background:lightgray 50% / cover no-repeat;
+}
+
+.desktop-test {
+  display: flex;
+  justify-content: center;
+}
+
+.desktop-1024 {
+  display: none;
+}
+
+.mobile-view-cards {
+  display: none;
+}
+
 .align-items-center {
   margin-bottom: 30px;
   gap: 12.5%
 }
-
 
 .footer-container,
 .line-container,
@@ -205,9 +224,10 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  margin-left: 5%;
-  width: 270px;
+  padding-left: 5%;
+  width: 380px;
 }
+
 .address-holder {
   display: flex;
   flex-direction: row;
@@ -245,7 +265,8 @@
   margin-right: auto;
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 360px;
+  width: 340px;
+  height: 48px;
 }
 
 .card-title-button span {
@@ -359,6 +380,10 @@
   padding-right: 5%;
   padding-bottom: 2%;
   gap: 17%;
+}
+
+.footer-final-social-media {
+  display: flex;
 }
 
 .footer-final-social-media .fa-facebook,
@@ -1118,7 +1143,133 @@ img.img-icon {
 }
 
 /* Extra small devices (portrait phones, less than 576px) */
-@media (min-width: 0px) and (max-width: 575.98px) {
+@media (min-width: 0px) and (max-width: 425px) {
+
+  .desktop-test {
+    display: none;
+  }
+
+  .card {
+    width: 300px;
+  }
+
+  .mobile-view-cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    width: 300px;
+  }
+
+  .carousel-card {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .card-title-button {
+    width: 270px;
+  }
+
+  .footer-final{
+    display: none;
+  }
+
+  .footer-final-mobile {
+    display: flex;
+  }
+
+  .footer-copyright p {
+    font-size: 12px;
+  }
+
+  .footer-info p {
+    width: 300px;
+  }
+
+  .footer-final-social-media {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .footer-final-social-media .fab {
+    margin-right: 10px;
+    font-size: 1rem;
+  }
+
+  .footer-container {
+    flex-direction: column;
+  }
+
+  .footer-logo img {
+    width: 120px;
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .footer-nav {
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .footer-support-email {
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .footer-text-media-container {
+    flex-direction: column;
+  }
+
+  .sub-footer-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+    align-items: center;
+  }
+
+  .sub-footer-image {
+    margin-left: 0px !important;
+    margin-bottom: 0px !important;
+    width: 300px;
+  }
+
+  .sub-footer-info {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    flex-direction: column;
+  }
+
+  .sub-footer-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sub-footer-text {
+    padding-right: 0px;
+    margin-bottom: 75px;
+    width: 80%;
+  }
+
+  .sub-footer-title {
+    color: #343D4C;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+  }
   .categories-container {
     display: flex;
     justify-content: flex-start;
@@ -1277,7 +1428,7 @@ img.img-icon {
         font-family: "Nunito";
         font-style: normal;
         font-weight: 900;
-        font-size: 24px;
+        font-size: 20px;
         line-height: 27px;
         color: #4285F4;
         width: 160px;
@@ -1316,7 +1467,8 @@ img.img-icon {
   }
 
   .card-img.img-fluid {
-    height: 223.39px;
+    width: 300px;
+    height: 398px;
     border-radius: 10px 10px 0px 0px;
     background:lightgray 50% / cover no-repeat;
   }
@@ -1501,8 +1653,22 @@ img.img-icon {
 }
 
 /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 425px) and (max-width: 767px) {
+@media (min-width: 425px) and (max-width: 766px) {
 
+  .desktop-test {
+    display: none;
+  }
+
+  .mobile-view-cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .carousel-card {
+    padding-left: 0px !important;
+  }
   .footer-final {
     display: none;
   }
@@ -1752,7 +1918,7 @@ img.img-icon {
     font-weight: 700;
     font-size: 16px;
     line-height: 27px;
-    color: #ffffff;
+    color: #4285F4;
     width: 160px;
   }
 
@@ -1785,8 +1951,8 @@ img.img-icon {
   }
 
   .card-img.img-fluid {
-    width: 175px;
-    height: 223.39px;
+    width: 384px;
+    height: 398px;
     border-radius: 10px 10px 0px 0px;
     background:lightgray 50% / cover no-repeat;
   }
@@ -1953,7 +2119,31 @@ img.img-icon {
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 767px) and (max-width: 1024px) {
+
+  .card-title-button {
+    width: 306px;
+  }
+
+  .card-title1 {
+    width: 304px;
+  }
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 5%;
+    width: 306px;
+  }
+
+  .desktop-test {
+    display: none;
+  }
+
+  .desktop-1024 {
+    display: flex;
+    justify-content: center;
+  }
 
   .footer-final {
     display: none;
@@ -2203,8 +2393,8 @@ img.img-icon {
   }
 
   .card-img.img-fluid {
-    width: 214.04px;
-    height: 261.78px;
+    width: 338px;
+    height: 398px;
     border-radius: 10px 10px 0px 0px;
     background:lightgray 50% / cover no-repeat;
   }
@@ -2479,13 +2669,6 @@ img.img-icon {
     margin-right: 30px !important;
   }
 
-  .card-img.img-fluid {
-    width: 214.04px;
-    height: 261.78px;
-    border-radius: 10px 10px 0px 0px;
-    background:lightgray 50% / cover no-repeat;
-  }
-
   .heart-badge-section {
     text-align: right;
     margin-top: 5px;
@@ -2750,13 +2933,6 @@ img.img-icon {
     margin-right: 30px !important;
   }
 
-  .card-img.img-fluid {
-    width: 400px;
-    height: 340px;
-    border-radius: 10px 10px 0px 0px;
-    background:lightgray 50% / cover no-repeat;
-  }
-
   .heart-badge-section,
   .activity-heart-badge-section {
     text-align: right;
@@ -2905,6 +3081,37 @@ img.img-icon {
 
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+
+  .card-title-button {
+    width: 409px;
+  }
+
+  .card-title1 {
+    width: 430px;
+  }
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 5%;
+    width: 450px;
+  }
+
+  .card-img.img-fluid {
+    width: 450px;
+    height: 398px;
+    border-radius: 10px 10px 0px 0px;
+    background:lightgray 50% / cover no-repeat;
+  }
+
+  .desktop-test {
+    display: none;
+  }
+
+  .desktop-1024 {
+    display: flex;
+    justify-content: center;
+  }
 
   .sub-footer-container {
     display: flex;

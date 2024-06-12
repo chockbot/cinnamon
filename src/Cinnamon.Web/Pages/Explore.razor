@@ -579,7 +579,8 @@
             } *@
         </div>
         <!--Section 2-->
-        <div class="section-2-lg row">
+        <!-- Mobile View -->
+        <div class="section-2-lg row mobile-view-cards">
             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
                     <div class="card card-placeholder-popular" aria-hidden="true">
@@ -634,7 +635,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
+            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
                 @* <div class="d-flex align-items-baseline justify-content-between">
                     <div class="mb-5">
                         <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
@@ -650,8 +651,8 @@
                     </Button>
                 </div> *@
                 @foreach (var act in activityFeeds)
-                {
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                {   
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                         <Div ElementId="#b-animate">
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
@@ -803,6 +804,459 @@
                 </div>
             </div>
         </div>
+        <!-- Desktop 1024px onwards -->
+        <div class="section-2-lg row desktop-1024">
+            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
+                @* <div class="d-flex align-items-baseline justify-content-between">
+                    <div class="mb-5">
+                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
+                        </div>
+                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                            <label class="heading">Explore More</label>
+                        </div>
+                    </div>
+                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
+                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
+                        <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
+                    </Button>
+                </div> *@
+                @foreach (var act in activityFeeds)
+                {   
+                    <!-- Large Desktop -->
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                        <Div ElementId="#b-animate">
+                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    <div class="card-img img-fluid position-relative">
+                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
+                                        </a>
+                                        @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
+                                        {
+                                            <CustomTooltip MarginLeft="-100">
+                                                <TextContent>
+                                                    <div class="ongoing-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
+                                                        </div>
+                                                    </div>
+                                                </TextContent>
+                                                <TooltipContent>
+                                                    <span class="color-grey-100">
+                                                        Ongoing Enrollees
+                                                    </span>
+                                                </TooltipContent>
+                                            </CustomTooltip>
+                                        }
+                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                        {
+                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                            if (act.IsFavorite)
+                                            {
+                                                <div class="favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
+                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavoriteAtivity(act)">
+                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="favorite-section">
+                                                <button type="button" class="favorite-icon-button border-0">
+                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="card-container">
+                                    @*   <div class="row text-start star-pulse-section">
+                                            <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                @if (act.SummaryDetails.TotalReviews > 0)
+                                                {
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                    <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                }
+                                                else if (act.IsNew)
+                                                {
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="new-experience-label">New Experience</span>
+                                                }
+                                                else if (act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
+                                                {
+                                                    int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
+                                                }
+                                            </div>
+                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                            </div>
+                                        </div> *@
+                                            <div class="title-section">
+                                                    <Tooltip Multiline=true Text=@act.Title>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                    </Tooltip>
+                                                    @if (@act.ExperienceTypeId == 1)
+                                                    {
+                                                        
+                                                        var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
+                                                        <div class="address-holder">
+                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="address-holder">
+                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                        </div>
+                                                    }
+                                            </div>
+                                            @{
+                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
+                                            }
+
+                                                @if (@act.ExperienceCreationTypeId == 3)
+                                                {
+                                                    <div class="address-holder">
+                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
+                                                    </div>
+                                                }
+                                        <div class="row price-badge-section">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                                <button class="card-title-button">
+                                                    <span>Buy Tickets</span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                     @*   @if(act.ExperienceCreationTypeId == 3)
+                                        {
+                                            <div class="mt-2">
+                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                    One time event
+                                                </span>
+                                            </div>
+                                        } *@
+                                    </div>
+                                </div>
+                            </Animate>
+                        </Div>  
+                    </div>
+                }
+                <div class="align-items-center" style="text-align:center;">
+                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
+                        @if (showOverlayPopularActivities)
+                        {
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>Discover More...</span>
+                        }
+                    </button>
+                    @if (hasNoMoreRecords)
+                    {
+                        <p>You're all caught up!</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Desktop 1440px onwards -->
+        <div class="section-2-lg row desktop-test">
+            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
+                @* <div class="d-flex align-items-baseline justify-content-between">
+                    <div class="mb-5">
+                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
+                        </div>
+                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                            <label class="heading">Explore More</label>
+                        </div>
+                    </div>
+                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
+                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
+                        <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
+                    </Button>
+                </div> *@
+                @foreach (var act in activityFeeds)
+                {   
+                    <!-- Large Desktop -->
+                    <div class="container-chat-1440 col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4 d-flex flex-column align-items-center card-activity-body explore-activity-item" id="activity-card-container-desktop-1440" style="margin-bottom:30px">
+                        <Div ElementId="#b-animate">
+                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    <div class="card-img img-fluid position-relative">
+                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                            <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
+                                        </a>
+                                        @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
+                                        {
+                                            <CustomTooltip MarginLeft="-100">
+                                                <TextContent>
+                                                    <div class="ongoing-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
+                                                        </div>
+                                                    </div>
+                                                </TextContent>
+                                                <TooltipContent>
+                                                    <span class="color-grey-100">
+                                                        Ongoing Enrollees
+                                                    </span>
+                                                </TooltipContent>
+                                            </CustomTooltip>
+                                        }
+                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                        {
+                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                            if (act.IsFavorite)
+                                            {
+                                                <div class="favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
+                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavoriteAtivity(act)">
+                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="favorite-section">
+                                                <button type="button" class="favorite-icon-button border-0">
+                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="card-container">
+                                    @*   <div class="row text-start star-pulse-section">
+                                            <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                @if (act.SummaryDetails.TotalReviews > 0)
+                                                {
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                    <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                }
+                                                else if (act.IsNew)
+                                                {
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="new-experience-label">New Experience</span>
+                                                }
+                                                else if (act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
+                                                {
+                                                    int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
+                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
+                                                }
+                                            </div>
+                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                            </div>
+                                        </div> *@
+                                            <div class="title-section">
+                                                    <Tooltip Multiline=true Text=@act.Title>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                    </Tooltip>
+                                                    @if (@act.ExperienceTypeId == 1)
+                                                    {
+                                                        
+                                                        var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
+                                                        <div class="address-holder">
+                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="address-holder">
+                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                        </div>
+                                                    }
+                                            </div>
+                                            @{
+                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
+                                            }
+
+                                                @if (@act.ExperienceCreationTypeId == 3)
+                                                {
+                                                    <div class="address-holder">
+                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
+                                                    </div>
+                                                }
+                                        <div class="row price-badge-section">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                                <button class="card-title-button">
+                                                    <span>Buy Tickets</span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                     @*   @if(act.ExperienceCreationTypeId == 3)
+                                        {
+                                            <div class="mt-2">
+                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
+                                                    One time event
+                                                </span>
+                                            </div>
+                                        } *@
+                                    </div>
+                                </div>
+                            </Animate>
+                        </Div>  
+                    </div>
+                }
+                <div class="align-items-center" style="text-align:center;">
+                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
+                        @if (showOverlayPopularActivities)
+                        {
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>Discover More...</span>
+                        }
+                    </button>
+                    @if (hasNoMoreRecords)
+                    {
+                        <p>You're all caught up!</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <!--End of Desktop 1440px onwards -->
     </div>
     <!--Section 3-->
     <div class="sub-footer">
