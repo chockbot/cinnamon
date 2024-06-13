@@ -64,6 +64,7 @@
             <Column ColumnSize="ColumnSize.Is8.OnDesktop">
                 @*Event Name*@
                 <h3 class="event-title">@activity.EventName</h3>
+
                 @*Share Event*@
                 <div class="d-flex">
                     <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
@@ -75,6 +76,7 @@
                         <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
                     </div>
                 </div>
+
                 @*Event Description*@
                 <section id="ote-description">
                     <p class="event-description">
@@ -83,79 +85,173 @@
                 </section>
 
                 @*Event Schedule*@
-                <h3 class="event-schedule">Date & Time</h3>
-                <div class="schedule-section">
-                    <div class="schedule-header">
-                        <p class="schedule-header-title">Select date and tickets</p>
-                        <div class="d-flex justify-content-between">
-                            <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
-                                                            ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                            <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
+                @if (!activity.IsComingSoon)
+                {
+                    <h3 class="event-schedule">Date & Time</h3>
+                    <div class="schedule-section">
+                        <div class="schedule-header">
+                            <p class="schedule-header-title">Select date and tickets</p>
+                            <div class="d-flex justify-content-between">
+                                <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
+                                                                ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="schedule-body">
-                        <Row VerticalGutter="30">
-                            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
-                                <div class="d-flex align-items-center">
-                                    <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                    <label class="ote-schedule me-1">Duration:</label>
-                                    <label class="font-16 color-black-100">
-                                        @EventDurationString
-                                    </label>
-                                </div>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
-                                <div class="d-flex align-items-center">
-                                    <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                    <label class="ote-schedule me-1">Time Start:</label>
-                                    <label class="font-16 color-black-100">@selectedDateStart.ToString("hh:mm tt")</label>
-                                </div>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <div class="d-flex align-items-center">
-                                <img class="me-2" src="images/ote/location.png" alt="clock">
-                                <label class="ote-schedule me-1">Location:</label>
-                                @if (activity.ExperienceTypeId == 1)
+                        <div class="schedule-body">
+                            <Row VerticalGutter="30">
+                                <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
+                                    <div class="d-flex align-items-center event-schedule-time">
+                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
+                                        <label class="ote-schedule me-1">Duration:</label>
+                                        <label class="ote-schedule-details">
+                                            @EventDurationString
+                                        </label>
+                                    </div>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
+                                    <div class="d-flex align-items-center event-schedule-time">
+                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
+                                        <label class="ote-schedule me-1">Time Start:</label>
+                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                    </div>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <div class="d-flex align-items-center event-schedule-place">
+                                    <img class="me-2" src="images/ote/location.png" alt="clock">
+                                    <label class="ote-schedule me-1">Location:</label>
+                                    @if (activity.ExperienceTypeId == 1)
+                                            {
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="ote-schedule-details">@address</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="ote-schedule-details">Online</label>
+                                            }
+                                    </div>
+                                </Column>
+                            </Row>
+                            <div class="event-ticket-section">
+                                 <div class="ticket-details-header">
+                                    <p class="prices-title">Tickets</p>
+                                    <p class="prices-title">Price</p>
+                                    <p class="prices-title">Status</p>
+                                    <p class="prices-title text-center">Quantity</p>
+                                 </div>
+                                @foreach (var item in AvailablePriceList)
+                                {
+                                    if (ticketCount != 0 && IsLimit)
                                     {
-                                        string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                        <label class="font-16 color-black-100 text-capitalize">@address</label>
+                                        if (ticketCount == activity.EventTicketLimit)
+                                        {
+                                            stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                        }
+                                        else
+                                        {
+                                            stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                        }
+
                                     }
                                     else
                                     {
-                                        <label class="font-16 color-black-100">Online</label>
+                                        stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
                                     }
-                                </div>
-                            </Column>
-                        </Row>
-                        <div>
-                            <p class="prices-title">Ticket Prices</p>
-                            @foreach (var item in AvailablePriceList)
-                            {
-                                <div class="ticket-details">
-                                    <p class="ticket-name">@item.Name</p>
-                                    <p class="align-items-center">
-                                        <span class="ticket-price">
-                                            ₱ @item.Price.ToString("#,##0")
-                                        </span>
-                                        @if (item.MaxSlots <= item.TicketSold)
-                                        {
-                                            <span class="ms-2 text-uppercase bg-red-200 font-10 color-white-100 border-radius-10 py-1 px-2">
-                                                sold out
+                                    <div class="ticket-details">
+                                        <p class="ticket-name">@item.Name</p>
+                                        <p class="align-items-center">
+                                            <span class="ticket-name">
+                                                ₱ @item.Price.ToString("#,##0")
                                             </span>
-                                        }
-                                        @* display count left *@
-                                        @if (item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
-                                        {
-                                            <span class="ms-2 text-uppercase bg-orange-100 font-10 color-white-100 border-radius-10 py-1 px-2">
-                                                Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                        </p>
+                                        <p class="align-items-center">
+                                            @if (item.MaxSlots <= item.TicketSold)
+                                            {
+                                                <span class="ticket-sold-out">
+                                                    sold out
+                                                </span>
+                                            }
+                                            @* display count left *@
+                                            @if (item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
+                                            {
+                                                <span class="tickets-left">
+                                                    Only @(item.MaxSlots - item.TicketSold) ticket/s left
+                                                </span>
+                                            }
+                                        </p>
+                                        <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                            <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                <span class="item-action">-</span>
                                             </span>
-                                        }
-                                    </p>
-                                </div>
-                            }
+                                            <span class="p-2 border-right-1-solid counter-item">
+                                                @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
+                                            </span>
+                                            <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-2 counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                @if (activity.EventTicketLimit != 0 && currentLogin is not null)
+                                                {
+                                                    <Tooltip Text="@stringMaxTicket" Multiline>
+                                                    <span class="item-action p-2">+</span>
+                                                </Tooltip>
+                                                }
+                                                else
+                                                {
+                                                    <span class="item-action p-2">+</span>
+                                                }
+
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                    <Divider/>
+                                }
+                            </div>
+                        </div>
+                        <div class="schedule-footer">
+                            <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">Buy Ticket</button>
                         </div>
                     </div>
-                </div>
+
+                    @*Important Information*@
+                    <section id="important-information" class="mt-3">
+                        <p class="event-schedule">Important Information</p>
+                        <p class="font-18 fw-bold color-black-100 m-font-16">What will happen after I purchase?</p>
+                        <ol class="color-grey-100 font-18 m-font-16">
+                            <li class="mb-3">A purchase confirmation email including your e-ticket will be sent to your email.</li>
+                            <li class="mb-3">You can access the event you purchased/joined by going to your Account from the menu.</li>
+                        </ol>
+                    </section>
+
+                    <Divider/>
+
+                    @*Event Location*@
+                    <section id="map-details" class="mt-3">
+                        <p class="event-schedule">Venue</p>
+                        @if (activity.ExperienceTypeId == 1)
+                        {
+                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16 text-capitalize">@address</p>
+                            <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
+                        }
+                        else
+                        {
+                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16">Online</p>
+                        }
+                    </section>
+
+                    @*Event Seat Plan*@
+                    @if (!string.IsNullOrEmpty(SetPlanImage))
+                    {
+                        <section id="set-plan" class="mt-4">
+                            <p class="font-24 font-weight-700 color-black-100">Seat Plan</p>
+                            <img style="width: 330px; height: auto; cursor:pointer" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                        </section>
+                    }
+                }
+                @if (activity.IsComingSoon)
+                {
+                    <div class="my-5">
+                        <img class="max-width-100 h-auto" src="images/coming-soon.png" alt="coming soon">
+                    </div>
+                }
             </Column>
         </Row>
     </Container>
@@ -521,7 +617,6 @@
 
         NavigationManager.NavigateTo(paymentUrl);
     }
-
     private int OverallTicketCount
     {
         get 
