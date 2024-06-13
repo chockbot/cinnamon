@@ -4,6 +4,13 @@
 
 }
 
+.input-group {
+  border-radius: 16px;
+  background: #FFF;
+  box-shadow: 0px 0px 47px 0px #D9D9D9;
+  width: 715px;
+}
+
 .card-img.img-fluid {
   width: 380px;
   height: 398px;
@@ -134,6 +141,31 @@
   gap: 5%;
 }
 
+.event-organizer-join-desktop-title {
+  display: none;
+  color: #E8E8E8;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+}
+
+.sub-header-image {
+  width: 786px;
+  height: 516px;
+  flex-shrink: 0;
+  background: url('images/explore-page-images/sub-header-event.png') lightgray 50% / cover no-repeat;
+  border-radius: 16px;
+}
+
+.event-organizer-invite-card {
+  width: 378px;
+  height: 516px;
+  flex-shrink: 0;
+}
+
 .event-organizer-card {
   border-radius: 16px;
 }
@@ -145,10 +177,14 @@
 }
 
 .event-organizer-info {
+  display: flex;
+  height: 393px;
+  flex-direction: column;
+  justify-content: space-around;
   position: relative;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  padding: 42.5px;
+  padding: 10%;
 }
 
 .event-organizer-info::before {
@@ -199,10 +235,15 @@
 }
 
 .event-organizer-join {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10%;
+  height: 123px;
   border-radius: 0px 0px 16px 16px;
   background: #2C7865;
-  padding: 50px;
-}
+  }
 
 .event-organizer-join-sub-title {
   color: #FFF;
@@ -694,10 +735,6 @@ a.dropdown-item {
   width: 25%;
 }
 
-.input-group {
-  width: 50%;
-}
-
 .home-logo {
   display: none;
 }
@@ -884,11 +921,6 @@ img.img-icon-home {
     .become:active {
         transform: scale(.94);
     }
-
-.input-group {
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adjust as needed */
-  background: #fff;
-}
 
 .active-tag-label {
   font-family: "Nunito";
@@ -1132,6 +1164,7 @@ img.img-icon {
   bottom: -5px;
   right: -8px;
 }
+
 .ongoing-text {
   color: #279be1;
   font-weight: 100;
@@ -1144,6 +1177,48 @@ img.img-icon {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 425px) {
+
+  .header-container {
+    background: url('images/explore-page-images/header-image-background-mobile.png') 100% / cover no-repeat;
+  }
+
+  .event-organizer-join-title {
+    font-size: 20px;
+  }
+
+  .event-organizer-join-sub-title {
+    font-size: 10px;
+  }
+  .event-organizer-info-title {
+    font-size: 35px;
+  }
+
+  .event-organizer-invite-card {
+    display: contents;
+    width: 300px;
+
+  }
+  .event-organizer-info {
+    width: 300px;
+    height: 291px;
+  }
+
+  .event-organizer-join {
+    width: 300px;
+    height: 104px;
+  }
+
+  .sub-header-image {
+    height: 384px;
+    width: 300px;
+    margin-bottom: 24px;
+  }
+
+  .sub-header-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
 
   .desktop-test {
     display: none;
@@ -1655,6 +1730,35 @@ img.img-icon {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 425px) and (max-width: 766px) {
 
+  .header-container {
+    background: url('images/explore-page-images/header-image-background-mobile.png') 100% / cover no-repeat;
+  }
+  
+  .event-organizer-invite-card {
+    display: contents;
+
+  }
+  .event-organizer-info {
+    width: 384px;
+    height: 291px;
+  }
+
+  .event-organizer-join {
+    width: 384px;
+    height: 104px;
+  }
+
+  .sub-header-image {
+    height: 384px;
+    width: 384px;
+    margin-bottom: 24px;
+  }
+
+  .sub-header-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .desktop-test {
     display: none;
   }
@@ -2121,6 +2225,82 @@ img.img-icon {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 767px) and (max-width: 1024px) {
 
+  .header-container {
+    background: url('images/explore-page-images/header-image-background-tablet.png') 100% / cover no-repeat;
+  }
+
+  .header-info-text {
+    width: 400px;
+  }
+
+  .event-organizer-join-sub-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-organizer-join-title {
+    margin-bottom: 0px;
+  }
+
+  .event-organizer-join-sub-title {
+    margin-bottom: 0px;
+  }
+  .event-organizer-join-desktop-title {
+    display: flex;
+    align-items: center;
+    padding-top: 10%;
+  }
+
+  .event-organizer-join {
+    display: flex;
+    justify-content: space-between;
+    width: 339px;
+    height: 266px;
+    padding: 20px;
+    border-radius: 0px 16px 16px 0px;
+  }
+
+  .event-organizer-invite-card {
+    display: flex;
+    flex-direction: row;
+    width: 687px;
+    height: 266px;
+    margin-top: 30px;
+  }
+
+  .event-organizer-info::before {
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 16px;
+  }
+
+  .sub-header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sub-header-image {
+    width: 696px;
+    height: 456.916px;
+    flex-shrink: 0;
+  }
+
+  .event-organizer-info {
+    align-items: center;
+    padding: 0px;
+    width: 359px;
+    height: 266px;
+  }
+
+  .event-organizer-info-title {
+    margin-bottom: 0px;
+    width: 300px;
+  }
+
+  .event-organizer-info-sub-title {
+    display: none;
+  }
+  
   .card-title-button {
     width: 306px;
   }
@@ -2254,11 +2434,6 @@ img.img-icon {
 
   .app-name {
     font-size: 3.8vw;
-  }
-
-  .input-group {
-    margin-left: 40px;
-    width: 100%;
   }
 
   .home-logo {
@@ -3082,6 +3257,73 @@ img.img-icon {
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
 
+  .event-organizer-join-sub-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-organizer-join-title {
+    margin-bottom: 0px;
+  }
+
+  .event-organizer-join-sub-title {
+    margin-bottom: 0px;
+  }
+  .event-organizer-join-desktop-title {
+    display: flex;
+    align-items: center;
+    padding-top: 10%;
+  }
+
+  .event-organizer-join {
+    display: flex;
+    justify-content: space-between;
+    width: 370px;
+    height: 266px;
+    padding: 20px;
+    border-radius: 0px 16px 16px 0px;
+  }
+
+  .event-organizer-invite-card {
+    display: flex;
+    flex-direction: row;
+    width: 930px;
+    height: 266px;
+    margin-top: 30px;
+  }
+
+  .event-organizer-info::before {
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 16px;
+  }
+
+  .sub-header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sub-header-image {
+    width: 930px;
+    height: 516px;
+  }
+
+  .event-organizer-info {
+    align-items: center;
+    padding: 0px;
+    width: 559px;
+    height: 266px;
+  }
+
+  .event-organizer-info-title {
+    margin-bottom: 0px;
+    width: 300px;
+  }
+
+  .event-organizer-info-sub-title {
+    display: none;
+  }
+
   .card-title-button {
     width: 409px;
   }
@@ -3166,9 +3408,6 @@ img.img-icon {
   .footer-nav {
     align-items: flex-start;
     justify-content: flex-start;
-  }
-  .input-group {
-      margin-left: 20px;
   }
 
   .dropdown-section {

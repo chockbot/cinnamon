@@ -315,7 +315,33 @@
    
     <!-- End of Search Bar -->
     <!-- End of Header -->
-    @if(!IsSearchPerformed)
+    <!-- New Announcement Like Cards -->
+    @if (!IsSearchPerformed)
+    {
+    <div class="container">
+        <div class="sub-header">
+            <div class="sub-header-container">
+                <div class="sub-header-image"></div>
+                <div class="event-organizer-invite-card">
+                    <div class="event-organizer-info">
+                        <p class="event-organizer-info-title">Be an Event Organizer!</p>
+                        <p class="event-organizer-info-sub-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                    </div>
+                    <div class="event-organizer-join">
+                        <p class="event-organizer-join-desktop-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                        <div class="event-organizer-join-sub-container">
+                        <p class="event-organizer-join-title">Join Our Team!</p>
+                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- End of New Announcement Like Cards -->
+        @if(!IsSearchPerformed)
     {
     <div class="container">
     <div class="upcoming-events">
@@ -338,32 +364,6 @@
     </div>
     </div>
     }
-    <!-- New Announcement Like Cards -->
-
-    @if (!IsSearchPerformed)
-    {
-    <div class="container">
-        <div class="sub-header">
-            <div class="sub-header-container">
-                <div class="sub-header-image">
-                    <img src="images/explore-page-images/sub-header-event.png" alt="sub-header-image" />
-                </div>
-                <div class="event-organizer-invite-card">
-                    <div class="event-organizer-info">
-                        <p class="event-organizer-info-title">Be an Event Organizer!</p>
-                        <p class="event-organizer-info-sub-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
-                    </div>
-                    <div class="event-organizer-join">
-                        <p class="event-organizer-join-title">Join Our Team!</p>
-                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
-
-    <!-- End of New Announcement Like Cards -->
     <!--Section 1-->
     <div class="container">
         <div class="section-1">
@@ -763,6 +763,8 @@
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 }
+                                        @if (act.ExperienceCreationTypeId == 3)
+                                        {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
                                                 <button class="card-title-button">
@@ -770,6 +772,7 @@
                                                 </button>
                                             </a>
                                         </div>
+                                        }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
                                             <div class="mt-2">
@@ -989,6 +992,8 @@
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 }
+                                        @if (act.ExperienceCreationTypeId == 3)
+                                        {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
                                                 <button class="card-title-button">
@@ -996,6 +1001,7 @@
                                                 </button>
                                             </a>
                                         </div>
+                                        }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
                                             <div class="mt-2">
@@ -1215,6 +1221,8 @@
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 }
+                                    @if (act.ExperienceCreationTypeId == 3)
+                                    {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
                                                 <button class="card-title-button">
@@ -1222,6 +1230,7 @@
                                                 </button>
                                             </a>
                                         </div>
+                                    }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
                                             <div class="mt-2">
