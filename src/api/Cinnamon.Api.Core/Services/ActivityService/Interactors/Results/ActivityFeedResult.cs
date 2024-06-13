@@ -13,6 +13,9 @@ public class ActivityFeedResult
         public int ExperienceCreationTypeId {get; set;}
         public string Price {get; set;}
         public bool IsNew {get; set;}
+        public DateTime To { get; set; }
+        public DateTime From { get; set; }
+        public string StartTime { get; set; }
         public Location Address {get; set;}
         public Summary SummaryDetails {get; set;}
     }
