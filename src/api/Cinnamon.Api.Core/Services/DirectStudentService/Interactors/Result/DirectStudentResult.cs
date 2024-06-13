@@ -15,6 +15,7 @@ public class DirectStudentResult
         public string BirthMonth {get; set;}
         public int BirthYear {get; set;}
         public int Age {get; set;}
+        public string? Email {get; set;}
     }
 
     public class DirectStudentSession 
@@ -36,6 +37,7 @@ public class DirectStudentResult
         public int Id {get; set;}
         public int DirectStudentSessionId {get; set;}
         public decimal Amount {get; set;}
+        public DateTime PaymentDate {get; set;}
         public DateTime CreatedOn { get; set; }
     }
 }

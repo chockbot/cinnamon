@@ -112,7 +112,8 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                                 StudentNo = session.StudentNo,
                                 SessionsAttended = session.SessionsAttended,
                                 DirectStudentPayment = session.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
-                                    Amount = session.StudentPayment.Amount
+                                    Amount = session.StudentPayment.Amount,
+                                    PaymentDate = session.StudentPayment.PaymentDate
                                 }
                             });
                             continue;
@@ -158,7 +159,8 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                             ExpirationDateEnd = endExpiration,
                             ExpirationDateStart = startExpiration,
                             DirectStudentPayment = session.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
-                                Amount = session.StudentPayment.Amount,    
+                                Amount = session.StudentPayment.Amount,
+                                PaymentDate = session.StudentPayment.PaymentDate
                             }
                         });
                     }
@@ -171,7 +173,8 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                     BirthYear = args.DirectStudentInfo.BirthYear,
                     Gender = args.DirectStudentInfo.Gender,
                     Id = args.DirectStudentInfo.StudentId,
-                    Name = args.DirectStudentInfo.Name
+                    Name = args.DirectStudentInfo.Name,
+                    Email = args.DirectStudentInfo.Email
                 },
                 UpdateStudentSessions = studentSesssions
             });

@@ -143,7 +143,8 @@ public class DirectStudentsController : ControllerBase
                     BirthYear = args.DirectStudentInfo.BirthYear,
                     Gender = args.DirectStudentInfo.Gender,
                     Name = args.DirectStudentInfo.Name,
-                    StudentId = args.DirectStudentInfo.StudentId
+                    StudentId = args.DirectStudentInfo.StudentId,
+                    Email = args.DirectStudentInfo.Email
                 },
                 DirectStudentSessions = args.DirectStudentSessions is null ? null : args.DirectStudentSessions.Select(s => new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentSession {
                     ActivityId = s.ActivityId,
@@ -156,7 +157,8 @@ public class DirectStudentsController : ControllerBase
                     StudentNo = s.StudentNo,
                     Period = s.Period,
                     StudentPayment = s.StudentPayment is null ? null : new Services.DirectStudentService.Interactors.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
-                        Amount = s.StudentPayment?.Amount
+                        Amount = s.StudentPayment?.Amount,
+                        PaymentDate = s.StudentPayment?.PaymentDate
                     }
                 })
             });
