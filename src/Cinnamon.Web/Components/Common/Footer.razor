@@ -1,0 +1,89 @@
+﻿@namespace Cinnamon.Web.Components.Common
+@inject NavigationManager NavigationManager;
+
+<div class="footer mt-5">
+    <div class="section-4">
+        <div class="footer-container align-items-footer">
+            <div class="footer-info">
+                <p>
+                    Automate and simplify your Events Planning operations with easy and
+                    secure options with Cinnamon!
+                </p>
+            </div>
+            <div class="footer-text-media-container">
+                <div class="footer-nav">
+                    <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                    <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
+                    <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                </div>
+                <div class="footer-support-email">
+                    <i class="far fa-envelope"></i>
+                    <p>support@cinnamon.ph</p>
+                </div>
+            </div>
+        </div>
+        <div class="line-container">
+            <div class="line"></div>
+        </div>
+        <div class="footer-final">
+            <div class="footer-logo">
+                <img src="images/explore-page-images/cinnamon-footer.png" />
+            </div>
+            <div class="footer-copyright">
+                <p>Copyright © 2023. All rights reserved.</p>
+            </div>
+            <div class="footer-final-social-media">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-tiktok"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-youtube"></i>
+            </div>
+        </div>
+        <!-- For tablet view -->
+        <div class="footer-final-tablet">
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="images/explore-page-images/cinnamon-footer.png" />
+                </div>
+                <div class="footer-copyright">
+                    <p>Copyright © 2023. All rights reserved.</p>
+                </div>
+            </div>
+            <div class="footer-final-social-media">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-tiktok"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-youtube"></i>
+            </div>
+        </div>
+        <!-- end of tablet view -->
+        <!-- For Mobile view -->
+        <div class="footer-final-mobile">
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="images/explore-page-images/cinnamon-footer.png" />
+                </div>
+                <div class="footer-final-social-media">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-linkedin"></i>
+                    <i class="fab fa-tiktok"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>Copyright © 2023. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/help");
+    }
+}
