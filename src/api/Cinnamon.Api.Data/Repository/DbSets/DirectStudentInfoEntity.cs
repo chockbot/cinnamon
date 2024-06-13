@@ -52,7 +52,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     var studentPayment = new DirectStudentPayment {
                         Amount = student.DirectStudentPayment.Amount,
                         DirectStudentSession = studentSession,
-                        PaymentDate = student.DirectStudentPayment.PaymentDate
+                        PaymentDate = student.DirectStudentPayment.PaymentDate.SetKindUtc()
                     };
 
                     applicationContext.DirectStudentInfos.Add(studentInfo);
@@ -78,7 +78,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     var studentPayment = new DirectStudentPayment {
                         Amount = student.DirectStudentPayment.Amount,
                         DirectStudentSession = studentSession,
-                        PaymentDate = student.DirectStudentPayment.PaymentDate
+                        PaymentDate = student.DirectStudentPayment.PaymentDate.SetKindUtc()
                     };
 
                     applicationContext.DirectStudentSessions.Add(studentSession);
@@ -149,7 +149,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                             }
 
                             studentPayment.Amount = session.DirectStudentPayment.Amount == 0 ? studentPayment.Amount : session.DirectStudentPayment.Amount;
-                            studentPayment.PaymentDate = session.DirectStudentPayment.PaymentDate == DateTime.MinValue ? studentPayment.PaymentDate : session.DirectStudentPayment.PaymentDate;
+                            studentPayment.PaymentDate = session.DirectStudentPayment.PaymentDate == DateTime.MinValue ? studentPayment.PaymentDate : session.DirectStudentPayment.PaymentDate.SetKindUtc();
                         }
 
                         sessionToUpdate.ActivityId = session.ActivityId == 0 ? sessionToUpdate.ActivityId : session.ActivityId;
@@ -160,8 +160,8 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                         sessionToUpdate.Remarks = session.Remarks ?? sessionToUpdate.Remarks;
                         sessionToUpdate.StudentNo = session.StudentNo ?? sessionToUpdate.StudentNo;
                         
-                        sessionToUpdate.ExpirationDateEnd = session.ExpirationDateEnd;
-                        sessionToUpdate.ExpirationDateStart = session.ExpirationDateStart;
+                        sessionToUpdate.ExpirationDateEnd = session.ExpirationDateEnd.SetKindUtc();
+                        sessionToUpdate.ExpirationDateStart = session.ExpirationDateStart.SetKindUtc();
                     }
                 }
             }

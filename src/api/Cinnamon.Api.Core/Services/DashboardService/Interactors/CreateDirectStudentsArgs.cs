@@ -25,6 +25,8 @@ public class CreateDirectStudentsArgs : IInteractor
         public string BirthMonth { get; set; }
 
         public int BirthYear { get; set; }
+
+        public string? Email {get; set;}
     }
 
     public class CreateDirectStudentSession
@@ -45,5 +47,7 @@ public class CreateDirectStudentsArgs : IInteractor
     public class CreateDirectStudentPayment
     {
         public decimal Amount { get; set; }
+
+        public DateTime PaymentDate {get; set;}
     }
 }

@@ -35,6 +35,8 @@ public class CreateDirectStudentsArgs
 
         [Required]
         public int BirthYear { get; set; }
+
+        public string? Email {get; set;}
     }
 
     public class CreateDirectStudentSession
@@ -60,5 +62,8 @@ public class CreateDirectStudentsArgs
     {
         [Required]
         public decimal Amount { get; set; }
+
+        [Required]
+        public DateTime PaymentDate {get; set;}
     }
 }

@@ -124,10 +124,12 @@ public class CreateDirectStudentsHandler : ICreateDirectStudentsHandler
                         Gender = student.CreateDirectStudentInfo.Gender,
                         Name = student.CreateDirectStudentInfo.Name,
                         ProviderId = profile.Id,
-                        Id = student.CreateDirectStudentInfo.Id
+                        Id = student.CreateDirectStudentInfo.Id,
+                        Email = student.CreateDirectStudentInfo.Email
                     },
                     CreateDirectStudentPayment = new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateDirectStudentsArgs.CreateDirectStudentPayment {
-                        Amount = student.CreateDirectStudentPayment.Amount
+                        Amount = student.CreateDirectStudentPayment.Amount,
+                        PaymentDate = student.CreateDirectStudentPayment.PaymentDate
                     },
                     CreateDirectStudentSession = new Framework.ApiCommand.ApiData.DirectStudent.Request.CreateDirectStudentsArgs.CreateDirectStudentSession {
                         ActivityId = student.CreateDirectStudentSession.ActivityId,
