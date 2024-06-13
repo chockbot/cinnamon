@@ -3,7 +3,7 @@
 @page "/explore/category/{filterSearch}"
 @page "/confirm-email"
 @page "/facebook-login"
-@layout EmptyLayout
+@layout LandingLayout
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components
@@ -39,6 +39,7 @@
 </SeoMeta>
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+@*
     <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
@@ -67,7 +68,7 @@
                     <a href="/Onboarding" class="btn border-0">Become an Activity Provider</a>
                 </div>
             }
-            @*Desktop*@
+            <!-- Desktop -->
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
@@ -175,7 +176,7 @@
                     }
                 </ul>
             </div>
-            @*Mobile*@
+            <!-- Mobile -->
             <div class="dropdown-mobile">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
@@ -290,7 +291,7 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </div> *@
     <!-- Header -->
     <div class="header">
         <div class="header-container">
@@ -367,9 +368,11 @@
     <!--Section 1-->
     <div class="container">
         <div class="section-1">
-            <div class="categories border-bottom">
+           <div class="categories border-bottom">
                 <div class="schedule-swiper">
                     <div class="swiper-wrapper text-center">
+                        <!-- DO NOT TOUCH ORIGINAL SWIPER -->
+                        @*
                         @foreach (var category in categories)
                         {
                             <div class="swiper-slide category justify-content-center">
@@ -380,12 +383,96 @@
                                     </a>
                                 </div>
                             </div>
-                        }
+                        } *@
+                        <!-- END OF DO NOT TOUCH -->
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id">
+                                        <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
+                                        <p class="static-category-title">All</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id">
+                                        <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Shows & Concerts</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id">
+                                        <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Sports</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id">
+                                        <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Tours & Attraction</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="button carousel-list text-center" id="category.Id">
+                                        <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Corporate</p>
+                                    </a>
+                                </div>
+                        </div>
                     </div>
                     <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
             </div>
+            @*
+            <!-- STATIC CATEGORY SWIPER -->
+            <div class="static-category-container">
+                <div class="static-category-selector">
+                    <a class="static-category-button">
+                        <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
+                        <p class="static-category-title">All</p>
+                    </a>
+                </div>
 
+                <div class="static-category-selector">
+                    <a class="static-category-button">
+                        <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
+                        <p class="static-category-title">Shows & Concerts</p>
+                    </a>
+                </div>
+
+                <div class="static-category-selector">
+                    <a class="static-category-button">
+                        <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
+                        <p class="static-category-title">Sports</p>
+                    </a>
+                </div>
+
+                <div class="static-category-selector">
+                    <a class="static-category-button">
+                        <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
+                        <p class="static-category-title">Tours & Attraction</p>
+                    </a>
+                </div>
+
+                <div class="static-category-selector">
+                    <a class="static-category-button">
+                        <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
+                        <p class="static-category-title">Corporate</p>
+                    </a>
+                </div>
+            </div> 
+            <!-- END OF STATIC CATEGORY SWIPER -->
+            *@
             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
                     <div class="card card-placeholder-popular" aria-hidden="true">
