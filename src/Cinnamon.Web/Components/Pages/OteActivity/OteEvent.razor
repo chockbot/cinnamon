@@ -208,7 +208,7 @@
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@ModelState.IsPrivate" @onchange="@(()=>CheckboxChanged(2))" value="3">
+                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@ModelState.IsPrivate" @onchange="@(()=>CheckboxChanged(3))" value="3">
                 <label class="form-check-label" for="private-details-page">
                     Private
                 </label>
@@ -651,6 +651,9 @@
         ModelState.SelectedType   = data.ExperienceType;
         ModelState.ComingSoon     = data.ComingSoon;
         ModelState.Publish        = data.IsPublish;
+        ModelState.IsPublic       = data.IsPublic;
+        ModelState.IsPrivate      = data.IsPrivate;
+        ModelState.IsComingSoon   = data.IsComingSoon;
 
         await LoadRegions();
         await SelectedRegionChanged(data.RegionCode);
@@ -789,7 +792,7 @@
         public IList<ImageItem> imageItems = new List<ImageItem>();
 
         //Display Preferrence
-        public bool IsPublic { get; set; } = true;
+        public bool IsPublic { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsComingSoon { get; set; }
 
@@ -953,18 +956,18 @@
     {
         if (val == 3)
         {
-            ModelState.Publish = true;
-            ModelState.ComingSoon = (val == 1) ? true : false;
+            ModelState.Publish = false;
+            ModelState.ComingSoon = false;
         }
         else if (val == 2)
         {
-            ModelState.Publish = false;
-            ModelState.ComingSoon = (val == 1) ? true : false;
+            ModelState.Publish = true;
+            ModelState.ComingSoon = false;
         }
         else
         {
             ModelState.Publish = true;
-            ModelState.ComingSoon = (val == 1) ? true : false;
+            ModelState.ComingSoon = true;
         }
     }
 }

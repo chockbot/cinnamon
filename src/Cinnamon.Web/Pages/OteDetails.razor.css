@@ -19,6 +19,13 @@ a {
     ::deep button:active {
         transform: scale(.94);
     }
+.calendar-section{
+    display:flex;
+    justify-content: space-between;
+}
+.seat-plan-section {
+    margin-bottom: 5rem;
+}
 .event-title {
     color: #343D4C;
     font-family: Nunito-extrabold;
@@ -454,6 +461,40 @@ a {
 }
 
 @media only screen and (max-width: 766px) {
+    .cover-photo{
+        display:flex;
+        justify-content: center;
+    }
+    ::deep .message-me-button {
+        width: 100% !important;
+    }
+    .calendar-section {
+        display: block;
+        margin-top:1rem;
+    }
+    .event-schedule-time {
+        padding-bottom: 10px 5px 5px 5px;
+    }
+    .event-schedule-place{
+        padding-bottom: 10px 5px 5px 5px;
+    }
+    .event-title{
+        margin-top: 1rem;
+    }
+    .ticket-details-header {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+        .ticket-details-header .prices-title:nth-child(3) {
+            display: none;
+        }
+        .ticket-details-header .prices-title:nth-child(4) {
+            display: none;
+        }
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
     .calculator-wrapper-container {
         display: none;
     }
@@ -485,6 +526,9 @@ a {
 @media only screen and (max-width: 991px) {
     .select-calendar-container {
         width: 100%;
+    }
+    ::deep .message-me-button {
+        width: 100% !important;
     }
 }
 

@@ -28,9 +28,9 @@
 
 @if(activity is not null)
 {
-    <Container class="ote-details-wrapper pt-5">
+    <Container class="ote-details-wrapper pt-5 container-to-hide">
         <Row HorizontalGutter="32">
-            <Column ColumnSize="ColumnSize.Is4.OnDesktop">
+            <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is5.OnDesktop.Is2.OnTablet.Is12.OnMobile">
                 <div class="cover-photo">
                     <img class="cover-photo-img" src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
                 </div>
@@ -61,7 +61,7 @@
                 </div>
                 
             </Column>
-            <Column ColumnSize="ColumnSize.Is8.OnDesktop">
+            <Column ColumnSize="ColumnSize.Is8.OnWidescreen.Is7.OnDesktop.Is10.OnTablet.Is12.OnMobile">
                 @*Event Name*@
                 <h3 class="event-title">@activity.EventName</h3>
 
@@ -91,7 +91,7 @@
                     <div class="schedule-section">
                         <div class="schedule-header">
                             <p class="schedule-header-title">Select date and tickets</p>
-                            <div class="d-flex justify-content-between">
+                            <div class="calendar-section">
                                 <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
                                                                 ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
                                 <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
@@ -240,10 +240,10 @@
                     @*Event Seat Plan*@
                     @if (!string.IsNullOrEmpty(SetPlanImage))
                     {
-                        <section id="set-plan" class="mt-4">
-                            <p class="font-24 font-weight-700 color-black-100">Seat Plan</p>
+                        <div id="set-plan" class="mt-4 seat-plan-section">
+                            <p class="event-schedule">Seat Plan</p>
                             <img style="width: 330px; height: auto; cursor:pointer" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
-                        </section>
+                        </div>
                     }
                 }
                 @if (activity.IsComingSoon)
