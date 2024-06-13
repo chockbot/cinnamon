@@ -57,10 +57,17 @@
             {
                 <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left" Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
                     <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
+
                         <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
                         <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
                             <div class='empty-image-container bg-white-100'>
-                                <img src="images/ote/no-image.png" alt="gallery-icon">
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                            <div class="delete-section d-flex justify-content-between">
+                                <p class="delete-text">Upload Cover Photo</p>
                             </div>
                         </div>
                         <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
