@@ -172,6 +172,8 @@ creationInProgress.uploadImages = async (activityId) => {
 };
 
 function dataUrlToFile(dataUrl, filename) {
+  if (!dataUrl) return undefined;
+
   const arr = dataUrl.split(",");
   if (arr.length < 2) {
     return undefined;
