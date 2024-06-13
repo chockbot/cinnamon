@@ -125,9 +125,9 @@
         var to = from.LastDayOfMonth();
 
         Dictionary<int, DateSchedule> dates = new();
-        if(Summary is not null && Summary.PricingData is not null && Summary.PricingData.BookedDates is not null)
+        if(Summary is not null && Summary.ScheduleData is not null && Summary.ScheduleData.BookedDates is not null)
         {
-            foreach (var item in Summary.PricingData.BookedDates)
+            foreach (var item in Summary.ScheduleData.BookedDates)
             {
                 if(!dates.ContainsKey(item.Id))
                 {
@@ -189,6 +189,7 @@
     {
         public OteEvent.ModelData EventData {get; set;}
         public OteLocation.ModelData LocationData {get; set;}
+        public OteSchedule.ModelData ScheduleData { get; set; }
         public OtePricing.ModelData PricingData {get; set;}
         public OtePublish.ModelData PublishData {get; set;}
         public OteOnlineEvent.ModelData OnlineData { get; set; }

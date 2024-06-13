@@ -12,350 +12,8 @@
 @implements IOteComponent
 
 <section class="ote-pricing-wrapper">
-    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
-        <div class="mb-4">
-            <div class="d-flex justify-content-between">
-                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                    <span>
-                        schedule
-                    </span>
-                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
-                </h3>
-                <label @onclick="ViewGuide" class="cursor-pointer">
-                    <span class="font-14 font-weight-700 color-green-100 text-decoration-underline">How to do this</span>
-                    <img src="images/ote/green-how-do-this.png" alt="icon">
-                </label>
-            </div>
-            <p class="font-16 color-grey-100 text-justify">
-                Plan and organize your event by setting up your preferred schedule, creating your event duration and recurring options with ease.
-            </p>
-        </div>
-        <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="ModelState">
-            <div class="data-form">
-                <div class="event-time">
-                    <div class="d-flex mb-3 flex-column flex-md-row">
-                        <div class="box-width me-3 m-width-100 mb-3 mb-md-0">
-                            <label for="" class="text-capitalize font-20 color-black-100 m-font-18">
-                                Event Duration
-                            </label>
-                            <Row HorizontalGutter="15">
-                                <Column ColumnSize="ColumnSize.Is3.OnMobile.Is6.OnDesktop">
-                                    <Validation>
-                                        <Field>
-                                            <FieldBody>
-                                                <NumericPicker class="text-center border-radius-10 m-border-radius-5 px-2 m-font-16"
-                                                               Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0"
-                                                               TValue="int" @bind-Value="ModelState.EventDurationCount">
-                                                </NumericPicker>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is4.OnMobile.Is6.OnDesktop">
-                                    <Field>
-                                        <FieldBody>
-                                            <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                                    @bind-SelectedValue="ModelState.EventDurationTimeUnit">
-                                                <SelectItem Value='@("hrs")'>hrs</SelectItem>
-                                                <SelectItem Value='@("days")'>days</SelectItem>
-                                                <SelectItem Value='@("weeks")'>weeks</SelectItem>
-                                                <SelectItem Value='@("months")'>months</SelectItem>
-                                            </Select>
-                                        </FieldBody>
-                                    </Field>
-                                </Column>
-                            </Row>
-                        </div>
-                        <div class="box-width">
-                            <Validation>
-                                <Field>
-                                    <FieldLabel class="text-capitalize font-20 color-black-100 m-font-18">
-                                        Start Time
-                                    </FieldLabel>
-                                    <FieldBody>
-                                        <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                                  Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.EventDurationTimeStart" />
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </div>
-                    </div>
-                </div>
-
-                <Divider class="my-4" />
-
-                @if(AlreadyHaveBooked)
-                {
-                    <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                        Event Recurrences
-                    </h3>
-                    <p class="font-16 color-grey-100 text-justify">
-                        You can manually adjust individual occurrences after customers bought tickets to your event. 
-                        Make sure to update any reminders or invitations associated with the event series.
-                    </p>
-
-                    @* <Row VerticalGutter="10">
-                        @foreach (var item in RescheduleStringDates)
-                        {
-                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="font-20 color-black-100">
-                                • @item
-                            </Column>
-                        }
-                    </Row> *@
-
-                    <div>
-                        <Button class="font-16 color-grey-100 bg-white-100 border-1-solid border-color-grey-200" 
-                            Clicked="() => seeScheduleCalendarModal?.Show()">
-                            See Schedule
-                        </Button>
-
-                        <Button Clicked="() => modalReschedule?.Show()" 
-                            class="bg-orange-100 color-white-100 hover-color-white font-16">
-                            Reschedule Event
-                        </Button>
-                    </div>
-                }
-                else 
-                {
-                    <div class="event-recurrence d-flex flex-column flex-md-row mb-0 mb-md-3">
-                        <div class="box-width me-3 mb-3 mb-md-0">
-                            <Field>
-                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                    recurrences
-                                </FieldLabel>
-                                <FieldBody>
-                                    <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                        SelectedValueChanged="RecurrenceChanged" SelectedValue="ModelState.Recurrences">
-                                        <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
-                                        <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
-                                        <SelectItem Value='@("daily")'>Daily</SelectItem>
-                                        <SelectItem Value='@("weekly")'>Weekly</SelectItem>
-                                        <SelectItem Value='@("monthly")'>Monthly</SelectItem>
-                                    </Select>
-                                    <div class="invalid-feedback">The recurrences field is mandatory.</div>
-                                </FieldBody>
-                            </Field>
-                        </div>
-
-                        @if(ModelState.Recurrences == "do-not-repeat")
-                        {
-                            <div class="box-width">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            start date
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationStart">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                        }
-                    </div>
-
-                    @if(ModelState.Recurrences != "do-not-repeat")
-                    {
-                        <div class="d-flex">
-                            <div class="box-width me-3">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            start
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationStart">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                            <div class="box-width">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            end
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationEnd">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                        </div>
-
-                        <div class="weekly-repeat-every mt-4">
-                            <label for="durationCount" class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                repeat every
-                            </label>
-                            <div class="repeat-every-flex d-flex align-items-baseline align-items-md-center flex-column flex-md-row">
-                                <div class="box-width me-3 mb-3 mb-md-0">
-                                    <Validation>
-                                        <Field>
-                                            <FieldBody>
-                                                <div class="d-flex">
-                                                    <NumericPicker ElementId="durationCount" 
-                                                        class="text-center me-3 border-radius-10 m-border-radius-5 m-font-16" 
-                                                        style="width: 90px;" Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
-                                                        TValue="int" @bind-Value="ModelState.DurationEvery">
-                                                    </NumericPicker>
-                                                    <Button Disabled class="bg-grey-200 px-4">
-                                                        @ModelState.RepeatEvery
-                                                    </Button>
-                                                </div>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                </div>
-                                @if(ModelState.Recurrences == "every-weekday")
-                                {
-                                    <div class="d-flex justify-content-center m-width-100">
-                                        <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">M</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">W</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">F</span>
-                                        <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                                    </div>
-                                }
-
-                                @if(ModelState.Recurrences == "weekly")
-                                {
-                                    <div class="d-flex justify-content-center m-width-100">
-                                        @foreach (var item in dayItems)
-                                        {
-                                            <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        @if(ModelState.Recurrences == "monthly")
-                        {
-                            <div class="mt-5">
-                                <RadioGroup TValue="int" @bind-CheckedValue="ModelState.MonthSelection">
-                                    <Validation>
-                                        <Field class="mb-3">
-                                            <FieldBody>
-                                                <div class="d-flex align-items-center">
-                                                    <label for="type-on-day" class="cursor-pointer">
-                                                        <Radio class="checkbox-round cursor-pointer" ElementId="type-on-day" TValue="int" Value="1">On day</Radio>
-                                                    </label>
-                                                    <NumericPicker Disabled="ModelState.MonthSelection == 2" class="text-center ms-3 border-radius-10 m-border-radius-5" 
-                                                        style="width: 90px;" Min="1" Max="31" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
-                                                        TValue="int" @bind-Value="ModelState.OnDayDate">
-                                                    </NumericPicker>
-                                                </div>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                    <Field>
-                                        <FieldBody>
-                                            <div class="d-flex align-items-center">
-                                                <label for="type-on-the" class="cursor-pointer">
-                                                    <Radio class="checkbox-round cursor-pointer" ElementId="type-on-the" TValue="int" Value="2">On the</Radio>
-                                                </label>
-                                                <div class="box-width ms-3">
-                                                    <Select Disabled="ModelState.MonthSelection == 1" TValue="string" Size="Size.Medium" 
-                                                        class="form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5"
-                                                        @bind-SelectedValue="ModelState.MonthRepeat">
-                                                        <SelectItem Value='@("first")'>First</SelectItem>
-                                                        <SelectItem Value='@("second")'>Second</SelectItem>
-                                                        <SelectItem Value='@("third")'>Third</SelectItem>
-                                                        <SelectItem Value='@("fourth")'>Fourth</SelectItem>
-                                                        <SelectItem Value='@("last")'>Last</SelectItem>
-                                                    </Select>
-                                                </div>
-                                                <div class="box-width ms-3">
-                                                    <Select Disabled="ModelState.MonthSelection == 1" TValue="string" Size="Size.Medium" 
-                                                        class="box-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5"
-                                                        @bind-SelectedValue="ModelState.MonthDay">
-                                                        <SelectItem Value='@("sunday")'>Sunday</SelectItem>
-                                                        <SelectItem Value='@("monday")'>Monday</SelectItem>
-                                                        <SelectItem Value='@("tuesday")'>Tuesday</SelectItem>
-                                                        <SelectItem Value='@("wednesday")'>Wednesday</SelectItem>
-                                                        <SelectItem Value='@("thursday")'>Thursday</SelectItem>
-                                                        <SelectItem Value='@("friday")'>Friday</SelectItem>
-                                                        <SelectItem Value='@("saturday")'>Saturday</SelectItem>
-                                                    </Select>
-                                                </div>
-                                            </div>
-                                        </FieldBody>
-                                    </Field>
-                                </RadioGroup>
-                            </div>
-                        }
-                    }
-                    <div class="text-center color-grey-100 mt-4">
-                        <p class="m-0 font-20 m-font-18">@ScheduleMessageInfo</p>
-                    </div>
-                }
-
-                
-            </div>
-        </Validations>
-    </div>
-
-    @if(!AlreadyHaveBooked)
-    {
-        <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
-            <div>
-                <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                    Add date overrides
-                </h3>
-                <p class="font-16 color-grey-100 text-justify">
-                    Customize recurrence patterns with override dates, providing flexible scheduling control for specific instances.
-                </p>
-                <div class="text-center">
-                    <Button Clicked="ViewCalendar" class="bg-transparent rounded-pill border-color-orange-100 px-5 my-4 color-orange-100 hover-color-primary">
-                        Add date override
-                    </Button>
-                </div>
-                <Divider DividerType="DividerType.Dashed" class="m-0" />
-                <div>
-                    <Table FullWidth>
-                        <TableBody>
-                            @foreach (var item in dateOverrides)
-                            {
-                                <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
-                                    <TableRowCell>
-                                        <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
-                                    </TableRowCell>
-                                    <TableRowCell>
-                                        <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
-                                    </TableRowCell>
-                                    <TableHeaderCell>
-                                        <Button Clicked="() => dateOverrides.Remove(item.Key)">
-                                            <img src="/images/ote/delete-icon.png" alt="delete">
-                                        </Button>
-                                    </TableHeaderCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-        </div>
-    }
-
     @*Ticket Limit*@
-    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
         <Field>
             <FieldLabel>
                 <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -618,321 +276,64 @@
             </div>
         </Validations>
     </div>
-
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
-
-    <Modal @ref="modalFeeBreakdown">
-        <ModalContent Centered class="border-radius-15">
-            <ModalHeader class="justify-content-center pb-0">
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Absorb Fees Breakdown</p>
-                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseDetails" />
-            </ModalHeader>
-            <ModalBody class="px-4">
-                <div class="color-black-100">
-                    <label class="font-weight-700 font-16 mb-2">Cost of Buyer</label>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Ticket Price:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.TicketPrice.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Service Fee:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.ServiceFee.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Handling Fee:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.HandlingFee.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex font-weight-700 justify-content-between">
-                        <p class="mb-0">Total:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.SubTotal.ToString("#,##0.00")</p>
-                    </div>
-                </div>
-                <div class="color-black-100 mt-4">
-                    <label class="font-weight-700 font-16 mb-1">Your Payout</label>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Ticket Revenue:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.PayoutAmount.ToString("#,##0.00")</p>
-                    </div>
-                </div>
-                <div class="color-grey-100 font-12 mt-4">
-                    <p class="mb-0">Note: Service will may change depending on the payment method used.</p>
-                    <p class="mb-0">E-wallet - 3%</p>
-                    <p class="mb-0">Cards - 5%</p>
-                </div>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-
-    <Modal @ref="modalScheduleGuid">
-        <ModalContent Size="ModalSize.Large" class="border-radius-20">
-            <ModalHeader class="justify-content-center pb-0">
-                <div class="d-flex justify-content-center align-items-center m-margin-top-75">
-                    <img src="images/ote/light-bulb.png" class="me-3 m-d-none" alt="icon">
-                    <p class="font-32 font-weight-700 color-black-100 mb-0 m-font-24">Create a better schedule</p>
-                </div>
-                <button type="button" style="top: 28px; right: 20px;" class="btn-close position-absolute" @onclick="CloseGuide" />
-            </ModalHeader>
-            <ModalBody class="color-grey-100 font-18 m-font-16">
-                <p>
-                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event,
-                    ensuring clarity and engagement for all participants.
-                </p>
-                <ol class="ps-4">
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Do Not Repeat:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Indicates that a particular event or activity should not occur again after its initial instance.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">"Special Anniversary Dinner on January 15, 2024, at 7:00 PM."</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Daily:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Daily recurrences involve events or activities that happen regularly and repeat on a daily basis.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">Event: Daily Morning Yoga Sessions</p>
-                            <p class="mb-0">Start Date: March 1, 2024</p>
-                            <p class="mb-0">End Date: March 15, 2024</p>
-                            <p class="mb-0">From: 7:00 AM</p>
-                            <p class="mb-0">To: 8:00 AM</p>
-                            <p class="mb-0">Recurring Daily: Monday to Friday</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Weekly:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Weekly recurrences refer to events or activities that occur regularly and repeat every seven days.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">Event: Weekly Photography Class</p>
-                            <p class="mb-0">Start Date: April 1, 2024</p>
-                            <p class="mb-0">End Date: June 30, 2024</p>
-                            <p class="mb-0">From: 6:00 PM</p>
-                            <p class="mb-0">To: 8:00 PM</p>
-                            <p class="mb-0">Recurring Weekly: Every Saturday</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Monthly:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Monthly recurrences denote events or activities that regularly repeat every calendar month.</p>
-                            <p class="mb-0">Sample: Event: Monthly Book Club Meeting</p>
-                            <p class="mb-0">Start Date: July 1, 2024</p>
-                            <p class="mb-0">End Date: December 31, 2024</p>
-                            <p class="mb-0">From: 4:00 PM</p>
-                            <p class="mb-0">To: 6:00 PM</p>
-                            <p class="mb-0">Recurring Monthly: First Sunday of Each Month</p>
-                        </div>
-                    </li>
-                </ol>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-
-    <Modal @ref="modalCalendar">
-        <ModalContent>
-            <ModalHeader class="justify-content-center">
-                <p class="m-0 color-black-100">Select the date(s) you want to assign specific hours</p>
-            </ModalHeader>
-            <ModalBody>
-                <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat
-                          SelectedDates="generatedDates.Select(g => g.Date)"
-                          CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
-            </ModalBody>
-
-            <ModalFooter class="d-block">
-                <div>
-                    <h3 class="font-20 text-center color-black-100">What hours will you be available?</h3>
-                    <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
-                        <Field>
-                            <FieldBody>
-                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                          Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.TimeStart" />
-                            </FieldBody>
-                        </Field>
-                        <span class="mx-2">-</span>
-                        <Field>
-                            <FieldBody>
-                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                          Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.TimeEnd" />
-                            </FieldBody>
-                        </Field>
-                    </div>
-                </div>
-            </ModalFooter>
-            
-            <ModalFooter class="justify-content-center pt-4">
-                <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
-                    cancel
-                </Button>
-                <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
-                    apply
-                </Button>
-            </ModalFooter>
-
-        </ModalContent>
-    </Modal>
-
-    <Modal @ref="modalError">
-        <ModalContent Centered class="border-radius-15">
-            <ModalHeader class="justify-content-center pb-0">
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
-                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
-            </ModalHeader>
-            
-            <ModalBody class="px-4">
-                <div class="color-black-100">
-                    @errorMessageAlert
-                </div>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-
-    <Modal @ref="modalReschedule">
-        <ModalContent Centered>
-            
-            <ModalHeader class="justify-content-center position-relative">
-                <p class="font-weight-700 m-0 color-black-100">Reschedule Event </p>
-                <button type="button" style="top: 28px; right: 25px; width 15px; height: 15px;" 
-                    class="btn-close position-absolute p-0" 
-                    @onclick="() => modalReschedule.Close(CloseReason.UserClosing)" />
-            </ModalHeader>
-
-            <ModalBody class="pt-0">
-                <p class="font-16 m-font-14 color-grey-100 text-center mb-4">
-                    As an activity providers you should be able to tag what is the NEW 
-                    date for the customers that bought the tickets
-                </p>
-                @* <Divider class="mt-0 mb-3" /> *@
-                <Row HorizontalGutter="20">
-                    <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
-                        @if(viewReschedules.Count > 0)
-                        {
-                            <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
-                                <Calendar @ref="rescheduleCalendar" CurrentDate="viewReschedules.First().NewDate" Flat 
-                                    SelectedDates="viewReschedules.Select(s => s.NewDate)" ViewOnly 
-                                    OnNextMonthChanged="OnCurrentMonthChangedCalendarView" 
-                                    OnPreviousMonthChanged="OnCurrentMonthChangedCalendarView" />
-                            </div>
-                        }
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
-                        <div class="mt-3 mt-md-0">
-                            <p class="text-capitalize font-16 color-black-100 mb-2 font-weight-700">select date range</p>
-
-                            <Validations @ref="scheduleFilterValidation" Mode="ValidationMode.Manual" Model="scheduleFilter">
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is6.Is12.OnDesktop">
-                                        <Validation>
-                                            <Field class="mb-3">
-                                                <FieldLabel class="font-12 text-capitalize color-grey-100 mb-1">
-                                                    From
-                                                </FieldLabel>
-                                                <FieldBody>
-                                                    <DateEdit class="font-16 border-radius-10 field-width m-border-radius-5 color-grey-100" 
-                                                        Size="Size.ExtraSmall" 
-                                                        TValue="DateTime" @bind-Date="scheduleFilter.DateFrom">
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </DateEdit>
-                                                </FieldBody>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is6.Is12.OnDesktop">
-                                        <Validation>
-                                            <Field>
-                                                <FieldLabel class="font-12 text-capitalize color-grey-100 mb-1">
-                                                    To
-                                                </FieldLabel>
-                                                <FieldBody>
-                                                    <DateEdit class="font-16 border-radius-10 field-width m-border-radius-5 color-grey-100" 
-                                                        Size="Size.ExtraSmall" 
-                                                        TValue="DateTime" @bind-Date="scheduleFilter.DateTo">
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </DateEdit>
-                                                </FieldBody>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
-                            </Validations>
-
-                            <Button Clicked="FilterDateSchedule" 
-                                class="font-16 bg-grey-200 color-grey-100 px-3 py-1 mt-0 mt-md-3 w-100 m-width-50">
-                                Search
-                            </Button>
-                        </div>
-                    </Column>
-                </Row>
-
-                <Divider class="my-4" />
-
-                <Table Borderless>
-                    <TableHeader>
-                        <TableHeaderCell class="color-black-100">
-                            Current Date
-                        </TableHeaderCell>
-                        <TableHeaderCell>
-                            
-                        </TableHeaderCell>
-                        <TableHeaderCell class="color-black-100">
-                            New Date
-                        </TableHeaderCell>
-                    </TableHeader>
-                </Table>
-                <div id="available-dates">
-                    @foreach (var item in filteredSchedules.OrderBy(d => d.OldDate))
-                    {
-                        <div class="d-flex justify-content-center align-items-center mb-3">
-                            <DateEdit Disabled class="reschedule-date-width color-black-100 font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                                Size="Size.ExtraSmall" 
-                                TValue="DateTime" @bind-Date="item.OldDate">
-                            </DateEdit>
-                            <img src="images/icons/date-to.png" class="mx-2" alt="icon">
-                            <DateEdit class="reschedule-date-width color-black-100 font-18 border-radius-10 m-font-16 m-border-radius-5" 
-                                Size="Size.ExtraSmall" 
-                                TValue="DateTime" @bind-Date="item.NewDate">
-                            </DateEdit>
-                        </div> 
-                    }
-                </div>
-                <div class="text-end">
-                    <Button Clicked="UpdateReschedule" class="px-3 py-1 font-16 bg-orange-100 color-white-100 hover-color-white">
-                        Update
-                    </Button>
-                </div>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-
-    <Modal @ref="seeScheduleCalendarModal">
-        <ModalContent Centered>
-            <ModalHeader class="justify-content-center position-relative">
-                <p class="m-0 font-20 color-black-100 font-weight-700">Event Schedule</p>
-                <button type="button" style="top: 28px; right: 25px; width 15px; height: 15px;" 
-                    class="btn-close position-absolute p-0" 
-                    @onclick="() => seeScheduleCalendarModal.Close(CloseReason.UserClosing)" />
-            </ModalHeader>
-            <ModalBody class="pt-0">
-                @if(viewSchedules.Count > 0)
-                {
-                    <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
-                        <Calendar @ref="seeScheduleCalendar" CurrentDate="viewSchedules.First().NewDate" Flat 
-                            SelectedDates="viewSchedules.Select(s => s.NewDate)" ViewOnly 
-                            OnNextMonthChanged="OnCurrentMonthChanged" 
-                            OnPreviousMonthChanged="OnCurrentMonthChanged" />
-                    </div>
-                }
-            </ModalBody>
-        </ModalContent>
-    </Modal>
-
 </section>
 
+<Modal @ref="modalFeeBreakdown">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Absorb Fees Breakdown</p>
+            <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseDetails" />
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <div class="color-black-100">
+                <label class="font-weight-700 font-16 mb-2">Cost of Buyer</label>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Ticket Price:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.TicketPrice.ToString("#,##0.00")</p>
+                </div>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Service Fee:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.ServiceFee.ToString("#,##0.00")</p>
+                </div>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Handling Fee:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.HandlingFee.ToString("#,##0.00")</p>
+                </div>
+                <div class="mb-2 d-flex font-weight-700 justify-content-between">
+                    <p class="mb-0">Total:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.SubTotal.ToString("#,##0.00")</p>
+                </div>
+            </div>
+            <div class="color-black-100 mt-4">
+                <label class="font-weight-700 font-16 mb-1">Your Payout</label>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Ticket Revenue:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.PayoutAmount.ToString("#,##0.00")</p>
+                </div>
+            </div>
+            <div class="color-grey-100 font-12 mt-4">
+                <p class="mb-0">Note: Service will may change depending on the payment method used.</p>
+                <p class="mb-0">E-wallet - 3%</p>
+                <p class="mb-0">Cards - 5%</p>
+            </div>
+        </ModalBody>
+    </ModalContent>
+    </Modal>
+<Modal @ref="modalError">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
+            <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
+        </ModalHeader>
+
+        <ModalBody class="px-4">
+            <div class="color-black-100">
+                @errorMessageAlert
+            </div>
+        </ModalBody>
+    </ModalContent>
+    </Modal>
 <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
            OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
@@ -952,7 +353,7 @@
     public EventCallback OnPrevClick { get; set; }
 
     [Parameter]
-    public Schedule ModelState { get; set; } = new();
+    public Pricing ModelState { get; set; } = new();
 
     [Parameter]
     public string Token { get; set; }
@@ -964,49 +365,16 @@
     private Pricing priceToDelete = new();
     private PricingList modelPricingList = new();
     private PricingList existingList = new PricingList();
-    private Validations? scheduleFormValidation;
     private Validations? pricingFormValidation;
     private Validations? pringListFormValidation;
-    private Validation? dateFromValidation;
-    private Validation? dateToValidation;
     private Validation? maxTicketLimit;
     private bool showErrors = false;
     private string errorMessageAlert { get; set; }
     private bool DisplayDelete = true;
     private Modal? modalFeeBreakdown { get; set; }
-    private Modal? modalScheduleGuid { get; set; }
     private Modal modalError { get; set; }
-    private Modal? modalReschedule {get; set;}
     private ModalTicketPricing modalTicketPricing = new();
     private ConfirmDialog confirmDialogRef { get; set; }
-    private IList<DayItem> dayItems = new List<DayItem> {
-        new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
-        new DayItem { Day = "M", Value = "MON", DayString = "Monday"},
-        new DayItem { Day = "T", Value = "TUE", DayString = "Tuesday", Selected = true},
-        new DayItem { Day = "W", Value = "WED", DayString = "Wednesday", Selected = true},
-        new DayItem { Day = "T", Value = "THU", DayString = "Thursday", Selected = true},
-        new DayItem { Day = "F", Value = "FRI", DayString = "Friday"},
-        new DayItem {Day = "S", Value = "SAT", DayString = "Saturday"}
-    };
-    private IEnumerable<GenerateRecurrenceDate.DateItem> generatedDates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
-    private Modal? modalCalendar { get; set; }
-    private Calendar? calendar { get; set; }
-    private Dictionary<DateTime, DateOverride> dateOverrides = new();
-    private GenerateRecurrenceDate recurrenceHelper = new();
-    private List<DateReschedule> viewSchedules = new();
-    private List<DateReschedule> viewReschedules = new();
-    private List<DateReschedule> filteredSchedules = new();
-    private Dictionary<int, DateReschedule> appliedSchedules = new();
-
-    private bool rescheduleUpdated = false;
-
-    private Modal? seeScheduleCalendarModal;
-    private Calendar? seeScheduleCalendar;
-
-    private Calendar? rescheduleCalendar;
-
-    private ScheduleFilter scheduleFilter = new();
-    private Validations? scheduleFilterValidation;
 
     private async Task NextClick()
     {
@@ -1026,17 +394,16 @@
 
     public async Task<bool> FieldValid()
     {
-        if (pricingFormValidation is not null && scheduleFormValidation is not null && pringListFormValidation is not null)
+        if (pricingFormValidation is not null && pringListFormValidation is not null)
         {
             bool pricingValid = await pricingFormValidation.ValidateAll();
-            bool scheduleValid = await scheduleFormValidation.ValidateAll();
             bool pricingListValid = await pringListFormValidation.ValidateAll();
             bool isSetLimit = true;
             if(ModelState.IsLimit == 2)
             {
                 isSetLimit = ModelState.EventTicketLimit != 0;
             }
-            bool valid = pricingValid && scheduleValid && pricingListValid && isSetLimit;
+            bool valid = pricingValid && pricingListValid && isSetLimit;
             showErrors = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -1054,63 +421,6 @@
         get
         {
             return showErrors ? ValidationMode.Auto : ValidationMode.Manual;
-        }
-    }
-
-    private string TimeFromClass
-    {
-        get
-        {
-            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if (dateFromValidation is not null && showErrors)
-            {
-                if (dateFromValidation.Status == ValidationStatus.Error)
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                else
-                {
-                    return $"{defaultClass} is-valid";
-                }
-            }
-            return defaultClass;
-        }
-    }
-
-    private string TimeToClass
-    {
-        get
-        {
-            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if (dateToValidation is not null && showErrors)
-            {
-                if (dateToValidation.Status == ValidationStatus.Error)
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                else
-                {
-                    return $"{defaultClass} is-valid";
-                }
-            }
-            return defaultClass;
-        }
-    }
-
-    private string RecurrencesClass
-    {
-        get
-        {
-            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
-            if (showErrors)
-            {
-                if (string.IsNullOrEmpty(ModelState.Recurrences))
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                return $"{defaultClass} is-valid";
-            }
-            return defaultClass;
         }
     }
 
@@ -1133,108 +443,40 @@
 
     public ModelData GetData()
     {
-        bool isRecurrence = ModelState.Recurrences != "do-not-repeat";
-        bool isMonthly = ModelState.Recurrences == "monthly";
-
-        string weekString = ModelState.Recurrences switch
-        {
-            "every-weekday" => "MON|TUE|WED|THU|FRI",
-            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
-            _ => ""
-        };
-
         ModelData data = new ModelData
-            {
-                DateFrom = ModelState.DateFrom,
-                DateTo = ModelState.DateTo,
-                Recurrences = ModelState.Recurrences,
-
-                DurationEnd = isRecurrence ? ModelState.DurationEnd : null,
-                DurationStart = isRecurrence ? ModelState.DurationStart : null,
-                DurationEvery = isRecurrence ? ModelState.DurationEvery : null,
-                MonthDay = isMonthly ? ModelState.MonthDay : null,
-                MonthRepeat = isMonthly ? ModelState.MonthRepeat : null,
-                MonthSelection = isMonthly ? ModelState.MonthSelection : null,
-                OnDayDate = isMonthly ? ModelState.OnDayDate : null,
-                WeekString = weekString,
-                EventDurationCount = ModelState.EventDurationCount,
-                EventDurationTimeUnit = ModelState.EventDurationTimeUnit,
-                EventTicketLimit = ModelState.EventTicketLimit,
-                IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
-
-                ItemPrices = modelPricingList.Pricings.Select(p =>
-                {
-                    return new ModelData.ItemPrice
-                    {
-                        AbsorbFees = p.AbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Price = p.Price,
-                        Description = p.Description,
-                        Id = p.Id,
-                        Name = p.Name,
-                        TicketSold = p.TicketSold
-                    };
-                }).ToList(),
-                DateOverrides = dateOverrides.Select(s =>
-                {
-                    return new ModelData.DateOverride
-                    {
-                        Date = s.Key,
-                        TimeEnd = s.Value.TimeEnd,
-                        TimeStart = s.Value.TimeStart
-                    };
-                }).ToList()
-            };
-        data.ItemPrices.Add(new ModelData.ItemPrice
-            {
-                AbsorbFees = modelPricing.AbsorbFees,
-                MaxSlots = modelPricing.MaxSlots,
-                Price = modelPricing.Price,
-                Description = modelPricing.Description,
-                Id = modelPricing.Id,
-                Name = modelPricing.Name,
-                TicketSold = modelPricing.TicketSold
-            });
-        
-        if(appliedSchedules.Count > 0)
         {
-            data.BookedDates = appliedSchedules.Values.Select(d => new ModelData.BookedDate {
-                Date = d.OldDate,
-                NewDate = d.NewDate,
-                Id = d.Id
-            });
-        }
+            EventTicketLimit = ModelState.EventTicketLimit,
+            IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
+
+            ItemPrices = modelPricingList.Pricings.Select(p =>
+            {
+                return new ModelData.ItemPrice
+                {
+                    AbsorbFees = p.AbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Description = p.Description,
+                    Id = p.Id,
+                    Name = p.Name,
+                    TicketSold = p.TicketSold
+                };
+            }).ToList()
+        };
+        data.ItemPrices.Add(new ModelData.ItemPrice
+        {
+            AbsorbFees = modelPricing.AbsorbFees,
+            MaxSlots = modelPricing.MaxSlots,
+            Price = modelPricing.Price,
+            Description = modelPricing.Description,
+            Id = modelPricing.Id,
+            Name = modelPricing.Name,
+            TicketSold = modelPricing.TicketSold
+        });
         return data;
     }
 
     public Task SetState(ModelData data)
     {
-        if(data.BookedDates is not null)
-        {
-            foreach (var item in data.BookedDates)
-            {
-                viewReschedules.Add(new DateReschedule {
-                    NewDate = item.Date,
-                    OldDate = item.Date,
-                    Id = item.Id
-                });
-
-                viewSchedules.Add(new DateReschedule {
-                    NewDate = item.Date,
-                    OldDate = item.Date,
-                    Id = item.Id
-                });
-            }
-        }
-        RecurrenceChanged(data.Recurrences);
-
-        // set selected days
-        var days = data.WeekString.Split("|");
-        foreach (var item in dayItems)
-        {
-            item.Selected = days.Contains(item.Value);
-        }
-
         //existing ticket
         foreach (var item in data.ItemPrices)
         {
@@ -1313,253 +555,16 @@
         return price.SubTotal;
     }
 
-    private string SetDayStyle(bool selected)
-    {
-        var style = "font-20 prevent-select cursor-pointer rounded-pill round-day me-2";
-        if (selected) return $"{style} bg-orange-100 color-white-100";
-        else return style;
-    }
-
-    private Task RecurrenceChanged(string value)
-    {
-        ModelState.Recurrences = value;
-        ModelState.RepeatEvery = value switch
-        {
-            "do-not-repeat" => "Do not repeat",
-            "every-weekday" => "Week",
-            "daily" => "Day",
-            "weekly" => "Weekly",
-            "monthly" => "Monthly",
-            _ => "Do not repeat"
-        };
-        return Task.CompletedTask;
-    }
-
-    private string ScheduleMessageInfo
-    {
-        get
-        {
-            string durationStart = ModelState.DurationStart.ToString("MM/dd/yyyy");
-            string durationEnd = ModelState.DurationEnd.ToString("MM/dd/yyyy");
-
-            if (ModelState.Recurrences == "do-not-repeat")
-            {
-                return "Repeat only once.";
-            }
-
-            if (ModelState.Recurrences == "every-weekday")
-            {
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every Monday through Friday until {durationEnd}.";
-                }
-
-                return $@"Occurs every {ModelState.DurationEvery} weeks on Monday, Tuesday, Wednesday,
-                    Thursday and Friday starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "daily")
-            {
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every day starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {ModelState.DurationEvery} days starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "weekly")
-            {
-                var days = dayItems.Where(d => d.Selected).Select(d => d.DayString);
-                string selectedDaysString = DayStrings(days);
-
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every {selectedDaysString} starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {ModelState.DurationEvery} weeks on {selectedDaysString} starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "monthly")
-            {
-                string everyMonthString = ModelState.DurationEvery > 1 ? $"{ModelState.DurationEvery} months" : "month";
-
-                if (ModelState.MonthSelection == 1)
-                {
-                    return $"Occurs every {everyMonthString} on day {ModelState.OnDayDate} starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {everyMonthString} on the {ModelState.MonthRepeat} {ModelState.MonthDay.Capitalize()} starting {durationStart} until {durationEnd}";
-            }
-
-            return string.Empty;
-        }
-    }
-
-    private string DayStrings(IEnumerable<string> strings)
-    {
-        string dayString = string.Empty;
-        if (strings.Count() > 1)
-        {
-            dayString = string.Join(", ", strings.Take(strings.Count() - 1));
-            dayString += " and " + strings.Last();
-        }
-        else
-        {
-            dayString = strings.FirstOrDefault();
-        }
-
-        return dayString;
-    }
-
-    private Task OnWeeklyDaySelected(DayItem item)
-    {
-        if (dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
-        item.Selected = !item.Selected;
-        return Task.CompletedTask;
-    }
-
-    private async Task ViewGuide()
-    {
-        await modalScheduleGuid.Show();
-    }
-
-    private async Task CloseGuide()
-    {
-        await modalScheduleGuid.Close(CloseReason.UserClosing);
-    }
-
-    private async Task ViewCalendar()
-    {
-        await GenerateEventDates();
-        var dates = generatedDates.Select(g => g.Date);
-        await calendar?.LoadDates(dates, dates.FirstOrDefault());
-        await modalCalendar?.Show();
-        StateHasChanged();
-    }
-
-    private async Task CloseCalendar()
-    {
-        await modalCalendar?.Close(CloseReason.UserClosing);
-    }
-
-    private Task GenerateEventDates()
-    {
-        var every = ModelState.DurationEvery;
-        var dateStart = ModelState.DurationStart;
-        var dateEnd = ModelState.DurationEnd;
-
-        var timeStart = ModelState.EventDurationTimeStart;
-        var timeDuration = ModelState.DateTo - ModelState.DateFrom;
-
-        string weekString = ModelState.Recurrences switch
-        {
-            "every-weekday" => "MON|TUE|WED|THU|FRI",
-            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
-            _ => ""
-        };
-
-        var monthSelection = ModelState.MonthSelection;
-        var onDayDate = ModelState.OnDayDate;
-        var monthRepeat = ModelState.MonthRepeat;
-        var monthDay = ModelState.MonthDay;
-
-        generatedDates = ModelState.Recurrences switch {
-            "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
-            "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
-            "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-            "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
-                onDayDate, monthRepeat, monthDay),
-            _ => recurrenceHelper.GenerateNoRepeat(ModelState.DateFrom, ModelState.DateTo)
-        };
-        return Task.CompletedTask;
-    }
-
-    private async Task SetOverrideDates()
-    {
-        if (calendar is null) return;
-
-        var dates = calendar.GetClickedDates;
-        foreach (var date in dates)
-        {
-            if (dateOverrides.ContainsKey(date.Date))
-            {
-                dateOverrides[date.Date].TimeStart = ModelState.TimeStart;
-                dateOverrides[date.Date].TimeEnd = ModelState.TimeEnd;
-            }
-            else
-            {
-                dateOverrides.Add(date.Date, new DateOverride
-                    {
-                        Date = date.Date,
-                        TimeEnd = ModelState.TimeEnd,
-                        TimeStart = ModelState.TimeStart
-                    });
-            }
-        }
-
-        await CloseCalendar();
-    }
-
     private string TimeToString(TimeSpan time)
     {
         return DateTime.Today.Add(time).ToString("hh:mmtt");
     }
-
-    private bool AlreadyHaveBooked
-    {
-        get 
-        {
-            if(ModelState is null) return false;
-
-            return ModelState.TotalBookedCount > 0;
-        }
-    }
-
-    private async Task UpdateReschedule()
-    {
-        foreach (var item in filteredSchedules)
-        {
-            if(appliedSchedules.ContainsKey(item.Id))
-            {
-                var appliedSchedule = appliedSchedules[item.Id];
-                appliedSchedule.NewDate = item.NewDate;
-            }
-            else 
-            {
-                appliedSchedules.Add(item.Id, new DateReschedule {
-                    Id = item.Id,
-                    NewDate = item.NewDate,
-                    OldDate = item.OldDate
-                });
-            }
-        }
-        await modalReschedule?.Close(CloseReason.UserClosing);
-    }
-
     public class ModelData
     {
-        public DateTime DateFrom { get; set; }
-        public DateTime DateTo { get; set; }
-        public string Recurrences { get; set; }
         public IList<ItemPrice> ItemPrices { get; set; } = new List<ItemPrice>();
-        public IList<DateOverride> DateOverrides { get; set; }
-
-        public DateTime? DurationStart { get; set; } = DateTime.Now;
-        public DateTime? DurationEnd { get; set; } = DateTime.Now;
-        public int? DurationEvery { get; set; }
-        public int? MonthSelection { get; set; }
-        public string? MonthRepeat { get; set; }
-        public string? MonthDay { get; set; }
-        public int? OnDayDate { get; set; }
-        public string? WeekString { get; set; }
-        public int EventDurationCount { get; set; }
-        public string EventDurationTimeUnit { get; set; }
         public int TicketSold { get; set; }
         public int IsLimit { get; set; } = 1;
         public int EventTicketLimit { get; set; }
-        public IEnumerable<BookedDate> BookedDates {get; set;}
 
         public class ItemPrice
         {
@@ -1572,116 +577,11 @@
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
         }
-
-        public class DateOverride
-        {
-            public DateTime Date { get; set; }
-            public TimeSpan TimeStart { get; set; }
-            public TimeSpan TimeEnd { get; set; }
-        }
-
-        public class BookedDate 
-        {
-            public int Id {get; set;}
-            public DateTime Date {get; set;}
-            public DateTime NewDate {get; set;}
-            public int BookedCount {get; set;}
-        }
     }
 
     private class PricingList
     {
         public IList<Pricing> Pricings { get; set; } = new List<Pricing>();
-    }
-
-    public class Schedule
-    {
-        private DateTime dateFrom = DateTime.Now;
-        [Required(ErrorMessage = "The date from field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DateFrom
-        {
-            get
-            {
-                dateFrom = DurationStart.Date + EventDurationTimeStart;
-                return dateFrom;
-            }
-            set
-            {
-                dateFrom = value;
-            }
-        }
-
-        [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeFrom { get; set; } = DateTime.Now.TimeOfDay;
-
-        private DateTime dateTo = DateTime.Now;
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
-        public DateTime DateTo
-        {
-            get
-            {
-                dateTo = EventDurationTimeUnit switch
-                {
-                    "hrs" => DateFrom.AddHours(EventDurationCount),
-                    "days" => DateFrom.AddDays(EventDurationCount),
-                    "weeks" => DateFrom.AddDays(7 * EventDurationCount),
-                    "months" => DateFrom.AddMonths(EventDurationCount),
-                    _ => DateFrom
-                };
-                return dateTo;
-            }
-            set
-            {
-                dateTo = value;
-            }
-        }
-
-        [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeTo { get; set; } = DateTime.Now.TimeOfDay;
-
-        [Required(ErrorMessage = "The recurrences field is mandatory.")]
-        public string Recurrences { get; set; } = "do-not-repeat";
-
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DurationStart { get; set; } = DateTime.Now;
-
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        [DateLessThan("DurationStart", ErrorMessage = "Invalid date range.")]
-        public DateTime DurationEnd { get; set; } = DateTime.Now;
-
-        public int DurationEvery { get; set; } = 1;
-        public string RepeatEvery { get; set; }
-
-        // monthly section fields
-        public int MonthSelection { get; set; } = 1;
-        public string MonthRepeat { get; set; } = "first";
-        public string MonthDay { get; set; } = "sunday";
-
-        [Range(1, 31)]
-        public int OnDayDate { get; set; } = 1;
-
-        [Range(1, int.MaxValue)]
-        public int EventDurationCount {get; set;} = 1;
-        public string EventDurationTimeUnit {get; set;} = "hrs";
-        public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
-        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
-        public int EventTicketLimit { get; set; }
-        public int IsLimit { get; set; } = 1;
-
-        // for date override
-        public TimeSpan TimeStart { get; set; } = DateTime.Now.TimeOfDay;
-        public TimeSpan TimeEnd { get; set; } = DateTime.Now.TimeOfDay;
-        public int TicketSold { get; set; } = 0;
-
-
-        // extra options
-        public int TotalBookedCount {get; set;}
-        public int ActivityId {get; set;}
     }
 
     public class Pricing
@@ -1702,6 +602,11 @@
 
         [Required(ErrorMessage = "The name field is mandatory.")]
         public string Name { get; set; }
+
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
+        public int EventTicketLimit { get; set; }
+        public int IsLimit { get; set; } = 1;
 
         public int TicketSold { get; set; }
 
@@ -1767,13 +672,6 @@
         public string Value { get; set; }
         public string DayString { get; set; }
         public bool Selected { get; set; }
-    }
-
-    private record DateOverride
-    {
-        public DateTime Date { get; set; }
-        public TimeSpan TimeStart { get; set; }
-        public TimeSpan TimeEnd { get; set; }
     }
 
     public class ComponentSummary
@@ -1887,96 +785,7 @@
         }
     }
 
-    private async Task OnCurrentMonthChanged(Calendar.CalendarCurrentMonth value)
-    {
-        var from = new DateTime(value.Year, value.Month, 1);
-        var to = from.LastDayOfMonth();
-
-        var dateItems = await LoadScheduleDates(from, to);
-        if(dateItems.Count() > 0)
-        {
-            viewSchedules.Clear();
-            viewSchedules.AddRange(dateItems);
-
-            seeScheduleCalendar.LoadCalendarItems();
-        }
-    }
-
-    private async Task OnCurrentMonthChangedCalendarView(Calendar.CalendarCurrentMonth value)
-    {
-        var from = new DateTime(value.Year, value.Month, 1);
-        var to = from.LastDayOfMonth();
-
-        var dateItems = await LoadScheduleDates(from, to);
-        if(dateItems.Count() > 0)
-        {
-            viewReschedules.Clear();
-            viewReschedules.AddRange(dateItems);
-            
-            rescheduleCalendar.LoadCalendarItems();
-        }
-    }
-
-    private async Task<IEnumerable<DateReschedule>> LoadScheduleDates(DateTime from, DateTime to)
-    {
-        try
-        {
-            var result = await activityApiHandler.OteScheduleDates(new Framework.ApiCommand.ApiCore.Activity.Request.OteScheduleDatesArgs {
-                ActivityId = ModelState.ActivityId,
-                From = from.ToString("yyyyMMdd"),
-                To = to.ToString("yyyyMMdd")
-            }, Token);
-            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess && result.Result.Result.Count() > 0)
-            {
-                return result.Result.Result.Select(d => new DateReschedule {
-                    Id = d.Id,
-                    NewDate = d.Date,
-                    OldDate = d.Date
-                });
-            }
-
-            return Enumerable.Empty<DateReschedule>();
-        }
-        catch (Exception ex)
-        {
-            return Enumerable.Empty<DateReschedule>();
-        }
-    }
-
-    private async Task FilterDateSchedule()
-    {
-        if(scheduleFilterValidation is not null && await scheduleFilterValidation.ValidateAll())
-        {
-            var items = await LoadScheduleDates(scheduleFilter.DateFrom, scheduleFilter.DateTo);
-            filteredSchedules.Clear();
-            foreach (var item in items)
-            {
-                if(appliedSchedules.ContainsKey(item.Id))
-                {
-                    item.NewDate = appliedSchedules[item.Id].NewDate;
-                }
-                filteredSchedules.Add(item);
-            }
-        }
-    }
-
-    private record DateReschedule
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public DateTime OldDate { get; set; }
-
-        [Required]
-        public DateTime NewDate { get; set; }
-    }
-
-    private record DateItem 
-    {
-        public DateTime Date {get; set;}
-        public DateTime DateStart {get; set;}
-        public DateTime DateEnd {get; set;}
-    }
+   
 
     private async Task CheckLimitChanged(int type)
     {
@@ -1986,14 +795,5 @@
             ModelState.EventTicketLimit = 0;
         }
         StateHasChanged();
-    }
-
-    private class ScheduleFilter 
-    {
-        [Required]
-        public DateTime DateFrom {get; set;} = DateTime.Now.FirstDayOfMonth();
-
-        [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
-        public DateTime DateTo {get; set;} = DateTime.Now.LastDayOfMonth();
     }
 }

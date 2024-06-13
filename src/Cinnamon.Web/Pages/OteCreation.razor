@@ -53,39 +53,62 @@
             <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
         </div>
         <Row>
-            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left m-d-none">
-                <OteSidebarNavigation SidebarItems="sidebarItems" />
-                <Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
-                <div>
-                    @if (sidebarImages.Count > currentIndex)
-                    {
-                        <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
-                        <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
-                    }
-                </div>
-            </Column>
+            @if (currentIndex == 0 && oteEvent is not null)
+            {
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left" Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
+                    <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
+                        <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
+                        <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
+                            <div class='empty-image-container bg-white-100'>
+                                <img src="images/ote/no-image.png" alt="gallery-icon">
+                            </div>
+                        </div>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(oteEvent.coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@oteEvent.coverPhoto.ContainerId">
+                                <input type="hidden" id="@oteEvent.coverPhoto.InputDataId" name="@oteEvent.coverPhoto.InputDataId" class="generated-input-data" />
+                                <img id="@oteEvent.coverPhoto.ImageSrcId" class="cover-image" src="@oteEvent.coverPhoto.ImageSrc" alt="supporting-photo">
+                                <div class="delete-section d-flex justify-content-between">
+                                    <p class="delete-text">Upload Cover Photo</p>
+                                    <img class="mt-2 cursor-pointer delete-icon" @onclick="oteEvent.DeleteCoverPhoto" src="images/ote/trashcan-icon-white.png" alt="delete">
+                                </div>
+                            </div>
+                        </Row>
+                    </label>
+                </Column>
+            }
+            else
+            {
+                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left m-d-none">
+                    <OteSidebarNavigation SidebarItems="sidebarItems" />
+                    @*<Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
+                    <div>
+                        @if (sidebarImages.Count > currentIndex)
+                        {
+                            <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
+                            <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
+                        }
+                    </div>*@
+                </Column>
+            }
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
                 <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
                     <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" />
                 </div>
+
                 <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
-                    <OteLocation @ref="oteLocation" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                    <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token"
+                                OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="pricingModel" />
                 </div>
                 <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                    <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token" 
-                        OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="scheduleModel" />
+                    <OteSchedule @ref="oteSchedule" OnNextClick="NextClick" Token="@token"
+                                 OnPrevClick="MovePrev" ModelState="scheduleModel" />
                 </div>
                 <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
                     <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
                 </div>
-                <div class='@(DisplayGallerySection ? "d-block" : "d-none")'>
-                    <OteGallery @ref="oteGallery" OnNextClick="NextClick" OnPrevClick="MovePrev" />
-                </div>
-                <div class='@(DisplaySummarySection ? "d-block" : "d-none")'>
-                    <OteSummary @ref="oteSummary" OnNextClick="NextClick" Token="@token" Summary="summary" OnPrevClick="MovePrev" />
-                </div>
+
                 <div class='@(DisplayPublishSection ? "d-block" : "d-none")'>
-                    <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" />
+                    <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="summary" Token="@token" />
                 </div>
             </Column>
         </Row>
@@ -101,15 +124,14 @@
     private OteEvent? oteEvent;
     private OteLocation? oteLocation;
     private OtePricing? otePricing;
-    private OteGallery? oteGallery;
-    private OteSummary? oteSummary;
+    private OteSchedule? oteSchedule;
     private OtePublish? otePublish;
     private OteOnlineEvent? oteOnline;
     private IList<OteSidebarNavigation.Item> sidebarItems = new List<OteSidebarNavigation.Item>();
     private IList<string> sidebarImages = new List<string>();
     private IList<ComponentItem<IOteComponent>> components = new List<ComponentItem<IOteComponent>>();
-    private OteSummary.ComponentSummary? summary = default;
-    private int numberOfPage = 6;
+    private OtePublish.ComponentSummary? summary = default;
+    private int numberOfPage = 4;
     private OtePricing.ComponentSummary? onlineEventSummary = default;
 
     private string token = string.Empty;
@@ -126,7 +148,8 @@
     private EventType eventType = EventType.None;
 
     private OteEvent.FormModel eventModel = new();
-    private OtePricing.Schedule scheduleModel = new();
+    private OtePricing.Pricing pricingModel = new();
+    private OteSchedule.Schedule scheduleModel = new();
     private OteOnlineEvent.ModelState onlineModel = new();
 
     protected override void OnInitialized()
@@ -175,7 +198,7 @@
     {
         get
         {
-            return Math.Round((currentIndex + 1) * 16.66);
+            return Math.Round((currentIndex + 1) * 20.0);
         }
     }
 
@@ -190,41 +213,28 @@
                 OnClick = NavigateToEvent
             });
 
-        sidebarItems.Add(new OteSidebarNavigation.Item
-            {
-                Label = "location",
-                IsActive = false,
-                OnClick = NavigateToLocation
-            });
-
         sidebarItems.Add(new OteSidebarNavigation.Item {
-            Label = "pricing & schedule",
+            Label = "tickets",
             IsActive = false,
             OnClick = NavigateToPricings
         });
 
+        sidebarItems.Add(new OteSidebarNavigation.Item
+            {
+                Label = "schedule",
+                IsActive = false,
+                OnClick = NavigateToSchedule
+            });
+
         if(eventType == EventType.Online)
         {
-            numberOfPage = 7;
+            numberOfPage = 5;
             sidebarItems.Add(new OteSidebarNavigation.Item {
                 Label = "online event page",
                 IsActive = false,
                 OnClick = NavigateToOnlineEvents
             });
         }
-
-        sidebarItems.Add(new OteSidebarNavigation.Item {
-            Label = "gallery",
-            IsActive = false,
-            OnClick = NavigateToGallery
-        });
-
-        sidebarItems.Add(new OteSidebarNavigation.Item
-            {
-                Label = "summary",
-                IsActive = false,
-                OnClick = NavigateToSummary
-            });
 
         sidebarItems.Add(new OteSidebarNavigation.Item
             {
@@ -248,7 +258,7 @@
         }
     }
 
-    private async Task NavigateToLocation(OteSidebarNavigation.Item _)
+    private async Task NavigateToPricings(OteSidebarNavigation.Item _)
     {
         if (currentIndex != 1)
         {
@@ -256,13 +266,13 @@
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                SetActiveItem(1);
+                SetActiveItem(2);
                 StateHasChanged();
             }
         }
     }
 
-    private async Task NavigateToPricings(OteSidebarNavigation.Item _)
+    private async Task NavigateToSchedule(OteSidebarNavigation.Item _)
     {
         if (currentIndex != 2)
         {
@@ -290,40 +300,9 @@
         }
     }
 
-    private async Task NavigateToGallery(OteSidebarNavigation.Item _)
-    {
-        int galleryIndex = eventType == EventType.Online ? 4 : 3;
-        if (currentIndex != galleryIndex)
-        {
-            var (valid, _) = await CurrentFieldValid();
-            SetValidItem(currentIndex, valid);
-            if (valid)
-            {
-                SetActiveItem(galleryIndex);
-                StateHasChanged();
-            }
-        }
-    }
-
-    private async Task NavigateToSummary(OteSidebarNavigation.Item _)
-    {
-        int summaryIndex = eventType == EventType.Online ? 5 : 4;
-        if (currentIndex != summaryIndex)
-        {
-            var (valid, _) = await CurrentFieldValid();
-            SetValidItem(currentIndex, valid);
-            if (valid)
-            {
-                SetActiveItem(summaryIndex);
-                summary = GetSummary();
-                StateHasChanged();
-            }
-        }
-    }
-
     private async Task NavigateToPublish(OteSidebarNavigation.Item _)
     {
-        int publishIndex = eventType == EventType.Online ? 6 : 5;
+        int publishIndex = eventType == EventType.Online ? 4 : 3;
         if (currentIndex != publishIndex)
         {
             var (valid, _) = await CurrentFieldValid();
@@ -378,16 +357,15 @@
 
         components.Add(new ComponentItem<IOteComponent>
             {
-                Component = oteLocation,
-                Name = "location",
+                Component = otePricing,
+                Name = "pricing",
                 HasNext = true,
                 HasPrevious = true
             });
-
         components.Add(new ComponentItem<IOteComponent>
             {
-                Component = otePricing,
-                Name = "pricing",
+                Component = oteSchedule,
+                Name = "schedule",
                 HasNext = true,
                 HasPrevious = true
             });
@@ -401,21 +379,6 @@
                     HasPrevious = true
                 });
         }
-        components.Add(new ComponentItem<IOteComponent>
-            {
-                Component = oteGallery,
-                Name = "gallery",
-                HasNext = true,
-                HasPrevious = true
-            });
-
-        components.Add(new ComponentItem<IOteComponent>
-            {
-                Component = oteSummary,
-                Name = "summary",
-                HasNext = true,
-                HasPrevious = true
-            });
 
         components.Add(new ComponentItem<IOteComponent>
             {
@@ -439,7 +402,6 @@
 
     private async Task NextClick()
     {
-
         var (valid, field) = await CurrentFieldValid();
         SetValidItem(currentIndex, valid);
 
@@ -447,10 +409,10 @@
         {
             if (field.HasNext)
             {
-                int locationIndex = 1;
+                int locationIndex = 0;
                 if (locationIndex == currentIndex)
                 {
-                    eventType = oteLocation?.GetData().ExperienceType switch
+                    eventType = oteEvent?.GetData().ExperienceType switch
                     {
                         1 => EventType.InPerson,
                         2 => EventType.Online,
@@ -461,7 +423,7 @@
                 }
 
                 // if in gallery section update summary object
-                int galleryIndex = components.Count - 3;
+                int galleryIndex = components.Count - 2;
                 if (galleryIndex == currentIndex)
                 {
                     summary = GetSummary();
@@ -499,9 +461,9 @@
         try
         {
             summary = GetSummary();
-            var location = summary.LocationData;
             var eventData = summary.EventData;
-            var schedule = summary.PricingData;
+            var schedule = summary.ScheduleData;
+            var pricing = summary.PricingData;
             var publishData = summary.PublishData;
             var onlineData = string.IsNullOrEmpty(summary.OnlineData.TicketInfos[0].Title) ? null : summary.OnlineData;
 
@@ -511,25 +473,25 @@
                 {
                     Activity = new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OteActivity
                     {
-                        BarangayCode             = location.BarangayCode,
-                        BarangayName             = location.BarangayName,
-                        CityName                 = location.CityName,
-                        CityNumber               = location.CityCode,
+                        BarangayCode             = eventData.BarangayCode,
+                        BarangayName             = eventData.BarangayName,
+                        CityName                 = eventData.CityName,
+                        CityNumber               = eventData.CityCode,
                         Description              = eventData.Description,
                         EventName                = eventData.Name,
                         ExperienceCreationTypeId = 3,
                         CategoryId               = eventData.Category,
-                        ExperienceTypeId         = location.ExperienceType,
-                        HouseNo                  = location.HouseNo,
-                        IsPublished              = publishData.IsPublish,
-                        PinnedLocation           = location.PinnedLocation,
-                        PostalCode               = location.PostalCode,
+                        ExperienceTypeId         = eventData.ExperienceType,
+                        HouseNo                  = eventData.HouseNo,
+                        IsPublished              = eventData.IsPublish,
+                        PinnedLocation           = eventData.PinnedLocation,
+                        PostalCode               = eventData.PostalCode,
                         Recurrence               = schedule.Recurrences,
-                        RegionCode               = location.RegionCode,
-                        RegionName               = location.RegionName,
+                        RegionCode               = eventData.RegionCode,
+                        RegionName               = eventData.RegionName,
                         ScheduleFrom             = schedule.DateFrom,
                         ScheduleTo               = schedule.DateTo,
-                        IsComingSoon             = publishData.ComingSoon,
+                        IsComingSoon             = eventData.ComingSoon,
                         DurationEnd              = schedule.DurationEnd,
                         DurationEvery            = schedule.DurationEvery,
                         DurationStart            = schedule.DurationStart,
@@ -540,9 +502,9 @@
                         WeekString               = schedule.WeekString,
                         EventDurationCount       = schedule.EventDurationCount,
                         EventDurationTimeUnit    = schedule.EventDurationTimeUnit,
-                        EventTicketLimit         = schedule.EventTicketLimit
+                        EventTicketLimit         = pricing.EventTicketLimit
                     },
-                    Pricings = schedule.ItemPrices.Select(p =>
+                    Pricings = pricing.ItemPrices.Select(p =>
                     {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing
                         {
@@ -581,9 +543,9 @@
                 throw new ApplicationException(publishOte.Message);
             }
 
-            if (oteGallery is not null)
+            if (oteEvent is not null)
             {
-                var uploadRes = await oteGallery.UploadImages(publishOte.Result.Result.ActivityId);
+                var uploadRes = await oteEvent.UploadImages(publishOte.Result.Result.ActivityId);
             }
 
             await NotificationService.Success("Success! You created an activity", "Success");
@@ -604,31 +566,31 @@
         try
         {
             summary = GetSummary();
-            var location = summary.LocationData;
-            var eventData = summary.EventData;
-            var schedule = summary.PricingData;
+            var eventData   = summary.EventData;
+            var schedule    = summary.ScheduleData;
+            var pricing     = summary.PricingData;
             var publishData = summary.PublishData;
             var onlineEvent = summary.OnlineData;
             await ProgressService.Go(null, opts => { opts.Color = Color.Warning; });
 
             var updateRes = await activityApiHandler.UpdateOte(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs {
                 Activity = new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateActivity {
-                    BarangayCode          = location.BarangayCode,
-                    BarangayName          = location.BarangayName,
+                    BarangayCode          = eventData.BarangayCode,
+                    BarangayName          = eventData.BarangayName,
                     CategoryId            = eventData.Category,
-                    CityName              = location.CityName,
-                    CityNumber            = location.CityCode,
+                    CityName              = eventData.CityName,
+                    CityNumber            = eventData.CityCode,
                     Description           = eventData.Description,
                     EventName             = eventData.Name,
-                    ExperienceTypeId      = location.ExperienceType,
-                    HouseNo               = location.HouseNo,
+                    ExperienceTypeId      = eventData.ExperienceType,
+                    HouseNo               = eventData.HouseNo,
                     Id                    = oteId,
-                    IsPublished           = publishData.IsPublish,
-                    PinnedLocation        = location.PinnedLocation,
-                    PostalCode            = location.PostalCode,
-                    IsComingSoon          = publishData.ComingSoon,
-                    RegionCode            = location.RegionCode,
-                    RegionName            = location.RegionName,
+                    IsPublished           = eventData.IsPublish,
+                    PinnedLocation        = eventData.PinnedLocation,
+                    PostalCode            = eventData.PostalCode,
+                    IsComingSoon          = eventData.ComingSoon,
+                    RegionCode            = eventData.RegionCode,
+                    RegionName            = eventData.RegionName,
                     ScheduleFrom          = schedule.DateFrom,
                     ScheduleTo            = schedule.DateTo,
                     Recurrence            = schedule.Recurrences,
@@ -642,26 +604,26 @@
                     WeekString            = schedule.WeekString,
                     EventDurationCount    = schedule.EventDurationCount,
                     EventDurationTimeUnit = schedule.EventDurationTimeUnit,
-                    EventTicketLimit      = schedule.EventTicketLimit
+                    EventTicketLimit      = pricing.EventTicketLimit
                 },
-                Pricings = schedule.ItemPrices.Select(p => {
+                Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
-                        Description = p.Description,
-                        Id = p.Id,
+                        Description  = p.Description,
+                        Id           = p.Id,
                         IsAbsorbFees = p.AbsorbFees,
-                        MaxSlots = p.MaxSlots ?? 0,
-                        Price = p.Price ?? 0m,
-                        Name = p.Name
+                        MaxSlots     = p.MaxSlots ?? 0,
+                        Price        = p.Price ?? 0m,
+                        Name         = p.Name
                     };
                 }),
                 DateOverrides = schedule.DateOverrides.Select(d =>  {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.DateOverride {
-                        Date = d.Date,
-                        TimeEnd = d.TimeEnd,
+                        Date      = d.Date,
+                        TimeEnd   = d.TimeEnd,
                         TimeStart = d.TimeStart
                     };
                 }),
-                OnlineEvents = oteLocation.GetData().ExperienceType == 2 ? onlineEvent.TicketInfos.Select(s => {
+                OnlineEvents = oteEvent.GetData().ExperienceType == 2 ? onlineEvent.TicketInfos.Select(s => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdateOnlineEvent {
                         Id                        = s.Id,
                         Title                     = s.Title,
@@ -684,9 +646,9 @@
                 throw new ApplicationException(updateRes.Message);
             }
 
-            if (oteGallery is not null)
+            if (oteEvent is not null)
             {
-                var uploadRes = await oteGallery.UploadImages(oteId);
+                var uploadRes = await oteEvent.UploadImages(oteId);
             }
 
             await NotificationService.Success("Success! You updated an activity", "Success");
@@ -779,24 +741,25 @@
                 }).ToList()
         });
 
-        await oteLocation?.SetState(new OteLocation.ModelData {
-            BarangayCode   = ote.BarangayCode,
-            BarangayName   = ote.BarangayName,
-            CityCode       = ote.CityNumber,
-            CityName       = ote.CityName,
-            ExperienceType = ote.ExperienceTypeId,
-            HouseNo        = ote.HouseNo,
-            PinnedLocation = ote.PinnedLocation,
-            PostalCode     = ote.PostalCode,
-            RegionCode     = ote.RegionCode,
-            RegionName     = ote.RegionName
-        });
+        //await oteLocation?.SetState(new OteLocation.ModelData {
+        //    BarangayCode   = ote.BarangayCode,
+        //    BarangayName   = ote.BarangayName,
+        //    CityCode       = ote.CityNumber,
+        //    CityName       = ote.CityName,
+        //    ExperienceType = ote.ExperienceTypeId,
+        //    HouseNo        = ote.HouseNo,
+        //    PinnedLocation = ote.PinnedLocation,
+        //    PostalCode     = ote.PostalCode,
+        //    RegionCode     = ote.RegionCode,
+        //    RegionName     = ote.RegionName
+        //});
 
         // set ote schedules state and parameters
+        //Pricing
         var options = ote.OteSchedule.ExtraOptions.Split("|");
+        pricingModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
+        pricingModel.IsLimit          = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
         await otePricing?.SetState(new OtePricing.ModelData {
-            Recurrences           = ote.Recurrences,
-            WeekString            = ote.OteSchedule.SelectedDays,
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings
                 .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);
@@ -810,30 +773,35 @@
                     TicketSold = totalTicketsSold
                 };
             }).ToList(),
-            BookedDates = scheduleDatesRes.Result.Result.Select(s => new OtePricing.ModelData.BookedDate {
-                Date = s.Date,
-                Id = s.Id,
-                NewDate = s.Date
-            }).ToList()
         });
+
+        //Schedule
+        await oteSchedule?.SetState(new OteSchedule.ModelData
+            {
+                Recurrences = ote.Recurrences,
+                WeekString = ote.OteSchedule.SelectedDays,
+                BookedDates = scheduleDatesRes.Result.Result.Select(s => new OteSchedule.ModelData.BookedDate
+                {
+                    Date = s.Date,
+                    Id = s.Id,
+                    NewDate = s.Date
+                }).ToList()
+            });
         scheduleModel.EventDurationTimeStart = ote.ScheduleFrom.TimeOfDay;
-        scheduleModel.DateFrom = ote.ScheduleFrom;
-        scheduleModel.DateTo = ote.ScheduleTo;
-        scheduleModel.TimeFrom = scheduleModel.DateFrom.TimeOfDay;
-        scheduleModel.TimeTo = scheduleModel.DateTo.TimeOfDay;
-        scheduleModel.DurationEnd = (ote.OteSchedule.RecurrenceDateEnd == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateEnd;
-        scheduleModel.DurationStart = (ote.OteSchedule.RecurrenceDateStart == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateStart;
-        scheduleModel.DurationEvery = ote.OteSchedule.RepeatEvery;
-        scheduleModel.MonthDay = options.Length >= 4 ? options[3] : "sunday";
-        scheduleModel.MonthRepeat = options.Length >= 3 ? options[2] : "first";
-        scheduleModel.MonthSelection = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1;
-        scheduleModel.OnDayDate = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
-        scheduleModel.EventDurationCount = ote.OteSchedule.EventDurationCount;
-        scheduleModel.EventDurationTimeUnit = ote.OteSchedule.EventDurationTimeUnit;
-        scheduleModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
-        scheduleModel.IsLimit = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
-        scheduleModel.TotalBookedCount = scheduleBookedRes.Result.Result.BookedCount;
-        scheduleModel.ActivityId = ote.Id;
+        scheduleModel.DateFrom               = ote.ScheduleFrom;
+        scheduleModel.DateTo                 = ote.ScheduleTo;
+        scheduleModel.TimeFrom               = scheduleModel.DateFrom.TimeOfDay;
+        scheduleModel.TimeTo                 = scheduleModel.DateTo.TimeOfDay;
+        scheduleModel.DurationEnd            = (ote.OteSchedule.RecurrenceDateEnd == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateEnd;
+        scheduleModel.DurationStart          = (ote.OteSchedule.RecurrenceDateStart == DateTime.MinValue) ? DateTime.Now : ote.OteSchedule.RecurrenceDateStart;
+        scheduleModel.DurationEvery          = ote.OteSchedule.RepeatEvery;
+        scheduleModel.MonthDay               = options.Length >= 4 ? options[3] : "sunday";
+        scheduleModel.MonthRepeat            = options.Length >= 3 ? options[2] : "first";
+        scheduleModel.MonthSelection         = options.Length >= 1 && int.TryParse(options[0], out int monthNum) ? monthNum : 1;
+        scheduleModel.OnDayDate              = options.Length >= 2 && int.TryParse(options[1], out int dayNum) ? dayNum  : 1;
+        scheduleModel.EventDurationCount     = ote.OteSchedule.EventDurationCount;
+        scheduleModel.EventDurationTimeUnit  = ote.OteSchedule.EventDurationTimeUnit;
+
         if(ote.ExperienceTypeId == 2)
         {
             eventType = EventType.Online;
@@ -855,32 +823,35 @@
                 });
             }
 
-            numberOfPage = ote.ExperienceTypeId == 2 ? 7 : 6;
+            numberOfPage = ote.ExperienceTypeId == 2 ? 5 : 4;
         }
 
-        oteGallery?.SetState(ote.Images.Select(i => {
-            return new OteGallery.ImageItem {
-                Id = i.Id,
-                ImageSrc = i.ImageSrc,
-                Order = i.Order
-            };
-        }).ToList());
+        //oteGallery?.SetState(ote.Images.Select(i => {
+        //    return new OteGallery.ImageItem {
+        //        Id = i.Id,
+        //        ImageSrc = i.ImageSrc,
+        //        Order = i.Order
+        //    };
+        //}).ToList());
 
-        await oteSummary?.SetState(scheduleDatesRes.Result.Result.Select(
-            d => new OteSummary.BookedDate {
+        //await oteSummary?.SetState(scheduleDatesRes.Result.Result.Select(
+        //    d => new OteSummary.BookedDate {
+        //        Date = d.Date,
+        //        Id = d.Id,
+        //        NewDate = d.Date
+        //    }),
+        //    oteRes.Result.Result.Id
+        //);
+
+        await otePublish?.SetState(scheduleDatesRes.Result.Result.Select(
+            d => new OtePublish.BookedDate {
                 Date = d.Date,
                 Id = d.Id,
                 NewDate = d.Date
             }),
-            oteRes.Result.Result.Id
+            oteRes.Result.Result.Id,
+            true
         );
-
-        await otePublish?.SetState(new OtePublish.ModelData
-            {
-                AcceptTerms = true,
-                ComingSoon = ote.IsComingSoon,
-                IsPublish = ote.IsPublished
-            });
 
         LoadSidebarItems();
         LoadImages();
@@ -888,15 +859,15 @@
         StateHasChanged();
     }
 
-    private OteSummary.ComponentSummary GetSummary()
+    private OtePublish.ComponentSummary GetSummary()
     {
-        return new OteSummary.ComponentSummary
+        return new OtePublish.ComponentSummary
             {
-                EventData = oteEvent.GetData(),
-                LocationData = oteLocation.GetData(),
-                PricingData = otePricing.GetData(),
-                PublishData = otePublish.GetData(),
-                OnlineData = oteOnline.GetData()
+                EventData    = oteEvent.GetData(),
+                ScheduleData = oteSchedule.GetData(),
+                PricingData  = otePricing.GetData(),
+                PublishData  = otePublish.GetData(),
+                OnlineData   = oteOnline.GetData()
             };
     }
 
@@ -926,7 +897,7 @@
         //var (valid, field) = await CurrentFieldValid();
         if(currentIndex > 0)
         {
-            if (summaryIndex == 5 && currentIndex == 3)
+            if (currentIndex == 3)
             {
                 onlineEventSummary = GetOnlineSummary();
             }
@@ -959,27 +930,12 @@
         }
     }
 
-    private bool DisplayGallerySection 
-    {
-        get 
-        {
-            return currentIndex == (eventType == EventType.Online ?  4 : 3);
-        }
-    }
-
-    private bool DisplaySummarySection 
-    {
-        get 
-        {
-            return currentIndex == (eventType == EventType.Online ?  5 : 4);
-        }
-    }
 
     private bool DisplayPublishSection 
     {
         get 
         {
-            return currentIndex == (eventType == EventType.Online ?  6 : 5);
+            return currentIndex == (eventType == EventType.Online ?  4 : 3);
         }
     }
 

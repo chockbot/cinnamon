@@ -145,7 +145,7 @@
         </div>
         <Divider />
         <Row>
-            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+           @* <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                 <div class="mt-2">
                     <label class="d-flex align-items-center mb-2">
                         <p class="font-16 color-grey-100 mb-0 text-capitalize">cover photo</p>
@@ -169,7 +169,7 @@
                         </Row>
                     </label>
                 </div>
-            </Column>
+            </Column>*@
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                 <div class="mt-2">
                     <label class="d-flex align-items-center mb-2">
@@ -233,15 +233,15 @@
     [Parameter]
     public FormModel ModelState {get; set;} = new();
 
-    private Validations? formValidation;
-    private Validation? eventNameValidation;
-    private Validation? eventDescriptionValidation;
-    private bool showErrors = false;
-    private IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
-    private IDictionary<string, Region> regions = new Dictionary<string, Region>();
-    private IDictionary<string, City> cities = new Dictionary<string, City>();
-    private ImageCropper? imageCropper;
-    private ImageItem coverPhoto = new ImageItem
+    public Validations? formValidation;
+    public Validation? eventNameValidation;
+    public Validation? eventDescriptionValidation;
+    public bool showErrors = false;
+    public IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
+    public IDictionary<string, Region> regions = new Dictionary<string, Region>();
+    public IDictionary<string, City> cities = new Dictionary<string, City>();
+    public ImageCropper? imageCropper;
+    public ImageItem coverPhoto = new ImageItem
         {
             ContainerId = "cover-photo-container",
             Display = false,
@@ -251,7 +251,7 @@
             FileId = "cover-photo-input-file",
             Order = 0
         };
-    private ImageItem setplanPhoto = new ImageItem
+    public ImageItem setplanPhoto = new ImageItem
         {
             ContainerId = "setplan-photo-container",
             Display = false,
@@ -261,10 +261,10 @@
             FileId = "setplan-photo-input-file",
             Order = 100
         };
-    private IList<ImageItem> imageItems = new List<ImageItem>();
-    private string errorMessage = string.Empty;
-    private IList<int> deletedIds = new List<int>();
-    private bool isNextClick = false;
+    public IList<ImageItem> imageItems = new List<ImageItem>();
+    public string errorMessage = string.Empty;
+    public IList<int> deletedIds = new List<int>();
+    public bool isNextClick = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -855,7 +855,7 @@
         public int Order { get; set; }
     }
 
-    private async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
+    public async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
     {
         if (imageCropper is not null)
         {
@@ -907,14 +907,14 @@
                         Order = coverPhoto.Order
                     });
             }
-            selectors.AddRange(imageItems.Select(i =>
-            {
-                return new ImageSelector
-                    {
-                        Selector = $"#{i.InputDataId}",
-                        Order = i.Order
-                    };
-            }));
+            //selectors.AddRange(imageItems.Select(i =>
+            //{
+            //    return new ImageSelector
+            //        {
+            //            Selector = $"#{i.InputDataId}",
+            //            Order = i.Order
+            //        };
+            //}));
             if (setplanPhoto.Display)
             {
                 selectors.Add(new ImageSelector
@@ -935,7 +935,7 @@
         }
     }
 
-    private Task DeleteCoverPhoto()
+    public Task DeleteCoverPhoto()
     {
         coverPhoto.Display = false;
         deletedIds.Add(coverPhoto.Id);
