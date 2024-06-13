@@ -25,13 +25,14 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
             {
                 if(student.DirectStudentInfo.Id == 0)
                 {
-                        var studentInfo = new DirectStudentInfo {
+                    var studentInfo = new DirectStudentInfo {
                         BirthMonth = student.DirectStudentInfo.BirthMonth,
                         BirthYear = student.DirectStudentInfo.BirthYear,
                         Gender = student.DirectStudentInfo.Gender,
                         Name = student.DirectStudentInfo.Name,
                         ProviderId = student.DirectStudentInfo.ProviderId,
-                        Id = student.DirectStudentInfo.Id
+                        Id = student.DirectStudentInfo.Id,
+                        Email = student.DirectStudentInfo.Email
                     };
 
                     var studentSession = new DirectStudentSession {
@@ -51,6 +52,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     var studentPayment = new DirectStudentPayment {
                         Amount = student.DirectStudentPayment.Amount,
                         DirectStudentSession = studentSession,
+                        PaymentDate = student.DirectStudentPayment.PaymentDate
                     };
 
                     applicationContext.DirectStudentInfos.Add(studentInfo);
@@ -76,6 +78,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     var studentPayment = new DirectStudentPayment {
                         Amount = student.DirectStudentPayment.Amount,
                         DirectStudentSession = studentSession,
+                        PaymentDate = student.DirectStudentPayment.PaymentDate
                     };
 
                     applicationContext.DirectStudentSessions.Add(studentSession);
@@ -112,6 +115,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                 student.BirthYear = directStudent.BirthYear == 0 ? student.BirthYear : directStudent.BirthYear;
                 student.Gender = directStudent.Gender ?? student.Gender;
                 student.Name = directStudent.Name ?? student.Name;
+                student.Email = directStudent.Email ?? student.Email;
             }
 
             if(sessions is not null)
@@ -145,6 +149,7 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                             }
 
                             studentPayment.Amount = session.DirectStudentPayment.Amount == 0 ? studentPayment.Amount : session.DirectStudentPayment.Amount;
+                            studentPayment.PaymentDate = session.DirectStudentPayment.PaymentDate == DateTime.MinValue ? studentPayment.PaymentDate : session.DirectStudentPayment.PaymentDate;
                         }
 
                         sessionToUpdate.ActivityId = session.ActivityId == 0 ? sessionToUpdate.ActivityId : session.ActivityId;
@@ -200,12 +205,14 @@ public class DirectStudentInfoEntity : GenericEntity<DirectStudentInfo>, IDirect
                     Gender = student.Gender,
                     Id = student.Id,
                     Name = student.Name,
-                    ProviderId = student.ProviderId
+                    ProviderId = student.ProviderId,
+                    Email = student.Email
                 },
                 DirectStudentPayment = new DirectStudentPaymentDTO {
                     Amount = studentPayment.Amount,
                     DirectStudentSessionId = studentPayment.DirectStudentSessionId,
-                    Id = studentPayment.Id
+                    Id = studentPayment.Id,
+                    PaymentDate = studentPayment.PaymentDate
                 },
                 DirectStudentSession = new DirectStudentSessionDTO {
                     ActivityId = studentSession.ActivityId,
