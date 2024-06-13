@@ -131,7 +131,7 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
             var query = "select ds.\"Id\" \"SessionId\", ds.\"DirectStudentInfoId\", ds.\"ActivityId\", ds.\"ScheduleId\", " +
                             "ds.\"Name\", ds.\"StudentNo\", ds.\"NumberOfSessions\", ds.\"SessionsAttended\", ds.\"Remarks\", " +
                             "ds.\"Status\", ds.\"ExpirationDateStart\", ds.\"ExpirationDateEnd\", dp.\"Id\" \"PaymentId\", " +
-                            "dp.\"Amount\" " +
+                            "dp.\"Amount\", dp.\"PaymentDate\" " +
                         "from public.\"DirectStudentSessions\" ds " +
                         "join public.\"DirectStudentPayments\" dp " +
                             "on ds.\"Id\" = dp.\"DirectStudentSessionId\" " +
@@ -169,7 +169,8 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
                             StudentNo = item["StudentNo"].ToString() ?? string.Empty,
                             DirectStudentPayment = new DirectStudentPayment {
                                 Amount = Convert.ToDecimal(item["Amount"]),
-                                Id = Convert.ToInt32(item["PaymentId"])
+                                Id = Convert.ToInt32(item["PaymentId"]),
+                                PaymentDate = Convert.ToDateTime(item["PaymentDate"])
                             }
                         }));
                     }

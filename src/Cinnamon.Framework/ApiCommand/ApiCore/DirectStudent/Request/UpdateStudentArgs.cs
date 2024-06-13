@@ -16,7 +16,8 @@ public class UpdateStudentArgs
         public string? Name {get; set;}
         public string? Gender {get; set;}
         public string? BirthMonth {get; set;}
-        public int? BirthYear {get; set;}       
+        public int? BirthYear {get; set;}
+        public string? Email {get; set;}
     }
 
     public class UpdateDirectStudentSession 
@@ -39,6 +40,7 @@ public class UpdateStudentArgs
     public class UpdateDirectStudentPayment 
     {
         public decimal? Amount {get; set;}
+        public DateTime? PaymentDate {get; set;}
     }
 
 }

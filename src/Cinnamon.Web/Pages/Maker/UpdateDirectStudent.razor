@@ -35,7 +35,7 @@
         <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">student information</p>
 
         <Validations @ref="studentValidation" Mode="ValidationMode.Manual" Model="student">
-            <Row class="flex-wrap">
+            <Row class="flex-wrap mb-3">
                 <Field class="field-name mb-3">
                     <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Name</FieldLabel>
                     <FieldBody>
@@ -46,6 +46,18 @@
                     </FieldBody>
                 </Field>
 
+                <Field class="field-name">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Parent Email</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <TextEdit @bind-Text="student.Email" class="color-black-100 font-16 m-font-12" 
+                                Size="Size.Default" Placeholder="Optional email" />
+                        </Validation>
+                    </FieldBody>
+                </Field>
+            </Row>
+
+            <Row class="flex-wrap">
                 <Field class="field-gender mb-3">
                     <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Gender</FieldLabel>
                     <FieldBody>
@@ -171,6 +183,14 @@
                                                     </Validation>
                                                 </FieldBody>
                                             </Field>
+
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment Date</FieldLabel>
+                                                <FieldBody>
+                                                    <DateEdit @bind-Date="item.PaymentDate" TValue="DateTime"  
+                                                        Size="Size.Small" class="color-black-100 font-16 m-font-12"  />
+                                                </FieldBody>
+                                            </Field>
                                         </div>
                                     </div>
                                 </div>   
@@ -244,6 +264,14 @@
                                             <FieldBody>
                                                 <NumericPicker @bind-Value="item.Amount" ReadOnly TValue="decimal" ShowStepButtons="false" Decimals="0" 
                                                         Placeholder="Amount" Size="Size.Small" class="color-black-100 font-16 m-font-12" Min="0" />
+                                            </FieldBody>
+                                        </Field>
+
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment Date</FieldLabel>
+                                            <FieldBody>
+                                                <DateEdit @bind-Date="item.PaymentDate" TValue="DateTime" ReadOnly 
+                                                    Size="Size.Small" class="color-black-100 font-16 m-font-12"  />
                                             </FieldBody>
                                         </Field>
                                     </div>
@@ -454,7 +482,8 @@
                     BirthYear = student.BirthYear,
                     Gender = student.Gender,
                     Name = student.Name,
-                    StudentId = student.Id
+                    StudentId = student.Id,
+                    Email = student.Email
                 },
                 DirectStudentSessions = ongoingActivities.Select(s => new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
                     ActivityId = s.ActivityId,
@@ -462,7 +491,8 @@
                     Name = student.Name,
                     ScheduleId = s.ScheduleId,
                     StudentPayment = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentPayment {
-                        Amount = s.Amount
+                        Amount = s.Amount,
+                        PaymentDate = s.PaymentDate
                     },
                     Period = s.PeriodConfirmation.SelectedPeriod
                 })
@@ -505,7 +535,8 @@
             BirthYear = studentToUpdate.DirectStudentInfo.BirthYear,
             Gender = studentToUpdate.DirectStudentInfo.Gender,
             Name = studentToUpdate.DirectStudentInfo.Name,
-            Id = studentToUpdate.DirectStudentInfo.Id
+            Id = studentToUpdate.DirectStudentInfo.Id,
+            Email = studentToUpdate.DirectStudentInfo.Email
         };
     }
 
@@ -527,7 +558,8 @@
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
                 Amount = s.DirectStudentPayment.Amount,
                 ScheduleId = s.ScheduleId,
-                Id = s.Id
+                Id = s.Id,
+                PaymentDate = s.DirectStudentPayment.PaymentDate
             }));
         }
     }
@@ -545,7 +577,8 @@
                 ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
                 Amount = s.DirectStudentPayment.Amount,
                 ScheduleId = s.ScheduleId,
-                Id = s.Id
+                Id = s.Id,
+                PaymentDate = s.DirectStudentPayment.PaymentDate
             }));
         }
     }
@@ -657,6 +690,9 @@
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
+        [EmailAddress(ErrorMessage = "Provide valid email address")]
+        public string? Email {get; set;}
+
         [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; }
 
@@ -679,6 +715,8 @@
 
         [Range(1, int.MaxValue, ErrorMessage = "The payment field is required.")]
         public decimal Amount {get; set;}
+
+        public DateTime PaymentDate {get; set;}
 
 
         // extra fields

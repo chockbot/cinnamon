@@ -11,4 +11,5 @@ public class DirectStudentInfoDTO
     public int Age {get; set;}
     public string Remarks { get; set; }
     public int SessionAttended { get; set; }
+    public string? Email {get; set;}
 }

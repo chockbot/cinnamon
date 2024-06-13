@@ -774,7 +774,8 @@ public class DashboardController : ControllerBase
                             BirthYear  = s.CreateDirectStudentInfo.BirthYear,
                             Gender     = s.CreateDirectStudentInfo.Gender,
                             Name       = s.CreateDirectStudentInfo.Name,
-                            Id         = s.CreateDirectStudentInfo.Id
+                            Id         = s.CreateDirectStudentInfo.Id,
+                            Email      = s.CreateDirectStudentInfo.Email
                         },
                         CreateDirectStudentSession = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentSession
                         {
@@ -788,6 +789,7 @@ public class DashboardController : ControllerBase
                         CreateDirectStudentPayment = new Services.DashboardService.Interactors.CreateDirectStudentsArgs.CreateDirectStudentPayment
                         {
                             Amount = s.CreateDirectStudentPayment.Amount,
+                            PaymentDate = s.CreateDirectStudentPayment.PaymentDate
                         }
                     };
                 }).ToList()
