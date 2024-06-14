@@ -314,7 +314,7 @@
     <!-- End of Search Bar -->
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
-    @if (!IsSearchPerformed)
+    @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
     <div class="container">
         <div class="sub-header">
@@ -339,13 +339,13 @@
     }
 
     <!-- End of New Announcement Like Cards -->
-        @if(!IsSearchPerformed)
+        @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
     <div class="container">
     <div class="upcoming-events">
         <div class="upcoming-events-container">
             <div class="upcoming-events-info">
-                <h1 class="upcoming-events-info-text">Upcoming Events</h1>
+                <h1 class="upcoming-events-info-text-main">Upcoming Events</h1>
             </div>
         </div>
     </div>
@@ -356,7 +356,7 @@
         <div class="upcoming-events-container">
             <div class="upcoming-events-info">
                 <p class="upcoming-events-info-text">Search Results</p>
-                <h1 class="upcoming-events-info-text">"@searchValue"</h1>
+                <h1 class="upcoming-events-info-text-search">"@searchValue"</h1>
             </div>
         </div>
     </div>
@@ -384,7 +384,7 @@
                         <!-- END OF DO NOT TOUCH -->
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
                                         <p class="static-category-title">All</p>
                                     </a>
@@ -393,7 +393,7 @@
 
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
                                         <p class="static-category-title">Shows & Concerts</p>
                                     </a>
@@ -402,7 +402,7 @@
 
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
                                         <p class="static-category-title">Sports</p>
                                     </a>
@@ -411,7 +411,7 @@
 
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
                                         <p class="static-category-title">Tours & Attraction</p>
                                     </a>
@@ -420,7 +420,7 @@
 
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
                                         <p class="static-category-title">Corporate</p>
                                     </a>
