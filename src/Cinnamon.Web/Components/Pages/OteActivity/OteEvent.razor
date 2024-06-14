@@ -365,6 +365,28 @@
         return false;
     }
 
+    public async Task<bool> ImageValid()
+    {
+        //Gallery
+        var isHaveCoverPhoto = coverPhoto.Display;
+        var message = string.Empty;
+        var isAllFieldsValid = true;
+        if (!isHaveCoverPhoto)
+        {
+            isAllFieldsValid = false;
+            message += "<li>Required cover photo</li>";
+        }
+        errorMessage = message;
+        StateHasChanged();
+        await Task.Delay(300); // add delay to populate is-invalid class
+        if (!isAllFieldsValid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            return false;
+        }
+        return true;
+    }
+
     private string CategoryClass
     {
         get
@@ -956,18 +978,21 @@
     {
         if (val == 3)
         {
-            ModelState.Publish = false;
+            ModelState.Publish    = false;
             ModelState.ComingSoon = false;
+            ModelState.IsPrivate  = true;
         }
         else if (val == 2)
         {
-            ModelState.Publish = true;
+            ModelState.Publish    = true;
             ModelState.ComingSoon = false;
+            ModelState.IsPublic   = true;
         }
         else
         {
-            ModelState.Publish = true;
-            ModelState.ComingSoon = true;
+            ModelState.Publish      = true;
+            ModelState.ComingSoon   = true;
+            ModelState.IsComingSoon = true;
         }
     }
 }
