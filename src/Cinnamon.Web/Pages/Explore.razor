@@ -3,7 +3,7 @@
 @page "/explore/category/{filterSearch}"
 @page "/confirm-email"
 @page "/facebook-login"
-@layout LandingLayout
+@layout EmptyLayout
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components
@@ -39,40 +39,31 @@
 </SeoMeta>
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-@*
     <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
         <div class="app-name col-lg-2 col-md-2">
             <a href="" class="app-name">@Resources.App.appName</a>
         </div>
-        <!--Search Location and Experience-->
-        <div class="col-lg-6 d-flex justify-content-end col-md-8 d-flex justify-content-center col-sm-10 d-flex flex-row justify-content-start col-11 d-flex flex-row justify-content-start">
-            <div class="home-logo">
-                <a class="button" href="#">
-                    <img src="images/Home.png" class="img-icon-home">
-                </a>
-            </div>
-        </div>
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end dropdown-section">
-            @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
-            {
-                <div class="become">
-                    <a @onclick="NavigateToDashboard" class="btn border-0">Go to Dashboard</a>
-                </div>
-            }
-            else
-            {
-                <div class="become">
-                    <a href="/Onboarding" class="btn border-0">Become an Activity Provider</a>
-                </div>
-            }
             <!-- Desktop -->
+                        <p class="cinnamon-link">Activities</p>
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                        <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
+                        @if (!isLogin)
+                        {
+                        <button class="btn-login" @onclick="() => signinModal.Show()">
+                            Login | Signup
+                        </button>
+                        }
+            @if (AuthState != null && AuthState.Identity.IsAuthenticated)
+            {
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
-                        <img src="images/menu.png">
+                        <img src="images/explore-page-images/explore-profile-picture.png">
                         @if (CustomerModel.CustomerProfile != null)
                         {
                             @if (newMessagesCount != 0)
@@ -176,11 +167,17 @@
                     }
                 </ul>
             </div>
+            }
             <!-- Mobile -->
             <div class="dropdown-mobile">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
+                        @if (AuthState != null && AuthState.Identity.IsAuthenticated)
+                        {
+                        <img src="images/explore-page-images/explore-profile-picture.png">
+                        } else {
                         <img src="images/menu.png">
+                        }
                         @if (CustomerModel.CustomerProfile != null)
                         {
                             @if (newMessagesCount != 0)
@@ -291,7 +288,7 @@
                 </ul>
             </div>
         </div>
-    </div> *@
+    </div> 
     <!-- Header -->
     <div class="header">
         <div class="header-container">
@@ -306,7 +303,7 @@
         <div class="input-group p-1">
             <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
                 <div class="input-group-append border-0">
-                    <button type="button" @onclick="Search" class="btn btn-link text-success">
+                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
                         <img src="images/explore-page-images/search-icon-explore.png" alt="search-icon" />
                     </button>
                 </div>
@@ -330,7 +327,7 @@
                     </div>
                     <div class="event-organizer-join">
                         <p class="event-organizer-join-desktop-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
-                        <div class="event-organizer-join-sub-container">
+                        <div class="event-organizer-join-sub-container" @onclick="NavigateToDashboard">
                         <p class="event-organizer-join-title">Join Our Team!</p>
                         <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
                         </div>
@@ -1549,6 +1546,7 @@
     public string searchValue = string.Empty;
     public int? experienceCategoryId = null;
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
+    private bool isLogin { get; set; } = false;
 
     public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
@@ -1769,6 +1767,9 @@
 
         if (user != null && user.Identity.IsAuthenticated)
         {
+
+            isLogin = true;
+
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {

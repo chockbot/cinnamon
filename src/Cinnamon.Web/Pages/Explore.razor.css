@@ -4,11 +4,59 @@
 
 }
 
+/*test area */
+.cinnamon-link {
+  font-family: Nunito;
+  font-size: 20px;
+  font-weight: 700;
+  color: #343D4C;
+  margin-top: 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .25s;
+}
+  .cinnamon-link:active {
+      transform: scale(.94);
+  }
+
+  .cinnamon-link:hover {
+      color: #FFA942;
+  }
+
+
+.dropdown-section {
+  width: fit-content;
+  gap: 10px;
+}
+.btn-login {
+  border: 2px solid #FFA942;
+  width: 195px;
+  height: 51px;
+  border-radius: 40px;
+  color: #FFA942;
+  font-family: Nunito;
+  font-size: 20px;
+  font-weight: 700;
+  background-color: transparent;
+  margin-top: 0.5rem;
+  transition: transform .25s;
+}
+
+  .btn-login:hover {
+      color: #FFFFFF;
+      background-color: #FFA942;
+  }
+  .btn-login:active {
+      transform: scale(.94);
+  }
+
+
 .input-group {
   border-radius: 16px;
   background: #FFF;
   box-shadow: 0px 0px 47px 0px #D9D9D9;
   width: 715px;
+  z-index: 0;
 }
 
 .card-img.img-fluid {
@@ -137,6 +185,11 @@
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    transition: color 0.4s ease;
+  }
+
+  .static-category-title:hover {
+    color: #FFA942;
   }
 
   .static-category-button {
@@ -730,7 +783,7 @@ button:focus {
 .top-row {
   background-color: white;
   border-bottom: 1px solid var(--lineColor);
-  justify-content: flex-start;
+  justify-content: space-between;
   aspect-ratio: 1600/74;
   width: 100%;
   display: flex;
@@ -750,7 +803,7 @@ button:focus {
 .app-name {
   color: var(--primary);
   font-family: "Backline";
-  font-size: 1.6vw;
+  font-size: 7vw;
   text-decoration: none;
 }
 
@@ -781,7 +834,6 @@ a.dropdown-item {
 
 .menu img {
   aspect-ratio: 1;
-  width: 25%;
 }
 
 .home-logo {
@@ -1212,6 +1264,17 @@ img.img-icon {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 425px) {
+  .btn-login {
+    display: none;
+  }
+
+  .cinnamon-link {
+    display: none;
+  }
+
+  .app-name {
+    padding-left: 10px;
+  }
 
   .header-container {
     background: url('images/explore-page-images/header-image-background-mobile.png') 100% / cover no-repeat;
@@ -1396,19 +1459,10 @@ img.img-icon {
     width: 90%;
   }
 
-  .app-name {
-    display: none;
-  }
-
   .home-logo {
     display: flex;
     margin-top: 0.5rem !important;
     margin-left: 6%;
-  }
-  .menu img {
-    width: 1.7rem;
-    margin-right: 10px;
-    margin-top: 5px;
   }
 
   .home-logo.img-icon-home {
@@ -1442,9 +1496,7 @@ img.img-icon {
   }
 
   .menu img {
-    width: 1.5rem;
-    margin-left: -30px;
-    margin-top: 5px;
+    width: 25px;
   }
 
   .px-4 {
@@ -1764,6 +1816,13 @@ img.img-icon {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 425px) and (max-width: 766px) {
+  .btn-login {
+    display: none;
+  }
+
+  .cinnamon-link {
+    display: none;
+  }
 
   .header-container {
     background: url('images/explore-page-images/header-image-background-mobile.png') 100% / cover no-repeat;
@@ -1922,10 +1981,6 @@ img.img-icon {
     width: 78%;
   }
 
-  .app-name {
-    display: none;
-  }
-
   .home-logo {
     display: flex;
     margin-top: 0.5rem !important;
@@ -1933,9 +1988,8 @@ img.img-icon {
   }
 
   .menu img {
-    width: 1.5rem;
-    margin-right: 10px;
-    margin-top: 5px;
+    width: 25px;
+
   }
 
   .home-logo.img-icon-home {
@@ -1983,6 +2037,10 @@ img.img-icon {
 
   .top-row a {
     margin-left: 0;
+  }
+
+  .app-name {
+    padding-left: 10px;
   }
 
   .filter {
@@ -2258,7 +2316,14 @@ img.img-icon {
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 767px) and (max-width: 1024px) {
+@media (min-width: 767px) and (max-width: 1023px) {
+  .btn-login {
+    display: none;
+  }
+
+  .cinnamon-link {
+    display: none;
+}
 
   .header-container {
     background: url('images/explore-page-images/header-image-background-tablet.png') 100% / cover no-repeat;
@@ -2271,6 +2336,7 @@ img.img-icon {
   .event-organizer-join-sub-container {
     display: flex;
     flex-direction: column;
+    cursor: pointer;
   }
 
   .event-organizer-join-title {
@@ -2439,7 +2505,7 @@ img.img-icon {
   .top-row {
     background-color: white;
     border-bottom: 1px solid var(--lineColor);
-    justify-content: flex-start;
+    justify-content: space-between;
     aspect-ratio: 1600/74;
     width: 100%;
     display: flex;
@@ -2496,13 +2562,13 @@ img.img-icon {
   .dropdown {
     font-family: "Nunito";
     font-size: 0.5vw;
+    display: none;
   }
 
   .dropdown-mobile {
     font-family: "Nunito";
     font-size: 0.5vw;
-    display: none;
-  }
+    }
 
   a.dropdown-item {
     margin-left: auto;
@@ -2510,6 +2576,8 @@ img.img-icon {
 
   .menu img {
     text-align: right;
+    width: 25px;
+    height: 25px;
   }
 
   .nav {
@@ -2745,7 +2813,7 @@ img.img-icon {
   .top-row {
     background-color: white;
     border-bottom: 1px solid var(--lineColor);
-    justify-content: flex-start;
+    justify-content: space-between;
     aspect-ratio: 1600/74;
     width: 100%;
     display: flex;
@@ -2792,7 +2860,7 @@ img.img-icon {
 
   .menu img {
     aspect-ratio: 1;
-    width: 25%;
+    padding-right: 10px;
   }
 
   .nav {
@@ -3017,7 +3085,7 @@ img.img-icon {
   .top-row {
     background-color: white;
     border-bottom: 1px solid var(--lineColor);
-    justify-content: flex-start;
+    justify-content: space-between;
     aspect-ratio: 1600/74;
     width: 100%;
     display: flex;
@@ -3064,7 +3132,6 @@ img.img-icon {
 
   .menu img {
     aspect-ratio: 1;
-    width: 25%;
   }
 
   .nav {
@@ -3291,6 +3358,9 @@ img.img-icon {
 
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+  .new-message-count-badge {
+    margin-right: 10px;
+  }
 
   .event-organizer-join-sub-container {
     display: flex;
