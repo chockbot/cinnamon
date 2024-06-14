@@ -10,6 +10,9 @@ public class ActivityFeed
     public string Price {get; set;}
     public bool IsFavorite {get; set;}
     public bool IsNew {get; set;}
+    public DateTime To { get; set; }
+    public DateTime From { get; set; }
+    public string StartTime { get; set; }
     public Location Address {get; set;}
     public Summary SummaryDetails {get; set;}
 

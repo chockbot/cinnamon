@@ -268,40 +268,40 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-    public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, 
-        ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates,
-        IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
-        IList<OteRescheduleDTO>? oteReschedules)
-    {
-        try
-        {
-            var activityResult = applicationContext.Activities
-                    .Where(a => a.Id == activity.Id);
-            
-            activityResult = activityResult.Include(a => a.ActivityDescription);
-            activityResult = activityResult.Include(a => a.Address);
-            activityResult = activityResult.Include(a => a.OteSchedule);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
-            activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
-            if (oteSchedule.OteOnlineEvent != null)
-            {
-                activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvent);
-            }
-            var result = await activityResult.FirstOrDefaultAsync();
-            
-            if(result is not null)
-            {
-                result.Description          = activity.Description;
-                result.Title                = activity.Title;
-                result.ExperienceTypeId     = activity.ExperienceTypeId;
-                result.Price                = activity.Price;
-                result.IsPublished          = activity.IsPublished;
-                result.ExperienceCategoryId = activity.ExperienceCategoryId;
-                result.Handler              = activity.Handler;
-                result.IsPublished          = activity.IsPublished;
-                result.IsComingSoon         = activity.IsComingSoon;
+	public async Task<AppResult<Activity>> UpdateOteActivity(Activity activity, ActivityDescription description, 
+		ActivityAddress address, OteSchedule oteSchedule, IList<OteDate> oteDates,
+		IList<OteSchedulePricingGroup> pricingGroups, bool recreateSchedule,
+		IList<OteRescheduleDTO>? oteReschedules)
+	{
+		try
+		{
+			var activityResult = applicationContext.Activities
+					.Where(a => a.Id == activity.Id);
+			
+			activityResult = activityResult.Include(a => a.ActivityDescription);
+			activityResult = activityResult.Include(a => a.Address);
+			activityResult = activityResult.Include(a => a.OteSchedule);
+			activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates);
+			activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteDates).ThenInclude(d => d.OteSchedulePricing);
+			activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricing);
+			activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteSchedulePricingGroups);
+			if (oteSchedule.OteOnlineEvent != null)
+			{
+				activityResult = activityResult.Include(a => a.OteSchedule).ThenInclude(s => s.OteOnlineEvent);
+			}
+			var result = await activityResult.FirstOrDefaultAsync();
+			
+			if(result is not null)
+			{
+				result.Description          = activity.Description;
+				result.Title                = activity.Title;
+				result.ExperienceTypeId     = activity.ExperienceTypeId;
+				result.Price                = activity.Price;
+				result.IsPublished          = activity.IsPublished;
+				result.ExperienceCategoryId = activity.ExperienceCategoryId;
+				result.Handler              = activity.Handler;
+				result.IsPublished          = activity.IsPublished;
+				result.IsComingSoon         = activity.IsComingSoon;
 
 				result.ActivityDescription.Description = description.Description;
 
@@ -315,154 +315,154 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				result.Address.PinnedLocation = address.PinnedLocation;
 				result.Address.PostalCode     = address.PostalCode;
 
-                // enable update for ote schedule
-                result.OteSchedule.From                  = oteSchedule.From;
-                result.OteSchedule.To                    = oteSchedule.To;
-                result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
-                result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
-                result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
-                result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
-                result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
-                result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
-                result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
-                result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
-                result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
+				// enable update for ote schedule
+				result.OteSchedule.From                  = oteSchedule.From;
+				result.OteSchedule.To                    = oteSchedule.To;
+				result.OteSchedule.Recurrences           = oteSchedule.Recurrences;
+				result.OteSchedule.ExtraOptions          = oteSchedule.ExtraOptions;
+				result.OteSchedule.RecurrenceDateEnd     = oteSchedule.RecurrenceDateEnd;
+				result.OteSchedule.RecurrenceDateStart   = oteSchedule.RecurrenceDateStart;
+				result.OteSchedule.RepeatEvery           = oteSchedule.RepeatEvery;
+				result.OteSchedule.SelectedDays          = oteSchedule.SelectedDays;
+				result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
+				result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
+				result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
 
-                if(recreateSchedule)
-                {
-                    this.applicationContext.OteSchedulePricings
-                        .RemoveRange(result.OteSchedule.OteSchedulePricing);
-                    this.applicationContext.OteDates
-                        .RemoveRange(result.OteSchedule.OteDates);
-                    this.applicationContext.OteSchedulePricingGroups
-                        .RemoveRange(result.OteSchedule.OteSchedulePricingGroups);
+				if(recreateSchedule)
+				{
+					this.applicationContext.OteSchedulePricings
+						.RemoveRange(result.OteSchedule.OteSchedulePricing);
+					this.applicationContext.OteDates
+						.RemoveRange(result.OteSchedule.OteDates);
+					this.applicationContext.OteSchedulePricingGroups
+						.RemoveRange(result.OteSchedule.OteSchedulePricingGroups);
 
-                    foreach (var pricingGrp in pricingGroups)
-                    {
-                        pricingGrp.Id = 0;
-                        pricingGrp.OteSchedule = null;
-                        pricingGrp.OteScheduleId = result.OteSchedule.Id;
-                        this.applicationContext.OteSchedulePricingGroups.Add(pricingGrp);
-                    }
+					foreach (var pricingGrp in pricingGroups)
+					{
+						pricingGrp.Id = 0;
+						pricingGrp.OteSchedule = null;
+						pricingGrp.OteScheduleId = result.OteSchedule.Id;
+						this.applicationContext.OteSchedulePricingGroups.Add(pricingGrp);
+					}
 
-                    foreach(var oteDate in oteDates)
-                    {
-                        oteDate.Id = 0;
-                        oteDate.OteScheduleId = result.OteSchedule.Id;
-                        foreach (var oteDatePricing in oteDate.OteSchedulePricing)
-                        {
-                            oteDatePricing.OteSchedule = null;
-                            oteDatePricing.OteScheduleId = result.OteSchedule.Id;
-                        }
-                        this.applicationContext.OteDates.Add(oteDate);
-                    }
-                }
+					foreach(var oteDate in oteDates)
+					{
+						oteDate.Id = 0;
+						oteDate.OteScheduleId = result.OteSchedule.Id;
+						foreach (var oteDatePricing in oteDate.OteSchedulePricing)
+						{
+							oteDatePricing.OteSchedule = null;
+							oteDatePricing.OteScheduleId = result.OteSchedule.Id;
+						}
+						this.applicationContext.OteDates.Add(oteDate);
+					}
+				}
 
-                if(!recreateSchedule)
-                {
-                    var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
-                    foreach(var price in updatedPricingList)
-                    {
-                        var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
-                        if(priceGroup is not null)
-                        {
-                            priceGroup.Description = price.Description;
-                            priceGroup.IsAbsorbFees = price.IsAbsorbFees;
-                            priceGroup.MaxSlots = price.MaxSlots;
-                            priceGroup.Price = price.Price;
-                            priceGroup.Name = price.Name;
+				if(!recreateSchedule)
+				{
+					var updatedPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id > 0);
+					foreach(var price in updatedPricingList)
+					{
+						var priceGroup = result.OteSchedule.OteSchedulePricingGroups.FirstOrDefault(p => p.Id == price.Id);
+						if(priceGroup is not null)
+						{
+							priceGroup.Description = price.Description;
+							priceGroup.IsAbsorbFees = price.IsAbsorbFees;
+							priceGroup.MaxSlots = price.MaxSlots;
+							priceGroup.Price = price.Price;
+							priceGroup.Name = price.Name;
 
-                            var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
-                            if(priceList is not null)
-                            {
-                                foreach(var ticketPrice in priceList)
-                                {
-                                    ticketPrice.Description = price.Description;
-                                    ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
-                                    ticketPrice.MaxSlots = price.MaxSlots;
-                                    ticketPrice.Price = price.Price;
-                                    ticketPrice.Name = price.Name;
-                                }
-                            }
-                        }
-                    }
+							var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
+							if(priceList is not null)
+							{
+								foreach(var ticketPrice in priceList)
+								{
+									ticketPrice.Description = price.Description;
+									ticketPrice.IsAbsorbFees = price.IsAbsorbFees;
+									ticketPrice.MaxSlots = price.MaxSlots;
+									ticketPrice.Price = price.Price;
+									ticketPrice.Name = price.Name;
+								}
+							}
+						}
+					}
 
-                    var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
-                    var newPricingGroups = newPricingList.Select(p => {
-                        return new OteSchedulePricingGroup {
-                            Description = p.Description,
-                            IsAbsorbFees = p.IsAbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Name = p.Name,
-                            Price = p.Price,
-                            OteSchedule = result.OteSchedule
-                        };
-                    });
-                    
-                    foreach(var item in newPricingGroups)
-                    {
-                        result.OteSchedule.OteSchedulePricingGroups.Add(item);
+					var newPricingList = oteSchedule.OteSchedulePricing.Where(p => p.Id == 0);
+					var newPricingGroups = newPricingList.Select(p => {
+						return new OteSchedulePricingGroup {
+							Description = p.Description,
+							IsAbsorbFees = p.IsAbsorbFees,
+							MaxSlots = p.MaxSlots,
+							Name = p.Name,
+							Price = p.Price,
+							OteSchedule = result.OteSchedule
+						};
+					});
+					
+					foreach(var item in newPricingGroups)
+					{
+						result.OteSchedule.OteSchedulePricingGroups.Add(item);
 
-                        foreach(var oteDate in result.OteSchedule.OteDates)
-                        {
-                            oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
-                                Description = item.Description,
-                                IsAbsorbFees = item.IsAbsorbFees,
-                                MaxSlots = item.MaxSlots,
-                                Name = item.Name,
-                                Price = item.Price,
-                                TicketSold = item.TicketSold,
-                                OteSchedule = result.OteSchedule,
-                                OteSchedulePricingGroup = item,
-                            });
-                        }
-                    }
+						foreach(var oteDate in result.OteSchedule.OteDates)
+						{
+							oteDate.OteSchedulePricing.Add(new OteSchedulePricing {
+								Description = item.Description,
+								IsAbsorbFees = item.IsAbsorbFees,
+								MaxSlots = item.MaxSlots,
+								Name = item.Name,
+								Price = item.Price,
+								TicketSold = item.TicketSold,
+								OteSchedule = result.OteSchedule,
+								OteSchedulePricingGroup = item,
+							});
+						}
+					}
 
-                    // update ote dates from new dates and merge existing
-                    if(oteReschedules is not null)
-                    {
-                        Dictionary<DateTime, OteDate> dates = new();
+					// update ote dates from new dates and merge existing
+					if(oteReschedules is not null)
+					{
+						Dictionary<DateTime, OteDate> dates = new();
 
-                        foreach (var schedule in oteReschedules)
-                        {
-                            var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Id == schedule.Id);
-                            if(oteDate is null) continue;
+						foreach (var schedule in oteReschedules)
+						{
+							var oteDate = result.OteSchedule.OteDates.FirstOrDefault(d => d.Id == schedule.Id);
+							if(oteDate is null) continue;
 
-                            if(!dates.ContainsKey(schedule.NewDate.Date))
-                            {
-                                oteDate.Date = schedule.NewDate.SetKindUtc();
-                                oteDate.DateStart = schedule.DateStart.SetKindUtc();
-                                oteDate.DateEnd = schedule.DateEnd.SetKindUtc();
+							if(!dates.ContainsKey(schedule.NewDate.Date))
+							{
+								oteDate.Date = schedule.NewDate.SetKindUtc();
+								oteDate.DateStart = schedule.DateStart.SetKindUtc();
+								oteDate.DateEnd = schedule.DateEnd.SetKindUtc();
 
-                                dates.Add(schedule.NewDate.Date, oteDate);
-                            }
-                            else 
-                            {
-                                var existingTickets = await this.applicationContext.OteTickets
-                                                                    .Where(t => t.OteDateId == oteDate.Id).ToListAsync();
+								dates.Add(schedule.NewDate.Date, oteDate);
+							}
+							else 
+							{
+								var existingTickets = await this.applicationContext.OteTickets
+																	.Where(t => t.OteDateId == oteDate.Id).ToListAsync();
 
-                                var modifiedOteDate = dates[schedule.NewDate.Date];
+								var modifiedOteDate = dates[schedule.NewDate.Date];
 
-                                foreach(var ticket in existingTickets)
-                                {
-                                    var ticketPricing = oteDate.OteSchedulePricing.First(p => p.Id == ticket.OteSchedulePricingId);
-                                    var ticketPricingGrp = result.OteSchedule.OteSchedulePricingGroups.First(p => p.Id == ticketPricing.OteSchedulePricingGroupId);
+								foreach(var ticket in existingTickets)
+								{
+									var ticketPricing = oteDate.OteSchedulePricing.First(p => p.Id == ticket.OteSchedulePricingId);
+									var ticketPricingGrp = result.OteSchedule.OteSchedulePricingGroups.First(p => p.Id == ticketPricing.OteSchedulePricingGroupId);
 
-                                    var newTicketPricing = modifiedOteDate.OteSchedulePricing.First(p => p.OteSchedulePricingGroupId == ticketPricingGrp.Id);
+									var newTicketPricing = modifiedOteDate.OteSchedulePricing.First(p => p.OteSchedulePricingGroupId == ticketPricingGrp.Id);
 
-                                    ticket.OteSchedulePricingId = newTicketPricing.Id;
-                                    ticket.OteDateId = modifiedOteDate.Id;
+									ticket.OteSchedulePricingId = newTicketPricing.Id;
+									ticket.OteDateId = modifiedOteDate.Id;
 
-                                    newTicketPricing.TicketSold += 1;
-                                }
+									newTicketPricing.TicketSold += 1;
+								}
 
-                                var pricingSchedsToDelete = result.OteSchedule.OteSchedulePricing.Where(p => p.OteDateId == oteDate.Id);
-                                pricingSchedsToDelete.ToList().ForEach(p => applicationContext.OteSchedulePricings.Remove(p));
-                                result.OteSchedule.OteDates.Remove(oteDate);
-                            }
-                        }
-                    }
-                }
+								var pricingSchedsToDelete = result.OteSchedule.OteSchedulePricing.Where(p => p.OteDateId == oteDate.Id);
+								pricingSchedsToDelete.ToList().ForEach(p => applicationContext.OteSchedulePricings.Remove(p));
+								result.OteSchedule.OteDates.Remove(oteDate);
+							}
+						}
+					}
+				}
 
 				if (result.OteSchedule.OteOnlineEvent != null)
 				{
@@ -820,7 +820,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
+    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null,
         int? categoryId = null, int? starReview = null, int? experienceType = null)
     {
         try
@@ -829,82 +829,90 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
             string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
             string searchClause = string.Empty;
-            if(!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(search))
             {
                 searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
             }
 
-			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
-								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
-								"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\" " +
-							"from public.\"Activities\" ac " +
-							"left join public.\"ActivityAddress\" ad " +
-								"on ac.\"Id\" = ad.\"ActivityId\" " +
-							"left join public.\"ActivitySummaries\" su " +
-								"on ac.\"Id\" = su.\"ActivityId\" " +
-							"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-								"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " + 
-								categoryClause + searchClause + starReviewClause + experienceTypeClause +
-							"order by ac.\"Guid\" " +
-							"limit " + take + " offset " + skip + " ";
-			
-			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
-			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-			{
-				command.CommandText = query;
-				command.CommandType = CommandType.Text;
+            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+                                "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+                                "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+                                "su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\" " +
+                            "from public.\"Activities\" ac " +
+                            "left join public.\"ActivityAddress\" ad " +
+                                "on ac.\"Id\" = ad.\"ActivityId\" " +
+                            "left join public.\"ActivitySummaries\" su " +
+                                "on ac.\"Id\" = su.\"ActivityId\" " +
+                            "left join public.\"OteSchedules\" os " +
+                                "on os.\"ActivityId\" = ac.\"Id\"" +
+                            "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
+                                categoryClause + searchClause + starReviewClause + experienceTypeClause +
+                            "order by ac.\"Guid\" " +
+                            "limit " + take + " offset " + skip + " ";
 
-                if(!string.IsNullOrEmpty(search))
+            IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if (!string.IsNullOrEmpty(search))
                 {
                     var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
-					command.Parameters.Add(parameterSearch);
-				}
+                    command.Parameters.Add(parameterSearch);
+                }
 
-				applicationContext.Database.OpenConnection();
+                applicationContext.Database.OpenConnection();
 
-				using (var dr = await command.ExecuteReaderAsync())
-				{
-					if (dr.HasRows)
-					{
-						var dt = new DataTable();
-						dt.Load(dr);
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
 
-						listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO {
-							ActivityId = Convert.ToInt32(item["Id"]),
-							ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
-							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-							Handler = item["Handler"].ToString() ?? string.Empty,
-							Price = item["Price"].ToString() ?? string.Empty,
-							Title = item["Title"].ToString() ?? string.Empty,
-							IsNew = Convert.ToBoolean(item["IsNew"]),
-							Address = new ActivityFeedDTO.Location {
-								City = item["CityName"].ToString() ?? string.Empty,
-								PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-								Region = item["RegionName"].ToString() ?? string.Empty,
-							},
-							SummaryDetails = new ActivityFeedDTO.Summary {
-								Completed = Convert.ToInt32(item["Completed"]),
-								ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
-								Ongoing = Convert.ToInt32(item["Ongoing"]),
-								ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
-								TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
-								TotalReviews = Convert.ToInt32(item["TotalReviews"])
-							}
-						}).ToList();
-					}
-				}
-			}
+                        listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO
+                        {
+                            ActivityId = Convert.ToInt32(item["Id"]),
+                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
+                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            Price = item["Price"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            IsNew = Convert.ToBoolean(item["IsNew"]),
+                            To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+                            From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+                            StartTime = item["StartTime"].ToString() ?? string.Empty,
+                            Address = new ActivityFeedDTO.Location
+                            {
+                                City = item["CityName"].ToString() ?? string.Empty,
+                                PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+                                Region = item["RegionName"].ToString() ?? string.Empty,
+                            },
+                            SummaryDetails = new ActivityFeedDTO.Summary
+                            {
+                                Completed = Convert.ToInt32(item["Completed"]),
+                                ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
+                                Ongoing = Convert.ToInt32(item["Ongoing"]),
+                                ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
+                                TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
+                                TotalReviews = Convert.ToInt32(item["TotalReviews"])
+                            }
+                        }).ToList();
+                    }
+                }
+            }
 
-			return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
-		}
-		catch (System.Exception ex)
-		{
-			return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
-		}       
-	}
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
+        }
+        catch (System.Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+        }
+    }
 
-	public async Task<AppResult<bool>> BatchSummaryUpdate()
+    public async Task<AppResult<bool>> BatchSummaryUpdate()
 	{
 		try
 		{
@@ -1042,111 +1050,111 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = ote.\"ActivityId\" " +
 								   "and sm.\"TotalParticipants\" != ote.\"TotalParticipants\"; " +
 
-                               "with withTotalRatings as ( " +
-                                   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
-                                       "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
-                                   "from public.\"Activities\" ac " +
-                                   "left join public.\"Reviews\" ar " +
-                                       "on ac.\"Id\" = ar.\"ActivityId\" " +
-                                   "group by ac.\"Id\" " +
-                               ") " +
-                               "update public.\"ActivitySummaries\" sm " +
-                               "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
-                               "from withTotalRatings rt " +
-                               "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
-                                   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
-                                
-                               "with activities as ( " +
-                                   "select ac.\"Id\", " +
-                                       "case when ai.\"ImageLocation\" is null then '' else ai.\"ImageLocation\" end as \"ImageLocation\", " +
-                                       "Row_Number() over (partition by ac.\"Id\" order by ac.\"Id\", ai.\"Order\") as \"RowCnt\" " +
-                                   "from public.\"Activities\" ac " +
-                                   "left join public.\"ActivityImages\" ai " +
-                                       "on ac.\"Id\" = ai.\"ActivityId\" " +
-                                   "where (ai.\"ImageLocation\" != '' or ai.\"ImageLocation\" is not null) " +
-                               ") " +
-                               "update public.\"ActivitySummaries\" sm " +
-                               "set \"ImageBannerSrc\" = ac.\"ImageLocation\" " +
-                               "from activities ac " +
-                               "where ac.\"RowCnt\" = 1 and sm.\"ActivityId\" = ac.\"Id\" and " +
-                                   "( sm.\"ImageBannerSrc\" != ac.\"ImageLocation\" ); " +
-                                   
-                               "with actLocation as ( " +
-                                   "select ac.\"Id\", ac.\"ExperienceTypeId\", " +
-                                       "case " +
-                                           "when ad.\"Address1\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address1\" " +
-                                           "else '' " +
-                                       "end \"Address1\", " +
-                                       "case " +
-                                           "when ad.\"Address2\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address2\" " +
-                                           "else '' " +
-                                       "end \"Address2\", " +
-                                       "case " +
-                                           "when ad.\"District\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"District\" " +
-                                           "else '' " +
-                                       "end \"District\", " +
-                                       "case " +
-                                           "when ad.\"Subdivision\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"Subdivision\" " +
-                                           "else '' " +
-                                       "end \"Subdivision\", " +
-                                       "case " +
-                                           "when ad.\"BarangayName\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"BarangayName\" " +
-                                           "else '' " +
-                                       "end \"BarangayName\", " +
-                                       "case " +
-                                           "when ad.\"CityName\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"CityName\" " +
-                                           "else '' " +
-                                       "end \"CityName\", " +
-                                       "case " +
-                                           "when ad.\"RegionName\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"RegionName\" " +
-                                           "else '' " +
-                                       "end \"RegionName\", " +
-                                       "case  " +
-                                           "when ad.\"PinnedLocation\" = '--NOTHING PROVIDED--' then '' " +
-                                           "when ac.\"ExperienceTypeId\" = 1 then ad.\"PinnedLocation\" " +
-                                           "else '' " +
-                                       "end \"PinnedLocation\" " +
-                                   "from public.\"Activities\" ac " +
-                                   "join public.\"ActivityAddress\" ad " +
-                                       "on ad.\"ActivityId\" = ac.\"Id\" " +
-                               "), " +
-                               "combinedLocation as ( " +
-                                   "select ac.\"Id\", Trim(ac.\"Address1\" || ' ' || ac.\"Address2\" || ' ' || " +
-                                       "ac.\"District\" || ' ' || ac.\"Subdivision\" || ' ' || " +
-                                       "ac.\"BarangayName\" || ' ' || ac.\"CityName\" || ' ' || " +
-                                       "ac.\"RegionName\" || ' ' || ac.\"PinnedLocation\") \"Address\" " +
-                                   "from actLocation ac	" +
-                               ") " +
-                               "update public.\"ActivitySummaries\" su " +
-                               "set \"Location\" = ac.\"Address\" " +
-                               "from combinedLocation ac " +
-                               "where su.\"ActivityId\" = ac.\"Id\" and  " +
-                                   "(Trim(su.\"Location\") != ac.\"Address\"); " +
+							   "with withTotalRatings as ( " +
+								   "select ac.\"Id\" \"ActivityId\", Count(ar.\"Id\") \"ReviewCount\", " +
+									   "Trunc(Coalesce(Sum(ar.\"Rating\"::decimal) / Count(ar.\"Id\"),0),1) \"Rating\" " +
+								   "from public.\"Activities\" ac " +
+								   "left join public.\"Reviews\" ar " +
+									   "on ac.\"Id\" = ar.\"ActivityId\" " +
+								   "group by ac.\"Id\" " +
+							   ") " +
+							   "update public.\"ActivitySummaries\" sm " +
+							   "set \"ReviewAccumulated\" = rt.\"Rating\", \"TotalReviews\" = rt.\"ReviewCount\" " +
+							   "from withTotalRatings rt " +
+							   "where sm.\"ActivityId\" = rt.\"ActivityId\" and " +
+								   "rt.\"ReviewCount\" != sm.\"TotalReviews\" and rt.\"Rating\" != sm.\"ReviewAccumulated\"; " +
+								
+							   "with activities as ( " +
+								   "select ac.\"Id\", " +
+									   "case when ai.\"ImageLocation\" is null then '' else ai.\"ImageLocation\" end as \"ImageLocation\", " +
+									   "Row_Number() over (partition by ac.\"Id\" order by ac.\"Id\", ai.\"Order\") as \"RowCnt\" " +
+								   "from public.\"Activities\" ac " +
+								   "left join public.\"ActivityImages\" ai " +
+									   "on ac.\"Id\" = ai.\"ActivityId\" " +
+								   "where (ai.\"ImageLocation\" != '' or ai.\"ImageLocation\" is not null) " +
+							   ") " +
+							   "update public.\"ActivitySummaries\" sm " +
+							   "set \"ImageBannerSrc\" = ac.\"ImageLocation\" " +
+							   "from activities ac " +
+							   "where ac.\"RowCnt\" = 1 and sm.\"ActivityId\" = ac.\"Id\" and " +
+								   "( sm.\"ImageBannerSrc\" != ac.\"ImageLocation\" ); " +
+								   
+							   "with actLocation as ( " +
+								   "select ac.\"Id\", ac.\"ExperienceTypeId\", " +
+									   "case " +
+										   "when ad.\"Address1\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address1\" " +
+										   "else '' " +
+									   "end \"Address1\", " +
+									   "case " +
+										   "when ad.\"Address2\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"Address2\" " +
+										   "else '' " +
+									   "end \"Address2\", " +
+									   "case " +
+										   "when ad.\"District\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"District\" " +
+										   "else '' " +
+									   "end \"District\", " +
+									   "case " +
+										   "when ad.\"Subdivision\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"Subdivision\" " +
+										   "else '' " +
+									   "end \"Subdivision\", " +
+									   "case " +
+										   "when ad.\"BarangayName\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"BarangayName\" " +
+										   "else '' " +
+									   "end \"BarangayName\", " +
+									   "case " +
+										   "when ad.\"CityName\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"CityName\" " +
+										   "else '' " +
+									   "end \"CityName\", " +
+									   "case " +
+										   "when ad.\"RegionName\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"RegionName\" " +
+										   "else '' " +
+									   "end \"RegionName\", " +
+									   "case  " +
+										   "when ad.\"PinnedLocation\" = '--NOTHING PROVIDED--' then '' " +
+										   "when ac.\"ExperienceTypeId\" = 1 then ad.\"PinnedLocation\" " +
+										   "else '' " +
+									   "end \"PinnedLocation\" " +
+								   "from public.\"Activities\" ac " +
+								   "join public.\"ActivityAddress\" ad " +
+									   "on ad.\"ActivityId\" = ac.\"Id\" " +
+							   "), " +
+							   "combinedLocation as ( " +
+								   "select ac.\"Id\", Trim(ac.\"Address1\" || ' ' || ac.\"Address2\" || ' ' || " +
+									   "ac.\"District\" || ' ' || ac.\"Subdivision\" || ' ' || " +
+									   "ac.\"BarangayName\" || ' ' || ac.\"CityName\" || ' ' || " +
+									   "ac.\"RegionName\" || ' ' || ac.\"PinnedLocation\") \"Address\" " +
+								   "from actLocation ac	" +
+							   ") " +
+							   "update public.\"ActivitySummaries\" su " +
+							   "set \"Location\" = ac.\"Address\" " +
+							   "from combinedLocation ac " +
+							   "where su.\"ActivityId\" = ac.\"Id\" and  " +
+								   "(Trim(su.\"Location\") != ac.\"Address\"); " +
 
-                               "with provider as ( " +
-                                   "select ac.\"Id\", (cs.\"FirstName\" || ' ' || cs.\"LastName\") \"Provider\" " +
-                                   "from public.\"Customers\" cs " +
-                                   "join public.\"Activities\" ac " +
-                                       "on cs.\"Id\" = ac.\"CreatedBy\"	" +
-                               ") " +
-                               "update public.\"ActivitySummaries\" su " +
-                               "set \"Provider\" = pr.\"Provider\" " +
-                               "from provider pr " +
-                               "where su.\"ActivityId\" = pr.\"Id\" and su.\"Provider\" != pr.\"Provider\"; " +
+							   "with provider as ( " +
+								   "select ac.\"Id\", (cs.\"FirstName\" || ' ' || cs.\"LastName\") \"Provider\" " +
+								   "from public.\"Customers\" cs " +
+								   "join public.\"Activities\" ac " +
+									   "on cs.\"Id\" = ac.\"CreatedBy\"	" +
+							   ") " +
+							   "update public.\"ActivitySummaries\" su " +
+							   "set \"Provider\" = pr.\"Provider\" " +
+							   "from provider pr " +
+							   "where su.\"ActivityId\" = pr.\"Id\" and su.\"Provider\" != pr.\"Provider\"; " +
 
-                           "commit; ";
-            
-            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = CommandType.Text;
+						   "commit; ";
+			
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
 
 				applicationContext.Database.OpenConnection();
 
@@ -1161,54 +1169,54 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-    public async Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId)
-    {
-        try
-        {
-            string query = "select os.\"ActivityId\", od.\"Id\" \"OteDateId\", " +
-                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
-                               "count(tc.\"Id\") \"Cnt\" " +
-                           "from public.\"OteDates\" od " +
-                           "join public.\"OteSchedules\" os " +
-                               "on od.\"OteScheduleId\" = os.\"Id\" " +
-                           "left join public.\"OteTickets\" tc " +
-                               "on tc.\"OteDateId\" = od.\"Id\" " +
-                           "where os.\"ActivityId\" = " + activityId + " " +
-                           "group by os.\"ActivityId\", od.\"Id\", " +
-                               "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" ";
-            
-            IList<OteAlreadyBookDate> listResult = new List<OteAlreadyBookDate>();
-            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = CommandType.Text;
+	public async Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId)
+	{
+		try
+		{
+			string query = "select os.\"ActivityId\", od.\"Id\" \"OteDateId\", " +
+							   "od.\"Date\", od.\"DateStart\", od.\"DateEnd\", " +
+							   "count(tc.\"Id\") \"Cnt\" " +
+						   "from public.\"OteDates\" od " +
+						   "join public.\"OteSchedules\" os " +
+							   "on od.\"OteScheduleId\" = os.\"Id\" " +
+						   "left join public.\"OteTickets\" tc " +
+							   "on tc.\"OteDateId\" = od.\"Id\" " +
+						   "where os.\"ActivityId\" = " + activityId + " " +
+						   "group by os.\"ActivityId\", od.\"Id\", " +
+							   "od.\"Date\", od.\"DateStart\", od.\"DateEnd\" ";
+			
+			IList<OteAlreadyBookDate> listResult = new List<OteAlreadyBookDate>();
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
 
-                applicationContext.Database.OpenConnection();
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
 
-                        listResult = dt.AsEnumerable().Select(item => new OteAlreadyBookDate {
-                            ActivityId = Convert.ToInt32(item["ActivityId"]),
-                            Date = Convert.ToDateTime(item["Date"]),
-                            DateEnd = Convert.ToDateTime(item["DateEnd"]),
-                            DateStart = Convert.ToDateTime(item["DateStart"]),
-                            OteDateId = Convert.ToInt32(item["OteDateId"]),
-                            BookCount = Convert.ToInt32(item["Cnt"])
-                        }).ToList();
-                    }
-                }
-            }
+						listResult = dt.AsEnumerable().Select(item => new OteAlreadyBookDate {
+							ActivityId = Convert.ToInt32(item["ActivityId"]),
+							Date = Convert.ToDateTime(item["Date"]),
+							DateEnd = Convert.ToDateTime(item["DateEnd"]),
+							DateStart = Convert.ToDateTime(item["DateStart"]),
+							OteDateId = Convert.ToInt32(item["OteDateId"]),
+							BookCount = Convert.ToInt32(item["Cnt"])
+						}).ToList();
+					}
+				}
+			}
 
-            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateSucceeded(listResult, "Successfully get ote already booked");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already book dates.");
-        }
-    }
+			return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateSucceeded(listResult, "Successfully get ote already booked");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<OteAlreadyBookDate>>.CreateFailed(ex, "An error occured when getting ote already book dates.");
+		}
+	}
 }
