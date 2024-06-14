@@ -347,7 +347,7 @@
         bool validPrefference = ModelState.IsPrivate || ModelState.IsPublic || ModelState.IsComingSoon;
         if (!validPrefference)
         {
-            message += "<li>Location is required.</li>";
+            message += "<li>Display Preferrence is required.</li>";
             errorMessage = message;
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
             return false;
@@ -366,28 +366,6 @@
             return valid;
         }
         return false;
-    }
-
-    public async Task<bool> ImageValid()
-    {
-        //Gallery
-        var isHaveCoverPhoto = coverPhoto.Display;
-        var message = string.Empty;
-        var isAllFieldsValid = true;
-        if (!isHaveCoverPhoto)
-        {
-            isAllFieldsValid = false;
-            message += "<li>Required cover photo</li>";
-        }
-        errorMessage = message;
-        StateHasChanged();
-        await Task.Delay(300); // add delay to populate is-invalid class
-        if (!isAllFieldsValid)
-        {
-            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
-            return false;
-        }
-        return true;
     }
 
     private string CategoryClass
