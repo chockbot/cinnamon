@@ -6,12 +6,36 @@
 }
 .top-row {
     background-color: white;
+    border-bottom: 1px solid #D9D9D9;
+    justify-content: flex-start;
+    aspect-ratio: 1600/74;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 2px 12px 0px #343D4C80;
+    background-color: white;
     border-bottom: 1px solid var(--lineColor);
     justify-content: space-between;
     width: 100%;
     display: flex;
     align-items: center;
 }
+/*.page {
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+}*/
+.page-wrapper {
+    position: sticky !important;
+}
+/*.top-row {
+    background-color: white;
+    border-bottom: 1px solid var(--lineColor);
+    justify-content: space-between;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}*/
 
     .top-row ::deep a {
         white-space: nowrap;
@@ -247,6 +271,25 @@ button:focus {
         top: 15px;
     }
 }
+
+/* Small devices (landscape phones, 588px and up) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .dropdown {
+        display: none;
+    }
+    .become{
+        display: none;
+    }
+    .dropdown-mobile {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+    .menu img{
+        width: 25px;
+        height: 25px;
+    }
+}
+ 
 
 @media screen and (min-width: 579px) and (max-width: 767px) {
     .app-name {

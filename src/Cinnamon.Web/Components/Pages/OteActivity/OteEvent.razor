@@ -1,4 +1,4 @@
-@namespace Cinnamon.Web.Components.Pages.OteActivity
+﻿@namespace Cinnamon.Web.Components.Pages.OteActivity
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Framework.ValidationAttributes;
@@ -8,24 +8,27 @@
 @inject INotificationService NotificationService;
 
 <section class="ote-event-wrapper">
+    <div class="create-title">Create Event</div>
     <p class="font-20 color-grey-100 text-justify m-font-16">
-        Note: A one-time event refers to a specific occurrence or happening that takes place at a
-        designated time and location. It could be a seminar, workshop, conference, concert,
-        or any other event that is not recurring on a regular basis.
-        <br>
-        <br>
-        After the event date, the one-time event will automatically deactivate in your page.
+        Note: After the event date, the one-time event will automatically deactivate in your page.
     </p>
     <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div id="error-message-container" class="mb-4 invalid is-invalid">
+                <ul id="error-list" class="fw-bold mb-0">
+                    @((MarkupString)errorMessage)
+                </ul>
+            </div>
+        }
         <Validations Mode="!isNextClick ? ValidationMode.Manual : ValidationMode.Auto" Model="ModelState" @ref="formValidation">
             <Validation @ref="eventNameValidation">
                 <Field class="mb-4" id="ote-event-name">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">1</span>
+                    <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
                         event name
                     </FieldLabel>
                     <FieldBody>
-                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                        <TextEdit id="event-name-words-input" Size="Size.Medium" class="font-16 border-radius-10 m-font-16 m-border-radius-5" 
                             Role="TextRole.Text" @bind-Text="ModelState.EventName">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
@@ -39,12 +42,11 @@
             </Validation>
             <Validation @ref="eventDescriptionValidation">
                 <Field class="mb-4" id="ote-event-description">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">2</span>
+                    <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
                         description
                     </FieldLabel>
                     <FieldBody>
-                        <MemoEdit id="event-description-words-input" Rows="5" class="font-18 border-radius-10 m-font-16 m-border-radius-5" 
+                        <MemoEdit id="event-description-words-input" Rows="5" class="font-16 border-radius-10 m-font-16 m-border-radius-5" 
                             @bind-Text="ModelState.Description">
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
@@ -57,7 +59,7 @@
                 </Field>
             </Validation>
             <Field class="mb-4" id="ote-event-category">
-                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
+                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
                     @* <span class="rounded-circle bg-orange-100 color-white-100 round-padding m-d-none">3</span> *@
                     select category
                 </FieldLabel>
@@ -73,7 +75,153 @@
                 </FieldBody>
             </Field>
         </Validations>
+        <Divider/>
+        @*Location*@
+        <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+           Location
+        </FieldLabel>
+        <div id="event-type" class="d-flex mb-3 m-margin-bottom-30">
+        <RadioGroup TValue="int" Name="experience-type" CheckedValue="@ModelState.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
+            <p class="font-20 d-none m-d-block color-black-100 mb-1">Type of experience</p>
+            <label for="type-online" class="bg-white-100 border-radius-10 prevent-select me-4
+                text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200 m-margin-right-5">
+                <Radio class="checkbox-round" ElementId="type-online" TValue="int" Value="2">Online</Radio>
+            </label>
+            <label for="type-in-person" class="bg-white-100 border-radius-10 prevent-select 
+                text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200">
+                <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="1">In-Person</Radio>
+            </label>
+        </RadioGroup>
     </div>
+        <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+           Event Location
+        </FieldLabel>
+        <div class="event-pinned-location">
+            <div id="map-pinned-location">
+                <Row VerticalGutter="10" HorizontalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is12.OnDesktop" class="m-d-none">
+                        <div class="textedit-container">
+                            <svg class="textedit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <g clip-path="url(#clip0_1975_286)">
+                                    <path d="M10 0C5.865 0 2.5 3.38833 2.5 7.55417C2.5 13.4733 9.295 19.585 9.58417 19.8417C9.70333 19.9475 9.85167 20 10 20C10.1483 20 10.2967 19.9475 10.4158 19.8425C10.705 19.585 17.5 13.4733 17.5 7.55417C17.5 3.38833 14.135 0 10 0ZM10 11.6667C7.7025 11.6667 5.83333 9.7975 5.83333 7.5C5.83333 5.2025 7.7025 3.33333 10 3.33333C12.2975 3.33333 14.1667 5.2025 14.1667 7.5C14.1667 9.7975 12.2975 11.6667 10 11.6667Z" fill="#D9D9D9" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_1975_286">
+                                        <rect width="20" height="20" fill="white" />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                            @if(ModelState.SelectedType == 1)
+                            {
+                                <Validations Mode="ValidationMode.Manual" Model="ModelState">
+                                    <Validation>
+                                        <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
+                                                  id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                                  class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation">
+                                        </TextEdit>
+                                    </Validation>
+                                </Validations>
+                                
+                                
+                            }
+                            else
+                            {
+                                <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
+                                          id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                          class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation" />
+                            }
+
+                            <button type="button" class="clear-button" @onclick="ClearTextEdit">✖</button>
+                        </div>
+                    </Column>
+                </Row>
+            </div>
+            <div id="iframe-map" class="mb-4">
+                @{
+                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(ModelState.PinnedLocation) ? ModelState.PinnedLocation : "''");
+                    <iframe id="mapframe" height="373" frameborder="0" src="@map" allowfullscreen class="iframe-search-modal w-100"></iframe>
+                }
+            </div>
+        </div>
+        <Divider />
+        <Row>
+           @* <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                <div class="mt-2">
+                    <label class="d-flex align-items-center mb-2">
+                        <p class="font-16 color-grey-100 mb-0 text-capitalize">cover photo</p>
+                    </label>
+                    <label for="@coverPhoto.FileId" class="cursor-pointer w-100">
+                        <InputFile id="@coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadCoverPhotoFile" />
+                        <div class='@(coverPhoto.Display ? "d-none" : "")'>
+                            <div class='empty-image-container bg-white-100'>
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
+                                <input type="hidden" id="@coverPhoto.InputDataId" name="@coverPhoto.InputDataId" class="generated-input-data" />
+                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@coverPhoto.ImageSrc" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/ote/trashcan-icon.png" alt="delete">
+                            </div>
+                        </Row>
+                    </label>
+                </div>
+            </Column>*@
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                <div class="mt-2">
+                    <label class="d-flex align-items-center mb-2">
+                        <p class="font-16 color-grey-100 mb-0 text-capitalize">supporting photo(optional)</p>
+                    </label>
+                    <label class="cursor-pointer w-100">
+                        <InputFile id="@setplanPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadSetplanPhotoFile" />
+                        <div for="@setplanPhoto.FileId" class='@(setplanPhoto.Display ? "d-none" : "")'>
+                            <div class='empty-image-container bg-white-100'>
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(setplanPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@setplanPhoto.ContainerId">
+                                <input type="hidden" id="@setplanPhoto.InputDataId" name="@setplanPhoto.InputDataId" class="generated-input-data" />
+                                <img id="@setplanPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@setplanPhoto.ImageSrc" alt="supporting-photo">
+                                <img class="mt-2 cursor-pointer" @onclick="DeleteSetplanPhoto" src="images/ote/trashcan-icon.png" alt="delete">
+                            </div>
+                        </Row>
+                    </label>
+                </div>
+            </Column>
+        </Row>
+        <Divider />
+        <FieldLabel class="font-20 text-capitalize color-black-100 mb-3 m-font-18">
+            Display Preferrence
+        </FieldLabel>
+        <div class="mb-2">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="display-type" id="public-details-page" checked="@ModelState.IsPublic" @onchange="@(()=>CheckboxChanged(2))" value="2">
+                <label class="form-check-label" for="public-details-page">
+                    Public
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@ModelState.IsPrivate" @onchange="@(()=>CheckboxChanged(3))" value="3">
+                <label class="form-check-label" for="private-details-page">
+                    Private
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@ModelState.IsComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
+                <label class="form-check-label" for="coming-soon">
+                    Display a Coming Soon Page
+                </label>
+            </div>
+        </div>
+    </div>
+    <ImageCropper @ref="imageCropper" />
     <OteRouteButtons NextButtonExtraClass="m-width-100" HavePrevious="false" OnNextClick="NextClick" />
 </section>
 
@@ -85,10 +233,46 @@
     [Parameter]
     public FormModel ModelState {get; set;} = new();
 
-    private Validations? formValidation;
-    private Validation? eventNameValidation;
-    private Validation? eventDescriptionValidation;
-    private bool isNextClick = false;
+    [Parameter]
+    public EventCallback OnCoverPhotoDisplayChanged {get; set;} 
+
+    public Validations? formValidation;
+    public Validation? eventNameValidation;
+    public Validation? eventDescriptionValidation;
+    public bool showErrors = false;
+    public IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
+    public IDictionary<string, Region> regions = new Dictionary<string, Region>();
+    public IDictionary<string, City> cities = new Dictionary<string, City>();
+    public ImageCropper? imageCropper;
+    public ImageItem coverPhoto = new ImageItem
+        {
+            ContainerId = "cover-photo-container",
+            Display = false,
+            FileSize = 0,
+            ImageSrcId = "cover-photo-image-src",
+            InputDataId = "cover-photo-input-data",
+            FileId = "cover-photo-input-file",
+            Order = 0
+        };
+    public ImageItem setplanPhoto = new ImageItem
+        {
+            ContainerId = "setplan-photo-container",
+            Display = false,
+            FileSize = 0,
+            ImageSrcId = "setplan-photo-image-src",
+            InputDataId = "setplan-photo-input-data",
+            FileId = "setplan-photo-input-file",
+            Order = 100
+        };
+    public IList<ImageItem> imageItems = new List<ImageItem>();
+    public string errorMessage = string.Empty;
+    public IList<int> deletedIds = new List<int>();
+    public bool isNextClick = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRegions();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -127,9 +311,51 @@
 
     public async Task<bool> FieldValid()
     {
+        //Gallery
+        var isHaveCoverPhoto = coverPhoto.Display;
+        var message = string.Empty;
+        var isAllFieldsValid = true;
+        if (!isHaveCoverPhoto)
+        {
+            isAllFieldsValid = false;
+            message += "<li>Required cover photo</li>";
+        }
+        errorMessage = message;
+        StateHasChanged();
+        await Task.Delay(300); // add delay to populate is-invalid class
+        if (!isAllFieldsValid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            return false;
+        }
+
+        //Location
+        if (ModelState.SelectedType == 1)
+        {
+            bool validPinnedLocation = ModelState.SelectedType == 1 && !string.IsNullOrEmpty(ModelState.PinnedLocation);
+            StateHasChanged();
+            await Task.Delay(300);
+            if (!validPinnedLocation)
+            {
+                message += "<li>Location is required.</li>";
+                errorMessage = message;
+                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+                return false;
+            }
+        }
+        //Display Preferrence
+        bool validPrefference = ModelState.IsPrivate || ModelState.IsPublic || ModelState.IsComingSoon;
+        if (!validPrefference)
+        {
+            message += "<li>Display Preferrence is required.</li>";
+            errorMessage = message;
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            return false;
+        }
+        //Event Details
         if (formValidation is not null)
         {
-            bool valid = await formValidation.ValidateAll() && ModelState.SelectedCategory > 0;
+            bool valid = await formValidation.ValidateAll();
             isNextClick = true;
             StateHasChanged();
             await Task.Delay(300); // add delay to populate is-invalid class
@@ -146,7 +372,7 @@
     {
         get
         {
-            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            string defaultStyle = "form-control font-16 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
             if (isNextClick)
             {
                 if(ModelState.SelectedCategory <= 0)
@@ -174,19 +400,331 @@
         return string.Join(". ", messages);
     }
 
+    private async Task LoadRegions()
+    {
+        try
+        {
+            regions.Clear();
+            var regionRes = await activityApiHandler.GetAllRegions();
+            if (!regionRes.Succeeded || regionRes.Result is null || !regionRes.Result.IsSuccess)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            var rg = regionRes.Result.Result.OrderBy(r => r.Name);
+
+            foreach (var item in rg)
+            {
+                if (!regions.ContainsKey(item.Code))
+                {
+                    regions.Add(
+                        item.Code,
+                        new Region
+                            {
+                                Code = item.Code,
+                                Name = item.Name
+                            }
+                    );
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task SelectedRegionChanged(string code)
+    {
+        if (regions.ContainsKey(code))
+        {
+            var region = regions[code];
+            if (region is not null)
+            {
+                ModelState.Region.Code = region.Code;
+                ModelState.Region.Name = region.Name;
+                await LoadCities();
+            }
+        }
+    }
+
+    private async Task LoadCities()
+    {
+        try
+        {
+            cities.Clear();
+            var cityRes = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs
+                {
+                    CountPerPage = 1000,
+                    RegionCode = ModelState.Region.Code
+                });
+            if (cityRes.Succeeded && cityRes.Result is not null && cityRes.Result.IsSuccess)
+            {
+                var ct = cityRes.Result.Result.OrderBy(c => c.Name);
+                foreach (var item in ct)
+                {
+                    if (!cities.ContainsKey(item.Code))
+                    {
+                        cities.Add(
+                            item.Code,
+                            new City
+                                {
+                                    Code = item.Code,
+                                    Name = item.Name,
+                                    IsCity = item.IsCity,
+                                    IsMunicipality = item.IsMunicipality
+                                }
+                        );
+                    }
+                }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task SelectedCityChanged(string code)
+    {
+        if (cities.ContainsKey(code))
+        {
+            var city = cities[code];
+            if (city is not null)
+            {
+                ModelState.City.Code = city.Code;
+                ModelState.City.Name = city.Name;
+                ModelState.City.IsCity = city.IsCity;
+                ModelState.City.IsMunicipality = city.IsMunicipality;
+                await LoadBarangays();
+            }
+        }
+    }
+
+    private async Task LoadBarangays()
+    {
+        try
+        {
+            barangays.Clear();
+            var barangayRes = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs
+                {
+                    CityCode = ModelState.City.Code,
+                    CountPerPage = 1000,
+                    IsCity = ModelState.City.IsCity,
+                    IsMunicipality = ModelState.City.IsMunicipality
+                });
+            if (barangayRes.Succeeded && barangayRes.Result is not null && barangayRes.Result.IsSuccess)
+            {
+                var br = barangayRes.Result.Result.OrderBy(b => b.Name);
+                foreach (var item in br)
+                {
+                    if (!barangays.ContainsKey(item.Code))
+                    {
+                        barangays.Add(
+                            item.Code,
+                            new Barangay
+                                {
+                                    Code = item.Code,
+                                    Name = item.Name
+                                }
+                        );
+                    }
+                }
+            }
+        }
+        catch (System.Exception)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private string RegionClass
+    {
+        get
+        {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            if (showErrors)
+            {
+                if (string.IsNullOrEmpty(ModelState.Region.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private string CityClass
+    {
+        get
+        {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            if (showErrors)
+            {
+                if (string.IsNullOrEmpty(ModelState.City.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private string BarangayClass
+    {
+        get
+        {
+            string defaultStyle = "form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5";
+            if (showErrors)
+            {
+                if (string.IsNullOrEmpty(ModelState.Barangay.Code))
+                {
+                    return $"{defaultStyle} is-invalid";
+                }
+                return $"{defaultStyle} is-valid";
+            }
+            return defaultStyle;
+        }
+    }
+
+    private async Task CheckExperienceTypeChanged(int type)
+    {
+        ModelState.SelectedType = type;
+        showErrors = false;
+        ClearLocationFields();
+        await formValidation.ClearAll();
+    }
+
+    private Task SelectedBarangayChanged(string code)
+    {
+        if (barangays.ContainsKey(code))
+        {
+            var barangay = barangays[code];
+            if (barangay is not null)
+            {
+                ModelState.Barangay.Code = barangay.Code;
+                ModelState.Barangay.Name = barangay.Name;
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private void ClearLocationFields()
+    {
+        ModelState.HouseNo        = string.Empty;
+        ModelState.Region.Code    = "none";
+        ModelState.Region.Name    = string.Empty;
+        ModelState.City.Code      = "none";
+        ModelState.City.Name      = string.Empty;
+        ModelState.Barangay.Code  = "none";
+        ModelState.Barangay.Name  = string.Empty;
+        ModelState.PostaCode      = string.Empty;
+        ModelState.PinnedLocation = string.Empty;
+    }
+
     public ModelData GetData()
     {
         ModelData data = new ModelData {
-            Category = ModelState.SelectedCategory,
-            Description = ModelState.Description,
-            Name = ModelState.EventName
+            Category       = ModelState.SelectedCategory,
+            Description    = ModelState.Description,
+            Name           = ModelState.EventName,
+            BarangayCode   = ModelState.Barangay.Code,
+            BarangayName   = ModelState.Barangay.Name,
+            CityCode       = ModelState.City.Code,
+            CityName       = ModelState.City.Name,
+            ExperienceType = ModelState.SelectedType,
+            HouseNo        = ModelState.HouseNo,
+            PinnedLocation = ModelState.PinnedLocation,
+            PostalCode     = ModelState.PostaCode,
+            RegionCode     = ModelState.Region.Code,
+            RegionName     = ModelState.Region.Name,
+            ComingSoon     = ModelState.ComingSoon,
+            IsPublish      = ModelState.Publish,
         };
         return data;
     }
 
-    public Task SetState(ModelData data)
+    public async Task SetState(ModelData data)
     {
-        return Task.CompletedTask;
+        ModelState.HouseNo        = data.HouseNo;
+        ModelState.PinnedLocation = data.PinnedLocation;
+        ModelState.PostaCode      = data.PostalCode;
+        ModelState.SelectedType   = data.ExperienceType;
+        ModelState.ComingSoon     = data.ComingSoon;
+        ModelState.Publish        = data.IsPublish;
+        ModelState.IsPublic       = data.IsPublic;
+        ModelState.IsPrivate      = data.IsPrivate;
+        ModelState.IsComingSoon   = data.IsComingSoon;
+
+        await LoadRegions();
+        await SelectedRegionChanged(data.RegionCode);
+        await SelectedCityChanged(data.CityCode);
+        await SelectedBarangayChanged(data.BarangayCode);
+
+        var orderedImages = data.images.OrderBy(i => i.Order).ThenBy(i => i.Id);
+        var coverImage = orderedImages.FirstOrDefault();
+        var setplanImage = orderedImages.FirstOrDefault(i => i.Order == 100);
+
+        if (setplanImage is not null)
+        {
+            setplanPhoto.Display = true;
+            setplanPhoto.ImageSrc = setplanImage.ImageSrc;
+            setplanPhoto.Id = setplanImage.Id;
+            setplanPhoto.Order = setplanImage.Order;
+        }
+
+        if (coverImage is not null)
+        {
+            coverPhoto.Display = true;
+            coverPhoto.ImageSrc = coverImage.ImageSrc;
+            coverPhoto.Id = coverImage.Id;
+            coverPhoto.Order = coverImage.Order;
+
+            var supportedImages = data.images.Where(i => i.Id != coverImage.Id && i.Id != setplanPhoto.Id);
+            foreach (var item in supportedImages)
+            {
+                string inputId = $"img-preview-input-{item.Order}";
+                string imgId = $"img-preview-src-{item.Order}";
+                string inputFileSrc = $"input-file-src-{item.Order}";
+
+                imageItems.Add(new ImageItem
+                    {
+                        ContainerId = $"{imgId}-{inputId}",
+                        Display = true,
+                        Id = item.Id,
+                        ImageSrc = item.ImageSrc,
+                        ImageSrcId = imgId,
+                        InputDataId = inputId,
+                        Order = item.Order,
+                        InputFileSrcId = inputFileSrc
+                    });
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private bool DisableLocation
+    {
+        get
+        {
+            return ModelState.SelectedType == 2;
+        }
+    }
+
+    private void ClearTextEdit()
+    {
+        ModelState.PinnedLocation = string.Empty;
+    }
+
+    private ValidationMode FormMode
+    {
+        get
+        {
+            return DisableLocation ? ValidationMode.Manual : (showErrors ? ValidationMode.Auto : ValidationMode.Manual);
+        }
     }
 
     public class ModelData
@@ -194,8 +732,27 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public int Category { get; set; }
+
+        //Location
+        public int ExperienceType {get; set;}
+        public string HouseNo {get; set;}
+        public string PostalCode {get; set;}
+        public string PinnedLocation {get; set;}
+        public string RegionName {get; set;}
+        public string RegionCode {get; set;}
+        public string CityName {get; set;}
+        public string CityCode {get; set;}
+        public string BarangayName {get; set;}
+        public string BarangayCode {get; set;}
+        public bool IsPublish { get; set; }
+        public bool ComingSoon { get; set; }
+        public IList<ImageItem> images { get; set; }
+        //Display Preferrence
+        public bool IsPublic => IsPublish && !ComingSoon;
+        public bool IsPrivate => !IsPublish && !ComingSoon;
+        public bool IsComingSoon => IsPublish && ComingSoon;
     }
-    
+
     public class FormModel
     {
         [Required(ErrorMessage = "The event name field is mandatory.")]
@@ -208,7 +765,40 @@
 
         public int SelectedCategory {get; set;} = 0;
 
+        //Location
+        [Required]
+        public int SelectedType {get; set;} = 1;
+
+        [Required(ErrorMessage = "The house # field is mandatory.")]
+        public string HouseNo {get; set;}
+
+        [Required(ErrorMessage = "The postal code field is mandatory.")]
+        public string PostaCode {get; set;}
+
+        public string PinnedLocation {get; set;}
+
+        [Required]
+        public Region Region {get; set;} = new();
+
+        [Required]
+        public City City {get; set;} = new();
+
+        [Required]
+        public Barangay Barangay {get; set;} = new();
+
+        public bool Publish { get; set; } = true;
+
+        public bool ComingSoon { get; set; } = false;
+
         public IList<CategoryItem> categoryItems = new List<CategoryItem>(); 
+
+        public IList<ImageItem> imageItems = new List<ImageItem>();
+
+        //Display Preferrence
+        public bool IsPublic { get; set; }
+        public bool IsPrivate { get; set; }
+        public bool IsComingSoon { get; set; }
+
     }
 
     public class CategoryItem 
@@ -216,5 +806,179 @@
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool Selected { get; set; }
+    }
+
+    public class Region
+    {
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "The region field is mandatory.")]
+        public string Code { get; set; }
+    }
+
+    public class City
+    {
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "The city field is mandatory.")]
+        public string Code { get; set; }
+
+        public bool IsCity { get; set; }
+        public bool IsMunicipality { get; set; }
+    }
+
+    public class Barangay
+    {
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "The barangay field is mandatory.")]
+        public string Code { get; set; }
+    }
+
+    public class ImageItem
+    {
+        public int Id { get; set; }
+        public string ContainerId { get; set; } = string.Empty;
+        public string ImageSrcId { get; set; } = string.Empty;
+        public string InputDataId { get; set; } = string.Empty;
+        public string FileId { get; set; } = string.Empty;
+        public decimal FileSize { get; set; } = 0;
+        public bool Display { get; set; } = false;
+        public int Order { get; set; } = 0;
+        public string ImageSrc { get; set; } = string.Empty;
+        public string InputFileSrcId { get; set; }
+    }
+
+    private class UploadResult
+    {
+        public string? Message { get; set; }
+        public bool? Success { get; set; }
+    }
+
+    private class ImageSelector
+    {
+        public string Selector { get; set; }
+        public int Order { get; set; }
+    }
+
+    public async Task LoadCoverPhotoFile(InputFileChangeEventArgs e)
+    {
+        if (imageCropper is not null)
+        {
+            var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions
+                {
+                    FileInputIndex = 0,
+                    FileSrcSelector = $"#{coverPhoto.FileId}",
+                    Title = "Crop selected image",
+                    OuputSelector = $"#{coverPhoto.InputDataId}",
+                    HeightRatio = 5,
+                    WidthRatio = 4
+                });
+            if (cropperResult.Cropped)
+            {
+                await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImage", $"#{coverPhoto.ImageSrcId}", $"#{coverPhoto.InputDataId}");
+                coverPhoto.FileSize = cropperResult.FileSize;
+                coverPhoto.Display = true;
+            }
+            else
+            {
+                coverPhoto.Display = false;
+            }
+
+            if(OnCoverPhotoDisplayChanged.HasDelegate)
+            {
+                await OnCoverPhotoDisplayChanged.InvokeAsync();
+            }
+        }
+    }
+
+    private async Task LoadSetplanPhotoFile(InputFileChangeEventArgs e)
+    {
+        var options = new
+        {
+            imgSelector = $"#{setplanPhoto.ImageSrcId}",
+            inputSelector = $"#{setplanPhoto.FileId}",
+            fileIndex = 0,
+            inputSelectorToWriteBlob = $"#{setplanPhoto.InputDataId}"
+        };
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImageByFileInput", options);
+        setplanPhoto.Display = true;
+    }
+
+    public async Task<bool> UploadImages(int createdActivityId)
+    {
+        try
+        {
+            var selectors = new List<ImageSelector>();
+            if (coverPhoto.Display)
+            {
+                selectors.Add(new ImageSelector
+                    {
+                        Selector = $"#{coverPhoto.InputDataId}",
+                        Order = coverPhoto.Order
+                    });
+            }
+            //selectors.AddRange(imageItems.Select(i =>
+            //{
+            //    return new ImageSelector
+            //        {
+            //            Selector = $"#{i.InputDataId}",
+            //            Order = i.Order
+            //        };
+            //}));
+            if (setplanPhoto.Display)
+            {
+                selectors.Add(new ImageSelector
+                    {
+                        Order = setplanPhoto.Order,
+                        Selector = $"#{setplanPhoto.InputDataId}"
+                    });
+            }
+
+            var result = await JS.InvokeAsync<UploadResult>("MyLib.Pages.activity.creation.uploadListImages",
+                    selectors, createdActivityId, deletedIds);
+
+            return result.Success ?? false;
+        }
+        catch (System.Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public Task DeleteCoverPhoto()
+    {
+        coverPhoto.Display = false;
+        deletedIds.Add(coverPhoto.Id);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteSetplanPhoto()
+    {
+        setplanPhoto.Display = false;
+        deletedIds.Add(setplanPhoto.Id);
+        return Task.CompletedTask;
+    }
+
+    private void CheckboxChanged(int val)
+    {
+        if (val == 3)
+        {
+            ModelState.Publish    = false;
+            ModelState.ComingSoon = false;
+            ModelState.IsPrivate  = true;
+        }
+        else if (val == 2)
+        {
+            ModelState.Publish    = true;
+            ModelState.ComingSoon = false;
+            ModelState.IsPublic   = true;
+        }
+        else
+        {
+            ModelState.Publish      = true;
+            ModelState.ComingSoon   = true;
+            ModelState.IsComingSoon = true;
+        }
     }
 }

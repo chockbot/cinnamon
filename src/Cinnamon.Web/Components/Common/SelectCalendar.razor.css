@@ -1,5 +1,5 @@
 .select-calendar-wrapper .input {
-  border-radius: 50px;
+  border-radius: 12px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 10px 20px;
   display: flex;
@@ -7,6 +7,7 @@
   align-items: center;
   cursor: pointer;
   background-color: #fff;
+  width: 522px;
 }
 
 .select-calendar-wrapper .calendar-container {
@@ -15,4 +16,25 @@
 
 .select-calendar-wrapper .calendar-wrapper {
   width: 100%;
+}
+@media only screen and (max-width: 766px) {
+    .select-calendar-wrapper .input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .select-calendar-wrapper .input {
+        width: 100%;
+    }
+}
+@media (min-width: 992px) and (max-width: 1199px){
+    .select-calendar-wrapper .input {
+        width: 350px;
+    }
+}
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .select-calendar-wrapper .input {
+        width: 450px;
+    }
 }

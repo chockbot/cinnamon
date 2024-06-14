@@ -1,135 +1,181 @@
 @namespace Cinnamon.Web.Components.Pages.OteActivity
 @using Cinnamon.Web.Components;
+@using Cinnamon.Framework.Extensions.DateTimeExtension;
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Framework.Helpers;
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject NavigationManager NavigationManager;
+@inject IActivityApiHandler activityApiHandler
 @implements IOteComponent;
 
 <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <section class="ote-publish-wrapper">
-    <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
-        <h3 class="font-24 font-weight-700 color-black-100 text-center">Your one time event is almost ready!</h3>
-        <Divider />
-        <div>
-            <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
-            <Row HorizontalGutter="20" VerticalGutter="20">
-                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                    <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
-                        <p class="mb-5 font-20 font-weight-700 color-black-100">
-                            What’s gonna happen 
-                            <br>
-                            when availed the 
-                            <br>
-                            ticket events?
-                        </p>
-                        <div class="publish-read-more">
-                            <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
-                                Read more
-                            </Button>
-                        </div>
-                    </div>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                    <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
-                        <p class="mb-5 font-20 font-weight-700 color-black-100">
-                            How will I get paid 
-                            <br>
-                            from this event?
-                        </p>
-                        <div class="publish-read-more">
-                            <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
-                                Read more
-                            </Button>
-                        </div>
-                    </div>
-                </Column>
-            </Row>
-            <p class="mt-4 mb-5 font-20 font-weight-700 color-black-100">Final setup:</p>
-            <div class="mb-4">
-                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.Publish = !model.Publish">
-                    <img class="me-1" src='@(model.Publish ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="font-20 color-black-100">
-                        Activate your activity now
-                    </span>
-                </span>
-                @if(model.Publish)
-                {
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@model.ComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
-                        <label class="form-check-label" for="coming-soon">
-                            Display a Coming Soon Page
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="display-type" id="details-page" checked="@(!model.ComingSoon)" @onchange="@(()=>CheckboxChanged(2))" value="2">
-                        <label class="form-check-label" for="details-page">
-                            Display your event NOW!
-                        </label>
-                    </div>
-                }
-                else
-                {
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@model.ComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1" disabled>
-                        <label class="form-check-label" for="coming-soon">
-                            Display a Coming Soon Page
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="display-type" id="details-page" checked="@(!model.ComingSoon)" @onchange="@(()=>CheckboxChanged(2))" value="2" disabled>
-                        <label class="form-check-label" for="details-page">
-                            Display your event NOW!
-                        </label>
-                    </div>
-                }
-
-            </div>
-            <div class="mb-4">
-                <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
-                    <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        <a class="terms-link" href="help/terms" target="_blank">
-                            [Terms and condition for one time event.]
-                        </a>
-                </span>
-                @if (showErrorMessage && !model.AcceptTerms)
-                {
-                    <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
-                }
-            </div>
-            @*<div class="mb-4">
-                <span class="d-inline-flex align-items-center cursor-pointer prevent-select" @onclick="() => model.ComingSoon = !model.ComingSoon">
-                    <img class="me-1" src='@(model.ComingSoon ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    <span class="font-20 color-black-100">
-                        Coming Soon
-                    </span>
-                </span>
-            </div>*@
-        </div>
-    </div>
-    <div class="section-footer mt-4 d-flex">
-        @if (HavePrevious)
+        @if (Summary is not null)
         {
-            <Button class="@PrevButtonClass" @onclick="PrevClick">
-                Back
-            </Button>
+            <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0 mb-3">
+                <div>
+                    @*Title*@
+                    <p class="event-name">@Summary.EventData.Name</p>
+                    @*Location*@
+                    @if (Summary.EventData.ExperienceType == 1)
+                    {
+                        string address = string.IsNullOrEmpty(Summary.EventData.PinnedLocation) ? $"{Summary.EventData.BarangayName + ", " + Summary.EventData.CityName + ", " + Summary.EventData.RegionName}" : Summary.EventData.PinnedLocation;
+                        <div>
+                            <p class="event-details ">
+                                @address
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <p class="event-details">
+                                Online
+                            </p>
+                        </div>
+                    }
+                    @*Schedule*@
+                    <div>
+                        <p class="event-details">
+                            @if (scheduleDates != null && scheduleDates.Count > 0)
+                            {
+                                string eventSchedule = $"{Summary.ScheduleData.DurationStart?.ToString("MMM dd")} - {Summary.ScheduleData.DurationEnd?.ToString("MMM dd, yyyy")}";
+                                @eventSchedule
+                            }
+                            else if (Summary.ScheduleData != null)
+                            {
+                                @Summary.ScheduleData.DurationStart?.ToString("MMM dd, yyyy")
+                            }
+                        </p>
+                        <p class="event-details">
+                            @Summary.ScheduleData.DateTo.ToString("hh:mm tt")
+                        </p>
+                    </div>
+                </div>
+
+                @*Calendar*@
+                <button class="view-calendar" @onclick="() => ViewCalendar()">View Calendar</button>
+
+                @*Tickets*@
+                <div>
+                    <p class="prices-title">Ticket Prices</p>
+                    @foreach (var item in Summary.PricingData.ItemPrices)
+                    {
+                        <div class="ticket-details">
+                            <p class="event-details">@item.Name</p>
+                            <p class="event-details">₱ @item.Price?.ToString("#,###")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
+                <div>
+                    <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
+                    <Row HorizontalGutter="20" VerticalGutter="20">
+                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                            <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
+                                <p class="mb-5 font-20 font-weight-700 color-black-100">
+                                    What’s gonna happen 
+                                    <br>
+                                    when availed the 
+                                    <br>
+                                    ticket events?
+                                </p>
+                                <div class="publish-read-more">
+                                    <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                        Read more
+                                    </Button>
+                                </div>
+                            </div>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                            <div class="box-border border-radius-20 pt-3 pb-4 px-3 text-center bg-white-100 h-100 position-relative">
+                                <p class="mb-5 font-20 font-weight-700 color-black-100">
+                                    How will I get paid 
+                                    <br>
+                                    from this event?
+                                </p>
+                                <div class="publish-read-more">
+                                    <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                        Read more
+                                    </Button>
+                                </div>
+                            </div>
+                        </Column>
+                    </Row>
+                    <p class="font-20 font-weight-700 color-black-100">Terms & Conditions</p>
+                    <div class="terms-condition-section">
+                        <span class="d-inline-flex align-items-center cursor-pointer prevent-select">
+                            <img @onclick="() => model.AcceptTerms = !model.AcceptTerms" class="me-1" src='@(model.AcceptTerms ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                            <p class="terms-link-text">I have read and agreed to the <span><a class="terms-link" href="help/terms" target="_blank">Terms & Conditions</a></span></p>
+                        </span>
+                        @if (showErrorMessage && !model.AcceptTerms)
+                        {
+                            <p class="mb-0 font-12 is-invalid text-danger">Please accept terms and condition</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="section-footer mt-4 d-flex">
+                @if (HavePrevious)
+                {
+                    <Button class="@PrevButtonClass" @onclick="PrevClick">
+                        Back
+                    </Button>
+                }
+                <Button class="@NextButtonClass" @onclick="NextClick">
+                <ChildContent>
+                    Publish
+                </ChildContent>
+                </Button>
+            </div>
+            <Modal @ref="modalCalendar">
+                <ModalContent Centered>
+                    <ModalHeader class="py-2 px-4 border-1-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                        <p class="font-16 m-0 font-weight-700">View Calendar</p>
+                        <button type="button" style="top: 13px; right: 20px;" class="btn-close position-absolute" @onclick="() => HideCalendar()" />
+                    </ModalHeader>
+                    <ModalBody>
+                        <Calendar @ref="summaryCalendar" CurrentDate="scheduleDates.First().NewDate"
+                                        Flat
+                                  SelectedDates="scheduleDates.Select(s => s.NewDate)"
+                                        ViewOnly
+                                  OnNextMonthChanged="OnCurrentMonthChanged"
+                                  OnPreviousMonthChanged="OnCurrentMonthChanged" />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         }
-        <Button class="@NextButtonClass" @onclick="NextClick">
-            <ChildContent>
-                Publish
-            </ChildContent>
-        </Button>
-    </div>
-   @* <OteRouteButtons HavePrevious LoadingLabel="Publishing" LoadingNext="invokingNext" OnNextClick="NextClick" OnPreviousClick="PrevClick"/>*@
 </section>
 </LoadingIndicator>
 <UserFlowModal @ref=userFlowModal Image="user-flow-ote.webp" MobileImage="user-flow-ote-mobile.png"/>
 <UserFlowModal @ref=moneyFlowsModal Image="money-flow-ote.webp" MobileImage="money-flow-ote-mobile.png" />
 
 @code 
-{
+            {
     [Parameter]
     public EventCallback OnNextClick {get; set;}
 
     [Parameter]
     public EventCallback OnPrevClick {get; set;}
+
+    [Parameter]
+    public ComponentSummary Summary { get; set; } = new();
+
+    [Parameter]
+    public string Token { get; set; }
+
+    private GenerateRecurrenceDate recurrenceHelper = new();
+
+    private Calendar? summaryCalendar;
+
+    private List<DateSchedule> scheduleDates = new();
+
+    private int activityId = 0;
+
+    private bool accepTerms = true;
+
     LoadingIndicator loadingIndicator;
     private FormModel model = new();
     private bool invokingNext = false;
@@ -138,6 +184,9 @@
     private UserFlowModal? moneyFlowsModal;
     public bool HavePrevious { get; set; } = true;
     public string NextButtonExtraClass { get; set; }
+    private Modal? modalCalendar { get; set; }
+
+    public bool IsShowCalendar { get; set; } = false;
 
     public Task<bool> FieldValid()
     {
@@ -174,16 +223,22 @@
     {
         return new ModelData {
             AcceptTerms = model.AcceptTerms,
-            ComingSoon = model.ComingSoon,
-            IsPublish = model.Publish
         };
     }
 
-    public Task SetState(ModelData data)
+    public Task SetState(IEnumerable<BookedDate> bookedDates, int activityId, bool AcceptTerms)
     {
-        model.AcceptTerms = data.AcceptTerms;
-        model.ComingSoon = data.ComingSoon;
-        model.Publish = data.IsPublish;
+        this.activityId = activityId;
+        foreach (var item in bookedDates)
+        {
+            scheduleDates.Add(new DateSchedule
+                {
+                    Id = item.Id,
+                    NewDate = item.Date,
+                    OldDate = item.Date
+                });
+        }
+        this.accepTerms = AcceptTerms;
         return Task.CompletedTask;
     }
 
@@ -195,16 +250,17 @@
 
     private class FormModel 
     {
-        public bool Publish {get; set;} = true;
         public bool AcceptTerms {get; set;} = true;
-        public bool ComingSoon {get; set;} = false;
+        public IEnumerable<BookedDate> bookedDates { get; set; }
+        public int activityId { get; set; }
     }
 
     public class ModelData 
     {
-        public bool IsPublish {get; set;}
         public bool AcceptTerms {get; set;}
-        public bool ComingSoon {get; set;}
+        public IEnumerable<BookedDate> bookedDates { get; set; }
+        public int activityId { get; set; }
+
     }
     private string NextButtonClass
     {
@@ -221,9 +277,111 @@
             return "me-2 bg-white-200 color-black-100 text-capitalize font-24 hover-color-black-100 px-5 border-radius-10 m-font-20 m-border-radius-5 m-width-100 m-margin-right-10";
         }
     }
-    
-    private void CheckboxChanged(int val)
+    public class ComponentSummary
     {
-        model.ComingSoon = (val == 1) ? true : false;
+        public OteEvent.ModelData EventData { get; set; }
+        public OteSchedule.ModelData ScheduleData { get; set; }
+        public OtePricing.ModelData PricingData { get; set; }
+        public OtePublish.ModelData PublishData { get; set; }
+        public OteOnlineEvent.ModelData OnlineData { get; set; }
+
+        // extra options
+        public IEnumerable<BookedDate> BookedDates { get; set; }
+    }
+    private async Task OnCurrentMonthChanged(Calendar.CalendarCurrentMonth value)
+    {
+        var from = new DateTime(value.Year, value.Month, 1);
+        var to = from.LastDayOfMonth();
+
+        Dictionary<int, DateSchedule> dates = new();
+        if (Summary is not null && Summary.ScheduleData is not null && Summary.ScheduleData.BookedDates is not null)
+        {
+            foreach (var item in Summary.ScheduleData.BookedDates)
+            {
+                if (!dates.ContainsKey(item.Id))
+                {
+                    dates.Add(item.Id, new DateSchedule
+                        {
+                            Id = item.Id,
+                            NewDate = item.NewDate,
+                            OldDate = item.Date
+                        });
+                }
+            }
+        }
+
+        var dateItems = await LoadScheduleDates(from, to);
+        if (dateItems.Count() > 0)
+        {
+            scheduleDates.Clear();
+
+            foreach (var item in dateItems)
+            {
+                if (dates.ContainsKey(item.Id))
+                {
+                    var date = dates[item.Id];
+                    item.NewDate = date.NewDate;
+                }
+                scheduleDates.Add(item);
+            }
+
+            summaryCalendar.LoadCalendarItems();
+        }
+    }
+
+    private async Task<IEnumerable<DateSchedule>> LoadScheduleDates(DateTime from, DateTime to)
+    {
+        try
+        {
+            var result = await activityApiHandler.OteScheduleDates(new Framework.ApiCommand.ApiCore.Activity.Request.OteScheduleDatesArgs
+                {
+                    ActivityId = activityId,
+                    From = from.ToString("yyyyMMdd"),
+                    To = to.ToString("yyyyMMdd")
+                }, Token);
+            if (result.Succeeded && result.Result is not null && result.Result.IsSuccess && result.Result.Result.Count() > 0)
+            {
+                return result.Result.Result.Select(d => new DateSchedule
+                    {
+                        Id = d.Id,
+                        NewDate = d.Date,
+                        OldDate = d.Date
+                    });
+            }
+
+            return Enumerable.Empty<DateSchedule>();
+        }
+        catch (Exception ex)
+        {
+            return Enumerable.Empty<DateSchedule>();
+        }
+    }
+
+    public class BookedDate
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime NewDate { get; set; }
+    }
+
+    private class DateSchedule
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public DateTime OldDate { get; set; }
+
+        [Required]
+        public DateTime NewDate { get; set; }
+    }
+    private async Task ViewCalendar()
+    {
+        await modalCalendar?.Show();
+        StateHasChanged();
+    }
+    private async Task HideCalendar()
+    {
+        await modalCalendar?.Hide();
+        StateHasChanged();
     }
 }

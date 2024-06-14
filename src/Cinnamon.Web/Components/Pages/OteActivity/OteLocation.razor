@@ -303,7 +303,6 @@
         }
     }
 
-
     private async Task LoadBarangays()
     {
         try
@@ -356,7 +355,6 @@
             {
                 bool valid = await formValidation.ValidateAll() && !string.IsNullOrEmpty(model.Region.Code)
                     && !string.IsNullOrEmpty(model.City.Code) && !string.IsNullOrEmpty(model.Barangay.Code);
-
                 showErrors = true;
                 StateHasChanged();
                 await Task.Delay(300); // add delay to populate is-invalid class
