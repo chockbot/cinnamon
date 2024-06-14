@@ -327,10 +327,20 @@
                     </div>
                     <div class="event-organizer-join">
                         <p class="event-organizer-join-desktop-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                        @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                        {
                         <div class="event-organizer-join-sub-container" @onclick="NavigateToDashboard">
                         <p class="event-organizer-join-title">Join Our Team!</p>
                         <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
                         </div>
+                        }
+                        else
+                        {   
+                        <div class="event-organizer-join-sub-container" @onclick="NavigateToOnboarding">
+                        <p class="event-organizer-join-title">Join Our Team!</p>
+                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                        </div>
+                        }
                     </div>
                 </div>
             </div>
