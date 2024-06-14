@@ -57,7 +57,6 @@
             {
                 <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left" Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
                     <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
-
                         <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
                         <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
                             <div class='empty-image-container bg-white-100'>
@@ -99,7 +98,7 @@
             }
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
                 <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
-                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" />
+                    <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged" />
                 </div>
 
                 <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
@@ -944,6 +943,12 @@
         {
             return currentIndex == (eventType == EventType.Online ?  4 : 3);
         }
+    }
+
+    private Task OnCoverPhotoDisplayChanged()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private class ComponentItem<T> where T : IOteComponent 

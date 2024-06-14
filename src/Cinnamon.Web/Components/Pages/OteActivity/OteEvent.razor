@@ -233,6 +233,9 @@
     [Parameter]
     public FormModel ModelState {get; set;} = new();
 
+    [Parameter]
+    public EventCallback OnCoverPhotoDisplayChanged {get; set;} 
+
     public Validations? formValidation;
     public Validation? eventNameValidation;
     public Validation? eventDescriptionValidation;
@@ -902,6 +905,11 @@
             else
             {
                 coverPhoto.Display = false;
+            }
+
+            if(OnCoverPhotoDisplayChanged.HasDelegate)
+            {
+                await OnCoverPhotoDisplayChanged.InvokeAsync();
             }
         }
     }
