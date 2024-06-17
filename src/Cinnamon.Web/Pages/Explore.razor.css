@@ -1,10 +1,23 @@
 ﻿body {
   font-family: 'Montserrat', sans-serif;
   font-family: 'Poppins', sans-serif;
-
 }
 
 /*test area */
+
+.tooltip {
+  /* Your existing styles here */
+
+  /* Add these lines to animate the opacity */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.0s ease, visibility 1.0s ease;
+}
+
+.tooltip:hover {
+  opacity: 1;
+  visibility: visible;
+}
 
 
 .static-category-effect:hover .static-category-title {
