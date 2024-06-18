@@ -562,10 +562,10 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 	public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudents(int? providerId, string searchValue, 
 		int searchBy, int activityId, int? count, int? skip)
 	{
-        try
-        {
+		try
+		{
 			int limitCount = count.HasValue ? count.Value : int.MaxValue;
-            int skipCount = skip.HasValue ? skip.Value : 0;
+			int skipCount = skip.HasValue ? skip.Value : 0;
 
 			string dateString = DateTime.Now.ToString("yyyy-MM-dd");
 			string studentWhereClause = "where 1=1 ";
@@ -603,7 +603,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 					directStudentWhereClause += "and ds.\"NumberOfSessions\" <= ds.\"SessionsAttended\" ";
 					break;
 			}
-            
+			
 			string query = "with cinnamonStd as " +
 						   "( " +
 								"select b.\"Id\" as \"StudentId\", a.\"Title\", " +
@@ -616,10 +616,10 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 								"join public.\"ActivitySchedules\" as c ON \"c\".\"Id\" = b.\"ScheduleId\" " +
 								"left join public.\"StudentAttendances\" sa " +
 									"on sa.\"StudentId\" = b.\"Id\" " + studentWhereClause +
-						    "), " +
+							"), " +
 							"directStd as " +
 							"( " +
-								"select ds.\"Id\" \"StudentId\", ac.\"Title\", " +
+								"select di.\"Id\" as \"StudentId\", ac.\"Title\", " +
 									"ds.\"Name\", ds.\"NumberOfSessions\", ds.\"SessionsAttended\", " +
 									"ds.\"StudentNo\", ds.\"Remarks\", '-infinity'::timestamp \"ExpirationDateEnd\", " +
 									"'-infinity'::timestamp \"ExpirationDateStart\", 0 \"HasExpiration\", " +
@@ -647,18 +647,18 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							"from allStd " + orderClause +
 							"offset " + skipCount + " limit " + limitCount + " ";
 
-            IList <StudentDTO> listResult = new List<StudentDTO>();
+			IList <StudentDTO> listResult = new List<StudentDTO>();
 
-            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = System.Data.CommandType.Text;
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
 
-                if (providerId.HasValue)
-                {
-                    var parameterCustomerId = new NpgsqlParameter("providerId", providerId.Value);
-                    command.Parameters.Add(parameterCustomerId);
-                }
+				if (providerId.HasValue)
+				{
+					var parameterCustomerId = new NpgsqlParameter("providerId", providerId.Value);
+					command.Parameters.Add(parameterCustomerId);
+				}
 
 				if(activityId > 0)
 				{
@@ -672,27 +672,27 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 					command.Parameters.Add(parameterSearch);
 				}
 
-                applicationContext.Database.OpenConnection();
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
 						
-                        //Get Enrolled Student List
-                        listResult = dt.AsEnumerable().Select(item => new StudentDTO
-                        {
-                            Id                  = Convert.ToInt32(item["StudentId"]),
-                            ActivityId          = Convert.ToInt32(item["ActivityId"]),
-                            ScheduleId          = Convert.ToInt32(item["ScheduleId"]),
-                            Name                = item["Name"].ToString() ?? string.Empty,
-                            NumberOfSessions    = Convert.ToInt32(item["NumberOfSessions"]),
-                            SessionsAttended    = Convert.ToInt32(item["SessionsAttended"]),
-                            ActivityTitle       = item["Title"].ToString() ?? string.Empty,
-                            StudentNo           = item["StudentNo"].ToString() ?? string.Empty,
-                            Remarks             = item["Remarks"].ToString() ?? string.Empty,
+						//Get Enrolled Student List
+						listResult = dt.AsEnumerable().Select(item => new StudentDTO
+						{
+							Id                  = Convert.ToInt32(item["StudentId"]),
+							ActivityId          = Convert.ToInt32(item["ActivityId"]),
+							ScheduleId          = Convert.ToInt32(item["ScheduleId"]),
+							Name                = item["Name"].ToString() ?? string.Empty,
+							NumberOfSessions    = Convert.ToInt32(item["NumberOfSessions"]),
+							SessionsAttended    = Convert.ToInt32(item["SessionsAttended"]),
+							ActivityTitle       = item["Title"].ToString() ?? string.Empty,
+							StudentNo           = item["StudentNo"].ToString() ?? string.Empty,
+							Remarks             = item["Remarks"].ToString() ?? string.Empty,
 							ExpirationEndDate   = Convert.ToDateTime(item["ExpirationDateEnd"]),
 							ExpirationStartDate = Convert.ToDateTime(item["ExpirationDateStart"]),
 							HasExpiration       = Convert.ToInt32(item["HasExpiration"]),
@@ -700,18 +700,18 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 													Convert.ToDateTime(item["LastAttendance"]) : DateTime.MinValue,
 							StudentType			= Convert.ToInt32(item["StudentType"]) == 0 ? 
 													Framework.Enums.StudentType.Cinnamon : Framework.Enums.StudentType.Manual
-                        }).ToList();
-                    }
-                }
-            }
+						}).ToList();
+					}
+				}
+			}
 
-            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
-        }
-        catch (Exception ex)
-        {
-            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
-        }
-    }
+			return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(listResult, "Successfully get completed students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when trying to get completed students");
+		}
+	}
 
 	public async Task<AppResult<int>> OngoingStudentCount(int activityId)
 	{
@@ -731,22 +731,22 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 			int result = 0;
 
 			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = System.Data.CommandType.Text;
-                
-                applicationContext.Database.OpenConnection();
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+				
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
-                        result = dt.AsEnumerable().Select(item => Convert.ToInt32(item["Ongoing"])).First();
-                    }
-                }
-            }
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+						result = dt.AsEnumerable().Select(item => Convert.ToInt32(item["Ongoing"])).First();
+					}
+				}
+			}
 
 			return AppResult<int>.CreateSucceeded(result, "Successfully get ongoing student count.");
 		}
@@ -773,23 +773,23 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 			int result = 0;
 
 			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = System.Data.CommandType.Text;
-                
-                applicationContext.Database.OpenConnection();
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+				
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
-                        //Get Enrolled Student List
-                        result = dt.AsEnumerable().Select(item => Convert.ToInt32(item["Completed"])).First();
-                    }
-                }
-            }
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+						//Get Enrolled Student List
+						result = dt.AsEnumerable().Select(item => Convert.ToInt32(item["Completed"])).First();
+					}
+				}
+			}
 
 			return AppResult<int>.CreateSucceeded(result, "Successfully get completed student count.");
 		}
