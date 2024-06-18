@@ -227,8 +227,8 @@
                         @if (activity.ExperienceTypeId == 1)
                         {
                             string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16 text-capitalize">@address</p>
-                            <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
+                            <p class="address">@address</p>
+                            <iframe height="373" id="mapframe" frameborder="0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else
                         {
@@ -241,7 +241,7 @@
                     {
                         <div id="set-plan" class="mt-4 seat-plan-section">
                             <p class="event-schedule">Seat Plan</p>
-                            <img style="width: 330px; height: auto; cursor:pointer" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                            <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
                         </div>
                     }
                 }
