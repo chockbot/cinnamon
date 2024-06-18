@@ -26,5 +26,5 @@ public interface IDirectStudentData
 
     Task<AppResult<DirectStudentInfoResult>> DirectStudentInfo(int studentId);
 
-    Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs arg, int studentId);
+    Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs arg);
 }

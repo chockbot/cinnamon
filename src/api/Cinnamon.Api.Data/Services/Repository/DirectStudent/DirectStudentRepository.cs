@@ -150,7 +150,7 @@ public class DirectStudentRepository : IDirectStudentRepository
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int studentId, bool ongoing, bool completed)
+	public async Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int? studentId, bool ongoing, bool completed)
 	{
 		try
 		{

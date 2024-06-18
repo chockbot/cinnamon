@@ -104,12 +104,17 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
         }
     }
 
-    public async Task<AppResult<IEnumerable<DirectStudentSession>>> StudentSessions(int studentId, 
+    public async Task<AppResult<IEnumerable<DirectStudentSession>>> StudentSessions(int? studentId, 
         bool? ongoingSessions = false, bool? completedSessions = false)
     {
         try
         {
-            var whereClause = string.Empty;
+            var whereClause = "where 1=1 ";
+
+            if(studentId.HasValue)
+            {
+                whereClause += "ds.\"DirectStudentInfoId\" = @studentId ";
+            }
 
             if(ongoingSessions.HasValue && ongoingSessions.Value)
             {
@@ -135,8 +140,7 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
                             "dp.\"Amount\", dp.\"PaymentDate\" " +
                         "from public.\"DirectStudentSessions\" ds " +
                         "join public.\"DirectStudentPayments\" dp " +
-                            "on ds.\"Id\" = dp.\"DirectStudentSessionId\" " +
-                        "where ds.\"DirectStudentInfoId\" = @studentId " + whereClause;
+                            "on ds.\"Id\" = dp.\"DirectStudentSessionId\" " + whereClause;
 
             var result = new List<DirectStudentSession>();
 
@@ -144,7 +148,10 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
             {
                 command.CommandText = query;
                 command.CommandType = System.Data.CommandType.Text;
-                command.Parameters.Add(new NpgsqlParameter("studentId", studentId));
+                if(studentId.HasValue)
+                {
+                    command.Parameters.Add(new NpgsqlParameter("studentId", studentId));
+                }
                 
                 applicationContext.Database.OpenConnection();
 

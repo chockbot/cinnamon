@@ -205,12 +205,12 @@ public class DirectStudentData : IDirectStudentData
         }
     }
 
-    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId)
+    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args)
     {
         try
         {
             var result = await flurlClient
-                            .Request($"DirectStudent/Sessions/{studentId}")
+                            .Request($"DirectStudent/Sessions")
                             .SetQueryParams(args)
                             .GetJsonAsync<StudentSessionsResult>();
             return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully get direct student sessions.");

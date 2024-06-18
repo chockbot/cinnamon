@@ -362,17 +362,17 @@ public class DirectStudentController : ControllerBase
     }
 
     [HttpGet]
-    [Route("Sessions/{studentId}")]
+    [Route("Sessions")]
     [ProducesResponseType(typeof(StudentSessionsResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args, int studentId)
+    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args)
     {
         try
         {
             bool ongoing = args.SessionStatus?.ToLower() == "ongoing";
             bool completed = args.SessionStatus?.ToLower() == "completed";
 
-            var result = await directStudentRepository.StudentSessions(studentId, ongoing, completed);
+            var result = await directStudentRepository.StudentSessions(args.StudentId, ongoing, completed);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

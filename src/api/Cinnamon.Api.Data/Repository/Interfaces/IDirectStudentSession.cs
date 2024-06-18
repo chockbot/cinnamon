@@ -8,7 +8,7 @@ public interface IDirectStudentSession : IGenericEntity<DirectStudentSession>
 {
     Task<AppResult<int>> OngoingStudentCount(int activityId);
     Task<AppResult<int>> CompletedStudentCount(int activityId);
-    Task<AppResult<IEnumerable<DirectStudentSession>>> StudentSessions(int studentId, 
+    Task<AppResult<IEnumerable<DirectStudentSession>>> StudentSessions(int? studentId, 
         bool? ongoingSessions = false, bool? completedSessions = false);
 
     Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
