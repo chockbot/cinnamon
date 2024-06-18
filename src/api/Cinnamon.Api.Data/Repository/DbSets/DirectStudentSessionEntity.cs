@@ -1,6 +1,7 @@
 using System.Data;
 using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -184,5 +185,104 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
         {
             return AppResult<IEnumerable<DirectStudentSession>>.CreateFailed(ex, "An error occured when getting student sessesions.");
         }
+    }
+
+    public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
+    {
+        try
+		{
+			// expired in two days
+			var dateString = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd");
+
+			string query = "with uniqueRows as " +
+                           "( " +
+                               "select distinct ct.\"Id\" \"customerId\", st.\"ExpirationDateStart\" \"DateStart\", st.\"ExpirationDateEnd\" \"DateEnd\", " +
+                                           "ct.\"Name\", ct.\"Email\", " +
+                                           "ac.\"Title\", ac.\"Handler\", ss.\"Price\", ac.\"Price\" \"APrice\", " +
+                                           "ac.\"Id\", ac.\"ExperienceTypeId\", ss.\"Id\" \"scheduleId\" " +
+                               "from public.\"DirectStudentSessions\" st " +
+                               "join public.\"DirectStudentInfos\" ct " +
+                                   "on ct.\"Id\" = st.\"DirectStudentInfoId\" " +
+                               "join public.\"Activities\" ac " +
+                                   "on ac.\"Id\" = st.\"ActivityId\" " +
+                               "join public.\"ActivitySchedules\" ss " +
+                                   "on ss.\"Id\" = st.\"ScheduleId\" " +
+                               "where Date(st.\"ExpirationDateEnd\") = Date('" + dateString + "') " +
+                           "), " +
+                           "rowCnt as ( " +
+                               "select ur.*, ad.\"Address1\", " +
+                                   "case " +
+                                       "when ur.\"ExperienceTypeId\" = 1 then ad.\"Address1\" " +
+                                       "when ur.\"ExperienceTypeId\" = 2 then 'Online' " +
+                                       "else '' " +
+                                   "end as \"Address\", " +
+                                   "ai.\"ImageLocation\", " +
+                                   "Row_Number() over ( " +
+                                       "partition by ur.\"customerId\", ur.\"Id\", ur.\"scheduleId\", ur.\"DateEnd\" " +
+                                       "order by ur.\"customerId\", ur.\"Id\", ur.\"scheduleId\", ur.\"DateEnd\", ai.\"Order\" " +
+                                   ") as \"RowCnt\" " +
+                               "from uniqueRows ur " +
+                               "join public.\"ActivityAddress\" ad " +
+                                   "on ad.\"ActivityId\" = ur.\"Id\" " +
+                               "join public.\"ActivityImages\" ai " +
+                                   "on ai.\"ActivityId\" = ur.\"Id\" " +
+                           "), " +
+                           "withImages as ( " +
+                               "select rc.\"customerId\", rc.\"DateStart\", rc.\"DateEnd\", rc.\"Name\", " +
+                                   "rc.\"Email\", rc.\"Title\", rc.\"Handler\", rc.\"Price\", rc.\"APrice\", " +
+                                   "rc.\"Id\", rc.\"scheduleId\", rc.\"Address\", rc.\"ImageLocation\" " +
+                               "from rowCnt rc " +
+                               "where rc.\"RowCnt\" = 1 " +
+                           ") " +
+                           "select wi.*, " +
+                               "Coalesce(Trunc((Sum(rv.\"Rating\"::decimal) / Count(rv.\"Rating\")),1),0) \"Rating\", " +
+                               "Coalesce(Count(rv.\"Rating\"),0) \"Cnt\" " +
+                           "from withImages wi " +
+                           "left join public.\"Reviews\" rv " +
+                               "on rv.\"ActivityId\" = wi.\"Id\" " +
+                           "group by wi.\"customerId\", wi.\"DateStart\", wi.\"DateEnd\", wi.\"Name\", " +
+                               "wi.\"Email\", wi.\"Title\", wi.\"Handler\", wi.\"Price\", " +
+                               "wi.\"APrice\", wi.\"Id\", wi.\"scheduleId\", wi.\"Address\", wi.\"ImageLocation\" ";
+			
+			IList<ExpiredStudentDTO> listResult = new List<ExpiredStudentDTO>();
+
+			using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = System.Data.CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+				
+				using(var dr = await command.ExecuteReaderAsync())
+				{
+					if(dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+
+						listResult = dt.AsEnumerable().Select(item => new ExpiredStudentDTO {
+							DateEnd = Convert.ToDateTime(item["DateEnd"]),
+							DateStart = Convert.ToDateTime(item["DateStart"]),
+							Email = item["Email"].ToString() ?? string.Empty,
+							FirstName = item["Name"].ToString() ?? string.Empty,
+							Handler = item["Handler"].ToString() ?? string.Empty,
+							Price = Convert.ToDecimal(item["Price"]),
+							Title = item["Title"].ToString() ?? string.Empty,
+							Address = item["Address"].ToString() ?? string.Empty,
+							APrice = item["APrice"].ToString() ?? string.Empty,
+							Count = Convert.ToInt32(item["Cnt"]),
+							ImageLocation = item["ImageLocation"].ToString() ?? string.Empty,
+							Rating = Convert.ToDecimal(item["Rating"])
+						}).ToList();
+					}
+				}
+			}
+
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(listResult, "Successfully get expiring students");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when trying to get expiring students");            
+		}
     }
 }

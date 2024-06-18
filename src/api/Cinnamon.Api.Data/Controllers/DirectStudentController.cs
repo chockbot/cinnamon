@@ -389,4 +389,30 @@ public class DirectStudentController : ControllerBase
             return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [HttpGet]
+    [Route("ExpiringSessions")]
+    [ProducesResponseType(typeof(ExpiringSessionsResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExpiringSessions()
+    {
+        try
+        {
+            var result = await directStudentRepository.ExpiringStudents();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExpiringSessionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ExpiringSessionsResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExpiringSessionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

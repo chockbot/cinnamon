@@ -3,6 +3,7 @@ using AutoMapper;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
@@ -166,6 +167,24 @@ public class DirectStudentRepository : IDirectStudentRepository
 		catch (Exception ex)
 		{
 			return AppResult<IEnumerable<DirectStudentSessionDTO>>.CreateFailed(ex, "An error occured when getting direct student sessions.");
+		}
+	}
+
+	public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
+	{
+		try
+		{
+			var result = await dataStore.DirectStudentSession.ExpiringStudents();
+			if(!result.Succeeded || result.Result is null)
+			{
+				return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+			}
+
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(result.Result, "Successfully get expiring direct students.");
+		}
+		catch (Exception ex)
+		{
+			return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when getting expiring direct students.");
 		}
 	}
 }
