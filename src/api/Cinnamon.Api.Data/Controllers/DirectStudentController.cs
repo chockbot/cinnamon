@@ -391,6 +391,32 @@ public class DirectStudentController : ControllerBase
     }
 
     [HttpGet]
+    [Route("Sessions/{id}")]
+    [ProducesResponseType(typeof(StudentSessionResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentSession(int id)
+    {
+        try
+        {
+            var result = await directStudentRepository.StudentSession(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new StudentSessionResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
     [Route("ExpiringSessions")]
     [ProducesResponseType(typeof(ExpiringSessionsResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

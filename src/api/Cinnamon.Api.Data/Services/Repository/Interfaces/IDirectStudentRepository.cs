@@ -21,4 +21,6 @@ public interface IDirectStudentRepository
     Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int? studentId, bool ongoing, bool completed);
 
     Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
+
+    Task<AppResult<DirectStudentSessionDTO>> StudentSession(int sessionId);
 }
