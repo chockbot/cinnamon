@@ -203,6 +203,13 @@ export async function previewImage(imgSelector, inputSelector) {
   const urlSrc = inputElem.value;
   imgElem.src = urlSrc;
 }
+export function previewBase64Image(imgSelector, base64String, fileType) {
+    debugger;
+    const imgElem = document.querySelector(imgSelector);
+    // Construct the Data URL
+    const dataUrl = `data:${fileType};base64,${base64String}`;
+    imgElem.src = dataUrl;
+}
 
 export async function previewImageByFileInput({
   imgSelector,
@@ -305,4 +312,5 @@ export default {
   showImageTemplate,
   uploadListImages,
   previewImageByFileInput,
+  previewBase64Image
 };
