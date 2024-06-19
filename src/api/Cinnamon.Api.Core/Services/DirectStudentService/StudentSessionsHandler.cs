@@ -40,8 +40,9 @@ public class StudentSessionsHandler : IStudentSessionsHandler
             }
 
             var studentSessionsRes = await directStudentData.StudentSessions(new Framework.ApiCommand.ApiData.DirectStudent.Request.StudentSessionsArgs {
-                SessionStatus = args.SessionStatus
-            }, args.StudentId);
+                SessionStatus = args.SessionStatus,
+                StudentId = args.StudentId
+            });
             if(!studentSessionsRes.Succeeded || studentSessionsRes.Result is null || !studentSessionsRes.Result.IsSuccess)
             {
                 return AppResult<StudentSessionsResult>.CreateFailed(new ApplicationException(studentSessionsRes.Result?.ErrorInfo?.Message), studentSessionsRes.Message);

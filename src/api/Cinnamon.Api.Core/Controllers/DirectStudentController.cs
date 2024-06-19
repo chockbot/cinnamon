@@ -22,13 +22,14 @@ public class DirectStudentsController : ControllerBase
     private readonly IGetDirectStudentByIdHandler getDirectStudentByIdHandler;
     private readonly ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler;
     private readonly IUpdateStudentAttendanceHandler updateStudentAttendanceHandler;
+    private readonly IStudentSessionHandler studentSessionHandler;
     private readonly IMapper mapper;
 
     public DirectStudentsController(IDirectStudentsInfoHandler directStudentsInfoHandler, IMapper mapper,
         IUpdateDirectStudentHandler updateDirectStudentHandler, IDirectStudentHandler directStudentHandler,
         IStudentSessionsHandler studentSessionsHandler, IGetDirectStudentByIdHandler getDirectStudentByIdHandler,
         ICreateDirectStudentAttendanceHandler createDirectStudentAttendanceHandler,
-        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler)
+        IUpdateStudentAttendanceHandler updateStudentAttendanceHandler, IStudentSessionHandler studentSessionHandler)
     {
         this.directStudentsInfoHandler = directStudentsInfoHandler;
         this.mapper = mapper;
@@ -38,6 +39,7 @@ public class DirectStudentsController : ControllerBase
         this.getDirectStudentByIdHandler = getDirectStudentByIdHandler;
         this.createDirectStudentAttendanceHandler = createDirectStudentAttendanceHandler;
         this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
+        this.studentSessionHandler = studentSessionHandler;
     }
 
     [HttpGet]
@@ -308,6 +310,35 @@ public class DirectStudentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateDirectStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Sessions/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(StudentSessionResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> StudentSession(int id)
+    {
+        try
+        {
+            var result = await studentSessionHandler.ExecuteAsync(new Services.DirectStudentService.Interactors.StudentSessionArgs {
+                SessionId = id
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var dto = mapper.Map<DirectStudentSessionDTO>(result.Result);
+
+            return new JsonResult(new StudentSessionResult
+            {
+                IsSuccess = true,
+                Result = dto
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

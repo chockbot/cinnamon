@@ -362,17 +362,17 @@ public class DirectStudentController : ControllerBase
     }
 
     [HttpGet]
-    [Route("Sessions/{studentId}")]
+    [Route("Sessions")]
     [ProducesResponseType(typeof(StudentSessionsResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args, int studentId)
+    public async Task<IActionResult> StudentSessions([FromQuery] StudentSessionsArgs args)
     {
         try
         {
             bool ongoing = args.SessionStatus?.ToLower() == "ongoing";
             bool completed = args.SessionStatus?.ToLower() == "completed";
 
-            var result = await directStudentRepository.StudentSessions(studentId, ongoing, completed);
+            var result = await directStudentRepository.StudentSessions(args.StudentId, ongoing, completed);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -387,6 +387,58 @@ public class DirectStudentController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new StudentSessionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
+    [Route("Sessions/{id}")]
+    [ProducesResponseType(typeof(StudentSessionResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StudentSession(int id)
+    {
+        try
+        {
+            var result = await directStudentRepository.StudentSession(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new StudentSessionResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new StudentSessionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
+    [Route("ExpiringSessions")]
+    [ProducesResponseType(typeof(ExpiringSessionsResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExpiringSessions()
+    {
+        try
+        {
+            var result = await directStudentRepository.ExpiringStudents();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExpiringSessionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ExpiringSessionsResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExpiringSessionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

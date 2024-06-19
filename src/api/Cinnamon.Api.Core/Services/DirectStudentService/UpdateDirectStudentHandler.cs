@@ -164,6 +164,20 @@ public class UpdateDirectStudentHandler : IUpdateDirectStudentHandler
                             }
                         });
                     }
+                    else 
+                    {
+                        studentSesssions.Add(new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentSession {
+                            Id = session.Id,
+                            Name = session.Name,
+                            Remarks = session.Remarks,
+                            SessionsAttended = session.SessionsAttended,
+                            StudentNo = session.StudentNo,
+                            DirectStudentPayment = session.StudentPayment is null ? null : new Framework.ApiCommand.ApiData.DirectStudent.Request.UpdateDirectStudentArgs.UpdateDirectStudentPayment {
+                                Amount = session.StudentPayment.Amount,
+                                PaymentDate = session.StudentPayment.PaymentDate
+                            }
+                        });
+                    }
                 }
             }
 

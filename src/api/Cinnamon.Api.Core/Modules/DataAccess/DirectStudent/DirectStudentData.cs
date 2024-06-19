@@ -205,12 +205,12 @@ public class DirectStudentData : IDirectStudentData
         }
     }
 
-    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args, int studentId)
+    public async Task<AppResult<StudentSessionsResult>> StudentSessions(StudentSessionsArgs args)
     {
         try
         {
             var result = await flurlClient
-                            .Request($"DirectStudent/Sessions/{studentId}")
+                            .Request($"DirectStudent/Sessions")
                             .SetQueryParams(args)
                             .GetJsonAsync<StudentSessionsResult>();
             return AppResult<StudentSessionsResult>.CreateSucceeded(result, "Successfully get direct student sessions.");
@@ -244,6 +244,26 @@ public class DirectStudentData : IDirectStudentData
         catch (Exception ex)
         {
             return AppResult<GetDirectStudentByIdResult>.CreateFailed(ex, "An error occured when get direct students api.");
+        }
+    }
+
+    public async Task<AppResult<StudentSessionResult>> StudentSession(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"DirectStudent/Sessions/{id}")
+                            .GetJsonAsync<StudentSessionResult>();
+            return AppResult<StudentSessionResult>.CreateSucceeded(result, "Successfully get direct student session.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<StudentSessionResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentSessionResult>.CreateFailed(ex, "An error occured when get direct student session.");
         }
     }
 }

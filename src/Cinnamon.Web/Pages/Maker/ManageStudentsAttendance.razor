@@ -190,6 +190,8 @@
 
     string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 
+    private int directStudentId = 0;
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -248,22 +250,21 @@
                 }
                 break;
             case "Manual":
-                var resultDirect = await directStudentApiHandler.DirectStudent(Id, token);
+                var resultDirect = await directStudentApiHandler.StudentSession(Id, token);
                 if (resultDirect.Succeeded && resultDirect.Result != null && resultDirect.Result.IsSuccess)
                 {
                     var studentToUpdate = resultDirect.Result.Result;
                     student = new Students
-                        {
-                            Id = studentToUpdate.DirectStudentInfo.Id,
-                            Gender = studentToUpdate.DirectStudentInfo.Gender,
-                            Name = studentToUpdate.DirectStudentInfo.Name,
-                            ActivityId = studentToUpdate.DirectStudentSession.ActivityId,
-                            ScheduleId = studentToUpdate.DirectStudentSession.ScheduleId,
-                            NumberOfSessions = studentToUpdate.DirectStudentSession.NumberOfSessions,
-                            SessionsAttended = studentToUpdate.DirectStudentSession.SessionsAttended,
-                            Remarks = studentToUpdate.DirectStudentSession.Remarks
-
-                        };
+                    {
+                        ActivityId = studentToUpdate.ActivityId,
+                        ScheduleId = studentToUpdate.ScheduleId,
+                        Id = studentToUpdate.Id,
+                        Name = studentToUpdate.Name,
+                        Remarks = studentToUpdate.Remarks,
+                        NumberOfSessions = studentToUpdate.NumberOfSessions,
+                        SessionsAttended = studentToUpdate.SessionsAttended
+                    };
+                    directStudentId = studentToUpdate.DirectStudentInfoId;
                 }
                 //Get Parent Name
                 profile.FirstName = "Juan";
@@ -359,7 +360,7 @@
                     var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
                         DirectStudentSessions = new List<Cinnamon.Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession>{
                             new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
-                                Id = Id,
+                                Id = student.Id,
                                 Remarks = remarksLocalState
                             }
                         }
