@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.EmailDriver.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
@@ -26,13 +27,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ApplicationConfig applicationConfig;
     private readonly IActivityData activityData;
     private readonly IOteDateData oteDateData;
+    private readonly ISendInviteEventHandler sendInviteEventHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
-        IOteDateData oteDateData)
+        IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -46,6 +48,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.applicationConfig = applicationConfig;
         this.activityData = activityData;
         this.oteDateData = oteDateData;
+        this.sendInviteEventHandler = sendInviteEventHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -245,6 +248,25 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 Discount = purchaseOrder.CouponAmount
             });
             if(!notifyEmailRes.Succeeded || notifyEmailRes.Result is null)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            var attendees = new List<Modules.EmailDriver.Interactors.SendInviteEventArgs.Attendee> 
+            {
+                new Modules.EmailDriver.Interactors.SendInviteEventArgs.Attendee {Email = customer.Email, Name = $"{customer.FirstName} {customer.LastName}"}
+            };
+
+            var sendInviteEventRes = await sendInviteEventHandler.ExecuteAsync(new Modules.EmailDriver.Interactors.SendInviteEventArgs
+            {
+                Attendees = attendees,
+                Content = "Cinnamon Experience Event",
+                DateEnd = oteDate.DateEnd,
+                DateStart = oteDate.DateStart,
+                Location = Location,
+                Subject = oteActivity.EventName
+            });
+            if(!sendInviteEventRes.Succeeded || sendInviteEventRes.Result is null)
             {
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
