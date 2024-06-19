@@ -8,16 +8,21 @@ using Flurl;
 using Flurl.Http;
 using Cinnamon.Api.Core.Modules.EmailDriver.MicrosoftGraph.ResponseObject;
 using System.Net;
+using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.EmailDriver.MicrosoftGraph;
 
 public class SendMailByMicrosoftGraph : ISendMailHandler
 {
     private readonly ApplicationConfig applicationConfig;
+    private readonly IFlurlClient flurlClientAccessToken;
+    private readonly IFlurlClient flurlClientGraphRequest;
 
-    public SendMailByMicrosoftGraph(ApplicationConfig applicationConfig)
+    public SendMailByMicrosoftGraph(ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac)
     {
         this.applicationConfig = applicationConfig;
+        this.flurlClientAccessToken = flurlFac.Get("https://login.microsoftonline.com");
+        this.flurlClientGraphRequest = flurlFac.Get("https://graph.microsoft.com/v1.0/");
     }
 
     public AppResult<SendMailResult> Execute(SendMailArgs args)
@@ -88,9 +93,9 @@ public class SendMailByMicrosoftGraph : ISendMailHandler
         try 
         {
             var emailConfig = applicationConfig.EmailService;
-            var cli = new FlurlClient("https://login.microsoftonline.com");
 
-            var result = await cli.Request($"{emailConfig.DirectoryTenantId}/oauth2/token")
+            var result = await this.flurlClientAccessToken
+                                    .Request($"{emailConfig.DirectoryTenantId}/oauth2/token")
                                     .PostUrlEncodedAsync(new {
                                         grant_type = emailConfig.GrantType,
                                         client_id = emailConfig.ClientId,
@@ -128,9 +133,8 @@ public class SendMailByMicrosoftGraph : ISendMailHandler
             // from data
             payload.message.from = new BodyPayload.From { emailAddress = new BodyPayload.EmailAddress { address = applicationConfig.EmailService.Email } };
 
-            var cli = new FlurlClient("https://graph.microsoft.com");
-
-            var result = await cli.Request($"v1.0/users/{applicationConfig.EmailService.UserId}/sendMail")
+            var result = await flurlClientGraphRequest
+                                .Request($"users/{applicationConfig.EmailService.UserId}/sendMail")
                                 .WithHeaders(new {
                                     Content_Type = "application/json"
                                 })
