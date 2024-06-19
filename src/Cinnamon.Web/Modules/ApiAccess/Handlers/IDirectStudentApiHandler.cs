@@ -19,4 +19,6 @@ public interface IDirectStudentApiHandler
     Task<AppResult<CreateDirectStudentAttendanceResult>> CreateDirectStudentAttendance(CreateDirectStudentAttendanceArgs args, string token);
 
     Task<AppResult<UpdateDirectStudentAttendanceResult>> UpdateDirectStudentAttendance(UpdateDirectStudentAttendanceArgs args, string token);
+
+    Task<AppResult<StudentSessionResult>> StudentSession(int sessionId, string token);
 }
