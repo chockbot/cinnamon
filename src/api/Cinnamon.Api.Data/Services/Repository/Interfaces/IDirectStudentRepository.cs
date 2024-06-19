@@ -1,4 +1,5 @@
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
@@ -17,5 +18,9 @@ public interface IDirectStudentRepository
 
     Task<AppResult<DirectStudentDTO>> DirectStudentInfo(int studentId);
 
-    Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int studentId, bool ongoing, bool completed);
+    Task<AppResult<IEnumerable<DirectStudentSessionDTO>>> StudentSessions(int? studentId, bool ongoing, bool completed);
+
+    Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents();
+
+    Task<AppResult<DirectStudentSessionDTO>> StudentSession(int sessionId);
 }
