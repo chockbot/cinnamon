@@ -619,7 +619,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 							"), " +
 							"directStd as " +
 							"( " +
-								"select di.\"Id\" as \"StudentId\", ac.\"Title\", " +
+								"select ds.\"Id\" as \"StudentId\", ac.\"Title\", " +
 									"ds.\"Name\", ds.\"NumberOfSessions\", ds.\"SessionsAttended\", " +
 									"ds.\"StudentNo\", ds.\"Remarks\", '-infinity'::timestamp \"ExpirationDateEnd\", " +
 									"'-infinity'::timestamp \"ExpirationDateStart\", 0 \"HasExpiration\", " +

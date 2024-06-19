@@ -466,7 +466,12 @@
         try
         {
             bool fieldsValid = await studentValidation?.ValidateAll();
-            bool activitiesFieldsValid = await enrolledActivitiesValidation?.ValidateAll();
+            bool activitiesFieldsValid = true;
+
+            if(enrolledActivitiesValidation is not null)
+            {
+                activitiesFieldsValid = await enrolledActivitiesValidation?.ValidateAll();
+            }
 
             if(!fieldsValid || !activitiesFieldsValid)
             {
@@ -501,7 +506,11 @@
             submitting = false;
 
             await studentValidation?.ClearAll();
-            await enrolledActivitiesValidation?.ClearAll();
+
+            if(enrolledActivitiesValidation is not null)
+            {
+                await enrolledActivitiesValidation?.ClearAll();
+            }
 
             if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
             {
