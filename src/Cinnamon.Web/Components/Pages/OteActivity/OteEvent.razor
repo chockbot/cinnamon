@@ -664,8 +664,8 @@
         await SelectedBarangayChanged(data.BarangayCode);
 
         var orderedImages = data.images.OrderBy(i => i.Order).ThenBy(i => i.Id);
-        var coverImage = orderedImages.FirstOrDefault();
-        var setplanImage = orderedImages.FirstOrDefault(i => i.Order == 100);
+        var coverImage = orderedImages.LastOrDefault(i => i.Order == 0);
+        var setplanImage = orderedImages.LastOrDefault(i => i.Order == 100);
 
         if (setplanImage is not null)
         {
@@ -903,12 +903,20 @@
         };
         await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewImageByFileInput", options);
         setplanPhoto.Display = true;
+        deletedIds.Add(setplanPhoto.Id);
     }
 
     public async Task<bool> UploadImages(int createdActivityId)
     {
         try
         {
+            //delete old images
+            var oldCoverImage = ModelState.imageItems.Where(i => i.Order == 0);
+            foreach (var item in oldCoverImage)
+            {
+                deletedIds.Add(item.Id);
+            }
+
             var selectors = new List<ImageSelector>();
              if (coverPhoto.Display)
             {
@@ -946,11 +954,14 @@
         }
     }
 
-    public Task DeleteCoverPhoto()
+    public async Task DeleteCoverPhoto()
     {
         coverPhoto.Display = false;
         deletedIds.Add(coverPhoto.Id);
-        return Task.CompletedTask;
+        if(OnCoverPhotoDisplayChanged.HasDelegate)
+        {
+            await OnCoverPhotoDisplayChanged.InvokeAsync();
+        }
     }
 
     private Task DeleteSetplanPhoto()

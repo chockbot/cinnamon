@@ -231,6 +231,7 @@ export async function previewImageByFileInput({
 }
 
 export async function uploadListImages(selectors, activityId, deletedIds) {
+    debugger;
   const formData = new FormData();
   for (const selector of selectors) {
     const file = dataUrlToFile($(selector.selector).val(), "image");
