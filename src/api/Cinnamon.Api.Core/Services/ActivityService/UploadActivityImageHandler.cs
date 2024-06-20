@@ -87,11 +87,11 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
 
             var totalImagesCount = oldImages.Count() + listImagesToUpload.Count;
             // minimum of 5 images and maximum of 10 images including cover
-            if(totalImagesCount > 10 || totalImagesCount < 5)
-            {
-                return AppResult<UploadActivityImageResult>.CreateFailed(
-                    new ApplicationException("Minimum of 5 images and maximum of 10 images."), "Minimum of 5 images and maximum of 10 images.");
-            }
+            //if(totalImagesCount > 10 || totalImagesCount < 5)
+            //{
+            //    return AppResult<UploadActivityImageResult>.CreateFailed(
+            //        new ApplicationException("Minimum of 5 images and maximum of 10 images."), "Minimum of 5 images and maximum of 10 images.");
+            //}
 
             // delete activity images
             if(deletedImages is not null)

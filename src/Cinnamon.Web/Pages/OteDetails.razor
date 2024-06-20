@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                 <div class="cover-photo">
-                    <img class="cover-photo-img" src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
+                    <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
                 </div>
                 <div class="d-flex align-items-center mt-3 me-2 me-md-5">
                     <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
@@ -227,8 +227,8 @@
                         @if (activity.ExperienceTypeId == 1)
                         {
                             string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                            <p class="mb-1 font-20 font-weight-400 color-black-100 m-font-16 text-capitalize">@address</p>
-                            <iframe height="373" id="mapframe" frameborder="0" style="border:0" class="w-100" src="@MapSource" allowfullscreen></iframe>
+                            <p class="address">@address</p>
+                            <iframe height="373" id="mapframe" frameborder="0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else
                         {
@@ -241,7 +241,7 @@
                     {
                         <div id="set-plan" class="mt-4 seat-plan-section">
                             <p class="event-schedule">Seat Plan</p>
-                            <img style="width: 330px; height: auto; cursor:pointer" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                            <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
                         </div>
                     }
                 }
@@ -497,6 +497,23 @@
             {
                 var image = activity.Images.FirstOrDefault(i => i.Order == 100);
                 if(image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+    private string CoverImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 0);
+                if (image is not null)
                 {
                     imageSrc = image.ImageSrc;
                 }

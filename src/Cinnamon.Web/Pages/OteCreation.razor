@@ -1,11 +1,13 @@
 @page "/experiences/ote"
 @page "/experiences/ote/{handler}"
 @using System.Security.Claims;
+@using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.OteActivity;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Framework.Extensions.DateTimeExtension;
+@using Cinnamon.Web.Modules.Services
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject INotificationService NotificationService;
@@ -13,6 +15,7 @@
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
 @inject IJSRuntime JS;
+@inject GoogleDriveService googleDriveService
 @attribute [Authorize]
 
 <PageTitle>Create an One time event | CinnamonPH</PageTitle>
@@ -53,49 +56,50 @@
             <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
         </div>
         <Row>
-            @if (currentIndex == 0 && oteEvent is not null)
-            {
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left" Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
-                    <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
-                        <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
-                        <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
-                            <div class='empty-image-container bg-white-100'>
-                                <div class="text-center">
-                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
-                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
-                                </div>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex == 0 && oteEvent is not null ? "d-block" : "d-none")' Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
+                <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
+                    <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
+                    <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
+                        <div class='empty-image-container bg-white-100'>
+                            <div class="text-center">
+                                <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
                             </div>
-                            <div class="delete-section d-flex justify-content-between">
-                                <p class="delete-text">Upload Cover Photo</p>
-                            </div>
+                            <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
                         </div>
-                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                        <div class="delete-section d-flex justify-content-between">
+                            <p class="delete-text">Upload Cover Photo</p>
+                        </div>
+                    </div>
+                    <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                        <LoadingIndicator @ref="loadingIndicator">
                             <div class='@(oteEvent.coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@oteEvent.coverPhoto.ContainerId">
-                                <input type="hidden" id="@oteEvent.coverPhoto.InputDataId" name="@oteEvent.coverPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@oteEvent.coverPhoto.ImageSrcId" class="cover-image" src="@oteEvent.coverPhoto.ImageSrc" alt="supporting-photo">
+                                <div class="image-section">
+                                    <input type="hidden" id="@oteEvent.coverPhoto.InputDataId" name="@oteEvent.coverPhoto.InputDataId" class="generated-input-data" />
+                                    <img id="@oteEvent.coverPhoto.ImageSrcId" class="cover-image" src="@oteEvent.coverPhoto.ImageSrc" alt="cover-photo">
+                                    <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns=" http: //www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
+                                </div>
                                 <div class="delete-section d-flex justify-content-between">
                                     <p class="delete-text">Upload Cover Photo</p>
                                     <img class="mt-2 cursor-pointer delete-icon" @onclick="oteEvent.DeleteCoverPhoto" src="images/ote/trashcan-icon-white.png" alt="delete">
                                 </div>
                             </div>
-                        </Row>
-                    </label>
-                </Column>
-            }
-            else
-            {
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class="col-left m-d-none side-ber-items">
-                    <OteSidebarNavigation SidebarItems="sidebarItems" />
-                    @*<Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
-                    <div>
-                        @if (sidebarImages.Count > currentIndex)
-                        {
-                            <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
-                            <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
-                        }
-                    </div>*@
-                </Column>
-            }
+                        </LoadingIndicator>
+                    </Row>
+                </label>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex != 0 && oteEvent is not null ? "d-block col-left m-d-none" : "d-none col-left m-d-none")'>
+                <OteSidebarNavigation SidebarItems="sidebarItems" />
+                @*<Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
+                <div>
+                    @if (sidebarImages.Count > currentIndex)
+                    {
+                        <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
+                        <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
+                    }
+                </div>*@
+            </Column>
+            
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
                 <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
                     <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged" />
@@ -120,7 +124,43 @@
         </Row>
     </Container>
 </div>
-
+<Modal @ref="modalRef">
+    <ModalContent Class="header-modal" Size="ModalSize.Large" Style="border-radius:1rem;" Centered>
+        <ModalHeader>
+            <div class="col-11 d-flex modal-header-section">
+                <p class="modal-title text-center">Choose Image</p>
+            </div>
+            <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+        </ModalHeader>
+        <ModalBody>
+            <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
+                <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
+                <div class="tap-here">
+                    <p class="click">Click here to upload.</p>
+                    <p class="choose">Or choose an image below. The ideal aspect is ration is 16:4.</p>
+                </div>
+            </label>
+            <div class="suggested-images">
+                <p class="category-name">@ImageTitle</p>
+                <div class="row">
+                    <div class="col-3 categories">
+                        <p class="image-category" @onclick="() => LoadFiles(1)">Abstract</p>
+                        <p class="image-category" @onclick="() => LoadFiles(4)">Game</p>
+                        <p class="image-category" @onclick="() => LoadFiles(2)">Music</p>
+                        <p class="image-category" @onclick="() => LoadFiles(3)">Technology</p>
+                        
+                    </div>
+                    <div class="col-9 photo-preview">                       
+                        @foreach (var item in MaterialList)
+                        {
+                            <img src="@item.ThumbnailLink" alt="banner image" class="cover-image-item" @onclick="() => LoadCoverPhoto(item)" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 @code
 {
     [Parameter]
@@ -139,6 +179,26 @@
     private OtePublish.ComponentSummary? summary = default;
     private int numberOfPage = 4;
     private OtePricing.ComponentSummary? onlineEventSummary = default;
+    public Modal modalRef = new();
+
+    public string searchValue = string.Empty;
+    public List<File> MaterialList = new List<File>();
+    public List<File> LoadList = new List<File>();
+    public List<File> SearchList = new List<File>();
+    private string nextPageToken = null;
+    private bool allFilesLoaded = false;
+    public string FolderID { get; set; } = "1Grg39ZXLAIqnPSRjuQrkZQrS3T3Yr8uU";
+    public string ImageTitle { get; set; } = "Abstract";
+    public Random random = new Random();
+
+
+    //File
+    public string FileId { get; set; }
+    public byte[] FileContent { get; set; }
+    public string FileType { get; set; }
+    public string FileName { get; set; }
+    public string Base64EncodedFile { get; set; }
+    private LoadingIndicator? loadingIndicator;
 
     private string token = string.Empty;
     private int accountId = 0;
@@ -162,6 +222,20 @@
     {
         LoadSidebarItems();
         LoadImages();
+
+        oteEvent = new OteEvent
+        {
+            coverPhoto = new OteEvent.ImageItem
+            {
+                ContainerId = "cover-photo-container",
+                Display     = false,
+                FileSize    = 0,
+                ImageSrcId  = "cover-photo-image-src",
+                InputDataId = "cover-photo-input-data",
+                FileId      = "cover-photo-input-file",
+                Order       = 0
+            }
+        };
     }
 
     protected override async Task OnInitializedAsync()
@@ -197,6 +271,18 @@
         catch (System.Exception ex)
         {
             NavigationManager.NavigateTo("explore");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadFiles(1);
+            if (string.IsNullOrEmpty(Handler))
+            {
+                await SetDefaultCoverPhoto();
+            }
         }
     }
 
@@ -722,6 +808,17 @@
         eventModel.SelectedCategory  = ote.CategoryId;
         eventModel.Description       = ote.Description;
         eventModel.EventName         = ote.EventName;
+        eventModel.imageItems        = ote.Images.Select(a =>
+        {
+            return new OteEvent.ImageItem
+                {
+                    Id = a.Id,
+                    ImageSrc = a.ImageSrc,
+                    Order = a.Order
+                };
+        }).ToList();
+
+            
         await oteEvent?.SetState(new OteEvent.ModelData
         {
             BarangayCode   = ote.BarangayCode,
@@ -736,15 +833,15 @@
             IsPublish      = ote.IsPublished,
             ComingSoon     = ote.IsComingSoon,
             ExperienceType = ote.ExperienceTypeId,
-            images = ote.Images.Select(i =>
+            images         = ote.Images.Select(a =>
+            {
+                return new OteEvent.ImageItem
                 {
-                    return new OteEvent.ImageItem
-                    {
-                        Id = i.Id,
-                        ImageSrc = i.ImageSrc,
-                        Order = i.Order
-                    };
-                }).ToList()
+                    Id = a.Id,
+                    ImageSrc = a.ImageSrc,
+                    Order = a.Order
+                };
+            }).ToList()
         });
 
         //await oteLocation?.SetState(new OteLocation.ModelData {
@@ -948,6 +1045,7 @@
     private Task OnCoverPhotoDisplayChanged()
     {
         StateHasChanged();
+        HideModal();
         return Task.CompletedTask;
     }
 
@@ -957,5 +1055,112 @@
         public string Name { get; set; } = string.Empty;
         public bool HasPrevious { get; set; }
         public bool HasNext { get; set; }
+    }
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private async Task LoadFiles(int folderId)
+    {
+        try
+        {
+            switch (folderId)
+            {
+                case 1:
+                    await LoadFiles("1Grg39ZXLAIqnPSRjuQrkZQrS3T3Yr8uU", "Abstract");
+                    break;
+                case 2:
+                    await LoadFiles("1qkp2uAvSgxphEMGzodW4s8H8BdGsgBJE", "Music");
+                    break;
+                case 3:
+                    await LoadFiles("1so_fBEEXk5ny4MDcz9sYXQwNbdZdjru1", "Technology");
+                    break;
+                case 4:
+                    await LoadFiles("1hI6znIsN23RIp7kn4EQ9cf5Apaj5ce82", "Game");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+
+    private async Task LoadFiles(string folderId, string imageTitle)
+    {
+        ImageTitle = imageTitle;
+        LoadList.Clear();
+        var result = await googleDriveService.ListFilesInFolder(folderId, nextPageToken);
+        LoadList.AddRange(result.FileList);
+        MaterialList = LoadList.ToList();
+        nextPageToken = result.Token;
+
+        // Check if there are no more files to load
+        if (string.IsNullOrEmpty(nextPageToken))
+        {
+            allFilesLoaded = true;
+        }
+    }
+    private async Task LoadCoverPhoto(File item)
+    {
+        await loadingIndicator.Show();
+        // Fetch file content from Google Drive
+        FileContent = await googleDriveService.GetFileContent(item.Id);
+
+        // Determine file type
+        var fileInfo = await googleDriveService.GetFileInfo(item.Id);
+        FileType = fileInfo.Type;
+        FileName = fileInfo.Name;
+
+        // If you need to display the file content directly, you can convert it to Base64
+        Base64EncodedFile = Convert.ToBase64String(FileContent);
+
+        //delete old images
+        var oldCoverImage = eventModel.imageItems.Where(i => i.Order == 0);
+        foreach (var img in oldCoverImage)
+        {
+            oteEvent.deletedIds.Add(img.Id);
+        }
+
+        //Preview
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
+        oteEvent.coverPhoto.Display = true;
+        await HideModal();
+        await loadingIndicator.Hide();
+    }
+    private async Task SetDefaultCoverPhoto()
+    {
+        //Get Random Image in MaterialList
+        List<File> list = new List<File>();
+        list = MaterialList.ToList();
+        int randomIndex = random.Next(list.Count);
+        File randomItem = list[randomIndex];
+        await LoadDefaultCoverPhoto(randomItem);
+
+    }
+
+    private async Task LoadDefaultCoverPhoto(File item)
+    {
+        // Fetch file content from Google Drive
+        FileContent = await googleDriveService.GetFileContent(item.Id);
+
+        // Determine file type
+        var fileInfo = await googleDriveService.GetFileInfo(item.Id);
+        FileType = fileInfo.Type;
+        FileName = fileInfo.Name;
+
+        // If you need to display the file content directly, you can convert it to Base64
+        Base64EncodedFile = Convert.ToBase64String(FileContent);
+
+        //Preview
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
+        oteEvent.coverPhoto.Display = true;
+        StateHasChanged();
     }
 }

@@ -110,10 +110,28 @@ input:focus {
             font-size: 16px;
             color: #717171;
         }
-
+@media (min-width: 992px) and (max-width: 1200px) {
+    .ticket-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 588px) and (max-width: 767px) {
+    ::deep .ote-publish-wrapper{
+        background-color: white;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .ticket-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 @media screen and (max-width: 767px) and (orientation: portrait) {
-  .box-border {
-    box-shadow: 2px 4px 10px 0px rgba(217, 217, 217, 0.25);
-    border: 1px solid rgba(217, 217, 217, 1);
-  }
+    .box-border {
+        box-shadow: 2px 4px 10px 0px rgba(217, 217, 217, 0.25);
+        border: 1px solid rgba(217, 217, 217, 1);
+    }
+
+    .ticket-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
