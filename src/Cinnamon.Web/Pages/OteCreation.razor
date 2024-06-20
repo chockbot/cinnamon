@@ -1121,8 +1121,15 @@
         // If you need to display the file content directly, you can convert it to Base64
         Base64EncodedFile = Convert.ToBase64String(FileContent);
 
+        //delete old images
+        var oldCoverImage = eventModel.imageItems.Where(i => i.Order == 0);
+        foreach (var img in oldCoverImage)
+        {
+            oteEvent.deletedIds.Add(img.Id);
+        }
+
         //Preview
-        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", Base64EncodedFile, FileType);
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
         oteEvent.coverPhoto.Display = true;
         await HideModal();
         await loadingIndicator.Hide();
@@ -1137,6 +1144,7 @@
         await LoadDefaultCoverPhoto(randomItem);
 
     }
+
     private async Task LoadDefaultCoverPhoto(File item)
     {
         // Fetch file content from Google Drive
@@ -1151,7 +1159,7 @@
         Base64EncodedFile = Convert.ToBase64String(FileContent);
 
         //Preview
-        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", Base64EncodedFile, FileType);
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
         oteEvent.coverPhoto.Display = true;
         StateHasChanged();
     }
