@@ -113,12 +113,12 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
 
             if(studentId.HasValue)
             {
-                whereClause += "ds.\"DirectStudentInfoId\" = @studentId ";
+                whereClause += "and ds.\"DirectStudentInfoId\" = @studentId ";
             }
 
             if(ongoingSessions.HasValue && ongoingSessions.Value)
             {
-                whereClause = "and ( " +
+                whereClause += "and ( " +
 										"(ds.\"SessionsAttended\" < ds.\"NumberOfSessions\" and ds.\"ExpirationDateEnd\" = '-infinity') or " +
 										"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") > Date(current_timestamp) " +
 											"and ds.\"SessionsAttended\" < ds.\"NumberOfSessions\") " +
@@ -128,7 +128,7 @@ public class DirectStudentSessionEntity : GenericEntity<DirectStudentSession>, I
             // override where clause
             if(completedSessions.HasValue && completedSessions.Value)
             {
-                whereClause = "and ( " +
+                whereClause += "and ( " +
                                      "(ds.\"SessionsAttended\" >= ds.\"NumberOfSessions\") or " +
 						             "(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
                                    ") ";
