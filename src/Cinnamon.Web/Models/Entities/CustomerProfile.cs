@@ -18,6 +18,7 @@
         public bool IsOfficial { get; set; }
         public DateTime IsOfficialDate { get; set; }
         public string About { get; set; }
+        public string ProfileImg { get; set; }
         public string Handler {get; set;}
         public string FrontIdImagePath { get; set; }
         public string BackIdImagePath { get; set; }

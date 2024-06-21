@@ -63,7 +63,7 @@
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
-                        <img src="images/explore-page-images/explore-profile-picture.png">
+                        <img class="rounded-2 rounded-circle profile-img" src="@CustomerModel.CustomerProfile.ProfileImg">
                         @if (CustomerModel.CustomerProfile != null)
                         {
                             @if (newMessagesCount != 0)
@@ -1655,8 +1655,6 @@
 
     public bool isLoginFB { get; set; } = false;
 
-    public string ProfileImg { get; set; } = string.Empty;
-
     private List<ActivityFeed> activityFeeds = new();
     private List<ActivityFeed> popularFeeds = new();
     private Modal? filterModal;
@@ -1844,6 +1842,7 @@
                         FirstName = args.FirstName,
                         LastName = args.LastName,
                         Id = args.Id,
+                        ProfileImg = args.ProfileImg,
                         IsMaker = args.IsMaker,
                         IsVerified = args.IsVerified,
                     };

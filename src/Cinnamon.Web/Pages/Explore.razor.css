@@ -166,12 +166,29 @@
 }
 
 .upcoming-events-info-text-main {
+  position: relative;
   color: #343D4C;
   font-family: Nunito;
   font-size: 32px;
   font-style: normal;
   font-weight: 900;
   line-height: normal;
+  cursor: pointer;
+}
+
+.upcoming-events-info-text-main::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background: #FFA942; /* Change to the color of your underline */
+  transition: width 0.3s ease-in-out;
+}
+
+.upcoming-events-info-text-main:hover::after {
+  width: 100%;
 }
 
 .upcoming-events-info-text {
