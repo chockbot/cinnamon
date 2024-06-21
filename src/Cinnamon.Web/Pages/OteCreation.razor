@@ -143,14 +143,14 @@
             <div class="suggested-images">
                 <p class="category-name">@ImageTitle</p>
                 <div class="row">
-                    <div class="col-3 categories">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 categories">
                         <p class="image-category" @onclick="() => LoadFiles(1)">Abstract</p>
                         <p class="image-category" @onclick="() => LoadFiles(4)">Game</p>
                         <p class="image-category" @onclick="() => LoadFiles(2)">Music</p>
                         <p class="image-category" @onclick="() => LoadFiles(3)">Technology</p>
                         
                     </div>
-                    <div class="col-9 photo-preview">                       
+                    <div class="col-lg-9 col-md-9 col-sm-12 col-12 photo-preview">
                         @foreach (var item in MaterialList)
                         {
                             <img src="@item.ThumbnailLink" alt="banner image" class="cover-image-item" @onclick="() => LoadCoverPhoto(item)" />
