@@ -137,18 +137,57 @@
                 <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
                 <div class="tap-here">
                     <p class="click">Click here to upload.</p>
-                    <p class="choose">Or choose an image below. The ideal aspect is ration is 16:4.</p>
+                    <p class="choose">Or choose an image below. The ideal aspect is ration is 4:5.</p>
                 </div>
             </label>
             <div class="suggested-images">
-                <p class="category-name">@ImageTitle</p>
+                <p class="category-name m-d-none">@ImageTitle</p>
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 categories">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 m-d-none categories">
                         <p class="image-category" @onclick="() => LoadFiles(1)">Abstract</p>
                         <p class="image-category" @onclick="() => LoadFiles(4)">Game</p>
                         <p class="image-category" @onclick="() => LoadFiles(2)">Music</p>
                         <p class="image-category" @onclick="() => LoadFiles(3)">Technology</p>
                         
+                    </div>
+                    <div class="categories-swipper col-12">
+                        <div class="row d-flex justify-content-start">
+                            <div class="col-sm-12 col-12 categories-container">
+                                <div class="schedule-swiper">
+                                    <div class="swiper-wrapper text-center">
+                                        <div class="swiper-slide category">
+                                            <div>
+                                                <a class="button carousel-list text-center" id="1" @onclick="() => LoadFiles(1)">
+                                                    <p class="image-category">Abstract</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide category">
+                                            <div>
+                                                <a class="button carousel-list text-center" id="2" @onclick="() => LoadFiles(2)">
+                                                    <p class="image-category">Game</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide category">
+                                            <div>
+                                                <a class="button carousel-list text-center" id="3" @onclick="() => LoadFiles(3)">
+                                                    <p class="image-category">Music</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide category">
+                                            <div>
+                                                <a class="button carousel-list text-center" id="4" @onclick="() => LoadFiles(4)">
+                                                    <p class="image-category">Technology</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-scrollbar"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-12 col-12 photo-preview">
                         @foreach (var item in MaterialList)
@@ -284,8 +323,13 @@
                 await SetDefaultCoverPhoto();
             }
         }
+        await JS.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await InitializeSwiper();
     }
-
+    private async Task InitializeSwiper()
+    {
+        await JS.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
+    }
     private double GetPerentCompletion
     {
         get
