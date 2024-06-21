@@ -349,17 +349,9 @@
     }
 
     <!-- End of New Announcement Like Cards -->
-        @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
+    @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-    <div class="container">
-    <div class="upcoming-events">
-        <div class="upcoming-events-container">
-            <div class="upcoming-events-info">
-                <h1 class="upcoming-events-info-text-main">Upcoming Events</h1>
-            </div>
-        </div>
-    </div>
-    </div>
+    
     } else {
     <div class="container">
     <div class="upcoming-events">
@@ -372,10 +364,36 @@
     </div>
     </div>
     }
+    <div class="container">
+        <div class="section-1 experience-selector">
+           <div class="categories">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
+                                        <p class="upcoming-events-info-text-main" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
+                                        <p class="upcoming-events-info-text-main" @onclick="@(() => ShowOTE(1))">General Experience</p>
+                                    </a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!--Section 1-->
     <div class="container">
         <div class="section-1">
-           <div class="categories border-bottom">
+           <div class="categories">
                 <div class="schedule-swiper">
                     <div class="swiper-wrapper text-center">
                         <!-- DO NOT TOUCH ORIGINAL SWIPER -->
@@ -866,6 +884,14 @@
                                                 </button>
                                             </a>
                                         </div>
+                                        } else {
+                                        <div class="row price-badge-section">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                                <button class="card-title-button">
+                                                    <span>Register</span>
+                                                </button>
+                                            </a>
+                                        </div>
                                         }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
@@ -1095,6 +1121,14 @@
                                                 </button>
                                             </a>
                                         </div>
+                                        } else {
+                                        <div class="row price-badge-section">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                                <button class="card-title-button">
+                                                    <span>Register</span>
+                                                </button>
+                                            </a>
+                                        </div>
                                         }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
@@ -1307,6 +1341,7 @@
                                             @{
                                                string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
                                             }
+                                                
 
                                                 @if (@act.ExperienceCreationTypeId == 3)
                                                 {
@@ -1314,9 +1349,15 @@
                                                         <img src="images/explore-page-images/date-explore.png" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
+                                                } else {
+                                                    <div class="address-holder">
+                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
+                                                    </div>
                                                 }
-                                    @if (act.ExperienceCreationTypeId == 3)
-                                    {
+                                                
+                                        @if (act.ExperienceCreationTypeId == 3)
+                                        {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
                                                 <button class="card-title-button">
@@ -1324,7 +1365,15 @@
                                                 </button>
                                             </a>
                                         </div>
-                                    }
+                                        } else {
+                                        <div class="row price-badge-section">
+                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
+                                                <button class="card-title-button-exp">
+                                                    <span>Register</span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                        }
                                      @*   @if(act.ExperienceCreationTypeId == 3)
                                         {
                                             <div class="mt-2">
@@ -1554,6 +1603,7 @@
     public List<ExperienceType> experiencesType = new List<ExperienceType>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     public string searchValue = string.Empty;
+    public int ExperienceCategory = 3;
     public int? experienceCategoryId = null;
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
     private bool isLogin { get; set; } = false;
@@ -1604,6 +1654,8 @@
     private string redirectUrl {get; set;} = string.Empty;
 
     public bool isLoginFB { get; set; } = false;
+
+    public string ProfileImg { get; set; } = string.Empty;
 
     private List<ActivityFeed> activityFeeds = new();
     private List<ActivityFeed> popularFeeds = new();
@@ -1946,6 +1998,7 @@
             Skip = pageIndex,
             Take = itemsPerPage,
             ExperienceType = filters.EventType,
+            ExperienceCategory = ExperienceCategory,
             StarReview = filters.StarReview
         });
 
@@ -2344,5 +2397,11 @@
     {
         public int? EventType {get; set;}
         public int? StarReview {get; set;}
+    }
+
+    public async Task ShowOTE(int ID)
+    {
+        ExperienceCategory = ID;
+        await FetchActivities(false);
     }
 }

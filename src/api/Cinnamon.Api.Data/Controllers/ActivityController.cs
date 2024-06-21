@@ -730,7 +730,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.ActivityFeed(args.Take, args.Skip, args.Search, 
-                args.CategoryId, args.StarReview, args.ExperienceType);
+                args.CategoryId, args.StarReview, args.ExperienceType, args.ExperienceCategory);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new ActivityFeedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

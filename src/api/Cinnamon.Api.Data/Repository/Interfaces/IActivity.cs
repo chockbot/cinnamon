@@ -31,7 +31,7 @@ public interface IActivity : IGenericEntity<Activity>
     Task<AppResult<IEnumerable<ActivityDTO>>> GetActivitiesNeedToDisable();
     Task<AppResult<IEnumerable<ActivityDTO>>> ForceDisableActivities(IList<int> activityIds);
     Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search, int? categoryId,
-        int? starReview = null, int? experienceType = null);
+        int? starReview = null, int? experienceType = null, int? experienceCategory = null);
     Task<AppResult<bool>> BatchSummaryUpdate();
     Task<AppResult<IEnumerable<OteAlreadyBookDate>>> OteAlreadyBookDates(int activityId);
 }

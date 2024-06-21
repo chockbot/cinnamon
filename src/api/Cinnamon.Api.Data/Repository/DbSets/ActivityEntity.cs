@@ -821,10 +821,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 	}
 
     public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null,
-        int? categoryId = null, int? starReview = null, int? experienceType = null)
+        int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null)
     {
         try
         {
+			string creationTypeClause = experienceCategory.HasValue ? "and ac.\"ExperienceCreationTypeId\" = " + experienceCategory + " ": string.Empty;
             string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
             string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
             string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
@@ -847,7 +848,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                 "on os.\"ActivityId\" = ac.\"Id\"" +
                             "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
                                 "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-                                categoryClause + searchClause + starReviewClause + experienceTypeClause +
+                                categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
                             "order by ac.\"Guid\" " +
                             "limit " + take + " offset " + skip + " ";
 

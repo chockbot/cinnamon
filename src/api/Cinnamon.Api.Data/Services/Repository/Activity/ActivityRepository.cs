@@ -2190,11 +2190,11 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
-        int? categoryId = null, int? starReview = null, int? experienceType = null)
+        int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null)
     {
         try
         {
-            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId, starReview, experienceType);
+            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId, starReview, experienceType, experienceCategory);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
