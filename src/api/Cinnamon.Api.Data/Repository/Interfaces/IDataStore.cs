@@ -66,6 +66,7 @@ public interface IDataStore
     IDirectStudentPayment DirectStudentPayment {get;}
     IDirectStudentAttendance DirectStudentAttendance {get;}
     IOteReminderFlag OteReminderFlag {get;}
+    IDynamicEmailTemplate DynamicEmailTemplate {get;}
     
     Task EnsureMigrate();
 

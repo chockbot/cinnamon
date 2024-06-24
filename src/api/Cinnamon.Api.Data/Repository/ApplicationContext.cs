@@ -110,6 +110,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
 
+    public DbSet<DynamicEmailTemplate> DynamicEmailTemplates {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -430,6 +432,10 @@ public class ApplicationContext : IdentityDbContext
         // for ote reminder flag
         modelBuilder.Entity<OteReminderFlag>()
             .HasIndex("ActivityId", "OteDateId");
+
+        // for dynamic email template
+        modelBuilder.Entity<DynamicEmailTemplate>()
+            .HasIndex("ActivityId", "ProviderId", "TemplateType");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
