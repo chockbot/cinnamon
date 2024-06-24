@@ -46,9 +46,8 @@
             <a href="" class="app-name">@Resources.App.appName</a>
         </div>
         <!--Menu-->
-        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end dropdown-section">
+        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end navbar-selection dropdown-section">
             <!-- Desktop -->
-                        <p class="cinnamon-link">Activities</p>
                         <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
                         <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
                         <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
@@ -63,7 +62,7 @@
             <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
-                        <img class="rounded-2 rounded-circle profile-img" src="@CustomerModel.CustomerProfile.ProfileImg">
+                        <img class="rounded-2 rounded-circle profile-img-desktop" src="@CustomerModel.CustomerProfile.ProfileImg">
                         @if (CustomerModel.CustomerProfile != null)
                         {
                             @if (newMessagesCount != 0)
@@ -174,7 +173,7 @@
                     <div class="menu">
                         @if (AuthState != null && AuthState.Identity.IsAuthenticated)
                         {
-                        <img src="images/explore-page-images/explore-profile-picture.png">
+                        <img class = "rounded-2 rounded-circle profile-img-mobile" src="@CustomerModel.CustomerProfile.ProfileImg">
                         } else {
                         <img src="images/menu.png">
                         }
@@ -293,7 +292,12 @@
     <div class="header">
         <div class="header-container">
             <div class="header-info">
+                @if (!showCategorySwiper)
+                {
                 <h1 class="header-info-text">Skip the FOMO: Secure Your Tickets Now!</h1>
+                } else {
+                <h1 class="header-info-text">Level Up Your Skills:  Get a Tutor Today!</h1>
+                }
             </div>
         </div>
     </div>
@@ -322,23 +326,40 @@
                 <div class="sub-header-image"></div>
                 <div class="event-organizer-invite-card">
                     <div class="event-organizer-info">
+                        @if (!showCategorySwiper){
                         <p class="event-organizer-info-title">Be an Event Organizer!</p>
                         <p class="event-organizer-info-sub-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                        } else {
+                        <p class="event-organizer-info-title activity-provider-switch">Be an Activity Provider!</p>
+                        <p class="event-organizer-info-sub-title">Automate and simplify your Experience with easy and secure options with Cinnamon!</p>
+                        }
                     </div>
                     <div class="event-organizer-join">
+                        @if (!showCategorySwiper) {
                         <p class="event-organizer-join-desktop-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
+                        } else {
+                        <p class="event-organizer-join-desktop-title">Automate and simplify your Experience operations with easy and secure options with Cinnamon!</p>
+                        }
                         @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                         {
                         <div class="event-organizer-join-sub-container" @onclick="NavigateToDashboard">
                         <p class="event-organizer-join-title">Join Our Team!</p>
+                        @if (!showCategorySwiper) {
                         <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                        } else {
+                        <p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
+                        }
                         </div>
                         }
                         else
                         {   
                         <div class="event-organizer-join-sub-container" @onclick="NavigateToOnboarding">
                         <p class="event-organizer-join-title">Join Our Team!</p>
+                        @if (!showCategorySwiper) {
                         <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                        } else {
+                        <p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
+                        }
                         </div>
                         }
                     </div>
@@ -397,22 +418,96 @@
                 <div class="schedule-swiper">
                     <div class="swiper-wrapper text-center">
                         <!-- DO NOT TOUCH ORIGINAL SWIPER -->
-                        @*
-                        @foreach (var category in categories)
+                        @if (showCategorySwiper)
                         {
+                            @*
+                        @foreach (var category in categories)
+                        {   
+                                if (category.Category == "New")
+                                {
+                                    category.Category = "All";
+                                }
+                            if (category.Id != 8)
+                            {
                             <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
-                                        <img src=@category.IconPath class="img-icon text-center">
-                                        <p class="card-title">@category.Category</p>
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
+                                        <img src=@category.IconPath class="static-category-selector-img">
+                                        <p class="staitc-category-title">@category.Category</p>
                                     </a>
                                 </div>
                             </div>
+                            }
                         } *@
+                        <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(1))">
+                                        <img src="images/Category/New.png" class="static-category-selector-img">
+                                        <p class="static-category-title">All</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(2))">
+                                        <img src="images/Category/Academic.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Academics</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(3))">
+                                        <img src="images/Category/Language.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Language</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(4))">
+                                        <img src="images/Category/Music.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Music</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(5))">
+                                        <img src="images/Category/Skill.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Skills</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(6))">
+                                        <img src="images/Category/SPED.png" class="static-category-selector-img">
+                                        <p class="static-category-title">SPED</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                                                <div class="swiper-slide category justify-content-center">
+                                <div class="w-100">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id"@onclick="@(() => Filter(7))">
+                                        <img src="images/Category/Sports.png" class="static-category-selector-img">
+                                        <p class="static-category-title">Sports</p>
+                                    </a>
+                                </div>
+                        </div>
+
+                        } else
+                        {
                         <!-- END OF DO NOT TOUCH -->
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(3))">
                                         <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
                                         <p class="static-category-title">All</p>
                                     </a>
@@ -453,7 +548,7 @@
                                         <p class="static-category-title">Corporate</p>
                                     </a>
                                 </div>
-                        </div>
+                        </div> }
                     </div>
                     <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
@@ -1418,11 +1513,11 @@
                 <div class="sub-footer-info">
                     <p class="sub-footer-title">Connect with Us on Social Media!</p>
                         <div class="sub-footer-media">
-                            <i class="fab fa-facebook"></i>
-                            <i class="fab fa-linkedin"></i>
-                            <i class="fab fa-tiktok"></i>
-                            <i class="fab fa-instagram"></i>
-                            <i class="fab fa-youtube"></i>
+                        <a href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                         </div>
                         <div class="sub-footer-text">
                             <p>1. Faster Sign-up: Ditch the forms, connect with social media to pre-fill info and buy tickets quicker.</p>
@@ -1449,7 +1544,7 @@
                     </div>
                     <div class="footer-support-email">
                         <i class="far fa-envelope"></i>
-                        <p>support@cinnamon.ph</p>
+                        <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
                     </div>
                 </div>
             </div>
@@ -1464,11 +1559,11 @@
                     <p>Copyright © 2023. All rights reserved.</p>   
                 </div>
                 <div class="footer-final-social-media">
-                    <i class="fab fa-facebook"></i>
-                    <i class="fab fa-linkedin"></i>
-                    <i class="fab fa-tiktok"></i>
-                    <i class="fab fa-instagram"></i>
-                    <i class="fab fa-youtube"></i>
+                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div> 
             </div>
             <!-- For tablet view -->
@@ -1482,11 +1577,11 @@
                 </div>
                 </div>
                 <div class="footer-final-social-media">
-                    <i class="fab fa-facebook"></i>
-                    <i class="fab fa-linkedin"></i>
-                    <i class="fab fa-tiktok"></i>
-                    <i class="fab fa-instagram"></i>
-                    <i class="fab fa-youtube"></i>
+                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div> 
             </div> 
             <!-- end of tablet view -->
@@ -1497,11 +1592,11 @@
                         <img src="images/explore-page-images/cinnamon-footer.png" />
                     </div>
                     <div class="footer-final-social-media">
-                        <i class="fab fa-facebook"></i>
-                        <i class="fab fa-linkedin"></i>
-                        <i class="fab fa-tiktok"></i>
-                        <i class="fab fa-instagram"></i>
-                        <i class="fab fa-youtube"></i>
+                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                     </div> 
                 </div>
                 <div class="footer-copyright">
@@ -1654,6 +1749,7 @@
     private string redirectUrl {get; set;} = string.Empty;
 
     public bool isLoginFB { get; set; } = false;
+    public bool showCategorySwiper = false;
 
     private List<ActivityFeed> activityFeeds = new();
     private List<ActivityFeed> popularFeeds = new();
@@ -2066,13 +2162,19 @@
         IsSearchPerformed = true;
     }
 
-    public async Task Filter(int id)
+    public async Task Filter(int? id)
     {
         experienceCategoryId = id;
         pageIndex = 0;
         itemsPerPage = 20;
 
-        await Task.WhenAll(new Task[] {FetchPopularActivities(id), FetchActivities(false)});
+        if (experienceCategoryId == 1)
+        {
+            await ShowOTE(3);
+        }
+        else {
+            await Task.WhenAll(new Task[] {FetchPopularActivities(experienceCategoryId), FetchActivities(false)});
+        }
     }
 
     public async Task Clear()
@@ -2401,6 +2503,19 @@
     public async Task ShowOTE(int ID)
     {
         ExperienceCategory = ID;
+        pageIndex = 1;
+
+        if (ExperienceCategory == 3)
+        {
+            showCategorySwiper = false;
+            await Filter(null);
+        }
+        else
+        {
+            showCategorySwiper = true;
+             await Filter(null);
+        }
+
         await FetchActivities(false);
     }
 }
