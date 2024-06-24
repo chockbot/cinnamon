@@ -16,6 +16,7 @@ using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcemen
 using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicContent;
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
+using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderFlag;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -105,5 +106,9 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentAlias.DynamicContentDTO, DynamicContent>();
         CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
+
+        // for ote reminder flag
+        CreateMap<OteReminderFlag, ReminderFlagAlias.OteReminderFlagDTO>();
+        CreateMap<ReminderFlagAlias.OteReminderFlagDTO, OteReminderFlag>();
     }
 }
