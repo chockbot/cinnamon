@@ -65,6 +65,7 @@ public interface IDataStore
     IDirectStudentSession DirectStudentSession {get;}
     IDirectStudentPayment DirectStudentPayment {get;}
     IDirectStudentAttendance DirectStudentAttendance {get;}
+    IOteReminderFlag OteReminderFlag {get;}
     
     Task EnsureMigrate();
 
