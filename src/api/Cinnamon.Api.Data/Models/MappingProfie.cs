@@ -133,5 +133,8 @@ public class MappingProfile : Profile
         CreateMap<DirectStudentAlias.DirectStudentInfoDTO, DirectStudentInfo>();
         CreateMap<DirectStudentAlias.DirectStudentSessionDTO, DirectStudentSession>();
         CreateMap<DirectStudentAlias.DirectStudentPaymentDTO, DirectStudentPayment>();
+
+        CreateMap<DynamicEmailTemplate, DynamicContentAlias.DynamicEmailTemplateDTO>();
+        CreateMap<DynamicContentAlias.DynamicEmailTemplateDTO, DynamicEmailTemplate>();
     }
 }
