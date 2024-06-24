@@ -3208,6 +3208,7 @@ public class ActivityController : ControllerBase
                 Skip = args.Skip,
                 Take = args.Take,
                 ExperienceType = args.ExperienceType,
+                ExperienceCategory = args.ExperienceCategory,
                 StarReview = args.StarReview
             });
 

@@ -1,10 +1,46 @@
 ﻿body {
   font-family: 'Montserrat', sans-serif;
   font-family: 'Poppins', sans-serif;
-
 }
 
+.social-media-href-button {
+  text-decoration: none;
+}
+
+.cinnamon-support-email {
+  text-decoration: none;
+  outline: none;
+  color: #E8E8E8;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  transition: ease 0.5s;
+}
+
+.cinnamon-support-email:hover {
+  color: #FFA942;
+}
+.profile-img-desktop {
+  width: 45px;
+  height: 45px;
+}
 /*test area */
+
+.tooltip {
+  /* Your existing styles here */
+
+  /* Add these lines to animate the opacity */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.0s ease, visibility 1.0s ease;
+}
+
+.tooltip:hover {
+  opacity: 1;
+  visibility: visible;
+}
 
 
 .static-category-effect:hover .static-category-title {
@@ -21,10 +57,10 @@
   font-size: 20px;
   font-weight: 700;
   color: #343D4C;
-  margin-top: 1.2rem;
   cursor: pointer;
   text-decoration: none;
   transition: transform .25s;
+  padding-right: 20px;
 }
   .cinnamon-link:active {
       transform: scale(.94);
@@ -39,7 +75,17 @@
   width: fit-content;
   gap: 10px;
 }
+
+.navbar-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .btn-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 2px solid #FFA942;
   width: 195px;
   height: 51px;
@@ -49,7 +95,6 @@
   font-size: 20px;
   font-weight: 700;
   background-color: transparent;
-  margin-top: 0.5rem;
   transition: transform .25s;
 }
 
@@ -146,12 +191,29 @@
 }
 
 .upcoming-events-info-text-main {
+  position: relative;
   color: #343D4C;
   font-family: Nunito;
   font-size: 32px;
   font-style: normal;
   font-weight: 900;
   line-height: normal;
+  cursor: pointer;
+}
+
+.upcoming-events-info-text-main::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background: #FFA942; /* Change to the color of your underline */
+  transition: width 0.3s ease-in-out;
+}
+
+.upcoming-events-info-text-main:hover::after {
+  width: 100%;
 }
 
 .upcoming-events-info-text {
@@ -271,6 +333,7 @@
   display: flex;
   justify-content: space-evenly;
   gap: 5%;
+  margin-bottom: 32px;
 }
 
 .event-organizer-join-desktop-title {
@@ -388,6 +451,17 @@
   transition: color 0.4s ease;
 }
 
+.event-organizer-join-sub-title.activity-provider-switch {
+  color: #FFF;
+  font-family: Poppins;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+  cursor: pointer;
+  transition: color 0.4s ease;
+}
+
 .event-organizer-join-sub-title:hover {
   color: #FFA942;
 }
@@ -477,6 +551,61 @@
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+
+.card-title-button-exp {
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 1px solid #34A853;
+  background: #FFFBF5;
+  color: #34A853;
+  font-family: Nunito;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 340px;
+  height: 48px;
+}
+
+.card-title-button-exp span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.card-title-button-exp span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.card-title-button-exp:hover span {
+  padding-right: 10px;
+}
+
+.card-title-button-exp:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.card-title-button-exp:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
 
 /* footer final */
 
@@ -1002,8 +1131,14 @@ img.img-icon-home {
 }
 
 .card-title2 {
-  font-size: 14px;
+  font-size: 16px;
   font-family: "Nunito";
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  cursor: pointer;
 }
 
 .card-body1 {
@@ -1243,14 +1378,13 @@ img.img-icon-home {
 .section-1 .categories .schedule-swiper {
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
+  margin-bottom: 56px;
 }
 
 .categories .swiper-wrapper {
   width: auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
 img.img-icon {
@@ -1259,7 +1393,8 @@ img.img-icon {
 }
 
 .categories .swiper-slide.category {
-  width: 90px;
+  width: fit-content;
+  margin-left: 30px;
 }
 
 .img-zoom-effect {
@@ -1307,6 +1442,19 @@ img.img-icon {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 425px) {
+
+  .event-organizer-info-title.activity-provider-switch {
+    font-size: 30px;
+  }
+
+  .profile-img-mobile {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  .section-1.experience-selector .categories .schedule-swiper {
+    width: fit-content;
+  }
+  
   .btn-login {
     display: none;
   }
@@ -1353,6 +1501,7 @@ img.img-icon {
     height: 384px;
     width: 300px;
     margin-bottom: 24px;
+    margin-top: 40px;
   }
 
   .sub-header-container {
@@ -1698,11 +1847,14 @@ img.img-icon {
   }
 
   .card-title2.mb-0.in-person {
+    font-size: 16px;
     font-family: "Nunito";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 19px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    cursor: pointer;
     color: #343d4c;
   }
 
@@ -1738,14 +1890,7 @@ img.img-icon {
   }
 
   .categories .swiper-slide.category {
-    width: 70px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
-
-  .categories .schedule-swiper {
-    margin-top: 0px;
-    margin-bottom: 20px;
-    margin-left: 0px;
-    margin-right: 0px;
+    width: fit-content;
   }
 
   .price-section {
@@ -1859,6 +2004,16 @@ img.img-icon {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 425px) and (max-width: 766px) {
+
+  .event-organizer-info-title.activity-provider-switch {
+    font-size: 40px;
+  }
+
+  .profile-img-mobile {
+    width: 35px !important;
+    height: 35px !important;
+  }
+
   .btn-login {
     display: none;
   }
@@ -1889,6 +2044,7 @@ img.img-icon {
     height: 384px;
     width: 384px;
     margin-bottom: 24px;
+    margin-top: 40px;
   }
 
   .sub-header-container {
@@ -2043,10 +2199,8 @@ img.img-icon {
 
   .search-bar {
     display: flex;
-    justify-content: start;
-    width: 100%;
-    margin-left: 6%;
   }
+
   .become {
     display: none;
   }
@@ -2257,14 +2411,7 @@ img.img-icon {
   }
 
   .categories .swiper-slide.category {
-    width: 100px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
-
-  .categories .schedule-swiper {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 0px;
-    margin-right: 0px;
+    width: fit-content;
   }
 
   .price-section {
@@ -2360,6 +2507,16 @@ img.img-icon {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 767px) and (max-width: 1023px) {
+
+  .new-message-count-badge {
+    margin-right: 2px;
+  }
+
+  .profile-img-mobile {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
   .btn-login {
     display: none;
   }
@@ -2427,6 +2584,8 @@ img.img-icon {
     width: 696px;
     height: 456.916px;
     flex-shrink: 0;
+    margin-bottom: 24px;
+    margin-top: 40px;
   }
 
   .event-organizer-info {
@@ -2699,7 +2858,7 @@ img.img-icon {
     font-weight: 700;
     font-size: 20px;
     line-height: 27px;
-    color: #ffffff;
+    color: #4285F4;
     width: 220px;
   }
 
@@ -2779,15 +2938,7 @@ img.img-icon {
   }
 
   .categories .swiper-slide.category {
-    width: 75px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
-
-  .categories .schedule-swiper {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 0px;
-    margin-right: 0px;
-    z-index: 0;
+    width: fit-content;
   }
 
   .activity-heart-badge-section {
@@ -2903,7 +3054,6 @@ img.img-icon {
 
   .menu img {
     aspect-ratio: 1;
-    padding-right: 10px;
   }
 
   .nav {
@@ -2976,7 +3126,7 @@ img.img-icon {
     font-weight: 700;
     font-size: 20px;
     line-height: 27px;
-    color: #ffffff;
+    color: #4285F4;
     width: 220px;
   }
 
@@ -3320,19 +3470,7 @@ img.img-icon {
   .categories .swiper-slide.category {
     display: flex;
     justify-content: space-around;
-    width: 100px; /*tied up with margin-left of .categories .schedule-swiper*/
-  }
-
-  .categories .schedule-swiper {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    margin-left: 0px;
-    margin-right: 0px;
-  }
-
-  .categories,
-  .activity-popular {
-    margin-bottom: 20px;
+    width: fit-content;
   }
 
   .active-tag-label {
@@ -3401,9 +3539,11 @@ img.img-icon {
 
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
-  .new-message-count-badge {
-    margin-right: 10px;
+  .btn-login {
+    height: 40px;
+    width: 190px;
   }
+
 
   .event-organizer-join-sub-container {
     display: flex;
@@ -3454,6 +3594,8 @@ img.img-icon {
   .sub-header-image {
     width: 930px;
     height: 516px;
+    margin-bottom: 24px;
+    margin-top: 40px;
   }
 
   .event-organizer-info {
@@ -3607,7 +3749,7 @@ img.img-icon {
 }
 
 /* For filter */
-@media only screen and (max-width: 890px) {
+@media only screen and (max-width: 767px) {
   .categories .swiper-wrapper {
     width: 100%;
   }

@@ -17,4 +17,5 @@ public class ActivityFeedArgs
     public int? StarReview {get; set;}
 
     public int? ExperienceType {get; set;}
+    public int? ExperienceCategory {get; set;}
 }
