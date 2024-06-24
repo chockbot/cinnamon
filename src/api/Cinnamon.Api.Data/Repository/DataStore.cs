@@ -133,6 +133,8 @@ public class DataStore : IDataStore
 
     public IOteReminderFlag OteReminderFlag => new OteReminderFlagEntity(applicationContext);
 
+    public IDynamicEmailTemplate DynamicEmailTemplate => new DynamicEmailTemplateEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {
