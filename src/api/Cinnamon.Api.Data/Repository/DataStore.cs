@@ -124,6 +124,8 @@ public class DataStore : IDataStore
 
     public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
 
+    public IDynamicEmailTemplate DynamicEmailTemplate => new DynamicEmailTemplateEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

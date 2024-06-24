@@ -100,6 +100,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ActivitySummary> ActivitySummaries {get; set;}
 
+    public DbSet<DynamicEmailTemplate> DynamicEmailTemplates {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -400,6 +402,10 @@ public class ApplicationContext : IdentityDbContext
         // for ote date
         modelBuilder.Entity<OteDate>()
             .HasIndex(d => d.Date);
+
+        // for dynamic email template
+        modelBuilder.Entity<DynamicEmailTemplate>()
+            .HasIndex("ActivityId", "ProviderId", "TemplateType");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
