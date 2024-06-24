@@ -108,6 +108,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DirectStudentAttendance> DirectStudentAttendances {get; set;}
 
+    public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -424,6 +426,10 @@ public class ApplicationContext : IdentityDbContext
         // for ote date
         modelBuilder.Entity<OteDate>()
             .HasIndex(d => d.Date);
+
+        // for ote reminder flag
+        modelBuilder.Entity<OteReminderFlag>()
+            .HasIndex("ActivityId", "OteDateId");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
