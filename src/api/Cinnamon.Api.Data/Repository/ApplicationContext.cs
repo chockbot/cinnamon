@@ -100,6 +100,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ActivitySummary> ActivitySummaries {get; set;}
 
+    public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -396,6 +398,10 @@ public class ApplicationContext : IdentityDbContext
             .HasIndex("Ongoing", "Completed", "TotalParticipants");
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Guid);
+
+        // for ote reminder flag
+        modelBuilder.Entity<OteReminderFlag>()
+            .HasIndex("ActivityId", "OteDateId");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
