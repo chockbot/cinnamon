@@ -51,8 +51,8 @@ public class DynamicEmailTemplateRepository : IDynamicEmailTemplateRepository
             }
 
             var entity = toUpdateRes.Result;
-            entity.Body = emailTemplate.Body;
-            entity.Subject = emailTemplate.Subject;
+            entity.Body = emailTemplate.Body ?? entity.Body;
+            entity.Subject = emailTemplate.Subject ?? entity.Subject;
 
             var updateRes = await dataStore.DynamicEmailTemplate.Update(entity);
             if(!updateRes.Succeeded || updateRes.Result is null)

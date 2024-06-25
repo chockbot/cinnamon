@@ -9,4 +9,7 @@ public interface IDynamicContentData
     Task<AppResult<CreateDynamicContentResult>> CreateDynamicContent(CreateDynamicContentArgs args);
     Task<AppResult<GetDynamicContentResult>> GetDynamicContent(string identifier);
     Task<AppResult<UpdateDynamicContentResult>> UpdateDynamicContent(UpdateDynamicContentArgs args);
+    Task<AppResult<CreateEmailTemplateResult>> CreateEmailTemplate(CreateEmailTemplateArgs args);
+    Task<AppResult<GetEmailTemplatesResult>> GetEmailTemplates(GetEmailTemplatesArgs args);
+    Task<AppResult<UpdateEmailTemplateResult>> UpdateEmailTemplate(UpdateEmailTemplateArgs args, int templateId);
 }
