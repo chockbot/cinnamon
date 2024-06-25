@@ -16,6 +16,8 @@ using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcemen
 using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicContent;
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
+using OteWaitListAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteWaitlist;
+using OteWaitListReqAlias = Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -105,5 +107,12 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentAlias.DynamicContentDTO, DynamicContent>();
         CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
+
+        // ote waitlist mapping
+        CreateMap<OteWaitlist, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListAlias.OteWaitlistDTO, OteWaitlist>();
+
+        CreateMap<OteWaitListReqAlias.CreateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListReqAlias.GetOteWaitlistByProviderArgs, OteWaitListAlias.OteWaitlistDTO>();
     }
 }

@@ -84,6 +84,8 @@ public class ActivityController : ControllerBase
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
     private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
     private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
+    private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
+    private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -111,7 +113,8 @@ public class ActivityController : ControllerBase
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
-        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler)
+        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
+        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler)
     {
         _logger = logger;
 
@@ -175,6 +178,8 @@ public class ActivityController : ControllerBase
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
         this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
         this.oteScheduleDatesHandler = oteScheduleDatesHandler;
+        this.createOteWaitlistHandler = createOteWaitlistHandler;
+        this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
     }
 
     [Route("CreateActivity")]
@@ -3330,6 +3335,70 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("CreateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateActivity([FromBody] CreateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await createOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateOteWaitlistArgs
+            {
+                ActivityId   = args.ActivityId,
+                CustomerId   = args.CustomerId,
+                CustomerName = args.CustomerName,
+                Payload      = args.Payload,
+                ProviderId   = args.ProviderId,
+                ScheduleId   = args.ScheduleId,
+                Status       = args.Status
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new CreateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch(Exception ex)
+        {
+            return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetWaitlistByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteWaitlistByProvider([FromQuery] GetOteWaitlistByProviderArgs args)
+    {
+        try
+        {
+            var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
+            {
+                ProviderId = args.ProviderId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.OteWaitList.OteWaitlistDTO>>(result.Result.OteWaitlists);
+
+            return new JsonResult(new GetOteWaitlistByProviderResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

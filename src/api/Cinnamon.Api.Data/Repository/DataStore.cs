@@ -124,6 +124,7 @@ public class DataStore : IDataStore
 
     public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
 
+    public IOteWaitlist OteWaitlist => new OteWaitlistEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {
