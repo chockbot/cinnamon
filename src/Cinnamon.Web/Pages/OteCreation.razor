@@ -515,7 +515,7 @@
                     {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.OtePricing
                         {
-                            Description = p.Description,
+                            Description = p.Description ?? string.Empty,
                             IsAbsorbFees = p.AbsorbFees,
                             MaxSlots = p.MaxSlots ?? 0,
                             Price = p.Price ?? 0m,
