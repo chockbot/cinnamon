@@ -108,5 +108,6 @@ public class MappingProfile : Profile
 
         CreateMap<DynamicEmailTemplate, DynamicContentAlias.DynamicEmailTemplateDTO>();
         CreateMap<DynamicContentAlias.DynamicEmailTemplateDTO, DynamicEmailTemplate>();
+        CreateMap<DynamicContentReqAlias.CreateEmailTemplateArgs, DynamicContentAlias.DynamicEmailTemplateDTO>();
     }
 }
