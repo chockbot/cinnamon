@@ -14,6 +14,7 @@ public class OteScheduleDTO
     public int EventDurationCount {get; set;}
     public int EventTicketLimit { get; set; }
     public string EventDurationTimeUnit {get; set;}
+    public bool IsOpen { get; set; }
 
     public OteSchedulePricingDTO OteSchedulePricingDTO { get; set; }
     public OteOnlineEventsDTO OteOnlineEventsDTO { get; set; }

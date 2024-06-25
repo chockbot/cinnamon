@@ -53,7 +53,7 @@
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
-                    <p class="reg-status">Open</p>
+                    <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
             </div>
             <div class="div-option-details" @onclick="() => capacityModal.Show()">
@@ -119,9 +119,9 @@
             <p class="approval-text">Close registration to stop accepting new guests, including anyone who may have been invited.</p>
             <p class="approval-text">Please note that capacity and availability settings apply when registration is open.</p>
             <div class="accept-reg">
-                <p class="approval">Required Approval</p>
+                <p class="approval">Accept Registration</p>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(ModelState.IsOpen)" @onchange="((e) => CheckRegistration(e))">
                 </div>
             </div>
         </ModalBody>
@@ -130,7 +130,7 @@
                 <Button class="btn-cancel" @onclick="() => registrationModal.Hide()">
                     Cancel
                 </Button>
-                <Button class="btn-save">
+                <Button class="btn-save" @onclick="() => registrationModal.Hide()">
                     Save
                 </Button>
             </div>
@@ -384,26 +384,20 @@
 
     public async Task<bool> FieldValid()
     {
-        if (pricingFormValidation is not null && pringListFormValidation is not null)
+        bool isSetLimit = true;
+        if(ModelState.IsLimit == 2)
         {
-            bool pricingValid = await pricingFormValidation.ValidateAll();
-            bool pricingListValid = await pringListFormValidation.ValidateAll();
-            bool isSetLimit = true;
-            if(ModelState.IsLimit == 2)
-            {
-                isSetLimit = ModelState.EventTicketLimit != 0;
-            }
-            bool valid = pricingValid && pricingListValid && isSetLimit;
-            showErrors = true;
-            StateHasChanged();
-            await Task.Delay(300); // add delay to populate is-invalid class
-            if (!valid)
-            {
-                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
-            }
-            return valid;
+            isSetLimit = ModelState.EventTicketLimit != 0;
         }
-        return false;
+        bool valid = isSetLimit;
+        showErrors = true;
+        StateHasChanged();
+        await Task.Delay(300); // add delay to populate is-invalid class
+        if (!valid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+        }
+        return valid;
     }
 
     private ValidationMode FormMode
@@ -436,7 +430,8 @@
         ModelData data = new ModelData
         {
             EventTicketLimit = ModelState.EventTicketLimit,
-            IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
+            IsLimit          = ModelState.EventTicketLimit != 0 ? 2 : 1,
+            IsOpen           = ModelState.IsOpen,
 
             ItemPrices = modelPricingList.Pricings.Select(p =>
             {
@@ -525,6 +520,7 @@
         public int TicketSold { get; set; }
         public int IsLimit { get; set; } = 1;
         public int EventTicketLimit { get; set; }
+        public bool IsOpen { get; set; }
 
         public class ItemPrice
         {
@@ -571,7 +567,7 @@
         public int TicketSold { get; set; }
 
         // extras
-        public bool IsOpen { get; set; } = false;
+        public bool IsOpen { get; set; }
         public int Order { get; set; }
         public int TempId { get; set; }
         public bool IsNew { get; set; }
@@ -722,7 +718,10 @@
         }
         StateHasChanged();
     }
-
+    private async Task CheckRegistration(ChangeEventArgs e)
+    {
+        ModelState.IsOpen = (bool)e.Value;
+    }
     private void onClickMenu(int ticketId)
     {
         if (activeMenuId == ticketId)

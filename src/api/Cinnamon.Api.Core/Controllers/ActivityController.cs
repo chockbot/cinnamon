@@ -2634,7 +2634,8 @@ public class ActivityController : ControllerBase
 
                     EventDurationCount = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit = activity.EventTicketLimit,
+                    IsOpen = activity.IsOpen
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2679,7 +2680,6 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
     [Route("UpdateOte")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
@@ -2719,9 +2719,10 @@ public class ActivityController : ControllerBase
                     OnDayDate = activity.OnDayDate,
                     WeekString = activity.WeekString,
 
-                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationCount    = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit      = activity.EventTicketLimit,
+                    IsOpen                = activity.IsOpen
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

@@ -508,7 +508,8 @@
                         WeekString               = schedule.WeekString,
                         EventDurationCount       = schedule.EventDurationCount,
                         EventDurationTimeUnit    = schedule.EventDurationTimeUnit,
-                        EventTicketLimit         = pricing.EventTicketLimit
+                        EventTicketLimit         = pricing.EventTicketLimit,
+                        IsOpen                   = pricing.IsOpen
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {
@@ -610,7 +611,8 @@
                     WeekString            = schedule.WeekString,
                     EventDurationCount    = schedule.EventDurationCount,
                     EventDurationTimeUnit = schedule.EventDurationTimeUnit,
-                    EventTicketLimit      = pricing.EventTicketLimit
+                    EventTicketLimit      = pricing.EventTicketLimit,
+                    IsOpen                = pricing.IsOpen
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -747,24 +749,12 @@
                 }).ToList()
         });
 
-        //await oteLocation?.SetState(new OteLocation.ModelData {
-        //    BarangayCode   = ote.BarangayCode,
-        //    BarangayName   = ote.BarangayName,
-        //    CityCode       = ote.CityNumber,
-        //    CityName       = ote.CityName,
-        //    ExperienceType = ote.ExperienceTypeId,
-        //    HouseNo        = ote.HouseNo,
-        //    PinnedLocation = ote.PinnedLocation,
-        //    PostalCode     = ote.PostalCode,
-        //    RegionCode     = ote.RegionCode,
-        //    RegionName     = ote.RegionName
-        //});
-
         // set ote schedules state and parameters
         //Pricing
-        var options = ote.OteSchedule.ExtraOptions.Split("|");
+        var options                   = ote.OteSchedule.ExtraOptions.Split("|");
         pricingModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
         pricingModel.IsLimit          = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
+        pricingModel.IsOpen           = ote.OteSchedule.IsOpen;
         await otePricing?.SetState(new OtePricing.ModelData {
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings

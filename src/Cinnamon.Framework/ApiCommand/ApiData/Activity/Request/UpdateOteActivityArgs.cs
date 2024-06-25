@@ -101,6 +101,8 @@ public class UpdateOteActivityArgs
         [Required]
 
         public int EventTicketLimit { get; set; }
+
+        public bool IsOpen { get; set; }
     }
 
     public class UpdateOtePricing 

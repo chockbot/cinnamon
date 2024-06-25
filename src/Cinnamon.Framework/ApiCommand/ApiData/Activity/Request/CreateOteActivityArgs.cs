@@ -100,6 +100,8 @@ public class CreateOteActivityArgs
 
         [Required]
         public int EventTicketLimit { get; set; }
+
+        public bool IsOpen { get; set; }
     }
 
     public class OtePricing 

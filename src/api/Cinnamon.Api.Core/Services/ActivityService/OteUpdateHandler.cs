@@ -225,8 +225,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                 return AppResult<OteUpdateResult>.CreateFailed(
                         new ApplicationException(alreadyBookedRes.Message), alreadyBookedRes.Message);
             }
-            
-            bool reCreateSchedule = 
+
+            bool reCreateSchedule =
                 !currentOteDetails.Schedule.Recurrences.Equals(args.Activity.Recurrence) ||
                 currentOteDetails.Schedule.From != args.Activity.ScheduleFrom ||
                 currentOteDetails.Schedule.To != args.Activity.ScheduleTo ||
@@ -236,7 +236,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                 currentOteDetails.Schedule.SelectedDays != (args.Activity.WeekString ?? String.Empty) ||
                 currentOteDetails.Schedule.ExtraOptions != (extraOptionsForMonthlyRecurring ?? String.Empty) ||
                 currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
-                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
+                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit ||
+                currentOteDetails.Schedule.IsOpen != args.Activity.IsOpen;
             
             bool alreadyHaveBooked = alreadyBookedRes.Result.OteAlreadyBookedItems.Any(d => d.BookCount > 0);
 
@@ -297,7 +298,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                     ExtraOptions          = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
-                    EventTicketLimit = args.Activity.EventTicketLimit
+                    EventTicketLimit      = args.Activity.EventTicketLimit,
+                    IsOpen                = args.Activity.IsOpen
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {
