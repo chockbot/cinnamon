@@ -616,7 +616,7 @@
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
-                        Description  = p.Description,
+                        Description  = p.Description ?? string.Empty,
                         Id           = p.Id,
                         IsAbsorbFees = p.AbsorbFees,
                         MaxSlots     = p.MaxSlots ?? 0,

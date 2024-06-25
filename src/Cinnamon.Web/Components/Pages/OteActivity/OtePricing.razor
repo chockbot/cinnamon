@@ -447,22 +447,11 @@
                 };
             }).ToList()
         };
-        data.ItemPrices.Add(new ModelData.ItemPrice
-        {
-            AbsorbFees = modelPricing.AbsorbFees,
-            MaxSlots = modelPricing.MaxSlots,
-            Price = modelPricing.Price,
-            Description = modelPricing.Description,
-            Id = modelPricing.Id,
-            Name = modelPricing.Name,
-            TicketSold = modelPricing.TicketSold
-        });
         return data;
     }
 
     public Task SetState(ModelData data)
     {
-        //existing ticket
         foreach (var item in data.ItemPrices)
         {
             modelPricingList.Pricings.Add(new Pricing
@@ -476,7 +465,6 @@
                     TicketSold = item.TicketSold
                 });
         }
-        existingList.Pricings = modelPricingList.Pricings.ToList();
         return Task.CompletedTask;
     }
 
@@ -743,13 +731,11 @@
     {
         modelPricing = new Pricing
             {
-                Id = ticket.Id,
-                Name = ticket.Name,
-                Price = ticket.Price,
-                MaxSlots = ticket.MaxSlots,
+                Id         = ticket.Id,
+                Name       = ticket.Name,
+                Price      = ticket.Price,
+                MaxSlots   = ticket.MaxSlots,
                 AbsorbFees = ticket.AbsorbFees,
-                TicketSold = ticket.TicketSold,
-
             };
         isEditing = true;
         await ticketModal.Show();
