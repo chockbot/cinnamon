@@ -664,8 +664,8 @@
         await SelectedBarangayChanged(data.BarangayCode);
 
         var orderedImages = data.images.OrderBy(i => i.Order).ThenBy(i => i.Id);
-        var coverImage = orderedImages.FirstOrDefault();
-        var setplanImage = orderedImages.FirstOrDefault(i => i.Order == 100);
+        var coverImage = orderedImages.LastOrDefault(i => i.Order == 0);
+        var setplanImage = orderedImages.LastOrDefault(i => i.Order == 100);
 
         if (setplanImage is not null)
         {
@@ -865,6 +865,12 @@
     {
         if (imageCropper is not null)
         {
+            //delete old images
+            var oldCoverImage = ModelState.imageItems.Where(i => i.Order == 0);
+            foreach (var item in oldCoverImage)
+            {
+                deletedIds.Add(item.Id);
+            }
             var cropperResult = await imageCropper.CropImage(new ImageCropper.ImageCropperOptions
                 {
                     FileInputIndex = 0,
@@ -894,6 +900,12 @@
 
     private async Task LoadSetplanPhotoFile(InputFileChangeEventArgs e)
     {
+        //delete old images
+        var oldSeatPlanImage = ModelState.imageItems.Where(i => i.Order == 100);
+        foreach (var item in oldSeatPlanImage)
+            {
+                deletedIds.Add(item.Id);
+            }
         var options = new
         {
             imgSelector = $"#{setplanPhoto.ImageSrcId}",
@@ -918,14 +930,6 @@
                         Order = coverPhoto.Order
                     });
             }
-            //selectors.AddRange(imageItems.Select(i =>
-            //{
-            //    return new ImageSelector
-            //        {
-            //            Selector = $"#{i.InputDataId}",
-            //            Order = i.Order
-            //        };
-            //}));
             if (setplanPhoto.Display)
             {
                 selectors.Add(new ImageSelector
@@ -946,11 +950,14 @@
         }
     }
 
-    public Task DeleteCoverPhoto()
+    public async Task DeleteCoverPhoto()
     {
         coverPhoto.Display = false;
         deletedIds.Add(coverPhoto.Id);
-        return Task.CompletedTask;
+        if(OnCoverPhotoDisplayChanged.HasDelegate)
+        {
+            await OnCoverPhotoDisplayChanged.InvokeAsync();
+        }
     }
 
     private Task DeleteSetplanPhoto()

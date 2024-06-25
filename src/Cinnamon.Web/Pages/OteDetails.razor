@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                 <div class="cover-photo">
-                    <img class="cover-photo-img" src="@activity.Images.ElementAt(0).ImageSrc" alt="cover-photo">
+                    <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
                 </div>
                 <div class="d-flex align-items-center mt-3 me-2 me-md-5">
                     <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
@@ -520,6 +520,23 @@
             {
                 var image = activity.Images.FirstOrDefault(i => i.Order == 100);
                 if(image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
+    }
+    private string CoverImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 0);
+                if (image is not null)
                 {
                     imageSrc = image.ImageSrc;
                 }
