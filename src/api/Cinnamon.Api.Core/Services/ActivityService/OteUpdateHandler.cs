@@ -299,7 +299,9 @@ public class OteUpdateHandler : IOteUpdateHandler
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
                     EventTicketLimit      = args.Activity.EventTicketLimit,
-                    IsOpen                = args.Activity.IsOpen
+                    IsOpen                = args.Activity.IsOpen,
+                    IsCapacity            = args.Activity.IsCapacity,
+                    CapacityCount         = args.Activity.CapacityCount,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

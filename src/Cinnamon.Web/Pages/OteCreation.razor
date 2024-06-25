@@ -639,7 +639,9 @@
                         EventDurationCount       = schedule.EventDurationCount,
                         EventDurationTimeUnit    = schedule.EventDurationTimeUnit,
                         EventTicketLimit         = pricing.EventTicketLimit,
-                        IsOpen                   = pricing.IsOpen
+                        IsOpen                   = pricing.IsOpen,
+                        IsCapacity               = pricing.IsCapacity,
+                        CapacityCount            = pricing.CapacityCount
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {
@@ -742,7 +744,9 @@
                     EventDurationCount    = schedule.EventDurationCount,
                     EventDurationTimeUnit = schedule.EventDurationTimeUnit,
                     EventTicketLimit      = pricing.EventTicketLimit,
-                    IsOpen                = pricing.IsOpen
+                    IsOpen                = pricing.IsOpen,
+                    IsCapacity            = pricing.IsCapacity,
+                    CapacityCount         = pricing.CapacityCount
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -864,7 +868,7 @@
                 };
         }).ToList();
 
-            
+
         await oteEvent?.SetState(new OteEvent.ModelData
         {
             BarangayCode   = ote.BarangayCode,
@@ -896,6 +900,8 @@
         pricingModel.EventTicketLimit = ote.OteSchedule.EventTicketLimit;
         pricingModel.IsLimit          = ote.OteSchedule.EventTicketLimit != 0 ? 2 : 1;
         pricingModel.IsOpen           = ote.OteSchedule.IsOpen;
+        pricingModel.IsCapacity       = ote.OteSchedule.IsCapacity;
+        pricingModel.CapacityCount    = ote.OteSchedule.CapacityCount;
         await otePricing?.SetState(new OtePricing.ModelData {
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings
@@ -962,23 +968,6 @@
 
             numberOfPage = ote.ExperienceTypeId == 2 ? 5 : 4;
         }
-
-        //oteGallery?.SetState(ote.Images.Select(i => {
-        //    return new OteGallery.ImageItem {
-        //        Id = i.Id,
-        //        ImageSrc = i.ImageSrc,
-        //        Order = i.Order
-        //    };
-        //}).ToList());
-
-        //await oteSummary?.SetState(scheduleDatesRes.Result.Result.Select(
-        //    d => new OteSummary.BookedDate {
-        //        Date = d.Date,
-        //        Id = d.Id,
-        //        NewDate = d.Date
-        //    }),
-        //    oteRes.Result.Result.Id
-        //);
 
         await otePublish?.SetState(scheduleDatesRes.Result.Result.Select(
             d => new OtePublish.BookedDate {

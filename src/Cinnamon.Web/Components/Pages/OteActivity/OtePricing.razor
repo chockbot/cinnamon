@@ -60,7 +60,7 @@
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Event Capacity</p>
-                    <p class="reg-status">300 &#x2022; Waitlist</p>
+                    <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
                 </div>
             </div>
             <div class="div-option-details" @onclick="() => ticketModal .Show()">
@@ -147,11 +147,11 @@
         <ModalBody class="px-4">
             <p class="approval-text">Auto-close registration when the capacity is reached. Only approved guests count toward the cap.</p>
             <p class="field-title">Capacity</p>
-            <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" class="capacity-input"></NumericPicker>
+             <NumericPicker Placeholder="0" ShowStepButtons="false" TValue="int" class="capacity-input" @bind-Value="ModelState.CapacityCount" Disabled="!ModelState.IsCapacity"></NumericPicker>
             <div class="accept-capacity">
                 <p class="approval">Over-Capacity Waitlist</p>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(ModelState.IsCapacity)" @onchange="((e) => CheckCapacity(e))">
                 </div>
             </div>
         </ModalBody>
@@ -160,7 +160,7 @@
                 <Button class="btn-cancel" @onclick="() => capacityModal.Hide()">
                     Cancel
                 </Button>
-                <Button class="btn-save">
+                <Button class="btn-save" @onclick="() => capacityModal.Hide()">
                     Save
                 </Button>
             </div>
@@ -432,7 +432,8 @@
             EventTicketLimit = ModelState.EventTicketLimit,
             IsLimit          = ModelState.EventTicketLimit != 0 ? 2 : 1,
             IsOpen           = ModelState.IsOpen,
-
+            IsCapacity       = ModelState.IsCapacity,
+            CapacityCount    = ModelState.CapacityCount,
             ItemPrices = modelPricingList.Pricings.Select(p =>
             {
                 return new ModelData.ItemPrice
@@ -509,6 +510,8 @@
         public int IsLimit { get; set; } = 1;
         public int EventTicketLimit { get; set; }
         public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
 
         public class ItemPrice
         {
@@ -551,11 +554,11 @@
         [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
         public int EventTicketLimit { get; set; }
         public int IsLimit { get; set; } = 1;
-
         public int TicketSold { get; set; }
-
-        // extras
         public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
+        // extras
         public int Order { get; set; }
         public int TempId { get; set; }
         public bool IsNew { get; set; }
@@ -709,6 +712,10 @@
     private async Task CheckRegistration(ChangeEventArgs e)
     {
         ModelState.IsOpen = (bool)e.Value;
+    }
+    private async Task CheckCapacity(ChangeEventArgs e)
+    {
+        ModelState.IsCapacity = (bool)e.Value;
     }
     private void onClickMenu(int ticketId)
     {

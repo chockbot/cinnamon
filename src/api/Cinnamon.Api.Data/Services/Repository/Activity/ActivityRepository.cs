@@ -1690,10 +1690,9 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
-        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit, bool IsOpen,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,int eventDurationCount, string eventDurationTimeUnit, 
+        int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
         {
@@ -1744,7 +1743,9 @@ public class ActivityRepository : IActivityRepository
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
                 EventTicketLimit      = eventTicketLimit,
-                IsOpen                = IsOpen
+                IsOpen                = IsOpen,
+                IsCapacity            = isCapacity,
+                CapacityCount         = capacityCount,
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1847,9 +1848,9 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, bool IsOpen, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
+        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, bool IsOpen, bool isCapacity, int capacityCount, 
+        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
+        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
     {
         try
         {
@@ -1893,7 +1894,9 @@ public class ActivityRepository : IActivityRepository
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
                 EventTicketLimit      = ticketEventLimit,
-                IsOpen                = IsOpen
+                IsOpen                = IsOpen,
+                IsCapacity            = isCapacity,
+                CapacityCount         = capacityCount,
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
