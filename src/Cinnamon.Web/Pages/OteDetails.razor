@@ -97,41 +97,41 @@
                             </div>
                         </div>
                         <div class="schedule-body">
-                            <Row VerticalGutter="30">
-                                <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                        <label class="ote-schedule me-1">Duration:</label>
-                                        <label class="ote-schedule-details">
-                                            @EventDurationString
-                                        </label>
-                                    </div>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12">
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                                </Column>
-                            </Row>
-                            @if(activity.IsOpen)
+                            @if (activity.IsOpen)
                             {
+                                <Row VerticalGutter="30">
+                                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
+                                            <label class="ote-schedule me-1">Duration:</label>
+                                            <label class="ote-schedule-details">
+                                                @EventDurationString
+                                            </label>
+                                        </div>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock.png" alt="clock">
+                                            <label class="ote-schedule me-1">Time Start:</label>
+                                            <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                        </div>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <div class="d-flex align-items-center event-schedule-place">
+                                            <img class="me-2" src="images/ote/location.png" alt="clock">
+                                            <label class="ote-schedule me-1">Location:</label>
+                                            @if (activity.ExperienceTypeId == 1)
+                                            {
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="ote-schedule-details">@address</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="ote-schedule-details">Online</label>
+                                            }
+                                        </div>
+                                    </Column>
+                                </Row>
                                 <div class="event-ticket-section">
                                     <div class="ticket-details-header">
                                         <p class="prices-title">Tickets</p>
@@ -212,7 +212,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
                                     <p class="close-text">Ticket Sales Closed</p>
                                 </div>
-                                <p class="ticket-name">This event is not currently on sale. You may contact the host to receive updates.</p>
+                                <p class="close-sub-text">This event is not currently on sale. You may contact the host to receive updates.</p>
                             }
                             
                         </div>
@@ -225,7 +225,7 @@
                         else
                         {
                             <div class="schedule-footer">
-                                <button class="btn-buy-ticket" disabled">Ticket Sales Closed</button>
+                                <button type="button" class="btn-close-ticket" disabled>Ticket Sales Closed</button>
                             </div>
                         }
 
@@ -433,6 +433,7 @@
             activity.OteDates         = activity.OteDates.OrderBy(d => d.Date);
             activity.Sold             = activity.Pricings.Sum(a => a.TicketSold);
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
+            activity.IsOpen           = act.OteSchedule.IsOpen;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
 
 

@@ -4,12 +4,24 @@ body {
 }
 .ticket-close{
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 .close-text {
     font-family: Nunito;
     font-size: 20px;
     font-weight: 900;
+    line-height: 30px;
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+}
+.close-sub-text {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    padding-left: 24px;
 }
 .img-seat-plan {
     width: 330px;
@@ -209,6 +221,23 @@ a {
     line-height: normal;
     border: none;
 }
+.btn-close-ticket {
+    border-radius: 12px;
+    width: 90%;
+    padding: 14px;
+    color: #FFFFFF;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    transition: none !important;
+    background-color: #D9D9D9;
+}
+.btn-close-ticket:active {
+    transform: none !important;
+}
 .provider-about-me {
     font-family: Nunito;
     font-size: 18px;
@@ -216,7 +245,14 @@ a {
     color: #717171;
     text-align: justify;
 }
-
+svg{
+    width: 40px;
+    height: 44px;
+}
+.ticket-close {
+    padding-top: 24px;
+    padding-left: 24px;
+}
 .read-more,
 .read-less {
     color: #343D4C; /* You can customize the color */
@@ -575,6 +611,13 @@ a {
     .img-seat-plan{
         width: 100%;
     }
+    svg {
+        width: 30px;
+        height: 34px;
+    }
+    .close-text {
+        line-height: 20px;
+    }
 }
 @media (min-width: 768px) and (max-width: 991px) {
     ::deep .cover-photo-img {
@@ -608,6 +651,13 @@ a {
     }
     .img-seat-plan {
         width: 100%;
+    }
+    svg {
+        width: 30px;
+        height: 34px;
+    }
+    .close-text {
+        line-height: 20px;
     }
 }
 @media (min-width: 992px) and (max-width: 1200px) {
