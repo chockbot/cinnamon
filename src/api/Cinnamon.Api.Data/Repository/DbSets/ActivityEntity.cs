@@ -327,6 +327,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				result.OteSchedule.EventDurationCount    = oteSchedule.EventDurationCount;
 				result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
 				result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
+				result.OteSchedule.IsOpen				 = oteSchedule.IsOpen;
 
 				if(recreateSchedule)
 				{
@@ -820,99 +821,99 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 		}
 	}
 
-    public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null,
-        int? categoryId = null, int? starReview = null, int? experienceType = null)
-    {
-        try
-        {
-            string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
-            string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
-            string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
-            string searchClause = string.Empty;
-            if (!string.IsNullOrEmpty(search))
-            {
-                searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
-            }
+	public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null,
+		int? categoryId = null, int? starReview = null, int? experienceType = null)
+	{
+		try
+		{
+			string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
+			string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
+			string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
+			string searchClause = string.Empty;
+			if (!string.IsNullOrEmpty(search))
+			{
+				searchClause = "and (ac.\"Title\" Ilike @search or su.\"Provider\" Ilike @search or su.\"Location\" Ilike @search )";
+			}
 
-            string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
-                                "ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
-                                "su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
-                                "su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\" " +
-                            "from public.\"Activities\" ac " +
-                            "left join public.\"ActivityAddress\" ad " +
-                                "on ac.\"Id\" = ad.\"ActivityId\" " +
-                            "left join public.\"ActivitySummaries\" su " +
-                                "on ac.\"Id\" = su.\"ActivityId\" " +
-                            "left join public.\"OteSchedules\" os " +
-                                "on os.\"ActivityId\" = ac.\"Id\"" +
-                            "where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
-                                "and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-                                categoryClause + searchClause + starReviewClause + experienceTypeClause +
-                            "order by ac.\"Guid\" " +
-                            "limit " + take + " offset " + skip + " ";
+			string query = "select ac.\"Id\", ac.\"Title\", ac.\"Handler\", ac.\"ExperienceTypeId\", ac.\"ExperienceCreationTypeId\", " +
+								"ad.\"CityName\", ad.\"RegionName\", ad.\"PinnedLocation\", su.\"ImageBannerSrc\", " +
+								"su.\"Ongoing\", su.\"Completed\", su.\"TotalReviews\", su.\"ReviewAccumulated\",  " +
+								"su.\"TotalParticipants\", ac.\"Price\", ac.\"IsNew\",os.\"From\", os.\"To\",TO_CHAR(os.\"To\",'HH12:MI AM') AS \"StartTime\" " +
+							"from public.\"Activities\" ac " +
+							"left join public.\"ActivityAddress\" ad " +
+								"on ac.\"Id\" = ad.\"ActivityId\" " +
+							"left join public.\"ActivitySummaries\" su " +
+								"on ac.\"Id\" = su.\"ActivityId\" " +
+							"left join public.\"OteSchedules\" os " +
+								"on os.\"ActivityId\" = ac.\"Id\"" +
+							"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
+								"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
+								categoryClause + searchClause + starReviewClause + experienceTypeClause +
+							"order by ac.\"Guid\" " +
+							"limit " + take + " offset " + skip + " ";
 
-            IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
-            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = query;
-                command.CommandType = CommandType.Text;
+			IList<ActivityFeedDTO> listResult = new List<ActivityFeedDTO>();
+			using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
 
-                if (!string.IsNullOrEmpty(search))
-                {
-                    var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
-                    command.Parameters.Add(parameterSearch);
-                }
+				if (!string.IsNullOrEmpty(search))
+				{
+					var parameterSearch = new NpgsqlParameter("search", $"%{search.Trim()}%");
+					command.Parameters.Add(parameterSearch);
+				}
 
-                applicationContext.Database.OpenConnection();
+				applicationContext.Database.OpenConnection();
 
-                using (var dr = await command.ExecuteReaderAsync())
-                {
-                    if (dr.HasRows)
-                    {
-                        var dt = new DataTable();
-                        dt.Load(dr);
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
 
-                        listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO
-                        {
-                            ActivityId = Convert.ToInt32(item["Id"]),
-                            ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
-                            ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
-                            Handler = item["Handler"].ToString() ?? string.Empty,
-                            Price = item["Price"].ToString() ?? string.Empty,
-                            Title = item["Title"].ToString() ?? string.Empty,
-                            IsNew = Convert.ToBoolean(item["IsNew"]),
-                            To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
-                            From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
-                            StartTime = item["StartTime"].ToString() ?? string.Empty,
-                            Address = new ActivityFeedDTO.Location
-                            {
-                                City = item["CityName"].ToString() ?? string.Empty,
-                                PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
-                                Region = item["RegionName"].ToString() ?? string.Empty,
-                            },
-                            SummaryDetails = new ActivityFeedDTO.Summary
-                            {
-                                Completed = Convert.ToInt32(item["Completed"]),
-                                ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
-                                Ongoing = Convert.ToInt32(item["Ongoing"]),
-                                ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
-                                TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
-                                TotalReviews = Convert.ToInt32(item["TotalReviews"])
-                            }
-                        }).ToList();
-                    }
-                }
-            }
+						listResult = dt.AsEnumerable().Select(item => new ActivityFeedDTO
+						{
+							ActivityId = Convert.ToInt32(item["Id"]),
+							ExperienceCreationTypeId = Convert.ToInt32(item["ExperienceCreationTypeId"]),
+							ExperienceTypeId = Convert.ToInt32(item["ExperienceTypeId"]),
+							Handler = item["Handler"].ToString() ?? string.Empty,
+							Price = item["Price"].ToString() ?? string.Empty,
+							Title = item["Title"].ToString() ?? string.Empty,
+							IsNew = Convert.ToBoolean(item["IsNew"]),
+							To = item["To"] != DBNull.Value ? Convert.ToDateTime(item["To"]) : DateTime.MinValue,
+							From = item["From"] != DBNull.Value ? Convert.ToDateTime(item["From"]) : DateTime.MinValue,
+							StartTime = item["StartTime"].ToString() ?? string.Empty,
+							Address = new ActivityFeedDTO.Location
+							{
+								City = item["CityName"].ToString() ?? string.Empty,
+								PinnedLocation = item["PinnedLocation"].ToString() ?? string.Empty,
+								Region = item["RegionName"].ToString() ?? string.Empty,
+							},
+							SummaryDetails = new ActivityFeedDTO.Summary
+							{
+								Completed = Convert.ToInt32(item["Completed"]),
+								ImageSrc = item["ImageBannerSrc"].ToString() ?? string.Empty,
+								Ongoing = Convert.ToInt32(item["Ongoing"]),
+								ReviewAccumulated = Convert.ToDecimal(item["ReviewAccumulated"]),
+								TotalParticipants = Convert.ToInt32(item["TotalParticipants"]),
+								TotalReviews = Convert.ToInt32(item["TotalReviews"])
+							}
+						}).ToList();
+					}
+				}
+			}
 
-            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
-        }
-        catch (System.Exception ex)
-        {
-            return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
-        }
-    }
+			return AppResult<IEnumerable<ActivityFeedDTO>>.CreateSucceeded(listResult, "Successfully get activity feed");
+		}
+		catch (System.Exception ex)
+		{
+			return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(ex, "An error occured when getting activity feed.");
+		}
+	}
 
-    public async Task<AppResult<bool>> BatchSummaryUpdate()
+	public async Task<AppResult<bool>> BatchSummaryUpdate()
 	{
 		try
 		{

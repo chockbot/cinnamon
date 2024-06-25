@@ -1,19 +1,15 @@
-﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Repository.Interfaces;
-using Entities = Cinnamon.Api.Data.Repository.Entities;
-using Cinnamon.Framework.Common;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
-using System.Linq.Expressions;
-using System.Globalization;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-using Cinnamon.Api.Data.Repository.Entities;
-using static Cinnamon.Framework.Enums.Enums;
-using System;
-using Cinnamon.Framework.Enums;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+﻿using AutoMapper;
 using Cinnamon.Api.Data.Extensions;
-using AutoMapper;
-using Cinnamon.Api.Data.Repository;
+using Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Enums;
+using System.Linq.Expressions;
+using static Cinnamon.Framework.Enums.Enums;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -1696,7 +1692,7 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit, bool IsOpen,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
     {
         try
@@ -1737,17 +1733,18 @@ public class ActivityRepository : IActivityRepository
             };
 
             var schedule = new Entities.OteSchedule {
-                From = scheduleFrom.SetKindUtc(),
-                To = scheduleTo.SetKindUtc(),
-                Recurrences = recurrence,
-                ExtraOptions = scheduleExtraOpt ?? String.Empty,
-                RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
-                RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
-                RepeatEvery = repeatEvery,
-                SelectedDays = selectedDays,
-                EventDurationCount = eventDurationCount,
+                From                  = scheduleFrom.SetKindUtc(),
+                To                    = scheduleTo.SetKindUtc(),
+                Recurrences           = recurrence,
+                ExtraOptions          = scheduleExtraOpt ?? String.Empty,
+                RecurrenceDateEnd     = recurrenceDateEnd.SetKindUtc(),
+                RecurrenceDateStart   = recurrenceDateStart.SetKindUtc(),
+                RepeatEvery           = repeatEvery,
+                SelectedDays          = selectedDays,
+                EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
-                EventTicketLimit = eventTicketLimit
+                EventTicketLimit      = eventTicketLimit,
+                IsOpen                = IsOpen
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1850,7 +1847,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
+        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, bool IsOpen, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
         IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
     {
@@ -1895,7 +1892,8 @@ public class ActivityRepository : IActivityRepository
                 SelectedDays          = selectedDays,
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
-                EventTicketLimit      = ticketEventLimit
+                EventTicketLimit      = ticketEventLimit,
+                IsOpen                = IsOpen
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {

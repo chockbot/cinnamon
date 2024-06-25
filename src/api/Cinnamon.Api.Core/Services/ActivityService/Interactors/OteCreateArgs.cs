@@ -67,6 +67,7 @@ public class OteCreateArgs : IInteractor
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
         public int EventTicketLimit { get; set;}
+        public bool IsOpen { get; set; }
     }
 
     public class OtePricing 
