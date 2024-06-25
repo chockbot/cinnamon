@@ -98,7 +98,7 @@
             <label for="category" class="form-control-label label-top-margin">Category</label>
             <select id="create-activity-category" @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
                 <option value="0">--Select Category--</option>
-                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category != "New" && e.Category != "Shows & Concerts" && e.Category != "Event" && e.Category != "Corporate" && e.Category != "Tours & Attractions"))
                 {
                     <option value="@cat.Id">@cat.Category</option>
                 }
