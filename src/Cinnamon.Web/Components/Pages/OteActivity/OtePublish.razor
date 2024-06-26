@@ -179,7 +179,7 @@
 <UserFlowModal @ref=userFlowModal Image="user-flow-ote.webp" MobileImage="user-flow-ote-mobile.png"/>
 <UserFlowModal @ref=moneyFlowsModal Image="money-flow-ote.webp" MobileImage="money-flow-ote-mobile.png" />
 
-<Offcanvas @ref="rightsideOffcanvas" ShowBackdrop Placement="Placement.End">
+<Offcanvas @ref="rightsideOffcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
     <OffcanvasHeader class="px-0 py-4 bg-white-100">
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if(selectedEmailSchedule == 0)
@@ -376,7 +376,8 @@
         };
     }
 
-    public Task SetState(IEnumerable<BookedDate> bookedDates, int activityId, bool AcceptTerms)
+    public Task SetState(IEnumerable<BookedDate> bookedDates, int activityId, bool AcceptTerms, 
+        ScheduleNotification feedback, ScheduleNotification reminder)
     {
         this.activityId = activityId;
         foreach (var item in bookedDates)
@@ -389,6 +390,21 @@
                 });
         }
         this.accepTerms = AcceptTerms;
+
+        this.feedbackNotificationOrig = new ScheduleNotification {
+            Body = feedback.Body,
+            Days = feedback.Days,
+            Subject = feedback.Subject
+        };
+        this.feedbackNotification = feedback; 
+
+        this.reminderNotificationOrig = new ScheduleNotification {
+            Body = reminder.Body,
+            Days = reminder.Days,
+            Subject = reminder.Subject
+        };
+        this.reminderNotification = reminder;
+
         return Task.CompletedTask;
     }
 
@@ -516,7 +532,7 @@
 
     private Task HideOffcanvas()
     {
-        return rightsideOffcanvas?.Hide();
+        return rightsideOffcanvas?.Close(CloseReason.UserClosing);
     }
 
     private Task OnSelectedScheduledEmail(int selected)
@@ -576,6 +592,12 @@
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public DateTime NewDate { get; set; }
+    }
+
+    private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
+    {
+        e.Cancel = !(e.CloseReason == CloseReason.UserClosing);
+        return Task.CompletedTask;
     }
 
     private class DateSchedule

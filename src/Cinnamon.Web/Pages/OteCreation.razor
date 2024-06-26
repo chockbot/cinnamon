@@ -988,7 +988,17 @@
                 NewDate = d.Date
             }),
             oteRes.Result.Result.Id,
-            true
+            true,
+            new OtePublish.ScheduleNotification {
+                Body = string.Empty,
+                Days = ote.OteSchedule.EmailFeedbackDays,
+                Subject = string.Empty
+            },
+            new OtePublish.ScheduleNotification {
+                Body = string.Empty,
+                Days = ote.OteSchedule.EmailReminderDays,
+                Subject = string.Empty
+            }
         );
 
         LoadSidebarItems();
