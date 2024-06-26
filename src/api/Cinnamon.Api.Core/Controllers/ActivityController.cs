@@ -2644,7 +2644,11 @@ public class ActivityController : ControllerBase
                     IsCapacity            = activity.IsCapacity,
                     CapacityCount         = activity.CapacityCount,
                     EmailFeedbackDays     = activity.EmailFeedbackDays,
-                    EmailReminderDays     = activity.EmailReminderDays
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2735,7 +2739,11 @@ public class ActivityController : ControllerBase
                     IsCapacity            = activity.IsCapacity,
                     CapacityCount         = activity.CapacityCount,
                     EmailFeedbackDays     = activity.EmailFeedbackDays,
-                    EmailReminderDays     = activity.EmailReminderDays
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

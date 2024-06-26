@@ -20,16 +20,18 @@ public class OteUpdateHandler : IOteUpdateHandler
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
 
     public OteUpdateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler, 
         IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler,
-        IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IOteAlreadyBookedHandler oteAlreadyBookedHandler, ISaveEmailTemplateHandler saveEmailTemplateHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.saveEmailTemplateHandler = saveEmailTemplateHandler;
         this.recurrenceDateHelper = new();
 
         this.htmlSanitizer = new 
@@ -355,6 +357,25 @@ public class OteUpdateHandler : IOteUpdateHandler
             {
                 return AppResult<OteUpdateResult>.CreateFailed(new ApplicationException(updateOte.Result?.ErrorInfo?.Message), updateOte.Message);
             }
+
+            var feedbackTemplateRes = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.FeedbackBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.FeedbackSubject ?? string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteThankYou
+            });
+
+            var reminderTemplteRes = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.ReminderBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.ReminderSubject ?? string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteReminder
+            });
+
+            // don't check if success or not
+            await Task.WhenAll(feedbackTemplateRes, reminderTemplteRes);
 
             return AppResult<OteUpdateResult>.CreateSucceeded(new OteUpdateResult {Id = updateOte.Result.Result.Id}, "One time event successfully updated.");
         }

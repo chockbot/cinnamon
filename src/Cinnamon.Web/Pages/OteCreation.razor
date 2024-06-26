@@ -643,7 +643,11 @@
                         IsCapacity               = pricing.IsCapacity,
                         CapacityCount            = pricing.CapacityCount,
                         EmailFeedbackDays        = publishData.EmailFeedback.Days,
-                        EmailReminderDays        = publishData.EmailReminder.Days
+                        EmailReminderDays        = publishData.EmailReminder.Days,
+                        FeedbackBody             = publishData.EmailFeedback.Body,
+                        FeedbackSubject          = publishData.EmailFeedback.Subject,
+                        ReminderBody             = publishData.EmailReminder.Body,
+                        ReminderSubject          = publishData.EmailReminder.Subject
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {
@@ -750,7 +754,11 @@
                     IsCapacity            = pricing.IsCapacity,
                     CapacityCount         = pricing.CapacityCount,
                     EmailFeedbackDays     = publishData.EmailFeedback.Days,
-                    EmailReminderDays     = publishData.EmailReminder.Days
+                    EmailReminderDays     = publishData.EmailReminder.Days,
+                    FeedbackBody          = publishData.EmailFeedback.Body,
+                    FeedbackSubject       = publishData.EmailFeedback.Subject,
+                    ReminderBody          = publishData.EmailReminder.Body,
+                    ReminderSubject       = publishData.EmailReminder.Subject
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
