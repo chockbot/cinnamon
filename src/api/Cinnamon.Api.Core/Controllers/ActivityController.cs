@@ -3384,7 +3384,8 @@ public class ActivityController : ControllerBase
         {
             var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
             {
-                ProviderId = args.ProviderId
+                ProviderId = args.ProviderId,
+                ActivityId = args.ActivityId
             });
 
             if (!result.Succeeded || result.Result is null)

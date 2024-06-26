@@ -33,6 +33,10 @@ public class OteActivity
     public bool ForceDisable {get; set;}
     public int EventTicketLimit { get; set; }
     public bool IsOpen { get; set; }
+    public bool IsCapacity { get; set; }
+    public int CapacityCount { get; set; }
+
+    public bool IsEventSoldOut { get; set; }
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}
