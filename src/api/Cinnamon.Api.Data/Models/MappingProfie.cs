@@ -18,6 +18,7 @@ using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicCon
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
 using OteWaitListAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteWaitlist;
 using OteWaitListReqAlias = Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
+using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderFlag;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -118,5 +119,9 @@ public class MappingProfile : Profile
 
         CreateMap<OteWaitListReqAlias.CreateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
         CreateMap<OteWaitListReqAlias.GetOteWaitlistByProviderArgs, OteWaitListAlias.OteWaitlistDTO>();
+
+        // for ote reminder flag
+        CreateMap<OteReminderFlag, ReminderFlagAlias.OteReminderFlagDTO>();
+        CreateMap<ReminderFlagAlias.OteReminderFlagDTO, OteReminderFlag>();
     }
 }

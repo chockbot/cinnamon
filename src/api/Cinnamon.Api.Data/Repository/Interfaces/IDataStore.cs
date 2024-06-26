@@ -63,6 +63,7 @@ public interface IDataStore
     IActivitySummary ActivitySummary {get;}
     IDynamicEmailTemplate DynamicEmailTemplate {get;}
     IOteWaitlist OteWaitlist { get;}
+    IOteReminderFlag OteReminderFlag {get;}
     
     Task EnsureMigrate();
 

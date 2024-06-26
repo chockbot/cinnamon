@@ -104,6 +104,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<OteWaitlist> OteWaitList { get; set; }
 
+    public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -412,6 +414,10 @@ public class ApplicationContext : IdentityDbContext
         //ote waitlist
         modelBuilder.Entity<OteWaitlist>().HasIndex(w => w.Id);
 
+
+        // for ote reminder flag
+        modelBuilder.Entity<OteReminderFlag>()
+            .HasIndex("ActivityId", "OteDateId");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

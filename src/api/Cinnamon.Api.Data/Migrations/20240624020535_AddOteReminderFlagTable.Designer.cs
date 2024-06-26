@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240624020535_AddOteReminderFlagTable")]
+    partial class AddOteReminderFlagTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1558,51 +1560,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("DynamicContents");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DynamicEmailTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProviderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TemplateType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId", "ProviderId", "TemplateType");
-
-                    b.ToTable("DynamicEmailTemplates");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -1995,8 +1952,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Date");
-
                     b.HasIndex("OteScheduleId");
 
                     b.ToTable("OteDates");
@@ -2131,9 +2086,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CapacityCount")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
 
@@ -2145,12 +2097,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("EmailFeedbackDays")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmailReminderDays")
-                        .HasColumnType("integer");
 
                     b.Property<int>("EventDurationCount")
                         .HasColumnType("integer");
@@ -2168,12 +2114,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("From")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCapacity")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOpen")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("RecurrenceDateEnd")
                         .HasColumnType("timestamp with time zone");
@@ -2439,56 +2379,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId", "QRCode", "Status");
 
                     b.ToTable("OteTickets");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteWaitlist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProviderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("OteWaitList");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutAccount", b =>

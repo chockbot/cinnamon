@@ -85,6 +85,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IOnlineEventRepository, Services.Repository.OnlineEvent.OnlineEventRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDynamicEmailTemplateRepository, Services.Repository.DynamicEmailTemplate.DynamicEmailTemplateRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOteWaitlistRepository, Services.Repository.OteWaitlist.OteWaitlistRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOteReminderRepository, Services.Repository.OteReminderFlag.OteReminderFlagRepository>();
 
         return services;
     }
