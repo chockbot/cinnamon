@@ -55,13 +55,13 @@ public interface IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
-        int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit, IList<OteDateOverrideDTO>? dateOverrides, 
+        int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,bool isOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
         IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, int eventTicketLimit, string scheduleExtraOpt, DateTime recurrenceDateEnd,
+        bool isPublished, string handler, int categoryId, bool comingSoon, int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, string scheduleExtraOpt, DateTime recurrenceDateEnd,
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,
         int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, 
         IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules);

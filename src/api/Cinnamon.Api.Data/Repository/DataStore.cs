@@ -135,6 +135,7 @@ public class DataStore : IDataStore
 
     public IDynamicEmailTemplate DynamicEmailTemplate => new DynamicEmailTemplateEntity(applicationContext);
 
+    public IOteWaitlist OteWaitlist => new OteWaitlistEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {

@@ -1308,4 +1308,49 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OteBookedCountResult>.CreateFailed(ex, "An error occured when ote schedule dates.");
         }
     }
+
+    public async Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteWaitlistResult>();
+
+            return AppResult<CreateOteWaitlistResult>.CreateSucceeded(result, "Successfully called create ote waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling create ote waitlist api");
+        }
+    }
+
+    public async Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetWaitlistByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetOteWaitlistByProviderResult>();
+
+            return AppResult<GetOteWaitlistByProviderResult>.CreateSucceeded(result, "Successfully get ote waitlist by provider.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
+        }
+    }
 }

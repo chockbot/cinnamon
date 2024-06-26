@@ -108,5 +108,13 @@ public class MappingProfile : Profile
 
         CreateMap<DataDto.DirectStudent.DirectStudentSessionDTO, DirectStudentResult.StudentSessionResult>();
         CreateMap<DirectStudentResult.StudentSessionResult, CoreDto.DirectStudents.DirectStudentSessionDTO>();
+
+        //for ote waitlist
+        CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.CreateOteWaitlistResult>();
+        CreateMap<ActivityResults.CreateOteWaitlistResult, CoreDto.OteWaitList.OteWaitlistDTO>();
+
+        CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist>();
+        CreateMap<ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist, CoreDto.OteWaitList.OteWaitlistDTO>();
+
     }
 }
