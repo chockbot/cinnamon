@@ -136,6 +136,16 @@
                              </div>
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <g clip-path="url(#clip0_473_881)">
+                                            <path d="M10.0007 0.833374C8.18766 0.833374 6.41538 1.37099 4.90793 2.37824C3.40048 3.38548 2.22556 4.81712 1.53176 6.49211C0.837956 8.1671 0.656426 10.0102 1.01012 11.7884C1.36382 13.5665 2.23686 15.1999 3.51884 16.4819C4.80082 17.7638 6.43417 18.6369 8.21233 18.9906C9.99049 19.3443 11.8336 19.1627 13.5086 18.4689C15.1836 17.7751 16.6152 16.6002 17.6225 15.0928C18.6297 13.5853 19.1673 11.813 19.1673 10C19.1645 7.56977 18.1978 5.23986 16.4793 3.5214C14.7608 1.80293 12.4309 0.836241 10.0007 0.833374ZM13.0898 13.0892C12.9335 13.2454 12.7216 13.3332 12.5007 13.3332C12.2797 13.3332 12.0678 13.2454 11.9115 13.0892L9.41149 10.5892C9.2552 10.433 9.16737 10.221 9.16732 10V5.00004C9.16732 4.77903 9.25512 4.56707 9.4114 4.41079C9.56768 4.2545 9.77964 4.16671 10.0007 4.16671C10.2217 4.16671 10.4336 4.2545 10.5899 4.41079C10.7462 4.56707 10.834 4.77903 10.834 5.00004V9.65504L13.0898 11.9109C13.246 12.0671 13.3338 12.2791 13.3338 12.5C13.3338 12.721 13.246 12.9329 13.0898 13.0892Z" fill="#343D4C" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_473_881">
+                                                <rect width="20" height="20" fill="white" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
                                     <p class="close-text">You're on the Waitlist</p>
                                 </div>
                                 <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@ProfileEmail</a></span>. We will let you know if you are admitted.</p>
@@ -145,41 +155,41 @@
                         else
                         {
                             <div class="schedule-body">
+                                <Row VerticalGutter="30">
+                                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
+                                            <label class="ote-schedule me-1">Duration:</label>
+                                            <label class="ote-schedule-details">
+                                                @EventDurationString
+                                            </label>
+                                        </div>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
+                                        <div class="d-flex align-items-center event-schedule-time">
+                                            <img class="me-2" src="images/ote/clock.png" alt="clock">
+                                            <label class="ote-schedule me-1">Time Start:</label>
+                                            <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                        </div>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <div class="d-flex align-items-center event-schedule-place">
+                                            <img class="me-2" src="images/ote/location.png" alt="clock">
+                                            <label class="ote-schedule me-1">Location:</label>
+                                            @if (activity.ExperienceTypeId == 1)
+                                            {
+                                                string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                <label class="ote-schedule-details">@address</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="ote-schedule-details">Online</label>
+                                            }
+                                        </div>
+                                    </Column>
+                                </Row>
                                 @if (activity.IsOpen)
                                 {
-                                    <Row VerticalGutter="30">
-                                        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
-                                            <div class="d-flex align-items-center event-schedule-time">
-                                                <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                                <label class="ote-schedule me-1">Duration:</label>
-                                                <label class="ote-schedule-details">
-                                                    @EventDurationString
-                                                </label>
-                                            </div>
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
-                                            <div class="d-flex align-items-center event-schedule-time">
-                                                <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                                <label class="ote-schedule me-1">Time Start:</label>
-                                                <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                            </div>
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is12">
-                                            <div class="d-flex align-items-center event-schedule-place">
-                                                <img class="me-2" src="images/ote/location.png" alt="clock">
-                                                <label class="ote-schedule me-1">Location:</label>
-                                                @if (activity.ExperienceTypeId == 1)
-                                                {
-                                                    string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                                    <label class="ote-schedule-details">@address</label>
-                                                }
-                                                else
-                                                {
-                                                    <label class="ote-schedule-details">Online</label>
-                                                }
-                                            </div>
-                                        </Column>
-                                    </Row>
                                     <div class="event-ticket-section">
                                         <div class="ticket-details-header">
                                             <p class="prices-title">Tickets</p>
@@ -256,11 +266,13 @@
                                 }
                                 else
                                 {
-                                    <div class="ticket-close">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
-                                        <p class="close-text">Ticket Sales Closed</p>
+                                    <div class="waitlist-section">
+                                        <div class="ticket-close">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
+                                            <p class="close-text">Ticket Sales Closed</p>
+                                        </div>
+                                        <p class="close-sub-text">This event is not currently selling tickets. You may contact the host to receive updates.</p>
                                     </div>
-                                    <p class="close-sub-text">This event is not currently on sale. You may contact the host to receive updates.</p>
                                 }
 
                             </div>
@@ -278,12 +290,6 @@
                                         <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">Buy Ticket</button>
                                     </div>
                                 }
-                            }
-                            else
-                            {
-                                <div class="schedule-footer">
-                                    <button type="button" class="btn-close-ticket" disabled>Ticket Sales Closed</button>
-                                </div>
                             }
                         }
                     </div>
