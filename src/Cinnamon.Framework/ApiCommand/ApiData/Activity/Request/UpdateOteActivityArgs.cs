@@ -105,6 +105,12 @@ public class UpdateOteActivityArgs
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+
+        [Required]
+        public int EmailFeedbackDays {get; set;}
+
+        [Required]
+        public int EmailReminderDays {get; set;}
     }
 
     public class UpdateOtePricing 

@@ -219,6 +219,8 @@ public class OteCreateHandler : IOteCreateHandler
                     IsOpen                   = args.Activity.IsOpen,
                     IsCapacity               = args.Activity.IsCapacity,
                     CapacityCount            = args.Activity.CapacityCount,
+                    EmailFeedbackDays        = args.Activity.EmailFeedbackDays,
+                    EmailReminderDays        = args.Activity.EmailReminderDays
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
