@@ -443,7 +443,8 @@ public class ActivityController : ControllerBase
                 activity.PinnedLocation, activity.ScheduleFrom, activity.ScheduleTo, activity.Recurrence, pricings, activity.IsPublished,
                 activity.Handler, activity.ExperienceCreationTypeId, args.Activity.IsComingSoon, args.Activity.ExtraOptions, 
                 args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
-                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, args.Activity.EventTicketLimit ,
+                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit, 
+                args.Activity.EventTicketLimit , args.Activity.IsOpen, args.Activity.IsCapacity, args.Activity.CapacityCount ,
                 dateOverrides, onlineEvent, args.Activity.CategoryId);
             
             if(!result.Succeeded || result.Result is null)
@@ -524,9 +525,9 @@ public class ActivityController : ControllerBase
                 args.Activity.CityName ?? string.Empty, args.Activity.RegionCode ?? string.Empty, args.Activity.RegionName ?? string.Empty,
                 args.Activity.BarangayCode ?? string.Empty, args.Activity.BarangayName ?? string.Empty,
                 args.Activity.PostalCode ?? string.Empty, args.Activity.PinnedLocation ?? string.Empty, args.Activity.ScheduleFrom, args.Activity.ScheduleTo, 
-                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon, args.Activity.EventTicketLimit,
-                args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, args.Activity.RepeatEvery,
-                args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
+                args.Activity.Recurrence, pricings, args.Activity.IsPublished, args.Activity.Handler, args.Activity.CategoryId, args.Activity.IsComingSoon, 
+                args.Activity.EventTicketLimit, args.Activity.IsOpen, args.Activity.IsCapacity, args.Activity.CapacityCount, args.Activity.ExtraOptions, args.Activity.RecurrenceDateEnd, args.Activity.RecurrenceDateStart, 
+                args.Activity.RepeatEvery, args.Activity.SelectedDays, dates, args.Activity.EventDurationCount, args.Activity.EventDurationTimeUnit,
                 dateOverrides, onlineEvents, args.RecreateSchedule, oteReschedules);
             
             if(!result.Succeeded || result.Result is null)

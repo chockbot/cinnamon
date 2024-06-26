@@ -84,6 +84,8 @@ public class ActivityController : ControllerBase
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
     private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
     private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
+    private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
+    private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -111,7 +113,8 @@ public class ActivityController : ControllerBase
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
-        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler)
+        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
+        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler)
     {
         _logger = logger;
 
@@ -175,6 +178,8 @@ public class ActivityController : ControllerBase
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
         this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
         this.oteScheduleDatesHandler = oteScheduleDatesHandler;
+        this.createOteWaitlistHandler = createOteWaitlistHandler;
+        this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
     }
 
     [Route("CreateActivity")]
@@ -2603,38 +2608,41 @@ public class ActivityController : ControllerBase
             var activity = args.Activity;
             var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs {
                 Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity {
-                    BarangayCode = activity.BarangayCode ?? string.Empty,
-                    BarangayName = activity.BarangayName ?? string.Empty,
-                    CityName = activity.CityName ?? string.Empty,
-                    CityNumber = activity.CityNumber ?? string.Empty,
-                    Description = activity.Description,
-                    EventName = activity.EventName,
+                    BarangayCode             = activity.BarangayCode ?? string.Empty,
+                    BarangayName             = activity.BarangayName ?? string.Empty,
+                    CityName                 = activity.CityName ?? string.Empty,
+                    CityNumber               = activity.CityNumber ?? string.Empty,
+                    Description              = activity.Description,
+                    EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
-                    CategoryId = activity.CategoryId,
-                    ExperienceTypeId = activity.ExperienceTypeId,
-                    HouseNo = activity.HouseNo ?? string.Empty,
-                    IsPublished = activity.IsPublished,
-                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
-                    PostalCode = activity.PostalCode ?? string.Empty,
-                    Recurrence = activity.Recurrence,
-                    RegionCode = activity.RegionCode ?? string.Empty,
-                    RegionName = activity.RegionName ?? string.Empty,
-                    ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon,
+                    CategoryId               = activity.CategoryId,
+                    ExperienceTypeId         = activity.ExperienceTypeId,
+                    HouseNo                  = activity.HouseNo ?? string.Empty,
+                    IsPublished              = activity.IsPublished,
+                    PinnedLocation           = activity.PinnedLocation ?? string.Empty,
+                    PostalCode               = activity.PostalCode ?? string.Empty,
+                    Recurrence               = activity.Recurrence,
+                    RegionCode               = activity.RegionCode ?? string.Empty,
+                    RegionName               = activity.RegionName ?? string.Empty,
+                    ScheduleFrom             = activity.ScheduleFrom,
+                    ScheduleTo               = activity.ScheduleTo,
+                    IsComingSoon             = activity.IsComingSoon,
                     
-                    DurationEnd = activity.DurationEnd,
-                    DurationEvery = activity.DurationEvery,
-                    DurationStart = activity.DurationStart,
-                    MonthDay = activity.MonthDay,
-                    MonthRepeat = activity.MonthRepeat,
+                    DurationEnd    = activity.DurationEnd,
+                    DurationEvery  = activity.DurationEvery,
+                    DurationStart  = activity.DurationStart,
+                    MonthDay       = activity.MonthDay,
+                    MonthRepeat    = activity.MonthRepeat,
                     MonthSelection = activity.MonthSelection,
-                    OnDayDate = activity.OnDayDate,
-                    WeekString = activity.WeekString,
+                    OnDayDate      = activity.OnDayDate,
+                    WeekString     = activity.WeekString,
 
-                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationCount    = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit      = activity.EventTicketLimit,
+                    IsOpen                = activity.IsOpen,
+                    IsCapacity            = activity.IsCapacity,
+                    CapacityCount         = activity.CapacityCount
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2679,7 +2687,6 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
     [Route("UpdateOte")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
@@ -2690,38 +2697,41 @@ public class ActivityController : ControllerBase
             var activity = args.Activity;
             var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs {
                 Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity {
-                    BarangayCode = activity.BarangayCode ?? string.Empty,
-                    BarangayName = activity.BarangayName ?? string.Empty,
-                    CategoryId = activity.CategoryId,
-                    CityName = activity.CityName ?? string.Empty,
-                    CityNumber = activity.CityNumber ?? string.Empty,
-                    Description = activity.Description,
-                    EventName = activity.EventName,
+                    BarangayCode     = activity.BarangayCode ?? string.Empty,
+                    BarangayName     = activity.BarangayName ?? string.Empty,
+                    CategoryId       = activity.CategoryId,
+                    CityName         = activity.CityName ?? string.Empty,
+                    CityNumber       = activity.CityNumber ?? string.Empty,
+                    Description      = activity.Description,
+                    EventName        = activity.EventName,
                     ExperienceTypeId = activity.ExperienceTypeId,
-                    HouseNo = activity.HouseNo ?? string.Empty,
-                    Id = activity.Id,
-                    IsPublished = activity.IsPublished,
-                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
-                    PostalCode = activity.PostalCode ?? string.Empty,
-                    Recurrence = activity.Recurrence,
-                    RegionCode = activity.RegionCode ?? string.Empty,
-                    RegionName = activity.RegionName ?? string.Empty,
-                    ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon,
+                    HouseNo          = activity.HouseNo ?? string.Empty,
+                    Id               = activity.Id,
+                    IsPublished      = activity.IsPublished,
+                    PinnedLocation   = activity.PinnedLocation ?? string.Empty,
+                    PostalCode       = activity.PostalCode ?? string.Empty,
+                    Recurrence       = activity.Recurrence,
+                    RegionCode       = activity.RegionCode ?? string.Empty,
+                    RegionName       = activity.RegionName ?? string.Empty,
+                    ScheduleFrom     = activity.ScheduleFrom,
+                    ScheduleTo       = activity.ScheduleTo,
+                    IsComingSoon     = activity.IsComingSoon,
 
-                    DurationEnd = activity.DurationEnd,
-                    DurationEvery = activity.DurationEvery,
-                    DurationStart = activity.DurationStart,
-                    MonthDay = activity.MonthDay,
-                    MonthRepeat = activity.MonthRepeat,
+                    DurationEnd    = activity.DurationEnd,
+                    DurationEvery  = activity.DurationEvery,
+                    DurationStart  = activity.DurationStart,
+                    MonthDay       = activity.MonthDay,
+                    MonthRepeat    = activity.MonthRepeat,
                     MonthSelection = activity.MonthSelection,
-                    OnDayDate = activity.OnDayDate,
-                    WeekString = activity.WeekString,
+                    OnDayDate      = activity.OnDayDate,
+                    WeekString     = activity.WeekString,
 
-                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationCount    = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit      = activity.EventTicketLimit,
+                    IsOpen                = activity.IsOpen,
+                    IsCapacity            = activity.IsCapacity,
+                    CapacityCount         = activity.CapacityCount
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
@@ -3330,6 +3340,71 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("CreateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateActivity([FromBody] CreateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await createOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateOteWaitlistArgs
+            {
+                ActivityId   = args.ActivityId,
+                CustomerId   = args.CustomerId,
+                CustomerName = args.CustomerName,
+                Payload      = args.Payload,
+                ProviderId   = args.ProviderId,
+                ScheduleId   = args.ScheduleId,
+                Status       = args.Status
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new CreateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch(Exception ex)
+        {
+            return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetWaitlistByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteWaitlistByProvider([FromQuery] GetOteWaitlistByProviderArgs args)
+    {
+        try
+        {
+            var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
+            {
+                ProviderId = args.ProviderId,
+                ActivityId = args.ActivityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.OteWaitList.OteWaitlistDTO>>(result.Result.OteWaitlists);
+
+            return new JsonResult(new GetOteWaitlistByProviderResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

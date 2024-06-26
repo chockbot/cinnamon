@@ -11,6 +11,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.Activity;
 
@@ -609,6 +611,48 @@ public class ActivityData: IActivityData
 		catch (Exception ex)
 		{
 			return AppResult<OteAlreadyBookedResult>.CreateFailed(ex, "An error occured when getting all activity feed.");
+		}
+	}
+
+	public async Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+				.Request("OteWaitlist/CreateOteWaitlist")
+				.PostJsonAsync(args)
+				.ReceiveJson<CreateOteWaitlistResult>();
+
+			return AppResult<CreateOteWaitlistResult>.CreateSucceeded(result, "Successfully posting create ote waitlist api");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, "An error occured when posting create ote waitlist api");
+		}
+	}
+
+	public async Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request("OteWaitlist/GetWaitlistByProvider")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetOteWaitlistByProviderResult>();
+
+			return AppResult<GetOteWaitlistByProviderResult>.CreateSucceeded(result, "Successfully getting get ote waitlist.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
 		}
 	}
 }

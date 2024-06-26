@@ -68,4 +68,6 @@ public interface IActivityApiHandler
     Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token);
     Task<AppResult<OteScheduleDatesResult>> OteScheduleDates(OteScheduleDatesArgs args, string token);
     Task<AppResult<OteBookedCountResult>> OteBookedCount(OteBookedCountArgs args, string token);
+    Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args, string token);
+    Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args, string token);  
 }

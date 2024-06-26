@@ -225,8 +225,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                 return AppResult<OteUpdateResult>.CreateFailed(
                         new ApplicationException(alreadyBookedRes.Message), alreadyBookedRes.Message);
             }
-            
-            bool reCreateSchedule = 
+
+            bool reCreateSchedule =
                 !currentOteDetails.Schedule.Recurrences.Equals(args.Activity.Recurrence) ||
                 currentOteDetails.Schedule.From != args.Activity.ScheduleFrom ||
                 currentOteDetails.Schedule.To != args.Activity.ScheduleTo ||
@@ -297,7 +297,10 @@ public class OteUpdateHandler : IOteUpdateHandler
                     ExtraOptions          = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
-                    EventTicketLimit = args.Activity.EventTicketLimit
+                    EventTicketLimit      = args.Activity.EventTicketLimit,
+                    IsOpen                = args.Activity.IsOpen,
+                    IsCapacity            = args.Activity.IsCapacity,
+                    CapacityCount         = args.Activity.CapacityCount,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

@@ -6,6 +6,8 @@ using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.AddOns.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.OnlineEvent.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Response;
 using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
@@ -39,4 +41,7 @@ public interface IActivityData
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
     Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);
+    Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args);
+    Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args);
+
 }
