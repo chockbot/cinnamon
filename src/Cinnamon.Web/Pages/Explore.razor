@@ -385,6 +385,11 @@
     </div>
     </div>
     }
+
+    <div class="container">
+        <hr class="line-divider">
+    </div>
+
     <div class="container">
         <div class="section-1 experience-selector">
            <div class="categories">
@@ -1515,9 +1520,9 @@
                         <div class="sub-footer-media">
                         <a href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                         <a href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
                         <a href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                         </div>
                         <div class="sub-footer-text">
                             <p>1. Faster Sign-up: Ditch the forms, connect with social media to pre-fill info and buy tickets quicker.</p>
@@ -2112,7 +2117,7 @@
                 }
 
                 pageIndex = pageIndex + feeds.Count();
-                itemsPerPage = 8;
+                itemsPerPage = 20;
 
                 hasNoMoreRecords = false;
             }
@@ -2508,12 +2513,12 @@
         if (ExperienceCategory == 3)
         {
             showCategorySwiper = false;
-            await Filter(null);
+            await FetchActivities(true);
         }
         else
         {
             showCategorySwiper = true;
-             await Filter(null);
+             await FetchActivities(true);
         }
 
         await FetchActivities(false);
