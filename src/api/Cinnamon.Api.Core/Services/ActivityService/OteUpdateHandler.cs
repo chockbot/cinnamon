@@ -236,8 +236,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                 currentOteDetails.Schedule.SelectedDays != (args.Activity.WeekString ?? String.Empty) ||
                 currentOteDetails.Schedule.ExtraOptions != (extraOptionsForMonthlyRecurring ?? String.Empty) ||
                 currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
-                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit ||
-                currentOteDetails.Schedule.IsOpen != args.Activity.IsOpen;
+                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
             
             bool alreadyHaveBooked = alreadyBookedRes.Result.OteAlreadyBookedItems.Any(d => d.BookCount > 0);
 

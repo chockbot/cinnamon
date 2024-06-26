@@ -716,6 +716,10 @@
     private async Task CheckCapacity(ChangeEventArgs e)
     {
         ModelState.IsCapacity = (bool)e.Value;
+        if (ModelState.IsCapacity == false)
+        {
+            ModelState.CapacityCount = 0;
+        }
     }
     private void onClickMenu(int ticketId)
     {

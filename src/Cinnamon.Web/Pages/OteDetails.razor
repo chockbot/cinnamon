@@ -97,7 +97,7 @@
                                 <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
                             </div>
                         </div>
-                        @if(IsOnWaitlist && activity.IsCapacity)
+                        @if(IsOnWaitlist && activity.IsCapacity && activity.IsOpen)
                         {
                              <div class="schedule-body">
                                 <Row VerticalGutter="30">
