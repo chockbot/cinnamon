@@ -37,6 +37,7 @@ public static class ServiceExtenstion
         services.AddTransient<IExperienceCreationType, ExperienceCreationTypeEntity>();
         services.AddTransient<IAddOns, AddOnsEntity>(); 
         services.AddTransient<IOteOnlineEvent, OteOnlineEventEntity>();
+        services.AddTransient<IOteWaitlist, OteWaitlistEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -83,6 +84,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IDynamicContnetRepository, Services.Repository.DynamicContent.DynamicContentRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOnlineEventRepository, Services.Repository.OnlineEvent.OnlineEventRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDynamicEmailTemplateRepository, Services.Repository.DynamicEmailTemplate.DynamicEmailTemplateRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOteWaitlistRepository, Services.Repository.OteWaitlist.OteWaitlistRepository>();
 
         return services;
     }

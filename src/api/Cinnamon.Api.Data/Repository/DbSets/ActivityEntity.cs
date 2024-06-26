@@ -328,6 +328,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				result.OteSchedule.EventDurationTimeUnit = oteSchedule.EventDurationTimeUnit;
 				result.OteSchedule.EventTicketLimit      = oteSchedule.EventTicketLimit;
 				result.OteSchedule.IsOpen				 = oteSchedule.IsOpen;
+				result.OteSchedule.IsCapacity			 = oteSchedule.IsCapacity;
+				result.OteSchedule.CapacityCount		 = oteSchedule.CapacityCount;
 
 				if(recreateSchedule)
 				{

@@ -67,5 +67,13 @@ public class MappingProfile : Profile
         CreateMap<ActivityResults.OteTicketBookedCountResult.FirstScheduleDate, CoreDto.Activity.OteTicketBookCountDTO.BookFirstScheduleDTO>();
         CreateMap<ActivityResults.OteTicketBookedCountResult, CoreDto.Activity.OteTicketBookCountDTO>()
             .ForMember(d => d.FirstSchedule, o => o.MapFrom(s => s.FirstOteDate));
+
+        //for ote waitlist
+        CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.CreateOteWaitlistResult>();
+        CreateMap<ActivityResults.CreateOteWaitlistResult, CoreDto.OteWaitList.OteWaitlistDTO>();
+
+        CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist>();
+        CreateMap<ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist, CoreDto.OteWaitList.OteWaitlistDTO>();
+
     }
 }

@@ -70,6 +70,8 @@ public class OteUpdateArgs : IInteractor
         public string EventDurationTimeUnit { get; set; }
         public int EventTicketLimit { get; set; }
         public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
     }
 
     public class OtePricing 

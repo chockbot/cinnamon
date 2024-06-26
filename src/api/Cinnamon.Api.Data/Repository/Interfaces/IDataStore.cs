@@ -62,6 +62,7 @@ public interface IDataStore
     IDynamicContent DynamicContent {get;}
     IActivitySummary ActivitySummary {get;}
     IDynamicEmailTemplate DynamicEmailTemplate {get;}
+    IOteWaitlist OteWaitlist { get;}
     
     Task EnsureMigrate();
 

@@ -86,6 +86,8 @@ public class UpdateOteArgs
 
         public int EventTicketLimit { get; set; }
         public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
     }
 
     public class OteUpdatePricing 
@@ -95,8 +97,6 @@ public class UpdateOteArgs
 
         [Required]
         public string Name {get; set;}
-
-        [Required]
         public string Description {get; set;}
 
         [Required]

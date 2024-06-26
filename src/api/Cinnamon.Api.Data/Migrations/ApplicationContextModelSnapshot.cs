@@ -2098,6 +2098,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("CapacityCount")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
 
@@ -2126,6 +2129,9 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("From")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCapacity")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsOpen")
                         .HasColumnType("boolean");
@@ -2394,6 +2400,56 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId", "QRCode", "Status");
 
                     b.ToTable("OteTickets");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteWaitlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("OteWaitList");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutAccount", b =>

@@ -17,6 +17,8 @@ public class OteSchedule : BaseEntity
     public int EventTicketLimit { get; set; }
     [DefaultValue(true)]
     public bool IsOpen { get; set; } = true;
+    public bool IsCapacity { get; set; }
+    public int CapacityCount { get; set; }
 
     public virtual Activity Activity {get; set;}
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}

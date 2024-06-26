@@ -236,8 +236,7 @@ public class OteUpdateHandler : IOteUpdateHandler
                 currentOteDetails.Schedule.SelectedDays != (args.Activity.WeekString ?? String.Empty) ||
                 currentOteDetails.Schedule.ExtraOptions != (extraOptionsForMonthlyRecurring ?? String.Empty) ||
                 currentOteDetails.Schedule.EventDurationCount != args.Activity.EventDurationCount ||
-                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit ||
-                currentOteDetails.Schedule.IsOpen != args.Activity.IsOpen;
+                currentOteDetails.Schedule.EventDurationTimeUnit != args.Activity.EventDurationTimeUnit;
             
             bool alreadyHaveBooked = alreadyBookedRes.Result.OteAlreadyBookedItems.Any(d => d.BookCount > 0);
 
@@ -299,7 +298,9 @@ public class OteUpdateHandler : IOteUpdateHandler
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
                     EventTicketLimit      = args.Activity.EventTicketLimit,
-                    IsOpen                = args.Activity.IsOpen
+                    IsOpen                = args.Activity.IsOpen,
+                    IsCapacity            = args.Activity.IsCapacity,
+                    CapacityCount         = args.Activity.CapacityCount,
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {

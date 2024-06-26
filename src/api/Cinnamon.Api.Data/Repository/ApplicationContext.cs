@@ -102,6 +102,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<DynamicEmailTemplate> DynamicEmailTemplates {get; set;}
 
+    public DbSet<OteWaitlist> OteWaitList { get; set; }
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -406,6 +408,10 @@ public class ApplicationContext : IdentityDbContext
         // for dynamic email template
         modelBuilder.Entity<DynamicEmailTemplate>()
             .HasIndex("ActivityId", "ProviderId", "TemplateType");
+
+        //ote waitlist
+        modelBuilder.Entity<OteWaitlist>().HasIndex(w => w.Id);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
