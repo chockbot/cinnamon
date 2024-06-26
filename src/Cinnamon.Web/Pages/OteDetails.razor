@@ -99,7 +99,7 @@
                         </div>
                         @if(IsOnWaitlist && activity.IsCapacity && activity.IsOpen)
                         {
-                             <div class="schedule-body">
+                            <div class="schedule-body">
                                 <Row VerticalGutter="30">
                                     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnDesktop.Is12.OnTablet.Is6.OnWidescreen">
                                         <div class="d-flex align-items-center event-schedule-time">
@@ -136,7 +136,6 @@
                              </div>
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11M7 10a2 2 0 1 0 0 4h10a2 2 0 1 0 0-4z"></path></svg>
                                     <p class="close-text">You're on the Waitlist</p>
                                 </div>
                                 <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@ProfileEmail</a></span>. We will let you know if you are admitted.</p>
@@ -928,6 +927,13 @@
                     Date = selectedDate
                 };
             });
+            if (currentLogin is null)
+            {
+                string oteDetailsUrl = $"/explore/ote/{Handler}";
+                await loginModal.Show();
+                signInReturnUrl = oteDetailsUrl;
+                return;
+            }
             var serializedPayload = JsonConvert.SerializeObject(payloadData);
             //Add to Waitlist
             var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
