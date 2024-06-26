@@ -116,5 +116,6 @@ public class MappingProfile : Profile
         CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist>();
         CreateMap<ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist, CoreDto.OteWaitList.OteWaitlistDTO>();
 
+        CreateMap<ActivityResults.EmailTemplateResult, CoreDto.DynamicContent.DynamicEmailTemplateDTO>();
     }
 }

@@ -835,6 +835,44 @@
             return;
         }
 
+        var feedbackTemplateRes = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteThankYou.ToString()
+        }, token);
+
+        var reminderTemplateRes = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteReminder.ToString()
+        }, token);
+
+        await Task.WhenAll(feedbackTemplateRes, reminderTemplateRes);
+        var feedbackResult = feedbackTemplateRes.Result;
+        var reminderResult = reminderTemplateRes.Result;
+
+        var feedback = new OtePublish.ScheduleNotification {
+            Body = string.Empty,
+            Days = oteRes.Result.Result.OteSchedule.EmailFeedbackDays,
+            Subject = string.Empty
+        };
+
+        var reminder = new OtePublish.ScheduleNotification {
+            Body = string.Empty,
+            Days = oteRes.Result.Result.OteSchedule.EmailReminderDays,
+            Subject = string.Empty
+        };
+
+        if(feedbackResult.Succeeded && feedbackResult.Result is not null && feedbackResult.Result.IsSuccess)
+        {
+            feedback.Body = feedbackResult.Result.Result.Body;
+            feedback.Subject = feedbackResult.Result.Result.Subject;
+        }
+
+        if(reminderResult.Succeeded && reminderResult.Result is not null && reminderResult.Result.IsSuccess)
+        {
+            reminder.Body = reminderResult.Result.Result.Body;
+            reminder.Subject = reminderResult.Result.Result.Subject;
+        }
+
         var scheduleBookedRes = await activityApiHandler.OteBookedCount(new Framework.ApiCommand.ApiCore.Activity.Request.OteBookedCountArgs {
             ActivityId = oteRes.Result.Result.Id
         }, token);
@@ -988,7 +1026,9 @@
                 NewDate = d.Date
             }),
             oteRes.Result.Result.Id,
-            true
+            true,
+            feedback,
+            reminder
         );
 
         LoadSidebarItems();

@@ -70,4 +70,5 @@ public interface IActivityApiHandler
     Task<AppResult<OteBookedCountResult>> OteBookedCount(OteBookedCountArgs args, string token);
     Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args, string token);
     Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args, string token);  
+    Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token);
 }
