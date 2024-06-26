@@ -19,18 +19,18 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly ICustomerData customerData;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
-    private readonly IDynamicContentData dynamicContentData;
+    private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IGenerateActivityHandler generateActivityHandler, ICustomerData customerData,
-        IDynamicContentData dynamicContentData)
+        ISaveEmailTemplateHandler saveEmailTemplateHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.customerData = customerData;
         this.recurrenceDateHelper = new();
-        this.dynamicContentData = dynamicContentData;
+        this.saveEmailTemplateHandler = saveEmailTemplateHandler;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -266,20 +266,20 @@ public class OteCreateHandler : IOteCreateHandler
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(createOteRes.Message), createOteRes.Message);
             }
             
-            var createReminderContent = dynamicContentData.CreateEmailTemplate(new Framework.ApiCommand.ApiData.DynamicContent.Request.CreateEmailTemplateArgs {
+            var createReminderContent = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
                 ActivityId = createOteRes.Result.Result.Id,
                 Body = args.Activity.ReminderBody ?? string.Empty,
                 ProviderId = currentUser.Result.Id,
                 Subject = args.Activity.ReminderSubject ?? string.Empty,
-                TemplateType = EmailTemplateType.OteReminder.ToString()
+                TemplateType = EmailTemplateType.OteReminder
             });
 
-            var createFeedbackContent = dynamicContentData.CreateEmailTemplate(new Framework.ApiCommand.ApiData.DynamicContent.Request.CreateEmailTemplateArgs {
+            var createFeedbackContent = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
                 ActivityId = createOteRes.Result.Result.Id,
                 Body = args.Activity.FeedbackBody ?? string.Empty,
                 ProviderId = currentUser.Result.Id,
                 Subject = args.Activity.FeedbackSubject ?? string.Empty,
-                TemplateType = EmailTemplateType.OteThankYou.ToString()
+                TemplateType = EmailTemplateType.OteThankYou
             });
 
             // dont check the result if error or success
