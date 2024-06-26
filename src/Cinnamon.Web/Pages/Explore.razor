@@ -398,7 +398,7 @@
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id">
-                                        <p class="upcoming-events-info-text-main" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
+                                        <p class="upcoming-events-info-text-main @((!showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
                                     </a>
                                 </div>
                         </div>
@@ -406,7 +406,7 @@
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id">
-                                        <p class="upcoming-events-info-text-main" @onclick="@(() => ShowOTE(1))">General Experience</p>
+                                        <p class="upcoming-events-info-text-main @((showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(1))">General Experience</p>
                                     </a>
                                 </div>
                         </div>
