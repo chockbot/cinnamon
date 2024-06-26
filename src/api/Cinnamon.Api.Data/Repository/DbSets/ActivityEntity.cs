@@ -330,6 +330,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 				result.OteSchedule.IsOpen				 = oteSchedule.IsOpen;
 				result.OteSchedule.IsCapacity			 = oteSchedule.IsCapacity;
 				result.OteSchedule.CapacityCount		 = oteSchedule.CapacityCount;
+				result.OteSchedule.EmailFeedbackDays	 = oteSchedule.EmailFeedbackDays;
+				result.OteSchedule.EmailReminderDays	 = oteSchedule.EmailReminderDays;
 
 				if(recreateSchedule)
 				{

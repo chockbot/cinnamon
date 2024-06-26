@@ -2642,7 +2642,9 @@ public class ActivityController : ControllerBase
                     EventTicketLimit      = activity.EventTicketLimit,
                     IsOpen                = activity.IsOpen,
                     IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2731,7 +2733,9 @@ public class ActivityController : ControllerBase
                     EventTicketLimit      = activity.EventTicketLimit,
                     IsOpen                = activity.IsOpen,
                     IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {

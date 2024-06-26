@@ -1714,7 +1714,8 @@ public class ActivityRepository : IActivityRepository
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
         int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,int eventDurationCount, string eventDurationTimeUnit, 
-        int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
+        int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays)
     {
         try
         {
@@ -1768,6 +1769,8 @@ public class ActivityRepository : IActivityRepository
                 IsOpen                = IsOpen,
                 IsCapacity            = isCapacity,
                 CapacityCount         = capacityCount,
+                EmailFeedbackDays     = emailFeedbackDays,
+                EmailReminderDays     = emailReminderDays
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1872,7 +1875,8 @@ public class ActivityRepository : IActivityRepository
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
         bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, bool IsOpen, bool isCapacity, int capacityCount, 
         string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
-        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
+        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, 
+        bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules, int emailReminderDays, int emailFeedbackDays)
     {
         try
         {
@@ -1919,6 +1923,8 @@ public class ActivityRepository : IActivityRepository
                 IsOpen                = IsOpen,
                 IsCapacity            = isCapacity,
                 CapacityCount         = capacityCount,
+                EmailFeedbackDays     = emailFeedbackDays,
+                EmailReminderDays     = emailReminderDays
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {

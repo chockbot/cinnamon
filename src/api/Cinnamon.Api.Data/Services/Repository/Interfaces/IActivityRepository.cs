@@ -56,7 +56,7 @@ public interface IActivityRepository
         bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, 
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
         int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,bool isOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId);
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays);
 
     Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
@@ -64,7 +64,8 @@ public interface IActivityRepository
         bool isPublished, string handler, int categoryId, bool comingSoon, int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, string scheduleExtraOpt, DateTime recurrenceDateEnd,
         DateTime recurrenceDateStart, int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,
         int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, 
-        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules);
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, 
+        IList<OteRescheduleDTO>? oteReschedules, int emailReminderDays, int emailFeedbackDays);
 
     Task<AppResult<OteActivityDTO>> FindOteByHandler(string handler, bool includeDescription = false, 
         bool includeAddress = false, bool includeSchedule = false, bool includePricing = false, bool includeProvider = false, bool includeImages = false, bool includeOnlineEvent = false, bool includeTickets = false);

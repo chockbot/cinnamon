@@ -641,7 +641,9 @@
                         EventTicketLimit         = pricing.EventTicketLimit,
                         IsOpen                   = pricing.IsOpen,
                         IsCapacity               = pricing.IsCapacity,
-                        CapacityCount            = pricing.CapacityCount
+                        CapacityCount            = pricing.CapacityCount,
+                        EmailFeedbackDays        = publishData.EmailFeedback.Days,
+                        EmailReminderDays        = publishData.EmailReminder.Days
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {
@@ -746,7 +748,9 @@
                     EventTicketLimit      = pricing.EventTicketLimit,
                     IsOpen                = pricing.IsOpen,
                     IsCapacity            = pricing.IsCapacity,
-                    CapacityCount         = pricing.CapacityCount
+                    CapacityCount         = pricing.CapacityCount,
+                    EmailFeedbackDays     = publishData.EmailFeedback.Days,
+                    EmailReminderDays     = publishData.EmailReminder.Days
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {

@@ -72,6 +72,9 @@ public class OteUpdateArgs : IInteractor
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+
+        public int EmailFeedbackDays {get; set;}
+        public int EmailReminderDays {get; set;}
     }
 
     public class OtePricing 

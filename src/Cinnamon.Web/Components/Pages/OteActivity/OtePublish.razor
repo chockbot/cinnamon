@@ -190,7 +190,7 @@
             {
                 <img src="images/ote/small-yello-star.png" alt="bell">
             }
-            <button class="btn-close" style="right: 0;" @onclick="HideOffcanvas" />
+            <button class="btn-close" style="right: 0;" @onclick="OnOffCanvasCancelled" />
         </div>
     </OffcanvasHeader>
     <OffcanvasBody class="px-0 pt-0">
@@ -282,10 +282,10 @@
     <OffcanvasFooter>
         <div class="w-100">
             <Divider />
-            <Button class="bg-orange-100 color-white-100 px-4 me-2">
+            <Button Clicked="OnOffCanvasSaved" class="bg-orange-100 color-white-100 px-4 me-2">
                 Save
             </Button>
-            <Button class="bg-grey-300 color-black-200">
+            <Button Clicked="OnOffCanvasCancelled" class="bg-grey-300 color-black-200">
                 Cancel
             </Button>
         </div>
@@ -333,6 +333,8 @@
     private int selectedEmailSchedule = 0;
     private ScheduleNotification reminderNotification = new();
     private ScheduleNotification feedbackNotification = new();
+    private ScheduleNotification reminderNotificationOrig = new();
+    private ScheduleNotification feedbackNotificationOrig = new();
 
     public Task<bool> FieldValid()
     {
@@ -369,6 +371,8 @@
     {
         return new ModelData {
             AcceptTerms = model.AcceptTerms,
+            EmailFeedback = feedbackNotificationOrig,
+            EmailReminder = reminderNotificationOrig
         };
     }
 
@@ -406,6 +410,8 @@
         public bool AcceptTerms {get; set;}
         public IEnumerable<BookedDate> bookedDates { get; set; }
         public int activityId { get; set; }
+        public ScheduleNotification EmailReminder {get; set;}
+        public ScheduleNotification EmailFeedback {get; set;}
 
     }
     private string NextButtonClass
@@ -519,6 +525,52 @@
         return ShowOffcanvas();
     }
 
+    private Task OnOffCanvasSaved()
+    {
+        if(selectedEmailSchedule == 0) return SaveEmailReminder();
+
+        return SaveEmailFeedback();
+    }
+
+    private Task OnOffCanvasCancelled()
+    {
+        if(selectedEmailSchedule == 0) return CancelEmailReminder();
+
+        return CancelEmailFeedback();
+    }
+
+    private Task SaveEmailReminder()
+    {
+        reminderNotificationOrig.Days = reminderNotification.Days;
+        reminderNotificationOrig.Body = reminderNotification.Body;
+        reminderNotificationOrig.Subject = reminderNotification.Subject;
+        return HideOffcanvas();
+    }
+
+    private Task CancelEmailReminder()
+    {
+        reminderNotification.Days = reminderNotificationOrig.Days;
+        reminderNotification.Body = reminderNotificationOrig.Body;
+        reminderNotification.Subject = reminderNotificationOrig.Subject;
+        return HideOffcanvas();
+    }
+
+    private Task SaveEmailFeedback()
+    {
+        feedbackNotificationOrig.Days = feedbackNotification.Days;
+        feedbackNotificationOrig.Body = feedbackNotification.Body;
+        feedbackNotificationOrig.Subject = feedbackNotification.Subject;
+        return HideOffcanvas();
+    }
+
+    private Task CancelEmailFeedback()
+    {
+        feedbackNotification.Days = feedbackNotificationOrig.Days;
+        feedbackNotification.Body = feedbackNotificationOrig.Body;
+        feedbackNotification.Subject = feedbackNotificationOrig.Subject;
+        return HideOffcanvas();
+    }
+
     public class BookedDate
     {
         public int Id { get; set; }
@@ -547,7 +599,7 @@
         StateHasChanged();
     }
 
-    private class ScheduleNotification 
+    public class ScheduleNotification 
     {
         public int Days {get; set;} = 1;
         public string Subject {get; set;}
