@@ -186,6 +186,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.ICreateOteWaitlistHandler, Services.ActivityService.CreateOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOteWaitlistByProviderHandler, Services.ActivityService.GetOteWaitlistByProviderHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ISaveEmailTemplateHandler, Services.ActivityService.SaveEmailTemplateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IEmailTemplateHandler, Services.ActivityService.EmailTemplateHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

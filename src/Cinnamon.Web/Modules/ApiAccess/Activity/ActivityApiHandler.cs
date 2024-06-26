@@ -1353,4 +1353,26 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
         }
     }
+
+    public async Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetEmailTemplate")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEmailTemplateResult>();
+
+            return AppResult<GetEmailTemplateResult>.CreateSucceeded(result, "Successfully get email template.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, "An error occured when getting email template.");
+        }
+    }
 }
