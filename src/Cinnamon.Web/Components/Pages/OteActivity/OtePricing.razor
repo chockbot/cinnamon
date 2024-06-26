@@ -63,7 +63,7 @@
                     <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
                 </div>
             </div>
-            <div class="div-option-details" @onclick="() => ticketModal .Show()">
+            <div class="div-option-details" @onclick="() => ticketModal.Show()">
                 <img class="option-img" src="images/ote/add.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Add Tickets</p>
@@ -654,6 +654,7 @@
                     modelPricing.IsNew = true;
                     modelPricingList.Pricings.Add(modelPricing);
                     await ticketModal.Hide();
+                    modelPricing = new Pricing();
                 }
             }
         }
