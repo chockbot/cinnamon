@@ -73,6 +73,11 @@ public class OteCreateArgs : IInteractor
 
         public int EmailReminderDays {get; set;}
         public int EmailFeedbackDays {get; set;}
+        
+        public string? FeedbackSubject {get; set;}
+        public string? FeedbackBody {get; set;}
+        public string? ReminderSubject {get; set;}
+        public string? ReminderBody {get; set;}
     }
 
     public class OtePricing 

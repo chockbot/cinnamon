@@ -20,16 +20,18 @@ public class OteUpdateHandler : IOteUpdateHandler
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly IDynamicContentData dynamicContentData;
 
     public OteUpdateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler, 
         IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler,
-        IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IOteAlreadyBookedHandler oteAlreadyBookedHandler, IDynamicContentData dynamicContentData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.dynamicContentData = dynamicContentData;
         this.recurrenceDateHelper = new();
 
         this.htmlSanitizer = new 

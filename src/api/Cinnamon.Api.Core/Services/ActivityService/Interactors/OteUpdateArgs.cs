@@ -75,6 +75,11 @@ public class OteUpdateArgs : IInteractor
 
         public int EmailFeedbackDays {get; set;}
         public int EmailReminderDays {get; set;}
+
+        public string? FeedbackSubject {get; set;}
+        public string? FeedbackBody {get; set;}
+        public string? ReminderSubject {get; set;}
+        public string? ReminderBody {get; set;}
     }
 
     public class OtePricing 
