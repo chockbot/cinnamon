@@ -101,4 +101,25 @@ public class OteRemindersController : ControllerBase
             return new JsonResult(new GetCustomersToRemindResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("EventsForThankYou")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEventsForReminderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventsForThankYou()
+    {
+        try
+        {
+            var result = await oteReminderRepository.GetEventsForThankYou();
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetEventsForReminderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetEventsForReminderResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEventsForReminderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
