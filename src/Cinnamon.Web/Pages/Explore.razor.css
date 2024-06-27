@@ -3,6 +3,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.footer-container-wider.align-items-footer {
+  display: none;
+}
+
 .line-divider {
   border-bottom: 1px solid #E8E8E8;
   margin-top: 40px;
@@ -3544,8 +3548,18 @@ img.img-icon {
   }
 }
 
+@media (min-width: 1441px){
+  .footer-container {
+    display: none;
+  }
+
+  .footer-container-wider.align-items-footer {
+    display: flex;
+  }
+}
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+
   .btn-login {
     height: 40px;
     width: 190px;
