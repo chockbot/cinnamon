@@ -11,4 +11,6 @@ public interface IOteRemindersData
     Task<AppResult<CreateReminderFlagResult>> CreateReminderFlag(CreateReminderFlagArgs args);
 
     Task<AppResult<GetEventsForReminderResult>> GetEventsForReminder();
+
+    Task<AppResult<GetCustomersToRemindResult>> GetCustomersToRemind(GetCustomersToRemindArgs args);
 }

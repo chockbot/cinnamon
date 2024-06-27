@@ -78,4 +78,25 @@ public class OteRemindersData : IOteRemindersData
 			return AppResult<GetEventsForReminderResult>.CreateFailed(ex, "An error occured when getting events for reminder.");
 		}
     }
+
+	public async Task<AppResult<GetCustomersToRemindResult>> GetCustomersToRemind(GetCustomersToRemindArgs args)
+    {
+        try
+		{
+			var result = await flurlClient
+							.Request($"OteReminders/CustomersForReminder")
+							.SetQueryParams(args)
+							.GetJsonAsync<GetCustomersToRemindResult>();
+
+			return AppResult<GetCustomersToRemindResult>.CreateSucceeded(result, "Successfully getting customers for reminder.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetCustomersToRemindResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetCustomersToRemindResult>.CreateFailed(ex, "An error occured when getting customers for reminder.");
+		}
+    }
 }

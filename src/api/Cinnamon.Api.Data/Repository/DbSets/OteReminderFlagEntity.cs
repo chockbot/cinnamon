@@ -77,4 +77,58 @@ public class OteReminderFlagEntity : GenericEntity<OteReminderFlag>, IOteReminde
             return AppResult<IEnumerable<OteForReminderDTO>>.CreateFailed(ex, "An error occured when getting event for reminder.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<CustomersNeedToRemindDTO>>> CustomersToRemind(int activityId, int oteDateId)
+    {
+        try
+        {
+            string query = "with rw as ( " +
+                                "select ot.\"ActivityId\", ot.\"OteDateId\", ot.\"CustomerId\", " +
+                                    "Row_Number() over (partition by ot.\"ActivityId\", ot.\"OteDateId\", ot.\"CustomerId\" order by ot.\"Id\" desc) \"RwCnt\" " +
+                                "from public.\"OteTickets\" ot " +
+                                "where ot.\"ActivityId\" = " + activityId + " and ot.\"OteDateId\" = " + oteDateId + " " +
+                                "order by \"Id\" desc " +
+                            ") " +
+                            "select rw.\"ActivityId\", rw.\"OteDateId\", rw.\"CustomerId\", " +
+                                "cs.\"FirstName\", cs.\"LastName\", cs.\"Email\" " +
+                            "from rw " +
+                            "join public.\"Customers\" cs " +
+                                "on cs.\"Id\" = rw.\"CustomerId\" " +
+                            "where rw.\"RwCnt\" = 1 and rw.\"OteDateId\" is not null ";
+            
+            IList<CustomersNeedToRemindDTO> listResult = new List<CustomersNeedToRemindDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+
+						listResult = dt.AsEnumerable().Select(item => new CustomersNeedToRemindDTO
+						{
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            CustomerId = Convert.ToInt32(item["CustomerId"]),
+                            Email = item["Email"].ToString() ?? string.Empty,
+                            FirstName = item["FirstName"].ToString() ?? string.Empty,
+                            LastName = item["LastName"].ToString() ?? string.Empty,
+                            OteDateId = Convert.ToInt32(item["OteDateId"])
+						}).ToList();
+					}
+				}
+			}
+
+            return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateSucceeded(listResult, "Successfully get event for reminder.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateFailed(ex, "An error occured when getting customers for reminder.");
+        }
+    }
 }

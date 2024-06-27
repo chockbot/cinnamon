@@ -10,4 +10,6 @@ public interface IOteReminderRepository
     Task<AppResult<IEnumerable<OteReminderFlagDTO>>> GetReminderFlags(int? activityId, int? dateId);
 
     Task<AppResult<IEnumerable<OteForReminderDTO>>> GetEventsForReminder();
+
+    Task<AppResult<IEnumerable<CustomersNeedToRemindDTO>>> CustomersToRemind(int activityId, int oteDateId);
 }
