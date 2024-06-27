@@ -199,7 +199,7 @@
                                         </div>
                                         @foreach (var item in AvailablePriceList)
                                         {
-                                            if (ticketCount != 0 && IsLimit)
+                                            if ((ticketCount != 0 && IsLimit))
                                             {
                                                 if (ticketCount == activity.EventTicketLimit)
                                                 {
@@ -210,6 +210,10 @@
                                                     stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
                                                 }
 
+                                            }
+                                            else if ((ticketCount != 0 && !IsLimit && activity.IsCapacity))
+                                            {
+                                                stringMaxTicket = $"Available {(ticketCount == 1 ? "ticket" : "tickets")} you can purchase is {ticketCount}.";
                                             }
                                             else
                                             {
@@ -380,6 +384,7 @@
     private string stringMaxTicket { get; set; }
     private bool IsLimit { get; set; }
     private bool IsOnWaitlist { get; set; }
+    private int capacityLimit { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -403,6 +408,7 @@
             {
                 await LoadWaitlist();
             }
+
         }
         catch (Exception ex)
         {
@@ -412,6 +418,7 @@
 
     private async Task LoadProfile()
     {
+        ticketCount = 0;
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         if(user is not null && user.Identity.IsAuthenticated)
         {
@@ -447,7 +454,15 @@
                             ticketCount += count.Result.Result.Tickets.Count();
                         }
                     }
-                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit - ticketCount : 0;
+                    @if (IsLimit)
+                    {
+                        activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                    }
+                    else
+                    {
+                        activity.EventTicketLimit = capacityLimit;
+                    }
+                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit : 0;
                 } 
             }
         }
@@ -513,6 +528,7 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= activity.Sold ? true : false;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
+            capacityLimit             = activity.CapacityCount - activity.Sold;
 
 
 
@@ -737,6 +753,7 @@
 
         NavigationManager.NavigateTo(paymentUrl);
     }
+
     private int OverallTicketCount
     {
         get 
@@ -761,7 +778,15 @@
             {
                 return Task.CompletedTask;
             }
+            if (selectedTickets[pricing.Id].Count >= limitTicket && !IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
             if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && !IsLimit && currentLogin is not null)
             {
                 return Task.CompletedTask;
             }
@@ -773,10 +798,18 @@
             {
                 return Task.CompletedTask;
             }
+            //else if (limitTicket == 0 && !IsLimit && currentLogin is not null)
+            //{
+            //    return Task.CompletedTask;
+            //}
             else if(selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
             {
                 return Task.CompletedTask;
             }
+            //else if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && !IsLimit && currentLogin is not null)
+            //{
+            //    return Task.CompletedTask;
+            //}
             else
             {
                 selectedTickets.Add(pricing.Id, new TicketInfo
@@ -873,6 +906,7 @@
         public decimal Price {get; set;}
         public string Name {get; set;}
     }
+
     private void ToggleAboutText()
     {
         showFullAbout = !showFullAbout;
@@ -902,6 +936,7 @@
             NavigationManager.NavigateTo(url);
         }
     }
+
     private async Task LoadWaitlist()
     {
         var waitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
@@ -914,6 +949,7 @@
             IsOnWaitlist = waitlists.Result.Result.Any(a => a.CustomerId == ProfileId);
         }
     }
+
     private async Task JoinWaitlist()
     {
         if (!activity.IsEventSoldOut)
@@ -963,6 +999,7 @@
             await NotificationService.Error("This event is sold out!");
         }
     }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }

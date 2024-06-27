@@ -74,17 +74,18 @@
         <div class="ticket-section mt-3">
             @foreach (var ticket in modelPricingList.Pricings)
             {
+                int ticketId = ticket.Id == 0 ? ticket.TempId : ticket.Id;
                 <div class="ticket-box">
                     <div class="ticket-section-name">
                         <p class="ticket-title">@ticket.Name</p>
                         <div class="dropdown-mobile">
-                            <button class="btn-menu " type="button" id="dropdownMenuButton-@ticket.Id" data-bs-toggle="dropdown"
-                                    aria-expanded="false" border="none" @onclick="() => onClickMenu(ticket.Id)">
+                            <button class="btn-menu " type="button" id="dropdownMenuButton-@ticketId" data-bs-toggle="dropdown"
+                                    aria-expanded="false" border="none" @onclick="() => onClickMenu(ticketId)">
                                 <div class="menu">
                                     <img src="images/ote/dots.png">
                                 </div>
                             </button>
-                            <ul class="dropdown-menu @ShowMenu(ticket.Id)" aria-labelledby="dropdownMenuButton-@ticket.Id">
+                            <ul class="dropdown-menu @ShowMenu(ticketId)" aria-labelledby="dropdownMenuButton-@ticketId">
                                 <li class="dropdown-item" @onclick="() => OnEditTicket(ticket)">
                                     Edit
                                 </li>
@@ -175,7 +176,7 @@
             <p class="font-20 font-weight-700 color-black-100 mb-0">@((isEditing ? "Edit" : "Add") + " your Ticket")</p>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
+            <Validations @ref="pricingFormValidation" Mode="ValidationMode.Manual" Model="modelPricing">
                 <Validation>
                     <Field class="mb-4">
                         <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
@@ -643,6 +644,7 @@
                         existingTicket.MaxSlots = modelPricing.MaxSlots;
                         existingTicket.AbsorbFees = modelPricing.AbsorbFees;
                         await ticketModal.Hide();
+                        pricingFormValidation.ClearAll();
                     }
                 }
                 else
@@ -655,6 +657,7 @@
                     modelPricingList.Pricings.Add(modelPricing);
                     await ticketModal.Hide();
                     modelPricing = new Pricing();
+                    pricingFormValidation.ClearAll();
                 }
             }
         }
@@ -754,7 +757,9 @@
     }
     private async Task OnCancelEdit()
     {
-        modelPricing = new Pricing();
         await ticketModal.Hide();
+        pricingFormValidation.ClearAll();
+        isEditing = false;
+        modelPricing = new Pricing();
     }
 }
