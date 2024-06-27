@@ -2513,12 +2513,14 @@
         if (ExperienceCategory == 3)
         {
             showCategorySwiper = false;
+            await Filter(null);
             await FetchActivities(true);
         }
         else
         {
             showCategorySwiper = true;
-             await FetchActivities(true);
+            await Filter(null);
+            await FetchActivities(true);
         }
 
         await FetchActivities(false);
