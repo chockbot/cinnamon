@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
@@ -39,22 +40,45 @@ public class OteReminderFlagRepository : IOteReminderRepository
         }
     }
 
-    public async Task<AppResult<OteReminderFlagDTO>> GetReminderFlag(int activityId, int dateId)
+    public async Task<AppResult<IEnumerable<OteReminderFlagDTO>>> GetReminderFlags(int? activityId, int? dateId)
     {
         try
         {
-            var result = await dataStore.OteReminderFlag.FindFirstAsync(r => r.ActivityId == activityId && r.OteDateId == dateId);
+            Expression<Func<Entities.OteReminderFlag, bool>> filter = r => 
+                (activityId.HasValue ? r.ActivityId == activityId.Value : true) &&
+                (dateId.HasValue ? r.OteDateId == dateId.Value : true);
+
+            var result = await dataStore.OteReminderFlag.FindAsync(filter);
             if(!result.Succeeded || result.Result is null)
             {
-                return AppResult<OteReminderFlagDTO>.CreateFailed(new ApplicationException("Unable to locate reminder flag."), "Unable to locate reminder flag.");
+                return AppResult<IEnumerable<OteReminderFlagDTO>>.CreateFailed(new ApplicationException("Unable to locate reminder flag."), "Unable to locate reminder flag.");
             }
 
-            var dto = mapper.Map<OteReminderFlagDTO>(result.Result);
-            return AppResult<OteReminderFlagDTO>.CreateSucceeded(dto, "Successsfully create ote reminder.");
+            var dto = mapper.Map<IEnumerable<OteReminderFlagDTO>>(result.Result);
+            return AppResult<IEnumerable<OteReminderFlagDTO>>.CreateSucceeded(dto, "Successsfully create ote reminder.");
         }
         catch (Exception ex)
         {
-            return AppResult<OteReminderFlagDTO>.CreateFailed(ex, "An error occured when creating ote reminder flag.");
+            return AppResult<IEnumerable<OteReminderFlagDTO>>.CreateFailed(ex, "An error occured when creating ote reminder flag.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<OteForReminderDTO>>> GetEventsForReminder()
+    {
+        try
+        {
+            var result = await dataStore.OteReminderFlag.GetEventsForReminder();
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<OteForReminderDTO>>.CreateFailed(
+                    new ApplicationException("Unable to get events for reminder."), "Unable to get events for reminder.");
+            }
+
+            return AppResult<IEnumerable<OteForReminderDTO>>.CreateSucceeded(result.Result, "Successsfully get events for reminder.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteForReminderDTO>>.CreateFailed(ex, "An error occured when getting events for reminder.");
         }
     }
 }

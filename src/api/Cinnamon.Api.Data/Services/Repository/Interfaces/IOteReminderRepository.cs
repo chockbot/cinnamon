@@ -7,5 +7,7 @@ public interface IOteReminderRepository
 {
     Task<AppResult<OteReminderFlagDTO>> CreateReminderFlag(OteReminderFlagDTO reminderFlag);
 
-    Task<AppResult<OteReminderFlagDTO>> GetReminderFlag(int activityId, int dateId);
+    Task<AppResult<IEnumerable<OteReminderFlagDTO>>> GetReminderFlags(int? activityId, int? dateId);
+
+    Task<AppResult<IEnumerable<OteForReminderDTO>>> GetEventsForReminder();
 }
