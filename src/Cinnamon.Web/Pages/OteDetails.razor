@@ -469,7 +469,14 @@
                     {
                         if(activity.IsCapacity)
                         {
-                            activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                            if (ticketCount == 0)
+                            {
+                                activity.EventTicketLimit = capacityLimit;
+                            }
+                            else
+                            {
+                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                            }
                         }
                         else
                         {
@@ -547,7 +554,6 @@
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= activity.Sold ? true : false;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
             capacityLimit             = activity.CapacityCount != 0 ? activity.CapacityCount - activity.Sold : 0;
-
             selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
             //selectedDate = SelectedDates.FirstOrDefault();
 
@@ -794,6 +800,10 @@
                 return Task.CompletedTask;
             }
             if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && !IsLimit && currentLogin is not null && capacityLimit != 0)
             {
                 return Task.CompletedTask;
             }
