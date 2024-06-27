@@ -80,4 +80,25 @@ public class OteRemindersController : ControllerBase
             return new JsonResult(new GetEventsForReminderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CustomersForReminder")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomersToRemindResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomersToRemind([FromQuery] GetCustomersToRemindArgs args)
+    {
+        try
+        {
+            var result = await oteReminderRepository.CustomersToRemind(args.ActivityId, args.OteDateId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetCustomersToRemindResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetCustomersToRemindResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomersToRemindResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

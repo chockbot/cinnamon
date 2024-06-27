@@ -81,4 +81,23 @@ public class OteReminderFlagRepository : IOteReminderRepository
             return AppResult<IEnumerable<OteForReminderDTO>>.CreateFailed(ex, "An error occured when getting events for reminder.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<CustomersNeedToRemindDTO>>> CustomersToRemind(int activityId, int oteDateId)
+    {
+        try
+        {
+            var result = await dataStore.OteReminderFlag.CustomersToRemind(activityId, oteDateId);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateFailed(
+                    new ApplicationException("Unable to get customers for reminder."), "Unable to get customers for reminder.");
+            }
+
+            return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateSucceeded(result.Result, "Successsfully get customers for reminder.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateFailed(ex, "An error occured when getting customers for reminder.");
+        }
+    }
 }
