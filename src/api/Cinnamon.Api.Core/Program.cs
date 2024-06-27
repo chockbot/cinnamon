@@ -208,6 +208,17 @@ builder.Services.AddQuartz(q => {
             .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.EventReminder.RunPerHour).RepeatForever())
         );
     }
+
+    if(applicationConfig.EventThankYou.RunJob)
+    {
+        var eventThankYouJobKey = new JobKey("EventThankYouJob");
+        q.AddJob<EventThankYouJob>(opts => opts.WithIdentity(eventThankYouJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(eventThankYouJobKey)
+            .WithIdentity("EventThankYouJob-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.EventThankYou.RunPerHour).RepeatForever())
+        );
+    }
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

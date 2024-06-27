@@ -191,6 +191,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.ISaveEmailTemplateHandler, Services.ActivityService.SaveEmailTemplateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IEmailTemplateHandler, Services.ActivityService.EmailTemplateHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteEmailReminderHandler, Services.ActivityService.OteEmailReminderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteEmailThankYouHandler, Services.ActivityService.OteEmailThankYouHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

@@ -138,7 +138,7 @@ public class OteReminderFlagEntity : GenericEntity<OteReminderFlag>, IOteReminde
         {
             var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 
-            string query = "select od.\"Id\" \"DateId\", ac.\"Id\" \"ActivityId\", od.\"DateStart\", " +
+            string query = "select od.\"Id\" \"DateId\", ac.\"Id\" \"ActivityId\", od.\"DateStart\", od.\"DateEnd\", " +
                                 "ac.\"Title\", ac.\"Description\", cs.\"FirstName\", cs.\"LastName\", cs.\"Email\" " +
                             "from public.\"OteDates\" od " +
                             "join public.\"OteSchedules\" os " +
@@ -147,9 +147,7 @@ public class OteReminderFlagEntity : GenericEntity<OteReminderFlag>, IOteReminde
                                 "on ac.\"Id\" = os.\"ActivityId\" " +
                             "join public.\"Customers\" cs " +
                                 "on cs.\"Id\" = ac.\"CreatedBy\" " +
-                            "left join public.\"OteReminderFlags\" otr " +
-                                "on otr.\"ActivityId\" = ac.\"Id\" and otr.\"OteDateId\" = od.\"Id\" " +
-                            "where od.\"DateEnd\" != '-infinity' and otr.\"Id\" is null and " +
+                            "where od.\"DateEnd\" != '-infinity' and " +
                                 "( " +
                                     "Date(od.\"DateEnd\") >= (Date('" + dateString + "') - Interval '7 DAY') and " +
 		                            "Date(od.\"DateEnd\") <= (Date('" + dateString + "') - Interval '1 DAY') " +
@@ -179,7 +177,8 @@ public class OteReminderFlagEntity : GenericEntity<OteReminderFlag>, IOteReminde
                             ProviderEmail = item["Email"].ToString() ?? string.Empty,
                             ProviderFirstName = item["FirstName"].ToString() ?? string.Empty,
                             ProviderLastName = item["LastName"].ToString() ?? string.Empty,
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            DateEnd = Convert.ToDateTime(item["DateEnd"])
 						}).ToList();
 					}
 				}
