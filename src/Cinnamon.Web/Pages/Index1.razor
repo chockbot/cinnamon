@@ -1,0 +1,924 @@
+﻿@layout LandingLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@inject ISystemApiHandler systemApiHandler;
+
+<PageTitle>Welcome to Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</PageTitle>
+<SeoMeta />
+
+<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+@if(Announcements.Count() > 0)
+{
+    <div class="announcements" style="display:@IsDisplay">
+        <div class="container">
+            <button type="button" class="close-button" aria-label="Close" @onclick="() =>DisplayAnnouncement()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="swiper announcement-swipper">
+                <div class="swiper-wrapper">
+                    @foreach (var item in Announcements)
+                    {
+                        <div class="swiper-slide">
+                            <Row class="align-items-center">
+                                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                    <p class="font-24 m-font-14 font-weight-900 color-black-100">@item.Title</p>
+                                    <p class="font-20 m-font-12 color-grey-100">
+                                        @item.Description
+                                    </p>
+                                </Column>
+                                @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
+                                {
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill announcement-btn">
+                                            @item.ButtonLabel
+                                        </a>
+                                    </Column>
+                                }
+                            </Row>
+                        </div>   
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<!--Search Section-->
+ <div class="top-section" style="position:relative;display:flex">
+    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="2500" ShowControls="false">
+        <CarouselSlide Name="1">
+            <Image Source="images/landing-page-images/landing-activity-image.jpg" class="section-1-image" Text="Lights image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="2">
+            <Image Source="images/landing-page-images/landing-event-image.jpg" class="section-1-image" Text="Keyboard image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="3">
+            <Image Source="images/landing-page-images/landing-research-image.jpg" class="section-1-image" Text="Road image" />
+        </CarouselSlide>
+    </Carousel>
+     <div class="provider-section">
+        <p class="provider-text">We provide activities and events just for you!</p>
+        <p class="provider-sub-text">Experience new adventures and learning in your life!</p>
+        <div class="provider-buttons">
+            <button type="button" class="btn btn-browse" id="btnBrowse" @onclick="@(() => NavigateToExplorePage())">
+                <span>Browse Now!</span>
+            </button>
+            <button type="button" class="btn btn-join" id="btnJoin" @onclick="@(() => NavigateToOnboardingPage())">
+                <span>Join the Provider Community</span>
+            </button>
+        </div>
+     </div>
+ </div>
+
+<!--Section 3-->
+@if (activities.Count != 0)
+{
+    <div class="section-3 row">
+        <div class="featured-activities col-12 justify-content-center">
+            <div class="container">
+                <div class="featured-header">
+                    <p class="featured-text">Featured Activities</p>
+                    <a class="see-more" href="/explore">See all</a>
+                </div>
+                <div class="row d-flex justify-content-start">
+                    @foreach (var act in activities)
+                    {
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                            <Div ElementId="#b-animate">
+                                <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    @if (act.Images.Count > 0)
+                                        {
+                                            <div class="card-img img-fluid position-relative">
+                                                <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
+                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
+                                                </a>
+                                               @* <div class="creation-section">
+                                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/GA.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/OTE.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/AVA.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/SUP.png" />
+                                                    }
+                                                </div>*@
+                                                
+                                                @*@if (act.OngoingStudents > 0)
+                                                {
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <div class="rounded-pill ongoing-section">
+                                                                <div class="active-badge" style="text-align:center">
+                                                                    <span class="pulse"></span>
+                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                </div>
+                                                            </div>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                Ongoing Enrollees
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip>
+                                                }*@
+                                                @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                                {
+                                                    act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                    if (act.IsFavorite != false)
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                                <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                                <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0">
+                                                            <img src="@addToFavorites" class="favorite-icon" @onclick="() =>NavigateToExplorePage()" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        <div class="card-container">
+                                            <div class="row text-start star-pulse-section">
+                                                <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                    @if (act.NumberOfReviews > 0)
+                                                    {
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="average-rating">@act.AverageRating</span>
+                                                        <span class="number-of-reviews">(@act.NumberOfReviews)</span>
+                                                    }
+                                                    else if (act.IsNew)
+                                                    {
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="new-experience-label">New Experience</span>
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents && act.NumberOfTickets != 0)
+                                                    {
+                                                        int numberOfTickets = RoundDownToNearestMultiple(act.NumberOfTickets);
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience && act.OngoingStudents != 0)
+                                                    {
+                                                        int numberOfStudents = RoundDownToNearestMultiple(act.OngoingStudents);
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="number-of-reviews">@($"{(numberOfStudents < 10 ? numberOfStudents.ToString() : numberOfStudents + "+")} booked")</span>
+                                                    }
+                                                </div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                </div>
+                                            </div>
+                                            <div class="row text-start">
+                                                <div class="title-section">
+                                                    <div>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                        @if (@act.ExperienceTypeId == 1)
+                                                        {
+                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row price-badge-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Animate>
+                            </Div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--Backed By-->
+<div class="section-backed-by row text-center">
+    <div class="backed-by-text col-12 d-flex justify-content-center">
+        <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+            <img src="images/landing-page-images/backed-by.webp">
+        </a>
+    </div>
+</div>
+
+<!--Testimonials-->
+<div class="testimonial-section">
+    <div class="custom-shape-divider-top">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M1920 21.3H1813.33C1706.67 21.3 1493.33 21.3 1280 16C1066.67 10.3 853.333 0.3 640 0C426.667 0.3 213.333 10.3 106.667 16L0 21.3V149.3H106.667C213.333 149.3 426.667 149.3 640 149.3C853.333 149.3 1066.67 149.3 1280 149.3C1493.33 149.3 1706.67 149.3 1813.33 149.3H1920V21.3Z" fill="#F3F6FC" />
+        </svg>
+    </div>
+    <div class="marketplace-wrapper">
+        <div id="carouselSection5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        I can't express how grateful I am to www.cinnamon.ph for the
+                                        incredible Mandarin language lessons they offer! My kids were
+                                        initially hesitant about learning a new language, but the engaging
+                                        and interactive lessons provided by their experienced instructor have
+                                        truly made a difference. The lessons are not only educational but also
+                                        loads of fun. It's an amazing feeling to see them confidently speaking
+                                        and understanding Mandarin. Cinnamon PH has made language
+                                        learning a delightful family journey, and we can't wait to explore
+                                        more lessons on their platform!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Emman</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
+                                    <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image-1.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        Cinnamon has been a game-changer in managing our kids' activities.
+                                        The easy payment options, the seamless program selection process,
+                                        and the flexibility in choosing enrollment periods have made it our
+                                        go-to platform. I can confidently say that Cinnamon has made
+                                        choosing my kids' various interest activities manageable and
+                                        enjoyable, and I wholeheartedly recommend it to all parents seeking
+                                        top-notch programs and tutors for their children. Thank you,
+                                        Cinnamon!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Mommy Lea</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="emman-profile" alt="profile-1" src="images/landing-page-images/emman-profile.png">
+                                    <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="custom-shape-divider-botttom">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0 145.747H106.667C213.333 145.747 426.667 145.747 640 151.782C853.333 158.272 1066.67 169.658 1280 170C1493.33 169.658 1706.67 158.272 1813.33 151.782L1920 145.747V0H1813.33C1706.67 0 1493.33 0 1280 0C1066.67 0 853.333 0 640 0C426.667 0 213.333 0 106.667 0H0V145.747Z" fill="#F3F6FC" />
+        </svg>
+    </div>
+</div>
+
+<!--Become an Activity Provider-->
+<div class="section-6 row">
+    <div class="activity-wrapper">
+        <div class="container">
+            <div class="activity-content">
+                <div class="become">
+                    <p class="become-title">Become an Activity Provider</p>
+                    <p class="become-description">
+                        An Activity Provider is someone who provides experiences
+                        on the Cinnamon platform. Live your passion, share your
+                        knowledge, and leave a mark on people's lives!.
+                    </p>
+                    <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
+                        <span>Sign up now</span>
+                    </button>
+                </div>
+                <div class="become-image">
+                    <img class="activity-provider" src="images/landing-page-images/activity-provider.png" />
+                </div>
+            </div>
+            <img class="line-dot" src="images/landing-page-images/line-dot.png" />
+        </div>
+    </div>
+</div>
+
+<!--How it Works-->
+<div class="section-5 row">
+    <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">How it Works</p>
+        <div class="container">
+            <div class="row d-flex justify-content-start">
+                <div class="landing-text landing-lg">
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/search.png"
+                         Title=@Resources.App.search
+                         Text=@Resources.App.searchDescription />
+                    </div>
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/book.png"
+                         Title=@Resources.App.book
+                         Text=@Resources.App.bookDescription />
+                    </div>
+                    <div class="col-sm-4">
+                        <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                        Title=@Resources.App.attend
+                        Text=@Resources.App.attendDescription />
+                    </div>
+                </div>
+                <div class="landing-text landing-md">
+                    <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="landing-text landing-sm">
+                    <div id="carouselSection4" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Cinnamon Video-->
+<div class="section-marketplace">
+    <div class="marketplace-wrapper">
+        <div class="container">
+            <div class="marketplace-content">
+                <div class="maketplace-item1">
+                    <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+                </div>
+                <div class="maketplace-item2">
+                    <div class="maketplace-item1-mobile">
+                        <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+                    </div>
+                    <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
+                    <div class="marketplace-tags">
+                        <div class="cinnamon-tags">
+                            <p class="cinnamon-welcome">
+                                Cinnamon is an activity learning & events
+                                marketplace. Our main focus is to help everyone
+                                spend their time on meaningful fun experiences by
+                                connecting you to people who are passionate about
+                                sharing their skills and knowledge.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Built by alumni from-->
+<div class="section-4 row">
+   <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">Built by alumni from</p>
+        <div class="container">
+            <div class="built-by">
+                <img class="accenture" alt="accenture" src="images/landing-page-images/accenture.png">
+                <img class="Dela-Salle" alt="Dela-Salle" src="images/landing-page-images/Dela-Salle.png">
+                <img class="SAP" alt="SAP" src="images/landing-page-images/SAP.png">
+                <img class="Unionbank" alt="Unionbank" src="images/landing-page-images/Unionbank.png">
+            </div>
+        </div>
+   </div>
+</div>
+
+<!--Footer-->
+<div class="footer desktop-only">
+    <div class="footer-content">
+        <span class="footer-appname color-primary">@Resources.App.appName</span>
+        <span class="footer-text"> Copyright © @year. All rights reserved.</span>
+        <div class="social-media-container">
+            <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
+                </svg>
+            </a>
+            @*            <a class="btn bg-white color-primary shadow rounded-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
+            </svg>
+            </a>*@
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!--Footer Mobile-->
+<div class="mobile-footer">
+    <div class="mobile-footer-content">
+        <span class="mobile-footer-appname color-primary">@Resources.App.appName</span>
+        <br />
+        <div class="social-media-container-mobile">
+            <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                </svg>
+            </a>
+        </div>
+        <span class="mobile-footer-text"> Copyright © @year. All rights reserved.</span>
+    </div>
+</div>
+
+<ModalLogin @ref="signinModal" />
+
+@code {
+    int year = DateTime.Now.Year;
+
+    IJSObjectReference module;
+
+    private ModalLogin signinModal;
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    public Profile CustomerModel = new Profile();
+
+    public List<ExperienceCategory> categories = new List<ExperienceCategory>();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public string addToFavorites = "images/favorites/experience-heart-default.svg";
+
+    public string searchValue = string.Empty;
+
+    public string buttonLabel = "Browse all";
+
+    public string IsDisplay = "block";
+
+    public int experienceCategoryId = 0;
+
+    int SelectedValue = 5;
+
+    private string selectedSlide = "1";
+
+    private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //get activities randomly
+        await FetchActivities();
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
+        }
+        // get experience categories
+        var experienceCategory = await activityApiHandler.GetExperienceCategories();
+        if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
+        {
+            categories = experienceCategory.Result.Result.Select(i =>
+            {
+                return new ExperienceCategory
+                    {
+                        Id = i.Id,
+                        Category = i.Name,
+                        IconPath = i.IconPath
+                    };
+            }).ToList();
+        }
+
+        await LoadAnnnouncements();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+            await GetFavorites();
+
+            await InitAnnouncementSwiper();   
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
+            await GetFavorites();
+        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+    }
+
+    private async Task InitAnnouncementSwiper()
+    {
+        await Task.Delay(2000);
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
+    }
+
+    private async Task FetchActivities()
+    {
+        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true,
+                IncludeExperienceTypes = true,
+                IncludeExperienceCategories = true,
+                IncludeSubCategories = true,
+                IsActive = true,
+                PageIndex = 1,
+                CountPerPage = 8,
+                ExperienceCategoryId = experienceCategoryId,
+                SearchValue = searchValue,
+                IncludeCustomer = true,
+                IncludeStudents = true,
+                IsDeactivated = false,
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted,
+                IncludeReviews = true,
+                IncludeTickets = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            if (ActivityListData.Result.Result.Count() > 0)
+            {
+                activities = ActivityListData.Result.Result.Select(r =>
+                {
+                    return new Activity
+                        {
+                            ActivityId = r.ActivityId,
+                            ExperienceTypeId = r.ExperienceTypeId,
+                            ExperienceType = r.ExperienceType,
+                            ExperienceCategoryId = r.ExperienceCategoryId,
+                            SubCategoryId = r.SubCategoryId,
+                            ExperienceCategory = r.ExperienceCategory,
+                            SubCategory = r.SubCategory,
+                            Title = r.Title,
+                            Description = r.Description,
+                            Price = r.Price,
+                            ScheduleIndicator = r.ScheduleIndicator,
+                            Remarks = r.Remarks,
+                            IsPublished = r.IsPublished,
+                            Address1 = r.Address1,
+                            Address2 = r.Address2,
+                            District = r.District,
+                            City = r.City,
+                            CityName = r.CityName,
+                            Subdivision = r.Subdivision,
+                            Region = r.Region,
+                            RegionName = r.RegionName,
+                            Barangay = r.Barangay,
+                            BarangayName = r.BarangayName,
+                            PostalCode = r.PostalCode,
+                            PinnedLocation = r.PinnedLocation,
+                            SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                            CustomerBringWithThem = r.CustomerBringWithThem,
+                            AdditionalRequirements = r.AdditionalRequirements,
+                            ActivityLevel = r.ActivityLevel,
+                            SkillLevel = r.SkillLevel,
+                            MinimumAge = r.MinimumAge,
+                            CanAdultsJoin = r.CanAdultsJoin,
+                            CreatedBy = r.CreatedBy,
+                            Handler = r.Handler,
+                            IsNew = r.IsNew,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                            NumberOfReviews = r.NumberOfReviews,
+                            AverageRating = r.AverageRating,
+                            ExperienceCreationType = r.ExperienceCreationType,
+                            NumberOfTickets = r.NumberOfTickets,
+                            ActivitySchedules = r.ActivitySchedules.Select(e =>
+                            {
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
+                            Images = r.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                            Owner = new CustomerProfile
+                            {
+                                IsVerified = r.Owner.IsVerified
+                            }
+                        };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task GetFavorites()
+    {
+        if (CustomerModel.CustomerProfile != null)
+        {
+            var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+            if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
+            {
+                CustomerModel.Favorites = customerFavorites.Result.Result.Select(i =>
+                {
+                    return new Favorite
+                        {
+                            ActivityId = i.ActivityId,
+                            CustomerId = i.CustomerId,
+                            IsFavorite = true
+                        };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task AddToFavorites(Activity activity)
+    {
+        activity.IsFavorite = !activity.IsFavorite;
+        if (activity.IsFavorite)
+        {
+            //Add to Favorites
+            var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        else
+        {
+            //Delete to Favorites
+            var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        await GetFavorites();
+    }
+
+    private async Task CreateFavorite(Activity activity)
+    {
+        //Add to Favorites
+        var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+            {
+                ActivityId = activity.ActivityId,
+                CustomerId = CustomerModel.CustomerProfile.Id
+            }, CustomerModel.Token);
+        await GetFavorites();
+    }
+
+    private string GetPriceLabel(Activity activity)
+    {
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if (schedules.Count > 1)
+        {
+            return $"₱ {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
+        }
+        if (schedules.Count == 1)
+        {
+            return $"₱ {(long)schedules[0].Price}";
+        }
+        return string.Empty;
+    }
+
+    private void NavigateToExplorePage()
+    {
+        NavigationManager.NavigateTo("/explore");
+    }
+    private void SearchToExplorePage()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            NavigationManager.NavigateTo("/explore");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/explore/experiences/{searchValue}");
+        }
+    }
+
+    private void SearchByFilter(int filter)
+    {
+        string filterString = filter.ToString();
+        NavigationManager.NavigateTo($"/explore/category/{filterString}");
+    }
+
+    private void NavigateToOnboardingPage()
+    {
+        NavigationManager.NavigateTo("/Onboarding");
+    }
+    private void NavigateToMaterialsPage()
+    {
+        NavigationManager.NavigateTo("/materials");
+    }
+    private Task OnChageInput(ChangeEventArgs e)
+    {
+        string text = e.Value.ToString();
+        if (string.IsNullOrEmpty(text))
+        {
+            buttonLabel = "Browse all";
+        }
+        else
+        {
+            buttonLabel = "Explore";
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadAnnnouncements()
+    {
+        var result = await systemApiHandler.GetAnnouncements();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            Announcements = result.Result.Result.Select(a => new AnnouncementModel {
+                ButtonLabel = a.ButtonLabel,
+                Description = a.Description,
+                HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
+                Id = a.Id,
+                Link = a.Link,
+                Status = a.Status,
+                Title = a.Title
+            });
+        }
+    }
+    public int RoundDownToNearestMultiple(int number)
+    {
+        int roundingFactor = IdentifyRoundingFactor(number);
+        return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
+    }
+    public int IdentifyRoundingFactor(int number)
+    {
+        return (Math.Abs(number) >= 1000) ? 1000 :
+               (Math.Abs(number) >= 100) ? 100 :
+                                            10;
+    }
+
+    public void DisplayAnnouncement()
+    {
+        IsDisplay = "none";
+    }
+
+    record AnnouncementModel
+    {
+        public int Id {get; set;}
+        public string Title {get; set;}
+        public string Description {get; set;}
+        public string ButtonLabel {get; set;}
+        public string Link {get; set;}
+        public bool HasButtonAction {get; set;}
+        public string Status {get; set;}
+    }
+}
