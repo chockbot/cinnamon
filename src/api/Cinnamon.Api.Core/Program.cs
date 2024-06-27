@@ -196,7 +196,18 @@ builder.Services.AddQuartz(q => {
             .WithIdentity("UpdateActivitySummaryJob-trigger")
             .WithSimpleSchedule(x => x.WithIntervalInMinutes(applicationConfig.ActivitySummary.RunPerMinute).RepeatForever())
         );
-    }  
+    }
+
+    if(applicationConfig.EventReminder.RunJob)
+    {
+        var eventReminderJobKey = new JobKey("EventReminderJob");
+        q.AddJob<EventReminderJob>(opts => opts.WithIdentity(eventReminderJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(eventReminderJobKey)
+            .WithIdentity("EventReminderJob-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.EventReminder.RunPerHour).RepeatForever())
+        );
+    }
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
