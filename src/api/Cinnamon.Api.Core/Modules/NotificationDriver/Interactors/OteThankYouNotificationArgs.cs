@@ -10,4 +10,5 @@ public class OteThankYouNotificationArgs : IInteractor
     public string CustomerName {get; set;}
     public string CustomerEmail {get; set;}
     public int DaysStart {get; set;}
+    public string Handler {get; set;}
 }

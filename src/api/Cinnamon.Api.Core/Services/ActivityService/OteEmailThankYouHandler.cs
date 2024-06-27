@@ -79,7 +79,8 @@ public class OteEmailThankYouHandler : IOteEmailThankYouHandler
                         ProviderId = activityRes.Result.Owner?.Id ?? 0,
                         EventLocation = oteActivity.ExperienceTypeId == 2 ? 
                             "Online" : $"{oteActivity.CityName} {oteActivity.RegionName} {oteActivity.PinnedLocation}".Trim(),
-                        EventName = oteActivity.EventName
+                        EventName = oteActivity.EventName,
+                        Handler = oteActivity.Handler
                     });
                 }
 
@@ -126,7 +127,8 @@ public class OteEmailThankYouHandler : IOteEmailThankYouHandler
                     CustomerName = $"{c.FirstName} {c.LastName}",
                     DaysStart = activity.DaysBeforeReminder,
                     EventName = activity.EventName,
-                    Subject = subject
+                    Subject = subject,
+                    Handler = activity.Handler
                 }));
 
                 await Task.WhenAll(sendEmailTasks);
@@ -147,5 +149,6 @@ public class OteEmailThankYouHandler : IOteEmailThankYouHandler
         public int ProviderId {get; set;}
         public string EventLocation {get; set;}
         public string EventName {get; set;}
+        public string Handler {get; set;}
     }
 }

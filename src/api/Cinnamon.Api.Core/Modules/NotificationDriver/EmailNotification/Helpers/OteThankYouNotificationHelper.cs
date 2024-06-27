@@ -4,7 +4,7 @@ namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers
 
 public class OteThankYouNotificationHelper
 {
-    public string GetTemplate(string eventName, string subject, string body, string customerName)
+    public string GetTemplate(string eventName, string subject, string body, string customerName, string link)
     {
         string defaultBody = $@"
             <p style='margin: 0'>
@@ -63,7 +63,8 @@ public class OteThankYouNotificationHelper
 
                 <p style='margin-bottom: 1rem; margin-top: 3rem;'>What did you think of sample event?</p>
                 <div style='display: flex'>
-                    <span
+                    <a
+                    href='{link}?rating=1'
                     style='
                         font-size: 24px;
                         display: block;
@@ -75,9 +76,10 @@ public class OteThankYouNotificationHelper
                         margin-right: 10px;
                         cursor: pointer;
                     '
-                    >&#128544;</span
+                    >&#128544;</a
                     >
-                    <span
+                    <a
+                    href='{link}?rating=2'
                     style='
                         font-size: 24px;
                         display: block;
@@ -89,9 +91,10 @@ public class OteThankYouNotificationHelper
                         margin-right: 10px;
                         cursor: pointer;
                     '
-                    >&#128542;</span
+                    >&#128542;</a
                     >
-                    <span
+                    <a
+                    href='{link}?rating=3'
                     style='
                         font-size: 24px;
                         display: block;
@@ -103,9 +106,10 @@ public class OteThankYouNotificationHelper
                         margin-right: 10px;
                         cursor: pointer;
                     '
-                    >&#128528;</span
+                    >&#128528;</a
                     >
-                    <span
+                    <a
+                    href='{link}?rating=4'
                     style='
                         font-size: 24px;
                         display: block;
@@ -117,9 +121,10 @@ public class OteThankYouNotificationHelper
                         margin-right: 10px;
                         cursor: pointer;
                     '
-                    >&#128512;</span
+                    >&#128512;</a
                     >
-                    <span
+                    <a
+                    href='{link}?rating=5'
                     style='
                         font-size: 24px;
                         display: block;
@@ -131,7 +136,7 @@ public class OteThankYouNotificationHelper
                         margin-right: 10px;
                         cursor: pointer;
                     '
-                    >&#128525;</span
+                    >&#128525;</a
                     >
                 </div>
                 
