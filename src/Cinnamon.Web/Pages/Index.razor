@@ -1,1792 +1,619 @@
-﻿@page "/"
-@page "/experiences/{landingSearch}"
-@page "/category/{filterSearch}"
-@page "/confirm-email"
-@page "/facebook-login"
-@layout EmptyLayout
-@using Microsoft.AspNetCore.SignalR.Client;
-@using Microsoft.AspNetCore.WebUtilities;
-@using Cinnamon.Web.Components
-@using System.Text
-@using System.Linq;
-@using System.Globalization
-@using System.Security.Claims
-@using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@using Cinnamon.Web.Models
-@using Cinnamon.Web.Models.Customer
-@using Cinnamon.Web.Models.Entities
-@using Cinnamon.Web.Components.Pages;
-@using Cinnamon.Framework.Enums
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IActivityApiHandler activityApiHandler
-@inject IAccountApiHandler accountApiHandler
+﻿@layout LandingLayout
+@page "/"
 @inject NavigationManager NavigationManager
-@inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IJSRuntime jsRuntime
-@inject Cinnamon.Web.Config.Config AppConfig;
-@inject IChatApiHandler chatApiHandler;
-@implements IDisposable
-@inject AutoMapper.IMapper mapper;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@inject ISystemApiHandler systemApiHandler;
 
-<SeoMeta Url="/explore" Keywords="GetKeyWords()">
-    <ExtraMeta>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-        <title>Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</title>
-    </ExtraMeta>
-</SeoMeta>
+<PageTitle>Welcome to Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH</PageTitle>
+<SeoMeta />
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-    <!--Search-->
-    <div class="top-row px-4">
-        <!--App Name-->
-        <div class="app-name col-lg-2 col-md-2">
-            <a href="" class="app-name">@Resources.App.appName</a>
-        </div>
-        <!--Menu-->
-        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end navbar-selection dropdown-section">
-            <!-- Desktop -->
-                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
-                        <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
-                        @if (!isLogin)
-                        {
-                        <button class="btn-login" @onclick="() => signinModal.Show()">
-                            Login | Signup
-                        </button>
-                        }
-            @if (AuthState != null && AuthState.Identity.IsAuthenticated)
-            {
-            <div class="dropdown">
-                <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                    <div class="menu">
-                        <img class="rounded-2 rounded-circle profile-img-desktop" src="@CustomerModel.CustomerProfile.ProfileImg">
-                        @if (CustomerModel.CustomerProfile != null)
-                        {
-                            @if (newMessagesCount != 0)
-                            {
-                                <span class="new-message-count-badge">
-                                    @newMessagesCount
-                                </span>
-                            }
-                        }
-                    </div>
-                </button>
-                <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                    @if (AuthState != null)
-                    {
-                        @if (AuthState.Identity.IsAuthenticated)
-                        {
-                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
-                            {
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
-                                </li>
-                            }
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToAccount" Text="Account" />
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Border="Border.Is0" Clicked="Logout">
-                                    Logout
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
-                                    @Resources.App.Sign
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
-                                   Materials
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
-                                @Resources.App.Sign
-                            </Button>
-                        </li>
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
-                                Materials
-                            </Button>
-                        </li>
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                Help
-                            </Button>
-                        </li>
-                    }
-                </ul>
-            </div>
-            }
-            <!-- Mobile -->
-            <div class="dropdown-mobile">
-                <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
-                    <div class="menu">
-                        @if (AuthState != null && AuthState.Identity.IsAuthenticated)
-                        {
-                        <img class = "rounded-2 rounded-circle profile-img-mobile" src="@CustomerModel.CustomerProfile.ProfileImg">
-                        } else {
-                        <img src="images/menu.png">
-                        }
-                        @if (CustomerModel.CustomerProfile != null)
-                        {
-                            @if (newMessagesCount != 0)
-                            {
-                                <span class="new-message-count-badge">
-                                    @newMessagesCount
-                                </span>
-                            }
-                        }
-                    </div>
-                </button>
-                <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                    @if (AuthState != null)
-                    {
-                        @if (AuthState.Identity.IsAuthenticated)
-                        {
-                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
-                            {
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
-                                </li>
-                            }
-                            else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
-                            {
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToMaterials" Text="Materials" />
-                                </li>
-                                <li class="dropdown-item messages-item">
-                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
-                                    @if (hasNewMessages)
-                                    {
-                                        <span class="has-new-message-badge">
-                                        </span>
-                                    }
-                                </li>
-                            }
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToAccount" Text="Account" />
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Border="Border.Is0" Clicked="Logout">
-                                    Logout
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
-                                    @Resources.App.Sign
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
-                                    Materials
-                                </Button>
-                            </li>
-                            <li class="dropdown-item">
-                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                    Help
-                                </Button>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
-                                @Resources.App.Sign
-                            </Button>
-                        </li>
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToMaterials">
-                                Materials
-                            </Button>
-                        </li>
-                        <li class="dropdown-item">
-                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
-                                Help
-                            </Button>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div> 
-    <!-- Header -->
-    <div class="header">
-        <div class="header-container">
-            <div class="header-info">
-                @if (!showCategorySwiper)
-                {
-                <h1 class="header-info-text">Skip the FOMO: Secure Your Tickets Now!</h1>
-                } else {
-                <h1 class="header-info-text">Level Up Your Skills:  Get a Tutor Today!</h1>
-                }
-            </div>
-        </div>
-    </div>
-    <!-- Search Bar -->
-    <div class="search-bar-container">
-    <form class="search-bar" @onsubmit=Search>
-        <div class="input-group p-1">
-            <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                <div class="input-group-append border-0">
-                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                        <img src="images/explore-page-images/search-icon-explore.png" alt="search-icon" />
-                    </button>
-                </div>
-        </div>
-         </form>
-    </div>
-   
-    <!-- End of Search Bar -->
-    <!-- End of Header -->
-    <!-- New Announcement Like Cards -->
-    @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
-    {
-    <div class="container">
-        <div class="sub-header">
-            <div class="sub-header-container">
-                <div class="sub-header-image"></div>
-                <div class="event-organizer-invite-card">
-                    <div class="event-organizer-info">
-                        @if (!showCategorySwiper){
-                            <p class="event-organizer-info-title">Be an Event Organizer!</p>
-                            <p class="event-organizer-info-sub-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
-                        } else {
-                            <p class="event-organizer-info-title activity-provider-switch">Be an Activity Provider!</p>
-                            <p class="event-organizer-info-sub-title">Automate and simplify your Experience with easy and secure options with Cinnamon!</p>
-                        }
-                    </div>
-                    <div class="event-organizer-join">
-                        @if (!showCategorySwiper) {
-                        <p class="event-organizer-join-desktop-title">Automate and simplify your Events Planning  operations with easy and secure options with Cinnamon!</p>
-                        } else {
-                        <p class="event-organizer-join-desktop-title">Automate and simplify your Experience operations with easy and secure options with Cinnamon!</p>
-                        }
-                        @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
-                        {
-                        <div class="event-organizer-join-sub-container" @onclick="NavigateToDashboard">
-                        <p class="event-organizer-join-title">Join Our Team!</p>
-                        @if (!showCategorySwiper) {
-                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                        } else {
-                        <p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
-                        }
-                        </div>
-                        }
-                        else
-                        {   
-                        <div class="event-organizer-join-sub-container" @onclick="NavigateToOnboarding">
-                        <p class="event-organizer-join-title">Join Our Team!</p>
-                        @if (!showCategorySwiper) {
-                        <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                        } else {
-                        <p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
-                        }
-                        </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
-
-    <!-- End of New Announcement Like Cards -->
-    @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
-    {
-    
-    } else {
-    <div class="container">
-    <div class="upcoming-events">
-        <div class="upcoming-events-container">
-            <div class="upcoming-events-info">
-                <p class="upcoming-events-info-text">Search Results</p>
-                <h1 class="upcoming-events-info-text-search">"@searchValue"</h1>
-            </div>
-        </div>
-    </div>
-    </div>
-    }
-
-    <div class="container">
-        <hr class="line-divider">
-    </div>
-
-    <div class="container">
-        <div class="section-1 experience-selector">
-           <div class="categories">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
-                                        <p class="upcoming-events-info-text-main @((!showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id">
-                                        <p class="upcoming-events-info-text-main @((showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(1))">General Experience</p>
-                                    </a>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!--Section 1-->
-    <div class="container">
-        <div class="section-1">
-           <div class="categories">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper text-center">
-                        <!-- DO NOT TOUCH ORIGINAL SWIPER -->
-                        @if (showCategorySwiper)
-                        {
-                            @*
-                        @foreach (var category in categories)
-                        {   
-                                if (category.Category == "New")
-                                {
-                                    category.Category = "All";
-                                }
-                            if (category.Id != 8)
-                            {
-                            <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
-                                        <img src=@category.IconPath class="static-category-selector-img">
-                                        <p class="staitc-category-title">@category.Category</p>
-                                    </a>
-                                </div>
-                            </div>
-                            }
-                        } *@
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(1))">
-                                        <img src="images/Category/New.png" class="static-category-selector-img">
-                                        <p class="static-category-title">All</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(2))">
-                                        <img src="images/Category/Academic.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Academics</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(3))">
-                                        <img src="images/Category/Language.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Language</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(4))">
-                                        <img src="images/Category/Music.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Music</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(5))">
-                                        <img src="images/Category/Skill.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Skills</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(6))">
-                                        <img src="images/Category/SPED.png" class="static-category-selector-img">
-                                        <p class="static-category-title">SPED</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                                                <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(7))">
-                                        <img src="images/Category/Sports.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Sports</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        } else
-                        {
-                        <!-- END OF DO NOT TOUCH -->
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(3))">
-                                        <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
-                                        <p class="static-category-title">All</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id"  @onclick="@(() => Filter(9))">
-                                        <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Shows & Concerts</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(7))">
-                                        <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Sports</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(10))">
-                                        <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Tours & Attraction</p>
-                                    </a>
-                                </div>
-                        </div>
-
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(11))">
-                                        <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
-                                        <p class="static-category-title">Corporate</p>
-                                    </a>
-                                </div>
-                        </div> }
-                    </div>
-                    <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
-                </div>
-            </div>
-            @*
-            <!-- STATIC CATEGORY SWIPER -->
-            <div class="static-category-container">
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
-                        <p class="static-category-title">All</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
-                        <p class="static-category-title">Shows & Concerts</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
-                        <p class="static-category-title">Sports</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
-                        <p class="static-category-title">Tours & Attraction</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
-                        <p class="static-category-title">Corporate</p>
-                    </a>
-                </div>
-            </div> 
-            <!-- END OF STATIC CATEGORY SWIPER -->
-            *@
-            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           @* @if (string.IsNullOrEmpty(searchValue) && popularFeeds.Count > 0)
-            {
-                <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                    <div class="row d-flex justify-content-start">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <label class="heading">Most Popular</label>
-                            <section class="popular-activities mt-4 overflow-hidden">
-                                <div class="activities-schedule-section activity-swiper">
-                                    <div class="swiper-wrapper">
-                                        @foreach (var act in popularFeeds)
-                                        {
-                                            <div @key="act" class="swiper-slide swiper-slide-popular">
-                                                <Div ElementId="#b-animate">
-                                                    <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                                        <div class="card activities-card">
-                                                            <div class="card-img img-fluid position-relative">
-                                                                <a class="button" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" style="text-decoration:none;" target="_blank">
-                                                                    <img src="@act.SummaryDetails.ImageSrc" alt="banner image" class="img-zoom-effect" />
-                                                                </a>
-                                                                @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
-                                                                {
-                                                                    <CustomTooltip MarginLeft="-100">
-                                                                        <TextContent>
-                                                                            <div class="ongoing-section">
-                                                                                <div class="active-badge" style="text-align:center">
-                                                                                    <span class="pulse"></span>
-                                                                                    <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </TextContent>
-                                                                        <TooltipContent>
-                                                                        <span class="ongoing-text">
-                                                                                Ongoing Enrollees
-                                                                            </span>
-                                                                        </TooltipContent>
-                                                                    </CustomTooltip>
-                                                                }
-                                                                @if(CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                                                {
-                                                                    act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                                                    if (act.IsFavorite)
-                                                                    {
-                                                                        <div class="favorite-section">
-                                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoritePopularAtivity(act)">
-                                                                                <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                                            </button>
-                                                                        </div>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <div class="favorite-section">
-                                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() => CreateFavoritePopularAtivity(act)">
-                                                                                <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                                            </button>
-                                                                        </div>
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    <div class="favorite-section">
-                                                                        <button type="button" class="favorite-icon-button border-0">
-                                                                            <img src="@addToFavorites" class="favorite-icon" @onclick= "() =>signinModal.Show()" />
-                                                                        </button>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                            <div class="card-container">
-                                                              <div class="row text-start star-pulse-section">
-                                                                    <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                                        @if (act.SummaryDetails.TotalReviews > 0)
-                                                                        {
-                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
-                                                                        }
-                                                                        else if (act.IsNew)
-                                                                        {
-                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="new-experience-label">New Experience</span>
-                                                                        }
-                                                                        else if(act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
-                                                                        {
-                                                                            int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
-                                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                                            <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
-                                                                        }
-                                                                    </div>
-                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                                    </div>
-                                                                </div> 
-                                                                <div class="row text-start">
-                                                                    <div class="title-section">
-                                                                        <div>
-                                                                            <Tooltip Multiline=true Text=@act.Title>
-                                                                                <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                                            </Tooltip>
-                                                                            @if (act.ExperienceTypeId == 1)
-                                                                            {
-                                                                                var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
-                                                                                <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row price-badge-section">
-                                                                    <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                                    <button class="card-title-button">
-                                                                        Buy Tickets
-                                                                    </button>
-                                                                    </a>
-                                                                </div>
-                                                                @if(act.ExperienceCreationTypeId == 3)
-                                                                {
-                                                                    <div class="mt-2">
-                                                                        <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
-                                                                            One time event
-                                                                        </span>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </Animate>
-                                                </Div>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="activity-swiper-scrollbar"></div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            } *@
-        </div>
-        <!--Section 2-->
-        <!-- Mobile View -->
-        <div class="section-2-lg row mobile-view-cards">
-            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                @* <div class="d-flex align-items-baseline justify-content-between">
-                    <div class="mb-5">
-                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
-                        </div>
-                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                            <label class="heading">Explore More</label>
-                        </div>
-                    </div>
-                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
-                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
-                        <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
-                    </Button>
-                </div> *@
-                @foreach (var act in activityFeeds)
-                {   
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
-                        <Div ElementId="#b-animate">
-                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                <div class="card activities-card">
-                                    <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                            <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
-                                        </a>
-                                        @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
-                                        {
-                                            <CustomTooltip MarginLeft="-100">
-                                                <TextContent>
-                                                    <div class="ongoing-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
-                                                        </div>
-                                                    </div>
-                                                </TextContent>
-                                                <TooltipContent>
-                                                    <span class="color-grey-100">
-                                                        Ongoing Enrollees
-                                                    </span>
-                                                </TooltipContent>
-                                            </CustomTooltip>
-                                        }
-                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                        {
-                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                            if (act.IsFavorite)
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
-                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavoriteAtivity(act)">
-                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="favorite-section">
-                                                <button type="button" class="favorite-icon-button border-0">
-                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
-                                                </button>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="card-container">
-                                    @*   <div class="row text-start star-pulse-section">
-                                            <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                @if (act.SummaryDetails.TotalReviews > 0)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                    <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
-                                                }
-                                                else if (act.IsNew)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="new-experience-label">New Experience</span>
-                                                }
-                                                else if (act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
-                                                {
-                                                    int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
-                                                }
-                                            </div>
-                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                            </div>
-                                        </div> *@
-                                            <div class="title-section">
-                                                    <Tooltip Multiline=true Text=@act.Title>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                    </Tooltip>
-                                                    @if (@act.ExperienceTypeId == 1)
-                                                    {
-                                                        
-                                                        var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
-                                                        <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        </div>
-                                                    }
-                                            </div>
-                                            @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
-                                            }
-
-                                                @if (@act.ExperienceCreationTypeId == 3)
-                                                {
-                                                    <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
-                                                    </div>
-                                                }
-                                        @if (act.ExperienceCreationTypeId == 3)
-                                        {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
-                                                    <span>Buy Tickets</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        } else {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
-                                                    <span>Register</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        }
-                                     @*   @if(act.ExperienceCreationTypeId == 3)
-                                        {
-                                            <div class="mt-2">
-                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
-                                                    One time event
-                                                </span>
-                                            </div>
-                                        } *@
-                                    </div>
-                                </div>
-                            </Animate>
-                        </Div>  
-                    </div>
-                }
-                <div class="align-items-center" style="text-align:center;">
-                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
-                        @if (showOverlayPopularActivities)
-                        {
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <span>Discover More...</span>
-                        }
-                    </button>
-                    @if (hasNoMoreRecords)
-                    {
-                        <p>You're all caught up!</p>
-                    }
-                </div>
-            </div>
-        </div>
-        <!-- Desktop 1024px onwards -->
-        <div class="section-2-lg row desktop-1024">
-            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                @* <div class="d-flex align-items-baseline justify-content-between">
-                    <div class="mb-5">
-                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
-                        </div>
-                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                            <label class="heading">Explore More</label>
-                        </div>
-                    </div>
-                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
-                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
-                        <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
-                    </Button>
-                </div> *@
-                @foreach (var act in activityFeeds)
-                {   
-                    <!-- Large Desktop -->
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
-                        <Div ElementId="#b-animate">
-                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                <div class="card activities-card">
-                                    <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                            <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
-                                        </a>
-                                        @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
-                                        {
-                                            <CustomTooltip MarginLeft="-100">
-                                                <TextContent>
-                                                    <div class="ongoing-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
-                                                        </div>
-                                                    </div>
-                                                </TextContent>
-                                                <TooltipContent>
-                                                    <span class="color-grey-100">
-                                                        Ongoing Enrollees
-                                                    </span>
-                                                </TooltipContent>
-                                            </CustomTooltip>
-                                        }
-                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                        {
-                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                            if (act.IsFavorite)
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
-                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavoriteAtivity(act)">
-                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="favorite-section">
-                                                <button type="button" class="favorite-icon-button border-0">
-                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
-                                                </button>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="card-container">
-                                    @*   <div class="row text-start star-pulse-section">
-                                            <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                @if (act.SummaryDetails.TotalReviews > 0)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                    <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
-                                                }
-                                                else if (act.IsNew)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="new-experience-label">New Experience</span>
-                                                }
-                                                else if (act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
-                                                {
-                                                    int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
-                                                }
-                                            </div>
-                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                            </div>
-                                        </div> *@
-                                            <div class="title-section">
-                                                    <Tooltip Multiline=true Text=@act.Title>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                    </Tooltip>
-                                                    @if (@act.ExperienceTypeId == 1)
-                                                    {
-                                                        
-                                                        var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
-                                                        <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        </div>
-                                                    }
-                                            </div>
-                                            @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
-                                            }
-
-                                                @if (@act.ExperienceCreationTypeId == 3)
-                                                {
-                                                    <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
-                                                    </div>
-                                                }
-                                        @if (act.ExperienceCreationTypeId == 3)
-                                        {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
-                                                    <span>Buy Tickets</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        } else {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
-                                                    <span>Register</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        }
-                                     @*   @if(act.ExperienceCreationTypeId == 3)
-                                        {
-                                            <div class="mt-2">
-                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
-                                                    One time event
-                                                </span>
-                                            </div>
-                                        } *@
-                                    </div>
-                                </div>
-                            </Animate>
-                        </Div>  
-                    </div>
-                }
-                <div class="align-items-center" style="text-align:center;">
-                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
-                        @if (showOverlayPopularActivities)
-                        {
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <span>Discover More...</span>
-                        }
-                    </button>
-                    @if (hasNoMoreRecords)
-                    {
-                        <p>You're all caught up!</p>
-                    }
-                </div>
-            </div>
-        </div>
-        <!-- Desktop 1440px onwards -->
-        <div class="section-2-lg row desktop-test">
-            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                    <div class="card card-placeholder-popular" aria-hidden="true">
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <div class="card-body">
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12 placeholder-image"></span>
-                                <span class="placeholder col-10"></span>
-                                <span class="placeholder col-9"></span>
-                                <span class="placeholder col-7"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="desktop-card-view row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                @* <div class="d-flex align-items-baseline justify-content-between">
-                    <div class="mb-5">
-                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            <label class="heading" style="@SetActivitiesStyle(showOverlayPopularActivities)">Keep exploring for more options</label>
-                        </div>
-                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                            <label class="heading">Explore More</label>
-                        </div>
-                    </div>
-                    <Button Clicked="OpenFilter" Border="Border.Is1" class="border-color-black-100 d-flex align-items-center">
-                        <img class="me-2" src="images/icons/btn-filter.png" alt="filter">
-                        <span class="font-20 m-font-14 font-weight-700 font-family-nunito">Filter</span>
-                    </Button>
-                </div> *@
-                @foreach (var act in activityFeeds)
-                {   
-                    <!-- Large Desktop -->
-                    <div class="container-chat-1440 col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4 d-flex flex-column align-items-center card-activity-body explore-activity-item" id="activity-card-container-desktop-1440" style="margin-bottom:30px">
-                        <Div ElementId="#b-animate">
-                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                <div class="card activities-card">
-                                    <div class="card-img img-fluid position-relative">
-                                        <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                            <img src=@act.SummaryDetails.ImageSrc alt="banner image" class="img-zoom-effect">
-                                        </a>
-                                        @if (act.ExperienceCreationTypeId == 1 && act.SummaryDetails.Ongoing > 0)
-                                        {
-                                            <CustomTooltip MarginLeft="-100">
-                                                <TextContent>
-                                                    <div class="ongoing-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.SummaryDetails.Ongoing</span>
-                                                        </div>
-                                                    </div>
-                                                </TextContent>
-                                                <TooltipContent>
-                                                    <span class="color-grey-100">
-                                                        Ongoing Enrollees
-                                                    </span>
-                                                </TooltipContent>
-                                            </CustomTooltip>
-                                        }
-                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                        {
-                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                            if (act.IsFavorite)
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() => AddFavoriteActivity(act)">
-                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavoriteAtivity(act)">
-                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="favorite-section">
-                                                <button type="button" class="favorite-icon-button border-0">
-                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
-                                                </button>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="card-container">
-                                    @*   <div class="row text-start star-pulse-section">
-                                            <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                @if (act.SummaryDetails.TotalReviews > 0)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                    <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
-                                                }
-                                                else if (act.IsNew)
-                                                {
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="new-experience-label">New Experience</span>
-                                                }
-                                                else if (act.ExperienceCreationTypeId == 3 && act.SummaryDetails.TotalParticipants > 0)
-                                                {
-                                                    int numberOfTickets = RoundDownToNearestMultiple(act.SummaryDetails.TotalParticipants);
-                                                    <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                    <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
-                                                }
-                                            </div>
-                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                            </div>
-                                        </div> *@
-                                            <div class="title-section">
-                                                    <Tooltip Multiline=true Text=@act.Title>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                    </Tooltip>
-                                                    @if (@act.ExperienceTypeId == 1)
-                                                    {
-                                                        
-                                                        var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
-                                                        <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                            <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        </div>
-                                                    }
-                                            </div>
-                                            @{
-                                               string formattedDate = act.From.ToString("MMM dd, yyyy ● h:mm tt");
-                                            }
-                                                
-
-                                                @if (@act.ExperienceCreationTypeId == 3)
-                                                {
-                                                    <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
-                                                    </div>
-                                                } else {
-                                                    <div class="address-holder">
-                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
-                                                        <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
-                                                    </div>
-                                                }
-                                                
-                                        @if (act.ExperienceCreationTypeId == 3)
-                                        {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
-                                                    <span>Buy Tickets</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        } else {
-                                        <div class="row price-badge-section">
-                                            <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button-exp">
-                                                    <span>Register</span>
-                                                </button>
-                                            </a>
-                                        </div>
-                                        }
-                                     @*   @if(act.ExperienceCreationTypeId == 3)
-                                        {
-                                            <div class="mt-2">
-                                                <span class="bg-green-100 color-white-100 font-12 rounded-pill px-2 py-1">
-                                                    One time event
-                                                </span>
-                                            </div>
-                                        } *@
-                                    </div>
-                                </div>
-                            </Animate>
-                        </Div>  
-                    </div>
-                }
-                <div class="align-items-center" style="text-align:center;">
-                    <button type="button" class="btn border-0 explore-more-button" id="btnExploreMore" @onclick="@(() => FetchActivities(true))">
-                        @if (showOverlayPopularActivities)
-                        {
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <span>Discover More...</span>
-                        }
-                    </button>
-                    @if (hasNoMoreRecords)
-                    {
-                        <p>You're all caught up!</p>
-                    }
-                </div>
-            </div>
-        </div>
-        <!--End of Desktop 1440px onwards -->
-    </div>
-    <!--Section 3-->
-    <div class="sub-footer">
-        <div class="section-3">
-            <div class="sub-footer-container">
-                <div class="sub-footer-image"></div>
-                <div class="sub-footer-info">
-                    <p class="sub-footer-title">Connect with Us on Social Media!</p>
-                        <div class="sub-footer-media">
-                        <a href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                        </div>
-                        <div class="sub-footer-text">
-                            <p>1. Faster Sign-up: Ditch the forms, connect with social media to pre-fill info and buy tickets quicker.</p>
-                            <p>2. Never Miss Out: Get notified about events your friends are interested in, so you don't miss the hottest happenings.</p>
-                            <p>3. Connect with the Organizer: Ask questions directly through social media and stay updated with the latest event info.</p>
-                        </div>
-                </div>
-            </div>
-        </div
-    </div>
-    <!--Footer-->
-    <div class="footer">
-        <div class="section-4">
-            <div class="footer-container align-items-footer">
-                <div class="footer-info">
-                    <p>Automate and simplify your Events Planning operations with easy and 
-                       secure options with Cinnamon!</p>
-                </div>
-                <div class="footer-text-media-container">
-                    <div class="footer-nav">
-                        <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                        <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                        <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
-                    </div>
-                    <div class="footer-support-email">
-                        <i class="far fa-envelope"></i>
-                        <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
-                    </div>
-                </div>
-            </div>
-            <div class="line-container">
-                <div class="line"></div>
-            </div>
-            <div class="footer-final">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
-                </div>
-                <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
-                </div>
-                <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                </div> 
-            </div>
-            <!-- For tablet view -->
-            <div class="footer-final-tablet">
-                <div class="footer-column">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
-                </div>
-                <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
-                </div>
-                </div>
-                <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                </div> 
-            </div> 
-            <!-- end of tablet view -->
-            <!-- For Mobile view -->
-            <div class="footer-final-mobile">
-                <div class="footer-column">
-                    <div class="footer-logo">
-                        <img src="images/explore-page-images/cinnamon-footer.png" />
-                    </div>
-                    <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                    </div> 
-                </div>
-                <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
-                </div>
-            </div> 
-        </div>
-    </div>
-    
-<div id="observerTarget"></div>
-
-<Modal id="explore-filter-modal" @ref="filterModal">
-    <ModalContent Centered class="font-family-nunito">
-        <ModalHeader Border="Border.Is0" class="font-24 color-black-100 font-weight-700 pb-0 m-font-16">Filter by</ModalHeader>
-        <ModalBody class="color-black-100 pt-2">
-            <div id="filter-by-type">
-                <label class="font-20 m-font-14">Type</label>
-                <div class="d-flex mt-3">
-                    <Button Clicked="() => filters.EventType = null" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" 
-                            src='@(filters.EventType == null ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
-                        <span class="font-16 m-font-14">All</span>
-                    </Button>
-                    <Button Clicked="() => filters.EventType = 2" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" 
-                            src='@(filters.EventType == 2 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
-                        <span class="font-16 m-font-14">Online</span>
-                    </Button>
-                    <Button Clicked="() => filters.EventType = 1" class="border-1-solid border-color-grey-200 d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2">
-                        <img class="me-2 filter-type-img" 
-                            src='@(filters.EventType == 1 ? "images/icons/small-selected.png" : "images/icons/unselected-small.png")' alt="icon">
-                        <span class="font-16 m-font-14">In-person</span>
-                    </Button>
-                </div>
-            </div>
-            <div id="filter-by-rating" class="mt-4">
-                <label class="font-20 m-font-14">Rating</label>
-                <div class="d-flex mt-3 flex-wrap">
-                    <Button Clicked="() => filters.StarReview = 5" class="@StarReviewBtnClass(5)">
-                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
-                        <span class="font-16 text-capitalize m-font-14">5 stars</span>
-                    </Button>
-                    <Button Clicked="() => filters.StarReview = 4" class="@StarReviewBtnClass(4)">
-                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
-                        <span class="font-16 text-capitalize m-font-14">4 stars & up</span>
-                    </Button>
-                    <Button Clicked="() => filters.StarReview = 3" class="@StarReviewBtnClass(3)">
-                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
-                        <span class="font-16 text-capitalize m-font-14">3 stars & up</span>
-                    </Button>
-                    <Button Clicked="() => filters.StarReview = 2" class="@StarReviewBtnClass(2)">
-                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
-                        <span class="font-16 text-capitalize m-font-14">2 stars & up</span>
-                    </Button>
-                    <Button Clicked="() => filters.StarReview = 1" class="@StarReviewBtnClass(1)">
-                        <img class="me-2 filter-type-img" src="images/icons/small-start.png" alt="icon">
-                        <span class="font-16 text-capitalize m-font-14">1 stars & up</span>
-                    </Button>
-                </div>
-            </div>
-        </ModalBody>
-        <ModalFooter>
-            <Button Clicked="CloseFilter" Border="Border.Is1" class="font-16 font-weight-700 px-4 m-font-14">
-                Cancel
-            </Button>
-            <Button Clicked="CustomFilters" class="font-16 bg-orange-100 color-white-100 font-weight-700 hover-color-white px-4 m-font-14">
-                Apply
-            </Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-
-<ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" IsFBLogin=isLoginFB />
-<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
-<ModalPassword @ref="modalPassword"></ModalPassword>
-<WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
-<ReviewModal @ref=ReviewModalRef/>
-<ModalFBUpdate @ref="fbUpdateModal"></ModalFBUpdate>
-<UpdatePasswordModal @ref=updatePasswordModal Token=@CustomerModel.Token Birthdate=@Birthday />
-
-@code
+@if(Announcements.Count() > 0)
 {
-    [Parameter]
-    public string landingSearch { get; set; }
-    [Parameter]
-    public string filterSearch { get; set; }
-    private WelcomeModal WelcomeModalRef { get; set; }
-    private ReviewModal ReviewModalRef { get; set; }
+    <div class="announcements" style="display:@IsDisplay">
+        <div class="container">
+            <button type="button" class="close-button" aria-label="Close" @onclick="() =>DisplayAnnouncement()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="swiper announcement-swipper">
+                <div class="swiper-wrapper">
+                    @foreach (var item in Announcements)
+                    {
+                        <div class="swiper-slide">
+                            <Row class="align-items-center">
+                                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                    <p class="font-24 m-font-14 font-weight-900 color-black-100">@item.Title</p>
+                                    <p class="font-20 m-font-12 color-grey-100">
+                                        @item.Description
+                                    </p>
+                                </Column>
+                                @if(!string.IsNullOrEmpty(item.ButtonLabel) && !string.IsNullOrEmpty(item.Link))
+                                {
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" class="text-start text-md-end">
+                                        <a href="@item.Link" class="d-inline-block cursor-pointer px-3 py-2 text-decoration-none font-16 m-font-10 font-weight-700 bg-orange-100 color-white-100 hover-color-white rounded-pill announcement-btn">
+                                            @item.ButtonLabel
+                                        </a>
+                                    </Column>
+                                }
+                            </Row>
+                        </div>   
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<!--Search Section-->
+ <div class="top-section" style="position:relative;display:flex">
+    <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="2500" ShowControls="false">
+        <CarouselSlide Name="1">
+            <Image Source="images/landing-page-images/landing-activity-image.jpg" class="section-1-image" Text="Lights image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="2">
+            <Image Source="images/landing-page-images/landing-event-image.jpg" class="section-1-image" Text="Keyboard image"/>
+        </CarouselSlide>
+        <CarouselSlide Name="3">
+            <Image Source="images/landing-page-images/landing-research-image.jpg" class="section-1-image" Text="Road image" />
+        </CarouselSlide>
+    </Carousel>
+     <div class="provider-section">
+        <p class="provider-text">We provide activities and events just for you!</p>
+        <p class="provider-sub-text">Experience new adventures and learning in your life!</p>
+        <div class="provider-buttons">
+            <button type="button" class="btn btn-browse" id="btnBrowse" @onclick="@(() => NavigateToExplorePage())">
+                <span>Browse Now!</span>
+            </button>
+            <button type="button" class="btn btn-join" id="btnJoin" @onclick="@(() => NavigateToOnboardingPage())">
+                <span>Join the Provider Community</span>
+            </button>
+        </div>
+     </div>
+ </div>
+
+<!--Section 3-->
+@if (activities.Count != 0)
+{
+    <div class="section-3 row">
+        <div class="featured-activities col-12 justify-content-center">
+            <div class="container">
+                <div class="featured-header">
+                    <p class="featured-text">Featured Activities</p>
+                    <a class="see-more" href="/explore">See all</a>
+                </div>
+                <div class="row d-flex justify-content-start">
+                    @foreach (var act in activities)
+                    {
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                            <Div ElementId="#b-animate">
+                                <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    @if (act.Images.Count > 0)
+                                        {
+                                            <div class="card-img img-fluid position-relative">
+                                                <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
+                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
+                                                </a>
+                                               @* <div class="creation-section">
+                                                    @if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/GA.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/OTE.png" />
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment)
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/AVA.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img class="creation-type" src="images/Creation-type/SUP.png" />
+                                                    }
+                                                </div>*@
+                                                
+                                                @*@if (act.OngoingStudents > 0)
+                                                {
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <div class="rounded-pill ongoing-section">
+                                                                <div class="active-badge" style="text-align:center">
+                                                                    <span class="pulse"></span>
+                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                </div>
+                                                            </div>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                Ongoing Enrollees
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip>
+                                                }*@
+                                                @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                                {
+                                                    act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                    if (act.IsFavorite != false)
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                                <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                                <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0">
+                                                            <img src="@addToFavorites" class="favorite-icon" @onclick="() =>NavigateToExplorePage()" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        <div class="card-container">
+                                            <div class="row text-start star-pulse-section">
+                                                <div class="col-12 col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                    @if (act.NumberOfReviews > 0)
+                                                    {
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="average-rating">@act.AverageRating</span>
+                                                        <span class="number-of-reviews">(@act.NumberOfReviews)</span>
+                                                    }
+                                                    else if (act.IsNew)
+                                                    {
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="new-experience-label">New Experience</span>
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.OneTimeEvents && act.NumberOfTickets != 0)
+                                                    {
+                                                        int numberOfTickets = RoundDownToNearestMultiple(act.NumberOfTickets);
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="number-of-reviews">@($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} booked")</span>
+                                                    }
+                                                    else if (act.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.GeneralExperience && act.OngoingStudents != 0)
+                                                    {
+                                                        int numberOfStudents = RoundDownToNearestMultiple(act.OngoingStudents);
+                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                        <span class="number-of-reviews">@($"{(numberOfStudents < 10 ? numberOfStudents.ToString() : numberOfStudents + "+")} booked")</span>
+                                                    }
+                                                </div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                </div>
+                                            </div>
+                                            <div class="row text-start">
+                                                <div class="title-section">
+                                                    <div>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                        @if (@act.ExperienceTypeId == 1)
+                                                        {
+                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row price-badge-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Animate>
+                            </Div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--Backed By-->
+<div class="section-backed-by row text-center">
+    <div class="backed-by-text col-12 d-flex justify-content-center">
+        <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+            <img src="images/landing-page-images/backed-by.webp">
+        </a>
+    </div>
+</div>
+
+<!--Testimonials-->
+<div class="testimonial-section">
+    <div class="custom-shape-divider-top">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M1920 21.3H1813.33C1706.67 21.3 1493.33 21.3 1280 16C1066.67 10.3 853.333 0.3 640 0C426.667 0.3 213.333 10.3 106.667 16L0 21.3V149.3H106.667C213.333 149.3 426.667 149.3 640 149.3C853.333 149.3 1066.67 149.3 1280 149.3C1493.33 149.3 1706.67 149.3 1813.33 149.3H1920V21.3Z" fill="#F3F6FC" />
+        </svg>
+    </div>
+    <div class="marketplace-wrapper">
+        <div id="carouselSection5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        I can't express how grateful I am to www.cinnamon.ph for the
+                                        incredible Mandarin language lessons they offer! My kids were
+                                        initially hesitant about learning a new language, but the engaging
+                                        and interactive lessons provided by their experienced instructor have
+                                        truly made a difference. The lessons are not only educational but also
+                                        loads of fun. It's an amazing feeling to see them confidently speaking
+                                        and understanding Mandarin. Cinnamon PH has made language
+                                        learning a delightful family journey, and we can't wait to explore
+                                        more lessons on their platform!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Emman</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="profile-1" alt="profile-1" src="images/landing-page-images/profile-1.png">
+                                    <img class="profile-2" alt="profile-2" src="images/landing-page-images/profile-2.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-wrapper">
+                        <div class="testimonial-content container">
+                            <div class="testimonial-image">
+                                <img src="images/landing-page-images/main-image-1.png">
+                            </div>
+                            <div class="testimonial-items">
+                                <div class="testimonial-title">
+                                    <img class="testimonial-quote col-1" alt="testimonial-quote" src="images/landing-page-images/testimonial-quote.png">
+                                    <p class="header-title col-lg-10 col-md-9 col-sm-12 col-12">Testimonials</p>
+                                </div>
+                                <div class="testimonial-message">
+                                    <p>
+                                        Cinnamon has been a game-changer in managing our kids' activities.
+                                        The easy payment options, the seamless program selection process,
+                                        and the flexibility in choosing enrollment periods have made it our
+                                        go-to platform. I can confidently say that Cinnamon has made
+                                        choosing my kids' various interest activities manageable and
+                                        enjoyable, and I wholeheartedly recommend it to all parents seeking
+                                        top-notch programs and tutors for their children. Thank you,
+                                        Cinnamon!
+                                    </p>
+                                </div>
+                                <div class="testimonial-review">
+                                    <p class="testimonial-name">-Mommy Lea</p>
+                                    <p class="testimonial-from">Review from Facebook</p>
+                                </div>
+                                <div class="reviews-profile">
+                                    <img class="emman-profile" alt="profile-1" src="images/landing-page-images/emman-profile.png">
+                                    <img class="mommy-profile" alt="profile-2" src="images/landing-page-images/mommy-profile.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselSection5" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="custom-shape-divider-botttom">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0 145.747H106.667C213.333 145.747 426.667 145.747 640 151.782C853.333 158.272 1066.67 169.658 1280 170C1493.33 169.658 1706.67 158.272 1813.33 151.782L1920 145.747V0H1813.33C1706.67 0 1493.33 0 1280 0C1066.67 0 853.333 0 640 0C426.667 0 213.333 0 106.667 0H0V145.747Z" fill="#F3F6FC" />
+        </svg>
+    </div>
+</div>
+
+<!--Become an Activity Provider-->
+<div class="section-6 row">
+    <div class="activity-wrapper">
+        <div class="container">
+            <div class="activity-content">
+                <div class="become">
+                    <p class="become-title">Become an Activity Provider</p>
+                    <p class="become-description">
+                        An Activity Provider is someone who provides experiences
+                        on the Cinnamon platform. Live your passion, share your
+                        knowledge, and leave a mark on people's lives!.
+                    </p>
+                    <button type="button" class="btn btn-sign-up border-0" id="btnExploreMore" @onclick="@(() => NavigateToOnboardingPage())">
+                        <span>Sign up now</span>
+                    </button>
+                </div>
+                <div class="become-image">
+                    <img class="activity-provider" src="images/landing-page-images/activity-provider.png" />
+                </div>
+            </div>
+            <img class="line-dot" src="images/landing-page-images/line-dot.png" />
+        </div>
+    </div>
+</div>
+
+<!--How it Works-->
+<div class="section-5 row">
+    <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">How it Works</p>
+        <div class="container">
+            <div class="row d-flex justify-content-start">
+                <div class="landing-text landing-lg">
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/search.png"
+                         Title=@Resources.App.search
+                         Text=@Resources.App.searchDescription />
+                    </div>
+                    <div class="col-lg-4">
+                        <OverviewCard ImageSource="images/landing-page-images/book.png"
+                         Title=@Resources.App.book
+                         Text=@Resources.App.bookDescription />
+                    </div>
+                    <div class="col-sm-4">
+                        <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                        Title=@Resources.App.attend
+                        Text=@Resources.App.attendDescription />
+                    </div>
+                </div>
+                <div class="landing-text landing-md">
+                    <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-md-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="landing-text landing-sm">
+                    <div id="carouselSection4" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/landing-page-images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection4" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Cinnamon Video-->
+<div class="section-marketplace">
+    <div class="marketplace-wrapper">
+        <div class="container">
+            <div class="marketplace-content">
+                <div class="maketplace-item1">
+                    <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+                </div>
+                <div class="maketplace-item2">
+                    <div class="maketplace-item1-mobile">
+                        <iframe class="cinnamon-video" src="https://www.youtube.com/embed/gMKqwXWrP_g?control=0&loop=1" title="Cinnamon-Your Family Experience Marketplace!" autoplay;></iframe>
+                    </div>
+                    <p class="featured-text">Your Family Experience<span style="color:var(--primary);"> Marketplace!</span></p>
+                    <div class="marketplace-tags">
+                        <div class="cinnamon-tags">
+                            <p class="cinnamon-welcome">
+                                Cinnamon is an activity learning & events
+                                marketplace. Our main focus is to help everyone
+                                spend their time on meaningful fun experiences by
+                                connecting you to people who are passionate about
+                                sharing their skills and knowledge.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Built by alumni from-->
+<div class="section-4 row">
+   <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">Built by alumni from</p>
+        <div class="container">
+            <div class="built-by">
+                <img class="accenture" alt="accenture" src="images/landing-page-images/accenture.png">
+                <img class="Dela-Salle" alt="Dela-Salle" src="images/landing-page-images/Dela-Salle.png">
+                <img class="SAP" alt="SAP" src="images/landing-page-images/SAP.png">
+                <img class="Unionbank" alt="Unionbank" src="images/landing-page-images/Unionbank.png">
+            </div>
+        </div>
+   </div>
+</div>
+
+<!--Footer-->
+<div class="footer desktop-only">
+    <div class="footer-content">
+        <span class="footer-appname color-primary">@Resources.App.appName</span>
+        <span class="footer-text"> Copyright © @year. All rights reserved.</span>
+        <div class="social-media-container">
+            <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
+                </svg>
+            </a>
+            @*            <a class="btn bg-white color-primary shadow rounded-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
+            </svg>
+            </a>*@
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!--Footer Mobile-->
+<div class="mobile-footer">
+    <div class="mobile-footer-content">
+        <span class="mobile-footer-appname color-primary">@Resources.App.appName</span>
+        <br />
+        <div class="social-media-container-mobile">
+            <a class="btn btn-primary shadow rounded-circle" href="https://www.facebook.com/cinnamonexperience" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                </svg>
+            </a>
+            <a class="btn bg-white color-primary shadow rounded-circle" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                </svg>
+            </a>
+        </div>
+        <span class="mobile-footer-text"> Copyright © @year. All rights reserved.</span>
+    </div>
+</div>
+
+<ModalLogin @ref="signinModal" />
+
+@code {
+    int year = DateTime.Now.Year;
+
+    IJSObjectReference module;
+
     private ModalLogin signinModal;
-    private ModalFBUpdate fbUpdateModal;
-    private UpdatePasswordModal updatePasswordModal;
 
-    bool IsSearchPerformed { get; set; } = false;
-    string SearchQuery { get; set; }
-    public ExploreModel Model = new ExploreModel();
-    public Profile CustomerModel = new Profile();
-    public ExperienceType exptype = new ExperienceType();
-    public List<ExperienceCategory> categories = new List<ExperienceCategory>();
-    public List<ExperienceType> experiencesType = new List<ExperienceType>();
-    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    public string searchValue = string.Empty;
-    public int ExperienceCategory = 3;
-    public int? experienceCategoryId = null;
-    public string addToFavorites = "images/favorites/experience-heart-default.svg";
-    private bool isLogin { get; set; } = false;
-
-    public bool clickButton { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
-    private ModalFinishSignUp modalFinishSignUp { get; set; }
-    private ModalPassword modalPassword { get; set; }
 
-    private int pageIndex = 0;
-    private int pageIndexPopularActivities = 1;
-    private bool isLoading = false;
-    private bool showOverlayPopularActivities = false;
-    private bool hasNoMoreRecords = false;
-    private bool hasNewMessages = false;
-    private int itemsPerPage = 20;
-    private int newMessagesCount = 0;
-    [Inject] HubConnection hubConnection { get; set; }
+    public Profile CustomerModel = new Profile();
 
-    List<ChatRoom> chatRooms = new List<ChatRoom>();
+    public List<ExperienceCategory> categories = new List<ExperienceCategory>();
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public bool? IsNewRegistered { get; set; }
+    public List<Activity> activities = new List<Activity>();
 
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "auth")]
-    public string? QueryAuth {get; set;}
+    public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "redirect")]
-    public string? QueryRedirect {get; set;}
+    public string searchValue = string.Empty;
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public bool? IsNewUser { get; set; }
+    public string buttonLabel = "Browse all";
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string? CurrentEmail { get; set; }
+    public string IsDisplay = "block";
 
-    public string Email { get; set; } = string.Empty;
+    public int experienceCategoryId = 0;
 
-    public string NewEmail { get; set; } = string.Empty;
+    int SelectedValue = 5;
 
-    public DateTime Birthday { get; set; } = DateTime.Now;
+    private string selectedSlide = "1";
 
-    private string redirectUrl {get; set;} = string.Empty;
-
-    public bool isLoginFB { get; set; } = false;
-    public bool showCategorySwiper = false;
-
-    private List<ActivityFeed> activityFeeds = new();
-    private List<ActivityFeed> popularFeeds = new();
-    private Modal? filterModal;
-
-    private Filters filters = new ();
+    private IEnumerable<AnnouncementModel> Announcements {get; set;} = Enumerable.Empty<AnnouncementModel>();
 
     protected override async Task OnInitializedAsync()
     {
-        LoadRedirectUrls();
+        //get activities randomly
+        await FetchActivities();
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
 
-        //Search in Landing Page
-        if (string.IsNullOrEmpty(landingSearch))
+        if (user != null && user.Identity.IsAuthenticated)
         {
-            await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
         }
-        else
-        {
-            searchValue = landingSearch;
-            await Search();
-        }
-        //Search by Filter
-        if (!string.IsNullOrEmpty(filterSearch))
-        {
-            int filter = int.Parse(filterSearch);
-            await Filter(filter);
-        }
-
-        await LoadSigninUser();
-        await GetFavorites();
-        showOverlayPopularActivities = false;
-
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
         if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
@@ -1801,197 +628,136 @@
                     };
             }).ToList();
         }
-        // get experience types
-        var experienceTypes = await activityApiHandler.GetExperienceTypes();
-        if (experienceTypes.Succeeded && experienceTypes.Result != null && experienceTypes.Result.IsSuccess)
-        {
-            experiencesType = experienceTypes.Result.Result.Select(i =>
-            {
-                return new ExperienceType
-                    {
-                        Id = i.Id,
-                        Name = i.Name
-                    };
-            }).ToList();
-        }
-        exptype = experiencesType.Where(a => a.Id == 2).ElementAt(0);
-        Model = new ExploreModel
-            {
-                ExperienceCategories = categories,
-                ExperienceTypes = experiencesType
-            };
 
-        NavigationManager.LocationChanged += LocationChanged;
+        await LoadAnnnouncements();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-            await LoadWelcomeDialog();
-        }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
-        await InitializeSwiper();
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+            await GetFavorites();
 
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        //Check if login via FB
-        if (uri.AbsolutePath.Contains("facebook-login"))
-        {
-            if (IsNewUser == true)
-            {
-                isLoginFB = true;
-                await signinModal.Show();
-            }
-            else
-            {
-                await fbUpdateModal.Show();
-            }
+            await InitAnnouncementSwiper();   
         }
         else
         {
-            var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
-            var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
-            try
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
+            await GetFavorites();
+        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+    }
+
+    private async Task InitAnnouncementSwiper()
+    {
+        await Task.Delay(2000);
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.landing.announcement.initSwiper", ".announcement-swipper");
+    }
+
+    private async Task FetchActivities()
+    {
+        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
             {
-                if (userSuccess && tokenSuccess)
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true,
+                IncludeExperienceTypes = true,
+                IncludeExperienceCategories = true,
+                IncludeSubCategories = true,
+                IsActive = true,
+                PageIndex = 1,
+                CountPerPage = 8,
+                ExperienceCategoryId = experienceCategoryId,
+                SearchValue = searchValue,
+                IncludeCustomer = true,
+                IncludeStudents = true,
+                IsDeactivated = false,
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted,
+                IncludeReviews = true,
+                IncludeTickets = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            if (ActivityListData.Result.Result.Count() > 0)
+            {
+                activities = ActivityListData.Result.Result.Select(r =>
                 {
-                    var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
+                    return new Activity
                         {
-                            Token = token,
-                            UserId = userId
-                        });
-                    if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
-                    {
-                        // invalid guid
-                        return;
-                    }
-
-                    // try to register again to check if already have account details
-                    var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
-                        {
-                            Email = verifyRes.Result.Result.Email,
-                            ValidationRoute = AppConfig.BaseUrl + "/explore"
-                        });
-                    if (!checkRegistered.Succeeded || checkRegistered.Result == null)
-                    {
-                        // error
-                        return;
-                    }
-
-                    if (checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
-                    {
-                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
-                        {
-                            if (CustomerModel.CustomerProfile != null)
+                            ActivityId = r.ActivityId,
+                            ExperienceTypeId = r.ExperienceTypeId,
+                            ExperienceType = r.ExperienceType,
+                            ExperienceCategoryId = r.ExperienceCategoryId,
+                            SubCategoryId = r.SubCategoryId,
+                            ExperienceCategory = r.ExperienceCategory,
+                            SubCategory = r.SubCategory,
+                            Title = r.Title,
+                            Description = r.Description,
+                            Price = r.Price,
+                            ScheduleIndicator = r.ScheduleIndicator,
+                            Remarks = r.Remarks,
+                            IsPublished = r.IsPublished,
+                            Address1 = r.Address1,
+                            Address2 = r.Address2,
+                            District = r.District,
+                            City = r.City,
+                            CityName = r.CityName,
+                            Subdivision = r.Subdivision,
+                            Region = r.Region,
+                            RegionName = r.RegionName,
+                            Barangay = r.Barangay,
+                            BarangayName = r.BarangayName,
+                            PostalCode = r.PostalCode,
+                            PinnedLocation = r.PinnedLocation,
+                            SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                            CustomerBringWithThem = r.CustomerBringWithThem,
+                            AdditionalRequirements = r.AdditionalRequirements,
+                            ActivityLevel = r.ActivityLevel,
+                            SkillLevel = r.SkillLevel,
+                            MinimumAge = r.MinimumAge,
+                            CanAdultsJoin = r.CanAdultsJoin,
+                            CreatedBy = r.CreatedBy,
+                            Handler = r.Handler,
+                            IsNew = r.IsNew,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                            NumberOfReviews = r.NumberOfReviews,
+                            AverageRating = r.AverageRating,
+                            ExperienceCreationType = r.ExperienceCreationType,
+                            NumberOfTickets = r.NumberOfTickets,
+                            ActivitySchedules = r.ActivitySchedules.Select(e =>
                             {
-                                Email        = CustomerModel.CustomerProfile.Email;
-                                NewEmail     = verifyRes.Result.Result.Email;
-                                Birthday     = CustomerModel.CustomerProfile.Birthdate;
-                                //Show update password modal
-                                updatePasswordModal.Show(Email, NewEmail);
-                            }
-                            else
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
+                            Images = r.Images.Select(i =>
                             {
-                                 modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
-                            }
-                        }
-                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
-                        {
-                            await modalPassword.OpenModal(verifyRes.Result.Result.Email);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                e.Message.ToString();
-            }
-        }
-
-    }
-
-    private async Task SendChatStatus()
-    {
-        if (hubConnection is not null && CustomerModel.CustomerProfile is not null && IsConnected)
-        {
-            await hubConnection.SendAsync("SendChatStatus", CustomerModel.CustomerProfile.Id);
-        }
-    }
-
-    private async Task LoadSigninUser()
-    {
-        // get user login
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var token = user.FindFirstValue("Token");
-        AuthState = user;
-
-        if (user != null && user.Identity.IsAuthenticated)
-        {
-
-            isLogin = true;
-
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                var args = result.Result.Result;
-                CustomerModel.Token = token;
-                CustomerModel.CustomerProfile = new CustomerProfile
-                    {
-                        Birthdate = args.Birthdate,
-                        Email = args.Email,
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        ProfileImg = args.ProfileImg,
-                        IsMaker = args.IsMaker,
-                        IsVerified = args.IsVerified,
-                    };
-
-                await GetChatRoomsByUserId();
-
-                if (hubConnection.State == HubConnectionState.Disconnected)
-                {
-                    try
-                    {
-                        await hubConnection.StartAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        await Task.Delay(new Random().Next(0, 5) * 1000);
-
-                        while (true)
-                        {
-                            try
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                            Owner = new CustomerProfile
                             {
-                                await hubConnection.StartAsync();
-
-                                break;
+                                IsVerified = r.Owner.IsVerified
                             }
-                            catch (ObjectDisposedException e)
-                            {
-                                await Task.Delay(new Random().Next(0, 5) * 1000);
-                            }
-                            catch
-                            {
-                                await Task.Delay(new Random().Next(0, 5) * 1000);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private async Task LoadWelcomeDialog()
-    {
-        if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
-        {
-            var customerId = CustomerModel.CustomerProfile.Id;
-            var result = await jsRuntime.InvokeAsync<Models.ResponseModel>("MyLib.Utils.cookieManager.getCookie", $"wel_dia_{customerId}");
-            if (string.IsNullOrEmpty(result.Message))
-            {
-                await WelcomeModalRef.Show();
+                        };
+                }).ToList();
             }
         }
     }
@@ -2019,26 +785,15 @@
         }
     }
 
-    private async Task AddFavoritePopularAtivity(ActivityFeed activity)
+    private async Task AddToFavorites(Activity activity)
     {
         activity.IsFavorite = !activity.IsFavorite;
-        await AddToFavorites(activity.ActivityId, activity.IsFavorite);
-    }
-
-    private async Task AddFavoriteActivity(ActivityFeed activity)
-    {
-        activity.IsFavorite = !activity.IsFavorite;
-        await AddToFavorites(activity.ActivityId, activity.IsFavorite);
-    }
-
-    private async Task AddToFavorites(int activityId, bool isFavorite)
-    {
-        if (isFavorite)
+        if (activity.IsFavorite)
         {
             //Add to Favorites
             var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
                 {
-                    ActivityId = activityId,
+                    ActivityId = activity.ActivityId,
                     CustomerId = CustomerModel.CustomerProfile.Id
                 }, CustomerModel.Token);
         }
@@ -2047,482 +802,124 @@
             //Delete to Favorites
             var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
                 {
-                    ActivityId = activityId,
+                    ActivityId = activity.ActivityId,
                     CustomerId = CustomerModel.CustomerProfile.Id
                 }, CustomerModel.Token);
         }
         await GetFavorites();
     }
 
-    private async Task CreateFavoritePopularAtivity(ActivityFeed activity)
-    {
-        activity.IsFavorite = !activity.IsFavorite;
-        await CreateFavorite(activity.ActivityId);
-    }
-
-    private async Task CreateFavoriteAtivity(ActivityFeed activity)
-    {
-        activity.IsFavorite = !activity.IsFavorite;
-        await CreateFavorite(activity.ActivityId);
-    }
-
-    private async Task CreateFavorite(int activityId)
+    private async Task CreateFavorite(Activity activity)
     {
         //Add to Favorites
         var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
             {
-                ActivityId = activityId,
+                ActivityId = activity.ActivityId,
                 CustomerId = CustomerModel.CustomerProfile.Id
             }, CustomerModel.Token);
         await GetFavorites();
-
     }
 
-    private async Task OnSkipMaker() 
+    private string GetPriceLabel(Activity activity)
     {
-        if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if (schedules.Count > 1)
         {
-            var customerId = CustomerModel.CustomerProfile.Id;
-            await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie", $"wel_dia_{customerId}", "1");
+            return $"₱ {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
         }
-    }
-
-    private async Task FetchActivities(bool isFromScroll)
-    {
-        isLoading = true;
-
-        var activityFeedRes = await activityApiHandler.ActivityFeed(new Framework.ApiCommand.ApiCore.Activity.Request.ActivityFeedArgs
+        if (schedules.Count == 1)
         {
-            CategoryId = experienceCategoryId,
-            Search = searchValue,
-            Skip = pageIndex,
-            Take = itemsPerPage,
-            ExperienceType = filters.EventType,
-            ExperienceCategory = ExperienceCategory,
-            StarReview = filters.StarReview
-        });
-
-        if (activityFeedRes.Succeeded && activityFeedRes.Result != null && activityFeedRes.Result.IsSuccess)
-        {
-            var feeds = mapper.Map<IEnumerable<ActivityFeed>>(activityFeedRes.Result.Result);
-            if (feeds.Count() > 0)
-            {
-                if (isFromScroll)
-                {
-                    activityFeeds.AddRange(feeds);
-                }
-                else
-                {
-                    activityFeeds = feeds.ToList();
-                }
-
-                pageIndex = pageIndex + feeds.Count();
-                itemsPerPage = 20;
-
-                hasNoMoreRecords = false;
-            }
-            else
-            {
-                hasNoMoreRecords = true;
-
-                if (!isFromScroll)
-                    activityFeeds = new();
-            }
+            return $"₱ {(long)schedules[0].Price}";
         }
-
-        isLoading = false;
+        return string.Empty;
     }
 
-    private async Task FetchPopularActivities(int? categoryId)
+    private void NavigateToExplorePage()
     {
-        showOverlayPopularActivities = true;
-
-        popularFeeds.Clear();
-
-        var activitiesRes = await activityApiHandler.PopularActivities(new Framework.ApiCommand.ApiCore.Activity.Request.PopularActivitiesArgs {
-            CountPerPage = 20,
-            PageIndex = 0,
-            CategoryId = categoryId
-        });
-        if(activitiesRes.Succeeded && activitiesRes.Result is not null && activitiesRes.Result.IsSuccess)
+        NavigationManager.NavigateTo("/explore");
+    }
+    private void SearchToExplorePage()
+    {
+        if (string.IsNullOrEmpty(searchValue))
         {
-            var popular = mapper.Map<IEnumerable<ActivityFeed>>(activitiesRes.Result.Result);
-            popularFeeds.AddRange(popular);
-        }
-        showOverlayPopularActivities = false;
-    }
-    
-    void UpdateSearchQuery(ChangeEventArgs e)
-    {
-        SearchQuery = e.Value.ToString();
-    }
-
-    public async Task Search()
-    {
-        experienceCategoryId = null;
-        pageIndex = 0;
-        itemsPerPage = 20;
-        await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
-
-        IsSearchPerformed = true;
-    }
-
-    public async Task Filter(int? id)
-    {
-        experienceCategoryId = id;
-        pageIndex = 0;
-        itemsPerPage = 20;
-
-        if (experienceCategoryId == 1)
-        {
-            await ShowOTE(3);
-        }
-        else {
-            await Task.WhenAll(new Task[] {FetchPopularActivities(experienceCategoryId), FetchActivities(false)});
-        }
-    }
-
-    public async Task Clear()
-    {
-        searchValue = string.Empty;
-        experienceCategoryId = null;
-        pageIndex = 0;
-        itemsPerPage = 20;
-        await FetchActivities(false);
-    }
-
-    private void NavigateToDashboard()
-    {
-        NavigationManager.NavigateTo("/maker/dashboard");
-    }
-
-    private void NavigateToAccount()
-    {
-        NavigationManager.NavigateTo("/customer/profile");
-    }
-
-    private void NavigateToCreation()
-    {
-        NavigationManager.NavigateTo("/Creation");
-    }
-
-    private void NavigateToOnboarding()
-    {
-        NavigationManager.NavigateTo("/Onboarding");
-    }
-
-    private void NavigateToHelp()
-    {
-        NavigationManager.NavigateTo("/Help");
-    }
-
-    private void NavigateToAttendance()
-    {
-        NavigationManager.NavigateTo("/maker/dashboard/attendance");
-    }
-    private void NavigateToMaterials()
-    {
-        NavigationManager.NavigateTo("/materials");
-    }
-
-    private void NavigateToMessages()
-    {
-        NavigationManager.NavigateTo("/Messages");
-    }
-
-    private void onClickMenu()
-    {
-        if (clickButton)
-        {
-            clickButton = false;
+            NavigationManager.NavigateTo("/explore");
         }
         else
         {
-            clickButton = true;
+            NavigationManager.NavigateTo($"/explore/experiences/{searchValue}");
         }
-        StateHasChanged();
     }
 
-    private string ShowMenu()
+    private void SearchByFilter(int filter)
     {
-        return clickButton ? "show" : "";
+        string filterString = filter.ToString();
+        NavigationManager.NavigateTo($"/explore/category/{filterString}");
     }
 
-    private void Logout()
+    private void NavigateToOnboardingPage()
     {
-        SendChatStatus();
-
-        try
+        NavigationManager.NavigateTo("/Onboarding");
+    }
+    private void NavigateToMaterialsPage()
+    {
+        NavigationManager.NavigateTo("/materials");
+    }
+    private Task OnChageInput(ChangeEventArgs e)
+    {
+        string text = e.Value.ToString();
+        if (string.IsNullOrEmpty(text))
         {
-            if (IsConnected)
-            {
-                hubConnection.StopAsync();
-            }
+            buttonLabel = "Browse all";
         }
-        finally
+        else
         {
-            hubConnection.DisposeAsync();
+            buttonLabel = "Explore";
         }
 
-        NavigationManager.NavigateTo("/api/account/logout", true);
+        return Task.CompletedTask;
     }
 
-    private string GetPriceLabel(string price)
+    private async Task LoadAnnnouncements()
     {
-        string result = "₱ 0.00";
-        decimal fromAmount = 0;
-        decimal toAmount = 0;
-        try
+        var result = await systemApiHandler.GetAnnouncements();
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            var prices = price.Split("/").Where(s => !string.IsNullOrEmpty(s)).ToArray();
-            if(prices.Length > 0)
-            {
-                var amountPrice = prices[0].Trim().Split("-").Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                if(amountPrice.Length > 0)
-                {
-                    var trimmed = amountPrice[0].Trim().Split("PHP").Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                    fromAmount = Convert.ToDecimal(trimmed[0].Trim());
-                }
-                if(amountPrice.Length > 1)
-                {
-                    toAmount = Convert.ToDecimal(amountPrice[1].Trim());
-                }
-            }
-            if(toAmount > 0) result = $"₱ {string.Format("{0}", (long)fromAmount)} - {string.Format("{0}", (long)toAmount)}";
-            else result = $"₱ {string.Format("{0}", (long)fromAmount)}";
-            return result;
-        }
-        catch(Exception)
-        {
-            return result;
+            Announcements = result.Result.Result.Select(a => new AnnouncementModel {
+                ButtonLabel = a.ButtonLabel,
+                Description = a.Description,
+                HasButtonAction = !string.IsNullOrEmpty(a.ButtonLabel) && !string.IsNullOrEmpty(a.Link),
+                Id = a.Id,
+                Link = a.Link,
+                Status = a.Status,
+                Title = a.Title
+            });
         }
     }
-
-    private string SetPlaceholderStyle(bool isDisplayed)
-    {
-        if (isDisplayed) return "display:flex";
-        return "display:none";
-    }
-
-    private string SetActivitiesStyle(bool isDisplayed)
-    {
-        if (isDisplayed) return "display:none";
-        return "display:block";
-    }
-
-    private async Task InitializeSwiper()
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
-    }
-
-    private IList<string> GetKeyWords()
-    {
-        IList<string> keywords = new List<string>
-        {
-            "piano lessons",
-            "voice lessons",
-            "football coach",
-            "football lessons",
-            "art lessons",
-            "art class",
-            "cooking sessions",
-            "cooking lessons",
-            "programming tutorial",
-            "programming skill",
-            "basketball clinic",
-            "basketball coach",
-            "SPED teaching",
-            "SPED lessons",
-            "guitar lessons",
-            "guitar class",
-            "math tutorial",
-            "fun learning activities",
-            "piano lessons for kids",
-            "voice lessons for kids",
-            "football coach for kids",
-            "football lessons for kids",
-            "art lessons for kids",
-            "art class for kids",
-            "cooking sessions for kids",
-            "cooking lessons for kids",
-            "programming tutorial for kids",
-            "programming skill for kids",
-            "basketball clinic for kids",
-            "basketball coach for kids",
-            "SPED teaching for kids",
-            "SPED lessons for kids",
-            "guitar lessons for kids",
-            "guitar class for kids",
-            "math tutorial for kids",
-            "fun learning activities for kids",
-            "piano lessons near me",
-            "voice lessons near me",
-            "football coach near me",
-            "football lessons near me",
-            "art lessons near me",
-            "art class near me",
-            "cooking sessions near me",
-            "cooking lessons near me",
-            "programming tutorial near me",
-            "programming skill near me",
-            "basketball clinic near me",
-            "basketball coach near me",
-            "SPED teaching near me",
-            "SPED lessons near me",
-            "guitar lessons near me",
-            "guitar class near me",
-            "math tutorial near me",
-            "fun learning activities near me",
-            "piano lessons online",
-            "voice lessons online",
-            "football coach online",
-            "football lessons online",
-            "art lessons online",
-            "art class online",
-            "cooking sessions online",
-            "cooking lessons online",
-            "programming tutorial online",
-            "programming skill online",
-            "basketball clinic online",
-            "basketball coach online",
-            "SPED teaching online",
-            "SPED lessons online",
-            "guitar lessons online",
-            "guitar class online",
-            "math tutorial online",
-            "fun learning activities online"
-        };
-        return keywords;
-    }
-
-    private async Task GetChatRoomsByUserId()
-    {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var token = user.FindFirstValue("Token");
-
-        var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
-            {
-                UserId = CustomerModel.CustomerProfile.Id
-            }, token);
-
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-        {
-            chatRooms = result.Result.Result.Select(c => new ChatRoom
-                {
-                    ChatRoomId = c.ChatRoomId,
-                    FromUserId = c.FromUserId,
-                    DateCreated = c.DateCreated,
-                    FromFirstName = c.FromFirstName,
-                    FromLastName = c.FromLastName,
-                    Message = c.Message,
-                    ToFirstName = c.ToFirstName,
-                    ToLastName = c.ToLastName,
-                    ToUserId = c.ToUserId,
-                    FromProfilePath = c.FromProfilePath,
-                    ToProfilePath = c.ToProfilePath,
-                    FromConnectionId = c.FromConnectionId,
-                    ToConnectionId = c.ToConnectionId,
-                    HasNewMessage = c.HasNewMessage,
-                    FromProfileLink = c.FromProfileLink
-                }).ToList();
-
-            hasNewMessages = chatRooms.Any(c => c.HasNewMessage);
-            newMessagesCount = chatRooms.Count(c => c.HasNewMessage);
-        }
-    }
-
-    void LocationChanged(object sender, LocationChangedEventArgs e)
-    {
-    }
-
-    void IDisposable.Dispose()
-    {
-        // Unsubscribe from the event when our component is disposed
-        NavigationManager.LocationChanged -= LocationChanged;
-    }
-
-    private IDictionary<string, string> redirectUrls = new Dictionary<string,string>();
-
-    private void LoadRedirectUrls()
-    {
-        redirectUrls.Add("messages","/Messages");
-    }
-
-    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
-
-    private string DetailsUrl(string handler, int xpCreationType) 
-    {
-        string url = string.Empty;
-        if(xpCreationType == 3) {
-            url = $"explore/ote/{handler}";
-        }
-        else if (xpCreationType == 1){
-            url = $"explore/{handler}";
-        }
-        return url;
-    }
-
     public int RoundDownToNearestMultiple(int number)
     {
         int roundingFactor = IdentifyRoundingFactor(number);
         return number < 10 ? number : (int)(Math.Floor((double)number / roundingFactor) * roundingFactor);
     }
-
     public int IdentifyRoundingFactor(int number)
     {
         return (Math.Abs(number) >= 1000) ? 1000 :
-               (Math.Abs(number) >= 100)  ? 100 :
+               (Math.Abs(number) >= 100) ? 100 :
                                             10;
     }
 
-    public async Task OpenFilter() => await filterModal?.Show();
-
-    public async Task CloseFilter() => await filterModal.Close(CloseReason.UserClosing);
-
-    public string StarReviewBtnClass(int star)
+    public void DisplayAnnouncement()
     {
-        if(star == filters.StarReview)
-        {
-            return "selected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
-        }
-        
-        return "unselected d-flex align-items-center px-md-3 py-md-2 px-2 py-1 me-2 me-2 mb-2";
+        IsDisplay = "none";
     }
 
-    public async Task CustomFilters()
+    record AnnouncementModel
     {
-        experienceCategoryId = null;
-        pageIndex = 0;
-        itemsPerPage = 20;
-
-        await Task.WhenAll(new Task[] { FetchActivities(false)});
-        await CloseFilter();
-    }
-
-    private class Filters 
-    {
-        public int? EventType {get; set;}
-        public int? StarReview {get; set;}
-    }
-
-    public async Task ShowOTE(int ID)
-    {
-        ExperienceCategory = ID;
-        pageIndex = 0;
-
-        if (ExperienceCategory == 3)
-        {
-            showCategorySwiper = false;
-            await Filter(null);
-            await FetchActivities(true);
-        }
-        else
-        {
-            showCategorySwiper = true;
-            await Filter(null);
-            await FetchActivities(false);
-        }
-
-        await FetchActivities(false);
+        public int Id {get; set;}
+        public string Title {get; set;}
+        public string Description {get; set;}
+        public string ButtonLabel {get; set;}
+        public string Link {get; set;}
+        public bool HasButtonAction {get; set;}
+        public string Status {get; set;}
     }
 }
