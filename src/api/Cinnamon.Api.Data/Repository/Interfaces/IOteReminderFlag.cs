@@ -7,4 +7,6 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 public interface IOteReminderFlag : IGenericEntity<OteReminderFlag>
 {
     Task<AppResult<IEnumerable<OteForReminderDTO>>> GetEventsForReminder();
+
+    Task<AppResult<IEnumerable<CustomersNeedToRemindDTO>>> CustomersToRemind(int activityId, int oteDateId);
 }
