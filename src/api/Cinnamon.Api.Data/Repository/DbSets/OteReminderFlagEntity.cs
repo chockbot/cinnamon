@@ -131,4 +131,64 @@ public class OteReminderFlagEntity : GenericEntity<OteReminderFlag>, IOteReminde
             return AppResult<IEnumerable<CustomersNeedToRemindDTO>>.CreateFailed(ex, "An error occured when getting customers for reminder.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<OteForReminderDTO>>> GetEventsForThankYou()
+    {
+        try
+        {
+            var dateString = DateTime.Now.ToString("yyyy-MM-dd");
+
+            string query = "select od.\"Id\" \"DateId\", ac.\"Id\" \"ActivityId\", od.\"DateStart\", od.\"DateEnd\", " +
+                                "ac.\"Title\", ac.\"Description\", cs.\"FirstName\", cs.\"LastName\", cs.\"Email\" " +
+                            "from public.\"OteDates\" od " +
+                            "join public.\"OteSchedules\" os " +
+                                "on os.\"Id\" = od.\"OteScheduleId\" " +
+                            "join public.\"Activities\" ac " +
+                                "on ac.\"Id\" = os.\"ActivityId\" " +
+                            "join public.\"Customers\" cs " +
+                                "on cs.\"Id\" = ac.\"CreatedBy\" " +
+                            "where od.\"DateEnd\" != '-infinity' and " +
+                                "( " +
+                                    "Date(od.\"DateEnd\") >= (Date('" + dateString + "') - Interval '7 DAY') and " +
+		                            "Date(od.\"DateEnd\") <= (Date('" + dateString + "') - Interval '1 DAY') " +
+                                ") ";
+            
+            IList<OteForReminderDTO> listResult = new List<OteForReminderDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
+
+				applicationContext.Database.OpenConnection();
+
+				using (var dr = await command.ExecuteReaderAsync())
+				{
+					if (dr.HasRows)
+					{
+						var dt = new DataTable();
+						dt.Load(dr);
+
+						listResult = dt.AsEnumerable().Select(item => new OteForReminderDTO
+						{
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            DateId = Convert.ToInt32(item["DateId"]),
+                            DateStart = Convert.ToDateTime(item["DateStart"]),
+                            Description= item["Description"].ToString() ?? string.Empty,
+                            ProviderEmail = item["Email"].ToString() ?? string.Empty,
+                            ProviderFirstName = item["FirstName"].ToString() ?? string.Empty,
+                            ProviderLastName = item["LastName"].ToString() ?? string.Empty,
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            DateEnd = Convert.ToDateTime(item["DateEnd"])
+						}).ToList();
+					}
+				}
+			}
+
+            return AppResult<IEnumerable<OteForReminderDTO>>.CreateSucceeded(listResult, "Successfully get event for reminder.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<OteForReminderDTO>>.CreateFailed(ex, "An error occured when getting event for reminder.");
+        }
+    }
 }

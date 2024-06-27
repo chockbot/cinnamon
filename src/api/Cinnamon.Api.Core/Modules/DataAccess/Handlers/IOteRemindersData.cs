@@ -13,4 +13,6 @@ public interface IOteRemindersData
     Task<AppResult<GetEventsForReminderResult>> GetEventsForReminder();
 
     Task<AppResult<GetCustomersToRemindResult>> GetCustomersToRemind(GetCustomersToRemindArgs args);
+
+    Task<AppResult<GetEventsForReminderResult>> GetEventsForThankYou();
 }

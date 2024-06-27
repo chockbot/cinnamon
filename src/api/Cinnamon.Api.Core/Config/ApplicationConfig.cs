@@ -14,4 +14,5 @@ public class ApplicationConfig
     public ExpiringStudentNotification ExpiringActivityNotification { get; set; }
     public ActivitySummary ActivitySummary {get; set;}
     public EventReminder EventReminder {get; set;}
+    public EventThankYou EventThankYou {get; set;}
 }
