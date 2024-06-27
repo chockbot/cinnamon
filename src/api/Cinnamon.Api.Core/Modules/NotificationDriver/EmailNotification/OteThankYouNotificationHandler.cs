@@ -5,6 +5,7 @@ using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Interactors;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Flurl;
 
 namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification;
 
@@ -30,7 +31,8 @@ public class OteThankYouNotificationHandler : IOteThankYouNotificationHandler
     {
         try
         {
-            var emailBody = helper.GetTemplate(args.EventName, args.Subject, args.Body, args.CustomerName);
+            var link = config.FrontendUrl.AppendPathSegment($"Event-Feedback/{args.Handler}");
+            var emailBody = helper.GetTemplate(args.EventName, args.Subject, args.Body, args.CustomerName, link);
             
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {
