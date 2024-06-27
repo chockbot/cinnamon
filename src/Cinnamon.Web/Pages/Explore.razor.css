@@ -3,6 +3,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.footer-container-wider.align-items-footer {
+  display: none;
+}
+
 .line-divider {
   border-bottom: 1px solid #E8E8E8;
   margin-top: 40px;
@@ -31,6 +35,13 @@
 .profile-img-desktop {
   width: 45px;
   height: 45px;
+}
+
+.app-name-footer {
+  color: var(--primary);
+  font-family: "Backline";
+  font-size: 30px;
+  text-decoration: none;
 }
 /*test area */
 
@@ -706,6 +717,7 @@
 
 .footer-final-social-media {
   display: flex;
+  align-items: center;
 }
 
 .footer-final-social-media .fa-facebook,
@@ -1456,6 +1468,10 @@ img.img-icon {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 425px) {
+
+  .app-name-footer {
+    font-size: 25px;
+  }
 
   .event-organizer-info-title.activity-provider-switch {
     font-size: 30px;
@@ -2658,6 +2674,7 @@ img.img-icon {
 
   .footer-final-social-media {
     display: flex;
+    align-items: center;
     flex-direction: row;
     align-items: end;
   }
@@ -3551,8 +3568,18 @@ img.img-icon {
   }
 }
 
+@media (min-width: 1441px){
+  .footer-container {
+    display: none;
+  }
+
+  .footer-container-wider.align-items-footer {
+    display: flex;
+  }
+}
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+
   .btn-login {
     height: 40px;
     width: 190px;
