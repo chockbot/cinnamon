@@ -32,7 +32,7 @@ public class OnlineEventRepository : IOnlineEventRepository
         }
         catch (Exception ex)
         {
-            return AppResult<bool>.CreateFailed(ex, "An error occured in deleting many online event");
+            return AppResult<bool>.CreateFailed(ex, "An error occured in deleting online event");
         }
     }
 }
