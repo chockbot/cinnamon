@@ -57,7 +57,7 @@
                 </div>
                 <div class="mt-2">
                     <Button Clicked="() => MessageProvider(provider.Id)" class="message-me-button">
-                        Message Me
+                        <span>Message Me</span>
                     </Button>
                 </div>
             </div>
@@ -94,7 +94,9 @@
                             <div class="calendar-section">
                                 <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
                                                                             ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
+                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">
+                                    <span>Check Availability</span>
+                                </Button>
                             </div>
                         </div>
                         @if(IsOnWaitlist && activity.IsCapacity && activity.IsOpen)
@@ -149,7 +151,7 @@
                                     <p class="close-text">You're on the Waitlist</p>
                                 </div>
                                 <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@ProfileEmail</a></span>. We will let you know if you are admitted.</p>
-                                <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave">you can leave the waitlist</a></span>.</p>
+                                <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
                             </div>
                         }
                         else
@@ -296,13 +298,17 @@
                                 if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">Join Waitlist</button>
+                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
+                                            <span>Join Waitlist</span>
+                                        </button>
                                     </div>
                                 }
                                 else
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">Buy Ticket</button>
+                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
+                                             <span>Buy Ticket</span>
+                                        </button>
                                     </div>
                                 }
                             }
@@ -361,6 +367,15 @@
 
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
 <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+           OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Leave Waitlist</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to leave the waitlist?</p>
+    </BodyContent>
+</ConfirmDialog>
 
 @code
 {
@@ -375,6 +390,7 @@
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
     private ImageViewer imageViewer;
+    private ConfirmDialog confirmDialogRef { get; set; }
     private bool IsInclusivePricing {get; set;}
     private bool isOpenMobileCalculator {get; set;}
     private bool isShowPreview = false;
@@ -391,6 +407,7 @@
     private DateTime selectedDateStart;
     private int SelectedScheduleId { get; set; }
     private IEnumerable<TicketItem> otesItems { get; set; }
+    private List<int> WaitlistIds = new List<int>();
     private int ticketCount { get; set; }
     private string stringMaxTicket { get; set; }
     private bool IsLimit { get; set; }
@@ -956,8 +973,41 @@
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
             IsOnWaitlist = waitlists.Result.Result.Any(a => a.CustomerId == ProfileId);
+            var oteWaitlistDTOs = waitlists.Result.Result.Where(a => a.CustomerId == ProfileId);
+            foreach (var item in oteWaitlistDTOs)
+            {
+                WaitlistIds.Add(item.Id);
+            }
         }
     }
+    private async Task RemoveFromWaitlist()
+    {
+        bool allSucceeded = true;
+        foreach (var waitlistId in WaitlistIds)
+        {
+            var removeWaitlist = await activityHandler.DeleteOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOteWaitlistArgs
+                {
+                    Id = waitlistId
+                }, token);
+
+            if (!(removeWaitlist.Succeeded && removeWaitlist.Result is not null && removeWaitlist.Result.IsSuccess))
+            {
+                allSucceeded = false;
+            }
+        }
+        if (allSucceeded)
+        {
+            //Add Email
+            WaitlistIds.Clear();
+            await LoadWaitlist();
+            await NotificationService.Success("You're removed from the waitlist.", "Success");
+        }
+        else
+        {
+            await NotificationService.Error("Failed to remove one or more items from waitlist.", "Error");
+        }
+    }
+
 
     private async Task JoinWaitlist()
     {
@@ -999,13 +1049,26 @@
             },token);
             if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
             {
+
+                //Add Email
                 await NotificationService.Success("Successfully added to waitlist.", "Success");
                 await LoadWaitlist();
             }
         }
+        else 
+        {
+            await NotificationService.Error("This event is sold out!", "Sold Out");
+        }
+    }
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            await RemoveFromWaitlist();
+        }
         else
         {
-            await NotificationService.Error("This event is sold out!");
+            await confirmDialogRef.Close();
         }
     }
 
