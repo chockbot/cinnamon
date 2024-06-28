@@ -73,5 +73,25 @@ public class OteWaitlistRepository : IOteWaitlistRepository
         throw new NotImplementedException();
     }
 
-   
+    public async Task<AppResult<bool>> DeleteOteWaitlist(int Id)
+    {
+        try
+        {
+            var oteWaitlist = await dataStore.OteWaitlist.GetByIdAsync(Id);
+            if (oteWaitlist.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("No ote waitlist to delete"), "No ote waitlist to delete");
+            }
+            var result = await dataStore.OteWaitlist.Remove(oteWaitlist.Result);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted ote waitlist");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured in deleting ote waitlist");
+        }
+    }
 }

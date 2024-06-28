@@ -57,4 +57,24 @@ public class OteWaitlistController : ControllerBase
             return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("DeleteOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOteWaitlistResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult>DeleteOteWaitlist([FromBody] DeleteOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await oteWaitlistRepository.DeleteOteWaitlist(args.Id);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteOteWaitlistResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
