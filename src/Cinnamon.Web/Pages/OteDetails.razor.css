@@ -124,7 +124,7 @@ a {
     line-height: normal;
 }
 ::deep .check-availability-button {
-    width: 209px;
+    width: 210px;
     height: 50px;
     border-radius: 12px;
     background: #34A853;
@@ -133,6 +133,50 @@ a {
     font-size: 18px;
     font-weight: 700;
 }
+::deep .check-availability-button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+    ::deep .check-availability-button span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+::deep .check-availability-button:hover span {
+    padding-right: 20px;
+}
+
+    ::deep .check-availability-button:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+::deep .check-availability-button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.btn-join-waitlist {
+    border-radius: 12px;
+    background: #279BE1;
+    width: 90%;
+    padding: 14px;
+    color: #FFF;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+}
+
 .prices-title {
     margin-top: 23px;
     color: #343D4C;
@@ -221,6 +265,33 @@ a {
     line-height: normal;
     border: none;
 }
+/*Transition*/
+.btn-buy-ticket span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+    .btn-buy-ticket span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+.btn-buy-ticket:hover span {
+    padding-right: 20px;
+}
+    .btn-buy-ticket:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+.btn-buy-ticket:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
 .btn-join-waitlist {
     border-radius: 12px;
     background: #279BE1;
@@ -234,6 +305,37 @@ a {
     line-height: normal;
     border: none;
 }
+/*Transition*/
+.btn-join-waitlist span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+    .btn-join-waitlist span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+.btn-join-waitlist:hover span {
+    padding-right: 20px;
+}
+
+    .btn-join-waitlist:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.btn-join-waitlist:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
 .btn-close-ticket {
     border-radius: 12px;
     width: 90%;
@@ -320,6 +422,31 @@ svg{
     border-radius: 8px;
     border: 1px solid #343D4C;
     background: #FFF;
+}
+::deep .message-me-button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+    ::deep .message-me-button span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+::deep .message-me-button:hover span {
+    padding-right: 20px;
+}
+    ::deep .message-me-button:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+::deep .message-me-button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 .details-text {
     font-family: Nunito;
@@ -669,7 +796,7 @@ svg{
         height: auto;
     }
     ::deep .check-availability-button {
-        width: 35%;
+        width: 33%;
         font-size: 14px;
     }
     .ote-schedule {

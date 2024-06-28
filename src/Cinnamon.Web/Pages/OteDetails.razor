@@ -57,7 +57,7 @@
                 </div>
                 <div class="mt-2">
                     <Button Clicked="() => MessageProvider(provider.Id)" class="message-me-button">
-                        Message Me
+                        <span>Message Me</span>
                     </Button>
                 </div>
             </div>
@@ -94,7 +94,9 @@
                             <div class="calendar-section">
                                 <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
                                                                             ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
+                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">
+                                    <span>Check Availability</span>
+                                </Button>
                             </div>
                         </div>
                         @if(IsOnWaitlist && activity.IsCapacity && activity.IsOpen)
@@ -296,13 +298,17 @@
                                 if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">Join Waitlist</button>
+                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
+                                            <span>Join Waitlist</span>
+                                        </button>
                                     </div>
                                 }
                                 else
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">Buy Ticket</button>
+                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
+                                             <span>Buy Ticket</span>
+                                        </button>
                                     </div>
                                 }
                             }
