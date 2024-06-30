@@ -203,15 +203,7 @@
                                         {
                                             if ((ticketCount != 0 && IsLimit))
                                             {
-                                                if (ticketCount == activity.EventTicketLimit)
-                                                {
-                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                }
-                                                else
-                                                {
-                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                }
-
+                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
                                             }
                                             else if ((ticketCount != 0 && !IsLimit && activity.IsCapacity))
                                             {
@@ -257,17 +249,17 @@
                                                                 <span class="item-action p-2">+</span>
                                                             </Tooltip>
                                                         }
-                                                        else if (activity.EventTicketLimit == 0 && IsLimit && activity.IsCapacity)
+                                                        else if (activity.EventTicketLimit == 0 && IsLimit && activity.IsCapacity && currentLogin is not null)
                                                         {
                                                             <Tooltip Text="@stringMaxTicket" Multiline>
                                                                 <span class="item-action p-2">+</span>
                                                             </Tooltip>
                                                         }
-                                                        else if (activity.EventTicketLimit == 0 && IsLimit && !activity.IsCapacity)
+                                                        else if (activity.EventTicketLimit == 0 && IsLimit && !activity.IsCapacity && currentLogin is not null)
                                                         {
                                                             <Tooltip Text="@stringMaxTicket" Multiline>
-                                                            <span class="item-action p-2">+</span>
-                                                        </Tooltip>
+                                                                <span class="item-action p-2">+</span>
+                                                            </Tooltip>
                                                         }
                                                         else
                                                         {
@@ -488,11 +480,15 @@
                         {
                             if (ticketCount == 0)
                             {
-                                activity.EventTicketLimit = activity.EventTicketLimit;
+                                activity.EventTicketLimit = (activity.Sold == 0 && activity.CapacityCount <= activity.EventTicketLimit)
+                                       ? capacityLimit
+                                       : capacityLimit;                            
                             }
                             else
                             {
-                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                                activity.EventTicketLimit = (activity.CapacityCount <= activity.EventTicketLimit)
+                                         ? (activity.CapacityCount - ticketCount)
+                                         : (activity.EventTicketLimit - ticketCount);
                             }
                         }
                         else
