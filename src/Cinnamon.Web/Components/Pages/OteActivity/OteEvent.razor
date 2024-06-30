@@ -102,7 +102,7 @@
         <div class="event-pinned-location">
             <div id="map-pinned-location">
                 <Row VerticalGutter="10" HorizontalGutter="10">
-                    <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is12.OnDesktop" class="m-d-none">
+                    <Column ColumnSize="ColumnSize.Is12.Is12.OnTablet.Is12.OnDesktop">
                         <div class="textedit-container">
                             <svg class="textedit-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <g clip-path="url(#clip0_1975_286)">
@@ -119,7 +119,7 @@
                                 <Validations Mode="ValidationMode.Manual" Model="ModelState">
                                     <Validation>
                                         <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
-                                                  id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                                  id="19d13aa1-90c0-4232-a7bc-62a772baa223"
                                                   class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation">
                                         </TextEdit>
                                     </Validation>
@@ -130,7 +130,7 @@
                             else
                             {
                                 <TextEdit Disabled="DisableLocation" Placeholder="Search your location"
-                                          id="19d13aa1-90c0-4232-a7bc-62a772baa223" Size="Size.Medium"
+                                          id="19d13aa1-90c0-4232-a7bc-62a772baa223"
                                           class="textedit font-16 border-radius-10 m-font-16 m-border-radius-5" Role="TextRole.Text" @bind-Text="ModelState.PinnedLocation" />
                             }
 
@@ -148,35 +148,10 @@
         </div>
         <Divider />
         <Row>
-           @* <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <div class="mt-2">
-                    <label class="d-flex align-items-center mb-2">
-                        <p class="font-16 color-grey-100 mb-0 text-capitalize">cover photo</p>
-                    </label>
-                    <label for="@coverPhoto.FileId" class="cursor-pointer w-100">
-                        <InputFile id="@coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadCoverPhotoFile" />
-                        <div class='@(coverPhoto.Display ? "d-none" : "")'>
-                            <div class='empty-image-container bg-white-100'>
-                                <div class="text-center">
-                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
-                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
-                            <div class='@(coverPhoto.Display ? "col-12 mb-4 text-center" : "d-none")' id="@coverPhoto.ContainerId">
-                                <input type="hidden" id="@coverPhoto.InputDataId" name="@coverPhoto.InputDataId" class="generated-input-data" />
-                                <img id="@coverPhoto.ImageSrcId" class="w-100 border-1-dashed border-color-black-100" src="@coverPhoto.ImageSrc" alt="supporting-photo">
-                                <img class="mt-2 cursor-pointer" @onclick="DeleteCoverPhoto" src="images/ote/trashcan-icon.png" alt="delete">
-                            </div>
-                        </Row>
-                    </label>
-                </div>
-            </Column>*@
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                 <div class="mt-2">
                     <label class="d-flex align-items-center mb-2">
-                        <p class="font-16 color-grey-100 mb-0 text-capitalize">supporting photo(optional)</p>
+                        <p class="font-16 color-black-100 mb-0 text-capitalize">seat plan(optional)</p>
                     </label>
                     <label class="cursor-pointer w-100">
                         <InputFile id="@setplanPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="LoadSetplanPhotoFile" />

@@ -14,6 +14,14 @@
 <section class="ote-pricing-wrapper">
     @*Ticket Limit*@
     <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div id="error-message-container" class="mb-4 invalid is-invalid">
+                <ul id="error-list" class="fw-bold mb-0">
+                    @((MarkupString)errorMessage)
+                </ul>
+            </div>
+        }
         <Field>
             <FieldLabel>
                 <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -366,6 +374,7 @@
     private ModalTicketPricing modalTicketPricing = new();
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool isEditing = false;
+    public string errorMessage = string.Empty;
 
     private async Task NextClick()
     {
@@ -386,11 +395,21 @@
     public async Task<bool> FieldValid()
     {
         bool isSetLimit = true;
+        bool checkTicket = true;
         if(ModelState.IsLimit == 2)
         {
             isSetLimit = ModelState.EventTicketLimit != 0;
         }
-        bool valid = isSetLimit;
+        checkTicket = modelPricingList.Pricings.Count != 0 ? true : false;
+        if (!checkTicket)
+        {
+            StateHasChanged();
+            await Task.Delay(300);
+            errorMessage = "<li>Please add ticket/s to proceed.</li>";
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+            return false;
+        }
+        bool valid = isSetLimit && checkTicket;
         showErrors = true;
         StateHasChanged();
         await Task.Delay(300); // add delay to populate is-invalid class
@@ -398,6 +417,7 @@
         {
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
         }
+        errorMessage = string.Empty;
         return valid;
     }
 
