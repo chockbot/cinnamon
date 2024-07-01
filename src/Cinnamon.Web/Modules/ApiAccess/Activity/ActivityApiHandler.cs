@@ -1353,6 +1353,7 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
         }
     }
+    
     public async Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token)
     {
         try
