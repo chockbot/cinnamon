@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Models.Layout;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components;
+@using Microsoft.AspNetCore.SignalR.Client;
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler;
@@ -13,7 +14,6 @@
     <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
     <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
         <LayoutSiderContent>
-            
             @if (Model.IsAuthenticated)
             {
                 if (Model.Profile != null && Model.Profile.IsMaker)
@@ -22,30 +22,39 @@
                         
                         <li class="nav-item">
                             <div class="nav-link item-link sidebar-header">
-                                <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
+                               @* <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>*@
                                 <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
                                     <span class="app-name" id="angelo">Cinnamon</span>
                                 </a>
                             </div>
                         </li>
+                        <Divider/>
+                        <li class="experiences-title">
+                            <label>Main</label>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
+                                <img class="icon-home" src="images/Dashboard Icon/dashboard-icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
+                            </a>
+                        </li>
                         <li class="experiences-title">
                             <label>Experiences</label>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
-                                <img class="icon-home" src="images/Dashboard Icon/dashboard icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToEvents">
+                                <img class="icon-home" src="images/Dashboard Icon/experience-icon.png"> <span class="ms-1 d-sm-inline nav-text">My Events</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link activities-link" @onclick="ToggleCollapse">
-                                <img class="icon-home" src="images/Dashboard Icon/my-activities-icon.png"> 
+                                <img class="icon-home" src="images/Dashboard Icon/experience-icon.png">
                                 <span class="ms-1 d-sm-inline nav-text">My Activities</span>
                                 <i class="fas @GetArrowIcon() arrow-icon"></i>
                             </a>
                             <ul class="submenu" style="display:@GetSubMenuDisplay()">
                                 <li class="sub-nav-link">
                                     <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
-                                        <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                                        <img class="icon-home" src="images/Dashboard Icon/schedule.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
                                     </a>
                                 </li>
                                 <li class="sub-nav-link">
@@ -55,18 +64,13 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToEvents">
-                                <img class="icon-home" src="images/Dashboard Icon/my-events-icon.png"> <span class="ms-1 d-sm-inline nav-text">My Events</span>
-                            </a>
-                        </li>
 
 
                         <li class="experiences-title">
                             <label>Others</label>
                         </li>
 
-                        <li class="nav-item messages-item">
+                        @*<li class="nav-item messages-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToMessages">
                                 <img class="icon-home" src="images/Dashboard Icon/email.svg"> <span class="ms-1 d-sm-inline nav-text">Messages</span>
                                 @if (hasNewMessages)
@@ -75,10 +79,10 @@
                                     </span>
                                 }
                             </a>
-                        </li>
+                        </li>*@
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToCoupons">
-                                <img class="icon-promotion" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Coupons</span>
+                                <img class="icon-home" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Coupons</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -96,7 +100,7 @@
                                 <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        @*<li class="nav-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToPremium">
                                 <img class="icon-home" src="images/Dashboard Icon/premium icon.png"> <span class="ms-1 d-sm-inline nav-text">Premium</span>
                             </a>
@@ -105,16 +109,22 @@
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToHelp">
                                 <img class="icon-home" src="images/Dashboard Icon/help.png"> <span class="ms-1 d-sm-inline nav-text">Help</span>
                             </a>
-                        </li>
+                        </li>*@
                     </ul>
                 }
             }
-            <div class="contact">
-                <a @onclick="NavigateToContact" data-bs-toggle="collapse" class="nav-link align-middle contact-box">
-                    <img src="images/Dashboard Icon/phone.png" alt="hugenerd" width="30" class="rounded-circle">
-                    <span class=" d-sm-inline mx-1">Contact Us</span>
-                </a>
-            </div>
+            <LayoutFooter>
+                <div class="contact">
+                    <a @onclick="NavigateToContact" data-bs-toggle="collapse" class="nav-link align-middle contact-box">
+                        <img src="images/Dashboard Icon/phone.png" alt="hugenerd" class="phone-icon">
+                        <span class=" d-sm-inline mx-1">Contact Us</span>
+                    </a>
+                    <a @onclick="Logout" data-bs-toggle="collapse" class="nav-link align-middle contact-box">
+                        <img src="images/Dashboard Icon/log-out.png" alt="hugenerd" class="phone-icon">
+                        <span class=" d-sm-inline mx-1">Logout</span>
+                    </a>
+                </div>
+            </LayoutFooter>
         </LayoutSiderContent>
     </LayoutSider>
     <Layout>
@@ -157,6 +167,8 @@
     private bool IsShowSidebar {get; set;} = false;
 
     List<ChatRoom> chatRooms = new List<ChatRoom>();
+
+    [Inject] HubConnection hubConnection { get; set; }
 
     private bool hasNewMessages = false;
 
