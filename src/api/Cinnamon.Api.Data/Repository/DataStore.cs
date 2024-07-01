@@ -129,6 +129,8 @@ public class DataStore : IDataStore
     
     public IOteReminderFlag OteReminderFlag => new OteReminderFlagEntity(applicationContext);
 
+    public IProviderCustomQuestion ProviderCustomQuestion => new ProviderCustomQuestionEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

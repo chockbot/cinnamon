@@ -64,6 +64,7 @@ public interface IDataStore
     IDynamicEmailTemplate DynamicEmailTemplate {get;}
     IOteWaitlist OteWaitlist { get;}
     IOteReminderFlag OteReminderFlag {get;}
+    IProviderCustomQuestion ProviderCustomQuestion {get;}
     
     Task EnsureMigrate();
 

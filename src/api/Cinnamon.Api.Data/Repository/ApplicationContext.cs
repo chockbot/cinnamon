@@ -86,6 +86,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<OteSharedLink> OteSharedLinks {get; set;}
     
     public DbSet<OteOnlineEvent> OteOnlineEvent { get; set;}
+
+    public DbSet<ProviderCustomQuestion> ProviderCustomQuestions {get; set;}
     
     // new disbursement flow
     public DbSet<Disbursement> Disbursements {get; set;}
@@ -418,6 +420,10 @@ public class ApplicationContext : IdentityDbContext
         // for ote reminder flag
         modelBuilder.Entity<OteReminderFlag>()
             .HasIndex("ActivityId", "OteDateId");
+
+        // for provider custom questions
+        modelBuilder.Entity<ProviderCustomQuestion>()
+            .HasIndex("ActivityId", "ProviderId");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
