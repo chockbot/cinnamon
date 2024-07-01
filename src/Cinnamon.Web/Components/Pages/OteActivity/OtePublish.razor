@@ -68,7 +68,7 @@
                     {
                         <div class="ticket-details">
                             <p class="event-details">@item.Name</p>
-                            <p class="event-details">₱ @item.Price?.ToString("#,###")</p>
+                            <p class="event-details"> @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</p>
                         </div>
                     }
                 </div>
