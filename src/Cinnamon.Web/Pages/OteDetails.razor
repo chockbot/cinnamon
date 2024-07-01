@@ -482,17 +482,16 @@
                             {
                                 if (activity.Sold == 0)
                                 {
-                                    activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
+                                    activity.EventTicketLimit = capacityLimit <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
                                 }
                                 else
                                 {
-                                    activity.EventTicketLimit = capacityLimit;
+                                    activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
                                 }
-
                             }
                             else
                             {
-                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                                activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? (capacityLimit - ticketCount) : (activity.EventTicketLimit - ticketCount);
                             }
                         }
                         else
