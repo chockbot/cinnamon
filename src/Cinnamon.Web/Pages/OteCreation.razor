@@ -763,7 +763,10 @@
                     FeedbackBody          = publishData.EmailFeedback.Body,
                     FeedbackSubject       = publishData.EmailFeedback.Subject,
                     ReminderBody          = publishData.EmailReminder.Body,
-                    ReminderSubject       = publishData.EmailReminder.Subject
+                    ReminderSubject       = publishData.EmailReminder.Subject,
+                    CustomAcceptedBody    = pricing.CustomAcceptedBody,
+                    CustomDeclinedBody    = pricing.CustomDeclinedBody,
+                    CustomPendingBody     = pricing.CustomPendingBody
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
@@ -850,9 +853,31 @@
             TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteReminder.ToString()
         }, token);
 
-        await Task.WhenAll(feedbackTemplateRes, reminderTemplateRes);
+        var pendingTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OtePending.ToString()
+        }, token);
+
+        var acceptedTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteConfirmed.ToString()
+        }, token);
+
+        var declinedTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs {
+            ActivityId = oteRes.Result.Result.Id,
+            TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteDeclined.ToString()
+        }, token);
+
+        string pendingBody = string.Empty;
+        string acceptedBody = string.Empty;
+        string declinedBody = string.Empty;
+
+        await Task.WhenAll(feedbackTemplateRes, reminderTemplateRes, pendingTemplate, acceptedTemplate, declinedTemplate);
         var feedbackResult = feedbackTemplateRes.Result;
         var reminderResult = reminderTemplateRes.Result;
+        var pendingResult = pendingTemplate.Result;
+        var accpedtedResult = acceptedTemplate.Result;
+        var declinedResult = declinedTemplate.Result;
 
         var feedback = new OtePublish.ScheduleNotification {
             Body = string.Empty,
@@ -876,6 +901,21 @@
         {
             reminder.Body = reminderResult.Result.Result.Body;
             reminder.Subject = reminderResult.Result.Result.Subject;
+        }
+
+        if(pendingResult.Succeeded && pendingResult.Result is not null && pendingResult.Result.IsSuccess)
+        {
+            pendingBody = pendingResult.Result.Result.Body;
+        }
+
+        if(accpedtedResult.Succeeded && accpedtedResult.Result is not null && accpedtedResult.Result.IsSuccess)
+        {
+            acceptedBody = accpedtedResult.Result.Result.Body;
+        }
+
+        if(declinedResult.Succeeded && declinedResult.Result is not null && declinedResult.Result.IsSuccess)
+        {
+            declinedBody = declinedResult.Result.Result.Body;
         }
 
         var scheduleBookedRes = await activityApiHandler.OteBookedCount(new Framework.ApiCommand.ApiCore.Activity.Request.OteBookedCountArgs {
@@ -971,6 +1011,9 @@
                     TicketSold = totalTicketsSold
                 };
             }).ToList(),
+            CustomAcceptedBody = acceptedBody,
+            CustomDeclinedBody = declinedBody,
+            CustomPendingBody = pendingBody
         });
 
         //Schedule
