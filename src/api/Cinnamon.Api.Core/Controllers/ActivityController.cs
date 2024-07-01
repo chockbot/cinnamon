@@ -117,7 +117,8 @@ public class ActivityController : ControllerBase
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
-        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler)
+        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
+        IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler)
     {
         _logger = logger;
 
@@ -3456,6 +3457,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    
     [Route("DeleteOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteOteWaitlistResult), StatusCodes.Status200OK)]
