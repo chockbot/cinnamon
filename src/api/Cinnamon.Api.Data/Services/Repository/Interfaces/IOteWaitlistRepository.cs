@@ -9,4 +9,5 @@ public interface IOteWaitlistRepository
     Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetAllAsync();
     Task<AppResult<OteWaitlistDTO>> CreateOteWaitlist(OteWaitlistDTO oteWaitlistDTO);
     Task<AppResult<OteWaitlistDTO>> UpdateOteWaitlist(OteWaitlistDTO oteWaitlistDTO);
+    Task<AppResult<bool>> DeleteOteWaitlist(int Id);
 }

@@ -43,5 +43,6 @@ public interface IActivityData
     Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);
     Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args);
     Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args);
+    Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args);
 
 }

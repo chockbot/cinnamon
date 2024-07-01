@@ -57,7 +57,7 @@
                 </div>
                 <div class="mt-2">
                     <Button Clicked="() => MessageProvider(provider.Id)" class="message-me-button">
-                        Message Me
+                        <span>Message Me</span>
                     </Button>
                 </div>
             </div>
@@ -94,7 +94,9 @@
                             <div class="calendar-section">
                                 <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"
                                                                             ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">Check Availability</Button>
+                                <Button Clicked="ViewAvailableDates" id="ote-btn-check-avail" class="check-availability-button">
+                                    <span>Check Availability</span>
+                                </Button>
                             </div>
                         </div>
                         @if(IsOnWaitlist && activity.IsCapacity && activity.IsOpen)
@@ -149,7 +151,7 @@
                                     <p class="close-text">You're on the Waitlist</p>
                                 </div>
                                 <p class="waitlist-sub-text">A confirmation email has been sent to <span><a class="user-email">@ProfileEmail</a></span>. We will let you know if you are admitted.</p>
-                                <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave">you can leave the waitlist</a></span>.</p>
+                                <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
                             </div>
                         }
                         else
@@ -199,17 +201,13 @@
                                         </div>
                                         @foreach (var item in AvailablePriceList)
                                         {
-                                            if (ticketCount != 0 && IsLimit)
+                                            if ((ticketCount != 0 && IsLimit))
                                             {
-                                                if (ticketCount == activity.EventTicketLimit)
-                                                {
-                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                }
-                                                else
-                                                {
-                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                }
-
+                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                            }
+                                            else if ((ticketCount != 0 && !IsLimit && activity.IsCapacity))
+                                            {
+                                                stringMaxTicket = $"Available {(ticketCount == 1 ? "ticket" : "tickets")} you can purchase is {ticketCount}.";
                                             }
                                             else
                                             {
@@ -248,8 +246,20 @@
                                                         @if (activity.EventTicketLimit != 0 && currentLogin is not null)
                                                         {
                                                             <Tooltip Text="@stringMaxTicket" Multiline>
-                                                            <span class="item-action p-2">+</span>
-                                                        </Tooltip>
+                                                                <span class="item-action p-2">+</span>
+                                                            </Tooltip>
+                                                        }
+                                                        else if (activity.EventTicketLimit == 0 && IsLimit && activity.IsCapacity && currentLogin is not null)
+                                                        {
+                                                            <Tooltip Text="@stringMaxTicket" Multiline>
+                                                                <span class="item-action p-2">+</span>
+                                                            </Tooltip>
+                                                        }
+                                                        else if (activity.EventTicketLimit == 0 && IsLimit && !activity.IsCapacity && currentLogin is not null)
+                                                        {
+                                                            <Tooltip Text="@stringMaxTicket" Multiline>
+                                                                <span class="item-action p-2">+</span>
+                                                            </Tooltip>
                                                         }
                                                         else
                                                         {
@@ -257,7 +267,6 @@
                                                         }
 
                                                     </span>
-
                                                 </div>
                                             </div>
                                             <Divider />
@@ -281,13 +290,17 @@
                                 if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">Join Waitlist</button>
+                                        <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
+                                            <span>Join Waitlist</span>
+                                        </button>
                                     </div>
                                 }
                                 else
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">Buy Ticket</button>
+                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
+                                             <span>Buy Ticket</span>
+                                        </button>
                                     </div>
                                 }
                             }
@@ -346,6 +359,15 @@
 
 <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
 <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+           OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Leave Waitlist</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to leave the waitlist?</p>
+    </BodyContent>
+</ConfirmDialog>
 
 @code
 {
@@ -360,6 +382,7 @@
     private string signInReturnUrl = string.Empty;
     private ModalLogin? loginModal;
     private ImageViewer imageViewer;
+    private ConfirmDialog confirmDialogRef { get; set; }
     private bool IsInclusivePricing {get; set;}
     private bool isOpenMobileCalculator {get; set;}
     private bool isShowPreview = false;
@@ -376,10 +399,12 @@
     private DateTime selectedDateStart;
     private int SelectedScheduleId { get; set; }
     private IEnumerable<TicketItem> otesItems { get; set; }
+    private List<int> WaitlistIds = new List<int>();
     private int ticketCount { get; set; }
     private string stringMaxTicket { get; set; }
     private bool IsLimit { get; set; }
     private bool IsOnWaitlist { get; set; }
+    private int capacityLimit { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -403,6 +428,7 @@
             {
                 await LoadWaitlist();
             }
+
         }
         catch (Exception ex)
         {
@@ -412,6 +438,7 @@
 
     private async Task LoadProfile()
     {
+        ticketCount = 0;
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         if(user is not null && user.Identity.IsAuthenticated)
         {
@@ -447,7 +474,37 @@
                             ticketCount += count.Result.Result.Tickets.Count();
                         }
                     }
-                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit - ticketCount : 0;
+                    if (IsLimit)
+                    {
+                        if (activity.IsCapacity)
+                        {
+                            if (ticketCount == 0)
+                            {
+                                if (activity.Sold == 0)
+                                {
+                                    activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
+                                }
+                                else
+                                {
+                                    activity.EventTicketLimit = capacityLimit;
+                                }
+
+                            }
+                            else
+                            {
+                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                            }
+                        }
+                        else
+                        {
+                            activity.EventTicketLimit = activity.EventTicketLimit - ticketCount;
+                        }
+                    }
+                    else
+                    {
+                        activity.EventTicketLimit = capacityLimit;
+                    }
+                    ticketCount = activity.EventTicketLimit > 0 ? activity.EventTicketLimit : 0;
                 } 
             }
         }
@@ -513,10 +570,7 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= activity.Sold ? true : false;
             IsLimit                   = act.OteSchedule.EventTicketLimit != 0 ? true : false;
-
-
-
-
+            capacityLimit             = activity.CapacityCount != 0 ? activity.CapacityCount - activity.Sold : 0;
             selectedDate = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
             //selectedDate = SelectedDates.FirstOrDefault();
 
@@ -737,6 +791,7 @@
 
         NavigationManager.NavigateTo(paymentUrl);
     }
+
     private int OverallTicketCount
     {
         get 
@@ -762,6 +817,10 @@
                 return Task.CompletedTask;
             }
             if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
+            {
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && !IsLimit && currentLogin is not null && capacityLimit != 0)
             {
                 return Task.CompletedTask;
             }
@@ -873,6 +932,7 @@
         public decimal Price {get; set;}
         public string Name {get; set;}
     }
+
     private void ToggleAboutText()
     {
         showFullAbout = !showFullAbout;
@@ -902,6 +962,7 @@
             NavigationManager.NavigateTo(url);
         }
     }
+
     private async Task LoadWaitlist()
     {
         var waitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
@@ -912,8 +973,42 @@
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
             IsOnWaitlist = waitlists.Result.Result.Any(a => a.CustomerId == ProfileId);
+            var oteWaitlistDTOs = waitlists.Result.Result.Where(a => a.CustomerId == ProfileId);
+            foreach (var item in oteWaitlistDTOs)
+            {
+                WaitlistIds.Add(item.Id);
+            }
         }
     }
+    private async Task RemoveFromWaitlist()
+    {
+        bool allSucceeded = true;
+        foreach (var waitlistId in WaitlistIds)
+        {
+            var removeWaitlist = await activityHandler.DeleteOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteOteWaitlistArgs
+                {
+                    Id = waitlistId
+                }, token);
+
+            if (!(removeWaitlist.Succeeded && removeWaitlist.Result is not null && removeWaitlist.Result.IsSuccess))
+            {
+                allSucceeded = false;
+            }
+        }
+        if (allSucceeded)
+        {
+            //Add Email
+            WaitlistIds.Clear();
+            await LoadWaitlist();
+            await NotificationService.Success("You're removed from the waitlist.", "Success");
+        }
+        else
+        {
+            await NotificationService.Error("Failed to remove one or more items from waitlist.", "Error");
+        }
+    }
+
+
     private async Task JoinWaitlist()
     {
         if (!activity.IsEventSoldOut)
@@ -954,15 +1049,29 @@
             },token);
             if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
             {
+
+                //Add Email
                 await NotificationService.Success("Successfully added to waitlist.", "Success");
                 await LoadWaitlist();
             }
         }
-        else
+        else 
         {
-            await NotificationService.Error("This event is sold out!");
+            await NotificationService.Error("This event is sold out!", "Sold Out");
         }
     }
+    private async Task ConfirmDeleteChanged(bool value)
+    {
+        if (value)
+        {
+            await RemoveFromWaitlist();
+        }
+        else
+        {
+            await confirmDialogRef.Close();
+        }
+    }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }

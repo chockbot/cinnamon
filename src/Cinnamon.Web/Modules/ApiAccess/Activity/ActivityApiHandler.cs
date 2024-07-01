@@ -1375,4 +1375,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetEmailTemplateResult>.CreateFailed(ex, "An error occured when getting email template.");
         }
     }
+    
+    public async Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteOteWaitlistResult>();
+
+            return AppResult<DeleteOteWaitlistResult>.CreateSucceeded(result, "Successfully called delete online event");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
+        }
+    }
 }

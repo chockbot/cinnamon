@@ -88,6 +88,7 @@ public class ActivityController : ControllerBase
     private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
     private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
+    private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -117,49 +118,49 @@ public class ActivityController : ControllerBase
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler,
-        IEmailTemplateHandler emailTemplateHandler)
+        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler)
     {
         _logger = logger;
 
-        this.createActivityHandler = createActivityHandler;
-        this.getExperienceTypesHandler = getExperienceTypesHandler;
-        this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
-        this.getSubCategoriesHandler = getSubCategoriesHandler;
-        this.getAllActivitiesHandler = getAllActivitiesHandler;
-        this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
-        this.updateActivityHandler = updateActivityHandler;
-        this.getOwnedActivityHandler = getOwnedActivityHandler;
-        this.uploadActivityImageHandler = uploadActivityImageHandler;
-        this.getAddressHandler = getAddressHandler;
-        this.getActivityImagesHandler = getActivityImagesHandler;
-        this.getActiviesByCategoriesHandler = getActiviesByCategoriesHandler;
-        this.getActivityHandler = getActivityHandler;
-        this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
-        this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
-        this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
-        this.getOwnedActivityByHandler = getOwnedActivityByHandler;
-        this.getMakerActivitiesHandler = getMakerActivitiesHandler;
-        this.getActivityByHandler = getActivityByHandler;
-        this.getAllRegionsHandler = getAllRegionsHandler;
-        this.getAllCitiesHandler = getAllCitiesHandler;
-        this.getAllBarangaysHandler = getAllBarangaysHandler;
-        this.getPopularActivitiesHandler = getPopularActivitiesHandler;
-        this.getRefundableExperienceHandler = getRefundableExperienceHandler;
-        this.updateActivityScheduleHandler = updateActivityScheduleHandler;
-        this.deleteActivityHandler = deleteActivityHandler;
-        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
-        this.providerCreateCouponHandler = providerCreateCouponHandler;
-        this.getCouponsHandler = getCouponsHandler;
-        this.updateCouponStatusHandler = updateCouponStatusHandler;
-        this.createFavoriteHandler = createFavoriteHandler;
-        this.removeFavoriteHandler = removeFavoriteHandler;
-        this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
-        this.validateCouponCodeHandler = validateCouponCodeHandler;
-        this.updateCouponHandler = updateCouponHandler;
-        this.recommendedActivitiesHandler = recommendedActivitiesHandler;
-        this.popularActivitiesHandler = popularActivitiesHandler;
-        this.getExperienceCreationTypeHandler = getExperienceCreationTypeHandler;
-        this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
+        this.createActivityHandler                = createActivityHandler;
+        this.getExperienceTypesHandler            = getExperienceTypesHandler;
+        this.getExperienceCategoriesHandler       = getExperienceCategoriesHandler;
+        this.getSubCategoriesHandler              = getSubCategoriesHandler;
+        this.getAllActivitiesHandler              = getAllActivitiesHandler;
+        this.getOwnedActivitiesHandler            = getOwnedActivitiesHandler;
+        this.updateActivityHandler                = updateActivityHandler;
+        this.getOwnedActivityHandler              = getOwnedActivityHandler;
+        this.uploadActivityImageHandler           = uploadActivityImageHandler;
+        this.getAddressHandler                    = getAddressHandler;
+        this.getActivityImagesHandler             = getActivityImagesHandler;
+        this.getActiviesByCategoriesHandler       = getActiviesByCategoriesHandler;
+        this.getActivityHandler                   = getActivityHandler;
+        this.getActivitiesBySubCategoriesHandler  = getActivitiesBySubCategoriesHandler;
+        this.getEnrolledActivitiesHandler         = getEnrolledActivitiesHandler;
+        this.updateActivityImageOrderHandler      = updateActivityImageOrderHandler;
+        this.getOwnedActivityByHandler            = getOwnedActivityByHandler;
+        this.getMakerActivitiesHandler            = getMakerActivitiesHandler;
+        this.getActivityByHandler                 = getActivityByHandler;
+        this.getAllRegionsHandler                 = getAllRegionsHandler;
+        this.getAllCitiesHandler                  = getAllCitiesHandler;
+        this.getAllBarangaysHandler               = getAllBarangaysHandler;
+        this.getPopularActivitiesHandler          = getPopularActivitiesHandler;
+        this.getRefundableExperienceHandler       = getRefundableExperienceHandler;
+        this.updateActivityScheduleHandler        = updateActivityScheduleHandler;
+        this.deleteActivityHandler                = deleteActivityHandler;
+        this.ownerPricingInclusiveHandler         = ownerPricingInclusiveHandler;
+        this.providerCreateCouponHandler          = providerCreateCouponHandler;
+        this.getCouponsHandler                    = getCouponsHandler;
+        this.updateCouponStatusHandler            = updateCouponStatusHandler;
+        this.createFavoriteHandler                = createFavoriteHandler;
+        this.removeFavoriteHandler                = removeFavoriteHandler;
+        this.getFavoritesByCustomerHandler        = getFavoritesByCustomerHandler;
+        this.validateCouponCodeHandler            = validateCouponCodeHandler;
+        this.updateCouponHandler                  = updateCouponHandler;
+        this.recommendedActivitiesHandler         = recommendedActivitiesHandler;
+        this.popularActivitiesHandler             = popularActivitiesHandler;
+        this.getExperienceCreationTypeHandler     = getExperienceCreationTypeHandler;
+        this.getActivityScheduleTimesHandler      = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
         this.oteCreateHandler = oteCreateHandler;
         this.oteUpdateHandler = oteUpdateHandler;
@@ -184,6 +185,7 @@ public class ActivityController : ControllerBase
         this.createOteWaitlistHandler = createOteWaitlistHandler;
         this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
         this.emailTemplateHandler = emailTemplateHandler;
+        this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
     }
 
     [Route("CreateActivity")]
@@ -3452,6 +3454,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    
+    [Route("DeleteOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOteWaitlistResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult>DeleteOteWaitlist([FromBody] DeleteOteWaitlistArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOteWaitlistArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOteWaitlistResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
