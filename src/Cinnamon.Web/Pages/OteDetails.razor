@@ -216,9 +216,7 @@
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
                                                 <p class="align-items-center">
-                                                    <span class="ticket-name">
-                                                        ₱ @item.Price.ToString("#,##0")
-                                                    </span>
+                                                    <span class="ticket-name">@((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</span>
                                                 </p>
                                                 <p class="align-items-center">
                                                     @if (item.MaxSlots <= item.TicketSold)
@@ -482,17 +480,16 @@
                             {
                                 if (activity.Sold == 0)
                                 {
-                                    activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
+                                    activity.EventTicketLimit = capacityLimit <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
                                 }
                                 else
                                 {
-                                    activity.EventTicketLimit = capacityLimit;
+                                    activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
                                 }
-
                             }
                             else
                             {
-                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                                activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? (capacityLimit - ticketCount) : (activity.EventTicketLimit - ticketCount);
                             }
                         }
                         else

@@ -103,8 +103,9 @@
                             </ul>
                         </div>
                     </div>
-
-                    <p class="ticket-price">&#8369 @ticket.Price</p>
+                    <p class="ticket-price">
+                        @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
+                    </p>
                     <p class="approval">Required Approval</p>
                     <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                     <div class="form-check form-switch">
@@ -199,6 +200,21 @@
                         </FieldBody>
                     </Field>
                 </Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                        Ticket Type
+                    </FieldLabel>
+                    <FieldBody>
+                        <label class="switch-light switch-candy" onclick="">
+                            <input type="checkbox" @onchange="CheckboxChanged">
+                            <span>
+                                <span>Free</span>
+                                <span>Paid</span>
+                                <a></a>
+                            </span>
+                        </label>
+                    </FieldBody>
+                </Field>
                 <Row VerticalGutter="10">
                     <Column ColumnSize="ColumnSize.Is7">
                         <Validation>
@@ -208,7 +224,7 @@
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@isFree">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -375,6 +391,7 @@
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool isEditing = false;
     public string errorMessage = string.Empty;
+    private bool isFree = true;
 
     private async Task NextClick()
     {
@@ -555,8 +572,8 @@
     public class Pricing
     {
         [Required(ErrorMessage = "The price field is mandatory.")]
-        [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
-        public decimal? Price { get; set; } = null;
+        [Range(0, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
+        public decimal? Price { get; set; } = 0;
 
         [Required(ErrorMessage = "The max slots field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
@@ -804,5 +821,13 @@
         pricingFormValidation.ClearAll();
         isEditing = false;
         modelPricing = new Pricing();
+    }
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        isFree = !(bool)e.Value;
+        if (isFree)
+        {
+            modelPricing.Price = 0;
+        }
     }
 }
