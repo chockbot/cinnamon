@@ -656,16 +656,37 @@
             {
                 if (isEditing)
                 {
-                    var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
-                    if (existingTicket != null)
+                    if (!modelPricing.IsNew)
                     {
-                        existingTicket.Name = modelPricing.Name;
-                        existingTicket.Price = modelPricing.Price;
-                        existingTicket.MaxSlots = modelPricing.MaxSlots;
-                        existingTicket.AbsorbFees = modelPricing.AbsorbFees;
-                        await ticketModal.Hide();
-                        pricingFormValidation.ClearAll();
+                        var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
+                        if (existingTicket != null)
+                        {
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            await ticketModal.Hide();
+                            isEditing = false;
+                            modelPricing = new Pricing();
+                            pricingFormValidation.ClearAll();
+                        }
                     }
+                    else
+                    {
+                        var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.TempId == modelPricing.TempId);
+                        if (existingTicket != null)
+                        {
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            await ticketModal.Hide();
+                            isEditing = false;
+                            modelPricing = new Pricing();
+                            pricingFormValidation.ClearAll();
+                        }
+                    }
+
                 }
                 else
                 {
@@ -771,6 +792,8 @@
                 Price      = ticket.Price,
                 MaxSlots   = ticket.MaxSlots,
                 AbsorbFees = ticket.AbsorbFees,
+                IsNew      = ticket.IsNew,
+                TempId     = ticket.TempId
             };
         isEditing = true;
         await ticketModal.Show();
