@@ -115,6 +115,45 @@
         </div>
     </div>
 
+    <div class="mt-3 border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+            Registration Emails
+        </h3>
+        <p class="sub-text">
+            Customize the emails sent when a guest registers for the event and for when you approve or decline their registration.
+        </p>
+
+        <Row HorizontalGutter="10">
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnPendingEmailTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnAcceptedTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Going</p>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnDeclinedTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Declined</p>
+                </div>
+            </Column>
+        </Row>
+    </div>
+
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
 
@@ -146,6 +185,84 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+
+<Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+    <OffcanvasHeader class="px-0 py-4 bg-white-100">
+        <div class="px-3 d-flex justify-content-between position-relative w-100">
+            @if(selectedEmailTemplate == 0)
+            {
+                <img src="images/ote/tiny-clock.png" alt="clock">
+            }
+            @if(selectedEmailTemplate == 1)
+            {
+                <img src="images/ote/tiny-check.png" alt="check">
+            }
+            @if(selectedEmailTemplate == 2)
+            {
+                <img src="images/ote/tiny-close.png" alt="close">
+            }
+            <button class="btn-close" style="right: 0;" @onclick="CloseOffCanvas" />
+        </div>
+    </OffcanvasHeader>
+    <OffcanvasBody class="px-0 pt-0">
+        <Divider class="m-0" />
+        <div class="p-3">
+            @if(selectedEmailTemplate == 0)
+            {
+                <div id="pending-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Pending Approval / Waitlist Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when a guest registers for the event, notifying them that their registration is 
+                        pending approval or that they are on the waitlist.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration pending approval for the event</p>
+                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+
+            @if(selectedEmailTemplate == 1)
+            {
+                <div id="accepted-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Confirmation Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when a guest registers or when you approve a guest who is pending approval.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration confirmed for the event</p>
+                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+
+            @if(selectedEmailTemplate == 2)
+            {
+                <div id="declined-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Declined Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when you decline a guest who is pending approval or on the waitlist.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration not accepted for the event</p>
+                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+        </div>
+    </OffcanvasBody>
+    <OffcanvasFooter>
+        <div class="w-100">
+            <Divider />
+            <Button class="bg-orange-100 color-white-100 px-4 me-2">
+                Save
+            </Button>
+            <Button class="bg-grey-300 color-black-200">
+                Cancel
+            </Button>
+        </div>
+    </OffcanvasFooter>
+</Offcanvas>
 
 @*Capacity Modal*@
 <Modal @ref="capacityModal">
@@ -338,7 +455,7 @@
 </ConfirmDialog>
 
 @code
-    {
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -375,6 +492,9 @@
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool isEditing = false;
     public string errorMessage = string.Empty;
+
+    private int selectedEmailTemplate = 0;
+    private Offcanvas? offcanvas;
 
     private async Task NextClick()
     {
@@ -804,5 +924,39 @@
         pricingFormValidation.ClearAll();
         isEditing = false;
         modelPricing = new Pricing();
+    }
+
+    private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
+    {
+        e.Cancel = !(e.CloseReason == CloseReason.UserClosing);
+        return Task.CompletedTask;
+    }
+
+    private Task ShowOffcanvas()
+    {
+        return offcanvas?.Show();
+    }
+
+    private Task CloseOffCanvas()
+    {
+        return offcanvas.Close(CloseReason.UserClosing);
+    }
+
+    private Task OnPendingEmailTemplateClick()
+    {
+        selectedEmailTemplate = 0;
+        return ShowOffcanvas();
+    }
+
+    private Task OnAcceptedTemplateClick()
+    {
+        selectedEmailTemplate = 1;
+        return ShowOffcanvas();
+    }
+
+    private Task OnDeclinedTemplateClick()
+    {
+        selectedEmailTemplate = 2;
+        return ShowOffcanvas();
     }
 }
