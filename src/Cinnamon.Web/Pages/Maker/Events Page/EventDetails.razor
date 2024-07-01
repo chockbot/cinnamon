@@ -29,7 +29,7 @@
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
-                <p class="back-text">Event Details</p>
+                <p class="back-text">@activity.EventName</p>
             </div>
         </div>
         <div class="ticket-options">
@@ -40,18 +40,20 @@
                     <p class="reg-status">Open</p>
                 </div>
             </div>
-            <div class="div-option-details">
+            <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Share QR Scanner Link</p>
                 </div>
             </div>
-            <div class="div-option-details">
-                <img class="option-img" src="images/ote/add.png" alt="cover-photo">
-                <div class="option-name">
-                    <p class="registration">Scan Tickets</p>
+            <a class="verify-ticket" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+                <div class="div-option-details">
+                    <img class="option-img" src="images/ote/add.png" alt="cover-photo">
+                    <div class="option-name">
+                        <p class="registration">Scan Tickets</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         @*Tabs*@
         <section class="customer-profile-details">

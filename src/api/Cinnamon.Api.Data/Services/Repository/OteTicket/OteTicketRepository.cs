@@ -132,11 +132,13 @@ public class OteTicketRepository : IOteTicketRepository
                     Recurrences = s.Recurrences,
                     OteSchedulePricingDTO = new OteSchedulePricingDTO
                     {
-                        Name = s.OteSchedulePricingDTO.Name,
+                        Id          = s.OteSchedulePricingDTO.Id,
+                        Name        = s.OteSchedulePricingDTO.Name,
                         Description = s.OteSchedulePricingDTO.Description,
-                        MaxSlots = s.OteSchedulePricingDTO.MaxSlots,
-                        Sold = s.OteSchedulePricingDTO.Sold,
-                        Available = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold
+                        MaxSlots    = s.OteSchedulePricingDTO.MaxSlots,
+                        Sold        = s.OteSchedulePricingDTO.Sold,
+                        Available   = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
+                        Price       = s.OteSchedulePricingDTO.Price
                     }
                 };
                 return ticketDTO;

@@ -52,11 +52,13 @@ public class GetTicketDetailsHandler : IGetTicketDetailsHandler
                         Recurrences = s.Recurrences,
                         OtePricingDTO = new Framework.ApiCommand.ApiCore.DTO.Activity.OtePricingDTO
                         {
+                            Id          = s.OteSchedulePricingDTO.Id,
                             Name        = s.OteSchedulePricingDTO.Name,
                             Description = s.OteSchedulePricingDTO.Description,
                             Sold        = s.OteSchedulePricingDTO.Sold,
                             MaxSlots    = s.OteSchedulePricingDTO.MaxSlots,
-                            Available   = s.OteSchedulePricingDTO.Available
+                            Available   = s.OteSchedulePricingDTO.Available,
+                            Price       = s.OteSchedulePricingDTO.Price
                         }
                     };
                 })
