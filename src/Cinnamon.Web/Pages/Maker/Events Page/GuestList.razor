@@ -1,0 +1,357 @@
+﻿@layout EmptyLayout;
+@using ClosedXML.Excel;
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IDashboardApiHandler dashboardApiHandler
+
+<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+    <div class="customer-list">
+        <div class="col-12 customer-content">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
+                <p class="back-text">Customer List</p>
+            </div>
+        </div>
+    <div class="col-12 customer-filter">
+        <div class="col-lg-8 col-md-6 col-sm-12 col-12 justify-content-start">
+            <div class="filter-content d-flex">
+                <p class="filter-text">Show</p>
+                <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                    <SelectItem Value="10">10</SelectItem>
+                    <SelectItem Value="25">25</SelectItem>
+                    <SelectItem Value="50">50</SelectItem>
+                    <SelectItem Value="100">100</SelectItem>
+                </Select>
+                <p class="filter-text">entries</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12 col-12 search-box">
+            <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                <SelectItem Value="0">Search By</SelectItem>
+                <SelectItem Value="1">Id</SelectItem>
+                <SelectItem Value="2">Name</SelectItem>
+                <SelectItem Value="3">Email</SelectItem>
+            </Select>
+            @if (IsDisplay)
+                {
+                    <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                }
+                <button class="btn-export" @onclick="ExportToExcel">
+                    <img class="excel-icon" src="images/xls-icon.png" />
+                </button>
+            </div>
+        </div>
+        <div class="ticket-table">
+            <div class="table-list">
+                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell class="th-id">
+                                Id
+                            </TableHeaderCell>
+                            <TableHeaderCell class="th-name">
+                                Name
+                            </TableHeaderCell>
+                            <TableHeaderCell class="th-email">
+                                Email
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Ticket
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Amount
+                            </TableHeaderCell>
+                            <TableHeaderCell class="th-status">
+                                Status
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in FilteredCustomer)
+                            {
+                                <TableRow @key="item">
+                                    <TableRowCell class="tr-name">
+                                        <span>@FormattedId(item.Id)</span>
+                                    </TableRowCell>
+                                    <TableRowCell class="tr-name">
+                                        <span>@item.Customer.FirstName @item.Customer.LastName</span>
+                                    </TableRowCell>
+                                    <TableRowCell class="tr-email">
+                                        <span>@item.Customer.Email</span>
+                                    </TableRowCell>
+                                    <TableRowCell class="tr-ticket">
+                                        <span>@item.Title</span>
+                                        <span>@item.Amount</span>
+                                    </TableRowCell>
+                                    <TableRowCell class="tr-amount">
+                                        <span>@item.Amount</span>
+                                    </TableRowCell>
+                                    <TableRowCell class="tr-button">
+                                        <div class="btn-status">
+                                            <button class="check-button" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                <img class="me-1" alt="check-icon"
+                                                src='@(item.Status == "VERIFIED" ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
+                                            </button>
+                                            <span>Verify</span>
+                                        </div>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                    </TableBody>
+                </Table>
+                @if (oteCustomer.Count != 0)
+                {
+                    <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                            <PaginationLink>
+                                <span aria-hidden="true">«</span>
+                            </PaginationLink>
+                        </PaginationItem>
+
+                        @{
+                            int pagesToShow = 7;
+                            int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                            int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                            for (var i = startPage; i <= endPage; i++)
+                            {
+                                var pageNumberAsString = i.ToString();
+                                <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                    <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                        @pageNumberAsString
+                                    </PaginationLink>
+                                </PaginationItem>
+                            }
+                        }
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                            <PaginationLink>
+                                <span aria-hidden="true">»</span>
+                            </PaginationLink>
+                        </PaginationItem>
+                    </Pagination>
+                }
+            </div>
+        </div>
+    </div>
+</LoadingIndicator>
+
+@code {
+    [Parameter]
+    public OteActivity activity { get; set; }
+    [Parameter]
+    public string Token { get; set; }
+    [Parameter]
+    public int dateId { get; set; }
+    public List<OteTicket> FilteredCustomer = new();
+    public List<OteTicket> ExportCustomer = new List<OteTicket>();
+    public List<OteTicket> oteCustomer = new List<OteTicket>();
+    IJSObjectReference module;
+    LoadingIndicator loadingIndicator;
+    public const string PREVIOUS = "previous";
+    public const string NEXT = "next";
+    public int pageItems = 10;
+    public string currentPage = "1";
+    public string SearchValue = string.Empty;
+    public int counterPage = 10;
+    public int SearchBy = 0;
+    public int selectedFilter;
+    public bool IsDisplay = false;
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Get Customer List
+        await GetCustomerList(1);
+    }
+    private async Task GetCustomerList(int pageIndex)
+    {
+        var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
+            {
+                SearchValue = SearchValue,
+                SearchBy = SearchBy,
+                ActivityId = activity.Id,
+                CountPerPage = counterPage,
+                PageIndex = pageIndex,
+                DateId = dateId
+            }, Token);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            oteCustomer = result.Result.Result.Select(e => new OteTicket
+                {
+                    Id = e.Id,
+                    ActivityId = e.ActivityId,
+                    Title = e.Title,
+                    Amount = e.Amount,
+                    QRCode = e.QRCode,
+                    Status = e.Status,
+                    Customer = new CustomerProfile
+                    {
+                        FirstName = e.Customer.FirstName,
+                        LastName = e.Customer.LastName,
+                        Email = e.Customer.Email
+                    }
+                }).ToList();
+            Pagination = result.Result.Pagination;
+            FilteredCustomer = oteCustomer.OrderBy(s => s.Id).ToList();
+        }
+    }
+    private async Task OnFilterValueChanged(int entries)
+    {
+        counterPage = entries;
+        await loadingIndicator.Show();
+        await GetCustomerList(1);
+        await loadingIndicator.Hide();
+    }
+    private async Task OnFilterByValueChange(int searchBy)
+    {
+        switch (searchBy)
+        {
+            case 0:
+                SearchBy = 0;
+                IsDisplay = false;
+                break;
+            case 1:
+                SearchBy = 1;
+                IsDisplay = true;
+                break;
+            case 2:
+                SearchBy = 2;
+                IsDisplay = true;
+                break;
+            case 3:
+                SearchBy = 3;
+                IsDisplay = true;
+                break;
+            default:
+                break;
+        }
+    }
+    private async void TextSearchChanged(string search)
+    {
+        SearchValue = search;
+        await loadingIndicator.Show();
+        await GetCustomerList(1);
+        FilteredCustomer = oteCustomer.OrderBy(a => a.Id).ToList();
+        await loadingIndicator.Hide();
+    }
+    private async Task ExportToExcel()
+    {
+        await loadingIndicator.Show();
+        await Task.Delay(1000);
+        //Get Customer List
+        var result = await dashboardApiHandler.GetOTEByActivityId(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetOTEByActivityIdArgs
+            {
+                ActivityId = activity.Id,
+                DateId = dateId
+            }, Token);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            ExportCustomer = result.Result.Result.Select(e => new OteTicket
+                {
+                    Id = e.Id,
+                    ActivityId = e.ActivityId,
+                    Title = e.Title,
+                    Amount = e.Amount,
+                    QRCode = e.QRCode,
+                    Status = e.Status,
+                    Customer = new CustomerProfile
+                    {
+                        FirstName = e.Customer.FirstName,
+                        LastName = e.Customer.LastName,
+                        Email = e.Customer.Email
+                    }
+                }).OrderBy(a => a.Id).ToList();
+        }
+        using (var workbook = new XLWorkbook("wwwroot/Template/CustomerList.xlsx"))
+        {
+            var worksheet = workbook.Worksheet(1);
+            int startRow = 3;
+            foreach (var item in ExportCustomer)
+            {
+                worksheet.Cell(1, 6).Value = $"Date: {DateTime.Today.ToString("MMMM dd, yyyy")}";
+                worksheet.Cell(startRow, 1).Value = item.Id;
+                worksheet.Cell(startRow, 2).Value = $"{item.Customer.FirstName} {item.Customer.LastName}";
+                worksheet.Cell(startRow, 3).Value = item.Customer.Email;
+                worksheet.Cell(startRow, 4).Value = item.Title;
+                worksheet.Cell(startRow, 5).Value = item.Amount;
+                worksheet.Cell(startRow, 6).Value = item.Status;
+                startRow++;
+            }
+            using (var memoryStream = new MemoryStream())
+            {
+                workbook.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var currentDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var fileName = $"CustomerList_{currentDate}.xlsx";
+                byte[] bytes = memoryStream.ToArray();
+
+                var bytesBase64 = Convert.ToBase64String(bytes);
+
+                // Download the saved memorystream file
+                await Task.Run(() => module.InvokeVoidAsync("saveAsFile", fileName, bytesBase64));
+            }
+        }
+        await loadingIndicator.Hide();
+
+    }
+    private string FormattedId(int id)
+    {
+        var idString = id.ToString();
+        var template = "000000";
+        var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
+        return referenceId;
+    }
+    public async Task UpdateTicketStatus(OteTicket ticket)
+    {
+        ticket.Status = ticket.Status == "VERIFIED" ? "UNVERIFIED" : "VERIFIED";
+        var updateRes = await dashboardApiHandler.UpdateOTETicket(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateOTETicketArgs
+            {
+                Id = ticket.Id,
+                Status = ticket.Status
+            }, Token);
+
+        //await GetCustomerList(1);
+    }
+    private bool IsActive(string page)
+       => currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPage.Equals(pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt > 1)
+        {
+            currentPage = (currentPageAsInt - 1).ToString();
+            await GetCustomerList(int.Parse(currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(currentPage);
+        if (currentPageAsInt < Pagination.TotalPages)
+        {
+            currentPage = (currentPageAsInt + 1).ToString();
+            await GetCustomerList(int.Parse(currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetCustomerList(int.Parse(page));
+    }
+}
