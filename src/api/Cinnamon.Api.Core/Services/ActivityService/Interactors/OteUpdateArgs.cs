@@ -80,6 +80,10 @@ public class OteUpdateArgs : IInteractor
         public string? FeedbackBody {get; set;}
         public string? ReminderSubject {get; set;}
         public string? ReminderBody {get; set;}
+
+        public string? CustomPendingBody {get; set;}
+        public string? CustomAcceptedBody {get; set;}
+        public string? CustomDeclinedBody {get; set;}
     }
 
     public class OtePricing 

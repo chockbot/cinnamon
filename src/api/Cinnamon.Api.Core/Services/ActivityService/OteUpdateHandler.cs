@@ -374,8 +374,32 @@ public class OteUpdateHandler : IOteUpdateHandler
                 TemplateType = Framework.Enums.EmailTemplateType.OteReminder
             });
 
+            var customPendingTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomPendingBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OtePending
+            });
+
+            var customAcceptTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomAcceptedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteConfirmed
+            });
+
+            var customDeclinedTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomDeclinedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteDeclined
+            });
+
             // don't check if success or not
-            await Task.WhenAll(feedbackTemplateRes, reminderTemplteRes);
+            await Task.WhenAll(feedbackTemplateRes, reminderTemplteRes, customPendingTemplate, customAcceptTemplate, customDeclinedTemplate);
 
             return AppResult<OteUpdateResult>.CreateSucceeded(new OteUpdateResult {Id = updateOte.Result.Result.Id}, "One time event successfully updated.");
         }

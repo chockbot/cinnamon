@@ -2654,7 +2654,10 @@ public class ActivityController : ControllerBase
                     FeedbackBody          = activity.FeedbackBody,
                     FeedbackSubject       = activity.FeedbackSubject,
                     ReminderBody          = activity.ReminderBody,
-                    ReminderSubject       = activity.ReminderSubject
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2749,7 +2752,10 @@ public class ActivityController : ControllerBase
                     FeedbackBody          = activity.FeedbackBody,
                     FeedbackSubject       = activity.FeedbackSubject,
                     ReminderBody          = activity.ReminderBody,
-                    ReminderSubject       = activity.ReminderSubject
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
