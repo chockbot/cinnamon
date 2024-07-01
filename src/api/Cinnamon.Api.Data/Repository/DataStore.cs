@@ -137,6 +137,9 @@ public class DataStore : IDataStore
 
     public IOteWaitlist OteWaitlist => new OteWaitlistEntity(applicationContext);
 
+    public IProviderCustomQuestion ProviderCustomQuestion => new ProviderCustomQuestionEntity(applicationContext);
+
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
