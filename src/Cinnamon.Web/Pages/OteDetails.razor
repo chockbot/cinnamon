@@ -216,9 +216,7 @@
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
                                                 <p class="align-items-center">
-                                                    <span class="ticket-name">
-                                                        ₱ @item.Price.ToString("#,##0")
-                                                    </span>
+                                                    <span class="ticket-name">@((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</span>
                                                 </p>
                                                 <p class="align-items-center">
                                                     @if (item.MaxSlots <= item.TicketSold)
