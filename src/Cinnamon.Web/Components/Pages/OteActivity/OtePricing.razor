@@ -47,7 +47,7 @@
                             </Feedback>
                         </NumericPicker>
                     }
-                 </FieldBody>
+                </FieldBody>
             </div>
         </Field>
     </div>
@@ -103,8 +103,9 @@
                             </ul>
                         </div>
                     </div>
-
-                    <p class="ticket-price">&#8369 @ticket.Price</p>
+                    <p class="ticket-price">
+                        @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
+                    </p>
                     <p class="approval">Required Approval</p>
                     <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                     <div class="form-check form-switch">
@@ -217,7 +218,7 @@
                     </p>
                     <div class="white-bg-shadow p-3 border-radius-10">
                         <p class="font-16 color-black-100 font-weight-700">Registration pending approval for the event</p>
-                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                        <MemoEdit @bind-Text="customPendingMessage" Rows="7" class="mb-1" Placeholder="Add custom message here..." />
                     </div>
                 </div>
             }
@@ -231,7 +232,7 @@
                     </p>
                     <div class="white-bg-shadow p-3 border-radius-10">
                         <p class="font-16 color-black-100 font-weight-700">Registration confirmed for the event</p>
-                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                        <MemoEdit @bind-Text="customAcceptedMessage" Rows="7" class="mb-1" Placeholder="Add custom message here..." />
                     </div>
                 </div>
             }
@@ -245,7 +246,7 @@
                     </p>
                     <div class="white-bg-shadow p-3 border-radius-10">
                         <p class="font-16 color-black-100 font-weight-700">Registration not accepted for the event</p>
-                        <MemoEdit Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                        <MemoEdit Rows="7" @bind-Text="customDeclinedMesasge" class="mb-1" Placeholder="Add custom message here..." />
                     </div>
                 </div>
             }
@@ -254,10 +255,10 @@
     <OffcanvasFooter>
         <div class="w-100">
             <Divider />
-            <Button class="bg-orange-100 color-white-100 px-4 me-2">
+            <Button Clicked="OnOffCanvasSave" class="bg-orange-100 color-white-100 px-4 me-2">
                 Save
             </Button>
-            <Button class="bg-grey-300 color-black-200">
+            <Button Clicked="OnOffCanvasCancel" class="bg-grey-300 color-black-200">
                 Cancel
             </Button>
         </div>
@@ -316,6 +317,21 @@
                         </FieldBody>
                     </Field>
                 </Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                        Ticket Type
+                    </FieldLabel>
+                    <FieldBody>
+                        <label class="switch-light switch-candy" onclick="">
+                            <input type="checkbox" @onchange="CheckboxChanged">
+                            <span>
+                                <span>Free</span>
+                                <span>Paid</span>
+                                <a></a>
+                            </span>
+                        </label>
+                    </FieldBody>
+                </Field>
                 <Row VerticalGutter="10">
                     <Column ColumnSize="ColumnSize.Is7">
                         <Validation>
@@ -325,7 +341,7 @@
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@isFree">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -452,7 +468,7 @@
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-</ConfirmDialog>
+    </ConfirmDialog>
 
 @code
 {
@@ -492,9 +508,17 @@
     private ConfirmDialog confirmDialogRef { get; set; }
     private bool isEditing = false;
     public string errorMessage = string.Empty;
+    private bool isFree = true;
 
     private int selectedEmailTemplate = 0;
     private Offcanvas? offcanvas;
+    private string customPendingMessage = string.Empty;
+    private string customAcceptedMessage = string.Empty;
+    private string customDeclinedMesasge = string.Empty;
+
+    private string customPendingMessageOrig = string.Empty;
+    private string customAcceptedMessageOrig = string.Empty;
+    private string customDeclinedMesasgeOrig = string.Empty;
 
     private async Task NextClick()
     {
@@ -554,9 +578,9 @@
         get
         {
             string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
-            if(showErrors)
+            if (showErrors)
             {
-                if(ModelState.EventTicketLimit == 0)
+                if (ModelState.EventTicketLimit == 0)
                 {
                     return $"{defaultClass} is-invalid";
                 }
@@ -587,7 +611,10 @@
                     Name = p.Name,
                     TicketSold = p.TicketSold
                 };
-            }).ToList()
+            }).ToList(),
+            CustomAcceptedBody = customAcceptedMessageOrig,
+            CustomDeclinedBody = customDeclinedMesasgeOrig,
+            CustomPendingBody = customPendingMessageOrig
         };
         return data;
     }
@@ -607,6 +634,13 @@
                     TicketSold = item.TicketSold
                 });
         }
+        customAcceptedMessageOrig = data.CustomAcceptedBody;
+        customDeclinedMesasgeOrig = data.CustomDeclinedBody;
+        customPendingMessageOrig = data.CustomPendingBody;
+
+        customAcceptedMessage = data.CustomAcceptedBody;
+        customDeclinedMesasge = data.CustomDeclinedBody;
+        customPendingMessage = data.CustomPendingBody;
         return Task.CompletedTask;
     }
 
@@ -654,6 +688,10 @@
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
 
+        public string CustomPendingBody {get; set;}
+        public string CustomAcceptedBody {get; set;}
+        public string CustomDeclinedBody {get; set;}
+
         public class ItemPrice
         {
             public int Id { get; set; }
@@ -675,8 +713,8 @@
     public class Pricing
     {
         [Required(ErrorMessage = "The price field is mandatory.")]
-        [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
-        public decimal? Price { get; set; } = null;
+        [Range(0, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
+        public decimal? Price { get; set; } = 0;
 
         [Required(ErrorMessage = "The max slots field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
@@ -926,6 +964,15 @@
         modelPricing = new Pricing();
     }
 
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        isFree = !(bool)e.Value;
+        if (isFree)
+        {
+            modelPricing.Price = 0;
+        }
+    }
+
     private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
     {
         e.Cancel = !(e.CloseReason == CloseReason.UserClosing);
@@ -958,5 +1005,57 @@
     {
         selectedEmailTemplate = 2;
         return ShowOffcanvas();
+    }
+
+    private Task SavePendingTemplate()
+    {
+        customPendingMessageOrig = customPendingMessage;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelPendingTemplate()
+    {
+        customPendingMessage = customPendingMessageOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task SaveAcceptedTemplate()
+    {
+        customAcceptedMessageOrig = customAcceptedMessage;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelAcceptedTemplate()
+    {
+        customAcceptedMessage = customAcceptedMessageOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task SaveDeclinedTemplate()
+    {
+        customDeclinedMesasgeOrig = customDeclinedMesasge;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelDeclinedTemplate()
+    {
+        customDeclinedMesasge = customDeclinedMesasgeOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task OnOffCanvasSave()
+    {
+        if(selectedEmailTemplate == 0) return SavePendingTemplate();
+        if(selectedEmailTemplate == 1) return SaveAcceptedTemplate();
+
+        return SaveDeclinedTemplate();
+    }
+
+    private Task OnOffCanvasCancel()
+    {
+        if(selectedEmailTemplate == 0) return CancelPendingTemplate();
+        if(selectedEmailTemplate == 1) return CancelAcceptedTemplate();
+
+        return CancelDeclinedTemplate();
     }
 }

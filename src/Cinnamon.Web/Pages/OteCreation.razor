@@ -649,7 +649,10 @@
                         FeedbackBody             = publishData.EmailFeedback.Body,
                         FeedbackSubject          = publishData.EmailFeedback.Subject,
                         ReminderBody             = publishData.EmailReminder.Body,
-                        ReminderSubject          = publishData.EmailReminder.Subject
+                        ReminderSubject          = publishData.EmailReminder.Subject,
+                        CustomAcceptedBody       = pricing.CustomAcceptedBody,
+                        CustomDeclinedBody       = pricing.CustomDeclinedBody,
+                        CustomPendingBody        = pricing.CustomPendingBody
                     },
                     Pricings = pricing.ItemPrices.Select(p =>
                     {

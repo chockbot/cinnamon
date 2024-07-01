@@ -282,8 +282,32 @@ public class OteCreateHandler : IOteCreateHandler
                 TemplateType = EmailTemplateType.OteThankYou
             });
 
+            var createCustomPending = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomPendingBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OtePending
+            });
+
+            var createCustomAccept = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomAcceptedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OteConfirmed
+            });
+
+            var createCustomDeclined = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomDeclinedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OteDeclined
+            });
+
             // dont check the result if error or success
-            await Task.WhenAll(createReminderContent, createFeedbackContent);
+            await Task.WhenAll(createReminderContent, createFeedbackContent, createCustomPending, createCustomAccept, createCustomDeclined);
 
             // update customer status to maker
             if(!currentUser.Result.IsMaker)
