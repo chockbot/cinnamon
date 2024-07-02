@@ -1398,4 +1398,26 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
         }
     }
+
+    public async Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/ProviderQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ProviderQuestionsResult>();
+
+            return AppResult<ProviderQuestionsResult>.CreateSucceeded(result, "Successfully get provider questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, "An error occured when getting provider questions.");
+        }
+    }
 }
