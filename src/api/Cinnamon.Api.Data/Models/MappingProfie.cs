@@ -119,6 +119,7 @@ public class MappingProfile : Profile
         CreateMap<OteWaitListAlias.OteWaitlistDTO, OteWaitlist>();
 
         CreateMap<OteWaitListReqAlias.CreateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListReqAlias.UpdateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
         CreateMap<OteWaitListReqAlias.GetOteWaitlistByProviderArgs, OteWaitListAlias.OteWaitlistDTO>();
 
         // for ote reminder flag

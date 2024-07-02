@@ -962,11 +962,12 @@
 
     private async Task LoadWaitlist()
     {
+        //0-NO STATUS 1-PENDING 2-APPROVED 3-DECLINED
         var waitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
         {
             ProviderId = provider.Id,
             ActivityId = activity.Id,
-            Status = new[] {0}
+            Status = new[] {1}
         }, token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
@@ -1009,6 +1010,7 @@
 
     private async Task JoinWaitlist()
     {
+        //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         if (!activity.IsEventSoldOut)
         {
             //Get Selected Ticket
@@ -1055,6 +1057,7 @@
             await NotificationService.Error("This event is sold out!", "Sold Out");
         }
     }
+
     private async Task ConfirmDeleteChanged(bool value)
     {
         if (value)

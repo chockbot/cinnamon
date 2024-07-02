@@ -13,4 +13,5 @@ public class OteWaitlist
     public decimal TicketPrice { get; set; }
     public string CustomerProfile { get; set; }
     public string CustomerEmail { get; set; }
+    public DateTime EventDate { get; set; }
 }

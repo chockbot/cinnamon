@@ -3370,7 +3370,7 @@ public class ActivityController : ControllerBase
     [Route("CreateOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateActivity([FromBody] CreateOteWaitlistArgs args)
+    public async Task<IActionResult> CreateOteWaitlist([FromBody] CreateOteWaitlistArgs args)
     {
         try
         {
@@ -3402,23 +3402,26 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [Route("UpdateOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status201Created)]
-    public async Task<IActionResult> UpdateActivity([FromBody] UpdateOteWaitlistArgs args)
+    public async Task<IActionResult> UpdateOteWaitlist([FromBody] UpdateOteWaitlistArgs args)
     {
         try
         {
             var result = await updateOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateOteWaitlistArgs
             {
-                Id           = args.Id,
-                ActivityId   = args.ActivityId,
-                CustomerId   = args.CustomerId,
-                CustomerName = args.CustomerName,
-                Payload      = args.Payload,
-                ProviderId   = args.ProviderId,
-                ScheduleId   = args.ScheduleId,
-                Status       = args.Status
+                Id            = args.Id,
+                ActivityId    = args.ActivityId,
+                CustomerId    = args.CustomerId,
+                CustomerName  = args.CustomerName,
+                Payload       = args.Payload,
+                ProviderId    = args.ProviderId,
+                ScheduleId    = args.ScheduleId,
+                Status        = args.Status,
+                CustomerEmail = args.CustomerEmail,
+                EventDate     = args.EventDate
             });
             if (!result.Succeeded || result.Result is null)
             {

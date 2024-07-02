@@ -128,6 +128,7 @@
                 foreach (var ticket in deserializedPayload)
                 {
                     // Get Ticket Details
+                    item.EventDate = ticket.Date;
                     var ticketDetails = OteTickets.FirstOrDefault(a => a.OtePricing.OteSchedulePricingsId == ticket.Id);
                     if (ticketDetails != null)
                     {
@@ -196,14 +197,16 @@
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
             {
-                Id = WaitlistDetails.Id,
-                ActivityId = WaitlistDetails.ActivityId,
-                ScheduleId = WaitlistDetails.ScheduleId,
-                CustomerId = WaitlistDetails.CustomerId,
-                CustomerName = WaitlistDetails.CustomerName,
-                ProviderId = WaitlistDetails.ProviderId,
-                Status = 2,
-                Payload = WaitlistDetails.Payload
+                Id            = WaitlistDetails.Id,
+                ActivityId    = WaitlistDetails.ActivityId,
+                ScheduleId    = WaitlistDetails.ScheduleId,
+                CustomerId    = WaitlistDetails.CustomerId,
+                CustomerEmail = WaitlistDetails.CustomerEmail,
+                CustomerName  = WaitlistDetails.CustomerName,
+                ProviderId    = WaitlistDetails.ProviderId,
+                EventDate     = WaitlistDetails.EventDate,
+                Status        = 2,
+                Payload       = WaitlistDetails.Payload
             }, Token);
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
@@ -216,14 +219,16 @@
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
             {
-                Id           = WaitlistDetails.Id,
-                ActivityId   = WaitlistDetails.ActivityId,
-                ScheduleId   = WaitlistDetails.ScheduleId,
-                CustomerId   = WaitlistDetails.CustomerId,
-                CustomerName = WaitlistDetails.CustomerName,
-                ProviderId   = WaitlistDetails.ProviderId,
-                Status       = 3,
-                Payload      = WaitlistDetails.Payload
+                Id            = WaitlistDetails.Id,
+                ActivityId    = WaitlistDetails.ActivityId,
+                ScheduleId    = WaitlistDetails.ScheduleId,
+                CustomerId    = WaitlistDetails.CustomerId,
+                CustomerName  = WaitlistDetails.CustomerName,
+                CustomerEmail = WaitlistDetails.CustomerEmail,
+                ProviderId    = WaitlistDetails.ProviderId,
+                EventDate     = WaitlistDetails.EventDate,
+                Status        = 3,
+                Payload       = WaitlistDetails.Payload
             }, Token);
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
