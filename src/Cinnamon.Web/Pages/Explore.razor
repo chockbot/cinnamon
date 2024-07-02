@@ -2172,7 +2172,7 @@
     public async Task Search()
     {
         experienceCategoryId = null;
-        pageIndex = 1;
+        pageIndex = 0;
         itemsPerPage = 20;
         await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
 
