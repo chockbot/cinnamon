@@ -1,5 +1,6 @@
 @page "/experiences/ote"
 @page "/experiences/ote/{handler}"
+@page "/experiences/ote/{handler}/{Tab:int}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
@@ -205,6 +206,9 @@
     [Parameter]
     public string Handler { get; set; }
 
+    [Parameter]
+    public int Tab { get; set; }
+
     private int currentIndex = 0;
     private OteEvent? oteEvent;
     private OteLocation? oteLocation;
@@ -305,6 +309,25 @@
             if(!string.IsNullOrEmpty(Handler))
             {
                 await LoadComponentState();
+                switch (Tab)
+                {
+                    case 1:
+                        currentIndex = 1;
+                        break;
+                    case 2:
+                        summary = GetSummary();
+                        if (eventType == EventType.InPerson)
+                        {
+                            currentIndex = 3;
+                        }
+                        else
+                        {
+                            currentIndex = 4;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         catch (System.Exception ex)
@@ -1091,6 +1114,10 @@
             }
 
             numberOfPage = ote.ExperienceTypeId == 2 ? 5 : 4;
+        }
+        else
+        {
+            eventType = EventType.InPerson;
         }
 
         await otePublish?.SetState(scheduleDatesRes.Result.Result.Select(
