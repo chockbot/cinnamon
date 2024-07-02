@@ -714,7 +714,7 @@
             CustomAcceptedBody = customAcceptedMessageOrig,
             CustomDeclinedBody = customDeclinedMesasgeOrig,
             CustomPendingBody = customPendingMessageOrig,
-            Questions = questions,
+            Questions = questions.Where(q => q.IsNew).ToList(),
         };
         return data;
     }
@@ -742,7 +742,14 @@
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
 
-        //questions = data.Questions;
+        if(data.Questions is not null && data.Questions.Count > 0)
+        {
+            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
+                FieldType = q.FieldType,
+                Question = q.Question,
+                Required = q.Required
+            }));
+        }
 
         return Task.CompletedTask;
     }
@@ -1178,7 +1185,8 @@
     {
         questions.Add(new CustomQuestion {
             Question = formQuestion.Question,
-            Required = formQuestion.Required
+            Required = formQuestion.Required,
+            IsNew = true
         });
         return CloseCustomQuestion();
     }
@@ -1188,5 +1196,6 @@
         public string Question {get; set;}
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew {get; set;} = false;
     }
 }

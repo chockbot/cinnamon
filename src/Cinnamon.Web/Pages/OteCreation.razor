@@ -803,7 +803,12 @@
                     NewDate = s.NewDate,
                     OldDate = s.Date,
                     Id = s.Id
-                }) : null
+                }) : null,
+                Questions = pricing.Questions is not null ? pricing.Questions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
+                    FieldType = q.FieldType,
+                    Question = q.Question,
+                    Required = q.Required
+                }) : null,
             }, token);
 
             await ProgressService.Go(-1);
@@ -923,6 +928,21 @@
             declinedBody = declinedResult.Result.Result.Body;
         }
 
+        var providerQuestions = new List<OtePricing.CustomQuestion>();
+
+        var providerQuestionsRes = await activityApiHandler.ProviderQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ProviderQuestionsArgs {
+            ActivityId = oteRes.Result.Result.Id
+        }, token);
+        if(providerQuestionsRes.Succeeded && providerQuestionsRes.Result is not null && providerQuestionsRes.Result.IsSuccess)
+        {
+            providerQuestions.AddRange(providerQuestionsRes.Result.Result.Select(q => new OtePricing.CustomQuestion {
+                FieldType = q.FieldType,
+                IsNew = false,
+                Question = q.FieldLabel,
+                Required = q.Required
+            }));
+        }
+
         var scheduleBookedRes = await activityApiHandler.OteBookedCount(new Framework.ApiCommand.ApiCore.Activity.Request.OteBookedCountArgs {
             ActivityId = oteRes.Result.Result.Id
         }, token);
@@ -1018,7 +1038,8 @@
             }).ToList(),
             CustomAcceptedBody = acceptedBody,
             CustomDeclinedBody = declinedBody,
-            CustomPendingBody = pendingBody
+            CustomPendingBody = pendingBody,
+            Questions = providerQuestions
         });
 
         //Schedule

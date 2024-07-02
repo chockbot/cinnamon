@@ -2796,7 +2796,12 @@ public class ActivityController : ControllerBase
                     OldDate = s.OldDate,
                     NewDate = s.NewDate,
                     Id = s.Id
-                }) : null
+                }) : null,
+                Questions = args.Questions is not null ? args.Questions.Select(q => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                    FieldType = q.FieldType,
+                    Question = q.Question,
+                    Required = q.Required
+                }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
