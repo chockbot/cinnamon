@@ -216,9 +216,7 @@
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
                                                 <p class="align-items-center">
-                                                    <span class="ticket-name">
-                                                        ₱ @item.Price.ToString("#,##0")
-                                                    </span>
+                                                    <span class="ticket-name">@((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</span>
                                                 </p>
                                                 <p class="align-items-center">
                                                     @if (item.MaxSlots <= item.TicketSold)
@@ -482,17 +480,16 @@
                             {
                                 if (activity.Sold == 0)
                                 {
-                                    activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
+                                    activity.EventTicketLimit = capacityLimit <= activity.EventTicketLimit ? capacityLimit : activity.EventTicketLimit;
                                 }
                                 else
                                 {
-                                    activity.EventTicketLimit = capacityLimit;
+                                    activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
                                 }
-
                             }
                             else
                             {
-                                activity.EventTicketLimit = activity.CapacityCount <= activity.EventTicketLimit ? (activity.CapacityCount - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                                activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? (capacityLimit - ticketCount) : (activity.EventTicketLimit - ticketCount);
                             }
                         }
                         else
@@ -965,10 +962,12 @@
 
     private async Task LoadWaitlist()
     {
+        //0-NO STATUS 1-PENDING 2-APPROVED 3-DECLINED
         var waitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
         {
             ProviderId = provider.Id,
-            ActivityId = activity.Id
+            ActivityId = activity.Id,
+            Status = new[] {1}
         }, token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
@@ -1011,6 +1010,7 @@
 
     private async Task JoinWaitlist()
     {
+        //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         if (!activity.IsEventSoldOut)
         {
             //Get Selected Ticket
@@ -1019,15 +1019,12 @@
                 await NotificationService.Error("Select a ticket to proceed.", "Oops!");
                 return;
             }
-            var payloadData = selectedTickets.Select(s =>
-            {
-                return new
+            var payloadData = selectedTickets.Select(s => new TicketDetails
                 {
                     Id = s.Value.Id,
                     Count = s.Value.Count,
                     Date = selectedDate
-                };
-            });
+                });
             if (currentLogin is null)
             {
                 string oteDetailsUrl = $"/explore/ote/{Handler}";
@@ -1060,6 +1057,7 @@
             await NotificationService.Error("This event is sold out!", "Sold Out");
         }
     }
+
     private async Task ConfirmDeleteChanged(bool value)
     {
         if (value)
@@ -1076,5 +1074,13 @@
     {
         public int PurchaseOrderId { get; set; }
         public string EventName { get; set; }
+    }
+    private class TicketDetails
+    {
+        public int Id { get; set; }
+
+        public int Count { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

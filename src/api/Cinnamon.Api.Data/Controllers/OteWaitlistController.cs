@@ -38,6 +38,28 @@ public class OteWaitlistController : ControllerBase
             return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("UpdateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateOteWaitlist([FromBody] UpdateOteWaitlistArgs args)
+    {
+        try
+        {
+            var dtoWaitlist = mapper.Map<Dto.OteWaitlist.OteWaitlistDTO>(args);
+            var result = await oteWaitlistRepository.UpdateOteWaitlist(dtoWaitlist);
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateOteWaitlistResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -45,7 +67,7 @@ public class OteWaitlistController : ControllerBase
     {
         try
         {
-            var result = await oteWaitlistRepository.GetWaitlistByProvider(args.ProviderId, args.ActivityId);
+            var result = await oteWaitlistRepository.GetWaitlistByProvider(args.ProviderId, args.ActivityId, args.Status);
             if (!result.Succeeded || result.Result is null)
             {
                 return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

@@ -1,0 +1,61 @@
+﻿@layout EmptyLayout;
+@using Cinnamon.Web.Models.Ote
+
+<div class="ticket-options">
+    <div class="event-buttons d-flex">
+        <button class="btn-event">Event Capacity 300 &#9679; Wailist Off</button>
+        <button class="btn-event">Manage Event</button>
+    </div>
+</div>
+<div class="ticket-details-section">
+    @foreach(var ticket in TicketList)
+    {
+        <div class="ticket-box">
+            <div class="ticket-section-name">
+                <p class="ticket-title">@ticket.OtePricing.Name</p>
+            </div>
+            <p class="ticket-price">
+                @((ticket.OtePricing.Price == 0) ? "Free" : $"₱{ticket.OtePricing.Price:N0}")
+            </p>
+            <div class="approval-section">
+                <p class="sold-value">Required Approval</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault-@ticket.OtePricing.Id">
+                </div>
+            </div>
+            <Divider/>
+            <div class="ticket-availability">
+                @if(ticket.OtePricing.MaxSlots <= ticket.OtePricing.Sold)
+                {
+                    <div class="sold-ticket">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none">
+                            <circle cx="5" cy="5.5" r="5" fill="#AD0C0C" />
+                        </svg>
+                        <p class="sold-value">Sold Out</p>
+                    </div>
+                    <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                }
+                else
+                {
+                    <div class="sold-ticket">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none">
+                            <circle cx="5" cy="5.5" r="5" fill="#009220" />
+                        </svg>
+                        <p class="sold-value">Available</p>
+                    </div>
+                    <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<OteSchedule> TicketList { get; set; }
+    private int? activeMenuId;
+    private string ShowMenu(int ticketId)
+    {
+        return activeMenuId == ticketId ? "show" : "";
+    }
+}
