@@ -43,6 +43,7 @@ public class OteFindByHandlerResult
         public bool IsAbsorbFees { get; set; }
         public int TicketSold {get; set;}
         public int OteSchedulePricingGroupId { get; set; }
+        public bool RequiredApproval {get; set;}
     }
 
     public class Image 
@@ -95,6 +96,7 @@ public class OteFindByHandlerResult
         public bool IsAbsorbFees {get; set;}
         public string Name {get; set;}
         public int TicketSold {get; set;}
+        public bool RequiredApproval {get; set;}
     }
     public class OteOnlineEvent
     {

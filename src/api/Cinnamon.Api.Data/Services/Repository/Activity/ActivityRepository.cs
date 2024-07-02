@@ -1780,6 +1780,7 @@ public class ActivityRepository : IActivityRepository
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
+                    RequiredApproval = p.RequiredApproval,
                     OteSchedule = schedule
                 };
             }).ToList();
@@ -1806,6 +1807,7 @@ public class ActivityRepository : IActivityRepository
                             MaxSlots = p.MaxSlots,
                             Price = p.Price,
                             Name = p.Name,
+                            RequiredApproval = p.RequiredApproval,
                             OteSchedule = schedule,
                             OteSchedulePricingGroup = p
                         };
@@ -1936,7 +1938,8 @@ public class ActivityRepository : IActivityRepository
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
-                    OteSchedule = schedule
+                    OteSchedule = schedule,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
@@ -1968,7 +1971,8 @@ public class ActivityRepository : IActivityRepository
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
