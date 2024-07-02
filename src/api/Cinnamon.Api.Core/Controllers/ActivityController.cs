@@ -2682,6 +2682,11 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,    
                         TicketRestriction = s.TicketRestriction,
                     }) : null,
+                Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required
+                }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)

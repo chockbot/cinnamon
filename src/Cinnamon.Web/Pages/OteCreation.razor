@@ -683,7 +683,12 @@
                             VideoLink = a.VideoLink,
                             TicketRestriction = a.TicketRestriction,
                         };
-                    }) : null
+                    }) : null,
+                    Questions = pricing.Questions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.CustomQuestion {
+                        FieldType = q.FieldType,
+                        Question = q.Question,
+                        Required = q.Required
+                    })
                 }, token);
 
             await ProgressService.Go(-1);
