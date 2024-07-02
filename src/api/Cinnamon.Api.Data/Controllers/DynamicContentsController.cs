@@ -14,11 +14,14 @@ public class DynamicContentsController : ControllerBase
 {
 
     private readonly IDynamicContnetRepository dynamicContnetRepository;
+    private readonly IDynamicEmailTemplateRepository dynamicEmailTemplateRepository;
     private readonly IMapper mapper;
 
-    public DynamicContentsController(IDynamicContnetRepository dynamicContnetRepository, IMapper mapper)
+    public DynamicContentsController(IDynamicContnetRepository dynamicContnetRepository, 
+        IDynamicEmailTemplateRepository dynamicEmailTemplateRepository, IMapper mapper )
     {
         this.dynamicContnetRepository = dynamicContnetRepository;
+        this.dynamicEmailTemplateRepository = dynamicEmailTemplateRepository;
         this.mapper = mapper;
     }
 
@@ -88,6 +91,78 @@ public class DynamicContentsController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateDynamicContentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpPost]
+    [Route("EmailTemplates")]
+    [ProducesResponseType(typeof(CreateEmailTemplateResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateEmailTemplate([FromBody] CreateEmailTemplateArgs args)
+    {
+        try
+        {
+            var dto = mapper.Map<DynamicEmailTemplateDTO>(args);
+            
+            var result = await dynamicEmailTemplateRepository.CreateEmailTemplate(dto);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            
+            return new JsonResult(new CreateEmailTemplateResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpGet]
+    [Route("EmailTemplates")]
+    [ProducesResponseType(typeof(GetEmailTemplatesResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetEmailTemplates([FromQuery] GetEmailTemplatesArgs args)
+    {
+        try
+        {
+            var result = await dynamicEmailTemplateRepository.GetEmailTemplates(args.ActivityId, args.ProviderId, args.TemplateType);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetEmailTemplatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            
+            return new JsonResult(new GetEmailTemplatesResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEmailTemplatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpPatch]
+    [Route("EmailTemplates/{id}")]
+    [ProducesResponseType(typeof(UpdateEmailTemplateResult), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateEmailTemplate([FromBody] UpdateEmailTemplateArgs args, int id)
+    {
+        try
+        {
+            var result = await dynamicEmailTemplateRepository.UpdateEmailTemplate(new DynamicEmailTemplateDTO {
+                Id = id,
+                Body = args.Body,
+                Subject = args.Subject
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            
+            return new JsonResult(new UpdateEmailTemplateResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

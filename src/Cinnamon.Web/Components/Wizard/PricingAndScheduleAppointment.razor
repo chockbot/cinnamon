@@ -16,7 +16,7 @@
 
 @if (Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
 {
-    <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="pricing-schedule-section color-black-100">
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
         {
@@ -503,7 +503,8 @@ else
 
     private async Task RemoveScheduleTime(long activityScheduleTimeId)
     {
-        foreach (var item in scheduleTimes)        {
+        foreach (var item in scheduleTimes)
+        {
             item.ActivityScheduleTimes = item.ActivityScheduleTimes.Where(a => a.ActivityScheduleTimeId != activityScheduleTimeId).ToList();
         }
 

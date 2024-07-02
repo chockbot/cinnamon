@@ -20,15 +20,6 @@
                 <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
                     <div class="experience-content">
                         <div class="col-12 d-block justify-content-start">
-                            <p class="title">Gross Sales</p>
-                            <p class="amount">&#8369;@String.Format("{0:N}", grossSales.Sum(a => a.Total))</p>
-                            <p class="amount-description">This is the sales for your activities/events.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
-                    <div class="experience-content">
-                        <div class="col-12 d-block justify-content-start">
                             <p class="title">Receivables from Cinnamon</p>
                             <p class="amount">&#8369;@String.Format("{0:N}",totalReceivables.Sum(t => t.Amount))</p>
                             <p class="amount-description">Complete your enrollee's attendance to automatically receive this amount in your payout account.</p>
@@ -41,6 +32,26 @@
                             <p class="title">Total Earnings</p>
                             <p class="amount">&#8369;@String.Format("{0:N}",totalEarnings.Sum(t => t.Amount))</p>
                             <p class="amount-description">This is the total credited amount to your account.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 experience-box">
+                    <div class="experience-content">
+                        <div class="col-12 d-block justify-content-start">
+                            <p class="title">Gross Sales</p>
+                            @if (directSales.Count != 0)
+                            { 
+                                <p class="amount">&#8369;@String.Format("{0:N}",totalSales)</p>
+                                <p class="amount-description">@String.Format("{0:N}", grossSales.Sum(a => a.Total)) - Cinnamon Students</p>
+                                <p class="amount-description">@String.Format("{0:N}", directSales.Sum(a => a.Total)) - Manually Added Students</p>
+                                <p class="amount-description">This is your sales from Cinnamon and Direct students.</p>
+                            }
+                            else
+                            {
+                                <p class="amount">&#8369;@String.Format("{0:N}",totalSales)</p>
+                                <p class="amount-description">This is the sales from Cinnamon.</p>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -307,7 +318,7 @@
     </Modal>
 </article>
 
-@code{
+                    @code{
 
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
@@ -327,9 +338,13 @@
 
     private List<GrossSales> grossSales = new List<GrossSales>();
 
+    private List<GrossSales> directSales = new List<GrossSales>();
+
     private List<Payouts> totalEarnings = new List<Payouts>();
 
     private List<Payouts> totalReceivables = new List<Payouts>();
+
+    private decimal totalSales { get; set; } = 0;
 
     public const string PREVIOUS = "previous";
     public const string NEXT = "next";
@@ -483,12 +498,31 @@
             grossSales = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
             {
                 return new GrossSales
-                    {
-                        PurchaseDate = e.PurchaseDate,
-                        Total = e.Total
-                    };
+                {
+                    PurchaseDate = e.PurchaseDate,
+                    Total = e.Total
+                };
             }).ToList();
         }
+        //Get direct student sales by Activity Provider
+        var directGross = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+        {
+            ProviderId = Profile.Id,
+            DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss")
+        }, Token);
+        if (directGross.Succeeded && directGross.Result != null && directGross.Result.IsSuccess)
+        {
+            directSales = directGross.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSales
+                {
+                    PurchaseDate = e.CreatedOn,
+                    Total = e.Amount
+                };
+            }).ToList();
+        }
+        //Get Total Amount
+        totalSales = grossSales.Sum(a => a.Total) + directSales.Sum(a => a.Total);
     }
     private async Task GetTotalEarnings()
     {

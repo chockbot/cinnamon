@@ -173,4 +173,27 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<TransactionRedirectionResult>.CreateFailed(ex, "An error occurred when getting transaction redirection.");
         }
     }
+
+    public async Task<AppResult<GetDirectStudentSalesResult>> GetDirectStudentSales(GetDirectStudentSalesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Transaction/GetDirectStudentSales")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetDirectStudentSalesResult>();
+
+            return AppResult<GetDirectStudentSalesResult>.CreateSucceeded(result, "Successfully getting direct student sales api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GetDirectStudentSalesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetDirectStudentSalesResult>.CreateFailed(ex, "An error occurred when getting direct student sales api");
+        }
+    }
 }

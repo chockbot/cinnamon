@@ -23,10 +23,11 @@ public class TransactionController : ControllerBase
     private readonly IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler;
     private readonly IMapper mapper;
     private readonly ITransactionRedirectionHandler transactionRedirectionHandler;
+    private readonly IGetDirectStudentSalesHandler getDirectStudentSalesHandler;
 
     public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
         IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler,
-        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler)
+        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler, IGetDirectStudentSalesHandler getDirectStudentSalesHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
@@ -36,6 +37,7 @@ public class TransactionController : ControllerBase
         this.otePurchaseOrderDetailsHandler = otePurchaseOrderDetailsHandler;
         this.mapper = mapper;
         this.transactionRedirectionHandler = transactionRedirectionHandler;
+        this.getDirectStudentSalesHandler = getDirectStudentSalesHandler;   
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -152,6 +154,44 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPurchaseOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetDirectStudentSales")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetDirectStudentSalesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetDirectStudentSales([FromQuery] GetDirectStudentSalesArgs args)
+    {
+        try
+        {
+            var date = DateTime.ParseExact(args.DateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            var result = await getDirectStudentSalesHandler.ExecuteAsync(new Services.TransactionService.Interactors.GetDirectStudentSalesArgs
+            {
+                Id       = args.ProviderId,
+                DateFrom = date
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetDirectStudentSalesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetDirectStudentSalesResult
+            {
+                IsSuccess = true,
+                Result = result.Result.DirectStudentSales.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.DirectStudents.DirectStudentPaymentDTO
+                    {
+                        Amount    = s.Amount,
+                        CreatedOn = s.PurchaseDate,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetDirectStudentSalesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 

@@ -1,19 +1,15 @@
-﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Repository.Interfaces;
-using Entities = Cinnamon.Api.Data.Repository.Entities;
-using Cinnamon.Framework.Common;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
-using System.Linq.Expressions;
-using System.Globalization;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-using Cinnamon.Api.Data.Repository.Entities;
-using static Cinnamon.Framework.Enums.Enums;
-using System;
-using Cinnamon.Framework.Enums;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+﻿using AutoMapper;
 using Cinnamon.Api.Data.Extensions;
-using AutoMapper;
-using Cinnamon.Api.Data.Repository;
+using Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
+using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Enums;
+using System.Linq.Expressions;
+using static Cinnamon.Framework.Enums.Enums;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -884,7 +880,6 @@ public class ActivityRepository : IActivityRepository
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
             if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
-            if (includeStudents) includes.Add(a => a.Students);
             if (includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
@@ -1049,18 +1044,41 @@ public class ActivityRepository : IActivityRepository
                     ProfileImg = customer.ProfilePath
                 };
             }
-            // student
-            if (includeStudents && activity.Students != null)
+
+            // ongoing and completed students count
+            if (includeStudents)
             {
-                var students = activity.Students;
-                activityDTO.CompletedStudents = students.Count(a => (a.SessionsAttended >= a.NumberOfSessions && activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 0)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-                                                              || (activityDTO.Schedules.LastOrDefault(s => s.Id == a.ScheduleId)?.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-                                                              && a.ExpirationDateEnd != DateTime.MinValue);
-                activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue));
+                int ongoingStudentsCount = 0;
+                int completedStudentsCount = 0;
+
+                var ongoingStudentsRes = await dataStore.Student.OngoingStudentCount(activity.Id);
+                if(ongoingStudentsRes.Succeeded)
+                {
+                    ongoingStudentsCount += ongoingStudentsRes.Result;
+                }
+
+                var completedStudentRes = await dataStore.Student.CompletedStudentCount(activity.Id);
+                if(completedStudentRes.Succeeded)
+                {
+                    completedStudentsCount += completedStudentRes.Result;
+                }
+
+                var directStudentOngoingCountRes = await dataStore.DirectStudentSession.OngoingStudentCount(activity.Id);
+                if(directStudentOngoingCountRes.Succeeded)
+                {
+                    ongoingStudentsCount += directStudentOngoingCountRes.Result;
+                }
+
+                var directStudentCompletedCountRes = await dataStore.DirectStudentSession.CompletedStudentCount(activity.Id);
+                if(directStudentCompletedCountRes.Succeeded)
+                {
+                    completedStudentsCount += directStudentCompletedCountRes.Result;
+                }
+
+                activityDTO.CompletedStudents = completedStudentsCount;
+                activityDTO.OngoingStudents = ongoingStudentsCount;
             }
+
             if (includeAddOns.HasValue && includeAddOns.Value && activity.AddOns != null)
             {
                 var addOns = activity.AddOns;
@@ -1694,10 +1712,10 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateOteActivity(string eventName, string description, int experienceTypeId, int customerId, string stringPrice,
         string? houseNo, string? cityNumber, string? cityName, string? regionCode, string? regionName, string? barangayCode, string? barangayName,
         string? postalCode, string? pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, 
-        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit, int eventTicketLimit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId)
+        bool isPublished, string handler, int experienceCreationTypeId, bool comingSoon, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart, 
+        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates,int eventDurationCount, string eventDurationTimeUnit, 
+        int eventTicketLimit, bool IsOpen, bool isCapacity, int capacityCount, IList<OteDateOverrideDTO>? dateOverrides, 
+        IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, int categoryId, int emailReminderDays, int emailFeedbackDays)
     {
         try
         {
@@ -1737,17 +1755,22 @@ public class ActivityRepository : IActivityRepository
             };
 
             var schedule = new Entities.OteSchedule {
-                From = scheduleFrom.SetKindUtc(),
-                To = scheduleTo.SetKindUtc(),
-                Recurrences = recurrence,
-                ExtraOptions = scheduleExtraOpt ?? String.Empty,
-                RecurrenceDateEnd = recurrenceDateEnd.SetKindUtc(),
-                RecurrenceDateStart = recurrenceDateStart.SetKindUtc(),
-                RepeatEvery = repeatEvery,
-                SelectedDays = selectedDays,
-                EventDurationCount = eventDurationCount,
+                From                  = scheduleFrom.SetKindUtc(),
+                To                    = scheduleTo.SetKindUtc(),
+                Recurrences           = recurrence,
+                ExtraOptions          = scheduleExtraOpt ?? String.Empty,
+                RecurrenceDateEnd     = recurrenceDateEnd.SetKindUtc(),
+                RecurrenceDateStart   = recurrenceDateStart.SetKindUtc(),
+                RepeatEvery           = repeatEvery,
+                SelectedDays          = selectedDays,
+                EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
-                EventTicketLimit = eventTicketLimit
+                EventTicketLimit      = eventTicketLimit,
+                IsOpen                = IsOpen,
+                IsCapacity            = isCapacity,
+                CapacityCount         = capacityCount,
+                EmailFeedbackDays     = emailFeedbackDays,
+                EmailReminderDays     = emailReminderDays
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1757,6 +1780,7 @@ public class ActivityRepository : IActivityRepository
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
+                    RequiredApproval = p.RequiredApproval,
                     OteSchedule = schedule
                 };
             }).ToList();
@@ -1783,6 +1807,7 @@ public class ActivityRepository : IActivityRepository
                             MaxSlots = p.MaxSlots,
                             Price = p.Price,
                             Name = p.Name,
+                            RequiredApproval = p.RequiredApproval,
                             OteSchedule = schedule,
                             OteSchedulePricingGroup = p
                         };
@@ -1850,9 +1875,10 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> UpdateOteActivity(int id, string eventName, string description, int experienceTypeId, string stringPrice,
         string houseNo, string cityNumber, string cityName, string regionCode, string regionName, string barangayCode, string barangayName,
         string postalCode, string pinnedLocation, DateTime scheduleFrom, DateTime scheduleTo, string recurrence, IList<OteSchedulePricingDTO> pricingDTOs,
-        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,
-        int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, int eventDurationCount, string eventDurationTimeUnit,
-        IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules)
+        bool isPublished, string handler, int categoryId, bool comingSoon, int ticketEventLimit, bool IsOpen, bool isCapacity, int capacityCount, 
+        string scheduleExtraOpt, DateTime recurrenceDateEnd, DateTime recurrenceDateStart,int repeatEvery, string selectedDays, IList<OteScheduleDateDTO> oteDates, 
+        int eventDurationCount, string eventDurationTimeUnit, IList<OteDateOverrideDTO>? dateOverrides, IList<OteOnlineEventsDTO> oteOnlineEventsDTOs, 
+        bool recreateSchedule, IList<OteRescheduleDTO>? oteReschedules, int emailReminderDays, int emailFeedbackDays)
     {
         try
         {
@@ -1895,7 +1921,12 @@ public class ActivityRepository : IActivityRepository
                 SelectedDays          = selectedDays,
                 EventDurationCount    = eventDurationCount,
                 EventDurationTimeUnit = eventDurationTimeUnit,
-                EventTicketLimit      = ticketEventLimit
+                EventTicketLimit      = ticketEventLimit,
+                IsOpen                = IsOpen,
+                IsCapacity            = isCapacity,
+                CapacityCount         = capacityCount,
+                EmailFeedbackDays     = emailFeedbackDays,
+                EmailReminderDays     = emailReminderDays
             };
 
             var pricingsGroup = pricingDTOs.Select(p => {
@@ -1907,7 +1938,8 @@ public class ActivityRepository : IActivityRepository
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
-                    OteSchedule = schedule
+                    OteSchedule = schedule,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
@@ -1939,7 +1971,8 @@ public class ActivityRepository : IActivityRepository
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
@@ -2190,11 +2223,11 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null, 
-        int? categoryId = null, int? starReview = null, int? experienceType = null)
+        int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null)
     {
         try
         {
-            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId, starReview, experienceType);
+            var result = await dataStore.Activity.ActivityFeed(take, skip, search, categoryId, starReview, experienceType, experienceCategory);
             if(!result.Succeeded || result.Result is null)
             {
                 return AppResult<IEnumerable<ActivityFeedDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

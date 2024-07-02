@@ -16,6 +16,12 @@ using AnnouncementAlias =  Cinnamon.Framework.ApiCommand.ApiData.DTO.Announcemen
 using AnnouncementReqAlias = Cinnamon.Framework.ApiCommand.ApiData.Announcement.Request;
 using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicContent;
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
+using DirectStudentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DirectStudent;
+using DirectStudentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DirectStudent.Request;
+using OteWaitListAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteWaitlist;
+using OteWaitListReqAlias = Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
+using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderFlag;
+using ProviderCustomQuestionAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -105,5 +111,51 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentAlias.DynamicContentDTO, DynamicContent>();
         CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
+
+        // direct student mappings
+        CreateMap<DirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
+        CreateMap<DirectStudentReqAlias.CreateDirectStudentsArgs.CreateDirectStudent, DirectStudentAlias.DirectStudentDTO>()
+            .ForMember(d => d.DirectStudentInfo, o => o.MapFrom(o => o.CreateDirectStudentInfo))
+            .ForMember(d => d.DirectStudentPayment, o => o.MapFrom(o => o.CreateDirectStudentPayment))
+            .ForMember(d => d.DirectStudentSession, o => o.MapFrom(o => o.CreateDirectStudentSession));
+
+
+        CreateMap<DirectStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
+        CreateMap<DirectStudentAlias.DirectStudentAttendanceDTO, DirectStudentAttendance>();
+        CreateMap<DirectStudentReqAlias.CreateStudentAttendanceArgs.CreateStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
+        CreateMap<DirectStudentReqAlias.UpdateStudentAttendanceBulkArgs.UpdateStudentAttendance, DirectStudentAlias.DirectStudentAttendanceDTO>();
+        CreateMap<DirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
+
+        CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentInfo, DirectStudentAlias.DirectStudentInfoDTO>();
+        CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentSession, DirectStudentAlias.DirectStudentSessionDTO>();
+        CreateMap<DirectStudentReqAlias.UpdateDirectStudentArgs.UpdateDirectStudentPayment, DirectStudentAlias.DirectStudentPaymentDTO>();
+        
+        CreateMap<DirectStudentAlias.DirectStudentInfoDTO, DirectStudentInfo>();
+        CreateMap<DirectStudentAlias.DirectStudentSessionDTO, DirectStudentSession>();
+        CreateMap<DirectStudentAlias.DirectStudentPaymentDTO, DirectStudentPayment>();
+
+        CreateMap<DynamicEmailTemplate, DynamicContentAlias.DynamicEmailTemplateDTO>();
+        CreateMap<DynamicContentAlias.DynamicEmailTemplateDTO, DynamicEmailTemplate>();
+        CreateMap<DynamicContentReqAlias.CreateEmailTemplateArgs, DynamicContentAlias.DynamicEmailTemplateDTO>();
+
+        // ote waitlist mapping
+        CreateMap<OteWaitlist, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListAlias.OteWaitlistDTO, OteWaitlist>();
+
+        CreateMap<OteWaitListReqAlias.CreateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListReqAlias.UpdateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
+        CreateMap<OteWaitListReqAlias.GetOteWaitlistByProviderArgs, OteWaitListAlias.OteWaitlistDTO>();
+
+        // for ote reminder flag
+        CreateMap<OteReminderFlag, ReminderFlagAlias.OteReminderFlagDTO>();
+        CreateMap<ReminderFlagAlias.OteReminderFlagDTO, OteReminderFlag>();
+
+        // for provider custom question
+        CreateMap<ProviderCustomQuestion, ProviderCustomQuestionAlias.ProviderCustomQuestionDTO>();
+        CreateMap<ProviderCustomQuestionAlias.ProviderCustomQuestionDTO, ProviderCustomQuestion>();
     }
 }

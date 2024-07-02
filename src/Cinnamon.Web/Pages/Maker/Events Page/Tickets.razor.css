@@ -1,0 +1,127 @@
+﻿.ticket-options{
+    display: flex;
+    justify-content:end;
+}
+.event-buttons {
+    gap: 16px;
+    margin-top: 37px;
+}
+.btn-event {
+    border-radius: 6px;
+    background: #FFF;
+    box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
+    display: inline-flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    border: none;
+}
+.ticket-details-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+    margin-top:24px;
+}
+.ticket-box {
+    height: 220px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px 16px 5px 16px;
+    box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
+}
+
+.ticket-title {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.ticket-price {
+    color: #343D4C;
+    font-family: Nunito-extrabold;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 900;
+    margin-bottom: 25px;
+}
+.ticket-availability,.approval-section {
+    display: flex;
+    justify-content: space-between;
+}
+.sold-ticket{
+    display: flex;
+    gap: 20px;
+}
+.sold-value {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 0;
+}
+svg {
+    margin-top: 5px;
+}
+.form-switch .form-check-input:checked {
+    background-color: #34A853;
+    border: none;
+}
+.email-box {
+    box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
+}
+
+.sub-text {
+    color: #717171;
+    text-align: justify;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.div-line {
+    height: 4px;
+    background-color: #d9d9d9;
+}
+
+.div-line-75 {
+    height: 4px;
+    background-color: #d9d9d9;
+    width: 75%;
+}
+@media screen and (min-width: 618px) and (max-width : 767px) {
+    .email-box {
+        margin-top: 10px;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .ticket-box {
+        height: auto;
+    }
+
+    .ticket-details-section {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr) !important;
+        gap: 20px;
+    }
+    .email-box {
+        margin-top: 10px;
+    }
+}
+@media only screen and (max-width: 991px){
+    .ticket-details-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px;
+    }
+}

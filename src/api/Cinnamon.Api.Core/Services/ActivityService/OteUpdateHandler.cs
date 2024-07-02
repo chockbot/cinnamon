@@ -20,17 +20,22 @@ public class OteUpdateHandler : IOteUpdateHandler
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
+    private readonly IProviderCustomQuestionData providerCustomQuestionData;
 
     public OteUpdateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler, 
         IGenerateActivityHandler generateActivityHandler, IOteFindByHandler oteFindByHandler,
-        IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IOteAlreadyBookedHandler oteAlreadyBookedHandler, ISaveEmailTemplateHandler saveEmailTemplateHandler,
+        IProviderCustomQuestionData providerCustomQuestionData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.saveEmailTemplateHandler = saveEmailTemplateHandler;
         this.recurrenceDateHelper = new();
+        this.providerCustomQuestionData = providerCustomQuestionData;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -225,8 +230,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                 return AppResult<OteUpdateResult>.CreateFailed(
                         new ApplicationException(alreadyBookedRes.Message), alreadyBookedRes.Message);
             }
-            
-            bool reCreateSchedule = 
+
+            bool reCreateSchedule =
                 !currentOteDetails.Schedule.Recurrences.Equals(args.Activity.Recurrence) ||
                 currentOteDetails.Schedule.From != args.Activity.ScheduleFrom ||
                 currentOteDetails.Schedule.To != args.Activity.ScheduleTo ||
@@ -297,7 +302,12 @@ public class OteUpdateHandler : IOteUpdateHandler
                     ExtraOptions          = extraOptionsForMonthlyRecurring ?? String.Empty,
                     EventDurationCount    = args.Activity.EventDurationCount,
                     EventDurationTimeUnit = args.Activity.EventDurationTimeUnit,
-                    EventTicketLimit = args.Activity.EventTicketLimit
+                    EventTicketLimit      = args.Activity.EventTicketLimit,
+                    IsOpen                = args.Activity.IsOpen,
+                    IsCapacity            = args.Activity.IsCapacity,
+                    CapacityCount         = args.Activity.CapacityCount,
+                    EmailFeedbackDays     = args.Activity.EmailFeedbackDays,
+                    EmailReminderDays     = args.Activity.EmailReminderDays
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.UpdateOteActivityArgs.UpdateOtePricing {
@@ -306,7 +316,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }).ToList(),
                 Dates = dateItems.Select(d => {
@@ -350,6 +361,64 @@ public class OteUpdateHandler : IOteUpdateHandler
             {
                 return AppResult<OteUpdateResult>.CreateFailed(new ApplicationException(updateOte.Result?.ErrorInfo?.Message), updateOte.Message);
             }
+
+            // for custom questions
+            if(args.Questions is not null && args.Questions.Count() > 0)
+            {
+                var questionsRes = args.Questions.Select(q => providerCustomQuestionData.CreateCustomQuestion(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.CreateCustomQuestionArgs {
+                    ActivityId = updateOte.Result.Result.Id,
+                    FieldLabel = q.Question,
+                    FieldType = q.FieldType,
+                    ProviderId = currentUser.Result.Id,
+                    Required = q.Required
+                }));
+
+                // dont check the result if error or success
+                await Task.WhenAll(questionsRes);
+            }
+
+            var feedbackTemplateRes = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.FeedbackBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.FeedbackSubject ?? string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteThankYou
+            });
+
+            var reminderTemplteRes = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.ReminderBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.ReminderSubject ?? string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteReminder
+            });
+
+            var customPendingTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomPendingBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OtePending
+            });
+
+            var customAcceptTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomAcceptedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteConfirmed
+            });
+
+            var customDeclinedTemplate = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = updateOte.Result.Result.Id,
+                Body = args.Activity.CustomDeclinedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = Framework.Enums.EmailTemplateType.OteDeclined
+            });
+
+            // don't check if success or not
+            await Task.WhenAll(feedbackTemplateRes, reminderTemplteRes, customPendingTemplate, customAcceptTemplate, customDeclinedTemplate);
 
             return AppResult<OteUpdateResult>.CreateSucceeded(new OteUpdateResult {Id = updateOte.Result.Result.Id}, "One time event successfully updated.");
         }

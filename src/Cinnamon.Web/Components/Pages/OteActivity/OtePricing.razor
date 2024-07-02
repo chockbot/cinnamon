@@ -12,342 +12,16 @@
 @implements IOteComponent
 
 <section class="ote-pricing-wrapper">
-    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0">
-        <div class="mb-4">
-            <div class="d-flex justify-content-between">
-                <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                    <span>
-                        schedule
-                    </span>
-                    <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">4</span>
-                </h3>
-                <label @onclick="ViewGuide" class="cursor-pointer">
-                    <span class="font-14 font-weight-700 color-green-100 text-decoration-underline">How to do this</span>
-                    <img src="images/ote/green-how-do-this.png" alt="icon">
-                </label>
-            </div>
-            <p class="font-16 color-grey-100 text-justify">
-                Plan and organize your event by setting up your preferred schedule, creating your event duration and recurring options with ease.
-            </p>
-        </div>
-        <Validations @ref="scheduleFormValidation" Mode="FormMode" Model="ModelState">
-            <div class="data-form">
-                <div class="event-time">
-                    <div class="d-flex mb-3 flex-column flex-md-row">
-                        <div class="box-width me-3 m-width-100 mb-3 mb-md-0">
-                            <label for="" class="text-capitalize font-20 color-black-100 m-font-18">
-                                Event Duration
-                            </label>
-                            <Row HorizontalGutter="15">
-                                <Column ColumnSize="ColumnSize.Is3.OnMobile.Is6.OnDesktop">
-                                    <Validation>
-                                        <Field>
-                                            <FieldBody>
-                                                <NumericPicker class="text-center border-radius-10 m-border-radius-5 px-2 m-font-16"
-                                                               Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0"
-                                                               TValue="int" @bind-Value="ModelState.EventDurationCount">
-                                                </NumericPicker>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is4.OnMobile.Is6.OnDesktop">
-                                    <Field>
-                                        <FieldBody>
-                                            <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                                    @bind-SelectedValue="ModelState.EventDurationTimeUnit">
-                                                <SelectItem Value='@("hrs")'>hrs</SelectItem>
-                                                <SelectItem Value='@("days")'>days</SelectItem>
-                                                <SelectItem Value='@("weeks")'>weeks</SelectItem>
-                                                <SelectItem Value='@("months")'>months</SelectItem>
-                                            </Select>
-                                        </FieldBody>
-                                    </Field>
-                                </Column>
-                            </Row>
-                        </div>
-                        <div class="box-width">
-                            <Validation>
-                                <Field>
-                                    <FieldLabel class="text-capitalize font-20 color-black-100 m-font-18">
-                                        Start Time
-                                    </FieldLabel>
-                                    <FieldBody>
-                                        <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                                  Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.EventDurationTimeStart" />
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </div>
-                    </div>
-                </div>
-
-                <Divider class="my-4" />
-
-                @if(AlreadyHaveBooked)
-                {
-                    <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                        Event Recurrences
-                    </h3>
-                    <p class="font-16 color-grey-100 text-justify">
-                        You can manually adjust individual occurrences after customers bought tickets to your event. 
-                        Make sure to update any reminders or invitations associated with the event series.
-                    </p>
-
-                    <Row VerticalGutter="10">
-                        @foreach (var item in RescheduleStringDates)
-                        {
-                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="font-20 color-black-100">
-                                • @item
-                            </Column>
-                        }
-                    </Row>
-
-                    <Button Clicked="() => modalReschedule?.Show()" class="bg-orange-100 color-white-100 hover-color-white font-16 mt-3">
-                        Reschedule Event
-                    </Button>
-                }
-                else 
-                {
-                    <div class="event-recurrence d-flex flex-column flex-md-row mb-0 mb-md-3">
-                        <div class="box-width me-3 mb-3 mb-md-0">
-                            <Field>
-                                <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                    recurrences
-                                </FieldLabel>
-                                <FieldBody>
-                                    <Select TValue="string" Size="Size.Medium" class="@RecurrencesClass"
-                                        SelectedValueChanged="RecurrenceChanged" SelectedValue="ModelState.Recurrences">
-                                        <SelectItem Value='@("do-not-repeat")'>Do not repeat</SelectItem>
-                                        <SelectItem Value='@("every-weekday")'>Every weekday</SelectItem>
-                                        <SelectItem Value='@("daily")'>Daily</SelectItem>
-                                        <SelectItem Value='@("weekly")'>Weekly</SelectItem>
-                                        <SelectItem Value='@("monthly")'>Monthly</SelectItem>
-                                    </Select>
-                                    <div class="invalid-feedback">The recurrences field is mandatory.</div>
-                                </FieldBody>
-                            </Field>
-                        </div>
-
-                        @if(ModelState.Recurrences == "do-not-repeat")
-                        {
-                            <div class="box-width">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            start date
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationStart">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                        }
-                    </div>
-
-                    @if(ModelState.Recurrences != "do-not-repeat")
-                    {
-                        <div class="d-flex">
-                            <div class="box-width me-3">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            start
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationStart">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                            <div class="box-width">
-                                <Validation>
-                                    <Field>
-                                        <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                            end
-                                        </FieldLabel>
-                                        <FieldBody>
-                                            <DateEdit class="font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                                TValue="DateTime" @bind-Date="ModelState.DurationEnd">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                            </div>
-                        </div>
-
-                        <div class="weekly-repeat-every mt-4">
-                            <label for="durationCount" class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                repeat every
-                            </label>
-                            <div class="repeat-every-flex d-flex align-items-baseline align-items-md-center flex-column flex-md-row">
-                                <div class="box-width me-3 mb-3 mb-md-0">
-                                    <Validation>
-                                        <Field>
-                                            <FieldBody>
-                                                <div class="d-flex">
-                                                    <NumericPicker ElementId="durationCount" 
-                                                        class="text-center me-3 border-radius-10 m-border-radius-5 m-font-16" 
-                                                        style="width: 90px;" Min="1" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
-                                                        TValue="int" @bind-Value="ModelState.DurationEvery">
-                                                    </NumericPicker>
-                                                    <Button Disabled class="bg-grey-200 px-4">
-                                                        @ModelState.RepeatEvery
-                                                    </Button>
-                                                </div>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                </div>
-                                @if(ModelState.Recurrences == "every-weekday")
-                                {
-                                    <div class="d-flex justify-content-center m-width-100">
-                                        <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">M</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">W</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">T</span>
-                                        <span class="font-20 rounded-pill round-day bg-orange-100 color-white-100 me-2 prevent-select">F</span>
-                                        <span class="font-20 rounded-pill round-day me-2 cursor-none prevent-select">S</span>
-                                    </div>
-                                }
-
-                                @if(ModelState.Recurrences == "weekly")
-                                {
-                                    <div class="d-flex justify-content-center m-width-100">
-                                        @foreach (var item in dayItems)
-                                        {
-                                            <span @key="item" class="@SetDayStyle(item.Selected)" @onclick="() => OnWeeklyDaySelected(item)">@item.Day</span>   
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        @if(ModelState.Recurrences == "monthly")
-                        {
-                            <div class="mt-5">
-                                <RadioGroup TValue="int" @bind-CheckedValue="ModelState.MonthSelection">
-                                    <Validation>
-                                        <Field class="mb-3">
-                                            <FieldBody>
-                                                <div class="d-flex align-items-center">
-                                                    <label for="type-on-day" class="cursor-pointer">
-                                                        <Radio class="checkbox-round cursor-pointer" ElementId="type-on-day" TValue="int" Value="1">On day</Radio>
-                                                    </label>
-                                                    <NumericPicker Disabled="ModelState.MonthSelection == 2" class="text-center ms-3 border-radius-10 m-border-radius-5" 
-                                                        style="width: 90px;" Min="1" Max="31" Size="Size.Medium" ShowStepButtons="false" Decimals="0" 
-                                                        TValue="int" @bind-Value="ModelState.OnDayDate">
-                                                    </NumericPicker>
-                                                </div>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                    <Field>
-                                        <FieldBody>
-                                            <div class="d-flex align-items-center">
-                                                <label for="type-on-the" class="cursor-pointer">
-                                                    <Radio class="checkbox-round cursor-pointer" ElementId="type-on-the" TValue="int" Value="2">On the</Radio>
-                                                </label>
-                                                <div class="box-width ms-3">
-                                                    <Select Disabled="ModelState.MonthSelection == 1" TValue="string" Size="Size.Medium" 
-                                                        class="form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5"
-                                                        @bind-SelectedValue="ModelState.MonthRepeat">
-                                                        <SelectItem Value='@("first")'>First</SelectItem>
-                                                        <SelectItem Value='@("second")'>Second</SelectItem>
-                                                        <SelectItem Value='@("third")'>Third</SelectItem>
-                                                        <SelectItem Value='@("fourth")'>Fourth</SelectItem>
-                                                        <SelectItem Value='@("last")'>Last</SelectItem>
-                                                    </Select>
-                                                </div>
-                                                <div class="box-width ms-3">
-                                                    <Select Disabled="ModelState.MonthSelection == 1" TValue="string" Size="Size.Medium" 
-                                                        class="box-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5"
-                                                        @bind-SelectedValue="ModelState.MonthDay">
-                                                        <SelectItem Value='@("sunday")'>Sunday</SelectItem>
-                                                        <SelectItem Value='@("monday")'>Monday</SelectItem>
-                                                        <SelectItem Value='@("tuesday")'>Tuesday</SelectItem>
-                                                        <SelectItem Value='@("wednesday")'>Wednesday</SelectItem>
-                                                        <SelectItem Value='@("thursday")'>Thursday</SelectItem>
-                                                        <SelectItem Value='@("friday")'>Friday</SelectItem>
-                                                        <SelectItem Value='@("saturday")'>Saturday</SelectItem>
-                                                    </Select>
-                                                </div>
-                                            </div>
-                                        </FieldBody>
-                                    </Field>
-                                </RadioGroup>
-                            </div>
-                        }
-                    }
-                    <div class="text-center color-grey-100 mt-4">
-                        <p class="m-0 font-20 m-font-18">@ScheduleMessageInfo</p>
-                    </div>
-                }
-
-                
-            </div>
-        </Validations>
-    </div>
-
-    @if(!AlreadyHaveBooked)
-    {
-        <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
-            <div>
-                <h3 class="font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                    Add date overrides
-                </h3>
-                <p class="font-16 color-grey-100 text-justify">
-                    Customize recurrence patterns with override dates, providing flexible scheduling control for specific instances.
-                </p>
-                <div class="text-center">
-                    <Button Clicked="ViewCalendar" class="bg-transparent rounded-pill border-color-orange-100 px-5 my-4 color-orange-100 hover-color-primary">
-                        Add date override
-                    </Button>
-                </div>
-                <Divider DividerType="DividerType.Dashed" class="m-0" />
-                <div>
-                    <Table FullWidth>
-                        <TableBody>
-                            @foreach (var item in dateOverrides)
-                            {
-                                <TableRow @key="item" VerticalAlignment="VerticalAlignment.Middle">
-                                    <TableRowCell>
-                                        <span>@item.Value.Date.ToString("MMMM dd, yyyy")</span>
-                                    </TableRowCell>
-                                    <TableRowCell>
-                                        <span>@TimeToString(item.Value.TimeStart)- @TimeToString(item.Value.TimeEnd)</span>
-                                    </TableRowCell>
-                                    <TableHeaderCell>
-                                        <Button Clicked="() => dateOverrides.Remove(item.Key)">
-                                            <img src="/images/ote/delete-icon.png" alt="delete">
-                                        </Button>
-                                    </TableHeaderCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-        </div>
-    }
-
     @*Ticket Limit*@
-    <div class="border-radius-10 bg-white-200 p-4 my-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+    <div class="border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div id="error-message-container" class="mb-4 invalid is-invalid">
+                <ul id="error-list" class="fw-bold mb-0">
+                    @((MarkupString)errorMessage)
+                </ul>
+            </div>
+        }
         <Field>
             <FieldLabel>
                 <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
@@ -373,457 +47,516 @@
                             </Feedback>
                         </NumericPicker>
                     }
-                 </FieldBody>
+                </FieldBody>
             </div>
         </Field>
     </div>
-
-    <Divider class="d-none m-d-block" />
-    <div class="my-3 border-radius-10">
-        <Validations @ref="pringListFormValidation" Model="modelPricingList" Mode="ValidationMode.Auto">
-            <div class="accordion" id="pricings-accordion">
-                @foreach (var item in modelPricingList.Pricings)
-                {
-                    <div class="accordion-item" @key="item">
-                        <h2 class="accordion-header">
-                            <button style='@(!item.Valid ? "border: 1px solid #dc3545 !important;" : "")'
-                                    class='@(item.Valid ? "accordion-button bg-white-200 font-20 m-font-16" : "accordion-button bg-white-200 font-20 m-font-16 is-invalid")'
-                                    type="button" data-bs-toggle="collapse" data-bs-target='@($"#collapse-{item.Id}")' aria-expanded="true" aria-controls='@($"collapse-{item.Id}")'>
-                                @item.Name
-                            </button>
-                        </h2>
-                        <div id='@($"collapse-{item.Id}")' class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#pricings-accordion">
-                            <div class="accordion-body bg-white-200">
-                                <div class="item-form-body">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="item.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(item)">
-                                            <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
-                                        </Button>
-                                    </div>
-                                    <Validation>
-                                        <Field class="mb-4">
-                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                ticket name
-                                            </FieldLabel>
-                                            <FieldBody>
-                                                <TextEdit ReadOnly="item.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Name">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                    <Validation>
-                                        <Field class="mb-4">
-                                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                admission description
-                                            </FieldLabel>
-                                            <FieldBody>
-                                                <MemoEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5" Rows="3" @bind-Text="item.Description">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </MemoEdit>
-                                            </FieldBody>
-                                        </Field>
-                                    </Validation>
-                                    <Row VerticalGutter="10" class="mb-2">
-                                        <Column ColumnSize="ColumnSize.Is7">
-                                            <Validation>
-                                                <Field>
-                                                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                        price
-                                                    </FieldLabel>
-                                                    <FieldBody>
-                                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                                       class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.Price">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </NumericPicker>
-                                                    </FieldBody>
-                                                </Field>
-                                            </Validation>
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is5">
-                                            <Validation>
-                                                <Field>
-                                                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                                        max slots
-                                                    </FieldLabel>
-                                                    <FieldBody>
-                                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
-                                                                       class="font-18 border-radius-10 m-font-16 m-border-radius-5" @bind-Value="item.MaxSlots">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </NumericPicker>
-                                                    </FieldBody>
-                                                </Field>
-                                            </Validation>
-                                        </Column>
-                                    </Row>
-                                    <Row VerticalGutter="10" class="mb-4">
-                                        <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
-                                            <div class="d-flex justify-content-between mb-3">
-                                                <span class="font-14 font-weight-700 color-orange-100">
-                                                    Buyer total: ₱ @(CalCulateBuyerTotal(item).ToString("#,##0.00"))
-                                                </span>
-                                                <span @onclick="() => ViewDetails(item)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
-                                                    view details
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <Check TValue="bool" Size="Size.Medium" @bind-Checked="item.AbsorbFees">
-                                                    Absorb Fees: Ticketing fees are deducted from your ticket revenue.
-                                                </Check>
-                                            </div>
-                                        </Column>
-                                    </Row>
+    <div class="mt-3 border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+        <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+            Tickets
+        </h3>
+        <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
+        <div class="ticket-options">
+            <div class="div-option-details" @onclick="() => registrationModal.Show()">
+                <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
+                <div class="option-name">
+                    <p class="registration">Registration</p>
+                    <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
+                </div>
+            </div>
+            <div class="div-option-details" @onclick="() => capacityModal.Show()">
+                <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
+                <div class="option-name">
+                    <p class="registration">Event Capacity</p>
+                    <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
+                </div>
+            </div>
+            <div class="div-option-details" @onclick="() => ticketModal.Show()">
+                <img class="option-img" src="images/ote/add.png" alt="cover-photo">
+                <div class="option-name">
+                    <p class="registration">Add Tickets</p>
+                    <p class="reg-status">@modelPricingList.Pricings.Count() tickets available</p>
+                </div>
+            </div>
+        </div>
+        <div class="ticket-section mt-3">
+            @foreach (var ticket in modelPricingList.Pricings)
+            {
+                int ticketId = ticket.Id == 0 ? ticket.TempId : ticket.Id;
+                <div class="ticket-box">
+                    <div class="ticket-section-name">
+                        <p class="ticket-title">@ticket.Name</p>
+                        <div class="dropdown-mobile">
+                            <button class="btn-menu " type="button" id="dropdownMenuButton-@ticketId" data-bs-toggle="dropdown"
+                                    aria-expanded="false" border="none" @onclick="() => onClickMenu(ticketId)">
+                                <div class="menu">
+                                    <img src="images/ote/dots.png">
                                 </div>
+                            </button>
+                            <ul class="dropdown-menu @ShowMenu(ticketId)" aria-labelledby="dropdownMenuButton-@ticketId">
+                                <li class="dropdown-item" @onclick="() => OnEditTicket(ticket)">
+                                    Edit
+                                </li>
+                                <li class="dropdown-item" @onclick="() => DeleteClick(ticket)">
+                                    Delete
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="ticket-price">
+                        @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
+                    </p>
+                    <p class="approval">Required Approval</p>
+                    <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
+                    <div class="form-check form-switch">
+                        <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3 border-radius-10 bg-white-200 p-4 m-bg-white-100 m-padding-0 m-margin-top-30 registration-section">
+        <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+            Registration Emails
+        </h3>
+        <p class="sub-text">
+            Customize the emails sent when a guest registers for the event and for when you approve or decline their registration.
+        </p>
+
+        <Row HorizontalGutter="10" class="mb-4">
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnPendingEmailTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnAcceptedTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Going</p>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                    @onclick="OnDeclinedTemplateClick">
+                    <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
+                    <div class="div-line mb-1"></div>
+                    <div class="div-line-75 mb-2"></div>
+                    <p class="font-16 color-grey-100 mb-0">Declined</p>
+                </div>
+            </Column>
+        </Row>
+
+        <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+            Registration Questions
+        </h3>
+        <p class="sub-text mb-4">
+            We will ask guests the following questions when they register for the event.
+        </p>
+
+        <Row class="align-items-center mb-2">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Name</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+        <Row class="align-items-center mb-2">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Email Address</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+        <Row class="align-items-center mb-4">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Phone Number</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+
+        <div>
+            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3">
+                + <span class="ms-2">Add Questions</span>
+            </Button>
+
+            @foreach (var question in questions)
+            {
+                <div class="bg-white-100 mb-2 p-3 border-radius-10">    
+                    <p class="font-16 color-grey-100 mb-0">
+                        @question.Question
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+</section>
+
+<!--- custom question modal !-->
+<Modal @ref="modalCustomQuestion">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Field class="mb-3">
+                <FieldLabel class="color-grey-100 mb-0">Question</FieldLabel>
+                <FieldBody>
+                    <MemoEdit @bind-Text="formQuestion.Question" Rows="5" />
+                </FieldBody>
+            </Field>
+            <div class="d-flex">
+                <label class="color-black-100 font-weight-700 me-3">Required</label>
+                <div class="form-check form-switch">
+                    <Switch class="form-check-input" @bind-Checked="formQuestion.Required" TValue="bool" />
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="btn-cancel" Clicked="CloseCustomQuestion">
+                    Cancel
+                </Button>
+                <Button class="btn-save" Clicked="AddQuestion">
+                    Save
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@*Registration Modal*@
+<Modal @ref="registrationModal">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Registration</p>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <p class="approval-text">Close registration to stop accepting new guests, including anyone who may have been invited.</p>
+            <p class="approval-text">Please note that capacity and availability settings apply when registration is open.</p>
+            <div class="accept-reg">
+                <p class="approval">Accept Registration</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(ModelState.IsOpen)" @onchange="((e) => CheckRegistration(e))">
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="btn-cancel" @onclick="() => registrationModal.Hide()">
+                    Cancel
+                </Button>
+                <Button class="btn-save" @onclick="() => registrationModal.Hide()">
+                    Save
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+    <OffcanvasHeader class="px-0 py-4 bg-white-100">
+        <div class="px-3 d-flex justify-content-between position-relative w-100">
+            @if(selectedEmailTemplate == 0)
+            {
+                <img src="images/ote/tiny-clock.png" alt="clock">
+            }
+            @if(selectedEmailTemplate == 1)
+            {
+                <img src="images/ote/tiny-check.png" alt="check">
+            }
+            @if(selectedEmailTemplate == 2)
+            {
+                <img src="images/ote/tiny-close.png" alt="close">
+            }
+            <button class="btn-close" style="right: 0;" @onclick="CloseOffCanvas" />
+        </div>
+    </OffcanvasHeader>
+    <OffcanvasBody class="px-0 pt-0">
+        <Divider class="m-0" />
+        <div class="p-3">
+            @if(selectedEmailTemplate == 0)
+            {
+                <div id="pending-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Pending Approval / Waitlist Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when a guest registers for the event, notifying them that their registration is 
+                        pending approval or that they are on the waitlist.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration pending approval for the event</p>
+                        <MemoEdit @bind-Text="customPendingMessage" Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+
+            @if(selectedEmailTemplate == 1)
+            {
+                <div id="accepted-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Confirmation Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when a guest registers or when you approve a guest who is pending approval.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration confirmed for the event</p>
+                        <MemoEdit @bind-Text="customAcceptedMessage" Rows="7" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+
+            @if(selectedEmailTemplate == 2)
+            {
+                <div id="declined-email-setup">
+                    <p class="font-20 color-black-100 font-weight-900 mb-1">Declined Email</p>
+                    <p class="font-16 color-grey-100 mb-4">
+                        This email is sent when you decline a guest who is pending approval or on the waitlist.
+                    </p>
+                    <div class="white-bg-shadow p-3 border-radius-10">
+                        <p class="font-16 color-black-100 font-weight-700">Registration not accepted for the event</p>
+                        <MemoEdit Rows="7" @bind-Text="customDeclinedMesasge" class="mb-1" Placeholder="Add custom message here..." />
+                    </div>
+                </div>
+            }
+        </div>
+    </OffcanvasBody>
+    <OffcanvasFooter>
+        <div class="w-100">
+            <Divider />
+            <Button Clicked="OnOffCanvasSave" class="bg-orange-100 color-white-100 px-4 me-2">
+                Save
+            </Button>
+            <Button Clicked="OnOffCanvasCancel" class="bg-grey-300 color-black-200">
+                Cancel
+            </Button>
+        </div>
+    </OffcanvasFooter>
+</Offcanvas>
+
+@*Capacity Modal*@
+<Modal @ref="capacityModal">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Max Capacity</p>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <p class="approval-text">Auto-close registration when the capacity is reached. Only approved guests count toward the cap.</p>
+            <p class="field-title">Capacity</p>
+             <NumericPicker Placeholder="0" ShowStepButtons="false" TValue="int" class="capacity-input" @bind-Value="ModelState.CapacityCount" Disabled="!ModelState.IsCapacity"></NumericPicker>
+            <div class="accept-capacity">
+                <p class="approval">Over-Capacity Waitlist</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(ModelState.IsCapacity)" @onchange="((e) => CheckCapacity(e))">
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="btn-cancel" @onclick="() => capacityModal.Hide()">
+                    Cancel
+                </Button>
+                <Button class="btn-save" @onclick="() => capacityModal.Hide()">
+                    Save
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@*Add Ticket Modal*@
+<Modal @ref="ticketModal">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">@((isEditing ? "Edit" : "Add") + " your Ticket")</p>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Validations @ref="pricingFormValidation" Mode="ValidationMode.Manual" Model="modelPricing">
+                <Validation>
+                    <Field class="mb-4">
+                        <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                            ticket name
+                        </FieldLabel>
+                        <FieldBody>
+                            <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-16 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Field class="mb-4">
+                    <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                        Ticket Type
+                    </FieldLabel>
+                    <FieldBody>
+                        <label class="switch-light switch-candy" onclick="">
+                            <input type="checkbox" @onchange="CheckboxChanged">
+                            <span>
+                                <span>Free</span>
+                                <span>Paid</span>
+                                <a></a>
+                            </span>
+                        </label>
+                    </FieldBody>
+                </Field>
+                <Row VerticalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is7">
+                        <Validation>
+                            <Field>
+                                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                                    price
+                                </FieldLabel>
+                                <FieldBody>
+                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@isFree">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </NumericPicker>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is5">
+                        <Validation>
+                            <Field>
+                                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                                    max slots
+                                </FieldLabel>
+                                <FieldBody>
+                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </NumericPicker>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+                <Row VerticalGutter="5" class="mb-1">
+                    <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="font-14 font-weight-700 color-#343D4C-100">
+                                Buyer total: ₱ @(CalCulateBuyerTotal(modelPricing).ToString("#,##0.00"))
+                            </span>
+                        </div>
+                        <div class="check-section">
+                            <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees"></Check>
+                            <p class="approval-text">Absorb Fees: Ticketing fees are deducted from your ticket revenue. <span><a class="learn-more" @onclick="() => ViewDetails(modelPricing)">Learn more...</a></span></p>
+                        </div>
+                        <div class="accept-reg">
+                            <p class="approval">Required Approval</p>
+                            <div class="form-check form-switch">
+                                <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
-        </Validations>
-    </div>
-    @if (modelPricingList.Pricings.Count > 0)
-    {
-        <Divider class="d-none m-d-block" />
-    }
-    <div class="border-radius-10 bg-white-200 p-4 my-3 m-bg-white-100 m-padding-0 m-margin-top-30">
-        <div class="mb-4">
-            <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
-                <span>
-                    pricing
-                </span>
-                <span class="rounded-circle bg-orange-100 color-white-100 round-padding ms-2 m-d-none">5</span>
-            </h3>
-            <p class="font-16 color-grey-100 text-justify">
-                Create your event pricing with essential details, ensuring simplicity and clarity for organizers and attendees.
-            </p>
-            <p class="font-16 color-grey-100 text-justify">
-                Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the
-                ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be
-                deleted.
-            </p>
-        </div>
-        <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
-            <div class="col-12 d-flex justify-content-end">
-                @if (DisplayDelete)
-                {
-                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" Disabled="modelPricing.TicketSold != 0 ? true : false" @onclick="() => DeleteClick(modelPricing)">
-                        <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
-                    </Button>
-                }
-            </div>
-            <Validation>
-                <Field class="mb-4">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        ticket name
-                    </FieldLabel>
-                    <FieldBody>
-                        <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
-                            <Feedback>
-                                <ValidationError />
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation>
-                <Field class="mb-4">
-                    <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                        admission description
-                    </FieldLabel>
-                    <FieldBody>
-                        <MemoEdit class="font-18 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Description">
-                            <Feedback>
-                                <ValidationError />
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Row VerticalGutter="10">
-                <Column ColumnSize="ColumnSize.Is7">
-                    <Validation>
-                        <Field>
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                price
-                            </FieldLabel>
-                            <FieldBody>
-                                <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                               class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </NumericPicker>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is5">
-                    <Validation>
-                        <Field>
-                            <FieldLabel class="font-20 text-capitalize color-black-100 mb-1 m-font-18">
-                                max slots
-                            </FieldLabel>
-                            <FieldBody>
-                                <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
-                                               class="font-18 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </NumericPicker>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Column>
-            </Row>
-            <Row VerticalGutter="10" class="mb-4">
-                <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="font-14 font-weight-700 color-orange-100">
-                            Buyer total: ₱ @(CalCulateBuyerTotal(modelPricing).ToString("#,##0.00"))
-                        </span>
-                        <span @onclick="() => ViewDetails(modelPricing)" class="font-14 color-grey-100 text-decoration-underline cursor-pointer text-capitalize m-d-none">
-                            view details
-                        </span>
-                    </div>
-                    <div>
-                        <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees">
-                            Absorb Fees: Ticketing fees are deducted from your ticket revenue.
-                        </Check>
-                    </div>
-                </Column>
-            </Row>
-            <div>
-                <Button Clicked="AddMoreTicketPrice" class="bg-orange-100 color-white-100 text-capitalize font-20 hover-color-white px-5 border-radius-10 m-border-radius-5 m-width-100">
-                    add more ticket price
+                        <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
+                    </Column>
+                </Row>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="btn-cancel" @onclick="() => OnCancelEdit()">
+                    Cancel
+                </Button>
+                <Button class="btn-save" @onclick="() => AddMoreTicketPrice()">
+                    Save
                 </Button>
             </div>
-        </Validations>
-    </div>
-    <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 
-    <Modal @ref="modalFeeBreakdown">
-        <ModalContent Centered class="border-radius-15">
-            <ModalHeader class="justify-content-center pb-0">
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Absorb Fees Breakdown</p>
-                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseDetails" />
-            </ModalHeader>
-            <ModalBody class="px-4">
-                <div class="color-black-100">
-                    <label class="font-weight-700 font-16 mb-2">Cost of Buyer</label>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Ticket Price:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.TicketPrice.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Service Fee:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.ServiceFee.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Handling Fee:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.HandlingFee.ToString("#,##0.00")</p>
-                    </div>
-                    <div class="mb-2 d-flex font-weight-700 justify-content-between">
-                        <p class="mb-0">Total:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.SubTotal.ToString("#,##0.00")</p>
-                    </div>
+<Modal @ref="modalFeeBreakdown">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Absorb Fees Breakdown</p>
+            <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseDetails" />
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <div class="color-black-100">
+                <label class="font-weight-700 font-16 mb-2">Cost of Buyer</label>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Ticket Price:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.TicketPrice.ToString("#,##0.00")</p>
                 </div>
-                <div class="color-black-100 mt-4">
-                    <label class="font-weight-700 font-16 mb-1">Your Payout</label>
-                    <div class="mb-2 d-flex color-grey-100 justify-content-between">
-                        <p class="mb-0">Ticket Revenue:</p>
-                        <p class="mb-0">₱ @modalTicketPricing.PayoutAmount.ToString("#,##0.00")</p>
-                    </div>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Service Fee:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.ServiceFee.ToString("#,##0.00")</p>
                 </div>
-                <div class="color-grey-100 font-12 mt-4">
-                    <p class="mb-0">Note: Service will may change depending on the payment method used.</p>
-                    <p class="mb-0">E-wallet - 3%</p>
-                    <p class="mb-0">Cards - 5%</p>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Handling Fee:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.HandlingFee.ToString("#,##0.00")</p>
                 </div>
-            </ModalBody>
-        </ModalContent>
-        </Modal>
+                <div class="mb-2 d-flex font-weight-700 justify-content-between">
+                    <p class="mb-0">Total:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.SubTotal.ToString("#,##0.00")</p>
+                </div>
+            </div>
+            <div class="color-black-100 mt-4">
+                <label class="font-weight-700 font-16 mb-1">Your Payout</label>
+                <div class="mb-2 d-flex color-grey-100 justify-content-between">
+                    <p class="mb-0">Ticket Revenue:</p>
+                    <p class="mb-0">₱ @modalTicketPricing.PayoutAmount.ToString("#,##0.00")</p>
+                </div>
+            </div>
+            <div class="color-grey-100 font-12 mt-4">
+                <p class="mb-0">Note: Service will may change depending on the payment method used.</p>
+                <p class="mb-0">E-wallet - 3%</p>
+                <p class="mb-0">Cards - 5%</p>
+            </div>
+        </ModalBody>
+    </ModalContent>
+    </Modal>
 
-        <Modal @ref="modalScheduleGuid">
-        <ModalContent Size="ModalSize.Large" class="border-radius-20">
-            <ModalHeader class="justify-content-center pb-0">
-                <div class="d-flex justify-content-center align-items-center m-margin-top-75">
-                    <img src="images/ote/light-bulb.png" class="me-3 m-d-none" alt="icon">
-                    <p class="font-32 font-weight-700 color-black-100 mb-0 m-font-24">Create a better schedule</p>
-                </div>
-                <button type="button" style="top: 28px; right: 20px;" class="btn-close position-absolute" @onclick="CloseGuide" />
-            </ModalHeader>
-            <ModalBody class="color-grey-100 font-18 m-font-16">
-                <p>
-                    Follow these guidelines based on the recurrence frequency, you can effectively structure the schedule for your one-time event,
-                    ensuring clarity and engagement for all participants.
-                </p>
-                <ol class="ps-4">
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Do Not Repeat:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Indicates that a particular event or activity should not occur again after its initial instance.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">"Special Anniversary Dinner on January 15, 2024, at 7:00 PM."</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Daily:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Daily recurrences involve events or activities that happen regularly and repeat on a daily basis.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">Event: Daily Morning Yoga Sessions</p>
-                            <p class="mb-0">Start Date: March 1, 2024</p>
-                            <p class="mb-0">End Date: March 15, 2024</p>
-                            <p class="mb-0">From: 7:00 AM</p>
-                            <p class="mb-0">To: 8:00 AM</p>
-                            <p class="mb-0">Recurring Daily: Monday to Friday</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Weekly:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Weekly recurrences refer to events or activities that occur regularly and repeat every seven days.</p>
-                            <p class="mb-0">Sample:</p>
-                            <p class="mb-0">Event: Weekly Photography Class</p>
-                            <p class="mb-0">Start Date: April 1, 2024</p>
-                            <p class="mb-0">End Date: June 30, 2024</p>
-                            <p class="mb-0">From: 6:00 PM</p>
-                            <p class="mb-0">To: 8:00 PM</p>
-                            <p class="mb-0">Recurring Weekly: Every Saturday</p>
-                        </div>
-                    </li>
-                    <li class="color-black-100 font-weight-700 mb-3">
-                        Monthly:
-                        <div class="font-weight-400 color-grey-100" style="margin-left: -17px;">
-                            <p>-Monthly recurrences denote events or activities that regularly repeat every calendar month.</p>
-                            <p class="mb-0">Sample: Event: Monthly Book Club Meeting</p>
-                            <p class="mb-0">Start Date: July 1, 2024</p>
-                            <p class="mb-0">End Date: December 31, 2024</p>
-                            <p class="mb-0">From: 4:00 PM</p>
-                            <p class="mb-0">To: 6:00 PM</p>
-                            <p class="mb-0">Recurring Monthly: First Sunday of Each Month</p>
-                        </div>
-                    </li>
-                </ol>
-            </ModalBody>
-        </ModalContent>
-        </Modal>
+<Modal @ref="modalError">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
+            <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
+        </ModalHeader>
 
-        <Modal @ref="modalCalendar">
-        <ModalContent>
-            <ModalHeader class="justify-content-center">
-                <p class="m-0 color-black-100">Select the date(s) you want to assign specific hours</p>
-            </ModalHeader>
-            <ModalBody>
-                <Calendar @ref="calendar" StoreClickedItems ViewOnly="false" StrikeOutNotSelected UnHighlightLoadedDates Flat
-                          SelectedDates="generatedDates.Select(g => g.Date)"
-                          CurrentDate="generatedDates.Select(g => g.Date).FirstOrDefault()" />
-                </ModalBody>
-                <ModalFooter class="d-block">
-                <div>
-                    <h3 class="font-20 text-center color-black-100">What hours will you be available?</h3>
-                    <div class="d-flex justify-content-center mt-4 mb-3 align-items-center">
-                        <Field>
-                            <FieldBody>
-                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                          Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.TimeStart" />
-                            </FieldBody>
-                        </Field>
-                        <span class="mx-2">-</span>
-                        <Field>
-                            <FieldBody>
-                                <TimeEdit class="font-18 border-radius-10 m-font-16 m-border-radius-5"
-                                          Size="Size.Medium" TValue="TimeSpan" @bind-Time="ModelState.TimeEnd" />
-                            </FieldBody>
-                        </Field>
-                    </div>
-                </div>
-                </ModalFooter>
-                <ModalFooter class="justify-content-center pt-4">
-                <Button Clicked="CloseCalendar" class="text-capitalize bg-transparent border-color-grey-200 border-radius-10 px-5">
-                    cancel
-                </Button>
-                <Button Clicked="SetOverrideDates" class="text-capitalize bg-orange-100 color-white-100 border-radius-10 px-5 hover-color-white">
-                    apply
-                </Button>
-                </ModalFooter>
-                </ModalContent>
-                </Modal>
+        <ModalBody class="px-4">
+            <div class="color-black-100">
+                @errorMessageAlert
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
-                <Modal @ref="modalError">
-                <ModalContent Centered class="border-radius-15">
-            <ModalHeader class="justify-content-center pb-0">
-                <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
-                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseErrorMessage" />
-            </ModalHeader>
-            <ModalBody class="px-4">
-                <div class="color-black-100">
-                    @errorMessageAlert
-                </div>
-            </ModalBody>
-        </ModalContent>
-        </Modal>
-
-        <Modal @ref="modalReschedule">
-            <ModalContent Centered>
-                <ModalHeader class="justify-content-center">
-                    <p class="font-weight-700 m-0 color-black-100">Reschedule Event </p>
-                </ModalHeader>
-                <ModalBody class="pt-0">
-                    <Divider class="mt-0 mb-3" />
-                    <Table Borderless>
-                        <TableHeader>
-                            <TableHeaderCell class="color-black-100">
-                                Current Date
-                            </TableHeaderCell>
-                            <TableHeaderCell>
-                                
-                            </TableHeaderCell>
-                            <TableHeaderCell class="color-black-100">
-                                New Date
-                            </TableHeaderCell>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in dateReschedules.OrderBy(d => d.OldDate))
-                            {
-                                <TableRow>
-                                    <TableRowCell class="px-0">
-                                        <DateEdit Disabled class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="item.OldDate">
-                                        </DateEdit>
-                                    </TableRowCell>
-                                    <TableRowCell VerticalAlignment="VerticalAlignment.Middle" class="text-center px-3">
-                                        <img src="images/icons/date-to.png" alt="icon">
-                                    </TableRowCell>
-                                    <TableRowCell class="px-0">
-                                        <DateEdit class="color-black-100 font-18 border-radius-10 field-width m-font-16 m-border-radius-5" Size="Size.Medium" 
-                                            TValue="DateTime" @bind-Date="item.NewDate">
-                                        </DateEdit>
-                                    </TableRowCell>
-                                </TableRow>   
-                            }
-                        </TableBody>
-                    </Table>
-                    <div class="text-end">
-                        <Button Clicked="UpdateReschedule" class="px-4 font-16 bg-orange-100 color-white-100 hover-color-white">
-                            Update
-                        </Button>
-                    </div>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
-    </section>
-
-    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
-               OnConfirmationChanged="ConfirmDeleteChanged">
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+           OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
         <p class="m-0">Confirm Action</p>
     </HeaderContent>
@@ -841,7 +574,7 @@
     public EventCallback OnPrevClick { get; set; }
 
     [Parameter]
-    public Schedule ModelState { get; set; } = new();
+    public Pricing ModelState { get; set; } = new();
 
     [Parameter]
     public string Token { get; set; }
@@ -853,37 +586,38 @@
     private Pricing priceToDelete = new();
     private PricingList modelPricingList = new();
     private PricingList existingList = new PricingList();
-    private Validations? scheduleFormValidation;
     private Validations? pricingFormValidation;
     private Validations? pringListFormValidation;
-    private Validation? dateFromValidation;
-    private Validation? dateToValidation;
     private Validation? maxTicketLimit;
     private bool showErrors = false;
+    private int? activeMenuId;
     private string errorMessageAlert { get; set; }
     private bool DisplayDelete = true;
     private Modal? modalFeeBreakdown { get; set; }
-    private Modal? modalScheduleGuid { get; set; }
     private Modal modalError { get; set; }
-    private Modal? modalReschedule {get; set;}
+    private Modal registrationModal { get; set; }
+    private Modal capacityModal { get; set; }
+    private Modal ticketModal { get; set; }
+    private Modal ticketUpdateModal { get; set; }
     private ModalTicketPricing modalTicketPricing = new();
     private ConfirmDialog confirmDialogRef { get; set; }
-    private IList<DayItem> dayItems = new List<DayItem> {
-        new DayItem { Day = "S", Value = "SUN", DayString = "Sunday"},
-        new DayItem { Day = "M", Value = "MON", DayString = "Monday"},
-        new DayItem { Day = "T", Value = "TUE", DayString = "Tuesday", Selected = true},
-        new DayItem { Day = "W", Value = "WED", DayString = "Wednesday", Selected = true},
-        new DayItem { Day = "T", Value = "THU", DayString = "Thursday", Selected = true},
-        new DayItem { Day = "F", Value = "FRI", DayString = "Friday"},
-        new DayItem {Day = "S", Value = "SAT", DayString = "Saturday"}
-    };
-    private IEnumerable<GenerateRecurrenceDate.DateItem> generatedDates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
-    private Modal? modalCalendar { get; set; }
-    private Calendar? calendar { get; set; }
-    private Dictionary<DateTime, DateOverride> dateOverrides = new();
-    private GenerateRecurrenceDate recurrenceHelper = new();
-    private IList<DateReschedule> dateReschedules = new List<DateReschedule>();
-    private bool rescheduleUpdated = false;
+    private bool isEditing = false;
+    public string errorMessage = string.Empty;
+    private bool isFree = true;
+
+    private int selectedEmailTemplate = 0;
+    private Offcanvas? offcanvas;
+    private string customPendingMessage = string.Empty;
+    private string customAcceptedMessage = string.Empty;
+    private string customDeclinedMesasge = string.Empty;
+
+    private string customPendingMessageOrig = string.Empty;
+    private string customAcceptedMessageOrig = string.Empty;
+    private string customDeclinedMesasgeOrig = string.Empty;
+
+    private Modal? modalCustomQuestion;
+    private List<CustomQuestion> questions = new();
+    private CustomQuestion formQuestion = new();
 
     private async Task NextClick()
     {
@@ -903,27 +637,31 @@
 
     public async Task<bool> FieldValid()
     {
-        if (pricingFormValidation is not null && scheduleFormValidation is not null && pringListFormValidation is not null)
+        bool isSetLimit = true;
+        bool checkTicket = true;
+        if(ModelState.IsLimit == 2)
         {
-            bool pricingValid = await pricingFormValidation.ValidateAll();
-            bool scheduleValid = await scheduleFormValidation.ValidateAll();
-            bool pricingListValid = await pringListFormValidation.ValidateAll();
-            bool isSetLimit = true;
-            if(ModelState.IsLimit == 2)
-            {
-                isSetLimit = ModelState.EventTicketLimit != 0;
-            }
-            bool valid = pricingValid && scheduleValid && pricingListValid && isSetLimit;
-            showErrors = true;
-            StateHasChanged();
-            await Task.Delay(300); // add delay to populate is-invalid class
-            if (!valid)
-            {
-                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
-            }
-            return valid;
+            isSetLimit = ModelState.EventTicketLimit != 0;
         }
-        return false;
+        checkTicket = modelPricingList.Pricings.Count != 0 ? true : false;
+        if (!checkTicket)
+        {
+            StateHasChanged();
+            await Task.Delay(300);
+            errorMessage = "<li>Please add ticket/s to proceed.</li>";
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+            return false;
+        }
+        bool valid = isSetLimit && checkTicket;
+        showErrors = true;
+        StateHasChanged();
+        await Task.Delay(300); // add delay to populate is-invalid class
+        if (!valid)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+        }
+        errorMessage = string.Empty;
+        return valid;
     }
 
     private ValidationMode FormMode
@@ -934,71 +672,14 @@
         }
     }
 
-    private string TimeFromClass
-    {
-        get
-        {
-            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if (dateFromValidation is not null && showErrors)
-            {
-                if (dateFromValidation.Status == ValidationStatus.Error)
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                else
-                {
-                    return $"{defaultClass} is-valid";
-                }
-            }
-            return defaultClass;
-        }
-    }
-
-    private string TimeToClass
-    {
-        get
-        {
-            string defaultClass = "font-18 border-radius-10 m-font-16 m-border-radius-5";
-            if (dateToValidation is not null && showErrors)
-            {
-                if (dateToValidation.Status == ValidationStatus.Error)
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                else
-                {
-                    return $"{defaultClass} is-valid";
-                }
-            }
-            return defaultClass;
-        }
-    }
-
-    private string RecurrencesClass
+    private string LimitClass
     {
         get
         {
             string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
             if (showErrors)
             {
-                if (string.IsNullOrEmpty(ModelState.Recurrences))
-                {
-                    return $"{defaultClass} is-invalid";
-                }
-                return $"{defaultClass} is-valid";
-            }
-            return defaultClass;
-        }
-    }
-
-    private string LimitClass
-    {
-        get
-        {
-            string defaultClass = "field-width form-control font-18 text-capitalize color-black-100 border-radius-10 m-font-16 m-border-radius-5 px-2";
-            if(showErrors)
-            {
-                if(ModelState.EventTicketLimit == 0)
+                if (ModelState.EventTicketLimit == 0)
                 {
                     return $"{defaultClass} is-invalid";
                 }
@@ -1010,108 +691,40 @@
 
     public ModelData GetData()
     {
-        bool isRecurrence = ModelState.Recurrences != "do-not-repeat";
-        bool isMonthly = ModelState.Recurrences == "monthly";
-
-        string weekString = ModelState.Recurrences switch
-        {
-            "every-weekday" => "MON|TUE|WED|THU|FRI",
-            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
-            _ => ""
-        };
-
         ModelData data = new ModelData
-            {
-                DateFrom = ModelState.DateFrom,
-                DateTo = ModelState.DateTo,
-                Recurrences = ModelState.Recurrences,
-
-                DurationEnd = isRecurrence ? ModelState.DurationEnd : null,
-                DurationStart = isRecurrence ? ModelState.DurationStart : null,
-                DurationEvery = isRecurrence ? ModelState.DurationEvery : null,
-                MonthDay = isMonthly ? ModelState.MonthDay : null,
-                MonthRepeat = isMonthly ? ModelState.MonthRepeat : null,
-                MonthSelection = isMonthly ? ModelState.MonthSelection : null,
-                OnDayDate = isMonthly ? ModelState.OnDayDate : null,
-                WeekString = weekString,
-                EventDurationCount = ModelState.EventDurationCount,
-                EventDurationTimeUnit = ModelState.EventDurationTimeUnit,
-                EventTicketLimit = ModelState.EventTicketLimit,
-                IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
-
-                ItemPrices = modelPricingList.Pricings.Select(p =>
-                {
-                    return new ModelData.ItemPrice
-                    {
-                        AbsorbFees = p.AbsorbFees,
-                        MaxSlots = p.MaxSlots,
-                        Price = p.Price,
-                        Description = p.Description,
-                        Id = p.Id,
-                        Name = p.Name,
-                        TicketSold = p.TicketSold
-                    };
-                }).ToList(),
-                DateOverrides = dateOverrides.Select(s =>
-                {
-                    return new ModelData.DateOverride
-                    {
-                        Date = s.Key,
-                        TimeEnd = s.Value.TimeEnd,
-                        TimeStart = s.Value.TimeStart
-                    };
-                }).ToList()
-            };
-        data.ItemPrices.Add(new ModelData.ItemPrice
-            {
-                AbsorbFees = modelPricing.AbsorbFees,
-                MaxSlots = modelPricing.MaxSlots,
-                Price = modelPricing.Price,
-                Description = modelPricing.Description,
-                Id = modelPricing.Id,
-                Name = modelPricing.Name,
-                TicketSold = modelPricing.TicketSold
-            });
-        
-        if(dateReschedules.Count > 0)
         {
-            data.BookedDates = dateReschedules.Select(d => new ModelData.BookedDate {
-                BookedCount = d.BookedCount,
-                Date = d.OldDate,
-                NewDate = d.NewDate,
-                Id = d.Id
-            });
-        }
+            EventTicketLimit = ModelState.EventTicketLimit,
+            IsLimit          = ModelState.EventTicketLimit != 0 ? 2 : 1,
+            IsOpen           = ModelState.IsOpen,
+            IsCapacity       = ModelState.IsCapacity,
+            CapacityCount    = ModelState.CapacityCount,
+            ItemPrices = modelPricingList.Pricings.Select(p =>
+            {
+                return new ModelData.ItemPrice
+                {
+                    AbsorbFees = p.AbsorbFees,
+                    MaxSlots = p.MaxSlots,
+                    Price = p.Price,
+                    Description = p.Description,
+                    Id = p.Id,
+                    Name = p.Name,
+                    TicketSold = p.TicketSold,
+                    RequiredApproval = p.RequiredApproval
+                };
+            }).ToList(),
+            CustomAcceptedBody = customAcceptedMessageOrig,
+            CustomDeclinedBody = customDeclinedMesasgeOrig,
+            CustomPendingBody = customPendingMessageOrig,
+            Questions = questions.Where(q => q.IsNew).ToList(),
+        };
         return data;
     }
 
     public Task SetState(ModelData data)
     {
-        if(data.BookedDates is not null)
-        {
-            foreach (var item in data.BookedDates)
-            {
-                dateReschedules.Add(new DateReschedule {
-                    BookedCount = item.BookedCount,
-                    NewDate = item.Date,
-                    OldDate = item.Date,
-                    Id = item.Id
-                });
-            }
-        }
-        RecurrenceChanged(data.Recurrences);
-
-        // set selected days
-        var days = data.WeekString.Split("|");
-        foreach (var item in dayItems)
-        {
-            item.Selected = days.Contains(item.Value);
-        }
-
-        //existing ticket
         foreach (var item in data.ItemPrices)
         {
-            existingList.Pricings.Add(new Pricing
+            modelPricingList.Pricings.Add(new Pricing
                 {
                     AbsorbFees = item.AbsorbFees,
                     Description = item.Description,
@@ -1119,38 +732,25 @@
                     MaxSlots = item.MaxSlots,
                     Price = item.Price,
                     Name = item.Name,
-                    TicketSold = item.TicketSold
+                    TicketSold = item.TicketSold,
+                    RequiredApproval = item.RequiredApproval
                 });
         }
+        customAcceptedMessageOrig = data.CustomAcceptedBody;
+        customDeclinedMesasgeOrig = data.CustomDeclinedBody;
+        customPendingMessageOrig = data.CustomPendingBody;
 
-        data.ItemPrices = data.ItemPrices.OrderBy(t => t.Id).ToList();
+        customAcceptedMessage = data.CustomAcceptedBody;
+        customDeclinedMesasge = data.CustomDeclinedBody;
+        customPendingMessage = data.CustomPendingBody;
 
-        var last = data.ItemPrices.LastOrDefault();
-        if (last is not null)
+        if(data.Questions is not null && data.Questions.Count > 0)
         {
-            var notLast = data.ItemPrices.Where(p => p.Id != last.Id);
-            foreach (var item in notLast)
-            {
-                modelPricingList.Pricings.Add(new Pricing
-                    {
-                        AbsorbFees = item.AbsorbFees,
-                        Description = item.Description,
-                        Id = item.Id,
-                        MaxSlots = item.MaxSlots,
-                        Price = item.Price,
-                        Name = item.Name,
-                        TicketSold = item.TicketSold,
-                        IsNew = false,
-                    });
-            }
-            modelPricing.AbsorbFees = last.AbsorbFees;
-            modelPricing.Description = last.Description;
-            modelPricing.Id = last.Id;
-            modelPricing.MaxSlots = last.MaxSlots;
-            modelPricing.Price = last.Price;
-            modelPricing.Name = last.Name;
-            modelPricing.TicketSold = last.TicketSold;
-            modelPricing.IsNew = false;
+            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
+                FieldType = q.FieldType,
+                Question = q.Question,
+                Required = q.Required
+            }));
         }
 
         return Task.CompletedTask;
@@ -1186,254 +786,25 @@
         return price.SubTotal;
     }
 
-    private string SetDayStyle(bool selected)
-    {
-        var style = "font-20 prevent-select cursor-pointer rounded-pill round-day me-2";
-        if (selected) return $"{style} bg-orange-100 color-white-100";
-        else return style;
-    }
-
-    private Task RecurrenceChanged(string value)
-    {
-        ModelState.Recurrences = value;
-        ModelState.RepeatEvery = value switch
-        {
-            "do-not-repeat" => "Do not repeat",
-            "every-weekday" => "Week",
-            "daily" => "Day",
-            "weekly" => "Weekly",
-            "monthly" => "Monthly",
-            _ => "Do not repeat"
-        };
-        return Task.CompletedTask;
-    }
-
-    private string ScheduleMessageInfo
-    {
-        get
-        {
-            string durationStart = ModelState.DurationStart.ToString("MM/dd/yyyy");
-            string durationEnd = ModelState.DurationEnd.ToString("MM/dd/yyyy");
-
-            if (ModelState.Recurrences == "do-not-repeat")
-            {
-                return "Repeat only once.";
-            }
-
-            if (ModelState.Recurrences == "every-weekday")
-            {
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every Monday through Friday until {durationEnd}.";
-                }
-
-                return $@"Occurs every {ModelState.DurationEvery} weeks on Monday, Tuesday, Wednesday,
-                    Thursday and Friday starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "daily")
-            {
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every day starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {ModelState.DurationEvery} days starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "weekly")
-            {
-                var days = dayItems.Where(d => d.Selected).Select(d => d.DayString);
-                string selectedDaysString = DayStrings(days);
-
-                if (ModelState.DurationEvery == 1)
-                {
-                    return $"Occurs every {selectedDaysString} starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {ModelState.DurationEvery} weeks on {selectedDaysString} starting {durationStart} until {durationEnd}";
-            }
-
-            if (ModelState.Recurrences == "monthly")
-            {
-                string everyMonthString = ModelState.DurationEvery > 1 ? $"{ModelState.DurationEvery} months" : "month";
-
-                if (ModelState.MonthSelection == 1)
-                {
-                    return $"Occurs every {everyMonthString} on day {ModelState.OnDayDate} starting {durationStart} until {durationEnd}";
-                }
-
-                return $"Occurs every {everyMonthString} on the {ModelState.MonthRepeat} {ModelState.MonthDay.Capitalize()} starting {durationStart} until {durationEnd}";
-            }
-
-            return string.Empty;
-        }
-    }
-
-    private string DayStrings(IEnumerable<string> strings)
-    {
-        string dayString = string.Empty;
-        if (strings.Count() > 1)
-        {
-            dayString = string.Join(", ", strings.Take(strings.Count() - 1));
-            dayString += " and " + strings.Last();
-        }
-        else
-        {
-            dayString = strings.FirstOrDefault();
-        }
-
-        return dayString;
-    }
-
-    private Task OnWeeklyDaySelected(DayItem item)
-    {
-        if (dayItems.Count(d => d.Selected) == 1 && item.Selected) return Task.CompletedTask;
-        item.Selected = !item.Selected;
-        return Task.CompletedTask;
-    }
-
-    private async Task ViewGuide()
-    {
-        await modalScheduleGuid.Show();
-    }
-
-    private async Task CloseGuide()
-    {
-        await modalScheduleGuid.Close(CloseReason.UserClosing);
-    }
-
-    private async Task ViewCalendar()
-    {
-        await GenerateEventDates();
-        var dates = generatedDates.Select(g => g.Date);
-        await calendar?.LoadDates(dates, dates.FirstOrDefault());
-        await modalCalendar?.Show();
-        StateHasChanged();
-    }
-
-    private async Task CloseCalendar()
-    {
-        await modalCalendar?.Close(CloseReason.UserClosing);
-    }
-
-    private Task GenerateEventDates()
-    {
-        var every = ModelState.DurationEvery;
-        var dateStart = ModelState.DurationStart;
-        var dateEnd = ModelState.DurationEnd;
-
-        var timeStart = ModelState.EventDurationTimeStart;
-        var timeDuration = ModelState.DateTo - ModelState.DateFrom;
-
-        string weekString = ModelState.Recurrences switch
-        {
-            "every-weekday" => "MON|TUE|WED|THU|FRI",
-            "weekly" => string.Join("|", dayItems.Where(i => i.Selected).Select(i => i.Value)),
-            _ => ""
-        };
-
-        var monthSelection = ModelState.MonthSelection;
-        var onDayDate = ModelState.OnDayDate;
-        var monthRepeat = ModelState.MonthRepeat;
-        var monthDay = ModelState.MonthDay;
-
-        generatedDates = ModelState.Recurrences switch {
-            "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
-            "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
-            "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-            "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection, 
-                onDayDate, monthRepeat, monthDay),
-            _ => recurrenceHelper.GenerateNoRepeat(ModelState.DateFrom, ModelState.DateTo)
-        };
-        return Task.CompletedTask;
-    }
-
-    private async Task SetOverrideDates()
-    {
-        if (calendar is null) return;
-
-        var dates = calendar.GetClickedDates;
-        foreach (var date in dates)
-        {
-            if (dateOverrides.ContainsKey(date.Date))
-            {
-                dateOverrides[date.Date].TimeStart = ModelState.TimeStart;
-                dateOverrides[date.Date].TimeEnd = ModelState.TimeEnd;
-            }
-            else
-            {
-                dateOverrides.Add(date.Date, new DateOverride
-                    {
-                        Date = date.Date,
-                        TimeEnd = ModelState.TimeEnd,
-                        TimeStart = ModelState.TimeStart
-                    });
-            }
-        }
-
-        await CloseCalendar();
-    }
-
     private string TimeToString(TimeSpan time)
     {
         return DateTime.Today.Add(time).ToString("hh:mmtt");
     }
-
-    private bool AlreadyHaveBooked
-    {
-        get 
-        {
-            return dateReschedules.Any(d => d.BookedCount > 0);
-        }
-    }
-
-    private async Task UpdateReschedule()
-    {
-        rescheduleUpdated = true;
-        await modalReschedule?.Close(CloseReason.UserClosing);
-    }
-
-    private IEnumerable<string> RescheduleStringDates 
-    {
-        get 
-        {
-            if(rescheduleUpdated)
-            {
-                return dateReschedules
-                            .OrderBy(d => d.Id)
-                            .DistinctBy(d => d.NewDate.Date)
-                            .Select(d => d.NewDate.ToString("MMMM dd, yyyy"));
-            }
-
-            return dateReschedules
-                        .OrderBy(d => d.Id)
-                        .Select(d => d.OldDate.ToString("MMMM dd, yyyy"));
-        }
-    }
-
     public class ModelData
     {
-        public DateTime DateFrom { get; set; }
-        public DateTime DateTo { get; set; }
-        public string Recurrences { get; set; }
         public IList<ItemPrice> ItemPrices { get; set; } = new List<ItemPrice>();
-        public IList<DateOverride> DateOverrides { get; set; }
-
-        public DateTime? DurationStart { get; set; } = DateTime.Now;
-        public DateTime? DurationEnd { get; set; } = DateTime.Now;
-        public int? DurationEvery { get; set; }
-        public int? MonthSelection { get; set; }
-        public string? MonthRepeat { get; set; }
-        public string? MonthDay { get; set; }
-        public int? OnDayDate { get; set; }
-        public string? WeekString { get; set; }
-        public int EventDurationCount { get; set; }
-        public string EventDurationTimeUnit { get; set; }
         public int TicketSold { get; set; }
         public int IsLimit { get; set; } = 1;
         public int EventTicketLimit { get; set; }
-        public IEnumerable<BookedDate> BookedDates {get; set;}
+        public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
+
+        public string CustomPendingBody {get; set;}
+        public string CustomAcceptedBody {get; set;}
+        public string CustomDeclinedBody {get; set;}
+
+        public List<CustomQuestion> Questions {get; set;}
 
         public class ItemPrice
         {
@@ -1445,21 +816,7 @@
             public string Name { get; set; }
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
-        }
-
-        public class DateOverride
-        {
-            public DateTime Date { get; set; }
-            public TimeSpan TimeStart { get; set; }
-            public TimeSpan TimeEnd { get; set; }
-        }
-
-        public class BookedDate 
-        {
-            public int Id {get; set;}
-            public DateTime Date {get; set;}
-            public DateTime NewDate {get; set;}
-            public int BookedCount {get; set;}
+            public bool RequiredApproval {get; set;}
         }
     }
 
@@ -1468,96 +825,11 @@
         public IList<Pricing> Pricings { get; set; } = new List<Pricing>();
     }
 
-    public class Schedule
-    {
-        private DateTime dateFrom = DateTime.Now;
-        [Required(ErrorMessage = "The date from field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DateFrom
-        {
-            get
-            {
-                dateFrom = DurationStart.Date + EventDurationTimeStart;
-                return dateFrom;
-            }
-            set
-            {
-                dateFrom = value;
-            }
-        }
-
-        [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeFrom { get; set; } = DateTime.Now.TimeOfDay;
-
-        private DateTime dateTo = DateTime.Now;
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        [DateLessThan("DateFrom", ErrorMessage = "Invalid date range.")]
-        public DateTime DateTo
-        {
-            get
-            {
-                dateTo = EventDurationTimeUnit switch
-                {
-                    "hrs" => DateFrom.AddHours(EventDurationCount),
-                    "days" => DateFrom.AddDays(EventDurationCount),
-                    "weeks" => DateFrom.AddDays(7 * EventDurationCount),
-                    "months" => DateFrom.AddMonths(EventDurationCount),
-                    _ => DateFrom
-                };
-                return dateTo;
-            }
-            set
-            {
-                dateTo = value;
-            }
-        }
-
-        [Required(ErrorMessage = "The time field is mandatory.")]
-        public TimeSpan TimeTo { get; set; } = DateTime.Now.TimeOfDay;
-
-        [Required(ErrorMessage = "The recurrences field is mandatory.")]
-        public string Recurrences { get; set; } = "do-not-repeat";
-
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        public DateTime DurationStart { get; set; } = DateTime.Now;
-
-        [Required(ErrorMessage = "The date to field is mandatory.")]
-        [DateOnwards(ErrorMessage = "Past dates not allowed.", Strict = false)]
-        [DateLessThan("DurationStart", ErrorMessage = "Invalid date range.")]
-        public DateTime DurationEnd { get; set; } = DateTime.Now;
-
-        public int DurationEvery { get; set; } = 1;
-        public string RepeatEvery { get; set; }
-
-        // monthly section fields
-        public int MonthSelection { get; set; } = 1;
-        public string MonthRepeat { get; set; } = "first";
-        public string MonthDay { get; set; } = "sunday";
-
-        [Range(1, 31)]
-        public int OnDayDate { get; set; } = 1;
-
-        [Range(1, int.MaxValue)]
-        public int EventDurationCount {get; set;} = 1;
-        public string EventDurationTimeUnit {get; set;} = "hrs";
-        public TimeSpan EventDurationTimeStart {get; set;} = DateTime.Now.TimeOfDay;
-        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
-        public int EventTicketLimit { get; set; }
-        public int IsLimit { get; set; } = 1;
-
-        // for date override
-        public TimeSpan TimeStart { get; set; } = DateTime.Now.TimeOfDay;
-        public TimeSpan TimeEnd { get; set; } = DateTime.Now.TimeOfDay;
-        public int TicketSold { get; set; } = 0;
-    }
-
     public class Pricing
     {
         [Required(ErrorMessage = "The price field is mandatory.")]
-        [Range(1, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
-        public decimal? Price { get; set; } = null;
+        [Range(0, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
+        public decimal? Price { get; set; } = 0;
 
         [Required(ErrorMessage = "The max slots field is mandatory.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
@@ -1572,10 +844,15 @@
         [Required(ErrorMessage = "The name field is mandatory.")]
         public string Name { get; set; }
 
-        public int TicketSold { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Please specify max ticket per customer.")]
+        public int EventTicketLimit { get; set; }
+        public int IsLimit { get; set; } = 1;
+        public int TicketSold { get; set; }
+        public bool IsOpen { get; set; } = true;
+        public bool IsCapacity { get; set; } = false;
+        public int CapacityCount { get; set; }
         // extras
-        public bool IsOpen { get; set; } = false;
         public int Order { get; set; }
         public int TempId { get; set; }
         public bool IsNew { get; set; }
@@ -1588,6 +865,8 @@
                 return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
             }
         }
+
+        public bool RequiredApproval {get; set;}
     }
 
     private class ModalTicketPricing
@@ -1638,13 +917,6 @@
         public bool Selected { get; set; }
     }
 
-    private record DateOverride
-    {
-        public DateTime Date { get; set; }
-        public TimeSpan TimeStart { get; set; }
-        public TimeSpan TimeEnd { get; set; }
-    }
-
     public class ComponentSummary
     {
         public OteOnlineEvent.ModelData OnlineData { get; set; }
@@ -1657,32 +929,51 @@
             bool priceValid = await pricingFormValidation.ValidateAll();
             if (priceValid)
             {
-                if (existingList.Pricings.Count == 0)
+                if (isEditing)
                 {
-                    modelPricing.TempId = 1;
-                    if (modelPricing.IsDeleted)
+                    if (!modelPricing.IsNew)
                     {
-                        modelPricing.Price = 0;
-                        modelPricing.Name = string.Empty;
-                        modelPricing.Description = string.Empty;
-                        modelPricing.MaxSlots = 0;
-                        modelPricing.IsNew = true;
-                        modelPricing.IsDeleted = false;
+                        var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
+                        if (existingTicket != null)
+                        {
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            await ticketModal.Hide();
+                            isEditing = false;
+                            modelPricing = new Pricing();
+                            pricingFormValidation.ClearAll();
+                        }
                     }
                     else
                     {
-                        existingList.Pricings.Add(modelPricing);
+                        var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.TempId == modelPricing.TempId);
+                        if (existingTicket != null)
+                        {
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            await ticketModal.Hide();
+                            isEditing = false;
+                            modelPricing = new Pricing();
+                            pricingFormValidation.ClearAll();
+                        }
                     }
+
                 }
-                modelPricingList.Pricings = existingList.Pricings;
-                int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
-                int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
-                existingList.Pricings.Add(new Pricing { TempId = maxId, Order = order, IsNew = true });
-                var last = existingList.Pricings.LastOrDefault();
-                if (last is not null)
+                else
                 {
-                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
-                    modelPricing = last;
+                    int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+                    int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+                    modelPricing.TempId = maxId;
+                    modelPricing.Order = order;
+                    modelPricing.IsNew = true;
+                    modelPricingList.Pricings.Add(modelPricing);
+                    await ticketModal.Hide();
+                    modelPricing = new Pricing();
+                    pricingFormValidation.ClearAll();
                 }
             }
         }
@@ -1709,7 +1000,6 @@
     {
         if (value)
         {
-            modelPricingList.Pricings = existingList.Pricings;
             if (priceToDelete.TempId == 0)
             {
                 modelPricingList.Pricings.Where(a => a.Id == priceToDelete.Id).FirstOrDefault().IsDeleted = true;
@@ -1719,61 +1009,15 @@
                     }, Token);
                 if (deleteTicket.Result != null && deleteTicket.Result.IsSuccess)
                 {
-                    existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
-                    var last = existingList.Pricings.LastOrDefault();
-                    if (last is not null)
-                    {
-                        modelPricingList.Pricings = existingList.Pricings.Where(p => p.Id != last.Id).ToList();
-                        modelPricing = last;
-                    }
-                    else
-                    {
-                        AddMoreTicketPrice();
-                    }
+                    modelPricingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
                 }
             }
             else
             {
                 modelPricingList.Pricings.Where(a => a.TempId == priceToDelete.TempId).FirstOrDefault().IsDeleted = true;
-                existingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
-                var last = existingList.Pricings.LastOrDefault();
-                if (last is not null && last.TempId != 0)
-                {
-                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.TempId != last.TempId).ToList();
-                    modelPricing = last;
-                }
-                else if (last is not null && last.TempId == 0)
-                {
-                    modelPricingList.Pricings = existingList.Pricings.Where(p => p.Id != last.Id).ToList();
-                    modelPricing = last;
-                }
-                else
-                {
-                    existingList.Pricings.Clear();
-                    AddMoreTicketPrice();
-                }
+                modelPricingList.Pricings = modelPricingList.Pricings.Where(a => !a.IsDeleted).OrderBy(a => a.Order).ToList();
             }
         }
-    }
-
-    private record DateReschedule
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public DateTime OldDate { get; set; }
-
-        [Required]
-        public DateTime NewDate { get; set; }
-
-        public int BookedCount { get; set; }
-    }
-
-    private record DateItem 
-    {
-        public DateTime Date {get; set;}
-        public DateTime DateStart {get; set;}
-        public DateTime DateEnd {get; set;}
     }
 
     private async Task CheckLimitChanged(int type)
@@ -1784,5 +1028,182 @@
             ModelState.EventTicketLimit = 0;
         }
         StateHasChanged();
+    }
+    private async Task CheckRegistration(ChangeEventArgs e)
+    {
+        ModelState.IsOpen = (bool)e.Value;
+    }
+    private async Task CheckCapacity(ChangeEventArgs e)
+    {
+        ModelState.IsCapacity = (bool)e.Value;
+        if (ModelState.IsCapacity == false)
+        {
+            ModelState.CapacityCount = 0;
+        }
+    }
+    private void onClickMenu(int ticketId)
+    {
+        if (activeMenuId == ticketId)
+        {
+            activeMenuId = null; // Close the menu if it's already open
+        }
+        else
+        {
+            activeMenuId = ticketId; // Open the menu for the clicked ticket
+        }
+    }
+
+    private string ShowMenu(int ticketId)
+    {
+        return activeMenuId == ticketId ? "show" : "";
+    }
+
+    private async Task OnEditTicket(Pricing ticket)
+    {
+        modelPricing = new Pricing
+            {
+                Id         = ticket.Id,
+                Name       = ticket.Name,
+                Price      = ticket.Price,
+                MaxSlots   = ticket.MaxSlots,
+                AbsorbFees = ticket.AbsorbFees,
+                IsNew      = ticket.IsNew,
+                TempId     = ticket.TempId
+            };
+        isEditing = true;
+        await ticketModal.Show();
+    }
+    private async Task OnCancelEdit()
+    {
+        await ticketModal.Hide();
+        pricingFormValidation.ClearAll();
+        isEditing = false;
+        modelPricing = new Pricing();
+    }
+
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        isFree = !(bool)e.Value;
+        if (isFree)
+        {
+            modelPricing.Price = 0;
+        }
+        else {
+            modelPricing.RequiredApproval = false;
+        }
+    }
+
+    private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
+    {
+        e.Cancel = !(e.CloseReason == CloseReason.UserClosing);
+        return Task.CompletedTask;
+    }
+
+    private Task ShowOffcanvas()
+    {
+        return offcanvas?.Show();
+    }
+
+    private Task CloseOffCanvas()
+    {
+        return offcanvas.Close(CloseReason.UserClosing);
+    }
+
+    private Task OnPendingEmailTemplateClick()
+    {
+        selectedEmailTemplate = 0;
+        return ShowOffcanvas();
+    }
+
+    private Task OnAcceptedTemplateClick()
+    {
+        selectedEmailTemplate = 1;
+        return ShowOffcanvas();
+    }
+
+    private Task OnDeclinedTemplateClick()
+    {
+        selectedEmailTemplate = 2;
+        return ShowOffcanvas();
+    }
+
+    private Task SavePendingTemplate()
+    {
+        customPendingMessageOrig = customPendingMessage;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelPendingTemplate()
+    {
+        customPendingMessage = customPendingMessageOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task SaveAcceptedTemplate()
+    {
+        customAcceptedMessageOrig = customAcceptedMessage;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelAcceptedTemplate()
+    {
+        customAcceptedMessage = customAcceptedMessageOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task SaveDeclinedTemplate()
+    {
+        customDeclinedMesasgeOrig = customDeclinedMesasge;
+        return CloseOffCanvas();
+    }
+
+    private Task CancelDeclinedTemplate()
+    {
+        customDeclinedMesasge = customDeclinedMesasgeOrig;
+        return CloseOffCanvas();
+    }
+
+    private Task OnOffCanvasSave()
+    {
+        if(selectedEmailTemplate == 0) return SavePendingTemplate();
+        if(selectedEmailTemplate == 1) return SaveAcceptedTemplate();
+
+        return SaveDeclinedTemplate();
+    }
+
+    private Task OnOffCanvasCancel()
+    {
+        if(selectedEmailTemplate == 0) return CancelPendingTemplate();
+        if(selectedEmailTemplate == 1) return CancelAcceptedTemplate();
+
+        return CancelDeclinedTemplate();
+    }
+
+    private Task ShowCustomQuestionModal()
+    {
+        return modalCustomQuestion?.Show();
+    }
+
+    private Task CloseCustomQuestion()
+    {
+        return modalCustomQuestion?.Close(CloseReason.UserClosing);
+    }
+
+    private Task AddQuestion()
+    {
+        questions.Add(new CustomQuestion {
+            Question = formQuestion.Question,
+            Required = formQuestion.Required,
+            IsNew = true
+        });
+        return CloseCustomQuestion();
+    }
+
+    public class CustomQuestion 
+    {
+        public string Question {get; set;}
+        public bool Required {get; set;}
+        public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew {get; set;} = false;
     }
 }

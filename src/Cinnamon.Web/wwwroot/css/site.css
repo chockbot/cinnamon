@@ -626,18 +626,18 @@ a,
 
 /* dashboard styling */
 .dashboard-layout .b-layout-sider {
-  background-color: #f3f6fc;
-  transition: left 0.5s ease-in-out;
-  min-width: 270px;
+    background-color: #343D4C;
+    transition: left 0.5s ease-in-out;
+    min-width: 270px;
 }
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
-  .dashboard-layout .b-layout-sider {
-    background-color: #f3f6fc;
-    transition: left 0.5s ease-in-out;
-    min-width: 210px;
-  }
+    .dashboard-layout .b-layout-sider {
+        background-color: #343D4C;
+        transition: left 0.5s ease-in-out;
+        min-width: 210px;
+    }
 }
 
 .dashboard-layout .b-layout-sider-content {
@@ -736,11 +736,11 @@ a,
     background-color: transparent;
   }
 
-  .dashboard-layout .b-layout-sider .b-layout-sider-content {
-    width: 300px;
-    background-color: #f3f6fc;
-    box-shadow: 0px 0px 5px;
-  }
+    .dashboard-layout .b-layout-sider .b-layout-sider-content {
+        width: 300px;
+        background-color: #343D4C;
+        box-shadow: 0px 0px 5px;
+    }
 }
 
 input::-ms-reveal,
@@ -1718,9 +1718,9 @@ input::-ms-clear {
 }
 
 /* ote creation page styling */
-.xp-ote-page-wrapper .col-left {
+/*.xp-ote-page-wrapper .col-left {
   padding-right: 4rem !important;
-}
+}*/
 
 .xp-ote-page-wrapper .col-right {
   padding-left: 4rem !important;
@@ -1748,6 +1748,10 @@ input::-ms-clear {
 .ote-pricing-wrapper .custom-checkbox input[type="checkbox"] {
   width: 25px;
   height: 25px;
+}
+
+.ote-pricing-wrapper .reschedule-date-width {
+  /* width: 130px; */
 }
 
 .ote-location-wrapper .custom-checkbox input[type="checkbox"]:checked {
@@ -2993,6 +2997,122 @@ input::-ms-clear {
 #explore-filter-modal #filter-by-rating .selected {
   border: 1px solid #febe10;
   background-color: rgba(243, 222, 186, 0.5);
+}
+
+/* for activity selection  */
+.activity-selection-wrapper .activity-selection-section {
+  min-height: 100vh;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.activity-selection-wrapper .activity-selection-section .experience-briefing {
+  padding-right: 50px;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .activity-selection-wrapper .activity-selection-section {
+    align-items: start;
+    min-height: unset;
+  }
+
+  .activity-selection-wrapper .activity-selection-section .experience-briefing {
+    padding-right: 0;
+  }
+}
+
+/* for direct student styling */
+.direct-students-wrapper .search-list-grp-container .list-group-item.active {
+  background-color: #f3f6fc;
+  border-color: #d9d9d9;
+  color: #343d4c;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item {
+  border-left: 0;
+  border-right: 0;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item:first-child {
+  border-top: 0;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item:last-child {
+  border-bottom: 0;
+}
+
+.direct-students-wrapper .list-grp-added-students-container .list-group-item {
+  background-color: inherit;
+  color: #343d4c;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .list-group-item.active {
+  border-top-width: 0;
+  background-color: #d9d9d9;
+  border-color: #d9d9d9;
+}
+
+@media only screen and (max-width: 767px) {
+  .direct-students-wrapper .student-info-grp {
+    order: 2;
+  }
+
+  .direct-students-wrapper .selected-student-grp {
+    order: 1;
+    margin-bottom: 1rem;
+  }
+}
+
+/* update direct students wrapper */
+
+.update-direct-students-wrapper .field-name {
+  width: 300px;
+}
+
+.update-direct-students-wrapper .field-gender {
+  width: 160px;
+}
+
+.update-direct-students-wrapper .field-birthmonth {
+  width: 190px;
+}
+
+.update-direct-students-wrapper .field-birthyear {
+  width: 150px;
+}
+
+.update-direct-students-wrapper .accordion-button:not(.collapsed) {
+  background-color: #f3f6fc;
+  color: #343d4c;
+}
+
+@media only screen and (max-width: 767px) {
+  .update-direct-students-wrapper .field-name {
+    width: 100%;
+  }
+
+  .update-direct-students-wrapper .field-gender {
+    width: 100%;
+  }
+
+  .update-direct-students-wrapper .field-birthmonth {
+    width: 50%;
+  }
+
+  .update-direct-students-wrapper .field-birthyear {
+    width: 50%;
+  }
 }
 
 /* general css */

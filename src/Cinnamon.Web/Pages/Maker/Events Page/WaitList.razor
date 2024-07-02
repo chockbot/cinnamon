@@ -1,0 +1,275 @@
+﻿@layout EmptyLayout;
+@using ClosedXML.Excel;
+@using Newtonsoft.Json;
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject INotificationService NotificationService;
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+
+<div class="customer-list">
+    <div class="ticket-table">
+        <div class="table-list">
+            @if (OteWaitlist == null || !OteWaitlist.Any())
+            {
+                <div class="sub-text">
+                    No waitlist in this event!
+                </div>
+            }
+            else
+            {
+                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell class="th-id">
+                            Name
+                        </TableHeaderCell>
+                        <TableHeaderCell class="th-name">
+                            Ticket
+                        </TableHeaderCell>
+                        <TableHeaderCell class="th-email">
+                            Price
+                        </TableHeaderCell>
+                        <TableHeaderCell class="th-status">
+                            Action
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in OteWaitlist)
+                        {
+                            <TableRow @key="item">
+                                <TableRowCell class="tr-name">
+                                    <span>@item.CustomerName</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <span>@item.TicketName</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <span>@item.TicketPrice</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                        Update
+                                    </button>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            }
+        </div>
+    </div>
+</div>
+
+
+@if (WaitlistDetails != null)
+{
+    <Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+    <OffcanvasHeader class="px-0 py-4 bg-white-100">
+        <div class="px-3 d-flex justify-content-between position-relative w-100">
+            <img src="images/ote/tiny-clock.png" alt="clock">
+            <button class="btn-close" style="right: 0;" @onclick="CloseOffCanvas" />
+        </div>
+    </OffcanvasHeader>
+    <OffcanvasBody class="px-0 pt-0">
+        <Divider class="m-0" />
+        <div class="details">
+            <p class="title">Waitlist Approval</p>
+        </div>
+        <div class="customer-details">
+            <img class="profile-img" src="@WaitlistDetails.CustomerProfile" />
+            <div class="profile-details">
+                <p class="name">@WaitlistDetails.CustomerName</p>
+                <p class="name">@WaitlistDetails.CustomerEmail</p>
+            </div>
+        </div>
+        <div class="registration">
+            <p class="name">Registration Time</p>
+            <p class="reg-time">@DateTime.Now.ToString("MMM dd, hh:mm tt")</p>
+
+            <p class="name">Details:</p>
+            <ul>
+                <li class="name">@WaitlistDetails.TicketName</li>
+                <li class="name">@WaitlistDetails.TicketPrice</li>
+            </ul>
+            <div class="d-flex justify-content-center gap-1">
+                <Button class="ticket-approve" Clicked="ApprovedWaitlist">
+                    Approve
+                </Button>
+                <Button class="ticket-decline" Clicked="DeclineWaitlist">
+                    Decline
+                </Button>
+            </div>
+        </div>
+    </OffcanvasBody>
+    </Offcanvas>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<OteSchedule> OteTickets { get; set; }
+
+    [Parameter]
+    public string Token { get; set; }
+
+    [Parameter]
+    public int ProviderId { get; set; }
+
+    [Parameter]
+    public int ActivityId { get; set; }
+
+    public List<OteWaitlist> OteWaitlist = new List<OteWaitlist>();
+
+    public OteWaitlist WaitlistDetails { get; set; }
+
+    private Offcanvas? offcanvas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWaitlist();
+        foreach (var item in OteWaitlist)
+        {
+            var deserializedPayload = JsonConvert.DeserializeObject<IEnumerable<TicketDetails>>(item.Payload);
+            if (deserializedPayload != null)
+            {
+                var ticketNames = new List<string>();
+                foreach (var ticket in deserializedPayload)
+                {
+                    // Get Ticket Details
+                    item.EventDate = ticket.Date;
+                    var ticketDetails = OteTickets.FirstOrDefault(a => a.OtePricing.OteSchedulePricingsId == ticket.Id);
+                    if (ticketDetails != null)
+                    {
+                        item.TicketPrice += ticketDetails.OtePricing.Price; 
+                        ticketNames.Add(ticketDetails.OtePricing.Name); 
+                    }
+                }
+                item.TicketName = ticketNames.Count > 1 ? string.Join(", ", ticketNames) : ticketNames.FirstOrDefault();
+            }
+            else
+            {
+                Console.WriteLine($"Payload is null for item with ID: {item.Id}");
+            }
+        }
+    } 
+
+    private class TicketDetails
+    {
+        [JsonProperty("Id")]
+        public int Id { get; set; }
+
+        [JsonProperty("Count")]
+        public int Count { get; set; }
+
+        [JsonProperty("Date")]
+        public DateTime Date { get; set; }
+    }
+
+    private Task OnPendingWaitlistClick()
+    {
+        return ShowOffcanvas();
+    }
+
+    private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
+    {
+        WaitlistDetails = new OteWaitlist();
+        e.Cancel = !(e.CloseReason == CloseReason.UserClosing);
+        return Task.CompletedTask;
+    }
+
+    private Task ShowOffcanvas()
+    {
+        return offcanvas?.Show();
+    }
+
+    private Task CloseOffCanvas()
+    {
+        WaitlistDetails = new OteWaitlist();
+        return offcanvas.Close(CloseReason.UserClosing);
+    }
+
+    public async Task UpdateTicketStatus(OteWaitlist waitlist)
+    {
+        WaitlistDetails = waitlist;
+        //Get Cuustomer Details
+        var result = await accountApiHandler.GetCustomerById(waitlist.CustomerId);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            waitlist.CustomerProfile = result.Result.Result.ProfileImg;
+            waitlist.CustomerEmail = result.Result.Result.Email;
+        }
+        await OnPendingWaitlistClick();
+    }
+
+    public async Task ApprovedWaitlist()
+    {
+        var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
+            {
+                Id            = WaitlistDetails.Id,
+                ActivityId    = WaitlistDetails.ActivityId,
+                ScheduleId    = WaitlistDetails.ScheduleId,
+                CustomerId    = WaitlistDetails.CustomerId,
+                CustomerEmail = WaitlistDetails.CustomerEmail,
+                CustomerName  = WaitlistDetails.CustomerName,
+                ProviderId    = WaitlistDetails.ProviderId,
+                EventDate     = WaitlistDetails.EventDate,
+                Status        = 2,
+                Payload       = WaitlistDetails.Payload
+            }, Token);
+        if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
+        {
+            await GetWaitlist();
+            await CloseOffCanvas();
+            await NotificationService.Success("Successfully approved waitlist.", "Success");
+
+        }
+    }
+    public async Task DeclineWaitlist()
+    {
+        var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
+            {
+                Id            = WaitlistDetails.Id,
+                ActivityId    = WaitlistDetails.ActivityId,
+                ScheduleId    = WaitlistDetails.ScheduleId,
+                CustomerId    = WaitlistDetails.CustomerId,
+                CustomerName  = WaitlistDetails.CustomerName,
+                CustomerEmail = WaitlistDetails.CustomerEmail,
+                ProviderId    = WaitlistDetails.ProviderId,
+                EventDate     = WaitlistDetails.EventDate,
+                Status        = 3,
+                Payload       = WaitlistDetails.Payload
+            }, Token);
+        if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
+        {
+            await GetWaitlist();
+            await CloseOffCanvas();
+            await NotificationService.Error("Successfully declined waitlist.", "Success");
+        }
+    }
+    private async Task GetWaitlist()
+    {
+        var waitlists = await activityApiHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
+        {
+            ProviderId = ProviderId,
+            ActivityId = ActivityId,
+            Status = new[] {1}
+        }, Token);
+        if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
+        {
+            OteWaitlist = waitlists.Result.Result.Select(e => new OteWaitlist
+            { 
+                Id           = e.Id,
+                ActivityId   = e.ActivityId,
+                CustomerId   = e.CustomerId,
+                CustomerName = e.CustomerName,
+                Payload      = e.Payload,
+                ProviderId   = e.ProviderId,
+                ScheduleId   = e.ScheduleId,
+                Status       = e.Status
+            }).ToList();
+        }
+    }
+}

@@ -60,15 +60,17 @@
 }
 .amount {
     font-family: Nunito;
-    font-size: 36px;
+    font-size: 30px;
     font-weight: 800;
     color: #343D4C;
+    margin-bottom: 2px;
 }
 .amount-description {
     font-family: Nunito;
     font-size: 14px;
     font-weight: 400;
     color: #717171;
+    margin-bottom: 2px;
 
 }
 .cinnamon-credits-table{
@@ -267,6 +269,9 @@
 }
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .amount {
+        font-size: 20px;
+    }
     .earnings-wrapper {
         display: block;
         margin-right: 0;
@@ -276,7 +281,11 @@
         margin-bottom: 1rem;
     }
 }
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
+    .amount {
+        font-size: 18px;
+    }
     .earnings-wrapper {
         display: block;
         margin-right: 0;
@@ -371,5 +380,16 @@
         }
     ::deep .request-refund-table td {
         padding: 5px;
+    }
+}
+
+@media screen and (max-width: 738px){
+    .earnings-wrapper {
+        display: block;
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .experience-box{
+        margin-bottom: 0.5rem;
     }
 }

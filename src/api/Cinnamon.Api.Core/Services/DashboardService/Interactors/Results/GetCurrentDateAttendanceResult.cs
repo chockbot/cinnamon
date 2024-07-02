@@ -1,3 +1,5 @@
+using Cinnamon.Framework.Enums;
+
 namespace Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;
 
 public class GetCurrentDateAttendanceResult 
@@ -24,5 +26,6 @@ public class GetCurrentDateAttendanceResult
         public string Remarks {get; set;}
         public DateTime ExpirationDateStart { get; set; }
         public DateTime ExpirationDateEnd { get; set; }
+        public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     }
 }

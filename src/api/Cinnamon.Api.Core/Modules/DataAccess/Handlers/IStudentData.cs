@@ -18,4 +18,5 @@ public interface IStudentData
     Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById (GetAllStudentsByIdArgs args);
     Task<AppResult<GetExpiringStudentsResult>> GetExpiringStudents();
     Task<AppResult<GetEnrolleeMasterListResult>> GetEnrolleeMasters(GetEnrolleeMasterListArgs args);
+    Task<AppResult<GetEnrolledStudentsResult>> GetEnrolledStudentsByProvider(GetEnrolledStudentsArgs args);
 }

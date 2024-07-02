@@ -126,17 +126,20 @@ public class OteTicketRepository : IOteTicketRepository
             {
                 var ticketDTO = new OteScheduleDTO
                 {
-                    ActivityId = activityId,
-                    From = s.From,
-                    To = s.To,
+                    ActivityId  = activityId,
+                    From        = s.From,
+                    To          = s.To,
                     Recurrences = s.Recurrences,
                     OteSchedulePricingDTO = new OteSchedulePricingDTO
                     {
-                        Name = s.OteSchedulePricingDTO.Name,
-                        Description = s.OteSchedulePricingDTO.Description,
-                        MaxSlots = s.OteSchedulePricingDTO.MaxSlots,
-                        Sold = s.OteSchedulePricingDTO.Sold,
-                        Available = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold
+                        Id                    = s.OteSchedulePricingDTO.Id,
+                        Name                  = s.OteSchedulePricingDTO.Name,
+                        Description           = s.OteSchedulePricingDTO.Description,
+                        MaxSlots              = s.OteSchedulePricingDTO.MaxSlots,
+                        Sold                  = s.OteSchedulePricingDTO.Sold,
+                        Available             = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
+                        Price                 = s.OteSchedulePricingDTO.Price,
+                        OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId
                     }
                 };
                 return ticketDTO;
@@ -252,6 +255,23 @@ public class OteTicketRepository : IOteTicketRepository
         catch (Exception ex)
         {
             return AppResult<OteSharedLinkDTO>.CreateFailed(ex, "An error occured when updating shared link status.");
+        }
+    }
+
+    public async Task<AppResult<int>> CountBookedTickets(int activityId)
+    {
+        try
+        {
+            Expression<Func<Entities.OteTicket, bool>> filter = 
+                a => a.ActivityId == activityId;
+
+            var result = await dataStore.OteTicket.Count(filter);
+
+            return AppResult<int>.CreateSucceeded(result.Result, "Successfully count booked tickets.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<int>.CreateFailed(ex, "An error occured when counting the booked tickets.");
         }
     }
 }

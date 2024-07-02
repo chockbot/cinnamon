@@ -61,6 +61,14 @@ public interface IDataStore
     IAnnouncement Announcement {get;}
     IDynamicContent DynamicContent {get;}
     IActivitySummary ActivitySummary {get;}
+    IDirectStudentInfo DirectStudentInfo {get;}
+    IDirectStudentSession DirectStudentSession {get;}
+    IDirectStudentPayment DirectStudentPayment {get;}
+    IDirectStudentAttendance DirectStudentAttendance {get;}
+    IOteReminderFlag OteReminderFlag {get;}
+    IDynamicEmailTemplate DynamicEmailTemplate {get;}
+    IOteWaitlist OteWaitlist { get;}
+    IProviderCustomQuestion ProviderCustomQuestion {get;}
     
     Task EnsureMigrate();
 

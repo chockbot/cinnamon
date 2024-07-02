@@ -10,7 +10,6 @@
 @using Cinnamon.Web.Components.Pages;
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@using System.Security.Claims;
 @using Cinnamon.Web.Models.Entities;
 @inject IChatApiHandler chatApiHandler;
 @inject IAccountApiHandler accountApiHandler
@@ -39,31 +38,60 @@
         </div>
         <h6 class="gross-sale-text">Track the sales of your activities. This helps you see your most profitable activities in Cinnamon.</h6>
     </div>
+    <RadioGroup TValue="int" Name="experience-type" CheckedValue="@SelectedType" CheckedValueChanged="CheckReportTypeChanged" class="radio-btn-group">
+        <label for="type-all" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4
+                    text-capitalize cursor-pointer">
+            <Radio class="checkbox-round" ElementId="type-all" TValue="int" Value="0">All</Radio>
+        </label>
+        <label for="type-cinnamon" class="bg-white-100 border-radius-10 prevent-select px-3 py-2 me-4
+                    text-capitalize cursor-pointer">
+            <Radio class="checkbox-round" ElementId="type-cinnamon" TValue="int" Value="1">Cinnamon Students</Radio>
+        </label>
+        <label for="type-direct" class="bg-white-100 border-radius-10 prevent-select px-3 py-2
+                    text-capitalize cursor-pointer">
+            <Radio class="checkbox-round" ElementId="type-direct" TValue="int" Value="2">Manually Added Students</Radio>
+        </label>
+    </RadioGroup>
     <LineChart @ref="lineChart" TItem="GrossSale" Options="@lineChartOptions" />
-    <div class="gross-legend-1 col-12 d-flex justify-content-start">
-        <div class="legend-1 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
+    <div class="gross-legend-1">
+        <div class="legend-1">
             <img class="img-legend-2" src="images/Reports/gross-legend-1.png" />
             <p>Amount in PHP</p>
         </div>
-    </div>
-    <div class="gross-legend-2 col-12 justify-content-start">
-        <div class="legend-3 col-lg-2 col-md-4 col-sm-6 col-6 d-flex">
+        <div class="legend-3">
             <img class="img-legend-3" src="images/Reports/gross-legend-3.png" />
             <p>Date period</p>
         </div>
     </div>
+    @if (SelectedType == 0)
+    {
+        <div class="total-sales mb-5">
+            <p class="title">Total Accumulated Sales - @SelectedRange</p>
+            <div class="total-breakdown">
+                <p class="cinnamon-sale">Cinnamon Students - &#8369; @CinnamonSale.ToString("#,##0.00")</p>
+                <p class="direct-sale">Manual Added Students - &#8369; @DirectSale.ToString("#,##0.00")</p>
+                <p class="total-amount-sales">Total - &#8369; @priceData.Sum(a=>a.Count).ToString("#,##0.00")</p>
+            </div>
+        </div>
+    }
+    
 </div>
 
 
 @code {
     private LineChart<GrossSale> lineChart;
-    private List<GrossSale> priceData    = new List<GrossSale>();
-    private string backgroundColors      = ChartColor.FromRgba(255, 255, 255, 0.2f);
-    private string borderColors          = ChartColor.FromRgba(255, 169, 66, 1);
-    private string pointBorderColor      = ChartColor.FromRgba(75, 183, 73, 1);
-    private string pointHoverBorderColor = ChartColor.FromRgba(52, 61, 76, 1);
-    private CustomerProfile profile      = new CustomerProfile();
-    private string Token                 = string.Empty;
+    private List<GrossSale> priceData       = new List<GrossSale>();
+    private List<GrossSale> directPriceData = new List<GrossSale>();
+    private string backgroundColors         = ChartColor.FromRgba(255, 255, 255, 0.2f);
+    private string borderColors             = ChartColor.FromRgba(255, 169, 66, 1);
+    private string pointBorderColor         = ChartColor.FromRgba(75, 183, 73, 1);
+    private string pointHoverBorderColor    = ChartColor.FromRgba(52, 61, 76, 1);
+    private CustomerProfile profile         = new CustomerProfile();
+    private string Token                    = string.Empty;
+    private int SelectedType { get; set; }  = 0;
+    private string SelectedRange { get; set; } = "1month";
+    private decimal CinnamonSale { get; set; } = 0;
+    private decimal DirectSale { get; set; } = 0;
     LineChartOptions lineChartOptions    = new()
     {
         Parsing = new ChartParsing
@@ -72,6 +100,7 @@
             YAxisKey = "count",
         },
     };
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -95,6 +124,7 @@
                          LastName = args.LastName
                      };
                     //Plot 1 month of Gross Sale
+                    SelectedType = 0;
                     await PlotLineChartData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
                 }
                 else
@@ -108,8 +138,10 @@
             e.Message.ToString();
         }
     }
+
     private async Task UpdateChatDataset(string dateRange)
     {
+        SelectedRange = dateRange;
         DateTime startDate;
         switch (dateRange)
         {
@@ -138,12 +170,80 @@
                 startDate = DateTime.Today.AddMonths(-1);
                 break;
         }
-
-        await PlotLineChartData(startDate.ToString("yyyyMMddHHmmss"));
-
-
+        //Select report to update
+        switch (SelectedType)
+        {
+            case 0:
+                await PlotLineChartData(startDate.ToString("yyyyMMddHHmmss"));
+                break;
+            case 1:
+                await PlotLineCinnamonData(startDate.ToString("yyyyMMddHHmmss"));
+                break;
+            case 2:
+                await PlotLineDirectData(startDate.ToString("yyyyMMddHHmmss"));
+                break;
+            default:
+                break;
+        }
     }
+
     private async Task PlotLineChartData(string startDate)
+    {
+        //Get gross sale by Activity Provider
+        var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+            {
+                Id = profile.Id,
+                DateFrom = startDate
+            }, Token);
+        if (gross.Succeeded && gross.Result != null && gross.Result.IsSuccess)
+        {
+            priceData = gross.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+            {
+                return new GrossSale
+                    {
+                        Sector = e.PurchaseDate.Date,
+                        Count = e.Total
+                    };
+            }).ToList();
+        }
+        //Total Cinnamon Sales
+        CinnamonSale = priceData.Sum(s => s.Count);
+        //Get Direct Sales by Activity Provider
+        var directGross = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = startDate
+            }, Token);
+        if (directGross.Succeeded && directGross.Result != null && directGross.Result.IsSuccess)
+        {
+            directPriceData = directGross.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSale
+                    {
+                        Sector = e.CreatedOn.Date,
+                        Count = e.Amount
+                    };
+            }).ToList();
+        }
+        //Total Direct Sales
+        DirectSale = directPriceData.Sum(d => d.Count);
+        //Merge Sales
+        priceData.AddRange(directPriceData);
+        // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
+        priceData = priceData
+            .GroupBy(item => item.Sector)
+            .Select(group => new GrossSale
+                {
+                    Sector = group.Key,
+                    Count = group.Sum(item => item.Count)
+                })
+            .ToList();
+
+        await lineChart.Clear();
+        await lineChart.AddDataSet(GetLineChartDataset(priceData, "Gross Sales"));
+    }
+
+    private async Task PlotLineCinnamonData(string startDate)
     {
         //Get gross sale by Activity Provider
         var gross = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
@@ -171,14 +271,70 @@
                     Count = group.Sum(item => item.Count)
                 })
             .ToList();
+
         await lineChart.Clear();
-        await lineChart.AddDataSet(GetLineChartDataset(priceData));
+        await lineChart.AddDataSet(GetLineChartDataset(priceData, "Cinnamon Student Sales"));
     }
-    private LineChartDataset<GrossSale> GetLineChartDataset(List<GrossSale> dataset)
+
+    private async Task PlotLineDirectData(string startDate)
+    {
+        //Get Direct Sales by Activity Provider
+        var directGross = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = startDate
+            }, Token);
+        if (directGross.Succeeded && directGross.Result != null && directGross.Result.IsSuccess)
+        {
+            directPriceData = directGross.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSale
+                    {
+                        Sector = e.CreatedOn.Date,
+                        Count = e.Amount
+                    };
+            }).ToList();
+        }
+        // Group the WatcherEvent items by Sector and calculate the sum of Count for each group
+        directPriceData = directPriceData
+            .GroupBy(item => item.Sector)
+            .Select(group => new GrossSale
+                {
+                    Sector = group.Key,
+                    Count = group.Sum(item => item.Count)
+                })
+            .ToList();
+
+        await lineChart.Clear();
+        await lineChart.AddDataSet(GetLineChartDataset(directPriceData, "Direct Student Sales"));
+    }
+
+    private async Task CheckReportTypeChanged(int type)
+    {
+        //Clear Data
+        priceData.Clear();
+        SelectedType = type;
+        switch (SelectedType)
+        {
+            case 0:
+                await PlotLineChartData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
+                break;
+            case 1:
+                await PlotLineCinnamonData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
+                break;
+            case 2:
+                await PlotLineDirectData(DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"));
+                break;
+            default:
+                break;
+        } 
+    }
+
+    private LineChartDataset<GrossSale> GetLineChartDataset(List<GrossSale> dataset, string label)
     {
         return new()
             {
-                Label = "Gross Sale Report",
+                Label = label,
                 Data = dataset,
                 BackgroundColor = backgroundColors, // line chart can only have one color
                 BorderColor = borderColors,
@@ -191,6 +347,7 @@
                 CubicInterpolationMode = "monotone",
             };
     }
+
     public class GrossSale
     {
         public DateTime Sector { get; set; }
@@ -200,6 +357,7 @@
         public string Sector1 { get { return Sector.ToString("MM/dd/yy"); } }
 
     }
+
     private void NavigateToManageReports()
     {
         NavigationManager.NavigateTo("/maker/dashboard/reports");

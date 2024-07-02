@@ -1,4 +1,4 @@
-﻿@layout DashboardLayout
+﻿@layout EmptyLayout
 
 @page "/maker/activity-selection"
 @using Cinnamon.Web.Models.Entities;
@@ -9,39 +9,42 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-<div class="row activity-selection-section">
-    <div class="col-lg-6 col-md-12 col-sm-12">
-        <div class="experience-title-header">
-            Choose type of experience
-        </div>
-        <div class="experience-briefing">
-            Choose the type of experience you are going to create. General Experiences are for usual experiences (e.g., Guitar Lessons for Kids).
-            Experience via Appointment are for experiences set by appointment. One Time Events are for events such as educational trip, museum trip, etc.
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-12 justify-content-md-center col-sm-12 justify-content-sm-center">
-        @foreach (var item in experienceCreationTypes)
-        {
-            <div class="experience-card" @onclick="() => NavigateToExperience(item.CreationType)">
-                <div class="row">
-                    <div class="col-lg-10 col-md-9 justify-content-md-center col-sm-9 justify-content-sm-center col-xs-9 justify-content-sx-center col-9">
-                        <div class="experience-title">
-                            @item.Name
-                        </div>
-                        <div class="experience-description">
-                            @item.Description
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-3 justify-content-md-center col-sm-3 justify-content-sm-center col-xs-3 justify-content-xs-center col-3">
-                        <img class="img-icon" src="@item.ImagePath" />
-                    </div>
-                </div>
+<Container class="activity-selection-wrapper">
+   <Row class="activity-selection-section mt-5 mt-md-0">
+        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            <div class="experience-title-header m-font-20">
+                Choose type of experience
             </div>
-        }
-    </div>
-</div>
+            <div class="experience-briefing m-font-16">
+                Choose the type of experience you are going to create. General Experiences are for usual experiences (e.g., Guitar Lessons for Kids).
+                Experience via Appointment are for experiences set by appointment. One Time Events are for events such as educational trip, museum trip, etc.
+            </div>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            @foreach (var item in experienceCreationTypes)
+            {
+                <div class="experience-card" @onclick="() => NavigateToExperience(item.CreationType)">
+                    <Row class="justify-content-between align-items-center">
+                        <Column ColumnSize="ColumnSize.Is9">
+                            <div class="experience-title m-font-18">
+                                @item.Name
+                            </div>
+                            <div class="experience-description m-font-16 mt-2">
+                                @item.Description
+                            </div>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is3" class="text-end">
+                            <img class="img-icon" src="@item.ImagePath" />
+                        </Column>
+                    </Row>
+                </div>
+            }
+        </Column>
+    </Row>
+</Container>
 
-@code {
+@code 
+{
     private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
     string token = string.Empty;
     public Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
@@ -67,13 +70,16 @@
             return;
         }
 
-        experienceCreationTypes = result.Result.Result.Select(e => new ExperienceCreationType
-            {
-                CreationType = (Cinnamon.Framework.Enums.Enums.ExperienceCreationType)e.Id,
-                Description = e.Description,
-                ImagePath = e.ImagePath,
-                Name = e.Name
-            }).ToList();
+        experienceCreationTypes = result.Result.Result
+                                    .Where(e => e.Id != 2)
+                                    .Select(e => new ExperienceCreationType
+                                    {
+                                        CreationType = (Cinnamon.Framework.Enums.Enums.ExperienceCreationType)e.Id,
+                                        Description = e.Description,
+                                        ImagePath = e.ImagePath,
+                                        Name = e.Name
+                                    })
+                                    .ToList();
     }
 
     private async Task NavigateToExperience(Cinnamon.Framework.Enums.Enums.ExperienceCreationType experienceCreationType)

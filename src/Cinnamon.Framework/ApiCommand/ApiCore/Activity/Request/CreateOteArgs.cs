@@ -14,6 +14,8 @@ public class CreateOteArgs
 
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 
+    public IEnumerable<CustomQuestion>? Questions {get; set;}
+
     public class OteActivity 
     {
         [Required]
@@ -85,6 +87,24 @@ public class CreateOteArgs
         [Required]
         public string EventDurationTimeUnit {get; set;}
         public int EventTicketLimit { get; set; }
+        public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
+
+        [Required]
+        public int EmailFeedbackDays {get; set;}
+
+        [Required]
+        public int EmailReminderDays {get; set;}
+
+        public string? FeedbackSubject {get; set;}
+        public string? FeedbackBody {get; set;}
+        public string? ReminderSubject {get; set;}
+        public string? ReminderBody {get; set;}
+
+        public string? CustomPendingBody {get; set;}
+        public string? CustomAcceptedBody {get; set;}
+        public string? CustomDeclinedBody {get; set;}
     }
 
     public class OtePricing 
@@ -92,7 +112,6 @@ public class CreateOteArgs
         [Required]
         public string Name {get; set;}
         
-        [Required]
         public string Description {get; set;}
 
         [Required]
@@ -103,6 +122,9 @@ public class CreateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
 
     public class OteOnlineEvent
@@ -128,5 +150,17 @@ public class CreateOteArgs
 
         [Required]
         public TimeSpan TimeEnd {get; set;}
+    }
+
+    public class CustomQuestion 
+    {
+        [Required]
+        public string Question {get; set;}
+
+        [Required]
+        public string FieldType {get; set;}
+
+        [Required]
+        public bool Required {get; set;}
     }
 }

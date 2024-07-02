@@ -121,8 +121,23 @@ public class DataStore : IDataStore
 
     public IDynamicContent DynamicContent => new DynamicContentEntity(applicationContext);
 
-
     public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
+
+    public IDirectStudentInfo DirectStudentInfo => new DirectStudentInfoEntity(applicationContext);
+
+    public IDirectStudentSession DirectStudentSession => new DirectStudentSessionEntity(applicationContext);
+
+    public IDirectStudentPayment DirectStudentPayment => new DirectStudentPaymentEntity(applicationContext);
+
+    public IDirectStudentAttendance DirectStudentAttendance => new DirectStudentAttendanceEntity(applicationContext);
+
+    public IOteReminderFlag OteReminderFlag => new OteReminderFlagEntity(applicationContext);
+
+    public IDynamicEmailTemplate DynamicEmailTemplate => new DynamicEmailTemplateEntity(applicationContext);
+
+    public IOteWaitlist OteWaitlist => new OteWaitlistEntity(applicationContext);
+
+    public IProviderCustomQuestion ProviderCustomQuestion => new ProviderCustomQuestionEntity(applicationContext);
 
 
     public async Task EnsureMigrate()

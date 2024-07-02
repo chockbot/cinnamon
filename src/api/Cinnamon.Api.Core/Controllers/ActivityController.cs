@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using ActivityResults = Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
+using System.Globalization;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DynamicContent;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -80,6 +83,14 @@ public class ActivityController : ControllerBase
     private readonly IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler;
     private readonly IActivityFeedHandler activityFeedHandler;
     private readonly IOteAlreadyBookedHandler oteAlreadyBookedHandler;
+    private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
+    private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
+    private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
+    private readonly IUpdateOteWaitlistHandler updateOteWaitlistHandler;
+    private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
+    private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
+    private readonly IEmailTemplateHandler emailTemplateHandler;
+    private readonly IProviderQuestionsHandler providerQuestionsHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -106,49 +117,53 @@ public class ActivityController : ControllerBase
         IGenerateEventSharedLinkHandler generateEventSharedLinkHandler, IOteValidateSharedLinkHandler oteValidateSharedLinkHandler,
         IOteSharedLinkVerificationHandler oteSharedLinkVerificationHandler, IDeleteOnlineEventHandler deleteOnlineEventHandler,
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
-        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler)
+        IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
+        IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
+        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
+        IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
+        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler)
     {
         _logger = logger;
 
-        this.createActivityHandler = createActivityHandler;
-        this.getExperienceTypesHandler = getExperienceTypesHandler;
-        this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
-        this.getSubCategoriesHandler = getSubCategoriesHandler;
-        this.getAllActivitiesHandler = getAllActivitiesHandler;
-        this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
-        this.updateActivityHandler = updateActivityHandler;
-        this.getOwnedActivityHandler = getOwnedActivityHandler;
-        this.uploadActivityImageHandler = uploadActivityImageHandler;
-        this.getAddressHandler = getAddressHandler;
-        this.getActivityImagesHandler = getActivityImagesHandler;
-        this.getActiviesByCategoriesHandler = getActiviesByCategoriesHandler;
-        this.getActivityHandler = getActivityHandler;
-        this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
-        this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
-        this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
-        this.getOwnedActivityByHandler = getOwnedActivityByHandler;
-        this.getMakerActivitiesHandler = getMakerActivitiesHandler;
-        this.getActivityByHandler = getActivityByHandler;
-        this.getAllRegionsHandler = getAllRegionsHandler;
-        this.getAllCitiesHandler = getAllCitiesHandler;
-        this.getAllBarangaysHandler = getAllBarangaysHandler;
-        this.getPopularActivitiesHandler = getPopularActivitiesHandler;
-        this.getRefundableExperienceHandler = getRefundableExperienceHandler;
-        this.updateActivityScheduleHandler = updateActivityScheduleHandler;
-        this.deleteActivityHandler = deleteActivityHandler;
-        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
-        this.providerCreateCouponHandler = providerCreateCouponHandler;
-        this.getCouponsHandler = getCouponsHandler;
-        this.updateCouponStatusHandler = updateCouponStatusHandler;
-        this.createFavoriteHandler = createFavoriteHandler;
-        this.removeFavoriteHandler = removeFavoriteHandler;
-        this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
-        this.validateCouponCodeHandler = validateCouponCodeHandler;
-        this.updateCouponHandler = updateCouponHandler;
-        this.recommendedActivitiesHandler = recommendedActivitiesHandler;
-        this.popularActivitiesHandler = popularActivitiesHandler;
-        this.getExperienceCreationTypeHandler = getExperienceCreationTypeHandler;
-        this.getActivityScheduleTimesHandler = getActivityScheduleTimesHandler;
+        this.createActivityHandler                = createActivityHandler;
+        this.getExperienceTypesHandler            = getExperienceTypesHandler;
+        this.getExperienceCategoriesHandler       = getExperienceCategoriesHandler;
+        this.getSubCategoriesHandler              = getSubCategoriesHandler;
+        this.getAllActivitiesHandler              = getAllActivitiesHandler;
+        this.getOwnedActivitiesHandler            = getOwnedActivitiesHandler;
+        this.updateActivityHandler                = updateActivityHandler;
+        this.getOwnedActivityHandler              = getOwnedActivityHandler;
+        this.uploadActivityImageHandler           = uploadActivityImageHandler;
+        this.getAddressHandler                    = getAddressHandler;
+        this.getActivityImagesHandler             = getActivityImagesHandler;
+        this.getActiviesByCategoriesHandler       = getActiviesByCategoriesHandler;
+        this.getActivityHandler                   = getActivityHandler;
+        this.getActivitiesBySubCategoriesHandler  = getActivitiesBySubCategoriesHandler;
+        this.getEnrolledActivitiesHandler         = getEnrolledActivitiesHandler;
+        this.updateActivityImageOrderHandler      = updateActivityImageOrderHandler;
+        this.getOwnedActivityByHandler            = getOwnedActivityByHandler;
+        this.getMakerActivitiesHandler            = getMakerActivitiesHandler;
+        this.getActivityByHandler                 = getActivityByHandler;
+        this.getAllRegionsHandler                 = getAllRegionsHandler;
+        this.getAllCitiesHandler                  = getAllCitiesHandler;
+        this.getAllBarangaysHandler               = getAllBarangaysHandler;
+        this.getPopularActivitiesHandler          = getPopularActivitiesHandler;
+        this.getRefundableExperienceHandler       = getRefundableExperienceHandler;
+        this.updateActivityScheduleHandler        = updateActivityScheduleHandler;
+        this.deleteActivityHandler                = deleteActivityHandler;
+        this.ownerPricingInclusiveHandler         = ownerPricingInclusiveHandler;
+        this.providerCreateCouponHandler          = providerCreateCouponHandler;
+        this.getCouponsHandler                    = getCouponsHandler;
+        this.updateCouponStatusHandler            = updateCouponStatusHandler;
+        this.createFavoriteHandler                = createFavoriteHandler;
+        this.removeFavoriteHandler                = removeFavoriteHandler;
+        this.getFavoritesByCustomerHandler        = getFavoritesByCustomerHandler;
+        this.validateCouponCodeHandler            = validateCouponCodeHandler;
+        this.updateCouponHandler                  = updateCouponHandler;
+        this.recommendedActivitiesHandler         = recommendedActivitiesHandler;
+        this.popularActivitiesHandler             = popularActivitiesHandler;
+        this.getExperienceCreationTypeHandler     = getExperienceCreationTypeHandler;
+        this.getActivityScheduleTimesHandler      = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
         this.oteCreateHandler = oteCreateHandler;
         this.oteUpdateHandler = oteUpdateHandler;
@@ -168,6 +183,14 @@ public class ActivityController : ControllerBase
         this.deleteTicketHandler = deleteTicketHandler;
         this.activityFeedHandler = activityFeedHandler;
         this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
+        this.oteScheduleDatesHandler = oteScheduleDatesHandler;
+        this.createOteWaitlistHandler = createOteWaitlistHandler;
+        this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
+        this.emailTemplateHandler = emailTemplateHandler;
+        this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
+        this.providerQuestionsHandler = providerQuestionsHandler;
+        this.updateOteWaitlistHandler = updateOteWaitlistHandler;
     }
 
     [Route("CreateActivity")]
@@ -2596,38 +2619,50 @@ public class ActivityController : ControllerBase
             var activity = args.Activity;
             var result = await oteCreateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteCreateArgs {
                 Activity = new Services.ActivityService.Interactors.OteCreateArgs.OteActivity {
-                    BarangayCode = activity.BarangayCode ?? string.Empty,
-                    BarangayName = activity.BarangayName ?? string.Empty,
-                    CityName = activity.CityName ?? string.Empty,
-                    CityNumber = activity.CityNumber ?? string.Empty,
-                    Description = activity.Description,
-                    EventName = activity.EventName,
+                    BarangayCode             = activity.BarangayCode ?? string.Empty,
+                    BarangayName             = activity.BarangayName ?? string.Empty,
+                    CityName                 = activity.CityName ?? string.Empty,
+                    CityNumber               = activity.CityNumber ?? string.Empty,
+                    Description              = activity.Description,
+                    EventName                = activity.EventName,
                     ExperienceCreationTypeId = activity.ExperienceCreationTypeId,
-                    CategoryId = activity.CategoryId,
-                    ExperienceTypeId = activity.ExperienceTypeId,
-                    HouseNo = activity.HouseNo ?? string.Empty,
-                    IsPublished = activity.IsPublished,
-                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
-                    PostalCode = activity.PostalCode ?? string.Empty,
-                    Recurrence = activity.Recurrence,
-                    RegionCode = activity.RegionCode ?? string.Empty,
-                    RegionName = activity.RegionName ?? string.Empty,
-                    ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon,
+                    CategoryId               = activity.CategoryId,
+                    ExperienceTypeId         = activity.ExperienceTypeId,
+                    HouseNo                  = activity.HouseNo ?? string.Empty,
+                    IsPublished              = activity.IsPublished,
+                    PinnedLocation           = activity.PinnedLocation ?? string.Empty,
+                    PostalCode               = activity.PostalCode ?? string.Empty,
+                    Recurrence               = activity.Recurrence,
+                    RegionCode               = activity.RegionCode ?? string.Empty,
+                    RegionName               = activity.RegionName ?? string.Empty,
+                    ScheduleFrom             = activity.ScheduleFrom,
+                    ScheduleTo               = activity.ScheduleTo,
+                    IsComingSoon             = activity.IsComingSoon,
                     
-                    DurationEnd = activity.DurationEnd,
-                    DurationEvery = activity.DurationEvery,
-                    DurationStart = activity.DurationStart,
-                    MonthDay = activity.MonthDay,
-                    MonthRepeat = activity.MonthRepeat,
+                    DurationEnd    = activity.DurationEnd,
+                    DurationEvery  = activity.DurationEvery,
+                    DurationStart  = activity.DurationStart,
+                    MonthDay       = activity.MonthDay,
+                    MonthRepeat    = activity.MonthRepeat,
                     MonthSelection = activity.MonthSelection,
-                    OnDayDate = activity.OnDayDate,
-                    WeekString = activity.WeekString,
+                    OnDayDate      = activity.OnDayDate,
+                    WeekString     = activity.WeekString,
 
-                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationCount    = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit      = activity.EventTicketLimit,
+                    IsOpen                = activity.IsOpen,
+                    IsCapacity            = activity.IsCapacity,
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2635,7 +2670,8 @@ public class ActivityController : ControllerBase
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }),
                 DateOverrides = args.DateOverrides is not null ? 
@@ -2652,6 +2688,11 @@ public class ActivityController : ControllerBase
                         VideoLink = s.VideoLink,    
                         TicketRestriction = s.TicketRestriction,
                     }) : null,
+                Questions = args.Questions is not null ? args.Questions.Select(s => new Services.ActivityService.Interactors.OteCreateArgs.CustomQuestion {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required
+                }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -2672,7 +2713,6 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CreateOteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
     [Route("UpdateOte")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateOteResult), StatusCodes.Status200OK)]
@@ -2683,38 +2723,50 @@ public class ActivityController : ControllerBase
             var activity = args.Activity;
             var result = await oteUpdateHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteUpdateArgs {
                 Activity = new Services.ActivityService.Interactors.OteUpdateArgs.OteActivity {
-                    BarangayCode = activity.BarangayCode ?? string.Empty,
-                    BarangayName = activity.BarangayName ?? string.Empty,
-                    CategoryId = activity.CategoryId,
-                    CityName = activity.CityName ?? string.Empty,
-                    CityNumber = activity.CityNumber ?? string.Empty,
-                    Description = activity.Description,
-                    EventName = activity.EventName,
+                    BarangayCode     = activity.BarangayCode ?? string.Empty,
+                    BarangayName     = activity.BarangayName ?? string.Empty,
+                    CategoryId       = activity.CategoryId,
+                    CityName         = activity.CityName ?? string.Empty,
+                    CityNumber       = activity.CityNumber ?? string.Empty,
+                    Description      = activity.Description,
+                    EventName        = activity.EventName,
                     ExperienceTypeId = activity.ExperienceTypeId,
-                    HouseNo = activity.HouseNo ?? string.Empty,
-                    Id = activity.Id,
-                    IsPublished = activity.IsPublished,
-                    PinnedLocation = activity.PinnedLocation ?? string.Empty,
-                    PostalCode = activity.PostalCode ?? string.Empty,
-                    Recurrence = activity.Recurrence,
-                    RegionCode = activity.RegionCode ?? string.Empty,
-                    RegionName = activity.RegionName ?? string.Empty,
-                    ScheduleFrom = activity.ScheduleFrom,
-                    ScheduleTo = activity.ScheduleTo,
-                    IsComingSoon = activity.IsComingSoon,
+                    HouseNo          = activity.HouseNo ?? string.Empty,
+                    Id               = activity.Id,
+                    IsPublished      = activity.IsPublished,
+                    PinnedLocation   = activity.PinnedLocation ?? string.Empty,
+                    PostalCode       = activity.PostalCode ?? string.Empty,
+                    Recurrence       = activity.Recurrence,
+                    RegionCode       = activity.RegionCode ?? string.Empty,
+                    RegionName       = activity.RegionName ?? string.Empty,
+                    ScheduleFrom     = activity.ScheduleFrom,
+                    ScheduleTo       = activity.ScheduleTo,
+                    IsComingSoon     = activity.IsComingSoon,
 
-                    DurationEnd = activity.DurationEnd,
-                    DurationEvery = activity.DurationEvery,
-                    DurationStart = activity.DurationStart,
-                    MonthDay = activity.MonthDay,
-                    MonthRepeat = activity.MonthRepeat,
+                    DurationEnd    = activity.DurationEnd,
+                    DurationEvery  = activity.DurationEvery,
+                    DurationStart  = activity.DurationStart,
+                    MonthDay       = activity.MonthDay,
+                    MonthRepeat    = activity.MonthRepeat,
                     MonthSelection = activity.MonthSelection,
-                    OnDayDate = activity.OnDayDate,
-                    WeekString = activity.WeekString,
+                    OnDayDate      = activity.OnDayDate,
+                    WeekString     = activity.WeekString,
 
-                    EventDurationCount = activity.EventDurationCount,
+                    EventDurationCount    = activity.EventDurationCount,
                     EventDurationTimeUnit = activity.EventDurationTimeUnit,
-                    EventTicketLimit = activity.EventTicketLimit
+                    EventTicketLimit      = activity.EventTicketLimit,
+                    IsOpen                = activity.IsOpen,
+                    IsCapacity            = activity.IsCapacity,
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
@@ -2723,7 +2775,8 @@ public class ActivityController : ControllerBase
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }),
                 DateOverrides = args.DateOverrides is not null ?
@@ -2747,7 +2800,12 @@ public class ActivityController : ControllerBase
                     OldDate = s.OldDate,
                     NewDate = s.NewDate,
                     Id = s.Id
-                }) : null
+                }) : null,
+                Questions = args.Questions is not null ? args.Questions.Select(q => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                    FieldType = q.FieldType,
+                    Question = q.Question,
+                    Required = q.Required
+                }) : null,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -3201,6 +3259,7 @@ public class ActivityController : ControllerBase
                 Skip = args.Skip,
                 Take = args.Take,
                 ExperienceType = args.ExperienceType,
+                ExperienceCategory = args.ExperienceCategory,
                 StarReview = args.StarReview
             });
 
@@ -3250,6 +3309,274 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new OteAlreadyBookedDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteBookedCount")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteBookedCountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteBookedCount([FromQuery] OteBookedCountArgs args)
+    {
+        try
+        {
+            var result = await oteTicketBookedCountHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteTicketBookedCountArgs {
+                ActivityId = args.ActivityId
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
+            }
+
+            var mappedResult = mapper.Map<OteTicketBookCountDTO>(result.Result);
+
+            return new JsonResult(new OteBookedCountResult
+            {
+                IsSuccess = true,
+                Result = mappedResult,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteBookedCountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OteScheduleDates")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OteScheduleDatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> OteScheduleDates([FromQuery] OteScheduleDatesArgs args)
+    {
+        try
+        {
+            DateTime? dateFrom = null;
+            if(!string.IsNullOrEmpty(args.From))
+            {
+                dateFrom = DateTime.ParseExact(args.From, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+
+            DateTime? dateTo = null;
+            if(!string.IsNullOrEmpty(args.To))
+            {
+                dateTo = DateTime.ParseExact(args.To, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            
+            var result = await oteScheduleDatesHandler.ExecuteAsync(new Services.ActivityService.Interactors.OteScheduleDatesArgs {
+                ActivityId = args.ActivityId,
+                DateFrom = dateFrom,
+                DateTo = dateTo
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });    
+            }
+
+            var mappedResult = mapper.Map<IEnumerable<OteScheduleDateDTO>>(result.Result.OteDateSchedules);
+
+            return new JsonResult(new OteScheduleDatesResult
+            {
+                IsSuccess = true,
+                Result = mappedResult,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OteScheduleDatesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("CreateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateOteWaitlist([FromBody] CreateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await createOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateOteWaitlistArgs
+            {
+                ActivityId   = args.ActivityId,
+                CustomerId   = args.CustomerId,
+                CustomerName = args.CustomerName,
+                Payload      = args.Payload,
+                ProviderId   = args.ProviderId,
+                ScheduleId   = args.ScheduleId,
+                Status       = args.Status
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new CreateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch(Exception ex)
+        {
+            return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateOteWaitlist([FromBody] UpdateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await updateOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateOteWaitlistArgs
+            {
+                Id            = args.Id,
+                ActivityId    = args.ActivityId,
+                CustomerId    = args.CustomerId,
+                CustomerName  = args.CustomerName,
+                Payload       = args.Payload,
+                ProviderId    = args.ProviderId,
+                ScheduleId    = args.ScheduleId,
+                Status        = args.Status,
+                CustomerEmail = args.CustomerEmail,
+                EventDate     = args.EventDate
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new UpdateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetWaitlistByProvider")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOteWaitlistByProvider([FromQuery] GetOteWaitlistByProviderArgs args)
+    {
+        try
+        {
+            var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
+            {
+                ProviderId = args.ProviderId,
+                ActivityId = args.ActivityId,
+                Status     = args.Status
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<CoreDto.OteWaitList.OteWaitlistDTO>>(result.Result.OteWaitlists);
+
+            return new JsonResult(new GetOteWaitlistByProviderResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetEmailTemplate")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEmailTemplateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEmailTemplate([FromQuery] GetEmailTemplateArgs args)
+    {
+        try
+        {
+            var result = await emailTemplateHandler.ExecuteAsync(new Services.ActivityService.Interactors.EmailTemplateArgs {
+                ActivityId = args.ActivityId,
+                TemplateType = args.TemplateType
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<DynamicEmailTemplateDTO>(result.Result);
+
+            return new JsonResult(new GetEmailTemplateResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    
+    [Route("DeleteOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteOteWaitlistResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult>DeleteOteWaitlist([FromBody] DeleteOteWaitlistArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteOteWaitlistArgs
+            {
+                Id = args.Id
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteOteWaitlistResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ProviderQuestions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ProviderQuestionsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ProviderQuestions([FromQuery] ProviderQuestionsArgs args)
+    {
+        try
+        {
+            var result = await providerQuestionsHandler.ExecuteAsync(new Services.ActivityService.Interactors.ProviderQuestionsArgs {
+                ActivityId = args.ActivityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<ProviderQuestionDTO>>(result.Result.Questions);
+
+            return new JsonResult(new ProviderQuestionsResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

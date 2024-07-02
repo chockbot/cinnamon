@@ -11,11 +11,9 @@
         <li>@ErrorMessage</li>
     </ul>
 </div>
-<div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
-    <label for="title" class="pricing-title">Pricing & Schedule</label>
-</div>
-<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
-    <div class="accordion" id="activitySchedules">
+
+<div class="pricing-schedule-section color-black-100">
+    <div class='@(Model.Activity.ActivitySchedules.Where(a => !a.IsNew).Count() > 0 ? "accordion" : "accordion d-none")' id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
         {
             var accordionId = $"panel-section{scheduleModel.Id}";
@@ -24,7 +22,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="@accordionHeaderId">
                     <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
-                        <span class="accordion-title">
+                        <span class="accordion-title font-20 m-font-18">
                             @if (string.IsNullOrEmpty(scheduleModel.Name))
                             {
                                 <span>N/A</span>
@@ -35,7 +33,7 @@
                             }
                         </span>
                         <div class="ms-auto">
-                            <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
+                            <span class="span-price font-20 m-font-18">P @Math.Truncate(scheduleModel.Price)</span>
                         </div>
                     </div>
                 </h2>
@@ -46,7 +44,7 @@
                                 <div class="form-check form-switch">
                                     <div class="row">
                                        <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
-                                           <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                                           <label for="title" class="form-control-label font-20 m-font-18">Set Inactive/Active:</label>
                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
                                        </div>
                                         <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
@@ -54,30 +52,30 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                                <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Schedule Name</label>
                                 <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
                                 <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
                             </div>
                             <div class="form-group">
-                                <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                                <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Schedule Day & Time</label>
                                 <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
                                 <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday 9 a.m.–5 p.m. If a schedule is to be defined with the enrollee, you can put words in this section to explain the setup. Example: "Schedule will be determined with the enrollee".</small>
                             </div>
                             <div class="col col-lg-3">
-                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Price</label>
                                 <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
                             </div>
                             <div class="col col-lg-3">
-                                <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                                <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Session/s</label>
                                 <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                             </div>
                             @*Expiration Section*@
                             <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                                <label for="title" class="expiration-title">Activity Expiration</label>
+                                <label for="title" class="expiration-title font-24 m-font-20">Activity Expiration</label>
                             </div>
                             <hr>
                             <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
-                                <label class="fw-bold title-description">
+                                <label class="fw-bold title-description font-20 m-font-18">
                                     Set Activity Expiration:
                                 </label>
                                 <div class="form-check form-switch">
@@ -88,7 +86,7 @@
                                 <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
-                                <label class="fw-bold title-description">
+                                <label class="fw-bold title-description font-20 m-font-18">
                                     Set expiration period
                                 </label>
                                 <div>
@@ -119,7 +117,7 @@
                                 }
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
-                                <label class="fw-bold title-description">
+                                <label class="fw-bold title-description font-20 m-font-18">
                                     Define start of expiration
                                 </label>
 
@@ -264,7 +262,7 @@
             </div>
         }
     </div>
-    <div class="pricing-schedule">
+    <div class="pricing-schedule border-radius-10">
         <div class="row mt-2">
             @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
             {
@@ -272,7 +270,7 @@
                     <div class="form-check form-switch">
                         <div class="row">
                             <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
-                                <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                                <label for="title" class="form-control-label font-20 m-font-18">Set Inactive/Active:</label>
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
                             </div>
                             <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
@@ -286,7 +284,7 @@
                                 <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
                             </td>
                             <td class="td-field-title">
-                                <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
+                                <label for="title" class="form-control-label label-top-margin right-margin font-20 m-font-18">Schedule Name</label>
                             </td>
                             <td class="how-to-guide" style="display:flex" @onclick="() => howToModal.ShowModal()">
                                 <label>How to do this</label>
@@ -298,25 +296,25 @@
                     <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
                 </div>
                 <div class="form-group">
-                    <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Schedule Day & Time</label>
                     <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
                     <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday 9 a.m.–5 p.m. If a schedule is to be defined with the enrollee, you can put words in this section to explain the setup. Example: "Schedule will be determined with the enrollee".</small>
                 </div>
                 <div class="col col-lg-3">
-                    <label for="title" class="form-control-label label-top-margin">Price</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Price</label>
                     <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
                 </div>
                 <div class="col col-lg-3">
-                    <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                    <label for="title" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Session/s</label>
                     <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                 </div>
                 @*Expiration Section*@
                 <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                    <label for="title" class="expiration-title">Activity Expiration</label>
+                    <label for="title" class="expiration-title font-24 m-font-20">Activity Expiration</label>
                 </div>
                 <hr>
                 <div class="col-lg-12 col-sm-12 col-12 justify-content-start d-flex activity-expiration">
-                    <label class="fw-bold title-description">
+                    <label class="fw-bold title-description font-20 m-font-18">
                         Set Activity Expiration:
                     </label>
                     <div class="form-check form-switch">
@@ -327,7 +325,7 @@
                     <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
-                    <label class="fw-bold title-description">
+                    <label class="fw-bold title-description font-20 m-font-18">
                         Set expiration period
                     </label>
                     <div>
@@ -359,7 +357,7 @@
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
 
-                    <label class="fw-bold title-description">
+                    <label class="fw-bold title-description font-20 m-font-18">
                         Define start of expiration
                     </label>
 
@@ -502,21 +500,21 @@
                 }
             }
             <div class="form-group">
-                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
+                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0 font-20 m-font-18" @onclick=AddSchedule>Add More Schedule</button>
             </div>
         </div>
     </div>
 </div>
 <br />
 <div class="col-lg-12 justify-content-start col-md-12 justify-content-start col-sm-12 justify-content-center col-12 justify-content-center">
-    <label for="title" class="pricing-title">
+    <label for="title" class="pricing-title color-black-100 font-20 m-font-18">
         Add-ons
     </label>
     <label for="sub-title" class="addons-sub-title">
         Add extra materials or services that you can charge your customers. These additions provide valuable support and resources for your students. Some examples are - jersey or uniform fee, tournament fees, membership fee, materials fee and more! You can add more than one item/service to offer.
     </label>
 </div>
-<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+<div class="pricing-schedule-section border-radius-10">
     <div class="accordion" id="activitySchedules">
         @foreach (var addOnModels in Model.Activity.AddOns.Where(a => !a.IsNew && !a.IsDeleted))
         {
@@ -526,7 +524,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="@accordionHeaderId">
                     <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
-                        <span class="accordion-title">
+                        <span class="accordion-title font-20 m-font-18">
                             @if (string.IsNullOrEmpty(addOnModels.Name))
                             {
                                 <span>N/A</span>
@@ -537,7 +535,7 @@
                             }
                         </span>
                         <div class="ms-auto">
-                            <span class="span-price">P @Math.Truncate(addOnModels.Price)</span>
+                            <span class="span-price font-20 m-font-18">P @Math.Truncate(addOnModels.Price)</span>
                         </div>
                     </div>
                 </h2>
@@ -549,12 +547,12 @@
                                     <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
                                 </Button>
                             </div>
-                            <div class="col-12 col-lg-8 col-md-7 col-sm-12">
-                                <label for="title" class="form-control-label">Add Item/Service</label>
+                            <div class="col-12 col-lg-8 col-md-7 col-sm-12 mb-3">
+                                <label for="title" class="form-control-label color-black-100 font-20 m-font-18 mb-1">Add Item/Service</label>
                                 <input class="form-control @RequiredCheck(addOnModels)" id="schedule-name" required @bind="addOnModels.Name" />
                             </div>
-                            <div class="col-12 col-lg-4 col-md-5 col-sm-12">
-                                <label for="title" class="form-control-label">Price</label>
+                            <div class="col-12 col-lg-4 col-md-5 col-sm-12 mb-3">
+                                <label for="title" class="form-control-label color-black-100 font-20 m-font-18 mb-1">Price</label>
                                 <input class="form-control unit-input @RequiredCheck(addOnModels)" id="price-input" type="number" placeholder="Price" required @bind="addOnModels.Price" />
                             </div>
                         </div>
@@ -563,17 +561,17 @@
             </div>
         }
     </div>
-    <div class="pricing-schedule">
+    <div class="pricing-schedule border-radius-10">
         <div class="row">
             @foreach (var addOnsModel in Model.Activity.AddOns.Where(a => a.IsNew))
             {
                 <div class="row">
                     <div class="col-12 col-lg-8 col-md-7 col-sm-12">
-                        <label for="title" class="form-control-label label-top-margin">Add Item/Service</label>
+                        <label for="title" class="form-control-label label-top-margin color-black-100 font-20 m-font-18">Add Item/Service</label>
                         <input class="form-control @RequiredCheck(addOnsModel)" id="schedule-name" required @bind="addOnsModel.Name" />
                     </div>
                     <div class="col-12 col-lg-4 col-md-5 col-sm-12">
-                        <label for="title" class="form-control-label label-top-margin">Price</label>
+                        <label for="title" class="form-control-label label-top-margin color-black-100 font-20 m-font-18">Price</label>
                         <input class="form-control unit-input @RequiredCheck(addOnsModel)" id="price-input" type="number" placeholder="Price" required @bind="addOnsModel.Price" />
                     </div>
                     <div class="col-12 justify-content-start">
@@ -582,7 +580,7 @@
                 </div>
             }
             <div class="form-group">
-                <button id="btnAddOns" type="button" class="btn btn-primary border-0" @onclick=CreateAddOns>Add More</button>
+                <button id="btnAddOns" type="button" class="btn btn-primary border-0 font-20 m-font-18" @onclick=CreateAddOns>Add More</button>
             </div>
         </div>
     </div>
@@ -669,7 +667,7 @@
 
     private string RequiredCheck(int? value)
     {
-        if (Model.HasError && (value == null || value.Value == 0))
+        if (Model.HasError && (value == null || value.Value <= 0))
         {
             return "invalid";
         }
@@ -678,13 +676,14 @@
 
     private string RequiredCheck(Decimal? value)
     {
-        if (Model.HasError && (value == null || value == 0))
+        if (Model.HasError && (value == null || value <= 0))
         {
             return "invalid";
         }
 
         return "";
     }
+
 
     public bool IsAllFieldsValidated()
     {

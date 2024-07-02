@@ -172,6 +172,8 @@ creationInProgress.uploadImages = async (activityId) => {
 };
 
 function dataUrlToFile(dataUrl, filename) {
+  if (!dataUrl) return undefined;
+
   const arr = dataUrl.split(",");
   if (arr.length < 2) {
     return undefined;
@@ -200,6 +202,14 @@ export async function previewImage(imgSelector, inputSelector) {
   const imgElem = document.querySelector(imgSelector);
   const urlSrc = inputElem.value;
   imgElem.src = urlSrc;
+}
+export function previewBase64Image(imgSelector, inputSelector, base64String, fileType) {
+    const inputElem = document.querySelector(inputSelector);
+    const imgElem = document.querySelector(imgSelector);
+    // Construct the Data URL
+    const dataUrl = `data:${fileType};base64,${base64String}`;
+    inputElem.value = dataUrl;
+    imgElem.src = dataUrl;
 }
 
 export async function previewImageByFileInput({
@@ -303,4 +313,5 @@ export default {
   showImageTemplate,
   uploadListImages,
   previewImageByFileInput,
+  previewBase64Image
 };

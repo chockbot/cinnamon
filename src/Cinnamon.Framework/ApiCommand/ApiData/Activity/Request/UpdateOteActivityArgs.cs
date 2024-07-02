@@ -101,6 +101,16 @@ public class UpdateOteActivityArgs
         [Required]
 
         public int EventTicketLimit { get; set; }
+
+        public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
+
+        [Required]
+        public int EmailFeedbackDays {get; set;}
+
+        [Required]
+        public int EmailReminderDays {get; set;}
     }
 
     public class UpdateOtePricing 
@@ -111,7 +121,6 @@ public class UpdateOteActivityArgs
         [Required]
         public string Name {get; set;}
 
-        [Required]
         public string Description {get; set;}
 
         [Required]
@@ -123,6 +132,9 @@ public class UpdateOteActivityArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
 
     public class UpdateOteOnlineEvent

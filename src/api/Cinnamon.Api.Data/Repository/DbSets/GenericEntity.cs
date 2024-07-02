@@ -48,14 +48,34 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     }
 
     public async Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, 
-        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null)
+        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null,
+        Expression<Func<TTarget, object>>? orderBy = null, Expression<Func<TTarget, object>>? orderByDesc = null)
     {
         try
         {
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<TTarget>().Where(expression).Skip(skipCount).Take(limitCount);
+            var query = applicationContext.Set<TTarget>().Where(expression);
+
+            // default order by
+            if(orderBy is null && orderByDesc is null)
+            {
+                query = query.OrderBy(t => t.Id);
+            }
+
+            if(orderByDesc is not null && orderBy is null)
+            {
+                query = query.OrderByDescending(orderByDesc);
+            }
+
+            // priority this one if there is orderbydesd and orderby
+            if(orderBy is not null)
+            {
+                query = query.OrderBy(orderBy);
+            }
+
+            query = query.Skip(skipCount).Take(limitCount);
 
             if(includes != null)
             {
@@ -88,6 +108,8 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
                     query = query.Include(include);
                 }
             }
+
+            query = query.OrderBy(o => o.Id);
 
             var result = await query.FirstOrDefaultAsync();
 
@@ -134,6 +156,19 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
             return AppResult<TTarget>.CreateFailed(ex, "An error occured when getting the entity by id");
         }
     }
+
+    public async Task<AppResult<int>> Count(Expression<Func<TTarget, bool>> expression)
+    {
+        try
+        {
+            var result = await applicationContext.Set<TTarget>().Where(expression).CountAsync();
+            return AppResult<int>.CreateSucceeded(result, "Successfully count entities.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<int>.CreateFailed(ex, "An error occured when counting the entities.");
+        }
+    } 
 
     public async Task<AppResult<TTarget>> Remove(TTarget entity)
     {

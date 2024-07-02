@@ -66,4 +66,12 @@ public interface IActivityApiHandler
     Task<AppResult<DeleteTicketResult>> DeleteTicket(DeleteTicketArgs args, string token);
     Task<AppResult<ActivityFeedResult>> ActivityFeed(ActivityFeedArgs args);
     Task<AppResult<OteAlreadyBookedDatesResult>> OteAlreadyBookedDates(int activityId, string token);
+    Task<AppResult<OteScheduleDatesResult>> OteScheduleDates(OteScheduleDatesArgs args, string token);
+    Task<AppResult<OteBookedCountResult>> OteBookedCount(OteBookedCountArgs args, string token);
+    Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args, string token);
+    Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args, string token);
+    Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args, string token);
+    Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token);
+    Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token);
+    Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token);
 }

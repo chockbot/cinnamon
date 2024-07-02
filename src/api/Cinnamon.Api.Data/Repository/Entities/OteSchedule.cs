@@ -1,3 +1,4 @@
+using System.ComponentModel;
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class OteSchedule : BaseEntity
@@ -14,6 +15,12 @@ public class OteSchedule : BaseEntity
     public int EventDurationCount {get; set;}
     public string EventDurationTimeUnit {get; set;}
     public int EventTicketLimit { get; set; }
+    [DefaultValue(true)]
+    public bool IsOpen { get; set; } = true;
+    public bool IsCapacity { get; set; }
+    public int CapacityCount { get; set; }
+    public int EmailReminderDays {get; set;}
+    public int EmailFeedbackDays {get; set;}
 
     public virtual Activity Activity {get; set;}
     public virtual IList<OteSchedulePricing> OteSchedulePricing {get; set;}

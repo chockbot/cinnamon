@@ -1264,4 +1264,183 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OteAlreadyBookedDatesResult>.CreateFailed(ex, "An error occured when ote already booked dates");
         }
     }
+
+    public async Task<AppResult<OteScheduleDatesResult>> OteScheduleDates(OteScheduleDatesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/OteScheduleDates")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteScheduleDatesResult>();
+
+            return AppResult<OteScheduleDatesResult>.CreateSucceeded(result, "Successfully get ote schedule dates.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteScheduleDatesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteScheduleDatesResult>.CreateFailed(ex, "An error occured when ote schedule dates.");
+        }
+    }
+
+    public async Task<AppResult<OteBookedCountResult>> OteBookedCount(OteBookedCountArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/OteBookedCount")
+                .SetQueryParams(args)
+                .GetJsonAsync<OteBookedCountResult>();
+
+            return AppResult<OteBookedCountResult>.CreateSucceeded(result, "Successfully get ote schedule dates.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OteBookedCountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteBookedCountResult>.CreateFailed(ex, "An error occured when ote schedule dates.");
+        }
+    }
+
+    public async Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOteWaitlistResult>();
+
+            return AppResult<CreateOteWaitlistResult>.CreateSucceeded(result, "Successfully called create ote waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling create ote waitlist api");
+        }
+    }
+
+    public async Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetWaitlistByProvider")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetOteWaitlistByProviderResult>();
+
+            return AppResult<GetOteWaitlistByProviderResult>.CreateSucceeded(result, "Successfully get ote waitlist by provider.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
+        }
+    }
+    
+    public async Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetEmailTemplate")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEmailTemplateResult>();
+
+            return AppResult<GetEmailTemplateResult>.CreateSucceeded(result, "Successfully get email template.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, "An error occured when getting email template.");
+        }
+    }
+    
+    public async Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/DeleteOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteOteWaitlistResult>();
+
+            return AppResult<DeleteOteWaitlistResult>.CreateSucceeded(result, "Successfully called delete online event");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
+        }
+    }
+
+    public async Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/ProviderQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ProviderQuestionsResult>();
+
+            return AppResult<ProviderQuestionsResult>.CreateSucceeded(result, "Successfully get provider questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, "An error occured when getting provider questions.");
+        }
+    }
+
+    public async Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOteWaitlistResult>();
+
+            return AppResult<UpdateOteWaitlistResult>.CreateSucceeded(result, "Successfully called update ote waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling uupdate ote waitlist api");
+        }
+    }
 }

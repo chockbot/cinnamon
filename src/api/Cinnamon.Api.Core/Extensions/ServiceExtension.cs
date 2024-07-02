@@ -22,6 +22,12 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IExpiringStudentNotificationHandler, Modules.NotificationDriver.EmailNotification.ExpiringStudentNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteCustomerPayedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteCustomerPayedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IChatUnreadNotificationHandler, Modules.NotificationDriver.EmailNotification.ChatUnreadNotificationHandler>();
+        services.AddTransient<Modules.EmailDriver.Handlers.ISendInviteEventHandler, Modules.EmailDriver.MicrosoftGraph.SendInviteEventHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteEventReminderNotificationHandler, Modules.NotificationDriver.EmailNotification.OteEventReminderNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteThankYouNotificationHandler, Modules.NotificationDriver.EmailNotification.OteThankYouNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOtePendingNotificationHandler, Modules.NotificationDriver.EmailNotification.OtePendingNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteApprovedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteApprovedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteDeclinedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteDeclinedNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -64,6 +70,9 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IDirectStudentData, Modules.DataAccess.DirectStudent.DirectStudentData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IOteRemindersData, Modules.DataAccess.OteReminders.OteRemindersData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IProviderCustomQuestionData, Modules.DataAccess.ProviderCustomQuestion.ProviderCustomQuestionData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -181,6 +190,18 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteUpdateSharedLinkStatusHandler, Services.ActivityService.OteUpdateSharedLinkStatusHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteTicketHandler, Services.ActivityService.DeleteTicketHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteAlreadyBookedHandler, Services.ActivityService.OteAlreadyBookedHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteTicketBookedCountHandler, Services.ActivityService.OteTicketBookedCountHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteScheduleDatesHandler, Services.ActivityService.OteScheduleDatesHandler>();
+
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateOteWaitlistHandler, Services.ActivityService.UpdateOteWaitlistHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ICreateOteWaitlistHandler, Services.ActivityService.CreateOteWaitlistHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetOteWaitlistByProviderHandler, Services.ActivityService.GetOteWaitlistByProviderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ISaveEmailTemplateHandler, Services.ActivityService.SaveEmailTemplateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IEmailTemplateHandler, Services.ActivityService.EmailTemplateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteEmailReminderHandler, Services.ActivityService.OteEmailReminderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteEmailThankYouHandler, Services.ActivityService.OteEmailThankYouHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteOteWaitlistHandler, Services.ActivityService.DeleteOteWaitlistHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IProviderQuestionsHandler, Services.ActivityService.ProviderQuestionsHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -193,6 +214,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IOteFinishTransactionHandler, Services.TransactionService.OteFinishTransactionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderDetailsHandler, Services.TransactionService.OtePurchaseOrderDetailsHandler>();
         services.AddTransient<Services.TransactionService.Handlers.ITransactionRedirectionHandler, Services.TransactionService.TransactionRedirectionHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IGetDirectStudentSalesHandler, Services.TransactionService.GetDirectStudentSalesHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -211,6 +233,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetTicketDetailsHandler, Services.DashboardService.GetTicketDetailsHandler>();    
         services.AddTransient<Services.DashboardService.Handlers.IUpdateOTETicketHandler, Services.DashboardService.UpdateOTETicketHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetOtePerDayHandler, Services.DashboardService.GetOtePerDayHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetEnrolledStudentsByProviderHandler, Services.DashboardService.GetEnrolledStudentsByProviderHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.ICreateDirectStudentsHandler, Services.DashboardService.CreateDirectStudentsHandler>();
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
@@ -274,6 +298,16 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Disbursement.Handlers.IGetDisbursementDetails, Services.Disbursement.GetDisbursementDetails>();
         services.AddTransient<Services.Disbursement.Handlers.IManualDisbursement, Services.Disbursement.ManualDisbursement>();
         services.AddTransient<Services.Disbursement.Handlers.IGetDisbursementByProviderId, Services.Disbursement.GetDisbursementByProviderId>();
+
+        // direct students services
+        services.AddTransient<Services.DirectStudentService.Handlers.IDirectStudentsInfoHandler, Services.DirectStudentService.DirectStudentsInfoHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IUpdateDirectStudentHandler, Services.DirectStudentService.UpdateDirectStudentHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IDirectStudentHandler, Services.DirectStudentService.DirectStudentHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IStudentSessionsHandler, Services.DirectStudentService.StudentSessionsHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IGetDirectStudentByIdHandler, Services.DirectStudentService.GetDirectStudentByIdHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.ICreateDirectStudentAttendanceHandler, Services.DirectStudentService.CreateDirectStudentAttendanceHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IUpdateStudentAttendanceHandler, Services.DirectStudentService.UpdateStudentAttendanceHandler>();
+        services.AddTransient<Services.DirectStudentService.Handlers.IStudentSessionHandler, Services.DirectStudentService.StudentSessionHandler>();
 
         return services;
     }

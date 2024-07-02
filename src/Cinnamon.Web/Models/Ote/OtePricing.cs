@@ -13,4 +13,5 @@ public class OtePricing
     public int Sold { get; set; }
     public int Available { get; set; }
     public int TicketSold {get; set;}
+    public int OteSchedulePricingsId { get; set; }
 }

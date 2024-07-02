@@ -43,6 +43,7 @@ public class OteFindByHandlerResult
         public bool IsAbsorbFees { get; set; }
         public int TicketSold {get; set;}
         public int OteSchedulePricingGroupId { get; set; }
+        public bool RequiredApproval {get; set;}
     }
 
     public class Image 
@@ -77,6 +78,11 @@ public class OteFindByHandlerResult
         public int EventDurationCount {get; set;}
         public string EventDurationTimeUnit {get; set;}
         public int EventTicketLimit { get; set; }
+        public bool IsOpen { get; set; }
+        public bool IsCapacity { get; set; }
+        public int CapacityCount { get; set; }
+        public int EmailFeedbackDays {get; set;}
+        public int EmailReminderDays {get; set;}
         public IList<OtePricingGroupDTO> OteSchedulePricingGroups {get; set;}
     }
 
@@ -90,6 +96,7 @@ public class OteFindByHandlerResult
         public bool IsAbsorbFees {get; set;}
         public string Name {get; set;}
         public int TicketSold {get; set;}
+        public bool RequiredApproval {get; set;}
     }
     public class OteOnlineEvent
     {
