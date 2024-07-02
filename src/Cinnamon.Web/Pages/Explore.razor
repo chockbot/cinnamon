@@ -341,7 +341,7 @@
     <div class="container">
         <div class="sub-header">
             <div class="sub-header-container">
-                <div class="sub-header-image"></div>
+        <div class="sub-header-image"></div>
                 <div class="event-organizer-invite-card">
                     <div class="event-organizer-info">
                         @if (!showCategorySwiper){
@@ -1571,9 +1571,9 @@
                             <div class="footer-final-social-media">
                                 <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                                 <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                                <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                                <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
                                 <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                                <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                                <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                             </div> 
                         </div>
                     </div>
@@ -1703,7 +1703,7 @@
     private ModalLogin signinModal;
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
-    private bool showMenu2 = false;
+    private string selectedSlide = "1";
 
 
     bool IsSearchPerformed { get; set; } = false;
@@ -2255,22 +2255,10 @@
         StateHasChanged();
     }
 
-    private void OnClickMenu2()
-    {
-        showMenu2 = !showMenu2;
-    }
-
     private string ShowMenu()
     {
         return clickButton ? "show" : "";
     }
-
-    
-    private string ShowMenu2()
-    {
-        return clickButton ? "show" : "";
-    }
-    
 
     private void Logout()
     {
