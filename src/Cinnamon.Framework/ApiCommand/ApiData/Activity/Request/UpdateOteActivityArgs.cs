@@ -132,6 +132,9 @@ public class UpdateOteActivityArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
 
     public class UpdateOteOnlineEvent

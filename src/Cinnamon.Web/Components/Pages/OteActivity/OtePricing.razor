@@ -109,7 +109,7 @@
                     <p class="approval">Required Approval</p>
                     <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault-@ticket.Id">
+                        <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                     </div>
                 </div>
             }
@@ -477,7 +477,7 @@
                         <div class="accept-reg">
                             <p class="approval">Required Approval</p>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                             </div>
                         </div>
                         <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -708,7 +708,8 @@
                     Description = p.Description,
                     Id = p.Id,
                     Name = p.Name,
-                    TicketSold = p.TicketSold
+                    TicketSold = p.TicketSold,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList(),
             CustomAcceptedBody = customAcceptedMessageOrig,
@@ -731,7 +732,8 @@
                     MaxSlots = item.MaxSlots,
                     Price = item.Price,
                     Name = item.Name,
-                    TicketSold = item.TicketSold
+                    TicketSold = item.TicketSold,
+                    RequiredApproval = item.RequiredApproval
                 });
         }
         customAcceptedMessageOrig = data.CustomAcceptedBody;
@@ -814,6 +816,7 @@
             public string Name { get; set; }
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
+            public bool RequiredApproval {get; set;}
         }
     }
 
@@ -862,6 +865,8 @@
                 return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
             }
         }
+
+        public bool RequiredApproval {get; set;}
     }
 
     private class ModalTicketPricing
@@ -1082,6 +1087,9 @@
         if (isFree)
         {
             modelPricing.Price = 0;
+        }
+        else {
+            modelPricing.RequiredApproval = false;
         }
     }
 

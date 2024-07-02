@@ -122,6 +122,9 @@ public class CreateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
 
     public class OteOnlineEvent

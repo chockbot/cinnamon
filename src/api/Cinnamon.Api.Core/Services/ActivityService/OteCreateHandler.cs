@@ -234,7 +234,8 @@ public class OteCreateHandler : IOteCreateHandler
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }).ToList(),
                 Dates = dateItems.Select(d => {

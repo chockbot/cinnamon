@@ -97,6 +97,8 @@ public class OteCreateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+
+        public bool RequiredApproval {get; set;}
     }
 
     public class OteOnlinEvent

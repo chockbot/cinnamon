@@ -2670,7 +2670,8 @@ public class ActivityController : ControllerBase
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }),
                 DateOverrides = args.DateOverrides is not null ? 
@@ -2774,7 +2775,8 @@ public class ActivityController : ControllerBase
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }),
                 DateOverrides = args.DateOverrides is not null ?

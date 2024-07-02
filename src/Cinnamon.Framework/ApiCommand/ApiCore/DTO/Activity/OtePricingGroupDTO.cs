@@ -10,4 +10,5 @@ public class OtePricingGroupDTO
     public bool IsAbsorbFees {get; set;}
     public string Name {get; set;}
     public int TicketSold {get; set;}
+    public bool RequiredApproval {get; set;}
 }
