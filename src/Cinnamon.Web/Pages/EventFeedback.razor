@@ -1,0 +1,67 @@
+@page "/Event-Feedback/{Identifier}"
+@using Cinnamon.Web.Components.Common;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject INotificationService NotificationService;
+@inject IActivityApiHandler activityHandler;
+@inject NavigationManager NavigationManager;
+
+<Container>
+    <div class="box-center p-4 border-radius-20 mb-5">
+        <p class="font-20 color-grey-100">We are happy you enjoyed</p>
+        <p class="color-black-100 font-weight-900 font-32">@Title</p>
+        <p class="font-20 color-black-100">Do you have any feedback?</p>
+        <MemoEdit Rows="7" Placeholder="Share your thoughts" />
+        <div class="text-end mt-3">
+            <Button Clicked="NavigateToExplore" class="bg-orange-100 color-white-100">
+                Submit
+            </Button>
+        </div>
+    </div>
+</Container>
+
+<Footer />
+
+@code 
+{
+    [Parameter]
+    public string Identifier {get; set;}
+
+    private string Title {get; set;} = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(string.IsNullOrEmpty(Identifier))
+        {
+            NavigationManager.NavigateTo("page-not-found");
+            return;
+        }
+
+        await LoadOteDetails();
+    }
+
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs {
+            }, Identifier);
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("page-not-found");
+                return;
+            }
+            var act = result.Result.Result;
+            Title = act.EventName;
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private Task NavigateToExplore()
+    {
+        NavigationManager.NavigateTo("/");
+        return Task.CompletedTask;
+    }
+}

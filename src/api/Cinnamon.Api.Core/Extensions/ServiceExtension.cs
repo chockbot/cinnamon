@@ -22,6 +22,11 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IExpiringStudentNotificationHandler, Modules.NotificationDriver.EmailNotification.ExpiringStudentNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteCustomerPayedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteCustomerPayedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IChatUnreadNotificationHandler, Modules.NotificationDriver.EmailNotification.ChatUnreadNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteEventReminderNotificationHandler, Modules.NotificationDriver.EmailNotification.OteEventReminderNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteThankYouNotificationHandler, Modules.NotificationDriver.EmailNotification.OteThankYouNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOtePendingNotificationHandler, Modules.NotificationDriver.EmailNotification.OtePendingNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteApprovedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteApprovedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IOteDeclinedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteDeclinedNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -64,6 +69,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAnnouncementData, Modules.DataAccess.Announcement.AnnouncementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDisbursementData, Modules.DataAccess.Disbursement.DisbursementData>();
         services.AddTransient<Modules.DataAccess.Handlers.IDynamicContentData, Modules.DataAccess.DynamincContent.DynamincContentData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IOteRemindersData, Modules.DataAccess.OteReminders.OteRemindersData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IProviderCustomQuestionData, Modules.DataAccess.ProviderCustomQuestion.ProviderCustomQuestionData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -186,6 +193,10 @@ public static class ServiceExtenstion
 
         services.AddTransient<Services.ActivityService.Handlers.ICreateOteWaitlistHandler, Services.ActivityService.CreateOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOteWaitlistByProviderHandler, Services.ActivityService.GetOteWaitlistByProviderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ISaveEmailTemplateHandler, Services.ActivityService.SaveEmailTemplateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IEmailTemplateHandler, Services.ActivityService.EmailTemplateHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteEmailReminderHandler, Services.ActivityService.OteEmailReminderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOteEmailThankYouHandler, Services.ActivityService.OteEmailThankYouHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteOteWaitlistHandler, Services.ActivityService.DeleteOteWaitlistHandler>();
 
         // transaction services

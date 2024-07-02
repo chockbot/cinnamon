@@ -6,6 +6,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.Extensions.DateTimeExtension;
 using Cinnamon.Framework.Helpers;
+using Cinnamon.Framework.Enums;
 using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
@@ -18,15 +19,18 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly ICustomerData customerData;
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
+    private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
-        IGenerateActivityHandler generateActivityHandler, ICustomerData customerData)
+        IGenerateActivityHandler generateActivityHandler, ICustomerData customerData,
+        ISaveEmailTemplateHandler saveEmailTemplateHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.generateActivityHandler = generateActivityHandler;
         this.customerData = customerData;
         this.recurrenceDateHelper = new();
+        this.saveEmailTemplateHandler = saveEmailTemplateHandler;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -219,6 +223,8 @@ public class OteCreateHandler : IOteCreateHandler
                     IsOpen                   = args.Activity.IsOpen,
                     IsCapacity               = args.Activity.IsCapacity,
                     CapacityCount            = args.Activity.CapacityCount,
+                    EmailFeedbackDays        = args.Activity.EmailFeedbackDays,
+                    EmailReminderDays        = args.Activity.EmailReminderDays
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Framework.ApiCommand.ApiData.Activity.Request.CreateOteActivityArgs.OtePricing {
@@ -259,6 +265,49 @@ public class OteCreateHandler : IOteCreateHandler
             {
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(createOteRes.Message), createOteRes.Message);
             }
+            
+            var createReminderContent = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.ReminderBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.ReminderSubject ?? string.Empty,
+                TemplateType = EmailTemplateType.OteReminder
+            });
+
+            var createFeedbackContent = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.FeedbackBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = args.Activity.FeedbackSubject ?? string.Empty,
+                TemplateType = EmailTemplateType.OteThankYou
+            });
+
+            var createCustomPending = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomPendingBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OtePending
+            });
+
+            var createCustomAccept = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomAcceptedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OteConfirmed
+            });
+
+            var createCustomDeclined = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {
+                ActivityId = createOteRes.Result.Result.Id,
+                Body = args.Activity.CustomDeclinedBody ?? string.Empty,
+                ProviderId = currentUser.Result.Id,
+                Subject = string.Empty,
+                TemplateType = EmailTemplateType.OteDeclined
+            });
+
+            // dont check the result if error or success
+            await Task.WhenAll(createReminderContent, createFeedbackContent, createCustomPending, createCustomAccept, createCustomDeclined);
 
             // update customer status to maker
             if(!currentUser.Result.IsMaker)

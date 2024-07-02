@@ -1558,6 +1558,51 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("DynamicContents");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.DynamicEmailTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TemplateType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId", "ProviderId", "TemplateType");
+
+                    b.ToTable("DynamicEmailTemplates");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -2042,6 +2087,39 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("OteOnlineEvent");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteReminderFlag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OteDateId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId", "OteDateId");
+
+                    b.ToTable("OteReminderFlags");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OteSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -2067,6 +2145,12 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EmailFeedbackDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmailReminderDays")
+                        .HasColumnType("integer");
 
                     b.Property<int>("EventDurationCount")
                         .HasColumnType("integer");
@@ -2496,6 +2580,47 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PayoutLogs");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ProviderCustomQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FieldLabel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FieldType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId", "ProviderId");
+
+                    b.ToTable("ProviderCustomQuestions");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PurchaseOrder", b =>

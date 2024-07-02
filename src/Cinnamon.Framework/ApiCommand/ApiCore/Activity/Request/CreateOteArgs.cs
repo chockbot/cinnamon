@@ -88,6 +88,21 @@ public class CreateOteArgs
         public bool IsOpen { get; set; }
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
+
+        [Required]
+        public int EmailFeedbackDays {get; set;}
+
+        [Required]
+        public int EmailReminderDays {get; set;}
+
+        public string? FeedbackSubject {get; set;}
+        public string? FeedbackBody {get; set;}
+        public string? ReminderSubject {get; set;}
+        public string? ReminderBody {get; set;}
+
+        public string? CustomPendingBody {get; set;}
+        public string? CustomAcceptedBody {get; set;}
+        public string? CustomDeclinedBody {get; set;}
     }
 
     public class OtePricing 

@@ -78,4 +78,67 @@ public class DynamincContentData : IDynamicContentData
             return AppResult<UpdateDynamicContentResult>.CreateFailed(ex, "An error occured when posting update dynamic content api.");
         }
     }
+
+    public async Task<AppResult<CreateEmailTemplateResult>> CreateEmailTemplate(CreateEmailTemplateArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("DynamicContents/EmailTemplates")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateEmailTemplateResult>();
+            return AppResult<CreateEmailTemplateResult>.CreateSucceeded(result, "Successfully calling create dynamic email template api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<CreateEmailTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateEmailTemplateResult>.CreateFailed(ex, "An error occured when calling create dynamic email template api.");
+        }
+    }
+
+    public async Task<AppResult<GetEmailTemplatesResult>> GetEmailTemplates(GetEmailTemplatesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("DynamicContents/EmailTemplates")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetEmailTemplatesResult>();
+            return AppResult<GetEmailTemplatesResult>.CreateSucceeded(result, "Successfully calling get dynamic email template api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<GetEmailTemplatesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEmailTemplatesResult>.CreateFailed(ex, "An error occured when calling get dynamic email template api.");
+        }
+    }
+
+    public async Task<AppResult<UpdateEmailTemplateResult>> UpdateEmailTemplate(UpdateEmailTemplateArgs args, int templateId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"DynamicContents/EmailTemplates/{templateId}")
+                            .PatchJsonAsync(args)
+                            .ReceiveJson<UpdateEmailTemplateResult>();
+            return AppResult<UpdateEmailTemplateResult>.CreateSucceeded(result, "Successfully calling update dynamic email template api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var flurlError = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateEmailTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateEmailTemplateResult>.CreateFailed(ex, "An error occured when calling update dynamic email template api.");
+        }
+    }
 }

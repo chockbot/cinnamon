@@ -13,6 +13,7 @@ using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using System.Globalization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DynamicContent;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -86,6 +87,7 @@ public class ActivityController : ControllerBase
     private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
     private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
     private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
+    private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -115,7 +117,8 @@ public class ActivityController : ControllerBase
         IOteUpdateSharedLinkStatusHandler oteUpdateSharedLinkStatusHandler, IActivityFeedHandler activityFeedHandler, 
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
-        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler)
+        ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler,
+        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler)
     {
         _logger = logger;
 
@@ -159,29 +162,30 @@ public class ActivityController : ControllerBase
         this.getExperienceCreationTypeHandler     = getExperienceCreationTypeHandler;
         this.getActivityScheduleTimesHandler      = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
-        this.oteCreateHandler                     = oteCreateHandler;
-        this.oteUpdateHandler                     = oteUpdateHandler;
-        this.oteFindByHandler                     = oteFindByHandler;
-        this.mapper                               = mapper;
-        this.oteTicketDetailsHandler              = oteTicketDetailsHandler;
-        this.customerOteHandler                   = customerOteHandler;
-        this.oteVerificationHandler               = oteVerificationHandler;
-        this.deleteAddOnsHandler                  = deleteAddOnsHandler;
-        this.deleteAddOnHandler                   = deleteAddOnHandler;
-        this.getOtePerDayHandler                  = getOtePerDayHandler;
-        this.generateEventSharedLinkHandler       = generateEventSharedLinkHandler;
-        this.oteValidateSharedLinkHandler         = oteValidateSharedLinkHandler;
-        this.oteSharedLinkVerificationHandler     = oteSharedLinkVerificationHandler;
-        this.deleteOnlineEventHandler             = deleteOnlineEventHandler;
-        this.oteUpdateSharedLinkStatusHandler     = oteUpdateSharedLinkStatusHandler;
-        this.deleteTicketHandler                  = deleteTicketHandler;
-        this.activityFeedHandler                  = activityFeedHandler;
-        this.oteAlreadyBookedHandler              = oteAlreadyBookedHandler;
-        this.oteTicketBookedCountHandler          = oteTicketBookedCountHandler;
-        this.oteScheduleDatesHandler              = oteScheduleDatesHandler;
-        this.createOteWaitlistHandler             = createOteWaitlistHandler;
-        this.getOteWaitlistByProviderHandler      = getOteWaitlistByProviderHandler;
-        this.deleteOteWaitlistHandler             = deleteOteWaitlistHandler;
+        this.oteCreateHandler = oteCreateHandler;
+        this.oteUpdateHandler = oteUpdateHandler;
+        this.oteFindByHandler = oteFindByHandler;
+        this.mapper = mapper;
+        this.oteTicketDetailsHandler = oteTicketDetailsHandler;
+        this.customerOteHandler = customerOteHandler;
+        this.oteVerificationHandler = oteVerificationHandler;
+        this.deleteAddOnsHandler = deleteAddOnsHandler;
+        this.deleteAddOnHandler = deleteAddOnHandler;
+        this.getOtePerDayHandler = getOtePerDayHandler;
+        this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
+        this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
+        this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
+        this.deleteOnlineEventHandler = deleteOnlineEventHandler;
+        this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
+        this.deleteTicketHandler = deleteTicketHandler;
+        this.activityFeedHandler = activityFeedHandler;
+        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
+        this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
+        this.oteScheduleDatesHandler = oteScheduleDatesHandler;
+        this.createOteWaitlistHandler = createOteWaitlistHandler;
+        this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
+        this.emailTemplateHandler = emailTemplateHandler;
+        this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
     }
 
     [Route("CreateActivity")]
@@ -2644,7 +2648,16 @@ public class ActivityController : ControllerBase
                     EventTicketLimit      = activity.EventTicketLimit,
                     IsOpen                = activity.IsOpen,
                     IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteCreateArgs.OtePricing {
@@ -2733,7 +2746,16 @@ public class ActivityController : ControllerBase
                     EventTicketLimit      = activity.EventTicketLimit,
                     IsOpen                = activity.IsOpen,
                     IsCapacity            = activity.IsCapacity,
-                    CapacityCount         = activity.CapacityCount
+                    CapacityCount         = activity.CapacityCount,
+                    EmailFeedbackDays     = activity.EmailFeedbackDays,
+                    EmailReminderDays     = activity.EmailReminderDays,
+                    FeedbackBody          = activity.FeedbackBody,
+                    FeedbackSubject       = activity.FeedbackSubject,
+                    ReminderBody          = activity.ReminderBody,
+                    ReminderSubject       = activity.ReminderSubject,
+                    CustomAcceptedBody    = activity.CustomAcceptedBody,
+                    CustomDeclinedBody    = activity.CustomDeclinedBody,
+                    CustomPendingBody     = activity.CustomPendingBody
                 },
                 Pricings = args.Pricings.Select(p => {
                     return new Services.ActivityService.Interactors.OteUpdateArgs.OtePricing {
@@ -3377,6 +3399,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new CreateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -3408,6 +3431,38 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOteWaitlistByProviderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetEmailTemplate")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEmailTemplateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEmailTemplate([FromQuery] GetEmailTemplateArgs args)
+    {
+        try
+        {
+            var result = await emailTemplateHandler.ExecuteAsync(new Services.ActivityService.Interactors.EmailTemplateArgs {
+                ActivityId = args.ActivityId,
+                TemplateType = args.TemplateType
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<DynamicEmailTemplateDTO>(result.Result);
+
+            return new JsonResult(new GetEmailTemplateResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEmailTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    
     [Route("DeleteOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(DeleteOteWaitlistResult), StatusCodes.Status200OK)]

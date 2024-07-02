@@ -121,10 +121,16 @@ public class DataStore : IDataStore
 
     public IDynamicContent DynamicContent => new DynamicContentEntity(applicationContext);
 
-
     public IActivitySummary ActivitySummary => new ActivitySummaryEntity(applicationContext);
 
+    public IDynamicEmailTemplate DynamicEmailTemplate => new DynamicEmailTemplateEntity(applicationContext);
+
     public IOteWaitlist OteWaitlist => new OteWaitlistEntity(applicationContext);
+    
+    public IOteReminderFlag OteReminderFlag => new OteReminderFlagEntity(applicationContext);
+
+    public IProviderCustomQuestion ProviderCustomQuestion => new ProviderCustomQuestionEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

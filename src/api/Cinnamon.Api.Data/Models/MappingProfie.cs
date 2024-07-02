@@ -18,6 +18,8 @@ using DynamicContentAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.DynamicCon
 using DynamicContentReqAlias = Cinnamon.Framework.ApiCommand.ApiData.DynamicContent.Request;
 using OteWaitListAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteWaitlist;
 using OteWaitListReqAlias = Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
+using ReminderFlagAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.OteReminderFlag;
+using ProviderCustomQuestionAlias = Cinnamon.Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion;
 
 namespace Cinnamon.Api.Data.Models;
 
@@ -108,11 +110,23 @@ public class MappingProfile : Profile
         CreateMap<DynamicContentReqAlias.CreateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
         CreateMap<DynamicContentReqAlias.UpdateDynamicContentArgs, DynamicContentAlias.DynamicContentDTO>();
 
+        CreateMap<DynamicEmailTemplate, DynamicContentAlias.DynamicEmailTemplateDTO>();
+        CreateMap<DynamicContentAlias.DynamicEmailTemplateDTO, DynamicEmailTemplate>();
+        CreateMap<DynamicContentReqAlias.CreateEmailTemplateArgs, DynamicContentAlias.DynamicEmailTemplateDTO>();
+
         // ote waitlist mapping
         CreateMap<OteWaitlist, OteWaitListAlias.OteWaitlistDTO>();
         CreateMap<OteWaitListAlias.OteWaitlistDTO, OteWaitlist>();
 
         CreateMap<OteWaitListReqAlias.CreateOteWaitlistArgs, OteWaitListAlias.OteWaitlistDTO>();
         CreateMap<OteWaitListReqAlias.GetOteWaitlistByProviderArgs, OteWaitListAlias.OteWaitlistDTO>();
+
+        // for ote reminder flag
+        CreateMap<OteReminderFlag, ReminderFlagAlias.OteReminderFlagDTO>();
+        CreateMap<ReminderFlagAlias.OteReminderFlagDTO, OteReminderFlag>();
+
+        // for provider custom question
+        CreateMap<ProviderCustomQuestion, ProviderCustomQuestionAlias.ProviderCustomQuestionDTO>();
+        CreateMap<ProviderCustomQuestionAlias.ProviderCustomQuestionDTO, ProviderCustomQuestion>();
     }
 }
