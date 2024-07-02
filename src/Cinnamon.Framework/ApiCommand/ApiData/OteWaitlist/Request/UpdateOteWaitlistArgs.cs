@@ -12,5 +12,5 @@ public class UpdateOteWaitlistArgs
     public int ActivityId { get; set; }
     public int ScheduleId { get; set; }
     public string Payload { get; set; }
-    public string Status { get; set; }
+    public int Status { get; set; }
 }

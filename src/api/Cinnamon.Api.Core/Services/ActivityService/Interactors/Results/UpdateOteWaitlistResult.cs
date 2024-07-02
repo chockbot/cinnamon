@@ -1,5 +1,7 @@
-﻿namespace Cinnamon.Api.Data.Repository.Entities;
-public class OteWaitlist : BaseEntity
+﻿using Cinnamon.Framework.Interactor;
+
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+public class UpdateOteWaitlistResult : IInteractor
 {
     public int Id { get; set; }
     public int ProviderId { get; set; }

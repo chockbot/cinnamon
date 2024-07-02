@@ -42,6 +42,7 @@ public interface IActivityData
     Task<AppResult<BatchSummaryUpdateResult>> BatchSummaryUpdate();
     Task<AppResult<OteAlreadyBookedResult>> OteAlreadyBooked(int activityId);
     Task<AppResult<CreateOteWaitlistResult>> CreateOteWaitlist(CreateOteWaitlistArgs args);
+    Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args);
     Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args);
     Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args);
 

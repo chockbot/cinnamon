@@ -86,6 +86,7 @@ public class ActivityController : ControllerBase
     private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
     private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
     private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
+    private readonly IUpdateOteWaitlistHandler updateOteWaitlistHandler;
     private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
@@ -120,7 +121,7 @@ public class ActivityController : ControllerBase
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
         IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
-        IProviderQuestionsHandler providerQuestionsHandler)
+        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler)
     {
         _logger = logger;
 
@@ -189,6 +190,7 @@ public class ActivityController : ControllerBase
         this.emailTemplateHandler = emailTemplateHandler;
         this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
         this.providerQuestionsHandler = providerQuestionsHandler;
+        this.updateOteWaitlistHandler = updateOteWaitlistHandler;
     }
 
     [Route("CreateActivity")]
@@ -3382,7 +3384,7 @@ public class ActivityController : ControllerBase
     [Route("CreateOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateActivity([FromBody] CreateOteWaitlistArgs args)
+    public async Task<IActionResult> CreateOteWaitlist([FromBody] CreateOteWaitlistArgs args)
     {
         try
         {
@@ -3414,6 +3416,44 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [Route("UpdateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateOteWaitlist([FromBody] UpdateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await updateOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateOteWaitlistArgs
+            {
+                Id            = args.Id,
+                ActivityId    = args.ActivityId,
+                CustomerId    = args.CustomerId,
+                CustomerName  = args.CustomerName,
+                Payload       = args.Payload,
+                ProviderId    = args.ProviderId,
+                ScheduleId    = args.ScheduleId,
+                Status        = args.Status,
+                CustomerEmail = args.CustomerEmail,
+                EventDate     = args.EventDate
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new UpdateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -3424,7 +3464,8 @@ public class ActivityController : ControllerBase
             var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
             {
                 ProviderId = args.ProviderId,
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                Status     = args.Status
             });
 
             if (!result.Succeeded || result.Result is null)
