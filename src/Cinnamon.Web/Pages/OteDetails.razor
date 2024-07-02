@@ -484,12 +484,27 @@
                                 }
                                 else
                                 {
-                                    activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
+                                    if (capacityLimit != 0)
+                                    {
+                                        activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
+                                    }
+                                    else
+                                    {
+                                        activity.EventTicketLimit = activity.EventTicketLimit - ticketCount;
+                                    }
+
                                 }
                             }
                             else
                             {
-                                activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? (capacityLimit - ticketCount) : (activity.EventTicketLimit - ticketCount);
+                                if (capacityLimit != 0)
+                                {
+                                    activity.EventTicketLimit = capacityLimit <= (activity.EventTicketLimit - ticketCount) ? capacityLimit : activity.EventTicketLimit - ticketCount;
+                                }
+                                else
+                                {
+                                    activity.EventTicketLimit = activity.EventTicketLimit - ticketCount;
+                                }
                             }
                         }
                         else
