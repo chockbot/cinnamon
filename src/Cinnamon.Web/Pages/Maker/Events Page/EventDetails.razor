@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details">
+            <div class="div-option-details" @onclick="NavigateToTickets">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
@@ -106,10 +106,10 @@
                         <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" />
                     </TabPanel>
                     <TabPanel Name="tickets">
-                        <Tickets TicketList="ticketList"></Tickets>
+                        <Tickets TicketList="ticketList" OteActivity="activity"></Tickets>
                     </TabPanel>
                     <TabPanel Name="emails">
-                       <Emails Handler="activity.Handler"></Emails>
+                        <Emails Handler=@activity.Handler></Emails>
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -231,6 +231,9 @@
         }
         var act = result.Result.Result;
         activity = mapper.Map<OteActivity>(act);
+        activity.IsOpen = act.OteSchedule.IsOpen;
+        activity.IsCapacity = act.OteSchedule.IsCapacity;
+        activity.CapacityCount = act.OteSchedule.CapacityCount;
 
         if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
         {
@@ -594,5 +597,9 @@
     {
         selectedTab = name;
         return Task.CompletedTask;
+    }
+    private void NavigateToTickets()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{1}");
     }
 }

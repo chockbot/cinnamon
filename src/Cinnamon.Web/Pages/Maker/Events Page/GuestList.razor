@@ -5,7 +5,9 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IDashboardApiHandler dashboardApiHandler
 
-<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+@if (activity != null)
+{
+    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <div class="customer-list">
         <div class="col-12 customer-filter">
             <div class="search-box">
@@ -133,7 +135,7 @@
         </div>
     </div>
 </LoadingIndicator>
-
+}
 @code {
     [Parameter]
     public OteActivity activity { get; set; }
@@ -152,7 +154,7 @@
     public string currentPage = "1";
     public string SearchValue = string.Empty;
     public int counterPage = 10;
-    public int SearchBy = 1;
+    public int SearchBy = 0;
     public int selectedFilter;
     public bool IsDisplay = false;
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();

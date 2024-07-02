@@ -309,26 +309,26 @@
             if(!string.IsNullOrEmpty(Handler))
             {
                 await LoadComponentState();
+                switch (Tab)
+                {
+                    case 1:
+                        currentIndex = 1;
+                        break;
+                    case 2:
+                        summary = GetSummary();
+                        if (eventType == EventType.InPerson)
+                        {
+                            currentIndex = 3;
+                        }
+                        else
+                        {
+                            currentIndex = 4;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
-
-            switch(Tab)
-            {
-                case 1:
-                    currentIndex = 1;
-                    break;
-                case 2:
-                    if (eventType == EventType.InPerson)
-                    {
-                        currentIndex = 3;
-                    }
-                    else
-                    {
-                        currentIndex = 4;
-                    }
-                    break;
-                default:
-                    break;
-            }  
         }
         catch (System.Exception ex)
         {
@@ -1088,6 +1088,10 @@
             }
 
             numberOfPage = ote.ExperienceTypeId == 2 ? 5 : 4;
+        }
+        else
+        {
+            eventType = EventType.InPerson;
         }
 
         await otePublish?.SetState(scheduleDatesRes.Result.Result.Select(

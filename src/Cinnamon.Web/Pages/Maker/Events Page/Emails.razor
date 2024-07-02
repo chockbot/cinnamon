@@ -1,18 +1,19 @@
 ﻿@layout EmptyLayout;
 @using Cinnamon.Web.Models.Ote
+@inject NavigationManager NavigationManager
 
 
 <div class="container">
     <div class="border-radius-10 p-4 m-3 m-bg-white-100 m-padding-0 mb-3">
         <Row VerticalGutter="20" HorizontalGutter="20">
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+                <label @onclick="NavigateToPublish" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
                     <img class="me-3" src="images/ote/red-bell.png" alt="bell">
                     <span class="font-16 color-black-100">Add Reminder Email</span>
                 </label>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+                <label @onclick="NavigateToPublish" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
                     <img class="me-3" src="images/ote/yellow-star.png" alt="bell">
                     <span class="font-16 color-black-100">Add Feedback Email</span>
                 </label>
@@ -22,5 +23,11 @@
 </div>
 
 @code {
+    [Parameter]
+    public string Handler { get; set; }
 
+    private void NavigateToPublish()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{Handler}/{2}");
+    }
 }
