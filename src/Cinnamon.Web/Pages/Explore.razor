@@ -292,6 +292,22 @@
         </div>
     </div> 
     <!-- Header -->
+    @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
+    {
+    <div class="header">
+        <div class="header-container">
+            <div class="header-info">
+                @if (!showCategorySwiper)
+                {
+                <h1 class="header-info-text">Skip the FOMO: Secure Your Tickets Now!</h1>
+                } else {
+                <h1 class="header-info-text">Level Up Your Skills:  Get a Tutor Today!</h1>
+                }
+            </div>
+        </div>
+    </div>
+    } else 
+    {
     <div class="header">
         <div class="header-container">
             <div class="header-info">
@@ -306,7 +322,7 @@
     </div>
     <!-- Search Bar -->
     <div class="search-bar-container">
-    <form class="search-bar" @onsubmit=Search>
+    <form class="search-bar upper-search-bar" @onsubmit=Search>
         <div class="input-group p-1">
             <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
                 <div class="input-group-append border-0">
@@ -317,8 +333,7 @@
         </div>
          </form>
     </div>
-   
-    <!-- End of Search Bar -->
+    }
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
@@ -370,83 +385,66 @@
             </div>
         </div>
     </div>
+    } else 
+    {
+
     }
 
     <!-- End of New Announcement Like Cards -->
     @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-    
-    } else {
-    <div class="container">
-    <div class="upcoming-events">
-        <div class="upcoming-events-container">
-            <div class="upcoming-events-info">
-                <p class="upcoming-events-info-text">Search Results</p>
-                <h1 class="upcoming-events-info-text-search">"@searchValue"</h1>
-            </div>
-        </div>
-    </div>
-    </div>
-    }
-
     <div class="container">
         <hr class="line-divider">
-    </div>
+    </div> 
+    } else {
+ 
+    }
+    
 
     <div class="container">
+        @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
+        {
         <div class="section-1 experience-selector">
            <div class="categories">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
+                    <div class="schedule-swiper no-search-toggle">
+                        <div class="swiper-wrapper" >
+                            <div class="swiper-slide category justify-content-center">
+                                    <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <p class="upcoming-events-info-text-main @((!showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
                                     </a>
-                                </div>
-                        </div>
+                                    </div>
+                            </div>
 
-                        <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
+                            <div class="swiper-slide category justify-content-center">
+                                    <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id">
                                         <p class="upcoming-events-info-text-main @((showCategorySwiper) ? "active" : "")" @onclick="@(() => ShowOTE(1))">General Experience</p>
                                     </a>
-                                </div>
-                        </div>
+                                    </div>
+                            </div>  
+                        </div> 
                     </div>
+
                 </div>
             </div>
+                    } else 
+                    {
+     
+                    }
         </div>
-    </div>
     
     <!--Section 1-->
     <div class="container">
         <div class="section-1">
-           <div class="categories">
+            <div class="categories">
                 <div class="schedule-swiper">
-                    <div class="swiper-wrapper text-center">
+                    <div class="swiper-wrapper text-center" style="margin-bottom:56px;">
                         <!-- DO NOT TOUCH ORIGINAL SWIPER -->
-                        @if (showCategorySwiper)
+                        @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
                         {
-                            @*
-                        @foreach (var category in categories)
-                        {   
-                                if (category.Category == "New")
-                                {
-                                    category.Category = "All";
-                                }
-                            if (category.Id != 8)
-                            {
-                            <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
-                                        <img src=@category.IconPath class="static-category-selector-img">
-                                        <p class="staitc-category-title">@category.Category</p>
-                                    </a>
-                                </div>
-                            </div>
-                            }
-                        } *@
+                                                @if (showCategorySwiper)
+                        {
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(1))">
@@ -456,7 +454,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(2))">
                                         <img src="images/explore-page-images/Academic.svg" class="static-category-selector-img">
@@ -556,51 +554,60 @@
                                         <p class="static-category-title">Corporate</p>
                                     </a>
                                 </div>
-                        </div> }
+                        </div> 
+                        }
+
+
+                        } else 
+                        {
+
+
+                        }
+
                     </div>
                     <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
             </div>
-            @*
-            <!-- STATIC CATEGORY SWIPER -->
-            <div class="static-category-container">
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-all.png" class="static-category-selector-img">
-                        <p class="static-category-title">All</p>
-                    </a>
+        @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
+        {
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+            <form class="search-bar" @onsubmit=Search>
+                <div class="input-group p-1">
+                    <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                        <div class="input-group-append border-0">
+                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                            </button>
+                        </div>
                 </div>
+                 </form>
+            </div>
+        }
+            @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
+            {
+    
+            } else {
+            <div class="container">
+            <div class="upcoming-events">
+                <div class="upcoming-events-container">
+                    <div class="upcoming-events-info">
+                        <p class="upcoming-events-info-text">Search Results for "@searchValue"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="search-selector-container">
+                <a class="search-selector-a" id="category.Id">
+                    <p class="search-selector @((!showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
+                </a>
+                <a class="search-selector-a" id="category.Id">
+                    <p class="search-selector @((showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(1))">General Experience</p>
+                </a>
+            </div>
+            </div>
+            }
 
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-shows-concerts.png" class="static-category-selector-img">
-                        <p class="static-category-title">Shows & Concerts</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-sports.png" class="static-category-selector-img">
-                        <p class="static-category-title">Sports</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-tourism-destination.png" class="static-category-selector-img">
-                        <p class="static-category-title">Tours & Attraction</p>
-                    </a>
-                </div>
-
-                <div class="static-category-selector">
-                    <a class="static-category-button">
-                        <img src="images/explore-page-images/explore-select-corporate.png" class="static-category-selector-img">
-                        <p class="static-category-title">Corporate</p>
-                    </a>
-                </div>
-            </div> 
-            <!-- END OF STATIC CATEGORY SWIPER -->
-            *@
+            <!-- End of Search Bar -->
             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
                     <div class="card card-placeholder-popular" aria-hidden="true">
@@ -1542,92 +1549,75 @@
             <!-- For much larger screens -->
             <div class="footer-container-wider align-items-footer">
                 <div class="footer-info">
+                    <a href="" class="app-name-footer">@Resources.App.appName</a>
                     <p>Automate and simplify your Events Planning operations with easy and 
                        secure options with Cinnamon!</p>
                 </div>
-                    <div class="footer-nav">
-                        <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                        <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                        <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                    <div class="footer-text-about-container">
+                        <p class="footer-text">Company</p>
+                        <div class="footer-nav">
+                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
+                            <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                        </div>
                     </div>
-                    <div class="footer-support-email">
-                        <i class="far fa-envelope"></i>
-                        <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                    <div class="footer-text-support-container">
+                        <p class="footer-text">Connect with Us</p>
+                        <div class="footer-email-social-container">
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                            <div class="footer-final-social-media">
+                                <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                                <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                                <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                                <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                            </div> 
+                        </div>
                     </div>
             </div>
             <!-- end of larger screens -->
             <div class="footer-container align-items-footer">
                 <div class="footer-info">
+                    <a href="" class="app-name-footer">@Resources.App.appName</a>
                     <p>Automate and simplify your Events Planning operations with easy and 
                        secure options with Cinnamon!</p>
                 </div>
-                <div class="footer-text-media-container">
-                    <div class="footer-nav">
-                        <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                        <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                        <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                    <div class="footer-text-about-container">
+                        <p class="footer-text">Company</p>
+                        <div class="footer-nav">
+                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
+                            <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+                        </div>
                     </div>
-                    <div class="footer-support-email">
-                        <i class="far fa-envelope"></i>
-                        <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                    <div class="footer-text-support-container">
+                        <p class="footer-text">Connect with Us</p>
+                        <div class="footer-email-social-container">
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                            <div class="footer-final-social-media">
+                                <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                                <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                                <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                                <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                            </div> 
+                        </div>
                     </div>
-                </div>
             </div>
             <div class="line-container">
                 <div class="line"></div>
             </div>
             <div class="footer-final">
-                <div class="footer-logo">
-                    <a href="" class="app-name-footer">@Resources.App.appName</a>
-                </div>
                 <div class="footer-copyright">
                     <p>Copyright © 2023. All rights reserved.</p>   
                 </div>
-                <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                </div> 
             </div>
-            <!-- For tablet view -->
-            <div class="footer-final-tablet">
-                <div class="footer-column">
-                <div class="footer-logo">
-                    <a href="" class="app-name-footer">@Resources.App.appName</a>
-                </div>
-                <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
-                </div>
-                </div>
-                <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                </div> 
-            </div> 
-            <!-- end of tablet view -->
-            <!-- For Mobile view -->
-            <div class="footer-final-mobile">
-                <div class="footer-column">
-                    <div class="footer-logo">
-                        <a href="" class="app-name-footer">@Resources.App.appName</a>
-                    </div>
-                    <div class="footer-final-social-media">
-                        <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
-                    </div> 
-                </div>
-                <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
-                </div>
-            </div> 
         </div>
     </div>
     
@@ -1713,6 +1703,8 @@
     private ModalLogin signinModal;
     private ModalFBUpdate fbUpdateModal;
     private UpdatePasswordModal updatePasswordModal;
+    private bool showMenu2 = false;
+
 
     bool IsSearchPerformed { get; set; } = false;
     string SearchQuery { get; set; }
@@ -2137,7 +2129,7 @@
                 }
 
                 pageIndex = pageIndex + feeds.Count();
-                itemsPerPage = 20;
+                itemsPerPage = 15;
 
                 hasNoMoreRecords = false;
             }
@@ -2180,7 +2172,7 @@
     public async Task Search()
     {
         experienceCategoryId = null;
-        pageIndex = 0;
+        pageIndex = 1;
         itemsPerPage = 20;
         await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
 
@@ -2263,10 +2255,22 @@
         StateHasChanged();
     }
 
+    private void OnClickMenu2()
+    {
+        showMenu2 = !showMenu2;
+    }
+
     private string ShowMenu()
     {
         return clickButton ? "show" : "";
     }
+
+    
+    private string ShowMenu2()
+    {
+        return clickButton ? "show" : "";
+    }
+    
 
     private void Logout()
     {
@@ -2528,7 +2532,7 @@
     public async Task ShowOTE(int ID)
     {
         ExperienceCategory = ID;
-        pageIndex = 1;
+        pageIndex = 0;
 
         if (ExperienceCategory == 3)
         {
