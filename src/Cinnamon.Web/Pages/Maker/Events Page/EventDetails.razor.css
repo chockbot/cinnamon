@@ -889,6 +889,276 @@
   }
 }
 
-.shared-link-btns {
-  width: 184px;
+
+@media screen and (min-width: 618px) and (max-width : 767px) {
+    .ticket-options {
+        display: block;
+    }
+    .div-option-details {
+        margin-bottom: 1rem;
+    }
+    .mobile-ticket-details {
+        display: block;
+        max-height: 350px;
+        overflow-y: scroll;
+    }
+
+    .mobile-wrapper {
+        border: 1px solid #d9d9d9;
+        border-radius: 10px;
+    }
+
+    .ticket-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom: 1px solid #d9d9d9;
+        background: #f3f6fc;
+        padding: 15px 0 0 10px;
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343d4c;
+        position: sticky;
+        top: 0;
+    }
+
+    .ticket-column {
+        padding: 10px 0 10px 10px;
+    }
+
+    .mobile-ticketname {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+        color: #343d4c;
+    }
+
+    .ticket-column p {
+        margin: 0;
+    }
+
+    .ticket-count {
+        gap: 20px;
+    }
+
+    .mobile-slot {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #343d4c;
+    }
+
+    .mobile-sold {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #ff0000;
+    }
+
+    .mobile-available {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 400;
+        color: #009220;
+    }
+
+    .event-details-wrapper {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 5px;
+        justify-items: start;
+    }
+
+    .event-section {
+        padding-left: 10px;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .event-title {
+        font-size: 24px;
+        color: #343d4c;
+    }
+
+    .ticket-table {
+        padding-top: 10px;
+    }
+
+        .ticket-table:nth-of-type(1) {
+            order: 2;
+            display: none;
+        }
+
+    .event-section:nth-of-type(2) {
+        order: 1;
+    }
+
+    .event-content {
+        gap: 10px;
+    }
+
+    .event-image {
+        display: none;
+    }
+
+    .ticket-details .ticket-table {
+        display: none;
+    }
+
+    .customer-content {
+        display: block;
+    }
+
+    .customer-filter {
+        display: block;
+    }
+
+    .customer-content .back-text {
+        display: none;
+    }
+
+    ::deep .search-bar {
+        width: 100%;
+        height: 40px;
+        background-color: #f3f6fc;
+        color: #717171;
+    }
+
+    .btn-export {
+        margin-bottom: 0.5rem;
+    }
+
+    .search-box {
+        margin-top: 1rem;
+        display: flex;
+    }
+    /*Customer Table styling*/
+    ::deep .table-list .b-table.table {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    ::deep .table-list table thead {
+        display: none;
+    }
+
+    ::deep .table-list table tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+        border: 1px solid;
+    }
+
+        ::deep .table-list table tbody tr td {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+            ::deep .table-list table tbody tr td:first-child {
+                background-color: #343d4c;
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                ::deep .table-list table tbody tr td:first-child > span {
+                    display: block;
+                    margin-right: 10px;
+                }
+
+                ::deep .table-list table tbody tr td:first-child span::before {
+                    content: "Id: ";
+                    font-weight: bold;
+                    width: 70%;
+                }
+
+            ::deep .table-list table tbody tr td:nth-child(2)::before {
+                content: "Name: ";
+                font-weight: bold;
+            }
+
+            ::deep .table-list table tbody tr td:nth-child(3)::before {
+                content: "Email: ";
+                font-weight: bold;
+            }
+
+    ::deep .tr-ticket {
+        text-align: left;
+    }
+
+    ::deep .table-list table tbody tr td:nth-child(4) {
+        display: flex;
+        padding: 0;
+    }
+
+        ::deep .table-list table tbody tr td:nth-child(4) span:first-child {
+            width: 60%;
+            padding: 10px;
+            border-right: 1px solid #000;
+        }
+
+            ::deep .table-list table tbody tr td:nth-child(4) span:first-child::before {
+                content: "Ticket: ";
+                font-weight: bold;
+            }
+
+        ::deep .table-list table tbody tr td:nth-child(4) span:last-child {
+            width: 40%;
+            padding: 10px;
+            display: block;
+        }
+
+            ::deep .table-list table tbody tr td:nth-child(4) span:last-child::before {
+                content: "Amount: ";
+                font-weight: bold;
+            }
+
+    ::deep .table-list table tbody tr td:nth-child(5) {
+        display: none;
+    }
+
+    ::deep .table-list table tbody tr td:last-child {
+        border: 0 !important;
+    }
+
+    ::deep .table-list .btn-status {
+        justify-content: flex-start;
+        padding: 0;
+        max-width: 80px;
+    }
+
+    ::deep .table-list .btn-primary {
+        font-size: 12px !important;
+    }
+
+    ::deep .table-list .check-button {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+        ::deep .table-list .check-button img {
+            width: 20px;
+            height: auto;
+        }
+
+    ::deep table {
+        outline: none;
+    }
+
+    .filter-content {
+        float: right;
+    }
+
+    ::deep .customer-list table {
+        outline: none;
+    }
 }
+    .shared-link-btns {
+        width: 184px;
+    }

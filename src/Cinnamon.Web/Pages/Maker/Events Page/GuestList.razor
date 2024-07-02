@@ -7,36 +7,22 @@
 
 <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <div class="customer-list">
-        <div class="col-12 customer-content">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
-                <p class="back-text">Customer List</p>
-            </div>
-        </div>
-    <div class="col-12 customer-filter">
-        <div class="col-lg-8 col-md-6 col-sm-12 col-12 justify-content-start">
-            <div class="filter-content d-flex">
-                <p class="filter-text">Show</p>
-                <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                    <SelectItem Value="10">10</SelectItem>
-                    <SelectItem Value="25">25</SelectItem>
-                    <SelectItem Value="50">50</SelectItem>
-                    <SelectItem Value="100">100</SelectItem>
+        <div class="col-12 customer-filter">
+            <div class="search-box">
+                <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                    <SelectItem Value="0">Search By</SelectItem>
+                    <SelectItem Value="1">Id</SelectItem>
+                    <SelectItem Value="2">Name</SelectItem>
+                    <SelectItem Value="3">Email</SelectItem>
                 </Select>
-                <p class="filter-text">entries</p>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-12 col-sm-12 col-12 search-box">
-            <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
-                <SelectItem Value="0">Search By</SelectItem>
-                <SelectItem Value="1">Id</SelectItem>
-                <SelectItem Value="2">Name</SelectItem>
-                <SelectItem Value="3">Email</SelectItem>
-            </Select>
-            @if (IsDisplay)
+                @if (IsDisplay)
                 {
                     <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
                 }
+            </div>
+            <div class="excel-section">
                 <button class="btn-export" @onclick="ExportToExcel">
+                    Export to Excel
                     <img class="excel-icon" src="images/xls-icon.png" />
                 </button>
             </div>
@@ -101,34 +87,47 @@
                 </Table>
                 @if (oteCustomer.Count != 0)
                 {
-                    <Pagination Class="pagination-section" Style="margin-top: 20px;">
-                        <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                            <PaginationLink>
-                                <span aria-hidden="true">«</span>
-                            </PaginationLink>
-                        </PaginationItem>
+                    <div class="pagination-section">
+                        <div class="filter-content d-flex">
+                            <p class="filter-text">Show</p>
+                            <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                                <SelectItem Value="10">10</SelectItem>
+                                <SelectItem Value="25">25</SelectItem>
+                                <SelectItem Value="50">50</SelectItem>
+                                <SelectItem Value="100">100</SelectItem>
+                            </Select>
+                            <p class="filter-text">entries</p>
+                        </div>
+                        <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                                <PaginationLink>
+                                    <span aria-hidden="true">«</span>
+                                </PaginationLink>
+                            </PaginationItem>
 
-                        @{
-                            int pagesToShow = 7;
-                            int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
-                            int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+                            @{
+                                int pagesToShow = 7;
+                                int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                                int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
 
-                            for (var i = startPage; i <= endPage; i++)
-                            {
-                                var pageNumberAsString = i.ToString();
-                                <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                    <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                        @pageNumberAsString
-                                    </PaginationLink>
-                                </PaginationItem>
+                                for (var i = startPage; i <= endPage; i++)
+                                {
+                                    var pageNumberAsString = i.ToString();
+                                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                            @pageNumberAsString
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                }
                             }
-                        }
-                        <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                            <PaginationLink>
-                                <span aria-hidden="true">»</span>
-                            </PaginationLink>
-                        </PaginationItem>
-                    </Pagination>
+                            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                                <PaginationLink>
+                                    <span aria-hidden="true">»</span>
+                                </PaginationLink>
+                            </PaginationItem>
+                        </Pagination>
+                    </div>
+                    
                 }
             </div>
         </div>

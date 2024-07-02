@@ -43,7 +43,10 @@
     background-color: var(--primary);
     border: 1px solid #f1f1f1;
 }
-
+.pagination-section{
+    display: flex;
+    justify-content: space-between;
+}
 .filter-content {
     gap: 10px;
     padding-left: 10px;
@@ -300,6 +303,8 @@
 
 .customer-filter {
     display: flex;
+    margin-top: 33px;
+    justify-content: space-between;
 }
 
 ::deep .search-bar {
@@ -312,7 +317,7 @@
 .search-box {
     display: flex;
     gap: 5px;
-    justify-content: end;
+    justify-content: space-between;
 }
 
 .btn-status {
@@ -454,6 +459,12 @@
         }
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .customer-filter{
+        display: block;
+    }
+    .btn-export{
+        width: 100%;
+    }
     .mobile-ticket-details {
         display: block;
         max-height: 350px;
@@ -696,11 +707,6 @@
     ::deep table {
         outline: none;
     }
-
-    .btn-export {
-        width: 350px;
-        margin-bottom: 0.5rem;
-    }
 }
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
@@ -846,6 +852,7 @@
 
     .btn-export {
         margin-bottom: 0.5rem;
+        width: 100%;
     }
 
     .search-box {
@@ -974,6 +981,17 @@
         outline: none;
     }
 }
+
+@media screen and (min-width: 618px) and (max-width : 767px){
+    .customer-filter{
+        display: block;
+    }
+    .btn-export {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+}
+
 
 .shared-link-btns {
     width: 184px;
