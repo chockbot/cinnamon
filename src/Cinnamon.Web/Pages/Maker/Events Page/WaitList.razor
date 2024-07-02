@@ -211,6 +211,7 @@
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
             await GetWaitlist();
+            await CloseOffCanvas();
             await NotificationService.Success("Successfully approved waitlist.", "Success");
 
         }
@@ -233,6 +234,7 @@
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
             await GetWaitlist();
+            await CloseOffCanvas();
             await NotificationService.Error("Successfully declined waitlist.", "Success");
         }
     }

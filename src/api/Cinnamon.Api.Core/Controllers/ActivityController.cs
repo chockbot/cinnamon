@@ -3402,7 +3402,6 @@ public class ActivityController : ControllerBase
         }
     }
 
-    [AllowAnonymous]
     [Route("UpdateOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status201Created)]
