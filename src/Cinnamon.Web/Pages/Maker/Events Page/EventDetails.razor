@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Components.Pages
 @using ClosedXML.Excel;
 @using System.IO;
+@inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -29,239 +30,90 @@
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
                 <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
-                <p class="back-text">Event Details</p>
+                <p class="back-text">@activity.EventName</p>
             </div>
         </div>
-        <div class="section-content">
-            <div class="ticket-details">
-                <div class="ticket-table">
-                    <div class="table-list">
-                        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHeaderCell class="th-ticket" TextAlignment="TextAlignment.Start">
-                                    Ticket
-                                </TableHeaderCell>
-                                <TableHeaderCell>
-                                    Slots
-                                </TableHeaderCell>
-                                <TableHeaderCell>
-                                    Sold
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-available">
-                                    Available
-                                </TableHeaderCell>
-
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in ticketList)
-                                {
-                                    <TableRow>
-                                        <TableRowCell class="tr-name" TextAlignment="TextAlignment.Start">@item.OtePricing.Name</TableRowCell>
-                                        <TableRowCell class="tr-slots" TextAlignment="TextAlignment.Center">@item.OtePricing.MaxSlots</TableRowCell>
-                                        <TableRowCell class="tr-sold" TextAlignment="TextAlignment.Center">@item.OtePricing.Sold</TableRowCell>
-                                        <TableRowCell class="tr-available" TextAlignment="TextAlignment.Center">@item.OtePricing.Available</TableRowCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                    </div>
-                </div>
-                <div class="event-section mb-3">
-                    <div class="event-details-content">
-                        <div class="event-content d-flex">
-                            <img class="event-image" src="@(activity.Images.Count() > 0 ? activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
-                            <div class="event-details">
-                                <p class="event-title">@activity.EventName</p>
-                                <p class="event-schedule">@activity.ScheduleFrom.ToString("dd MMMM yyyy") | @activity.ScheduleFrom.ToString("hh:mm tt")</p>
-                                @if (!string.IsNullOrEmpty(activity.PinnedLocation))
-                                {
-                                    <p class="event-location">
-                                        @activity.PinnedLocation
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p class="event-location">
-                                        @activity.CityName, @activity.RegionName
-                                    </p>
-                                }
-                                <div class="overall-ticket">
-                                    <p class="event-ticket">Total Ticket Slots: <span class="event-slots">@TotalSlots</span></p>
-                                    <p class="event-ticket">Available: <span class="event-available">@TotalAvailable</span></p>
-                                    <p class="event-ticket">Sold: <span class="event-sold">@TotalSold</span></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center flex-wrap">
-                            <a class="text-capitalize bg-orange-100 text-decoration-none color-white-100 p-2 border-radius-5 mt-2 d-inline-block hover-color-white shared-link-btns me-3" 
-                                    href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
-                                    verify tickets here!
-                            </a>
-                            <Button Disabled="generatingEventSharedLink" Loading="generatingEventSharedLink" 
-                                Clicked="GenerateLinkShowModal" class="border-1-solid border-color-grey-100 font-16 me-3 shared-link-btns mt-2">
-                                <LoadingTemplate>
-                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                                    Getting Event Link...
-                                </LoadingTemplate>
-                                <ChildContent>
-                                    Share QR scanner link
-                                </ChildContent>
-                            </Button>
-                            <Button Disabled="sharedLinkStatus.UpdatingStatus" Loading="sharedLinkStatus.UpdatingStatus" 
-                                Clicked="() => modalSharelinkDisableEnable?.Show()" class="border-1-solid border-color-grey-100 font-16 me-3 shared-link-btns mt-2">
-                                @sharedLinkStatus.Label
-                            </Button>
-                        </div>
-                    </div>
+        <div class="ticket-options">
+            <div class="div-option-details">
+                <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
+                <div class="option-name">
+                    <p class="registration">Registration</p>
+                    <p class="reg-status">Open</p>
                 </div>
             </div>
-            <div class="mobile-ticket-details">
-                <div class="mobile-wrapper">
-                    <div class="ticket-header">
-                        <p class="header-text">Ticket Details</p>
-                    </div>
-                    @foreach (var item in ticketList)
-                    {
-                        <div class="ticket-column">
-                            <p class="mobile-ticketname">@item.OtePricing.Name</p>
-                            <div class="ticket-count d-flex">
-                                <p class="mobile-slots">Slots: @item.OtePricing.MaxSlots</p>
-                                <p class="mobile-sold">Sold: @item.OtePricing.Sold</p>
-                                <p class="mobile-available">Available: @item.OtePricing.Available</p>
-                            </div>
-                        </div>
-                    }
+            <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
+                <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
+                <div class="option-name">
+                    <p class="registration">Share QR Scanner Link</p>
                 </div>
             </div>
-            <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
-                <div class="customer-list">
-                <div class="col-12 customer-content">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 justify-content-start">
-                        <p class="back-text">Customer List</p>
+            <a class="verify-ticket" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+                <div class="div-option-details">
+                    <img class="option-img" src="images/ote/add.png" alt="cover-photo">
+                    <div class="option-name">
+                        <p class="registration">Scan Tickets</p>
                     </div>
                 </div>
-                <div class="col-12 customer-filter">
-                    <div class="col-lg-8 col-md-6 col-sm-12 col-12 justify-content-start">
-                        <div class="filter-content d-flex">
-                             <p class="filter-text">Show</p>
-                             <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                                 <SelectItem Value="10">10</SelectItem>
-                                 <SelectItem Value="25">25</SelectItem>
-                                 <SelectItem Value="50">50</SelectItem>
-                                 <SelectItem Value="100">100</SelectItem>
-                             </Select>
-                             <p class="filter-text">entries</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12 col-12 search-box">
-                        <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
-                                <SelectItem Value="0">Search By</SelectItem>
-                                <SelectItem Value="1">Id</SelectItem>
-                                <SelectItem Value="2">Name</SelectItem>
-                                <SelectItem Value="3">Email</SelectItem>
-                            </Select>
-                            @if(IsDisplay)
-                            {
-                                <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
-                            }
-                        <button class="btn-export" @onclick="ExportToExcel">
-                            <img class="excel-icon" src="images/xls-icon.png" />
-                        </button>
-                    </div>
-                </div>
-                <div class="ticket-table">
-                    <div class="table-list">
-                        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHeaderCell class="th-id">
-                                    Id
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-name">
-                                    Name
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-email">
-                                    Email
-                                </TableHeaderCell>
-                                <TableHeaderCell>
-                                    Ticket
-                                </TableHeaderCell>
-                                <TableHeaderCell>
-                                    Amount
-                                </TableHeaderCell>
-                                <TableHeaderCell class="th-status">
-                                    Status
-                                </TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in FilteredCustomer)
-                                {
-                                    <TableRow @key="item">
-                                        <TableRowCell class="tr-name">
-                                            <span>@FormattedId(item.Id)</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-name">
-                                            <span>@item.Customer.FirstName @item.Customer.LastName</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-email">
-                                            <span>@item.Customer.Email</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-ticket">
-                                            <span>@item.Title</span>
-                                            <span>@item.Amount</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-amount">
-                                            <span>@item.Amount</span>
-                                        </TableRowCell>
-                                        <TableRowCell class="tr-button">
-                                            <div class="btn-status">
-                                                <button class="check-button" type="button" @onclick="() => UpdateTicketStatus(item)">
-                                                    <img class="me-1" alt="check-icon"
-                                                         src='@(item.Status == "VERIFIED" ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
-                                                </button>
-                                                <span>Verify</span>
-                                            </div>
-                                        </TableRowCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                            <Pagination Class="pagination-section" Style="margin-top: 20px;">
-                                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                                    <PaginationLink>
-                                        <span aria-hidden="true">«</span>
-                                    </PaginationLink>
-                                </PaginationItem>
-
-                                @{
-                                    int pagesToShow = 7;
-                                    int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
-                                    int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
-
-                                    for (var i = startPage; i <= endPage; i++)
-                                    {
-                                        var pageNumberAsString = i.ToString();
-                                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                                @pageNumberAsString
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    }
-                                }
-                                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                                    <PaginationLink>
-                                        <span aria-hidden="true">»</span>
-                                    </PaginationLink>
-                                </PaginationItem>
-                            </Pagination>
-                    </div>
-                </div>
-            </div>
-            </LoadingIndicator>
+            </a>
         </div>
+        @*Tabs*@
+        <section class="customer-profile-details">
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                <div class="swiper-wrapper">
+                    <div class='swiper-slide @(selectedTab == "overview" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "overview" ? "active" : "")' @onclick='() => selectedTab = "overview"'>
+                            overview
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "guest-list" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "guest-list" ? "active" : "")' @onclick='() => selectedTab = "guest-list"'>
+                                guest list
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "wait-list" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "wait-list" ? "active" : "")' @onclick='() => selectedTab = "wait-list"'>
+                            waitlist
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "tickets" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "tickets" ? "active" : "")' @onclick='() => selectedTab = "tickets"'>
+                            tickets
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "emails" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "emails" ? "active" : "")' @onclick='() => selectedTab = "emails"'>
+                            emails
+                        </div>
+                    </div>
+                </div>
+            </Div>
+            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Name="overview" TextTransform="TextTransform.Capitalize">overview</Tab>
+                    <Tab Name="guest-list" TextTransform="TextTransform.Capitalize">guest list</Tab>
+                    <Tab Name="wait-list" TextTransform="TextTransform.Capitalize">waitlist</Tab>
+                    <Tab Name="tickets" TextTransform="TextTransform.Capitalize">tickets</Tab>
+                    <Tab Name="emails" TextTransform="TextTransform.Capitalize">emails</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="overview">
+                        <Overview Activity="activity" Tickets="ticketList"/>
+                    </TabPanel>
+                    <TabPanel Name="guest-list">
+                        <GuestList activity="activity" Token=@Token dateId="dateId"/>
+                    </TabPanel>
+                    <TabPanel Name="wait-list">
+                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" />
+                    </TabPanel>
+                    <TabPanel Name="tickets">
+                        <Tickets TicketList="ticketList"></Tickets>
+                    </TabPanel>
+                    <TabPanel Name="emails">
+                        @*<CustomerFavorite profile="Model.CustomerProfile" />*@
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </section>
     </div>
 
     <Modal @ref="modalSharedLink">
@@ -324,6 +176,7 @@
     public List<OteTicket> FilteredCustomer = new();
     public List<OteSchedule> ticketList = new List<OteSchedule>();
     public List<OteTicket> ExportCustomer = new List<OteTicket>();
+    public List<OteWaitlist> WaitList = new List<OteWaitlist>();
     private OteActivity? activity;
     public const string PREVIOUS   = "previous";
     public const string NEXT       = "next";
@@ -340,6 +193,8 @@
     public int SearchBy = 0;
     public int selectedFilter;
     public bool IsDisplay = false;
+    private string selectedTab = "overview";
+    private int ProviderId { get; set; }
 
     private SharedLink eventSharedLink = new();
     private SharedLinkStatus sharedLinkStatus = new();
@@ -354,7 +209,14 @@
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         Token = user.FindFirstValue("Token");
-
+        if(user.Identity != null && user.Identity.IsAuthenticated && Token  != null)
+        {
+            var account = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if(account.Succeeded && account.Result != null && account.Result.IsSuccess)
+            {
+                ProviderId = account.Result.Result.Id;
+            }
+        }
         var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
             {
                 IncludeAddress = true,
@@ -369,7 +231,7 @@
         }
         var act = result.Result.Result;
         activity = mapper.Map<OteActivity>(act);
-        
+
         if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
         {
             dateId = parsedDate;
@@ -389,7 +251,9 @@
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
         }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
+
     private async Task GetTicketList()
     {
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
@@ -407,11 +271,14 @@
                 Recurrences = s.Recurrences,
                 OtePricing = new OtePricing
                 {
-                    Name        = s.OtePricingDTO.Name,
-                    MaxSlots    = s.OtePricingDTO.MaxSlots,
-                    Description = s.OtePricingDTO.Description,
-                    Sold        = s.OtePricingDTO.Sold,
-                    Available   = s.OtePricingDTO.Available,
+                    Id                    = s.OtePricingDTO.Id,
+                    Name                  = s.OtePricingDTO.Name,
+                    MaxSlots              = s.OtePricingDTO.MaxSlots,
+                    Description           = s.OtePricingDTO.Description,
+                    Sold                  = s.OtePricingDTO.Sold,
+                    Available             = s.OtePricingDTO.Available,
+                    Price                 = s.OtePricingDTO.Price,
+                    OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId
                 }
             }).ToList();
         }
@@ -581,6 +448,7 @@
         var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
         return referenceId;
     }
+
     private async Task OnFilterValueChanged(int entries)
     {
         counterPage = entries;
@@ -588,6 +456,7 @@
         await GetCustomerList(1);
         await loadingIndicator.Hide();
     }
+
     private async Task OnFilterByValueChange(int searchBy)
     {
         switch (searchBy)
@@ -719,5 +588,11 @@
     {
         public bool UpdatingStatus {get; set;}
         public string Label {get; set;} = "Disable event access";
+    }
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
     }
 }

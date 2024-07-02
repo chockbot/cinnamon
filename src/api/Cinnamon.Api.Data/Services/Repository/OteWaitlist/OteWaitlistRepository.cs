@@ -36,13 +36,14 @@ public class OteWaitlistRepository : IOteWaitlistRepository
             return AppResult<OteWaitlistDTO>.CreateFailed(ex, "An error occured when creating ote waitlist");
         }
     }
-    public async Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetWaitlistByProvider(int? providerId, int? activityId)
+    public async Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetWaitlistByProvider(int? providerId, int? activityId, IEnumerable<int>? status = null)
     {
         try
         {
             Expression<Func<Entities.OteWaitlist, bool>> filter = 
                 a => (providerId.HasValue ? a.ProviderId == providerId.Value: true)&&
-                     (activityId.HasValue ? a.ActivityId == activityId.Value: true);
+                     (activityId.HasValue ? a.ActivityId == activityId.Value: true) &&
+                     (status != null ? status.Contains(a.Status) : true);
 
             var result = await dataStore.OteWaitlist.FindAsync(filter);
 
@@ -58,9 +59,30 @@ public class OteWaitlistRepository : IOteWaitlistRepository
             return AppResult<IEnumerable<OteWaitlistDTO>>.CreateFailed(ex, "An error occured when getting waitlists by provider id.");
         }
     }
-    public Task<AppResult<OteWaitlistDTO>> UpdateOteWaitlist(OteWaitlistDTO oteWaitlistDTO)
+    public async Task<AppResult<OteWaitlistDTO>> UpdateOteWaitlist(OteWaitlistDTO oteWaitlistDTO)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var waitlistRes = await dataStore.OteWaitlist.GetByIdAsync(oteWaitlistDTO.Id);
+            if (!waitlistRes.Succeeded || waitlistRes.Result == null)
+            {
+                return AppResult<OteWaitlistDTO>.CreateFailed(waitlistRes.Error.Exception, waitlistRes.Message);
+            }
+            var waitlist = waitlistRes.Result;
+            waitlist.Status = oteWaitlistDTO.Status;
+
+            var updatedWaitlistRes = await dataStore.OteWaitlist.Update(waitlist);
+            if (!updatedWaitlistRes.Succeeded || updatedWaitlistRes.Result is null)
+            {
+                return AppResult<OteWaitlistDTO>.CreateFailed(new ApplicationException(updatedWaitlistRes.Message), updatedWaitlistRes.Message);
+            }
+            var dtoWaitlist = mapper.Map<OteWaitlistDTO>(updatedWaitlistRes.Result);
+            return AppResult<OteWaitlistDTO>.CreateSucceeded(dtoWaitlist, "Waitlist successfully updated");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteWaitlistDTO>.CreateFailed(ex, "An error occured when updating ote waitlist");
+        }
     }
 
     public Task<AppResult<IEnumerable<OteWaitlistDTO>>> GetAllAsync(int? count, int? skip)
