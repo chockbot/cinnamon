@@ -9,7 +9,7 @@
     <div class="customer-list">
         <div class="col-12 customer-filter">
             <div class="search-box">
-                <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                <Select TValue="int" class="dropdown-select-search" SelectedValue=@SearchBy SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
                     <SelectItem Value="0">Search By</SelectItem>
                     <SelectItem Value="1">Id</SelectItem>
                     <SelectItem Value="2">Name</SelectItem>
@@ -152,7 +152,7 @@
     public string currentPage = "1";
     public string SearchValue = string.Empty;
     public int counterPage = 10;
-    public int SearchBy = 0;
+    public int SearchBy = 1;
     public int selectedFilter;
     public bool IsDisplay = false;
     public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();

@@ -38,7 +38,7 @@
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
-                    <p class="reg-status">Open</p>
+                    <p class="reg-status">@((activity.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
             </div>
             <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
@@ -109,7 +109,7 @@
                         <Tickets TicketList="ticketList"></Tickets>
                     </TabPanel>
                     <TabPanel Name="emails">
-                        @*<CustomerFavorite profile="Model.CustomerProfile" />*@
+                       <Emails Handler="activity.Handler"></Emails>
                     </TabPanel>
                 </Content>
             </Tabs>
