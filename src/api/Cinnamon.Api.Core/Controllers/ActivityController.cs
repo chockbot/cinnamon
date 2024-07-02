@@ -89,6 +89,7 @@ public class ActivityController : ControllerBase
     private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
+    private readonly IProviderQuestionsHandler providerQuestionsHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -118,7 +119,8 @@ public class ActivityController : ControllerBase
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler,
-        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler)
+        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler,
+        IProviderQuestionsHandler providerQuestionsHandler)
     {
         _logger = logger;
 
@@ -186,6 +188,7 @@ public class ActivityController : ControllerBase
         this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
         this.emailTemplateHandler = emailTemplateHandler;
         this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
+        this.providerQuestionsHandler = providerQuestionsHandler;
     }
 
     [Route("CreateActivity")]
@@ -3495,6 +3498,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ProviderQuestions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ProviderQuestionsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ProviderQuestions([FromQuery] ProviderQuestionsArgs args)
+    {
+        try
+        {
+            var result = await providerQuestionsHandler.ExecuteAsync(new Services.ActivityService.Interactors.ProviderQuestionsArgs {
+                ActivityId = args.ActivityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<ProviderQuestionDTO>>(result.Result.Questions);
+
+            return new JsonResult(new ProviderQuestionsResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
