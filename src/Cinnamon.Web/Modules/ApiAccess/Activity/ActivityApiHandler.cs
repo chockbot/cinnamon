@@ -1354,6 +1354,28 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
     
+    public async Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetEmailTemplate")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEmailTemplateResult>();
+
+            return AppResult<GetEmailTemplateResult>.CreateSucceeded(result, "Successfully get email template.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, "An error occured when getting email template.");
+        }
+    }
+    
     public async Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token)
     {
         try
@@ -1377,25 +1399,25 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token)
+    public async Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token)
     {
         try
         {
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
-                .Request($"Activity/GetEmailTemplate")
+                .Request($"Activity/ProviderQuestions")
                 .SetQueryParams(args)
-                .GetJsonAsync<GetEmailTemplateResult>();
+                .GetJsonAsync<ProviderQuestionsResult>();
 
-            return AppResult<GetEmailTemplateResult>.CreateSucceeded(result, "Successfully get email template.");
+            return AppResult<ProviderQuestionsResult>.CreateSucceeded(result, "Successfully get provider questions.");
         }
         catch (FlurlHttpException ex)
         {
-            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, ex.Message);
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<GetEmailTemplateResult>.CreateFailed(ex, "An error occured when getting email template.");
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, "An error occured when getting provider questions.");
         }
     }
 }

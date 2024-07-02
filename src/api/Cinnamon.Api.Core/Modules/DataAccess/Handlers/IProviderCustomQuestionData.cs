@@ -8,5 +8,5 @@ public interface IProviderCustomQuestionData
 {
     Task<AppResult<CreateCustomQuestionResult>> CreateCustomQuestion(CreateCustomQuestionArgs args);
 
-    Task<AppResult<CreateCustomQuestionResult>> GetCustomQuestions(GetCustomQuestionsArgs args);
+    Task<AppResult<GetCustomQuestionsResult>> GetCustomQuestions(GetCustomQuestionsArgs args);
 }

@@ -38,24 +38,24 @@ public class ProviderCustomQuestionData : IProviderCustomQuestionData
         }
     }
 
-    public async Task<AppResult<CreateCustomQuestionResult>> GetCustomQuestions(GetCustomQuestionsArgs args)
+    public async Task<AppResult<GetCustomQuestionsResult>> GetCustomQuestions(GetCustomQuestionsArgs args)
     {
         try
         {
             var result = await flurlClient
                 .Request("ProviderCustomQuestions")
                 .SetQueryParams(args)
-                .GetJsonAsync<CreateCustomQuestionResult>();
-            return AppResult<CreateCustomQuestionResult>.CreateSucceeded(result, "Successfully posting get custom questions api");
+                .GetJsonAsync<GetCustomQuestionsResult>();
+            return AppResult<GetCustomQuestionsResult>.CreateSucceeded(result, "Successfully posting get custom questions api");
         }
         catch (FlurlHttpException ex)
         {
             var error = await ex.GetResponseJsonAsync();
-            return AppResult<CreateCustomQuestionResult>.CreateFailed(ex, ex.Message);
+            return AppResult<GetCustomQuestionsResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<CreateCustomQuestionResult>.CreateFailed(ex, "An error occured when posting get custom questions api");
+            return AppResult<GetCustomQuestionsResult>.CreateFailed(ex, "An error occured when posting get custom questions api");
         }
     }
 }

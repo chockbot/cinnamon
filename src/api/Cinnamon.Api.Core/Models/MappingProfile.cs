@@ -117,5 +117,8 @@ public class MappingProfile : Profile
         CreateMap<ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist, CoreDto.OteWaitList.OteWaitlistDTO>();
 
         CreateMap<ActivityResults.EmailTemplateResult, CoreDto.DynamicContent.DynamicEmailTemplateDTO>();
+
+        // for provider custom questions
+        CreateMap<ActivityResults.ProviderQuestionsResult.Question, CoreDto.DynamicContent.ProviderQuestionDTO>();
     }
 }
