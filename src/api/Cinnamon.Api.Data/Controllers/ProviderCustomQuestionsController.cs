@@ -27,7 +27,8 @@ public class ProviderCustomQuestionsController : ControllerBase
                 ActivityId = args.ActivityId,
                 FieldLabel = args.FieldLabel,
                 FieldType = args.FieldType,
-                ProviderId = args.ProviderId
+                ProviderId = args.ProviderId,
+                Required = args.Required
             });
             if(!result.Succeeded || result.Result is null)
             {
