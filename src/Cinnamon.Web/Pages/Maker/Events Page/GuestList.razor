@@ -5,11 +5,13 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IDashboardApiHandler dashboardApiHandler
 
-<LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+@if (activity != null)
+{
+    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <div class="customer-list">
         <div class="col-12 customer-filter">
             <div class="search-box">
-                <Select TValue="int" class="dropdown-select-search" SelectedValue="SearchBy" SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                <Select TValue="int" class="dropdown-select-search" SelectedValue=@SearchBy SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
                     <SelectItem Value="0">Search By</SelectItem>
                     <SelectItem Value="1">Id</SelectItem>
                     <SelectItem Value="2">Name</SelectItem>
@@ -133,7 +135,7 @@
         </div>
     </div>
 </LoadingIndicator>
-
+}
 @code {
     [Parameter]
     public OteActivity activity { get; set; }

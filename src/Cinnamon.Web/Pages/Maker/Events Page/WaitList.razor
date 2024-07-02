@@ -12,7 +12,15 @@
 <div class="customer-list">
     <div class="ticket-table">
         <div class="table-list">
-            <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+            @if (OteWaitlist == null || !OteWaitlist.Any())
+            {
+                <div class="sub-text">
+                    No waitlist in this event!
+                </div>
+            }
+            else
+            {
+                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell class="th-id">
@@ -31,29 +39,32 @@
                 </TableHeader>
                 <TableBody>
                     @foreach (var item in OteWaitlist)
-                    {
-                        <TableRow @key="item">
-                            <TableRowCell class="tr-name">
-                                <span>@item.CustomerName</span>
-                            </TableRowCell>
-                            <TableRowCell class="tr-name">
-                                <span>@item.TicketName</span>
-                            </TableRowCell>
-                            <TableRowCell class="tr-name">
-                                <span>@item.TicketPrice</span>
-                            </TableRowCell>
-                            <TableRowCell class="tr-name">
-                                <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
-                                    Update
-                                </button>
-                            </TableRowCell>
-                        </TableRow>
-                    }
-                </TableBody>
-            </Table>
+                        {
+                            <TableRow @key="item">
+                                <TableRowCell class="tr-name">
+                                    <span>@item.CustomerName</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <span>@item.TicketName</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <span>@item.TicketPrice</span>
+                                </TableRowCell>
+                                <TableRowCell class="tr-name">
+                                    <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                        Update
+                                    </button>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            }
         </div>
     </div>
 </div>
+
+
 @if (WaitlistDetails != null)
 {
     <Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
