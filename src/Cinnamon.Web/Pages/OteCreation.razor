@@ -662,7 +662,8 @@
                             IsAbsorbFees = p.AbsorbFees,
                             MaxSlots = p.MaxSlots ?? 0,
                             Price = p.Price ?? 0m,
-                            Name = p.Name
+                            Name = p.Name,
+                            RequiredApproval = p.RequiredApproval
                         };
                     }),
                     DateOverrides = schedule.DateOverrides.Select(d =>
@@ -780,7 +781,8 @@
                         IsAbsorbFees = p.AbsorbFees,
                         MaxSlots     = p.MaxSlots ?? 0,
                         Price        = p.Price ?? 0m,
-                        Name         = p.Name
+                        Name         = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }),
                 DateOverrides = schedule.DateOverrides.Select(d =>  {
@@ -1033,7 +1035,8 @@
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
-                    TicketSold = totalTicketsSold
+                    TicketSold = totalTicketsSold,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList(),
             CustomAcceptedBody = acceptedBody,
