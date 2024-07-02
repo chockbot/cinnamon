@@ -126,19 +126,20 @@ public class OteTicketRepository : IOteTicketRepository
             {
                 var ticketDTO = new OteScheduleDTO
                 {
-                    ActivityId = activityId,
-                    From = s.From,
-                    To = s.To,
+                    ActivityId  = activityId,
+                    From        = s.From,
+                    To          = s.To,
                     Recurrences = s.Recurrences,
                     OteSchedulePricingDTO = new OteSchedulePricingDTO
                     {
-                        Id          = s.OteSchedulePricingDTO.Id,
-                        Name        = s.OteSchedulePricingDTO.Name,
-                        Description = s.OteSchedulePricingDTO.Description,
-                        MaxSlots    = s.OteSchedulePricingDTO.MaxSlots,
-                        Sold        = s.OteSchedulePricingDTO.Sold,
-                        Available   = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
-                        Price       = s.OteSchedulePricingDTO.Price
+                        Id                    = s.OteSchedulePricingDTO.Id,
+                        Name                  = s.OteSchedulePricingDTO.Name,
+                        Description           = s.OteSchedulePricingDTO.Description,
+                        MaxSlots              = s.OteSchedulePricingDTO.MaxSlots,
+                        Sold                  = s.OteSchedulePricingDTO.Sold,
+                        Available             = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
+                        Price                 = s.OteSchedulePricingDTO.Price,
+                        OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId
                     }
                 };
                 return ticketDTO;

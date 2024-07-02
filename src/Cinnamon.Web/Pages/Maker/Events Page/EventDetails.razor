@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Components.Pages
 @using ClosedXML.Excel;
 @using System.IO;
+@inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -69,6 +70,11 @@
                                 guest list
                         </div>
                     </div>
+                    <div class='swiper-slide @(selectedTab == "wait-list" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "wait-list" ? "active" : "")' @onclick='() => selectedTab = "wait-list"'>
+                            waitlist
+                        </div>
+                    </div>
                     <div class='swiper-slide @(selectedTab == "tickets" ? "swiper-slide-active" : "")'>
                         <div class='tab-item @(selectedTab == "tickets" ? "active" : "")' @onclick='() => selectedTab = "tickets"'>
                             tickets
@@ -85,6 +91,7 @@
                 <Items>
                     <Tab Name="overview" TextTransform="TextTransform.Capitalize">overview</Tab>
                     <Tab Name="guest-list" TextTransform="TextTransform.Capitalize">guest list</Tab>
+                    <Tab Name="wait-list" TextTransform="TextTransform.Capitalize">waitlist</Tab>
                     <Tab Name="tickets" TextTransform="TextTransform.Capitalize">tickets</Tab>
                     <Tab Name="emails" TextTransform="TextTransform.Capitalize">emails</Tab>
                 </Items>
@@ -93,12 +100,13 @@
                         <Overview Activity="activity" Tickets="ticketList"/>
                     </TabPanel>
                     <TabPanel Name="guest-list">
-                        <GuestList activity="activity" Token=@Token dateId="dateId"></GuestList>
-                        @*<Experiences Token="@Token" Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile" />*@
+                        <GuestList activity="activity" Token=@Token dateId="dateId"/>
+                    </TabPanel>
+                    <TabPanel Name="wait-list">
+                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" />
                     </TabPanel>
                     <TabPanel Name="tickets">
                         <Tickets TicketList="ticketList"></Tickets>
-                        @*<RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token" />*@
                     </TabPanel>
                     <TabPanel Name="emails">
                         @*<CustomerFavorite profile="Model.CustomerProfile" />*@
@@ -168,6 +176,7 @@
     public List<OteTicket> FilteredCustomer = new();
     public List<OteSchedule> ticketList = new List<OteSchedule>();
     public List<OteTicket> ExportCustomer = new List<OteTicket>();
+    public List<OteWaitlist> WaitList = new List<OteWaitlist>();
     private OteActivity? activity;
     public const string PREVIOUS   = "previous";
     public const string NEXT       = "next";
@@ -185,6 +194,7 @@
     public int selectedFilter;
     public bool IsDisplay = false;
     private string selectedTab = "overview";
+    private int ProviderId { get; set; }
 
     private SharedLink eventSharedLink = new();
     private SharedLinkStatus sharedLinkStatus = new();
@@ -199,7 +209,14 @@
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         Token = user.FindFirstValue("Token");
-
+        if(user.Identity != null && user.Identity.IsAuthenticated && Token  != null)
+        {
+            var account = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if(account.Succeeded && account.Result != null && account.Result.IsSuccess)
+            {
+                ProviderId = account.Result.Result.Id;
+            }
+        }
         var result = await activityApiHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
             {
                 IncludeAddress = true,
@@ -214,7 +231,7 @@
         }
         var act = result.Result.Result;
         activity = mapper.Map<OteActivity>(act);
-        
+
         if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
         {
             dateId = parsedDate;
@@ -236,6 +253,7 @@
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
+
     private async Task GetTicketList()
     {
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
@@ -253,13 +271,14 @@
                 Recurrences = s.Recurrences,
                 OtePricing = new OtePricing
                 {
-                    Id          = s.OtePricingDTO.Id,
-                    Name        = s.OtePricingDTO.Name,
-                    MaxSlots    = s.OtePricingDTO.MaxSlots,
-                    Description = s.OtePricingDTO.Description,
-                    Sold        = s.OtePricingDTO.Sold,
-                    Available   = s.OtePricingDTO.Available,
-                    Price       = s.OtePricingDTO.Price
+                    Id                    = s.OtePricingDTO.Id,
+                    Name                  = s.OtePricingDTO.Name,
+                    MaxSlots              = s.OtePricingDTO.MaxSlots,
+                    Description           = s.OtePricingDTO.Description,
+                    Sold                  = s.OtePricingDTO.Sold,
+                    Available             = s.OtePricingDTO.Available,
+                    Price                 = s.OtePricingDTO.Price,
+                    OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId
                 }
             }).ToList();
         }
@@ -429,6 +448,7 @@
         var referenceId = idString.Length > template.Length ? idString : template.Substring(idString.Length) + idString;
         return referenceId;
     }
+
     private async Task OnFilterValueChanged(int entries)
     {
         counterPage = entries;
@@ -436,6 +456,7 @@
         await GetCustomerList(1);
         await loadingIndicator.Hide();
     }
+
     private async Task OnFilterByValueChange(int searchBy)
     {
         switch (searchBy)
@@ -568,6 +589,7 @@
         public bool UpdatingStatus {get; set;}
         public string Label {get; set;} = "Disable event access";
     }
+
     private Task OnSelectedTabChanged(string name)
     {
         selectedTab = name;

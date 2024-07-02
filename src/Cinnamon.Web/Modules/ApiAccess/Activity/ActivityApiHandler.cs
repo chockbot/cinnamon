@@ -1398,4 +1398,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, "An error occurred when calling delete online event api");
         }
     }
+
+    public async Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateOteWaitlist")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOteWaitlistResult>();
+
+            return AppResult<UpdateOteWaitlistResult>.CreateSucceeded(result, "Successfully called update ote waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling uupdate ote waitlist api");
+        }
+    }
 }

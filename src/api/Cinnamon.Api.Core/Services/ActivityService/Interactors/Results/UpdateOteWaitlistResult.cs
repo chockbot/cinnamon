@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Cinnamon.Framework.Interactor;
 
-namespace Cinnamon.Framework.ApiCommand.ApiData.OteWaitlist.Request;
-
-public class UpdateOteWaitlistArgs
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+public class UpdateOteWaitlistResult : IInteractor
 {
-    [Required]
     public int Id { get; set; }
-    public int CustomerId { get; set; }
     public int ProviderId { get; set; }
+    public int CustomerId { get; set; }
     public string CustomerName { get; set; }
     public int ActivityId { get; set; }
     public int ScheduleId { get; set; }

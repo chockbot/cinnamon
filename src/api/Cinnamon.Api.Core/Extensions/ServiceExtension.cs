@@ -191,6 +191,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteTicketBookedCountHandler, Services.ActivityService.OteTicketBookedCountHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOteScheduleDatesHandler, Services.ActivityService.OteScheduleDatesHandler>();
 
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateOteWaitlistHandler, Services.ActivityService.UpdateOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateOteWaitlistHandler, Services.ActivityService.CreateOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOteWaitlistByProviderHandler, Services.ActivityService.GetOteWaitlistByProviderHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ISaveEmailTemplateHandler, Services.ActivityService.SaveEmailTemplateHandler>();

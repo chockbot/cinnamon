@@ -634,7 +634,26 @@ public class ActivityData: IActivityData
 			return AppResult<CreateOteWaitlistResult>.CreateFailed(ex, "An error occured when posting create ote waitlist api");
 		}
 	}
+	public async Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+				.Request("OteWaitlist/UpdateOteWaitlist")
+				.PostJsonAsync(args)
+				.ReceiveJson<UpdateOteWaitlistResult>();
 
+			return AppResult<UpdateOteWaitlistResult>.CreateSucceeded(result, "Successfully posting update ote waitlist api");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when posting update ote waitlist api");
+		}
+	}
 	public async Task<AppResult<GetOteWaitlistByProviderResult>> GetOteWaitlistByProvider(GetOteWaitlistByProviderArgs args)
 	{
 		try

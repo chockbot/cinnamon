@@ -36,7 +36,8 @@ public class GetOteWaitlistByProviderHandler : IGetOteWaitlistByProviderHandler
             var oteWaitlist = await activityData.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiData.OteWaitlist.Request.GetOteWaitlistByProviderArgs
             {
                 ProviderId = args.ProviderId,
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                Status     = args.Status
             });
             if (!oteWaitlist.Succeeded || oteWaitlist.Result is null || !oteWaitlist.Result.IsSuccess)
             {

@@ -965,7 +965,8 @@
         var waitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
         {
             ProviderId = provider.Id,
-            ActivityId = activity.Id
+            ActivityId = activity.Id,
+            Status = new[] {0}
         }, token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
@@ -1016,15 +1017,12 @@
                 await NotificationService.Error("Select a ticket to proceed.", "Oops!");
                 return;
             }
-            var payloadData = selectedTickets.Select(s =>
-            {
-                return new
+            var payloadData = selectedTickets.Select(s => new TicketDetails
                 {
                     Id = s.Value.Id,
                     Count = s.Value.Count,
                     Date = selectedDate
-                };
-            });
+                });
             if (currentLogin is null)
             {
                 string oteDetailsUrl = $"/explore/ote/{Handler}";
@@ -1073,5 +1071,13 @@
     {
         public int PurchaseOrderId { get; set; }
         public string EventName { get; set; }
+    }
+    private class TicketDetails
+    {
+        public int Id { get; set; }
+
+        public int Count { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

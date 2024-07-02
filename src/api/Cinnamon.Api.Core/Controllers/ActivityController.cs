@@ -86,6 +86,7 @@ public class ActivityController : ControllerBase
     private readonly IOteTicketBookedCountHandler oteTicketBookedCountHandler;
     private readonly IOteScheduleDatesHandler oteScheduleDatesHandler;
     private readonly ICreateOteWaitlistHandler createOteWaitlistHandler;
+    private readonly IUpdateOteWaitlistHandler updateOteWaitlistHandler;
     private readonly IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
@@ -118,7 +119,7 @@ public class ActivityController : ControllerBase
         IDeleteTicketHandler deleteTicketHandler, IOteAlreadyBookedHandler oteAlreadyBookedHandler,
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler,
-        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler)
+        IEmailTemplateHandler emailTemplateHandler, IDeleteOteWaitlistHandler deleteOteWaitlistHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler)
     {
         _logger = logger;
 
@@ -162,30 +163,31 @@ public class ActivityController : ControllerBase
         this.getExperienceCreationTypeHandler     = getExperienceCreationTypeHandler;
         this.getActivityScheduleTimesHandler      = getActivityScheduleTimesHandler;
         this.createOngoingActivityScheduleHandler = createOngoingActivityScheduleHandler;
-        this.oteCreateHandler = oteCreateHandler;
-        this.oteUpdateHandler = oteUpdateHandler;
-        this.oteFindByHandler = oteFindByHandler;
-        this.mapper = mapper;
-        this.oteTicketDetailsHandler = oteTicketDetailsHandler;
-        this.customerOteHandler = customerOteHandler;
-        this.oteVerificationHandler = oteVerificationHandler;
-        this.deleteAddOnsHandler = deleteAddOnsHandler;
-        this.deleteAddOnHandler = deleteAddOnHandler;
-        this.getOtePerDayHandler = getOtePerDayHandler;
-        this.generateEventSharedLinkHandler = generateEventSharedLinkHandler;
-        this.oteValidateSharedLinkHandler = oteValidateSharedLinkHandler;
-        this.oteSharedLinkVerificationHandler = oteSharedLinkVerificationHandler;
-        this.deleteOnlineEventHandler = deleteOnlineEventHandler;
-        this.oteUpdateSharedLinkStatusHandler = oteUpdateSharedLinkStatusHandler;
-        this.deleteTicketHandler = deleteTicketHandler;
-        this.activityFeedHandler = activityFeedHandler;
-        this.oteAlreadyBookedHandler = oteAlreadyBookedHandler;
-        this.oteTicketBookedCountHandler = oteTicketBookedCountHandler;
-        this.oteScheduleDatesHandler = oteScheduleDatesHandler;
-        this.createOteWaitlistHandler = createOteWaitlistHandler;
-        this.getOteWaitlistByProviderHandler = getOteWaitlistByProviderHandler;
-        this.emailTemplateHandler = emailTemplateHandler;
-        this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
+        this.oteCreateHandler                     = oteCreateHandler;
+        this.oteUpdateHandler                     = oteUpdateHandler;
+        this.oteFindByHandler                     = oteFindByHandler;
+        this.mapper                               = mapper;
+        this.oteTicketDetailsHandler              = oteTicketDetailsHandler;
+        this.customerOteHandler                   = customerOteHandler;
+        this.oteVerificationHandler               = oteVerificationHandler;
+        this.deleteAddOnsHandler                  = deleteAddOnsHandler;
+        this.deleteAddOnHandler                   = deleteAddOnHandler;
+        this.getOtePerDayHandler                  = getOtePerDayHandler;
+        this.generateEventSharedLinkHandler       = generateEventSharedLinkHandler;
+        this.oteValidateSharedLinkHandler         = oteValidateSharedLinkHandler;
+        this.oteSharedLinkVerificationHandler     = oteSharedLinkVerificationHandler;
+        this.deleteOnlineEventHandler             = deleteOnlineEventHandler;
+        this.oteUpdateSharedLinkStatusHandler     = oteUpdateSharedLinkStatusHandler;
+        this.deleteTicketHandler                  = deleteTicketHandler;
+        this.activityFeedHandler                  = activityFeedHandler;
+        this.oteAlreadyBookedHandler              = oteAlreadyBookedHandler;
+        this.oteTicketBookedCountHandler          = oteTicketBookedCountHandler;
+        this.oteScheduleDatesHandler              = oteScheduleDatesHandler;
+        this.createOteWaitlistHandler             = createOteWaitlistHandler;
+        this.getOteWaitlistByProviderHandler      = getOteWaitlistByProviderHandler;
+        this.emailTemplateHandler                 = emailTemplateHandler;
+        this.deleteOteWaitlistHandler             = deleteOteWaitlistHandler;
+        this.updateOteWaitlistHandler             = updateOteWaitlistHandler;
     }
 
     [Route("CreateActivity")]
@@ -3400,6 +3402,42 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [Route("UpdateOteWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOteWaitlistResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateActivity([FromBody] UpdateOteWaitlistArgs args)
+    {
+        try
+        {
+            var result = await updateOteWaitlistHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateOteWaitlistArgs
+            {
+                Id           = args.Id,
+                ActivityId   = args.ActivityId,
+                CustomerId   = args.CustomerId,
+                CustomerName = args.CustomerName,
+                Payload      = args.Payload,
+                ProviderId   = args.ProviderId,
+                ScheduleId   = args.ScheduleId,
+                Status       = args.Status
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var mapResults = mapper.Map<CoreDto.OteWaitList.OteWaitlistDTO>(result.Result);
+
+            return new JsonResult(new UpdateOteWaitlistResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -3410,7 +3448,8 @@ public class ActivityController : ControllerBase
             var result = await getOteWaitlistByProviderHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOteWaitlistByProviderArgs
             {
                 ProviderId = args.ProviderId,
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                Status     = args.Status
             });
 
             if (!result.Succeeded || result.Result is null)

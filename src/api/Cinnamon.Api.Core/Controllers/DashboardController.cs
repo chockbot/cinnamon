@@ -586,13 +586,14 @@ public class DashboardController : ControllerBase
                         Recurrences = s.Recurrences,
                         OtePricingDTO = new Framework.ApiCommand.ApiCore.DTO.Activity.OtePricingDTO
                         {
-                            Id          = s.OtePricingDTO.Id,
-                            Name        = s.OtePricingDTO.Name,
-                            Description = s.OtePricingDTO.Description,
-                            MaxSlots    = s.OtePricingDTO.MaxSlots,
-                            Sold        = s.OtePricingDTO.Sold,
-                            Available   = s.OtePricingDTO.Available,
-                            Price       = s.OtePricingDTO.Price
+                            Id                    = s.OtePricingDTO.Id,
+                            Name                  = s.OtePricingDTO.Name,
+                            Description           = s.OtePricingDTO.Description,
+                            MaxSlots              = s.OtePricingDTO.MaxSlots,
+                            Sold                  = s.OtePricingDTO.Sold,
+                            Available             = s.OtePricingDTO.Available,
+                            Price                 = s.OtePricingDTO.Price,
+                            OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId
                         }
                     };
                 })

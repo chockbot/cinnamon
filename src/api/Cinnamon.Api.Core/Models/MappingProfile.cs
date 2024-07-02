@@ -72,6 +72,9 @@ public class MappingProfile : Profile
         CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.CreateOteWaitlistResult>();
         CreateMap<ActivityResults.CreateOteWaitlistResult, CoreDto.OteWaitList.OteWaitlistDTO>();
 
+        CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.UpdateOteWaitlistResult>();
+        CreateMap<ActivityResults.UpdateOteWaitlistResult, CoreDto.OteWaitList.OteWaitlistDTO>();
+
         CreateMap<DataDto.OteWaitlist.OteWaitlistDTO, ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist>();
         CreateMap<ActivityResults.GetOteWaitlistByProviderResult.OteWaitlist, CoreDto.OteWaitList.OteWaitlistDTO>();
 
