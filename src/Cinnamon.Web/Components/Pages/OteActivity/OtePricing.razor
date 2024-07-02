@@ -109,7 +109,7 @@
                     <p class="approval">Required Approval</p>
                     <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                     <div class="form-check form-switch">
-                        <Switch @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
+                        <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                     </div>
                 </div>
             }
@@ -477,7 +477,7 @@
                         <div class="accept-reg">
                             <p class="approval">Required Approval</p>
                             <div class="form-check form-switch">
-                                <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                             </div>
                         </div>
                         <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -1087,6 +1087,9 @@
         if (isFree)
         {
             modelPricing.Price = 0;
+        }
+        else {
+            modelPricing.RequiredApproval = false;
         }
     }
 
