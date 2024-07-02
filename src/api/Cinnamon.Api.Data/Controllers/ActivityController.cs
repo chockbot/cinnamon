@@ -408,7 +408,8 @@ public class ActivityController : ControllerBase
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
@@ -480,7 +481,8 @@ public class ActivityController : ControllerBase
                     IsAbsorbFees = p.IsAbsorbFees,
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
-                    Name = p.Name
+                    Name = p.Name,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
 
