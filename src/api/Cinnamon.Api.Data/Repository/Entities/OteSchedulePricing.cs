@@ -11,6 +11,7 @@ public class OteSchedulePricing : BaseEntity
     public int TicketSold {get; set;}
     public int? OteDateId {get; set;}
     public int? OteSchedulePricingGroupId {get; set;}
+    public bool RequiredApproval {get; set;}
 
     public virtual OteSchedule OteSchedule {get; set;}
     public virtual OteDate? OteDate  {get; set;}
