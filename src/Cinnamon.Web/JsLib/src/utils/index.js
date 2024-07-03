@@ -5,6 +5,7 @@ import { scrollToTop, scrollToView } from "./scrollToView.js";
 import { countWords } from "./wordsCount.js";
 import clipboardCopy from "./clipboardCopy.js";
 import navigation from "./navigation.js";
+import localStorage from "./localStorage.js";
 
 export default {
   cookieManager,
@@ -15,4 +16,5 @@ export default {
   countWords,
   clipboardCopy,
   navigation,
+  localStorage,
 };

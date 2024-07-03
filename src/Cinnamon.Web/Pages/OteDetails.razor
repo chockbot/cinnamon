@@ -855,7 +855,8 @@
                     Count = 1,
                     Id = pricing.Id,
                     Price = pricing.Price,
-                    Name = pricing.Name
+                    Name = pricing.Name,
+                    RequiredApproval = pricing.RequiredApproval
                 });
             }
 
@@ -943,6 +944,7 @@
         public int Count {get; set;}
         public decimal Price {get; set;}
         public string Name {get; set;}
+        public bool RequiredApproval {get; set;}
     }
 
     private void ToggleAboutText()
