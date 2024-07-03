@@ -14,4 +14,6 @@ public class OteWaitlist
     public string CustomerProfile { get; set; }
     public string CustomerEmail { get; set; }
     public DateTime EventDate { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime ChangedOn { get; set; }
 }

@@ -50,11 +50,33 @@
                                 <TableRowCell class="tr-name">
                                     <span>@item.TicketPrice</span>
                                 </TableRowCell>
-                                <TableRowCell class="tr-name">
-                                    <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
-                                        Update
-                                    </button>
-                                </TableRowCell>
+                                @switch (item.Status)
+                                {
+                                    case 1:
+                                        <TableRowCell class="tr-name">
+                                            <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Update
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    case 2:
+                                        <TableRowCell class="approved-waitlist">
+                                            <button class="btn-approved" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Approved
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    case 3:
+                                        <TableRowCell class="declined-waitlist">
+                                            <button class="btn-declined" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Declined
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    default:
+                                        break;
+                                }
+                               
                             </TableRow>
                         }
                     </TableBody>
@@ -96,13 +118,60 @@
                 <li class="name">@WaitlistDetails.TicketPrice</li>
             </ul>
             <div class="d-flex justify-content-center gap-1">
-                <Button class="ticket-approve" Clicked="ApprovedWaitlist">
-                    Approve
-                </Button>
-                <Button class="ticket-decline" Clicked="DeclineWaitlist">
-                    Decline
-                </Button>
+                @if(WaitlistDetails.Status == 1)
+                {
+                    <Button class="ticket-approve" Clicked="ApprovedWaitlist">
+                        Approve
+                    </Button>
+                    <Button class="ticket-decline" Clicked="DeclineWaitlist">
+                        Decline
+                    </Button>
+                }
             </div>
+        </div>
+        <div class="timeline-section">
+            <p class="timeline-title">Timeline</p>
+                @if (WaitlistDetails.Status == 1)
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br/>
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+                else if (WaitlistDetails.Status == 2)
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br/>
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                        <li class="name mt-2">
+                            <span>Registered Approved from @EventName</span>
+                            <br />
+                            <span>@WaitlistDetails.ChangedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+                else
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br />
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                        <li class="name mt-2">
+                            <span>Registered Declined from @EventName</span>
+                            <br />
+                            <span>@WaitlistDetails.ChangedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+
         </div>
     </OffcanvasBody>
     </Offcanvas>
@@ -120,6 +189,9 @@
 
     [Parameter]
     public int ActivityId { get; set; }
+
+    [Parameter]
+    public string EventName { get; set; }
 
     public List<OteWaitlist> OteWaitlist = new List<OteWaitlist>();
 
@@ -255,7 +327,7 @@
         {
             ProviderId = ProviderId,
             ActivityId = ActivityId,
-            Status = new[] {1}
+            Status = new[] {1,2,3}
         }, Token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
@@ -268,7 +340,9 @@
                 Payload      = e.Payload,
                 ProviderId   = e.ProviderId,
                 ScheduleId   = e.ScheduleId,
-                Status       = e.Status
+                Status       = e.Status,
+                ChangedOn    = e.ChangedOn,
+                CreatedOn    = e.CreatedOn
             }).ToList();
         }
     }

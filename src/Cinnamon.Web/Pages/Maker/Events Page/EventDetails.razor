@@ -58,7 +58,7 @@
         </div>
         @*Tabs*@
         <section class="customer-profile-details">
-            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile.Block.OnTablet">
                 <div class="swiper-wrapper">
                     <div class='swiper-slide @(selectedTab == "overview" ? "swiper-slide-active" : "")'>
                         <div class='tab-item @(selectedTab == "overview" ? "active" : "")' @onclick='() => selectedTab = "overview"'>
@@ -103,7 +103,7 @@
                         <GuestList activity="activity" Token=@Token dateId="dateId"/>
                     </TabPanel>
                     <TabPanel Name="wait-list">
-                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" />
+                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" EventName="@activity.EventName"/>
                     </TabPanel>
                     <TabPanel Name="tickets">
                         <Tickets TicketList="ticketList" OteActivity="activity"></Tickets>

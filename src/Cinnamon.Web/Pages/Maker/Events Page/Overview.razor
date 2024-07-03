@@ -3,9 +3,11 @@
 
 <div class="overview-section">
     <Row>
-        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop">
-            <div class="overview-details d-flex">
-                <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is9.OnDesktop">
+            <div class="overview-details">
+                <div class="event-image-section">
+                    <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+                </div>
                 <div class="event-details">
                     <p class="event-title">When & Where</p>
                     <div class="event-schedule-details">
@@ -34,7 +36,7 @@
                 </div>
             </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop">
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is3.OnDesktop">
             <div class="ticket-details m-margin-top-30">
                 <p class="event-title">Tickets</p>
                 <p class="event-schedule">Total Ticket Slots: @TotalSlots</p>
