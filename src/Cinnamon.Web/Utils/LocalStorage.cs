@@ -24,6 +24,8 @@ public class LocalStorage : ILocalStorage
     public async Task<T?> GetItem<T>(string key)
     {
         var value = await jsRuntime.InvokeAsync<string>("MyLib.Utils.localStorage.getItem",key);
+        if(value is null) return default;
+
         return jsonSerializationProvider.Deserialize<T>(value);
     }
 
@@ -34,6 +36,7 @@ public class LocalStorage : ILocalStorage
 
     public async Task SetItem(string key, object value)
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.localStorage.setItem", key, value);
+        var payload = jsonSerializationProvider.Serialize(value);
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.localStorage.setItem", key, payload);
     }
 }

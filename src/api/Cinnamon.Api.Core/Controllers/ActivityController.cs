@@ -3583,6 +3583,7 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [Route("ActivityQuestions")]
     [HttpGet]
     [ProducesResponseType(typeof(ActivityQuestionsResult), StatusCodes.Status200OK)]

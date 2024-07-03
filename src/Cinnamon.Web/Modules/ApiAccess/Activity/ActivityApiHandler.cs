@@ -1444,12 +1444,11 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args, string token)
+    public async Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args)
     {
         try
         {
             var result = await flurlClient
-                .WithOAuthBearerToken(token)
                 .Request($"Activity/ActivityQuestions")
                 .SetQueryParams(args)
                 .GetJsonAsync<ActivityQuestionsResult>();
