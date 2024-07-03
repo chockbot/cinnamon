@@ -123,5 +123,6 @@ public class MappingProfile : Profile
 
         // for provider custom questions
         CreateMap<ActivityResults.ProviderQuestionsResult.Question, CoreDto.DynamicContent.ProviderQuestionDTO>();
+        CreateMap<ActivityResults.ActivityQuestionsResult.Question, CoreDto.DynamicContent.ProviderQuestionDTO>();
     }
 }

@@ -1443,4 +1443,26 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling uupdate ote waitlist api");
         }
     }
+
+    public async Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/ActivityQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ActivityQuestionsResult>();
+
+            return AppResult<ActivityQuestionsResult>.CreateSucceeded(result, "Successfully get activity questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, "An error occured when getting activity questions.");
+        }
+    }
 }
