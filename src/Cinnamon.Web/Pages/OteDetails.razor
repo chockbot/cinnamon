@@ -379,17 +379,19 @@
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @* <Validation>
+            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
+                <Validation>
                     <Field class="mb-3">
                         <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
                         <FieldBody>
-                            <TextEdit >
+                            <TextEdit @bind-Text="personalForm.Phone">
                                 <ValidationError />
                             </TextEdit>
                         </FieldBody>
                     </Field>
-                </Validation> *@
+                </Validation>
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
                 @foreach (var question in activityQuestions)
                 {
                     if(question.Required)
@@ -471,6 +473,8 @@
     private List<ActivityQuestion> activityQuestions = new();
     private Modal? modalQuestions;
     private Validations? questionValidation;
+    private Validations? phoneValidation;
+    private PersonalValidation personalForm = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1239,5 +1243,11 @@
         // extra fields
         [Required(ErrorMessage = "Please write your answer")]
         public string Answer {get; set;}
+    }
+
+    private class PersonalValidation 
+    {
+        [Required(ErrorMessage = "Please provider your mobile number")]
+        public string Phone {get; set;}
     }
 }

@@ -545,17 +545,19 @@
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @* <Validation>
+            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
+                <Validation>
                     <Field class="mb-3">
                         <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
                         <FieldBody>
-                            <TextEdit >
+                            <TextEdit @bind-Text="personalForm.Phone">
                                 <ValidationError />
                             </TextEdit>
                         </FieldBody>
                     </Field>
-                </Validation> *@
+                </Validation>
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
                 @foreach (var question in activityQuestions)
                 {
                     if(question.Required)
@@ -628,6 +630,8 @@
     private List<ActivityQuestion> activityQuestions = new();
     private Modal? modalQuestions;
     private Validations? questionValidation;
+    private Validations? phoneValidation;
+    private PersonalValidation personalForm = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1127,6 +1131,10 @@
             {
                 await modalQuestions.Show();
             }
+            else 
+            {
+                await SubmitTransaction();
+            }
         }
         else
         {
@@ -1139,6 +1147,18 @@
         try
         {
             submitting = true;
+
+            var questionsData = await localStorage.GetItem<StorageData>("activityQuestions");
+            var questions = new List<ActivityQuestion>();
+
+            if(questionsData is not null && questionsData.ActivityId == activity.Id)
+            {
+                questions.AddRange(questionsData.Questions.Select(q => new ActivityQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
+                }));
+            }
 
             var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1157,6 +1177,11 @@
                         Count = t.Value.Count,
                         Id = t.Value.Id
                     };
+                }),
+                Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
                 })
             }, token);
 
@@ -1167,6 +1192,8 @@
             }
             else
             {
+                await localStorage.RemoveItem("activityQuestions");
+
                 submitting = false;
                 if (submit.Result.Result.Action == 1)
                 {
@@ -1230,7 +1257,7 @@
 
     private async Task SubmitAnserQuestions()
     {
-        var validForms = await questionValidation.ValidateAll();
+        var validForms = (await questionValidation.ValidateAll()) && (await phoneValidation.ValidateAll());
         if(!validForms) return;
 
         await localStorage.SetItem("activityQuestions", new {
@@ -1292,5 +1319,11 @@
         public int Id {get; set;}
         public string Question {get; set;}
         public string Answer {get; set;}
+    }
+
+    private class PersonalValidation 
+    {
+        [Required(ErrorMessage = "Please provider your mobile number")]
+        public string Phone {get; set;}
     }
 }
