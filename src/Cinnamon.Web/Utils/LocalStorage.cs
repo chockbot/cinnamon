@@ -1,26 +1,39 @@
+using Cinnamon.Framework.Providers;
+using Microsoft.JSInterop;
+
 namespace Cinnamon.Web.Utils;
 
 public interface ILocalStorage 
 {
-    Task GetItem<T>(string key);
+    Task<T?> GetItem<T>(string key);
     Task SetItem(string key, object value);
     Task RemoveItem(string key);
 }
 
 public class LocalStorage : ILocalStorage
 {
-    public Task GetItem<T>(string key)
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IJSRuntime jsRuntime;
+
+    public LocalStorage(IJsonSerializationProvider jsonSerializationProvider, IJSRuntime jsRuntime)
     {
-        throw new NotImplementedException();
+        this.jsonSerializationProvider = jsonSerializationProvider;
+        this.jsRuntime = jsRuntime;
+    }
+    
+    public async Task<T?> GetItem<T>(string key)
+    {
+        var value = await jsRuntime.InvokeAsync<string>("MyLib.Utils.localStorage.getItem",key);
+        return jsonSerializationProvider.Deserialize<T>(value);
     }
 
-    public Task RemoveItem(string key)
+    public async Task RemoveItem(string key)
     {
-        throw new NotImplementedException();
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.localStorage.removeItem", key);
     }
 
-    public Task SetItem(string key, object value)
+    public async Task SetItem(string key, object value)
     {
-        throw new NotImplementedException();
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.localStorage.setItem", key, value);
     }
 }
