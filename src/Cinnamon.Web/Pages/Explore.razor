@@ -447,7 +447,7 @@
                         {
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(1))">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Clear())">
                                         <img src="images/explore-page-images/NewSVG.svg" class="static-category-selector-img">
                                         <p class="static-category-title">All</p>
                                     </a>
@@ -513,7 +513,7 @@
                         <!-- END OF DO NOT TOUCH -->
                         <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
-                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => ShowOTE(3))">
+                                    <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Clear())">
                                         <img src="images/explore-page-images/NewSVG.svg" class="static-category-selector-img">
                                         <p class="static-category-title">All</p>
                                     </a>
@@ -984,6 +984,11 @@
                                                         <img src="images/explore-page-images/date-explore.png" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
+                                                } else {
+                                                    <div class="address-holder">
+                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
+                                                    </div>
                                                 }
                                         @if (act.ExperienceCreationTypeId == 3)
                                         {
@@ -997,7 +1002,7 @@
                                         } else {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
+                                                <button class="card-title-button-exp">
                                                     <span>Register</span>
                                                 </button>
                                             </a>
@@ -1221,7 +1226,13 @@
                                                         <img src="images/explore-page-images/date-explore.png" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
+                                                } else {
+                                                    <div class="address-holder">
+                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
+                                                    </div>
                                                 }
+
                                         @if (act.ExperienceCreationTypeId == 3)
                                         {
                                         <div class="row price-badge-section">
@@ -1234,7 +1245,7 @@
                                         } else {
                                         <div class="row price-badge-section">
                                             <a class="button carousel-card text-center" href="@DetailsUrl(act.Handler, (int)act.ExperienceCreationTypeId)" target="_blank">
-                                                <button class="card-title-button">
+                                                <button class="card-title-button-exp">
                                                     <span>Register</span>
                                                 </button>
                                             </a>
@@ -1439,6 +1450,7 @@
                                                             <img src="images/explore-page-images/location-explore.png" class="location-icon" />
                                                             <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         </div>
+                                                        
                                                     }
                                                     else
                                                     {
@@ -1446,6 +1458,7 @@
                                                         <img src="images/explore-page-images/location-explore.png" class="location-icon" />
                                                         <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                                                         </div>
+                                                        
                                                     }
                                             </div>
                                             @{
@@ -2525,16 +2538,12 @@
         if (ExperienceCategory == 3)
         {
             showCategorySwiper = false;
-            await Filter(null);
-            await FetchActivities(true);
+            await FetchActivities(false);
         }
         else
         {
             showCategorySwiper = true;
-            await Filter(null);
-            await FetchActivities(true);
+            await FetchActivities(false);
         }
-
-        await FetchActivities(false);
     }
 }
