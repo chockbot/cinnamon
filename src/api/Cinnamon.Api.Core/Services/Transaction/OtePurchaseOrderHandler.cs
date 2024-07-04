@@ -138,6 +138,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Combining free and paid tickets is not permitted."), "Combining free and paid tickets is not permitted.");
             }
 
+            var oteDate = oteActivity.OteDates.FirstOrDefault(d => d.Id == defaultDatePricing.OteDateId);
+            if(oteDate is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                    new ApplicationException("Unable to get ote date. Please contact support."), "Unable to get ote date. Please contact support.");
+            }
+
             var checkInclusivePaymentRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
                 CustomerId = oteActivity.ProviderId
             });
@@ -361,7 +368,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Id = t.Id,
                         Name = t.Name,
                         Price = t.Price,
-                        OteDateId = t.OteDateId
+                        OteDateId = t.OteDateId,
+                        Date = oteDate.DateStart
                     }),
                     Questions = args.Questions?.Select(q => new {
                         Question = q.Question,
