@@ -1251,7 +1251,7 @@
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
-        if (!activity.IsEventSoldOut)
+        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
         {
              await ProceedToJoinWaitlist();
         }
