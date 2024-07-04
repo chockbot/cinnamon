@@ -319,11 +319,50 @@
                         if (eventType == EventType.InPerson)
                         {
                             currentIndex = 3;
+                            otePublish?.OnSelectedScheduledEmail(0);
                         }
                         else
                         {
                             currentIndex = 4;
+                            otePublish?.OnSelectedScheduledEmail(0);
                         }
+                        break;
+                    case 3:
+                        summary = GetSummary();
+                        if (eventType == EventType.InPerson)
+                        {
+                            currentIndex = 3;
+                            otePublish?.OnSelectedScheduledEmail(1);
+                        }
+                        else
+                        {
+                            currentIndex = 4;
+                            otePublish?.OnSelectedScheduledEmail(1);
+                        }
+                        break;
+                    case 4:
+                        currentIndex = 1;
+                        otePricing?.modalCustomQuestion.Show();
+                        break;
+                    case 5:
+                        currentIndex = 1;
+                        otePricing?.registrationModal.Show();
+                        break;
+                    case 6:
+                        currentIndex = 1;
+                        otePricing?.capacityModal.Show();
+                        break;
+                    case 7:
+                        currentIndex = 1;
+                        otePricing?.OnPendingEmailTemplateClick();
+                        break;
+                    case 8:
+                        currentIndex = 1;
+                        otePricing?.OnAcceptedTemplateClick();
+                        break;
+                    case 9:
+                        currentIndex = 1;
+                        otePricing?.OnDeclinedTemplateClick();
                         break;
                     default:
                         break;

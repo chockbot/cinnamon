@@ -111,12 +111,16 @@
         <div class="registration">
             <p class="name">Registration Time</p>
             <p class="reg-time">@DateTime.Now.ToString("MMM dd, hh:mm tt")</p>
-
-            <p class="name">Details:</p>
-            <ul>
-                <li class="name">@WaitlistDetails.TicketName</li>
-                <li class="name">@WaitlistDetails.TicketPrice</li>
-            </ul>
+            @if(WaitlistDetails.Registrations.Count() != 0)
+            {
+                foreach (var reg in WaitlistDetails.Registrations)
+                {
+                    <div class="registration-section">
+                         <p class="name">@reg.Question</p>
+                            <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
+                    </div>
+                }
+            }
             <div class="d-flex justify-content-center gap-1">
                 @if(WaitlistDetails.Status == 1)
                 {
@@ -204,11 +208,11 @@
         await GetWaitlist();
         foreach (var item in OteWaitlist)
         {
-            var deserializedPayload = JsonConvert.DeserializeObject<IEnumerable<TicketDetails>>(item.Payload);
+            var deserializedPayload = JsonConvert.DeserializeObject<Payload>(item.Payload);
             if (deserializedPayload != null)
             {
                 var ticketNames = new List<string>();
-                foreach (var ticket in deserializedPayload)
+                foreach (var ticket in deserializedPayload.Tickets)
                 {
                     // Get Ticket Details
                     item.EventDate = ticket.Date;
@@ -219,6 +223,14 @@
                         ticketNames.Add(ticketDetails.OtePricing.Name); 
                     }
                 }
+                if(deserializedPayload.Questions.Count() != 0)
+                {
+                    item.Registrations.AddRange(deserializedPayload.Questions.Select(reg => new Models.Ote.OteWaitlist.Registration
+                    {
+                        Answer = reg.Answer,
+                        Question = reg.Question
+                    }));
+                }
                 item.TicketName = ticketNames.Count > 1 ? string.Join(", ", ticketNames) : ticketNames.FirstOrDefault();
             }
             else
@@ -228,16 +240,25 @@
         }
     } 
 
-    private class TicketDetails
+    public class Payload
     {
-        [JsonProperty("Id")]
+        public IEnumerable<TicketDetails> Tickets { get; set; }
+        public IEnumerable<QuestionDetails> Questions { get; set; }
+    }
+
+    public class TicketDetails
+    {
         public int Id { get; set; }
-
-        [JsonProperty("Count")]
-        public int Count { get; set; }
-
-        [JsonProperty("Date")]
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int OteDateId { get; set; }
         public DateTime Date { get; set; }
+    }
+
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 
     private Task OnPendingWaitlistClick()
