@@ -1129,42 +1129,78 @@
                 await NotificationService.Error("Select a ticket to proceed.", "Oops!");
                 return;
             }
-            var payloadData = selectedTickets.Select(s => new TicketDetails
-                {
-                    Id = s.Value.Id,
-                    Count = s.Value.Count,
-                    Date = selectedDate
-                });
-            if (currentLogin is null)
+
+            var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
+            if(havePaidAndFreeTicket)
             {
-                string oteDetailsUrl = $"/explore/ote/{Handler}";
-                await loginModal.Show();
-                signInReturnUrl = oteDetailsUrl;
+                await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
                 return;
             }
-            var serializedPayload = JsonConvert.SerializeObject(payloadData);
-            //Add to Waitlist
-            var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
-                {
-                    ActivityId   = activity.Id,
-                    ScheduleId   = SelectedScheduleId,
-                    CustomerId   = ProfileId,
-                    CustomerName = ProfileName,
-                    ProviderId   = provider.Id,
-                    Status       = 1,
-                    Payload      = serializedPayload
-            },token);
-            if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
-            {
 
-                //Add Email
-                await NotificationService.Success("Successfully added to waitlist.", "Success");
-                await LoadWaitlist();
+            var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+            if(haveApprovalTicket)
+            {
+                await modalQuestions?.Show();
             }
+            else
+            {
+                await ProceedToJoinWaitlist();
+            }    
         }
         else 
         {
             await NotificationService.Error("This event is sold out!", "Sold Out");
+        }
+    }
+
+    private async Task ProceedToJoinWaitlist()
+    {
+        var storageData = await localStorage.GetItem<StorageData>("activityQuestions");
+
+        var payload = new 
+        {
+            Tickets = selectedTickets.Select(t => new {
+                Id = t.Value.Id,
+                Count = t.Value.Count,
+                Date = selectedDate,
+                Price = t.Value.Price,
+                Name = t.Value.Name,
+            }),
+            Questions = storageData is not null && storageData.Questions is not null ?
+                storageData.Questions.Select(q => new {
+                    Id = q.Id,
+                    Question = q.Question,
+                    Answer = q.Answer
+                }) : null
+        };
+
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            await loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return;
+        }
+        var serializedPayload = JsonConvert.SerializeObject(payload);
+
+        //Add to Waitlist
+        var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
+        {
+            ActivityId   = activity.Id,
+            ScheduleId   = SelectedScheduleId,
+            CustomerId   = ProfileId,
+            CustomerName = ProfileName,
+            ProviderId   = provider.Id,
+            Status       = 1,
+            Payload      = serializedPayload
+        },token);
+
+        if (waitlist.Succeeded && waitlist.Result is not null && waitlist.Result.IsSuccess)
+        {
+            //Add Email
+            await NotificationService.Success("Successfully added to waitlist.", "Success");
+            await LoadWaitlist();
         }
     }
 
@@ -1213,7 +1249,16 @@
             })
         });
 
-        await ProceedToPaymentOption();
+        await modalQuestions?.Close(CloseReason.UserClosing);
+
+        if (!activity.IsEventSoldOut)
+        {
+             await ProceedToJoinWaitlist();
+        }
+        else 
+        {
+            await ProceedToPaymentOption();
+        }
     }
 
     private class TicketItem
@@ -1249,5 +1294,18 @@
     {
         [Required(ErrorMessage = "Please provider your mobile number")]
         public string Phone {get; set;}
+    }
+
+    private class StorageData 
+    {
+        public int ActivityId {get; set;}
+        public IEnumerable<StorageQuestion> Questions {get; set;} 
+    }
+
+    private class StorageQuestion 
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public string Answer {get; set;}
     }
 }
