@@ -857,14 +857,11 @@
     {
         get
         {
-            decimal result = 0;
+            if(selectedTickets.Sum(t => t.Value.Price) == 0) return 0;
 
-            if(selectedTickets.Count > 0 && !IsInclusivePricing)
-            {
-                result = 15;
-            }
+            if(selectedTickets.Count > 0 && !IsInclusivePricing) return 15;
 
-            return result;
+            return 0;
         }
     }
 
