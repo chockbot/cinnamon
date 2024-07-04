@@ -1,0 +1,749 @@
+@layout DashboardLayout
+@page "/maker/dashboard/enrollee-masterlist/direct-student/{StudentId:int}"
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Maker
+@using System.Globalization
+@using Cinnamon.Web.Components.Pages
+@using Cinnamon.Framework.Enums
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Framework.Helpers;
+@inject IJSRuntime JS;
+@inject INotificationService NotificationService;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IDirectStudentApiHandler directStudentApiHandler;
+
+<Container class="update-direct-students-wrapper pb-4">
+    <div class="header mb-3">
+        <div class="title-section align-items-center">
+            <button class="back-button m-0 p-0" @onclick="GoToPrev">
+                <img src="images/Dashboard/back-icon.png">
+            </button>
+            <p class="back-text font-20 m-font-18 font-weight-900 mb-0">Update Direct Students</p>
+        </div>
+    </div>
+
+    <p class="text-description font-16 m-font-12 mb-4 mb-md-5">
+        You can update students to your class who enrolled on the platform
+    </p>
+
+    <div class="mb-4">
+        <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">student information</p>
+
+        <Validations @ref="studentValidation" Mode="ValidationMode.Manual" Model="student">
+            <Row class="flex-wrap mb-3">
+                <Field class="field-name mb-3">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Name</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <TextEdit @bind-Text="student.Name" class="color-black-100 font-16 m-font-12" 
+                                Size="Size.Default" Placeholder="Juan Dela Cruz Jr." />
+                        </Validation>
+                    </FieldBody>
+                </Field>
+
+                <Field class="field-name">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Parent Email</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <TextEdit @bind-Text="student.Email" class="color-black-100 font-16 m-font-12" 
+                                Size="Size.Default" Placeholder="Optional email" />
+                        </Validation>
+                    </FieldBody>
+                </Field>
+            </Row>
+
+            <Row class="flex-wrap">
+                <Field class="field-gender mb-3">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Gender</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <Select @bind-SelectedValue="student.Gender"
+                                class="form-select color-black-100 text-capitalize font-16 m-font-12" Size="Size.Small" TValue="string">
+                                <SelectItem Value='"male"'>male</SelectItem>
+                                <SelectItem Value='"female"'>female</SelectItem>
+                            </Select>
+                        </Validation>
+                    </FieldBody>
+                </Field>
+
+                <Field class="field-birthmonth mb-3">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Birth Month</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <Select @bind-SelectedValue="student.BirthMonth" 
+                                class="form-select text-capitalize color-black-100 font-16 m-font-12" Size="Size.Small" TValue="string">
+                                <SelectItem Value='"january"'>january</SelectItem>
+                                <SelectItem Value='"february"'>february</SelectItem>
+                                <SelectItem Value='"march"'>march</SelectItem>
+                                <SelectItem Value='"april"'>april</SelectItem>
+                                <SelectItem Value='"may"'>may</SelectItem>
+                                <SelectItem Value='"june"'>june</SelectItem>
+                                <SelectItem Value='"july"'>july</SelectItem>
+                                <SelectItem Value='"august"'>august</SelectItem>
+                                <SelectItem Value='"september"'>september</SelectItem>
+                                <SelectItem Value='"october"'>october</SelectItem>
+                                <SelectItem Value='"november"'>november</SelectItem>
+                                <SelectItem Value='"december"'>december</SelectItem>
+                            </Select>
+                        </Validation>
+                    </FieldBody>
+                </Field>
+
+                <Field class="field-birthyear mb-3">
+                    <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Year</FieldLabel>
+                    <FieldBody>
+                        <Validation>
+                            <Select @bind-SelectedValue="student.BirthYear"
+                                class="form-select text-capitalize color-black-100 font-16 m-font-12" Size="Size.Small" TValue="int">
+                                @foreach (var year in years)
+                                {
+                                    <SelectItem Value="year">@year</SelectItem>    
+                                }
+                            </Select>
+                        </Validation>
+                    </FieldBody>
+                </Field>
+            </Row>
+        </Validations>
+    </div>
+
+    @if(ongoingActivities.Count > 0)
+    {
+        <div class="mb-4">
+            <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">current activities</p>
+
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <Validations @ref="enrolledActivitiesValidation" Mode="ValidationMode.Manual" Model="ongoingActivities">
+                        <div class="accordion" id="accordion-schedules">
+                            @foreach (var item in ongoingActivities)
+                            {
+                                <div class="accordion-item">
+                                    <div class="accordion-header" id="heading-ongoing-@item.Id">
+                                        <button class="py-2 accordion-button bg-white-200 font-16 m-font-12 text-capitalize" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#collapse-ongoing-@item.Id" 
+                                            aria-expanded="true" aria-controls="collapse-ongoing-@item.Id">
+                                            @item.ActivityName
+                                        </button>
+                                    </div>
+                                    <div id="collapse-ongoing-@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-ongoing-@item.Id">
+                                        <div class="accordion-body">
+                                            <p class="font-16 m-font-12 font-weight-900 text-capitalize my-3">activity information</p>
+
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class</FieldLabel>
+                                                <FieldBody>
+                                                    <Validation>
+                                                        <Select @bind-SelectedValue="item.ActivityId" @onchange="e => OnFilterValueChanged(e, item)"
+                                                            class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int"
+                                                            >
+                                                            <ChildContent>
+                                                                <SelectItem Value='0' selected Disabled>select experience</SelectItem>
+                                                                @foreach (var item in activities)
+                                                                {
+                                                                    <SelectItem Value='item.Value.ActivityId'>
+                                                                        @item.Value.Title
+                                                                    </SelectItem>
+                                                                }
+                                                            </ChildContent>
+                                                        </Select>
+                                                    </Validation>
+                                                </FieldBody>
+                                            </Field>
+
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class/Schedule</FieldLabel>
+                                                <FieldBody>
+                                                    <Validation>
+                                                        <Select @bind-SelectedValue="item.ScheduleId" @onchange="e => SelectedScheduleChanged(e, item)"
+                                                            class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int">
+                                                            <ChildContent>
+                                                                <SelectItem Value='0' selected Disabled>select schedule</SelectItem>
+                                                                @foreach (var sched in GetActivitySchedules(item.ActivityId))
+                                                                {
+                                                                    <SelectItem Value='sched.Id'>@sched.Name</SelectItem>
+                                                                }
+                                                            </ChildContent>
+                                                        </Select>
+                                                    </Validation>
+                                                </FieldBody>
+                                            </Field>
+
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment</FieldLabel>
+                                                <FieldBody>
+                                                    <Validation>
+                                                        <NumericPicker @bind-Value="item.Amount" TValue="decimal" ShowStepButtons="false" Decimals="0" 
+                                                            Placeholder="Amount" Size="Size.Small" class="color-black-100 font-16 m-font-12" Min="1" />
+                                                    </Validation>
+                                                </FieldBody>
+                                            </Field>
+
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment Date</FieldLabel>
+                                                <FieldBody>
+                                                    <DateEdit @bind-Date="item.PaymentDate" TValue="DateTime"  
+                                                        Size="Size.Small" class="color-black-100 font-16 m-font-12"  />
+                                                </FieldBody>
+                                            </Field>
+                                        </div>
+                                    </div>
+                                </div>   
+                            }
+                        </div>
+                    </Validations>
+                </Column>
+            </Row>
+        </div>
+    }
+
+    @if(completedActivities.Count > 0)
+    {
+        <div>
+            <p class="font-20 m-font-18 font-weight-900 text-capitalize mb-3 mb-md-4">completed/expired activities</p>
+
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                    <div class="accordion" id="accordion-schedules">
+                        @foreach (var item in completedActivities)
+                        {
+                            <div class="accordion-item">
+                                <div class="accordion-header" id="heading-completed-@item.Id">
+                                    <button class="py-2 accordion-button bg-white-200 font-16 m-font-12 text-capitalize" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse-completed-@item.Id" 
+                                        aria-expanded="true" aria-controls="collapse-completed-@item.Id">
+                                        @item.ActivityName
+                                    </button>
+                                </div>
+                                <div id="collapse-completed-@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-completed-@item.Id">
+                                    <div class="accordion-body">
+                                        <p class="font-16 m-font-12 font-weight-900 text-capitalize my-3">activity information</p>
+
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class</FieldLabel>
+                                            <FieldBody>
+                                                <Select @bind-SelectedValue="item.ActivityId" ReadOnly
+                                                    class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int"
+                                                    >
+                                                    <ChildContent>
+                                                        <SelectItem Value='0' selected Disabled>select experience</SelectItem>
+                                                        @foreach (var item in activities)
+                                                        {
+                                                            <SelectItem Value='item.Value.ActivityId'>
+                                                                @item.Value.Title
+                                                            </SelectItem>
+                                                        }
+                                                    </ChildContent>
+                                                </Select>
+                                            </FieldBody>
+                                        </Field>
+
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Class/Schedule</FieldLabel>
+                                            <FieldBody>
+                                                <Select @bind-SelectedValue="item.ScheduleId" ReadOnly
+                                                    class="form-select text-capitalize font-16 m-font-12 color-black-100" Size="Size.Small" TValue="int">
+                                                    <ChildContent>
+                                                        <SelectItem Value='0' selected Disabled>select schedule</SelectItem>
+                                                        @foreach (var sched in GetActivitySchedules(item.ActivityId))
+                                                        {
+                                                            <SelectItem Value='sched.Id'>@sched.Name</SelectItem>
+                                                        }
+                                                    </ChildContent>
+                                                </Select>
+                                            </FieldBody>
+                                        </Field>
+
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment</FieldLabel>
+                                            <FieldBody>
+                                                <NumericPicker @bind-Value="item.Amount" ReadOnly TValue="decimal" ShowStepButtons="false" Decimals="0" 
+                                                        Placeholder="Amount" Size="Size.Small" class="color-black-100 font-16 m-font-12" Min="0" />
+                                            </FieldBody>
+                                        </Field>
+
+                                        <Field class="mb-3">
+                                            <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Payment Date</FieldLabel>
+                                            <FieldBody>
+                                                <DateEdit @bind-Date="item.PaymentDate" TValue="DateTime" ReadOnly 
+                                                    Size="Size.Small" class="color-black-100 font-16 m-font-12"  />
+                                            </FieldBody>
+                                        </Field>
+                                    </div>
+                                </div>
+                            </div>   
+                        }
+                    </div>
+                </Column>
+            </Row>
+        </div>
+    }
+
+    <Row class="mt-4">
+        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            <div class="text-end">
+                <Button Disabled="submitting" Loading="submitting" Clicked="SaveStudents"
+                    class="px-4 text-capitalize font-16 m-font-12 bg-orange-100 color-white-100 hover-color-white">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please Wait..
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save Changes
+                    </ChildContent>
+                </Button>
+            </div>
+        </Column>
+    </Row>
+
+    <Modal @ref="confirmPeriodModal" class="modal-period-confirmation"
+        Closing="OnModalClosing">
+        <ModalContent Centered>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                <button type="button" style="top: 20px; right: 20px;" class="btn-close position-absolute" @onclick="CancelConfirmationModal" />
+            </ModalHeader>
+            <ModalBody>
+                <fieldset>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                        checked='@(currentSelectedActivity.PeriodConfirmation.SelectedPeriod == "currentperiod")' 
+                                        value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@currentSelectedActivity.PeriodConfirmation.DurationLeft</span> to use this.</p>
+                                </Column>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                        checked='@(currentSelectedActivity.PeriodConfirmation.SelectedPeriod == "nextperiod")'  
+                                        value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@currentSelectedActivity.PeriodConfirmation.NextPeriod.AddDays(1).ToString("MMMM dd, yyyy")</span></p>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                    <Button Loading="currentSelectedActivity.PeriodConfirmation.IsSubmitting" 
+                        Disabled="currentSelectedActivity.PeriodConfirmation.IsSubmitting || string.IsNullOrEmpty(currentSelectedActivity.PeriodConfirmation.SelectedPeriod)" 
+                        class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Proceed
+                        </ChildContent>
+                    </Button>
+                    @if(currentSelectedActivity.PeriodConfirmation.IsShowError && !currentSelectedActivity.PeriodConfirmation.IsApplied)
+                    {
+                        <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                    }
+                </fieldset>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+</Container>
+
+@code 
+{
+    [Parameter]
+    public int StudentId {get; set;}
+
+    private string token = string.Empty;
+    private IList<int> years = new List<int>();
+    private Dictionary<int, Activity> activities = new();
+    private List<ActivitySchedule> scheduleList = new();
+    private Student student = new();
+    private Validations? studentValidation;
+    
+    private List<EnrolledActivity> ongoingActivities = new();
+    private List<EnrolledActivity> completedActivities = new();
+    private Validations? enrolledActivitiesValidation;
+    private Modal? confirmPeriodModal;
+    private EnrolledActivity currentSelectedActivity = new();
+    private bool submitting = false;
+
+    protected override void OnInitialized()
+    {
+        // minimum years
+        var maxYear = DateTime.Now.Year - 4;
+        var minYear = DateTime.Now.Year - 100;
+        for (int i = minYear; i <= maxYear; i++)
+        {
+            years.Add(i);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            token = user.FindFirstValue("Token");
+            if (token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+            await Task.WhenAll(LoadStudent(), GetActivities());
+
+            await Task.WhenAll(LoadCompletedSessions(), LoadOngoingSessions());
+        }
+        catch (Exception ex)
+        {
+            ex.Message.ToString();
+        }
+    }
+
+    private async Task GetActivities()
+    {
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+        {
+            IncludeAtivitySchedules = true,
+            IsActive = true
+        }, token);
+
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            var filteredActivities = activityRes.Result.Result
+                                .Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+                                .OrderBy(a => a.ActivityId);
+
+            foreach (var item in filteredActivities)
+            {
+                activities.Add(item.ActivityId, new Activity {
+                    Title = item.Title,
+                    ActivityId = item.ActivityId
+                });
+
+                foreach (var sched in item.ActivitySchedules)
+                {
+                    scheduleList.Add(new ActivitySchedule {
+                        ActivityId = item.ActivityId,
+                        Id = sched.Id,
+                        Name = sched.Name,
+                        HasExpiration = sched.HasExpiration,
+                        SessionName = sched.SessionName,
+                        StartDate = sched.StartDate
+                    });
+                }
+            }
+        }
+    }
+
+    private IEnumerable<ActivitySchedule> GetActivitySchedules(int activityId)
+    {
+        if(activityId > 0)
+        {
+            return scheduleList.Where(s => s.ActivityId == activityId);
+        }
+
+        return Enumerable.Empty<ActivitySchedule>();
+    }
+
+    private void NavigateToEnrolleeMasterlist()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
+    }
+
+    private async Task SaveStudents()
+    {
+        try
+        {
+            bool fieldsValid = await studentValidation?.ValidateAll();
+            bool activitiesFieldsValid = true;
+
+            if(enrolledActivitiesValidation is not null)
+            {
+                activitiesFieldsValid = await enrolledActivitiesValidation?.ValidateAll();
+            }
+
+            if(!fieldsValid || !activitiesFieldsValid)
+            {
+                await NotificationService.Error("Please double check required fields and try again", "Error");
+                return;
+            }
+
+            submitting = true;
+
+            var result = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                DirectStudentInfo = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentInfo {
+                    BirthMonth = student.BirthMonth,
+                    BirthYear = student.BirthYear,
+                    Gender = student.Gender,
+                    Name = student.Name,
+                    StudentId = student.Id,
+                    Email = student.Email
+                },
+                DirectStudentSessions = ongoingActivities.Select(s => new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    Name = student.Name,
+                    ScheduleId = s.ScheduleId,
+                    StudentPayment = new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentPayment {
+                        Amount = s.Amount,
+                        PaymentDate = s.PaymentDate
+                    },
+                    Period = s.PeriodConfirmation.SelectedPeriod
+                })
+            }, token);
+
+            submitting = false;
+
+            await studentValidation?.ClearAll();
+
+            if(enrolledActivitiesValidation is not null)
+            {
+                await enrolledActivitiesValidation?.ClearAll();
+            }
+
+            if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new Exception("An error occured");
+            }
+
+            await NotificationService.Success("Success! Student updated.", "Success");
+
+            NavigateToEnrolleeMasterlist();
+        }
+        catch (Exception)
+        {
+            await NotificationService.Error("An error occured when updating direct student.", "Error");
+        }
+    }
+
+    private async Task LoadStudent()
+    {
+        var result = await directStudentApiHandler.DirectStudent(StudentId, token);
+
+        if(!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+        {
+            await NotificationService.Error(result.Result?.ErrorInfo?.Message ?? result.Message, "Error");
+            NavigateToEnrolleeMasterlist();
+            return;
+        }
+
+        var studentToUpdate = result.Result.Result;
+        student = new Student {
+            BirthMonth = studentToUpdate.DirectStudentInfo.BirthMonth,
+            BirthYear = studentToUpdate.DirectStudentInfo.BirthYear,
+            Gender = studentToUpdate.DirectStudentInfo.Gender,
+            Name = studentToUpdate.DirectStudentInfo.Name,
+            Id = studentToUpdate.DirectStudentInfo.Id,
+            Email = studentToUpdate.DirectStudentInfo.Email
+        };
+    }
+
+    private async Task GoToPrev()
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.navigation.back");
+    }
+
+    private async Task LoadOngoingSessions()
+    {
+        var sessionsRes = await directStudentApiHandler.StudentSessions(new Framework.ApiCommand.ApiCore.DirectStudent.Request.StudentSessionsArgs {
+            SessionStatus = "ongoing"
+        }, StudentId, token);
+
+        if(sessionsRes.Succeeded && sessionsRes.Result is not null && sessionsRes.Result.IsSuccess)
+        {
+            ongoingActivities.AddRange(sessionsRes.Result.Result.OrderByDescending(s => s.Id).Select(s => new EnrolledActivity {
+                ActivityId = s.ActivityId,
+                ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
+                Amount = s.DirectStudentPayment.Amount,
+                ScheduleId = s.ScheduleId,
+                Id = s.Id,
+                PaymentDate = s.DirectStudentPayment.PaymentDate
+            }));
+        }
+    }
+
+    private async Task LoadCompletedSessions()
+    {
+        var sessionsRes = await directStudentApiHandler.StudentSessions(new Framework.ApiCommand.ApiCore.DirectStudent.Request.StudentSessionsArgs {
+            SessionStatus = "completed"
+        }, StudentId, token);
+
+        if(sessionsRes.Succeeded && sessionsRes.Result is not null && sessionsRes.Result.IsSuccess)
+        {
+            completedActivities.AddRange(sessionsRes.Result.Result.OrderByDescending(s => s.Id).Select(s => new EnrolledActivity {
+                ActivityId = s.ActivityId,
+                ActivityName = activities[s.ActivityId]?.Title ?? string.Empty,
+                Amount = s.DirectStudentPayment.Amount,
+                ScheduleId = s.ScheduleId,
+                Id = s.Id,
+                PaymentDate = s.DirectStudentPayment.PaymentDate
+            }));
+        }
+    }
+
+    private Task OnFilterValueChanged(ChangeEventArgs e, EnrolledActivity activity)
+    {
+        if (int.TryParse(e.Value.ToString(), out int selectedValue))
+        {
+            if (selectedValue != 0)
+            {
+                activity.ActivityId = selectedValue;
+                activity.ScheduleId = 0;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        e.Cancel = (e.CloseReason == CloseReason.FocusLostClosing || e.CloseReason == CloseReason.EscapeClosing);
+        return Task.CompletedTask;
+    }
+
+    private Task CancelConfirmationModal()
+    {
+        // to reset selected schedule and empty selected period to trigger validate again
+        currentSelectedActivity.PeriodConfirmation.SelectedPeriod = string.Empty;
+        currentSelectedActivity.ScheduleId = 0;
+        currentSelectedActivity.PrevScheduleId = -1;
+
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            currentSelectedActivity.PeriodConfirmation.SelectedPeriod = period;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task ConfirmProceedClick()
+    {
+        if(string.IsNullOrEmpty(currentSelectedActivity.PeriodConfirmation.SelectedPeriod))
+        {
+            currentSelectedActivity.PeriodConfirmation.IsShowError = true;
+            return Task.CompletedTask;
+        }
+        
+        return confirmPeriodModal.Close(CloseReason.UserClosing);
+    }
+
+    private async Task SelectedScheduleChanged(ChangeEventArgs e, EnrolledActivity activity)
+    {
+        if(int.TryParse(e.Value.ToString(), out int selectedValue))
+        {
+            var selectedSched = GetActivitySchedules(activity.ActivityId).FirstOrDefault(s => s.Id == selectedValue);
+            if(selectedSched is null)
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+                return;
+            }
+
+            activity.ScheduleId = selectedValue;
+            currentSelectedActivity = activity;
+
+            if(selectedSched.HasExpiration == 1)
+            {
+                if(currentSelectedActivity.ScheduleId != currentSelectedActivity.PrevScheduleId)
+                {
+                    await PeriodCalculation(selectedSched.StartDate.Value, selectedSched.SessionName);
+                    await confirmPeriodModal.Show();
+                }
+            }
+
+            currentSelectedActivity.PrevScheduleId = selectedValue;
+        }
+    }
+
+    private Task PeriodCalculation(DateTime dateStart, string sessionName)
+    {
+        var datePeriod = DateNextPeriod.CreateRecurring(dateStart, sessionName);
+        DateTime periodStart = datePeriod.PeriodStart;
+        // to set the last time of the day
+        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+
+        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+        DateTime now = DateTime.Now;
+
+        int daysLeft = (periodEnd - now).Days;
+        int hours = (periodEnd - now).Hours;
+        string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+        currentSelectedActivity.PeriodConfirmation.DaysLeft = Math.Abs((now - periodEnd).Days);
+        currentSelectedActivity.PeriodConfirmation.DurationLeft = durationLeft;
+        currentSelectedActivity.PeriodConfirmation.NextPeriod = nextPeriod;
+        currentSelectedActivity.PeriodConfirmation.IsApplied = false;
+        currentSelectedActivity.PeriodConfirmation.IsShowError = false;
+
+        return Task.CompletedTask;
+    }
+
+    private class Student
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [EmailAddress(ErrorMessage = "Provide valid email address")]
+        public string? Email {get; set;}
+
+        [Required(ErrorMessage = "Gender is required")]
+        public string Gender { get; set; }
+
+        [Required(ErrorMessage = "Birth Month is required")]
+        public string BirthMonth { get; set; }
+
+        [Range(1900, 2100, ErrorMessage = "Year must be between 1900 and 2100")]
+        public int BirthYear { get; set; }
+    }
+
+    private class EnrolledActivity 
+    {
+        public int Id {get; set;}
+
+        [Range(1, int.MaxValue, ErrorMessage = "Class is required")]
+        public int ActivityId {get; set;}
+
+        [Range(1, int.MaxValue, ErrorMessage = "Schedule is required")]
+        public int ScheduleId {get; set;}
+
+        [Range(1, int.MaxValue, ErrorMessage = "The payment field is required.")]
+        public decimal Amount {get; set;}
+
+        public DateTime PaymentDate {get; set;}
+
+
+        // extra fields
+        public string ActivityName {get; set;}
+        public PeriodConfirmation PeriodConfirmation {get; set;} = new();
+        public int PrevScheduleId {get; set;} = -1;
+    }
+
+    private class PeriodConfirmation 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
+    }
+}

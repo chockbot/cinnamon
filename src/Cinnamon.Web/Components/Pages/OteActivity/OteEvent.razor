@@ -68,7 +68,10 @@
                         <SelectItem Value="0" Disabled class="text-capitalize">--Select Category--</SelectItem>
                         @foreach (var item in ModelState.categoryItems)
                         {
-                            <SelectItem Value="item.Id" class="text-capitalize">@item.Name</SelectItem>
+                            if (item.Name != "Academics" && item.Name != "Language" && item.Name != "Music" && item.Name != "Skill" && item.Name != "SPED" &&  item.Name != "Event")
+                            {
+                                <SelectItem Value="item.Id" class="text-capitalize">@item.Name</SelectItem>
+                            }
                         }
                     </Select>
                     <div class="invalid-feedback">Select category to your event</div>

@@ -12,6 +12,8 @@ public class OtePurchaseOrderArgs : IInteractor
     public bool IsCreditsApplied {get; set;}
     public IEnumerable<Ticket> Tickets {get; set;}
 
+    public IEnumerable<ActivityQuestion>? Questions {get; set;}
+
     public class CardDetails 
     {
         public string CardNumber {get; set;}
@@ -24,5 +26,12 @@ public class OtePurchaseOrderArgs : IInteractor
     {
         public int Id {get; set;}
         public int Count {get; set;}
+    }
+
+    public class ActivityQuestion 
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public string Answer {get; set;}
     }
 }

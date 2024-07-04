@@ -12,6 +12,8 @@ public class OteCreateArgs : IInteractor
 
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 
+    public IEnumerable<CustomQuestion>? Questions {get; set;}
+
     public class OteActivity 
     {
         public string EventName {get; set;}
@@ -95,6 +97,8 @@ public class OteCreateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+
+        public bool RequiredApproval {get; set;}
     }
 
     public class OteOnlinEvent
@@ -113,5 +117,12 @@ public class OteCreateArgs : IInteractor
         public DateTime Date {get; set;}
         public TimeSpan TimeStart {get; set;}
         public TimeSpan TimeEnd {get; set;}
+    }
+
+    public class CustomQuestion 
+    {
+        public string Question {get; set;}
+        public string FieldType {get; set;}
+        public bool Required {get; set;}
     }
 }

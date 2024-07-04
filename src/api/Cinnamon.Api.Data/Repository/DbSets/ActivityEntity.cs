@@ -376,6 +376,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							priceGroup.MaxSlots = price.MaxSlots;
 							priceGroup.Price = price.Price;
 							priceGroup.Name = price.Name;
+							priceGroup.RequiredApproval = price.RequiredApproval;
 
 							var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
 							if(priceList is not null)
@@ -387,6 +388,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 									ticketPrice.MaxSlots = price.MaxSlots;
 									ticketPrice.Price = price.Price;
 									ticketPrice.Name = price.Name;
+									ticketPrice.RequiredApproval = price.RequiredApproval;
 								}
 							}
 						}
@@ -400,6 +402,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							MaxSlots = p.MaxSlots,
 							Name = p.Name,
 							Price = p.Price,
+							RequiredApproval = p.RequiredApproval,
 							OteSchedule = result.OteSchedule
 						};
 					});
@@ -419,6 +422,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								TicketSold = item.TicketSold,
 								OteSchedule = result.OteSchedule,
 								OteSchedulePricingGroup = item,
+								RequiredApproval = item.RequiredApproval
 							});
 						}
 					}
@@ -826,10 +830,11 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 	}
 
 	public async Task<AppResult<IEnumerable<ActivityFeedDTO>>> ActivityFeed(int take, int skip, string? search = null,
-		int? categoryId = null, int? starReview = null, int? experienceType = null)
+		int? categoryId = null, int? starReview = null, int? experienceType = null, int? experienceCategory = null)
 	{
 		try
 		{
+			string creationTypeClause = experienceCategory.HasValue ? "and ac.\"ExperienceCreationTypeId\" = " + experienceCategory + " ": string.Empty;
 			string categoryClause = categoryId.HasValue ? "and ac.\"ExperienceCategoryId\" = " + categoryId + " " : string.Empty;
 			string starReviewClause = starReview.HasValue ? "and su.\"ReviewAccumulated\" >= " + starReview + " " : string.Empty;
 			string experienceTypeClause = experienceType.HasValue ? "and ac.\"ExperienceTypeId\" = " + experienceType + " " : string.Empty;
@@ -852,7 +857,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								"on os.\"ActivityId\" = ac.\"Id\"" +
 							"where ac.\"IsDeactivated\" = false and ac.\"Status\" = 1 " +
 								"and ac.\"IsPublished\" = true and ac.\"ForceDisable\" = false " +
-								categoryClause + searchClause + starReviewClause + experienceTypeClause +
+								categoryClause + searchClause + starReviewClause + experienceTypeClause + creationTypeClause +
 							"order by ac.\"Guid\" " +
 							"limit " + take + " offset " + skip + " ";
 
@@ -921,6 +926,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 	{
 		try
 		{
+			var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 			string query = "Begin; " +
 							   "with activities as ( " +
 								   "select ac.\"Id\", " +
@@ -941,14 +947,26 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where ac.\"RowCnt\" = 1 and sm.\"Id\" is null; " +
 								
 							   "with ongoingStundents as ( " +
-								   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Ongoing\" " +
-								   "from public.\"Activities\" ac " +
-								   "join public.\"Students\" st " +
-									   "on ac.\"Id\" = st.\"ActivityId\" " +
-								   "where (st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
-									   "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date(current_timestamp) " +
-												   "and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
-								   "group by ac.\"Id\" " +
+								   "select grpstd.\"ActivityId\", Sum(\"Ongoing\") \"Ongoing\" " +
+								   "from " +
+										"( " +
+											"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Ongoing\" " +
+											"from public.\"Activities\" ac " +
+											"join public.\"Students\" st " +
+												"on ac.\"Id\" = st.\"ActivityId\" " +
+											"where (st.\"SessionsAttended\" < st.\"NumberOfSessions\" and st.\"ExpirationDateEnd\" = '-infinity') or " +
+													"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") > Date(' " + dateString + "') " +
+														"and st.\"SessionsAttended\" < st.\"NumberOfSessions\") " +
+											"group by ac.\"Id\" " +
+											"union all " +
+											"select ds.\"ActivityId\", Count(ds.\"ActivityId\") \"Ongoing\" " +
+											"from public.\"DirectStudentSessions\" ds " +
+											"where (ds.\"SessionsAttended\" < ds.\"NumberOfSessions\" and ds.\"ExpirationDateEnd\" = '-infinity') or " +
+													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") > Date('" + dateString + "') " +
+														"and ds.\"SessionsAttended\" < ds.\"NumberOfSessions\") " +
+											"group by ds.\"ActivityId\" " +
+										") as \"grpstd\" " +
+								   "group by grpstd.\"ActivityId\" " +
 							   ") " +
 							   "update public.\"ActivitySummaries\" sm " +
 							   "set \"Ongoing\" = og.\"Ongoing\" " +
@@ -956,13 +974,24 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = og.\"ActivityId\" and og.\"Ongoing\" != sm.\"Ongoing\"; " +
 
 							   "with withCompletedStudents as ( " +
-								   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
-								   "from public.\"Activities\" ac " +
-								   "join public.\"Students\" st " +
-									   "on ac.\"Id\" = st.\"ActivityId\" " +
-								   "where (st.\"SessionsAttended\" >= st.\"NumberOfSessions\") or " +
-									   "(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
-								   "group by ac.\"Id\" " +
+								    "select grpstd.\"ActivityId\", Sum(\"Completed\") \"Completed\" " +
+									"from " +
+										"( " +
+											"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"Completed\" " +
+											"from public.\"Activities\" ac " +
+											"join public.\"Students\" st " +
+												"on ac.\"Id\" = st.\"ActivityId\" " +
+											"where (st.\"SessionsAttended\" >= st.\"NumberOfSessions\") or " +
+													"(st.\"ExpirationDateEnd\" != '-infinity' and Date(st.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
+											"group by ac.\"Id\" " +
+											"union all " +
+											"select ds.\"ActivityId\", Count(ds.\"ActivityId\") \"Completed\" " +
+											"from public.\"DirectStudentSessions\" ds " +
+											"where (ds.\"SessionsAttended\" >= ds.\"NumberOfSessions\") or " +
+													"(ds.\"ExpirationDateEnd\" != '-infinity' and Date(ds.\"ExpirationDateEnd\") <= Date(current_timestamp) ) " +
+											"group by ds.\"ActivityId\" " +
+										") as \"grpstd\" " +
+									"group by grpstd.\"ActivityId\" " +
 							   ") " +
 							   "update public.\"ActivitySummaries\" sm " +
 							   "set \"Completed\" = cm.\"Completed\" " +
@@ -970,11 +999,19 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							   "where sm.\"ActivityId\" = cm.\"ActivityId\" and sm.\"Completed\" != cm.\"Completed\"; " +
 
 							   "with withTotalStudents as ( " +
-								   "select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
-								   "from public.\"Activities\" ac " +
-								   "join public.\"Students\" st " +
-									   "on ac.\"Id\" = st.\"ActivityId\" " +
-								   "group by ac.\"Id\" " +
+								    "select grpstd.\"ActivityId\", Sum(grpstd.\"TotalParticipants\") \"TotalParticipants\" " +
+									"from ( " +
+										"select ac.\"Id\" \"ActivityId\", Count(st.\"Id\") \"TotalParticipants\" " +
+										"from public.\"Activities\" ac " +
+										"join public.\"Students\" st " +
+											"on ac.\"Id\" = st.\"ActivityId\" " +
+										"group by ac.\"Id\" " +
+										"union all " +
+										"select ds.\"ActivityId\", Count(ds.\"Id\") " +
+										"from public.\"DirectStudentSessions\" ds " +
+										"group by ds.\"ActivityId\" " +
+									") as \"grpstd\" " +
+									"group by grpstd.\"ActivityId\" " +
 							   ") " +
 							   "update public.\"ActivitySummaries\" sm " +
 							   "set \"TotalParticipants\" = st.\"TotalParticipants\" " +

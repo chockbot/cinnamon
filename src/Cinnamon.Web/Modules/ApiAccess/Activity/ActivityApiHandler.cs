@@ -1353,7 +1353,7 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetOteWaitlistByProviderResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
         }
     }
-
+    
     public async Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token)
     {
         try
@@ -1399,6 +1399,28 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/ProviderQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ProviderQuestionsResult>();
+
+            return AppResult<ProviderQuestionsResult>.CreateSucceeded(result, "Successfully get provider questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ProviderQuestionsResult>.CreateFailed(ex, "An error occured when getting provider questions.");
+        }
+    }
+
     public async Task<AppResult<UpdateOteWaitlistResult>> UpdateOteWaitlist(UpdateOteWaitlistArgs args, string token)
     {
         try
@@ -1419,6 +1441,27 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling uupdate ote waitlist api");
+        }
+    }
+
+    public async Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/ActivityQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ActivityQuestionsResult>();
+
+            return AppResult<ActivityQuestionsResult>.CreateSucceeded(result, "Successfully get activity questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, "An error occured when getting activity questions.");
         }
     }
 }

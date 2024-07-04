@@ -109,7 +109,7 @@
                     <p class="approval">Required Approval</p>
                     <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault-@ticket.Id">
+                        <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                     </div>
                 </div>
             }
@@ -124,7 +124,7 @@
             Customize the emails sent when a guest registers for the event and for when you approve or decline their registration.
         </p>
 
-        <Row HorizontalGutter="10">
+        <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnPendingEmailTemplateClick">
@@ -153,10 +153,105 @@
                 </div>
             </Column>
         </Row>
+
+        <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+            Registration Questions
+        </h3>
+        <p class="sub-text mb-4">
+            We will ask guests the following questions when they register for the event.
+        </p>
+
+        <Row class="align-items-center mb-2">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Name</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+        <Row class="align-items-center mb-2">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Email Address</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+        <Row class="align-items-center mb-4">
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <label for="">Phone Number</label>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                <div>
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
+                        Size="Size.Small" Placeholder="Required" Disabled />
+                </div>
+            </Column>
+        </Row>
+
+        <div>
+            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3">
+                + <span class="ms-2">Add Questions</span>
+            </Button>
+
+            @foreach (var question in questions)
+            {
+                <div class="bg-white-100 mb-2 p-3 border-radius-10">    
+                    <p class="font-16 color-grey-100 mb-0">
+                        @question.Question
+                    </p>
+                </div>
+            }
+        </div>
     </div>
 
     <OteRouteButtons HavePrevious OnNextClick="NextClick" OnPreviousClick="PrevClick" />
 </section>
+
+<!--- custom question modal !-->
+<Modal @ref="modalCustomQuestion">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Field class="mb-3">
+                <FieldLabel class="color-grey-100 mb-0">Question</FieldLabel>
+                <FieldBody>
+                    <MemoEdit @bind-Text="formQuestion.Question" Rows="5" />
+                </FieldBody>
+            </Field>
+            <div class="d-flex">
+                <label class="color-black-100 font-weight-700 me-3">Required</label>
+                <div class="form-check form-switch">
+                    <Switch class="form-check-input" @bind-Checked="formQuestion.Required" TValue="bool" />
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="btn-cancel" Clicked="CloseCustomQuestion">
+                    Cancel
+                </Button>
+                <Button class="btn-save" Clicked="AddQuestion">
+                    Save
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 
 @*Registration Modal*@
 <Modal @ref="registrationModal">
@@ -382,7 +477,7 @@
                         <div class="accept-reg">
                             <p class="approval">Required Approval</p>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                             </div>
                         </div>
                         <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -520,6 +615,10 @@
     private string customAcceptedMessageOrig = string.Empty;
     private string customDeclinedMesasgeOrig = string.Empty;
 
+    private Modal? modalCustomQuestion;
+    private List<CustomQuestion> questions = new();
+    private CustomQuestion formQuestion = new();
+
     private async Task NextClick()
     {
         if (OnNextClick.HasDelegate)
@@ -609,12 +708,14 @@
                     Description = p.Description,
                     Id = p.Id,
                     Name = p.Name,
-                    TicketSold = p.TicketSold
+                    TicketSold = p.TicketSold,
+                    RequiredApproval = p.RequiredApproval
                 };
             }).ToList(),
             CustomAcceptedBody = customAcceptedMessageOrig,
             CustomDeclinedBody = customDeclinedMesasgeOrig,
-            CustomPendingBody = customPendingMessageOrig
+            CustomPendingBody = customPendingMessageOrig,
+            Questions = questions.Where(q => q.IsNew).ToList(),
         };
         return data;
     }
@@ -631,7 +732,8 @@
                     MaxSlots = item.MaxSlots,
                     Price = item.Price,
                     Name = item.Name,
-                    TicketSold = item.TicketSold
+                    TicketSold = item.TicketSold,
+                    RequiredApproval = item.RequiredApproval
                 });
         }
         customAcceptedMessageOrig = data.CustomAcceptedBody;
@@ -641,6 +743,16 @@
         customAcceptedMessage = data.CustomAcceptedBody;
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
+
+        if(data.Questions is not null && data.Questions.Count > 0)
+        {
+            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
+                FieldType = q.FieldType,
+                Question = q.Question,
+                Required = q.Required
+            }));
+        }
+
         return Task.CompletedTask;
     }
 
@@ -692,6 +804,8 @@
         public string CustomAcceptedBody {get; set;}
         public string CustomDeclinedBody {get; set;}
 
+        public List<CustomQuestion> Questions {get; set;}
+
         public class ItemPrice
         {
             public int Id { get; set; }
@@ -702,6 +816,7 @@
             public string Name { get; set; }
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
+            public bool RequiredApproval {get; set;}
         }
     }
 
@@ -750,6 +865,8 @@
                 return !string.IsNullOrEmpty(Description) && Price > 0 && MaxSlots > 0;
             }
         }
+
+        public bool RequiredApproval {get; set;}
     }
 
     private class ModalTicketPricing
@@ -971,6 +1088,9 @@
         {
             modelPricing.Price = 0;
         }
+        else {
+            modelPricing.RequiredApproval = false;
+        }
     }
 
     private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
@@ -1057,5 +1177,33 @@
         if(selectedEmailTemplate == 1) return CancelAcceptedTemplate();
 
         return CancelDeclinedTemplate();
+    }
+
+    private Task ShowCustomQuestionModal()
+    {
+        return modalCustomQuestion?.Show();
+    }
+
+    private Task CloseCustomQuestion()
+    {
+        return modalCustomQuestion?.Close(CloseReason.UserClosing);
+    }
+
+    private Task AddQuestion()
+    {
+        questions.Add(new CustomQuestion {
+            Question = formQuestion.Question,
+            Required = formQuestion.Required,
+            IsNew = true
+        });
+        return CloseCustomQuestion();
+    }
+
+    public class CustomQuestion 
+    {
+        public string Question {get; set;}
+        public bool Required {get; set;}
+        public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew {get; set;} = false;
     }
 }

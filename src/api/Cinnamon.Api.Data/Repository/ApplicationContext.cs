@@ -102,11 +102,19 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ActivitySummary> ActivitySummaries {get; set;}
 
+    public DbSet<DirectStudentInfo> DirectStudentInfos {get; set;}
+
+    public DbSet<DirectStudentSession> DirectStudentSessions {get; set;}
+
+    public DbSet<DirectStudentPayment> DirectStudentPayments {get; set;}
+
+    public DbSet<DirectStudentAttendance> DirectStudentAttendances {get; set;}
+
+    public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
+
     public DbSet<DynamicEmailTemplate> DynamicEmailTemplates {get; set;}
 
     public DbSet<OteWaitlist> OteWaitList { get; set; }
-
-    public DbSet<OteReminderFlag> OteReminderFlags {get; set;}
 
     #endregion
 
@@ -405,9 +413,29 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Guid);
 
+        // for direct student info
+        modelBuilder.Entity<DirectStudentInfo>()
+            .HasIndex(s => s.ProviderId);
+        modelBuilder.Entity<DirectStudentInfo>()
+            .HasIndex(s => s.CreatedOn);
+        
+        // for direct student session
+        modelBuilder.Entity<DirectStudentSession>()
+            .HasIndex(s => s.ActivityId);
+        modelBuilder.Entity<DirectStudentSession>()
+            .HasIndex(s => s.ScheduleId);
+
+        // for direct student attendance
+        modelBuilder.Entity<DirectStudentAttendance>()
+            .HasIndex("Date", "DirectStudentSessionId");
+
         // for ote date
         modelBuilder.Entity<OteDate>()
             .HasIndex(d => d.Date);
+
+        // for ote reminder flag
+        modelBuilder.Entity<OteReminderFlag>()
+            .HasIndex("ActivityId", "OteDateId");
 
         // for dynamic email template
         modelBuilder.Entity<DynamicEmailTemplate>()

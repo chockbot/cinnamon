@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Web.Models.Entities;
+﻿using Cinnamon.Framework.Enums;
+
+namespace Cinnamon.Web.Models.Entities;
 
 public class Students
 {
@@ -26,4 +28,5 @@ public class Students
     public StudentAttendance studentAttendance { get; set; }
     public ActivitySchedule activitySchedule { get; set; }
     public string ActivityType { get; set; }
+    public StudentType StudentType { get; set; } = StudentType.Manual;
 }

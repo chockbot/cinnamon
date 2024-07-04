@@ -3,6 +3,7 @@
 @using Cinnamon.Web.Models.Dashboard
 @using System.Security.Claims
 @using System.Globalization
+@using Cinnamon.Framework.Enums
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Models.Maker
@@ -13,6 +14,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IDirectStudentApiHandler directStudentApiHandler;
 @using Blazorise.DataGrid
 @attribute [Authorize]
 
@@ -21,41 +23,37 @@
 
 @if(Model != null)
 {
-<LoadingIndicator @ref=loadingIndicator>
-        <section class="mt-5 maker-dashboard">
-            <div class="header">
+<section class="mt-5 maker-dashboard">
+    <div class="header">
+        <h3 class="text-capitalize fw-bold header-title" style="color:#343D4C;">Manage Students</h3>
+    </div>
+    <div class="header-filters-section">
+        <div class="header-filters">
+                <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
+                    <SelectItem Value="0">Search By</SelectItem>
+                    <SelectItem Value="1">Name</SelectItem>
+                    <SelectItem Value="2">Ongoing</SelectItem>
+                    <SelectItem Value="3">Completed</SelectItem>
 
-                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
-
-                <div class="header-filters">
-                    <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
-                        <SelectItem Value="0">Search By</SelectItem>
-                        <SelectItem Value="1">Name</SelectItem>
-                        <SelectItem Value="2">Ongoing</SelectItem>
-                        <SelectItem Value="3">Completed</SelectItem>
-
-                    </Select>
-                    @if (Model.isDisplay == true)
+                </Select>
+                @if (Model.isDisplay == true)
+                {
+                    <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                }
+                <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                    <SelectItem Value="0">Select Experience</SelectItem>
+                    @foreach (var item in Model.activities.OrderBy(a => a.Title))
                     {
-                        <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                        <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
                     }
-                    <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                        <SelectItem Value="0">Select Experience</SelectItem>
-                        @foreach (var item in Model.activities.OrderBy(a => a.Title))
-                        {
-                            <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
-                        }
-                    </Select>
-                    @if (Model.selectedFilter != 0)
-                    {
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
-                            View Schedule
-                        </Button>
-                    }
-
-                </div>
-            </div>
-            <div class="student-attendance-section">
+                </Select>
+        </div>
+        <div class="add-enrollee">
+            <button class="btn-enrollee" @onclick="@(() => NavigateToEnrolleeMasterlist())">Direct Enrollee Masterlist</button>
+        </div> 
+    </div>
+    <LoadingIndicator @ref=loadingIndicator>
+        <div class="student-attendance-section">
                 <div class="table-list">
                     <Table @ref="tableStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                     <TableHeader>
@@ -98,24 +96,17 @@
                     <TableBody>
                         @foreach (var item in Model.FilteredStudents)
                             {
-                                var schedule = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
                                 <TableRow>
                                     <TableRowCell class="name-body">@item.Name</TableRowCell>
                                     <TableRowCell class="completion-date-body">
                                         <center>
                                             @if (item.SessionsAttended >= item.NumberOfSessions)
                                             {
-                                                var result = studentAttendances.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                                                && s.ActivityId == item.ActivityId).LastOrDefault();
-                                                if (result != null)
-                                                {
-                                                    @result.Date.ToString("MMMM dd, yyyy")
-                                                    ;
-                                                }
+                                                @item.LastAttendance.ToString("MMMM dd, yyyy")
                                             }
                                             else
                                             {
-                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
+                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && item.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && item.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
                                                 {
                                                     <p>@item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy") <span class="expired-session">Expired</span></p>
                                                 }
@@ -124,10 +115,8 @@
                                                     string ongoing = "Ongoing";
                                                     @ongoing
                                                 }
-
                                             }
                                         </center>
-
                                     </TableRowCell>
                                     <TableRowCell class="progress-body">
                                         <center>
@@ -163,10 +152,34 @@
                             }
                         </TableBody>
                     </Table>
+                    <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                            <PaginationLink>
+                                <span aria-hidden="true">«</span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        @{
+                            for (var i = 1; i <= Pagination.TotalPages; i++)
+                            {
+                                var pageNumberAsString = i.ToString();
+                                <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                    <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                        @pageNumberAsString
+                                    </PaginationLink>
+                                </PaginationItem>
+                            }
+                        }
+                        <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                            <PaginationLink>
+                                <span aria-hidden="true">»</span>
+                            </PaginationLink>
+                        </PaginationItem>
+                    </Pagination>
                 </div>
             </div>
-        </section>
     </LoadingIndicator>
+</section>
+
     
 <Modal @ref="modalRef">
     <ModalContent Centered Size="ModalSize.Small">
@@ -177,7 +190,8 @@
         <ModalBody>
             <Label Visibility="Visibility.Invisible">@Model.Id</Label>
             <input type="number" class="form-control" placeholder="Enter Number" required max="999" min="0" maxlength="3" @bind="@Model.jerseyNumber" onkeypress="if(this.value.length > 2) return false;" />
-            <Button Color="Color.Primary" TextColor="TextColor.White" Width="Width.Is100" Size="Size.Large" Border="Border.Is0" Type="ButtonType.Submit" Loading="isLoading" Clicked="() => SaveChanges(Model.Id, Model.jerseyNumber)">
+            <Button Color="Color.Primary" TextColor="TextColor.White" Width="Width.Is100" Size="Size.Large" Border="Border.Is0" Type="ButtonType.Submit" Loading="isLoading" 
+                Clicked="() => SaveChanges(Model.Id, Model.jerseyNumber, Model.StudentType)">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                     Saving
@@ -243,6 +257,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 @if (Model.showSuccessMessage)
 {
     <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -250,7 +265,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@code {
+
+@code 
+{
 
     private ManageStudentsModel Model { get; set; } = new();
     LoadingIndicator loadingIndicator;
@@ -258,11 +275,15 @@
     public Modal modalRefViewSchedule;
     public Table tableStudents;
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
-    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private StudentAttendance studnetAttendance = new StudentAttendance();
-    private GetStudent students = new GetStudent();
     string token = string.Empty;
     private bool isLoading = false;
+    public const string PREVIOUS = "previous";
+    public const string NEXT = "next";
+    public int UserId { get; set; }
+    public int SearchBy { get; set; } = 0;
+    public string SearchValue { get; set; } = string.Empty;
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -283,13 +304,19 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+            else
+            {
+                UserId = result.Result.Result.Id;
+            }
             if (!result.Result.Result.IsMaker)
             {
                 // should not able to access the page
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            await GetStudents();
+
+            await GetActivities();
+            await GetStudents(1);
         }
         catch (Exception)
         {
@@ -298,130 +325,173 @@
         }
 
     }
+
     public void ViewAttendence(ManageStudentsData data)
     {
-        NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + data.Id);
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + data.Id +"/"+ data.StudentType);
     }
+
     private void ShowModal(ManageStudentsData data)
     {
         modalRef.Show();
         Int32.TryParse(data.StudentNo, out Model.jerseyNumber);
         Model.Id = data.Id;
+        Model.StudentType = data.StudentType;
     }
+
     private Task HideModal()
     {
         return modalRef.Hide();
     }
+    
     private Task HideViewScheduleModal()
     {
         return modalRefViewSchedule.Hide();
     }
-    private void OnFilterValueChanged(int activityId)
+
+    private async Task OnFilterValueChanged(int activityId)
     {
-        loadingIndicator.Show();
         Model.selectedFilter = activityId;
         if (Model.selectedFilter == 0)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
+            SearchBy = 0;
+            await GetStudents(1);
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
-
-            activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
+            SearchBy = 4;
+            await GetStudents(1);
         }
-        loadingIndicator.Hide();
     }
 
-    private void OnSeachByValueChange(int selectedId)
+    private async Task OnSeachByValueChange(int selectedId)
     {
-        loadingIndicator.Show();
-        Model.searchBy = selectedId;
-        switch (Model.searchBy)
+        SearchBy = selectedId;
+        switch (SearchBy)
         {
             case 0:
                 Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
+                await GetStudents(1);
                 break;
             case 1:
                 Model.isDisplay = true;
-                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
                 break;
             case 2:
                 Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
+                await GetStudents(1);
                 break;
             case 3:
                 Model.isDisplay = false;
-                Model.FilteredStudents = Model.manageStudents.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.HasExpiration == 0) 
-                || (a.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                || (a.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue) 
-                || (a.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
-                || (a.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
-                && a.ExpirationDateEnd != DateTime.MinValue).ToList();
+                await GetStudents(1);
                 break;
             default:
                 Model.isDisplay = true;
                 break;
         }
-        loadingIndicator.Hide();
     }
 
-    private void TextSearchChanged(string search)
+    private async Task TextSearchChanged(string search)
     {
-        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).
-        OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
+        SearchValue = search;
+        SearchBy = 1;
+        await GetStudents(1);
     }
 
-    private async void SaveChanges(int Id, int StudentNo)
+    private async void SaveChanges(int Id, int StudentNo, StudentType studentType)
     {
-        //Show Loading
         await ShowLoading();
 
         var result = string.Format("{0:00}", StudentNo);
-        var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+
+        if(studentType == StudentType.Cinnamon)
+        {
+            var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
             {
                 Id = Id,
                 StudentNo = result
             });
-        if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
-        {
-            Model.errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
-            Model.showErrorMessage = true;
-            StateHasChanged();
-            return;
+
+            if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+            {
+                Model.errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
+                Model.showErrorMessage = true;
+            }
         }
-        else
+
+        if(studentType == StudentType.Manual)
         {
-            Model.FilteredStudents.Clear();
-            Model.activities.Clear();
-            Model.activitySchedules.Clear();
-            Model.manageStudents.Clear();
-            Model.activitySchedules.Clear();
-            Model.studentAttendances.Clear();
-            Model.students.Clear();
-            studentAttendances.Clear();
-            students.item.Clear();
-            await GetStudents();
-            //Hide Loading
-            await HideLoading();
-            //Hide Modal
-            await HideModal();
-            StateHasChanged();
+            var updateRes = await directStudentApiHandler.UpdateStudent(new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs {
+                DirectStudentSessions = new List<Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession> {
+                    new Framework.ApiCommand.ApiCore.DirectStudent.Request.UpdateStudentArgs.UpdateDirectStudentSession {
+                        Id = Id,
+                        StudentNo = result
+                    },
+                }
+            }, token);
+
+            if (!updateRes.Succeeded || updateRes.Result == null || !updateRes.Result.IsSuccess)
+            {
+                Model.errorMessage = updateRes.Result?.ErrorInfo?.Message ?? updateRes.Message;
+                Model.showErrorMessage = true;
+            }
         }
+
+        await HideModal();
+        await HideLoading();
+
+        await GetStudents(1);
+
+        StateHasChanged();
     }
 
-    private async Task GetStudents()
+    private async Task GetStudents(int pageIndex)
     {
-        await loadingIndicator.Show();
-        //Get Owned Activities
+        //Get Enrolled Students
+        var result = await dashboardApiHandler.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetEnrolledStudentsByProviderArgs
+        {
+            ProviderId   = UserId,
+            CountPerPage = 20,
+            PageIndex    = pageIndex,
+            SearchBy     = SearchBy,
+            SearchValue  = SearchValue,
+            ActivityId   = Model.selectedFilter
+        }, token);
+
+        Model.manageStudents = result.Result.Result.Select(s =>
+        {
+            return new ManageStudentsData
+            {
+                Id                  = s.Id,
+                ActivityId          = s.ActivityId,
+                ScheduleId          = s.ScheduleId,
+                Name                = s.Name,
+                Title               = s.ActivityName,
+                StudentNo           = s.StudentNo,
+                Remarks             = s.Remarks,
+                SessionsAttended    = s.SessionsAttended,
+                NumberOfSessions    = s.NumberOfSessions,
+                ExpirationDateStart = s.ExpirationStartDate,
+                ExpirationDateEnd   = s.ExpirationEndDate,
+                HasExpiration       = s.HasExpiration,
+                LastAttendance      = s.LastAttendance,
+                StudentType         = s.StudentType
+            }; 
+        }).ToList();
+
+        Pagination = result.Result.Pagination;
+        Model.FilteredStudents = Model.manageStudents;
+    }
+
+    private async Task GetActivities()
+    {
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
             {
-                IncludeAtivitySchedules = true
+                IncludeAtivitySchedules = true,
+                IsActive = true
             }, token);
         if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
-            Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            Model.activities = activityRes.Result.Result.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderBy(a => a.ActivityId).Select(a =>
             {
                 // map only required fields
                 return new Activity
@@ -431,108 +501,7 @@
                         Title = a.Title
                     };
             }).ToList();
-
-            foreach (var activityResult in activityRes.Result.Result)
-            {
-                foreach (var activitySchedule in activityResult.ActivitySchedules)
-                {
-                    Model.activitySchedules.Add(new ActivitySchedule
-                        {
-                            Id = activitySchedule.Id,
-                            IsActiveSchedule = activitySchedule.IsActiveSchedule,
-                            ActivityId = activityResult.ActivityId,
-                            Name = activitySchedule.Name,
-                            DateTime = activitySchedule.DateTime,
-                            UnitPrice = activitySchedule.UnitPrice,
-                            PerUnit1 = activitySchedule.PerUnit1,
-                            PerUnit2 = activitySchedule.PerUnit2,
-                            PriceUnit1 = activitySchedule.PriceUnit1,
-                            PriceUnit2 = activitySchedule.PriceUnit2,
-                            Price = activitySchedule.Price,
-                            IsSetSession = activitySchedule.IsSetSession,
-                            SessionName = activitySchedule.SessionName,
-                            HasExpiration = activitySchedule.HasExpiration,
-                            StartDate = activitySchedule.StartDate
-                        });
-                }
-            }
         }
-        //Get Enrolled Experience
-        foreach (var item in Model.activities)
-        {
-            var student = await ongoingApiHandler.GetEnrolledStudents(item.ActivityId);
-            if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
-            {
-                Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-                {
-                    return new Students
-                        {
-                            ActivityId = a.ActivityId,
-                            CustomerId = a.CustomerId,
-                            Id = a.Id,
-                            Name = a.Name,
-                            NumberOfSessions = a.NumberOfSessions,
-                            Remarks = a.Remarks,
-                            ScheduleId = a.ScheduleId,
-                            SessionsAttended = a.SessionsAttended,
-                            Status = a.Status,
-                            StudentNo = a.StudentNo,
-                            ExpirationDateEnd = a.ExpirationEndDate,
-                            ExpirationDateStart = a.ExpirationStartDate
-                        };
-                }).ToList();
-            }
-            students.item.AddRange(Model.students);
-        }
-        var query = from item in students.item
-                    join item1 in Model.activities on item.ActivityId equals item1.ActivityId
-                    orderby item.Id
-                    select new ManageStudentsData
-                        {
-                            Id = item.Id,
-                            ActivityId = item.ActivityId,
-                            Title = item1.Title,
-                            CustomerId = item.CustomerId,
-                            Name = item.Name,
-                            NumberOfSessions = item.NumberOfSessions,
-                            SessionsAttended = item.SessionsAttended,
-                            Remarks = item.Remarks,
-                            StudentNo = item.StudentNo,
-                            Status = item.Status,
-                            ScheduleId = item.ScheduleId,
-                            ExpirationDateEnd = item.ExpirationDateEnd,
-                            ExpirationDateStart = item.ExpirationDateStart,
-                            HasExpiration = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault().HasExpiration
-                        };
-        //List DataGrid Content
-        Model.manageStudents = query.ToList();
-        Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
-        //Get Student Attendance
-        foreach (var item in Model.FilteredStudents)
-        {
-            var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
-                {
-                    Id = item.Id,
-                    ActivityId = item.ActivityId,
-                    ScheduleId = item.ScheduleId
-                }, token);
-
-            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            {
-                var result = attendance.Result.Result;
-                studnetAttendance = new StudentAttendance
-                    {
-                        Id = result.Id,
-                        Date = result.Date,
-                        IsPresent = result.IsPresent,
-                        StudentId = result.StudentId,
-                        ScheduleId = result.ScheduleId,
-                        ActivityId = result.ActivityId
-                    };
-                studentAttendances.Add(studnetAttendance);
-            }
-        }
-        await loadingIndicator.Hide();
     }
 
     private void SortByName()
@@ -605,6 +574,53 @@
         isLoading = false;
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private bool IsActive(string page)
+       => Model.currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return Model.currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return Model.currentPage.Equals(Model.pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt > 1)
+        {
+            Model.currentPage = (currentPageAsInt - 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt < Model.pageItems)
+        {
+            Model.currentPage = (currentPageAsInt + 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        Model.currentPage = page;
+        await GetStudents(int.Parse(page));
+    }
+
+    private void NavigateToEnrolleeMasterlist()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/enrollee-masterlist");
     }
 }
 

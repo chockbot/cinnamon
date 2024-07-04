@@ -3022,6 +3022,122 @@ input::-ms-clear {
   background-color: rgba(243, 222, 186, 0.5);
 }
 
+/* for activity selection  */
+.activity-selection-wrapper .activity-selection-section {
+  min-height: 100vh;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.activity-selection-wrapper .activity-selection-section .experience-briefing {
+  padding-right: 50px;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .activity-selection-wrapper .activity-selection-section {
+    align-items: start;
+    min-height: unset;
+  }
+
+  .activity-selection-wrapper .activity-selection-section .experience-briefing {
+    padding-right: 0;
+  }
+}
+
+/* for direct student styling */
+.direct-students-wrapper .search-list-grp-container .list-group-item.active {
+  background-color: #f3f6fc;
+  border-color: #d9d9d9;
+  color: #343d4c;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item {
+  border-left: 0;
+  border-right: 0;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item:first-child {
+  border-top: 0;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .added-student-list-grp
+  .list-group-item:last-child {
+  border-bottom: 0;
+}
+
+.direct-students-wrapper .list-grp-added-students-container .list-group-item {
+  background-color: inherit;
+  color: #343d4c;
+}
+
+.direct-students-wrapper
+  .list-grp-added-students-container
+  .list-group-item.active {
+  border-top-width: 0;
+  background-color: #d9d9d9;
+  border-color: #d9d9d9;
+}
+
+@media only screen and (max-width: 767px) {
+  .direct-students-wrapper .student-info-grp {
+    order: 2;
+  }
+
+  .direct-students-wrapper .selected-student-grp {
+    order: 1;
+    margin-bottom: 1rem;
+  }
+}
+
+/* update direct students wrapper */
+
+.update-direct-students-wrapper .field-name {
+  width: 300px;
+}
+
+.update-direct-students-wrapper .field-gender {
+  width: 160px;
+}
+
+.update-direct-students-wrapper .field-birthmonth {
+  width: 190px;
+}
+
+.update-direct-students-wrapper .field-birthyear {
+  width: 150px;
+}
+
+.update-direct-students-wrapper .accordion-button:not(.collapsed) {
+  background-color: #f3f6fc;
+  color: #343d4c;
+}
+
+@media only screen and (max-width: 767px) {
+  .update-direct-students-wrapper .field-name {
+    width: 100%;
+  }
+
+  .update-direct-students-wrapper .field-gender {
+    width: 100%;
+  }
+
+  .update-direct-students-wrapper .field-birthmonth {
+    width: 50%;
+  }
+
+  .update-direct-students-wrapper .field-birthyear {
+    width: 50%;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;

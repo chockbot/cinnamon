@@ -7,4 +7,5 @@ public class ProviderCustomQuestionDTO
     public int ProviderId {get; set;}
     public string FieldLabel {get; set;}
     public string FieldType {get; set;}   
+    public bool Required {get; set;}
 }

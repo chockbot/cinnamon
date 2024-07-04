@@ -126,12 +126,18 @@ p {
   font-weight: 500;
   color: #343d4c;
 }
+.amount-calculate {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 900;
+    color: #343d4c;
+}
 
 .amount {
-  font-family: Nunito;
-  font-size: 36px;
-  font-weight: 900;
-  color: #343d4c;
+    font-family: Nunito;
+    font-size: 35px;
+    font-weight: 900;
+    color: #343d4c;
 }
 
 .description {
@@ -149,7 +155,7 @@ p {
   margin-top: 2rem;
   margin-left: 40px;
   background: none;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px;
   z-index: 1;
   border: 1px solid #d9d9d9;
@@ -158,14 +164,81 @@ p {
 .profile-wrapper {
   margin-top: 2rem;
   background: none;
-  border-radius: 25px;
+  border-radius: 8px;
   padding: 10px;
   z-index: 1;
   border: 1px solid #d9d9d9;
   display: flex;
 }
+
+.manual-student-wrapper {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background: none;
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 1;
+    border: 1px solid #d9d9d9;
+}
+.manual-text {
+    font-family: Nunito;
+    font-size: 18px;
+    font-weight: 400;
+    color: #717171;
+}
+.manual-sub-text {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    max-width: 550px;
+    padding-top:5px;
+}
+
+.manual-count-section{
+    display: flex;
+    justify-content: space-between
+}
+.manual-count {
+    display: flex;
+    gap: 20px;
+}
+.manual-number {
+    font-family: Nunito;
+    font-size: 32px;
+    font-weight: 700;
+    color: #343D4C;
+}
+.manual-icon{
+    width:17px;
+    height: 20px;
+    margin-top: 15px;
+}
+.m-manual-icon{
+    display:none;
+}
+.btn-add-manual {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 700;
+    color: #343D4C;
+    background-color: transparent;
+    border: 1px solid #343D4C;
+    border-radius: 49px;
+    padding: 9px 20px 9px 20px;
+    transition: transform .25s;
+}
+    .btn-add-manual:hover {
+        background-color: #4BB749;
+        color: white;
+        border: none;
+    }
+    .btn-add-manual:active {
+        transform: scale(.94);
+    }
+
 .profile-details {
-  display: flex;
+    display: flex;
 }
 .progress-bar-section {
   display: block;
@@ -178,8 +251,8 @@ p {
   margin-top: 1rem;
   margin-bottom: 2rem;
   background: none;
-  border-radius: 25px;
-  padding: 15px;
+  border-radius: 8px;
+  padding: 20px;
   z-index: 1;
   border: 1px solid #d9d9d9;
 }
@@ -628,25 +701,44 @@ hr {
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .amount {
+        font-size: 20px;
+    }
+    .dashboard-wrapper{
+        margin-left: 0px;
+    }
+    .m-manual-icon{
+        display: none;
+    }
     ::deep .personal-tab-swiper .swiper-slide .tab-item.active {
         background-color: white;
         color: #343d4c;
         text-decoration: underline 3px solid #ffa942;
         text-underline-position: under;
     }
+
   .dashboard-tab {
     margin: 0;
+    border:none;
   }
-
-  .dashboard-wrapper {
-    display: block;
-    margin-right: 0;
-    margin-left: 0;
-  }
-
-  .experience-box {
-    margin-bottom: 1rem;
-  }
+    .profile-wrapper {
+        border-top: none;
+        border-right: none;
+        border-left: none;
+        border-radius: 0;
+    }
+    .manual-student-wrapper {
+        border-top: none;
+        border-right: none;
+        border-left: none;
+        border-radius: 0;
+    }
+    .faqs-wrapper {
+        border: none;
+    }
+    .experience-box {
+        margin-bottom: 1rem;
+    }
 
   .announcement {
     margin-right: 0px;
@@ -695,14 +787,11 @@ hr {
   .user-information {
     display: block;
   }
-  .dashboard-details-tab {
-    margin-top: 1rem;
-    padding: 0;
-    margin-left: -10px;
-  }
-  ::deep .dashboard-details-tab .tab-content > .active {
-    border: none;
-  }
+    .dashboard-details-tab {
+        margin-top: 1rem;
+        padding: 0;
+        margin-left: -10px;
+    }
 }
 
 /* For Mobile Portrait View */
@@ -943,6 +1032,52 @@ hr {
         margin-top: 1rem;
     }
 
+    .manual-student-wrapper{
+        padding: 10px;
+        border-top: none;
+        border-right:none;
+        border-left: none;
+        border-radius: 0;
+    }
+
+    .faqs-wrapper {
+        padding: 10px;
+    }
+
+    .manual-text {
+        font-family: Nunito;
+        font-size: 16px;
+        color: #343D4C;
+    }
+    .manual-sub-text {
+        font-family: Nunito;
+        font-size: 14px;
+        color: #343D4C;
+    }
+    .manual-number {
+        font-family: Nunito;
+        font-size: 32px;
+        font-weight: 700;
+        color: #717171;
+    }
+    .manual-icon {
+       display: none;
+    }
+    .m-manual-icon{
+        display: block;
+        width: 17px;
+        height:20px;
+        margin-top: 15px;
+    }
+    .btn-add-manual {
+        
+    }
+
+        .btn-add-manual:hover {
+            background-color: #4BB749;
+            color: white;
+        }
+
     ::deep .dashboard-details-tab .tab-content > .active {
         border: none;
     }
@@ -1020,6 +1155,9 @@ hr {
         margin: 15px 15px 15px 0px;
         width: 70px;
         height: 70px;
+    }
+    .amount{
+        font-size: 18px;
     }
 }
 

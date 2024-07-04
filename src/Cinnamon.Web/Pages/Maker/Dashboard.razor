@@ -61,7 +61,12 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Sales</p>
-                                <p class="amount">&#8369;@totalSales</p>
+                                <p class="amount">&#8369;@overAllTotal</p>
+                                @if(directSalesData.Count != 0)
+                                {
+                                    <p class="description">@totalSales - Cinnamon Students</p>
+                                    <p class="description">@totalDirectSales - Manually Added Students</p>
+                                }
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -69,7 +74,15 @@
                         </div>
                         <div class="col-12 d-flex">
                             <div class="col-8 d-flex justify-content-start">
-                                <p class="description">Total sales from all activities</p>
+                                @if(directSalesData.Count != 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                   <p class="description">This is you sales from Cinnamon.</p> 
+                                }
+                                
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <a class="earnings-link" href="/maker/dashboard/grosssale">View sales</a>
@@ -127,7 +140,12 @@
                         <div class="col-12 d-flex">
                             <div class="col-8 d-block justify-content-start">
                                 <p class="title">Total Sales</p>
-                                <p class="amount">&#8369;@totalSales</p>
+                                <p class="amount">&#8369;@overAllTotal</p>
+                                @if (directSalesData.Count != 0)
+                                {
+                                    <p class="description">@totalSales - Cinnamon Students</p>
+                                    <p class="description">@totalDirectSales - Manually Added Students</p>
+                                }
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
@@ -135,7 +153,15 @@
                         </div>
                         <div class="col-12 d-flex">
                             <div class="col-8 d-flex justify-content-start">
-                                <p class="description">Total sales from all activities</p>
+                                @if (directSalesData.Count != 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <p class="description">From Cinnamon</p>
+                                }
+
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 <a class="earnings-link" href="/maker/dashboard/grosssale">View sales</a>
@@ -672,6 +698,7 @@
             </div>
         @*Profile and Faqs*@
         <div class="col-lg-5 col-md-12 col-sm-12 col-12 dashboard-profile">
+
             <div class="col-12 profile-wrapper">
                 <div class="col-lg-5 justify-content-lg-start col-md-6 justify-content-md-start col-sm-12 justify-content-sm-center col-12 justify-content-center profile-details">
                     <div class="profile-pic">
@@ -698,29 +725,42 @@
                     </div>
                     @if(cnt == 1)
                     {
-                        <p class="badge-text">Completed 10 students.</p>
+                        <p class="badge-text">Gain 10 purchases.</p>
                     }
                     else if (cnt == 2)
                     {
-                        <p class="badge-text">Completed 25 students & received 10 reviews.</p>
+                        <p class="badge-text">Gain 25 purchases & 10 reviews from activities.</p>
                     }
                     else if (cnt == 3)
                     {
-                        <p class="badge-text">Completed 100 students & received 25 reviews.</p>
+                        <p class="badge-text">Gain 100 purchases & 25 reviews from activities.</p>
                     }
                     else
                     {
                         @if(NoOfCompleted == 0)
                         {
-                            <p class="badge-text">No completed students & reviews yet.</p> 
-                            
+                            <p class="badge-text">No gain purchases & reviews yet.</p>
+
                         }
                         else
                         {
-                            <p class="badge-text">Completed @NoOfCompleted students & received @NoOfReviews reviews.</p>
+                            <p class="badge-text">Gain @NoOfCompleted purchases & @NoOfReviews reviews from activities.</p>
                         }   
                     }
                 </div>
+            </div>
+
+            <div class="manual-student-wrapper">
+                <p class="manual-text">Manually Added Students</p>
+                <div class="manual-count-section">
+                    <div class="manual-count">
+                        <p class="manual-number">@directSalesData.Count()</p>
+                        <img class="manual-icon" src="images/Dashboard/manual-icon.png"/>
+                        <img class="m-manual-icon" src="images/Dashboard/m-manual-icon.png">
+                    </div>
+                    <button class="btn-add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Students</button>
+                </div>
+                <p class="manual-sub-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
             </div>
 
             <div class="faqs-wrapper">
@@ -752,6 +792,7 @@
                     </div>
                     <p><a class="link-question" @onclick="() => NavigateToHelp()">More information here.</a></p>
                 </div>
+
         </div>
     </div>
 }
@@ -769,6 +810,8 @@
     public List<Activity> AppointmentActvities = new List<Activity>();
 
     private List<GrossSales> salesData = new List<GrossSales>();
+
+    private List<GrossSales> directSalesData = new List<GrossSales>();
 
     public Activity activity = new Activity();
 
@@ -801,6 +844,10 @@
     private string badgeName2 = "Epic";
 
     private string totalSales { get; set; }
+
+    private string totalDirectSales { get; set; }
+
+    private string overAllTotal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -872,8 +919,30 @@
                         };
                 }).ToList();
             }
-            var amount = salesData.Sum(a => a.Total);
-            totalSales = String.Format("{0:N}", amount);
+            //Get Total Earning in Direct Students
+            var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+            }, Model.Token);
+            if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
+            {
+                directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+                {
+                    return new GrossSales
+                    {
+                        PurchaseDate = e.CreatedOn,
+                        Total = e.Amount
+                    };
+                }).ToList();
+            }
+            var amount       = salesData.Sum(a => a.Total);
+            var directAmount = directSalesData.Sum(a => a.Total);
+            var total        = amount + directAmount;
+            //Overall Total Earnings
+            totalSales       = String.Format("{0:N}", amount);
+            totalDirectSales = String.Format("{0:N}", directAmount);
+            overAllTotal     = String.Format("{0:N}", total);
         }
         catch (Exception e)
         {
@@ -1043,6 +1112,10 @@
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/maker/dashboard/help");
+    }
+    private void NavigateToDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
     }
 
     public double GetPercentage()

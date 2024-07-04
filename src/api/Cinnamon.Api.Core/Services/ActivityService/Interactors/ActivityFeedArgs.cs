@@ -10,4 +10,5 @@ public class ActivityFeedArgs : IInteractor
     public int? CategoryId {get; set;}
     public int? StarReview {get; set;}
     public int? ExperienceType {get; set;}
+    public int? ExperienceCategory {get; set;}
 }

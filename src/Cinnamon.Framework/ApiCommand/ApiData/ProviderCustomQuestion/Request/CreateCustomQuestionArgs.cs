@@ -15,4 +15,7 @@ public class CreateCustomQuestionArgs
 
     [Required]
     public string FieldType {get; set;}
+
+    [Required]
+    public bool Required {get; set;}
 }

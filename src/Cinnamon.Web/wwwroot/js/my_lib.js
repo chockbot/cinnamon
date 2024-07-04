@@ -479,7 +479,29 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n/* harmony import */ var _experienceExcelWriter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./experienceExcelWriter.js */ \"./src/utils/experienceExcelWriter.js\");\n/* harmony import */ var _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scrollToView.js */ \"./src/utils/scrollToView.js\");\n/* harmony import */ var _wordsCount_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./wordsCount.js */ \"./src/utils/wordsCount.js\");\n/* harmony import */ var _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./clipboardCopy.js */ \"./src/utils/clipboardCopy.js\");\n\n\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  experienceExcelWriter: _experienceExcelWriter_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  scrollToView: _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__.scrollToView,\n  scrollToTop: _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__.scrollToTop,\n  countWords: _wordsCount_js__WEBPACK_IMPORTED_MODULE_4__.countWords,\n  clipboardCopy: _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cookieManager.js */ \"./src/utils/cookieManager.js\");\n/* harmony import */ var _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./excelWriter.js */ \"./src/utils/excelWriter.js\");\n/* harmony import */ var _experienceExcelWriter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./experienceExcelWriter.js */ \"./src/utils/experienceExcelWriter.js\");\n/* harmony import */ var _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scrollToView.js */ \"./src/utils/scrollToView.js\");\n/* harmony import */ var _wordsCount_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./wordsCount.js */ \"./src/utils/wordsCount.js\");\n/* harmony import */ var _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./clipboardCopy.js */ \"./src/utils/clipboardCopy.js\");\n/* harmony import */ var _navigation_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./navigation.js */ \"./src/utils/navigation.js\");\n/* harmony import */ var _localStorage_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./localStorage.js */ \"./src/utils/localStorage.js\");\n\n\n\n\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  cookieManager: _cookieManager_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  excelWriter: _excelWriter_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  experienceExcelWriter: _experienceExcelWriter_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  scrollToView: _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__.scrollToView,\n  scrollToTop: _scrollToView_js__WEBPACK_IMPORTED_MODULE_3__.scrollToTop,\n  countWords: _wordsCount_js__WEBPACK_IMPORTED_MODULE_4__.countWords,\n  clipboardCopy: _clipboardCopy_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"],\n  navigation: _navigation_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"],\n  localStorage: _localStorage_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/index.js?");
+
+/***/ }),
+
+/***/ "./src/utils/localStorage.js":
+/*!***********************************!*\
+  !*** ./src/utils/localStorage.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  setItem: (key, value) => localStorage.setItem(key, value),\n  getItem: key => localStorage.getItem(key),\n  removeItem: key => localStorage.removeItem(key)\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/localStorage.js?");
+
+/***/ }),
+
+/***/ "./src/utils/navigation.js":
+/*!*********************************!*\
+  !*** ./src/utils/navigation.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   back: () => (/* binding */ back),\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nconst back = () => history.back();\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  back\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/navigation.js?");
 
 /***/ }),
 

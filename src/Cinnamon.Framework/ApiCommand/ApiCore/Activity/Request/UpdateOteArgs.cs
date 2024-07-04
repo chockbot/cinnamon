@@ -17,6 +17,8 @@ public class UpdateOteArgs
 
     public IEnumerable<OteUpdateReschedule>? OteReschedules {get; set;}
 
+    public IEnumerable<CustomQuestion>? Questions {get; set;}
+
     public class OteUpdateActivity 
     {
         [Required]
@@ -122,6 +124,9 @@ public class UpdateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
     public class OteUpdateOnlineEvent
     {
@@ -142,5 +147,17 @@ public class UpdateOteArgs
 
         [Required]
         public DateTime NewDate {get; set;}
+    }
+
+    public class CustomQuestion 
+    {
+        [Required]
+        public string Question {get; set;}
+
+        [Required]
+        public string FieldType {get; set;}
+
+        [Required]
+        public bool Required {get; set;}
     }
 }

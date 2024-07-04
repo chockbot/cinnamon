@@ -1,3 +1,4 @@
+using Cinnamon.Framework.Enums;
 using Cinnamon.Web.Models.Entities;
 
 namespace Cinnamon.Web.Models.Dashboard;
@@ -5,7 +6,7 @@ namespace Cinnamon.Web.Models.Dashboard;
 public class AttendanceModel 
 {
     public List<Schedule> Schedules {get; set;} = new();
-    public List<StudentAttendance> Attendances {get; set;} = new();
+    public Dictionary<string,StudentAttendance> Attendances {get; set;} = new();
     public List<StudentAttendance> FilteredAttendance {get; set;} = new();
     public List<Activity> Activities { get; set;} = new();
     public bool IsShowErrorMessage {get; set;}
@@ -51,6 +52,7 @@ public class AttendanceModel
         public int SessionsAttended {get; set;}
         public DateTime ExpirationDateStart { get; set; }
         public DateTime ExpirationDateEnd { get; set; }
+        public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     }
     public class Activity
     {

@@ -62,6 +62,7 @@ public class GetCurrentDateAttendanceHandler : IGetCurrentDateAttendanceHandler
                         Remarks = s.Remarks,
                         ExpirationDateEnd = s.ExpirationDateEnd,
                         ExpirationDateStart = s.ExpirationDateStart,
+                        StudentType = s.StudentType
                     };
                 })
             }, "Successfully get current date student attendance");

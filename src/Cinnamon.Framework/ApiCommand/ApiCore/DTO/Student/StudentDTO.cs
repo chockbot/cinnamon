@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Schedule;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 
@@ -19,7 +20,10 @@ public class StudentDTO
     public DateTime PurchaseDate { get; set; }
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
+    public DateTime LastAttendance {get; set;}
+    public StudentType StudentType {get; set;} = StudentType.Cinnamon;
     public bool HasReview { get; set; }
+    public int HasExpiration { get; set; }
     public string ActivityName { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }

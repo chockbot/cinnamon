@@ -14,6 +14,8 @@ public class CreateOteArgs
 
     public IEnumerable<DateOverride>? DateOverrides {get; set;}
 
+    public IEnumerable<CustomQuestion>? Questions {get; set;}
+
     public class OteActivity 
     {
         [Required]
@@ -120,6 +122,9 @@ public class CreateOteArgs
 
         [Required]
         public decimal Price {get; set;}
+
+        [Required]
+        public bool RequiredApproval {get; set;}
     }
 
     public class OteOnlineEvent
@@ -145,5 +150,17 @@ public class CreateOteArgs
 
         [Required]
         public TimeSpan TimeEnd {get; set;}
+    }
+
+    public class CustomQuestion 
+    {
+        [Required]
+        public string Question {get; set;}
+
+        [Required]
+        public string FieldType {get; set;}
+
+        [Required]
+        public bool Required {get; set;}
     }
 }

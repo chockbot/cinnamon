@@ -14,6 +14,8 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<OteReschedule>? OteReschedules {get; set;}
 
+    public IEnumerable<CustomQuestion>? Questions {get; set;}
+
     public class OteActivity 
     {
         public int Id {get; set;}
@@ -99,6 +101,8 @@ public class OteUpdateArgs : IInteractor
         public int MaxSlots {get; set;}
 
         public decimal Price {get; set;}
+
+        public bool RequiredApproval {get; set;}
     }
     public class OteOnlineEvent
     {
@@ -126,5 +130,12 @@ public class OteUpdateArgs : IInteractor
         public DateTime NewDate {get; set;}
         public DateTime DateStart {get; set;}
         public DateTime DateEnd {get; set;}
+    }
+
+    public class CustomQuestion 
+    {
+        public string Question {get; set;}
+        public string FieldType {get; set;}
+        public bool Required {get; set;}
     }
 }

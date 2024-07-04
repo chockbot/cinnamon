@@ -20,10 +20,11 @@ public class OteCreateHandler : IOteCreateHandler
     private readonly HtmlSanitizer htmlSanitizer;
     private readonly GenerateRecurrenceDate recurrenceDateHelper;
     private readonly ISaveEmailTemplateHandler saveEmailTemplateHandler;
+    private readonly IProviderCustomQuestionData providerCustomQuestionData;
 
     public OteCreateHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IGenerateActivityHandler generateActivityHandler, ICustomerData customerData,
-        ISaveEmailTemplateHandler saveEmailTemplateHandler)
+        ISaveEmailTemplateHandler saveEmailTemplateHandler, IProviderCustomQuestionData providerCustomQuestionData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -31,6 +32,7 @@ public class OteCreateHandler : IOteCreateHandler
         this.customerData = customerData;
         this.recurrenceDateHelper = new();
         this.saveEmailTemplateHandler = saveEmailTemplateHandler;
+        this.providerCustomQuestionData = providerCustomQuestionData;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -232,7 +234,8 @@ public class OteCreateHandler : IOteCreateHandler
                         IsAbsorbFees = p.IsAbsorbFees,
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
-                        Name = p.Name
+                        Name = p.Name,
+                        RequiredApproval = p.RequiredApproval
                     };
                 }).ToList(),
                 Dates = dateItems.Select(d => {
@@ -264,6 +267,21 @@ public class OteCreateHandler : IOteCreateHandler
             if(!createOteRes.Succeeded || createOteRes.Result is null || !createOteRes.Result.IsSuccess)
             {
                 return AppResult<OteCreateResult>.CreateFailed(new ApplicationException(createOteRes.Message), createOteRes.Message);
+            }
+
+            // for custom questions
+            if(args.Questions is not null && args.Questions.Count() > 0)
+            {
+                var questionsRes = args.Questions.Select(q => providerCustomQuestionData.CreateCustomQuestion(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.CreateCustomQuestionArgs {
+                    ActivityId = createOteRes.Result.Result.Id,
+                    FieldLabel = q.Question,
+                    FieldType = q.FieldType,
+                    ProviderId = currentUser.Result.Id,
+                    Required = q.Required
+                }));
+
+                // dont check the result if error or success
+                await Task.WhenAll(questionsRes);
             }
             
             var createReminderContent = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {

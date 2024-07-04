@@ -273,7 +273,7 @@
             {
                 <div class="chat-profile-section">
                     <div class="row">
-                        <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                        <div class="col-lg-6 col-sm-5 col-5 d-xl-block d-lg-block d-md-block d-sm-block d-none">
                             <div class="d-flex">
                                 @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                 {
@@ -327,7 +327,7 @@
                                 }
                             </div>
                         </div>
-                        <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                        <div class="col-lg-6 col-sm-7 col-7 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
                             @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
                             {
                                 var details = new ChatMember
@@ -391,7 +391,7 @@
                 @if (chatHistories.Count == 0)
                 {
                     <div class="row justify-content-center no-message-section text-center">
-                        <div class="col-lg-5">
+                        <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                             <img src="images/messages/speech-bubble.svg" />
                             <div class="divider"></div>
                             <label class="no-conversation-title">
@@ -518,9 +518,6 @@
                             <td class="input-section">
                                 <div class="input-group border p-1 rounded-pill-section">
                                     <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
-                                    </div>
-                                    <div class="input-group-append border-0">
-                                        <img src="images/messages/send-emoji.svg" class="emoji-icon" />
                                     </div>
                                 </div>
                           
@@ -659,18 +656,18 @@
                        @* <button type="button" class="border-0 leave-button" @onclick="Stop">
                             <span class="fa fa-arrow-circle-left"></span> Stop
                         </button>*@
+                        @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.Customer)
+                        {
+                            <div class="col-lg-12 profile-settings-section">
+                                @if (showLeaveGroup)
+                                {
+                                    <button type="button" class="border-0 leave-button">
+                                        Leave Group <img src="images/messages/leave-group-icon.svg" class="send-private-message-picture" />
+                                    </button>
+                                }
+                            </div>
+                        }
                     </div>
-                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.Customer)
-                    {
-                        <div class="col-lg-12 profile-settings-section">
-                            @if (showLeaveGroup)
-                            {
-                                <button type="button" class="border-0 leave-button">
-                                    Leave Group <img src="images/messages/leave-group-icon.svg" class="send-private-message-picture" />
-                                </button>
-                            }
-                        </div>
-                    }
                 </div>
             }
         </div>

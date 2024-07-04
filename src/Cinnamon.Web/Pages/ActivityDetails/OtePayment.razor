@@ -1,10 +1,12 @@
 @page "/payment/ote/{Handler}"
 @using AutoMapper;
 @using System.Security.Claims;
+@using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Ote;
 @using Cinnamon.Web.Models;
+@using Cinnamon.Web.Utils;
 @inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
@@ -12,6 +14,7 @@
 @inject IActivityApiHandler activityHandler;
 @inject ITransactionApiHandler transactionApiHandler;
 @inject IMapper mapper;
+@inject ILocalStorage localStorage;
 
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
 <SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
@@ -533,8 +536,71 @@
     </ModalContent>
 </Modal>
 
+<Modal @ref="modalQuestions">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center pb-0">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Waitlist Registration</p>
+                <p class="font-16 color-grey-100 mt-1 text-center">Please Fill up some questions to complete your registration</p>
+            </div>
+        </ModalHeader>
+        <ModalBody class="px-4">
+            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
+                <Validation>
+                    <Field class="mb-3">
+                        <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
+                        <FieldBody>
+                            <TextEdit @bind-Text="personalForm.Phone">
+                                <ValidationError />
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
+                @foreach (var question in activityQuestions)
+                {
+                    if(question.Required)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
+                                <FieldBody>
+                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." >
+                                        <ValidationError />
+                                    </MemoEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <div class="button-footer">
+                <Button class="bg-white-200 color-grey-100 me-2" 
+                    Clicked="() => modalQuestions.Close(CloseReason.UserClosing)">
+                    Cancel
+                </Button>
+                <Button class="bg-orange-100 color-white-100" Clicked="SubmitAnserQuestions">
+                    Submit
+                </Button>
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     [Parameter, SupplyParameterFromQuery]
@@ -560,6 +626,12 @@
     private bool IsLimit { get; set; }
     private int ticketLimit { get; set; }
     private string stringMaxTicket { get; set; }
+
+    private List<ActivityQuestion> activityQuestions = new();
+    private Modal? modalQuestions;
+    private Validations? questionValidation;
+    private Validations? phoneValidation;
+    private PersonalValidation personalForm = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -596,6 +668,7 @@
         {
             await LoadOteDetails();
             await LoadProvideDetails();
+            await LoadActivityQuestions();
         }
         catch (Exception ex)
         {
@@ -670,7 +743,8 @@
                                     Name = sTicket.Name,
                                     OteScheduleId = sTicket.OteScheduleId,
                                     Price = sTicket.Price,
-                                    TicketSold = sTicket.TicketSold
+                                    TicketSold = sTicket.TicketSold,
+                                    RequiredApproval = sTicket.RequiredApproval
                                 };
                                 await AddSelectedTicket(otePricing);
                             }
@@ -1004,6 +1078,7 @@
                         Count = 1,
                         Id = pricing.Id,
                         Price = pricing.Price,
+                        RequiredApproval = pricing.RequiredApproval
                     });
             }
 
@@ -1038,7 +1113,33 @@
             await NotificationService.Error("Please select ticket to purchase.", "Ticket");
             return;
         }
-        await SubmitTransaction();
+
+        var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
+        if(havePaidAndFreeTicket)
+        {
+            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
+            return;
+        }
+
+        var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+        if(haveApprovalTicket)
+        {
+            // check if already answer the questions before if not then ask again.
+            var questions = await localStorage.GetItem<StorageData>("activityQuestions");
+            if(questions is null || questions.ActivityId != activity.Id)
+            {
+                await modalQuestions.Show();
+            }
+            else 
+            {
+                await SubmitTransaction();
+            }
+        }
+        else
+        {
+            await SubmitTransaction();
+        }
     }
 
     private async Task SubmitTransaction()
@@ -1046,6 +1147,18 @@
         try
         {
             submitting = true;
+
+            var questionsData = await localStorage.GetItem<StorageData>("activityQuestions");
+            var questions = new List<ActivityQuestion>();
+
+            if(questionsData is not null && questionsData.ActivityId == activity.Id)
+            {
+                questions.AddRange(questionsData.Questions.Select(q => new ActivityQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
+                }));
+            }
 
             var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1064,6 +1177,11 @@
                         Count = t.Value.Count,
                         Id = t.Value.Id
                     };
+                }),
+                Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
                 })
             }, token);
 
@@ -1074,6 +1192,8 @@
             }
             else
             {
+                await localStorage.RemoveItem("activityQuestions");
+
                 submitting = false;
                 if (submit.Result.Result.Action == 1)
                 {
@@ -1109,10 +1229,47 @@
             return true;
         }
     }
+
     private Task NavigateBack()
     {
         NavigationManager.NavigateTo($"/explore/ote/{activity.Handler}");
         return Task.CompletedTask;
+    }
+
+    private async Task LoadActivityQuestions()
+    {
+        var activityQuestionsRes = await activityHandler.ActivityQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ActivityQuestionsArgs {
+            ActivityId = activity.Id
+        });
+        if(!activityQuestionsRes.Succeeded || activityQuestionsRes.Result is null || !activityQuestionsRes.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        activityQuestions.AddRange(activityQuestionsRes.Result.Result.Select(q => new ActivityQuestion {
+            FieldType = q.FieldType,
+            Id = q.Id,
+            Question = q.FieldLabel,
+            Required = q.Required
+        }));
+    }
+
+    private async Task SubmitAnserQuestions()
+    {
+        var validForms = (await questionValidation.ValidateAll()) && (await phoneValidation.ValidateAll());
+        if(!validForms) return;
+
+        await localStorage.SetItem("activityQuestions", new {
+            ActivityId = activity.Id,
+            Questions = activityQuestions.Select(q => new {
+                Id = q.Id,
+                Question = q.Question,
+                Answer = q.Answer
+            })
+        });
+
+        await SubmitTransaction();
     }
 
     private class CouponDetails 
@@ -1134,5 +1291,39 @@
         public int Id {get; set;}
         public int Count {get; set;}
         public decimal Price {get; set;}
+        public bool RequiredApproval {get; set;}
+    }
+
+    private class ActivityQuestion 
+    {
+        public int Id {get; set;}
+
+        [Required]
+        public string Question {get; set;}
+        public string FieldType {get; set;}
+        public bool Required {get; set;}
+
+        // extra fields
+        [Required(ErrorMessage = "Please write your answer")]
+        public string Answer {get; set;}
+    }
+
+    private class StorageData 
+    {
+        public int ActivityId {get; set;}
+        public IEnumerable<StorageQuestion> Questions {get; set;} 
+    }
+
+    private class StorageQuestion 
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public string Answer {get; set;}
+    }
+
+    private class PersonalValidation 
+    {
+        [Required(ErrorMessage = "Please provider your mobile number")]
+        public string Phone {get; set;}
     }
 }
