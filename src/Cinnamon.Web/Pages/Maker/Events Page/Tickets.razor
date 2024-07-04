@@ -4,8 +4,8 @@
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
-        <button class="btn-event" @onclick="NavigateToCapacity"><span class="fw-bold">Event Capacity</span>@((OteActivity.IsCapacity == true) ? $" {OteActivity.CapacityCount}" : "Off") &#x2022; Waitlist</button>
-        <button class="btn-event" @onclick="NavigateToEvents">Manage Event</button>
+        <button class="btn-event" @onclick="NavigateToCapacity"><span class="fw-bold">Event Capacity @((OteActivity.IsCapacity == true) ? $"{OteActivity.CapacityCount}" : "Off") &#x2022; Waitlist</span></button>
+        <button class="btn-event fw-bold" @onclick="NavigateToEvents">Manage Event</button>
     </div>
 </div>
 <div class="ticket-details-section">
@@ -21,7 +21,7 @@
             <div class="approval-section">
                 <p class="sold-value">Required Approval</p>
                 <div class="form-check form-switch">
-                    <Switch Disabled="ticket.OtePricing.Price != 0" @bind-Checked="ticket.OtePricing.RequiredApproval" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" />
+                    <Switch @bind-Checked="ticket.OtePricing.RequiredApproval" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" ReadOnly/>
                 </div>
             </div>
             <Divider/>
@@ -133,7 +133,7 @@
     </Row>
 
     <div>
-        <Button Clicked="NavigateToQuestions" class="color-green-100 bg-white-100 font-16 mb-3">
+        <Button Clicked="NavigateToQuestions" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
             + <span class="ms-2">Add Questions</span>
         </Button>
     </div>
