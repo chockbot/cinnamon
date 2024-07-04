@@ -17,7 +17,7 @@ public class OteWaitlist
     public DateTime CreatedOn { get; set; }
     public DateTime ChangedOn { get; set; }
 
-    public List<Registration> Registrations { get; set; }    
+    public List<Registration> Registrations = new List<Registration>();
 
     public class Registration
     {

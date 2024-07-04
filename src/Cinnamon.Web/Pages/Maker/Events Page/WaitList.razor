@@ -100,6 +100,20 @@
         <Divider class="m-0" />
         <div class="details">
             <p class="title">Waitlist Approval</p>
+            @switch (WaitlistDetails.Status)
+            {
+                case 1:
+                    <p class="waitlist-status">Waitlist</p>
+                break;
+                case 2:
+                    <p class="waitlist-approved">Approved</p>
+                break;
+                case 3:
+                    <p class="waitlist-declined">Declined</p>
+                break;
+                default:
+                break;
+            }
         </div>
         <div class="customer-details">
             <img class="profile-img" src="@WaitlistDetails.CustomerProfile" />
@@ -115,13 +129,13 @@
             {
                 foreach (var reg in WaitlistDetails.Registrations)
                 {
-                    <div class="registration-section">
+                    <div class="registration-section mt-1">
                          <p class="name">@reg.Question</p>
-                            <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
+                         <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
                     </div>
                 }
             }
-            <div class="d-flex justify-content-center gap-1">
+            <div class="d-flex mt-2 justify-content-center gap-1">
                 @if(WaitlistDetails.Status == 1)
                 {
                     <Button class="ticket-approve" Clicked="ApprovedWaitlist">
@@ -314,7 +328,7 @@
             }, Token);
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
-            await GetWaitlist();
+            await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Success("Successfully approved waitlist.", "Success");
 
@@ -337,7 +351,7 @@
             }, Token);
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
-            await GetWaitlist();
+            await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Error("Successfully declined waitlist.", "Success");
         }
@@ -364,7 +378,7 @@
                 Status       = e.Status,
                 ChangedOn    = e.ChangedOn,
                 CreatedOn    = e.CreatedOn
-            }).ToList();
+            }).OrderByDescending(a => a.CreatedOn).ToList();
         }
     }
 }
