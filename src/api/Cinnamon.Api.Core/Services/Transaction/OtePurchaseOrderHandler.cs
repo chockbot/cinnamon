@@ -169,7 +169,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             decimal providerFeePercent = args.PaymentMethod == "CARD" ? 5 : 3;
             decimal paymentProviderFee = isInclusivePayment ? 0 : subTotal * (providerFeePercent / 100); //.05m;
             decimal discount = 0;
-            decimal serviceFee = isInclusivePayment ? 0 : 15; //50;
+            decimal serviceFee = subTotal <= 0 ? 0 : (isInclusivePayment ? 0 : 15); //50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
