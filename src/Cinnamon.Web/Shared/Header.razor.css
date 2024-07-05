@@ -1,24 +1,24 @@
 ﻿.become {
-    transition: transform .25s;
+  transition: transform 0.25s;
 }
 .become:active {
-    transform: scale(.94);
+  transform: scale(0.94);
 }
 .top-row {
-    background-color: white;
-    border-bottom: 1px solid #D9D9D9;
-    justify-content: flex-start;
-    aspect-ratio: 1600/74;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    box-shadow: 0px 2px 12px 0px #343D4C80;
-    background-color: white;
-    border-bottom: 1px solid var(--lineColor);
-    justify-content: space-between;
-    width: 100%;
-    display: flex;
-    align-items: center;
+  background-color: white;
+  border-bottom: 1px solid #d9d9d9;
+  justify-content: flex-start;
+  aspect-ratio: 1600/74;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 2px 12px 0px #343d4c80;
+  background-color: white;
+  border-bottom: 1px solid var(--lineColor);
+  justify-content: space-between;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 /*.page {
     position: sticky;
@@ -26,7 +26,8 @@
     flex-direction: column;
 }*/
 .page-wrapper {
-    position: sticky !important;
+  position: sticky !important;
+  z-index: 9999;
 }
 /*.top-row {
     background-color: white;
@@ -37,308 +38,304 @@
     align-items: center;
 }*/
 
-    .top-row ::deep a {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-    }
+.top-row ::deep a {
+  white-space: nowrap;
+  margin-left: 1.5rem;
+}
 
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-row a:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .app-name {
-    color: var(--primary);
-    font-family: 'Backline';
-    font-size: 1.6vw;
-    text-decoration: none;
+  color: var(--primary);
+  font-family: "Backline";
+  font-size: 1.6vw;
+  text-decoration: none;
 }
 .become {
-    font-weight: 900;
-    text-align: center;
-    font-family: 'Nunito';
-    font-size: 1.5vw;
+  font-weight: 900;
+  text-align: center;
+  font-family: "Nunito";
+  font-size: 1.5vw;
 }
-    .become:hover {
-        color: var(--primary);
-    }
+.become:hover {
+  color: var(--primary);
+}
 button:focus {
-    outline: none !important;
-    box-shadow: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .new-message-count-badge {
-    background: #AD2323;
-    width: 16px;
-    height: 16px;
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 13.3333px;
-    line-height: 18px;
-    color: #FFFFFF;
-    position: absolute;
-    border-radius: 50%;
-    right: 25px;
-    top: -6px;
+  background: #ad2323;
+  width: 16px;
+  height: 16px;
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13.3333px;
+  line-height: 18px;
+  color: #ffffff;
+  position: absolute;
+  border-radius: 50%;
+  right: 25px;
+  top: -6px;
 }
 
 .has-new-message-badge {
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    left: 100px;
-    top: 15px;
-    background: #AD2323;
-    border-radius: 50%;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  left: 100px;
+  top: 15px;
+  background: #ad2323;
+  border-radius: 50%;
 }
 
 .messages-item {
-    position: relative;
+  position: relative;
 }
 
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
-    .top-row {
-        background-color: white;
-        border-bottom: 1px solid var(--lineColor);
-        justify-content: space-between;
-        aspect-ratio: 1600/74;
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
-        .top-row ::deep a {
-            white-space: nowrap;
-            margin-left: 1.5rem;
-        }
+  .top-row {
+    background-color: white;
+    border-bottom: 1px solid var(--lineColor);
+    justify-content: space-between;
+    aspect-ratio: 1600/74;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .top-row ::deep a {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+  }
 
-        .top-row a:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+  .top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .app-name {
-        font-size: 3vw;
-    }
+  .app-name {
+    font-size: 3vw;
+  }
 
-    .menu {
-        position: relative;
-        height: 32%;
-    }
-    .dropdown {
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-    }
-    a.dropdown-item {
-        margin-left: auto;
-    }
-    .dropdown-mobile {
-        display: none;
-    }
-    .menu img {
-        aspect-ratio: 1;
-        width: 25%;
-    }
+  .menu {
+    position: relative;
+    height: 32%;
+  }
+  .dropdown {
+    font-family: "Nunito";
+    font-size: 0.5vw;
+  }
+  a.dropdown-item {
+    margin-left: auto;
+  }
+  .dropdown-mobile {
+    display: none;
+  }
+  .menu img {
+    aspect-ratio: 1;
+    width: 25%;
+  }
 
-    .input-group {
-        width: 50%;
-    }
+  .input-group {
+    width: 50%;
+  }
 
-    .nav {
-        position: relative;
-        height: 32%;
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-        text-align: right;
-    }
+  .nav {
+    position: relative;
+    height: 32%;
+    font-family: "Nunito";
+    font-size: 0.5vw;
+    text-align: right;
+  }
 
-        .nav img {
-            aspect-ratio: 1;
-            width: 10%;
-        }
+  .nav img {
+    aspect-ratio: 1;
+    width: 10%;
+  }
 }
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
-    .app-name {
-        font-size: 2.5rem;
-    }
-    .top-row {
-        background-color: white;
-        border-bottom: 1px solid var(--lineColor);
-        justify-content: space-between;
-        aspect-ratio: 1600/74;
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
+  .app-name {
+    font-size: 2.5rem;
+  }
+  .top-row {
+    background-color: white;
+    border-bottom: 1px solid var(--lineColor);
+    justify-content: space-between;
+    aspect-ratio: 1600/74;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
 
-        .top-row ::deep a {
-            white-space: nowrap;
-            margin-left: 1.5rem;
-        }
+  .top-row ::deep a {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+  }
 
-        .top-row a:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    .become {
-        display: none;
-    }
+  .top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .become {
+    display: none;
+  }
 
+  .menu {
+    position: relative;
+    height: 50%;
+  }
 
-    .menu {
-        position: relative;
-        height: 50%;
-    }
+  .dropdown {
+    font-family: "Nunito";
+    font-size: 0.5vw;
+  }
 
-    .dropdown {
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-    }
+  a.dropdown-item {
+    margin-left: auto;
+  }
+  .dropdown-mobile {
+    display: none;
+  }
+  .menu img {
+    aspect-ratio: 1;
+    width: 20%;
+  }
 
-    a.dropdown-item {
-        margin-left: auto;
-    }
-    .dropdown-mobile {
-        display: none;
-    }
-    .menu img {
-        aspect-ratio: 1;
-        width: 20%;
-    }
+  .input-group {
+    width: 50%;
+  }
 
-    .input-group {
-        width: 50%;
-    }
+  .nav {
+    position: relative;
+    height: 32%;
+    font-family: "Nunito";
+    font-size: 0.5vw;
+    text-align: right;
+  }
 
-    .nav {
-        position: relative;
-        height: 32%;
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-        text-align: right;
-    }
-
-        .nav img {
-            aspect-ratio: 1;
-            width: 10%;
-        }
+  .nav img {
+    aspect-ratio: 1;
+    width: 10%;
+  }
 }
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
-    .app-name {
-        font-size: 2.5rem;
-    }
+  .app-name {
+    font-size: 2.5rem;
+  }
 
-    .menu-label{
-        display:none;
-    }
-    .become {
-        display: none;
-    }
+  .menu-label {
+    display: none;
+  }
+  .become {
+    display: none;
+  }
 
-    .menu img {
-        margin-right: 0;
-        width: 20px;
-    }
+  .menu img {
+    margin-right: 0;
+    width: 20px;
+  }
 
-    .px-4 {
-        padding-right: 0.5rem !important;
-        padding-left: 0.8rem !important;
-    }
+  .px-4 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.8rem !important;
+  }
 
-    .top-row {
-        padding: 5px 0;
-    }
+  .top-row {
+    padding: 5px 0;
+  }
 
-        .top-row.auth {
-            justify-content: space-between;
-        }
+  .top-row.auth {
+    justify-content: space-between;
+  }
 
-        .top-row a {
-            margin-left: 0;
-        }
-    .dropdown-mobile {
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-    }
-    .dropdown{
-        display: none;
-    }
+  .top-row a {
+    margin-left: 0;
+  }
+  .dropdown-mobile {
+    font-family: "Nunito";
+    font-size: 0.5vw;
+  }
+  .dropdown {
+    display: none;
+  }
 
-    .new-message-count-badge {
-        right: 10px;
-        top: 15px;
-    }
+  .new-message-count-badge {
+    right: 10px;
+    top: 15px;
+  }
 }
 
 /* Small devices (landscape phones, 588px and up) */
 @media (min-width: 576px) and (max-width: 767px) {
-    .dropdown {
-        display: none;
-    }
-    .become{
-        display: none;
-    }
-    .dropdown-mobile {
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-    }
-    .menu img{
-        width: 25px;
-        height: 25px;
-    }
+  .dropdown {
+    display: none;
+  }
+  .become {
+    display: none;
+  }
+  .dropdown-mobile {
+    font-family: "Nunito";
+    font-size: 0.5vw;
+  }
+  .menu img {
+    width: 25px;
+    height: 25px;
+  }
 }
- 
 
 @media screen and (min-width: 579px) and (max-width: 767px) {
-    .app-name {
-        font-size: 2.5rem;
-    }
+  .app-name {
+    font-size: 2.5rem;
+  }
 
-    .menu-label {
-        display: none;
-    }
+  .menu-label {
+    display: none;
+  }
 
-    .become {
-        display: none;
-    }
+  .become {
+    display: none;
+  }
 
-    .menu img {
-        margin-right: 0;
-        width: 20px;
-    }
+  .menu img {
+    margin-right: 0;
+    width: 20px;
+  }
 
-    .px-4 {
-        padding-right: 0.5rem !important;
-        padding-left: 0.8rem !important;
-    }
+  .px-4 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.8rem !important;
+  }
 
-    .top-row {
-        padding: 5px 0;
-    }
+  .top-row {
+    padding: 5px 0;
+  }
 
-        .top-row.auth {
-            justify-content: space-between;
-        }
+  .top-row.auth {
+    justify-content: space-between;
+  }
 
-        .top-row a {
-            margin-left: 0;
-        }
+  .top-row a {
+    margin-left: 0;
+  }
 
-    .dropdown-mobile {
-        font-family: 'Nunito';
-        font-size: 0.5vw;
-    }
+  .dropdown-mobile {
+    font-family: "Nunito";
+    font-size: 0.5vw;
+  }
 
-    .dropdown {
-        display: none;
-    }
+  .dropdown {
+    display: none;
+  }
 
-    .new-message-count-badge {
-        right: 10px;
-        top: 15px;
-    }
+  .new-message-count-badge {
+    right: 10px;
+    top: 15px;
+  }
 }
-
- 

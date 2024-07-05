@@ -129,7 +129,7 @@
                                             @if (activity.ExperienceTypeId == 1)
                                             {
                                                 string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                                <label class="ote-schedule-details">@address</label>
+                                                <label class="ote-schedule-details text-capitalize">@address</label>
                                             }
                                             else
                                             {
@@ -184,7 +184,7 @@
                                             @if (activity.ExperienceTypeId == 1)
                                             {
                                                 string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                                <label class="ote-schedule-details">@address</label>
+                                                <label class="ote-schedule-details text-capitalize">@address</label>
                                             }
                                             else
                                             {
@@ -326,7 +326,7 @@
                         @if (activity.ExperienceTypeId == 1)
                         {
                             string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                            <p class="address">@address</p>
+                            <p class="address text-capitalize">@address</p>
                             <iframe height="373" id="mapframe" frameborder="0" class="w-100" src="@MapSource" allowfullscreen></iframe>
                         }
                         else
