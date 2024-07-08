@@ -4,8 +4,8 @@
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
-        <button class="btn-event" @onclick="NavigateToTickets">@((OteActivity.IsCapacity == true) ? $"{OteActivity.CapacityCount}" : "Off") &#x2022; Waitlist</button>
-        <button class="btn-event" @onclick="NavigateToEvents">Manage Event</button>
+        <button class="btn-event" @onclick="NavigateToCapacity"><span class="fw-bold">Event Capacity @((OteActivity.IsCapacity == true) ? $"{OteActivity.CapacityCount}" : "Off") &#x2022; Waitlist</span></button>
+        <button class="btn-event fw-bold" @onclick="NavigateToEvents">Manage Event</button>
     </div>
 </div>
 <div class="ticket-details-section">
@@ -21,7 +21,7 @@
             <div class="approval-section">
                 <p class="sold-value">Required Approval</p>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault-@ticket.OtePricing.Id">
+                    <Switch @bind-Checked="ticket.OtePricing.RequiredApproval" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" ReadOnly/>
                 </div>
             </div>
             <Divider/>
@@ -51,7 +51,7 @@
     }
 </div>
 <Divider />
-<div class="mt-3 border-radius-10 p-4 m-bg-white-100 m-padding-0 m-margin-top-30">
+<div class="mt-3 border-radius-10 pt-3 m-bg-white-100 m-padding-0 m-margin-top-30">
     <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
         Registration Emails
     </h3>
@@ -61,7 +61,7 @@
 
     <Row HorizontalGutter="10">
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToTickets">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToPending">
                 <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
                 <div class="div-line mb-1"></div>
                 <div class="div-line-75 mb-2"></div>
@@ -69,7 +69,7 @@
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToTickets">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToAccepted">
                 <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
                 <div class="div-line mb-1"></div>
                 <div class="div-line-75 mb-2"></div>
@@ -77,7 +77,7 @@
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToTickets">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToDeclined">
                 <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
                 <div class="div-line mb-1"></div>
                 <div class="div-line-75 mb-2"></div>
@@ -85,6 +85,51 @@
             </div>
         </Column>
     </Row>
+    <h3 class="text-capitalize mt-3  font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
+        Registration Questions
+    </h3>
+    <p class="sub-text mb-4">
+        We will ask guests the following questions when they register for the event.
+    </p>
+
+        <div class="questions-holder mb-2">
+            <div class="title-holder">
+                <label for="">Name</label>
+            </div>
+            <div class="button-holder">
+                <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                          Size="Size.Small" Placeholder="Required" Disabled />
+            </div>
+        </div>
+
+
+        <div class="questions-holder mb-2">
+            <div class="title-holder">
+                <label for="">Email Address</label>
+            </div>
+            <div class="button-holder">
+                <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                          Size="Size.Small" Placeholder="Required" Disabled />
+            </div>
+        </div>
+
+
+        <div class="questions-holder mb-2">
+            <div class="title-holder">
+                <label for="">Phone Number</label>
+            </div>
+            <div class="button-holder">
+                <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                          Size="Size.Small" Placeholder="Required" Disabled />
+            </div>
+        </div>
+
+
+    <div>
+        <Button Clicked="NavigateToQuestions" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
+            + <span class="ms-2">Add Questions</span>
+        </Button>
+    </div>
 </div>
 
 @code {
@@ -104,8 +149,28 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{1}");
     }
+    private void NavigateToQuestions()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{4}");
+    }
+    private void NavigateToCapacity()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{6}");
+    }
     private void NavigateToEvents()
     {
         NavigationManager.NavigateTo("/maker/dashboard/events");
+    }
+    private void NavigateToPending()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{7}");
+    }
+    private void NavigateToAccepted()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{8}");
+    }
+    private void NavigateToDeclined()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{9}");
     }
 }

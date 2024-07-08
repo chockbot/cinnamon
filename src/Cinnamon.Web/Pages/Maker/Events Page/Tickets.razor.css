@@ -2,9 +2,21 @@
     display: flex;
     justify-content:end;
 }
+
+.questions-holder {
+    display: flex;
+    flex-direction: row;
+    gap: 144px;
+}
+
 .event-buttons {
     gap: 16px;
     margin-top: 37px;
+}
+::deep .btn-question {
+    background-color: #F3F6FC;
+    border-radius: 8px;
+    padding: 10px 16px;
 }
 .btn-event {
     border-radius: 6px;
@@ -99,6 +111,8 @@ svg {
     background-color: #d9d9d9;
     width: 75%;
 }
+
+
 @media screen and (min-width: 618px) and (max-width : 767px) {
     .email-box {
         margin-top: 10px;
@@ -122,6 +136,27 @@ svg {
     .ticket-details-section {
         display: grid;
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 375px) {
+    .questions-holder {
+        gap: 0px
+    }
+}
+
+@media screen and (min-width: 375px) and (max-width: 618px) {
+    .questions-holder {
+        gap: 73px;
+    }
+}
+
+
+@media screen and (min-width: 0px) and (max-width: 618px) {
+    .ticket-details-section {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr) !important;
         gap: 20px;
     }
 }

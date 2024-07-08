@@ -535,7 +535,7 @@
         return rightsideOffcanvas?.Close(CloseReason.UserClosing);
     }
 
-    private Task OnSelectedScheduledEmail(int selected)
+    public Task OnSelectedScheduledEmail(int selected)
     {
         selectedEmailSchedule = selected;
         return ShowOffcanvas();

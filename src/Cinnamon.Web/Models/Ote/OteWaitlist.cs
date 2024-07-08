@@ -14,4 +14,14 @@ public class OteWaitlist
     public string CustomerProfile { get; set; }
     public string CustomerEmail { get; set; }
     public DateTime EventDate { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime ChangedOn { get; set; }
+
+    public List<Registration> Registrations = new List<Registration>();
+
+    public class Registration
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
 }

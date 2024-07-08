@@ -1,0 +1,255 @@
+﻿@layout EmptyLayout
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote
+@using Microsoft.JSInterop
+@using Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject ITransactionApiHandler transactionApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IJSRuntime jsRuntime
+@attribute [Authorize]
+
+<div class="dashboard-header">
+    <div class="dashboard-wrapper">
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Total Sales</p>
+                        <p class="amount">&#8369;@overAllTotal</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description">This Month</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link" href="/maker/dashboard/grosssale">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Events</p>
+                        <p class="amount">@OTEActivities.Count()</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/activity.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description-activity">All Events</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link-activity" href="/maker/dashboard/events">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Registration</p>
+                        <p class="amount">50</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/students.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description-student">This Month</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link-student" href="/maker/dashboard/managestudents">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ms-1">
+    <div class="activitiest-section col-9">
+        <div class="title">Activities</div>
+        <Divider />
+        <div class="activity-header">
+            <p class="header">Title</p>
+            <p class="header">Type</p>
+            <p class="header">Status</p>
+            <p class="header ms-5">Action</p>
+        </div>
+        <Divider />
+        <div class="activity-table">
+            @foreach (var item in OTEActivities)
+            {
+                <div class="activity-details">
+                    <div class="activity-title">
+                        <p class="activity-text">@item.EventName</p>
+                    </div>
+                    @*Activity Type*@
+                    @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                    {
+                        <div class="activity-type-face">
+                            <p class="activity-face">Face to Face</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="activity-type-online">
+                            <p class="activity-online">Online</p>
+                        </div>
+                    }
+                    @*Schedule*@
+                    <div class="activity-title">
+                        <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                    @*Activity Status & Action*@
+                    <div class="details-action ms-5">
+                        <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
+                    </div>
+                </div>
+                <Divider />
+            }
+        </div>
+    </div>
+    <div class="other-section col-3">
+        <div class="manual-section">
+            <p class="manual-title">Schedule</p>
+            <p class="manual-text">No Schedule for Today.</p>
+            <div class="manual-option">
+                <button class="add-manual">Scan Tickets</button>
+            </div>
+        </div>
+        <div class="profile-section">
+            <p class="manual-title">Profile</p>
+            <p class="manual-text">67% Completed</p>
+            <div class="profile-pic">
+                <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                <p class="manual-text">@profile.Email</p>
+            </div>
+            <div class="manual-option">
+                <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+            </div>
+        </div>
+        <div class="attendance-section">
+            <p class="manual-title">Upcoming Events</p>
+            @if (OTEActivities.Count != 0)
+            {
+                @if (OTEActivities.Count >= 2)
+                {
+                    <ul>
+                        <li class="manual-text">@OTEActivities[0].EventName</li>
+                        <li class="manual-text">@OTEActivities[1].EventName</li>
+                    </ul>
+                }
+                else
+                {
+                    <ul>
+                        <li class="manual-text">@OTEActivities[0].EventName</li>
+                    </ul>
+                }
+            }
+            else
+            {
+                <p class="manual-text">No upcoming events</p>
+            }
+            <div class="manual-option">
+                <button class="check-attendance">Create New</button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string Token { get; set; }
+
+    [Parameter]
+    public string overAllTotal { get; set; }
+
+    public List<OteActivity> OTEActivities = new List<OteActivity>();
+
+    private CustomerProfile profile = new CustomerProfile();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var customer        = result.Result.Result;
+        profile.Id          = customer.Id;
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
+        profile.ProfilePath = customer.ProfileImg;
+        profile.IsVerified  = customer.IsVerified;
+
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
+        profile.ProfilePath = customer.ProfileImg;
+        profile.IsVerified  = customer.IsVerified;
+        profile.Email       = customer.Email;
+
+        //GEt OTE Event
+        await GetOTEActivities();
+    }
+    private void NavigateToProfile()
+    {
+        NavigationManager.NavigateTo("/customer/profile");
+    }
+    private async Task GetOTEActivities()
+    {
+        //Get OTE Details
+        var resultOTE = await activityApiHandler.GetOtePerDay(Token);
+        if (resultOTE.Succeeded && resultOTE.Result != null && resultOTE.Result.IsSuccess)
+        {
+            OTEActivities = resultOTE.Result.Result.Select(a =>
+            {
+                return new OteActivity
+                    {
+                        Id               = a.ActivityId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        EventName        = a.Title,
+                        Description      = a.Description,
+                        Handler          = a.Handler,
+                        CityName         = a.CityName,
+                        RegionName       = a.RegionName,
+                        PinnedLocation   = a.PinnedLocation,
+                        EventImage       = a.EventImage,
+                        ScheduleFrom     = a.DateStart,
+                        ScheduleTo       = a.DateEnd,
+                        OteDateId        = a.DateId,
+                        ForceDisable     = a.ForceDisable,
+                    };
+            }).Where(e => !e.ForceDisable).ToList();
+        }
+    }
+    private void NavigateToEventDetails(string handler, int selectedId)
+    {
+        NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}/?date={selectedId}");
+    }
+}

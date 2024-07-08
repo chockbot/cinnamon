@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details" @onclick="NavigateToTickets">
+            <div class="div-option-details" @onclick="NavigateToRegistration">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
@@ -58,7 +58,7 @@
         </div>
         @*Tabs*@
         <section class="customer-profile-details">
-            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile.Block.OnTablet">
                 <div class="swiper-wrapper">
                     <div class='swiper-slide @(selectedTab == "overview" ? "swiper-slide-active" : "")'>
                         <div class='tab-item @(selectedTab == "overview" ? "active" : "")' @onclick='() => selectedTab = "overview"'>
@@ -103,7 +103,7 @@
                         <GuestList activity="activity" Token=@Token dateId="dateId"/>
                     </TabPanel>
                     <TabPanel Name="wait-list">
-                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" />
+                        <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" EventName="@activity.EventName"/>
                     </TabPanel>
                     <TabPanel Name="tickets">
                         <Tickets TicketList="ticketList" OteActivity="activity"></Tickets>
@@ -281,7 +281,8 @@
                     Sold                  = s.OtePricingDTO.Sold,
                     Available             = s.OtePricingDTO.Available,
                     Price                 = s.OtePricingDTO.Price,
-                    OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId
+                    OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId,
+                    RequiredApproval      = s.OtePricingDTO.RequiredApproval
                 }
             }).ToList();
         }
@@ -601,5 +602,9 @@
     private void NavigateToTickets()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{1}");
+    }
+    private void NavigateToRegistration()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{5}");
     }
 }
