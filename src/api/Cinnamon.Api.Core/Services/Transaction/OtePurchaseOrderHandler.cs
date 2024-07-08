@@ -182,9 +182,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
                 }
 
-                // skip tickets need for approval
-                if(ticketPrice.Price == 0 && ticketPrice.RequiredApproval) continue;
-
                 // create selected ticket instance
                 for(int i = 0; i < ticket.Count; i++)
                 {
@@ -195,7 +192,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Price = ticketPrice.Price,
                         Code = qrcode,
                         ImageData = GenerateQRCode(qrcode),
-                        OteDateId = ticketPrice.OteDateId
+                        OteDateId = ticketPrice.OteDateId,
+                        RequiredApproval = ticketPrice.RequiredApproval
                     });
                 }
             }
@@ -507,5 +505,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
+        public bool RequiredApproval {get; set;}
     }
 }
