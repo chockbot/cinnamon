@@ -3458,7 +3458,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
+    [AllowAnonymous]
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]

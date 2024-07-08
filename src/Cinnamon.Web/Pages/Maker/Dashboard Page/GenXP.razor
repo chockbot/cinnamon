@@ -1,0 +1,497 @@
+﻿@layout EmptyLayout
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote
+@using Microsoft.JSInterop
+@using Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Cinnamon.Web.Models.Dashboard
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject ITransactionApiHandler transactionApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IJSRuntime jsRuntime
+@attribute [Authorize]
+
+<div class="dashboard-header">
+    <div class="dashboard-wrapper">
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Total Sales</p>
+                        <p class="amount">&#8369;@overAllTotal</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description">This Month</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link" href="/maker/dashboard/grosssale">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Activities</p>
+                        <p class="amount">@GeneralActivities.Count()</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/activity.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description-activity">All Activities</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link-activity" href="/maker/dashboard/managestudents">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="experience-box">
+            <div class="experience-content">
+                <div class="col-12 d-flex">
+                    <div class="col-8 d-block justify-content-start">
+                        <p class="box-title">Students</p>
+                        <p class="amount">@NoOfEnrollees</p>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <img class="earning-icon" src="images/Dashboard/students.png" />
+                    </div>
+                </div>
+                <div class="col-12 d-flex">
+                    <div class="col-7 d-flex justify-content-start">
+                        <p class="description-student">Ongoing Students</p>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <a class="earnings-link-student" href="/maker/dashboard/managestudents">See all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ms-1">
+    <div class="activitiest-section col-9">
+        <div class="title">Activities</div>
+        <Divider/>
+        <div class="activity-header">
+            <p class="header">Title</p>
+            <p class="header">Type</p>
+            <p class="header">Status</p>
+            <p class="header">Action</p>
+        </div>
+        <Divider />
+        <div class="activity-table">
+            @foreach (var item in GeneralActivities)
+            {
+                <div class="activity-details">
+                    <div class="activity-title">
+                        <p class="activity-text">@item.Title</p>
+                    </div>
+                    @*Activity Type*@
+                    @if (item.ExperienceTypeId == 1)
+                    {
+                        <div class="activity-type-face">
+                            <p class="activity-face">Face to Face</p>
+                        </div>
+                    }  
+                    else
+                    {
+                        <div class="activity-type-online">
+                            <p class="activity-online">Online</p>
+                        </div>
+                    }
+                    @*Activity Status & Action*@
+                    @if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
+                    {
+                        <div class="status">
+                            <span class="active-text">Active</span>
+                        </div>
+                        <div class="activity-action">
+                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                <img class="action-btn" src="images/Dashboard/edit.png"/>
+                            </a>
+                        </div>
+                    }
+                    else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
+                    {
+                        <div class="status">
+                            <span class="inactive-text">Inactive</span>
+                        </div>
+                        <div class="activity-action">
+                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                <img class="action-btn" src="images/Dashboard/edit.png" />
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="status">
+                            <span class="progress-text"> In progress</span>
+                        </div>
+                        <div class="inprogress-action">
+                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                <img class="action-btn" src="images/Dashboard/edit.png" />
+                            </a> 
+                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
+                                <img class="action-btn" src="images/Dashboard/delete.png" />
+                            </button>
+                        </div>
+                    }
+                </div>
+                <Divider />
+            }
+        </div>
+    </div>
+    <div class="other-section col-3">
+        <div class="manual-section">
+            <p class="manual-title">Manual Enrollment</p>
+            <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
+            <div class="manual-option">
+                <p class="manual-count">+@directSalesData.Count()</p>
+                <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
+            </div>
+            
+        </div>
+        <div class="attendance-section">
+            <p class="manual-title">Check Attendance</p>
+            <p class="manual-text">Check your student attendance today.</p>
+            <div class="manual-option">
+                <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
+            </div>
+        </div>
+        <div class="profile-section">
+            <p class="manual-title">Profile</p>
+            <p class="manual-text">67% Completed</p>
+            <div class="profile-pic">
+                <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                <p class="manual-text">@profile.Email</p>
+            </div>
+            <div class="manual-option">
+                <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row ms-1">
+    <div class="activitiest-section col-9">
+        <div class="d-flex justify-content-between">
+            <div class="title">Student List</div>
+            <button class="manage-student" @onclick="NavigateToManage">Manage Student</button>
+        </div>
+        
+        <Divider />
+        <div class="activity-header">
+            <p class="header">Name</p>
+            <p class="header">Category</p>
+            <p class="header">Recent Enrollment</p>
+        </div>
+        <Divider />
+        <div class="activity-table">
+            @foreach (var item in FilteredStudents)
+            {
+                <div class="activity-details">
+                    <div class="activity-title">
+                        <p class="activity-text">@item.Name</p>
+                    </div>
+                    @if (item.StudentType == StudentType.Cinnamon)
+                    {
+                        <div class="activity-type-face">
+                            <p class="activity-face">Cinnamon Enrollment</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="activity-type-online">
+                            <p class="activity-online">Manual Enrollment</p>
+                        </div>
+                    }
+                    <div class="activity-title">
+                        <p class="activity-text">@item.Title</p>
+                    </div>
+                </div>
+                <Divider />
+            }
+        </div>
+        <Pagination Class="pagination-section" Style="margin-top: 20px;">
+            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                <PaginationLink>
+                    <span aria-hidden="true">«</span>
+                </PaginationLink>
+            </PaginationItem>
+            @{
+                for (var i = 1; i <= Pagination.TotalPages; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                }
+            }
+            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                <PaginationLink>
+                    <span aria-hidden="true">»</span>
+                </PaginationLink>
+            </PaginationItem>
+        </Pagination>
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public string Token { get; set; }
+
+    [Parameter]
+    public string overAllTotal { get; set; }
+
+    [Parameter]
+    public int NoOfEnrollees { get; set; }
+
+    public List<Activity> GeneralActivities = new List<Activity>();
+
+    private ManageStudentsModel Model { get; set; } = new();
+
+    public List<Activity> activities = new List<Activity>();
+
+    private List<GrossSales> directSalesData = new List<GrossSales>();
+
+    private CustomerProfile profile = new CustomerProfile();
+
+    public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
+
+    public List<ManageStudentsData> FilteredStudents { get; set; } = new();
+
+    public int SearchBy { get; set; } = 0;
+
+    public string SearchValue { get; set; } = string.Empty;
+
+
+    public const string PREVIOUS = "previous";
+    public const string NEXT = "next";
+
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var customer = result.Result.Result;
+        profile.Id          = customer.Id;
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
+        profile.ProfilePath = customer.ProfileImg;
+        profile.IsVerified  = customer.IsVerified;
+
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
+        profile.ProfilePath = customer.ProfileImg;
+        profile.IsVerified  = customer.IsVerified;
+        profile.Email = customer.Email;
+
+        //Get Enrolled Students
+        await GetStudents(1);
+        await GetOwnedActivities(Token);
+
+        //Get Total Earning in Direct Students
+        var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
+            }, Token);
+        if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
+        {
+            directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+            {
+                return new GrossSales
+                    {
+                        PurchaseDate = e.CreatedOn,
+                        Total = e.Amount
+                    };
+            }).ToList();
+        }
+
+    }
+
+
+    private async Task DeleteActivity(int activityId)
+    {
+        var res = await activityApiHandler.DeleteActivityById(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteActivityArgs
+            {
+                ActivityId = activityId
+            }, Token);
+
+        if (res.Result.IsSuccess)
+        {
+            await GetOwnedActivities(Token);
+        }
+    }
+    private async Task GetOwnedActivities(string token)
+    {
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+            {
+                IncludeActivityImages = true,
+                IncludeStudents = true,
+                IncludeAtivitySchedules = true,
+            }, token);
+
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                {
+                    ActivityId = a.ActivityId,
+                    IsPublished = a.IsPublished,
+                    Title = a.Title,
+                    Description = a.Description,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    ExperienceCreationType = a.ExperienceCreationType,
+                    Handler = a.Handler,
+                    CityName = a.CityName,
+                    CreatedOn = a.CreatedOn,
+                    Images = a.Images.Select(i =>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
+                    Status = a.Status,
+                    OngoingStudents = a.OngoingStudents,
+                    CompletedStudents = a.CompletedStudents,
+                    NumberOfReviews = a.NumberOfReviews,
+                    ForceDisable = a.ForceDisable
+                };
+            }).ToList();
+        }
+        GeneralActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderByDescending(a => a.CreatedOn).ToList();
+        NoOfEnrollees = GeneralActivities.Sum(a => a.OngoingStudents);
+    }
+    private void NavigateToDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
+    }
+    private void NavigateToProfile()
+    {
+        NavigationManager.NavigateTo("/customer/profile");
+    }
+    private void NavigateToAttendance()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+    private async Task GetStudents(int pageIndex)
+    {
+        //Get Enrolled Students
+        var result = await dashboardApiHandler.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetEnrolledStudentsByProviderArgs
+        {
+            ProviderId   = profile.Id,
+            CountPerPage = 20,
+            PageIndex    = pageIndex,
+            SearchBy     = SearchBy,
+            SearchValue  = SearchValue,
+            ActivityId   = Model.selectedFilter
+        }, Token);
+
+        manageStudents = result.Result.Result.Select(s =>
+        {
+            return new ManageStudentsData
+            {
+                Id                  = s.Id,
+                ActivityId          = s.ActivityId,
+                ScheduleId          = s.ScheduleId,
+                Name                = s.Name,
+                Title               = s.ActivityName,
+                StudentNo           = s.StudentNo,
+                Remarks             = s.Remarks,
+                SessionsAttended    = s.SessionsAttended,
+                NumberOfSessions    = s.NumberOfSessions,
+                ExpirationDateStart = s.ExpirationStartDate,
+                ExpirationDateEnd   = s.ExpirationEndDate,
+                HasExpiration       = s.HasExpiration,
+                LastAttendance      = s.LastAttendance,
+                StudentType         = s.StudentType,
+            }; 
+        }).ToList();
+
+        Pagination = result.Result.Pagination;
+        FilteredStudents = manageStudents;
+    }
+    private bool IsActive(string page)
+      => Model.currentPage == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return Model.currentPage.Equals("1");
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return Model.currentPage.Equals(Model.pageItems.ToString());
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt > 1)
+        {
+            Model.currentPage = (currentPageAsInt - 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse(Model.currentPage);
+        if (currentPageAsInt < Model.pageItems)
+        {
+            Model.currentPage = (currentPageAsInt + 1).ToString();
+            await GetStudents(int.Parse(Model.currentPage));
+        }
+    }
+
+    private async Task SetActive(string page)
+    {
+        Model.currentPage = page;
+        await GetStudents(int.Parse(page));
+    }
+
+    private void NavigateToManage()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    }
+}

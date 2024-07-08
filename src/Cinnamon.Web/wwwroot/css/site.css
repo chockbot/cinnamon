@@ -135,10 +135,6 @@ a,
     box-shadow: none;
     background: transparent;
   }
-
-  .customer-profile-details .nav.nav-tabs {
-    display: none;
-  }
 }
 /* end profile styling section */
 
@@ -631,15 +627,6 @@ a,
     min-width: 270px;
 }
 
-/* For Tablet View */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-    .dashboard-layout .b-layout-sider {
-        background-color: #343D4C;
-        transition: left 0.5s ease-in-out;
-        min-width: 210px;
-    }
-}
-
 .dashboard-layout .b-layout-sider-content {
   width: 100%;
   position: relative;
@@ -726,21 +713,58 @@ a,
 .progress .progress-bar {
   border: 6px solid #4bb749;
 }
-
-@media screen and (max-width: 767px) and (orientation: portrait) {
-  .dashboard-layout .b-layout-sider {
-    position: absolute;
-    z-index: 9999999;
-    left: -380px;
-    width: 100%;
-    background-color: transparent;
-  }
-
-    .dashboard-layout .b-layout-sider .b-layout-sider-content {
-        width: 300px;
-        background-color: #343D4C;
-        box-shadow: 0px 0px 5px;
+/* Small Screen View */
+@media screen and (min-width:617px) and (max-width:767px) {
+    .dashboard-layout .b-layout-sider {
+        position: absolute;
+        z-index: 9999999;
+        left: -380px;
+        width: 100%;
+        background-color: transparent;
     }
+        .dashboard-layout .b-layout-sider .b-layout-sider-content {
+            width: 300px;
+            background-color: #343D4C;
+            box-shadow: 0px 0px 5px;
+        }
+
+}
+/* For Mobile View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .dashboard-layout .b-layout-sider {
+        position: absolute;
+        z-index: 9999999;
+        left: -380px;
+        width: 100%;
+        background-color: transparent;
+    }
+    
+        .dashboard-layout .b-layout-sider .b-layout-sider-content {
+            width: 300px;
+            background-color: #343D4C;
+            box-shadow: 0px 0px 5px;
+        }
+}
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+
+    .customer-profile-details .nav {
+        gap: 0px !important;
+      }
+  
+    .dashboard-layout .b-layout-sider {
+        position: absolute;
+        z-index: 9999999;
+        left: -380px;
+        width: fit-content;
+        background-color: transparent;
+    }
+
+        .dashboard-layout .b-layout-sider .b-layout-sider-content {
+            width: 300px;
+            background-color: #343D4C;
+            box-shadow: 0px 0px 5px;
+        }
 }
 
 input::-ms-reveal,
