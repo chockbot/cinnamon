@@ -173,7 +173,7 @@
                 <p class="manual-text">No upcoming events</p>
             }
             <div class="manual-option">
-                <button class="check-attendance">Create New</button>
+                <button class="check-attendance" @onclick="NavigateToCreate">Create New</button>
             </div>
         </div>
     </div>
@@ -252,4 +252,9 @@
     {
         NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}/?date={selectedId}");
     }
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote");
+    }
+    
 }
