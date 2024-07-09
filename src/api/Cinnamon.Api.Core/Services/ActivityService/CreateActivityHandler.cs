@@ -58,17 +58,17 @@ public class CreateActivityHandler : ICreateActivityHandler
             }
             int id = Convert.ToInt32(customerId);
 
-            // const int maxWords = 80;
+            const int maxWords = 80;
             var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
             var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
             var classPoliciesLength = WordsLenght(args.ClassPolicies ?? string.Empty);
 
-            // if (customerBringLength > maxWords || specificProvideLength > maxWords || classPoliciesLength > maxWords)
-            // {
-            //     return AppResult<CreateActivityResult>.CreateFailed(
-            //         new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields."), 
-            //             $"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields.");
-            // }
+            if (customerBringLength > maxWords || specificProvideLength > maxWords || classPoliciesLength > maxWords)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide/Class Policies fields.");
+            }
 
             // generate activity handler
             var generateHandlerRes = await generateActivityHandler.ExecuteAsync(new GenerateActivityHandlerArgs {
