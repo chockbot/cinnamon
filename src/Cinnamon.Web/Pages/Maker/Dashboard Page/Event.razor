@@ -19,7 +19,8 @@
 @inject IJSRuntime jsRuntime
 @attribute [Authorize]
 
-<div class="dashboard-header">
+
+<div class="dashboard-header desktop-switch">
     <div class="dashboard-wrapper">
         <div class="experience-box">
             <div class="experience-content">
@@ -83,6 +84,86 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- swiper for tablet & mobile -->
+<div class="dashboard-header swiper-switch">
+    <div class="dashboard-wrapper">
+        <div class="schedule-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="experience-box">
+                        <div class="experience-content">
+                            <div class="col-12 d-flex">
+                                <div class="col-8 d-block justify-content-start">
+                                    <p class="box-title">Total Sales</p>
+                                    <p class="amount">&#8369;@overAllTotal</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-end">
+                                    <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                                </div>
+                            </div>
+                            <div class="col-12 d-flex">
+                                <div class="col-7 d-flex justify-content-start">
+                                    <p class="description">This Month</p>
+                                </div>
+                                <div class="col-5 d-flex justify-content-end">
+                                    <a class="earnings-link" href="/maker/dashboard/grosssale">See all</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="experience-box">
+                        <div class="experience-content">
+                            <div class="col-12 d-flex">
+                                <div class="col-8 d-block justify-content-start">
+                                    <p class="box-title">Events</p>
+                                    <p class="amount">@OTEActivities.Count()</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-end">
+                                    <img class="earning-icon" src="images/Dashboard/activity.png" />
+                                </div>
+                            </div>
+                            <div class="col-12 d-flex">
+                                <div class="col-7 d-flex justify-content-start">
+                                    <p class="description-activity">All Events</p>
+                                </div>
+                                <div class="col-5 d-flex justify-content-end">
+                                    <a class="earnings-link-activity" href="/maker/dashboard/events">See all</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="experience-box">
+                        <div class="experience-content">
+                            <div class="col-12 d-flex">
+                                <div class="col-8 d-block justify-content-start">
+                                    <p class="box-title">Registration</p>
+                                    <p class="amount">50</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-end">
+                                    <img class="earning-icon" src="images/Dashboard/students.png" />
+                                </div>
+                            </div>
+                            <div class="col-12 d-flex">
+                                <div class="col-7 d-flex justify-content-start">
+                                    <p class="description-student">This Month</p>
+                                </div>
+                                <div class="col-5 d-flex justify-content-end">
+                                    <a class="earnings-link-student" href="/maker/dashboard/managestudents">See all</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
         </div>
     </div>
 </div>
@@ -214,6 +295,15 @@
         //GEt OTE Event
         await GetOTEActivities();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
+        }
+    }
+    
     private void NavigateToProfile()
     {
         NavigationManager.NavigateTo("/customer/profile");
