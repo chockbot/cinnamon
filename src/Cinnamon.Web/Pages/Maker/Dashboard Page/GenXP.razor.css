@@ -1,5 +1,12 @@
-﻿.dashboard-header {
+﻿.swiper-switch {
+    display: none;
+}
+
+.dashboard-header {
     margin-top: 2rem;
+}
+.swiper-scrollbar {
+    display: none;
 }
 .mobile-other-section{
     display: none;
@@ -342,12 +349,24 @@ p {
 .manual-text {
     color: #717171;
     font-family: Nunito;
-    font-size: 14px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     margin-top: 5px;
     margin-bottom: 20px;
+}
+.link-profile {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    text-decoration: underline;
+    cursor: pointer;
 }
 .manual-count {
     color: #000;
@@ -629,5 +648,24 @@ p {
 
     .create-activity {
         margin-top: 3.5rem;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 769px) {
+    .swiper-switch {
+        display: block;
+    }
+
+    .swiper-wrapper {
+        width: 300px !important;
+    }
+
+    .desktop-switch {
+        display: none;
+    }
+}
+@media only screen and (max-width: 890px) {
+    #explore-category-scrollbar {
+        display: none;
     }
 }
