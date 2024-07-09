@@ -2,6 +2,10 @@
     margin-top: 2rem;
 }
 
+.mobile-other-section {
+    display: none;
+}
+
 .dashboard-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -23,6 +27,40 @@
     border-radius: 8px;
     background: #FFF;
     box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+}
+
+.section-1 {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.activities-section {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    margin-top: 20px;
+    height: auto;
+    max-height: 715px;
+    overflow-y: scroll;
+}
+
+.studentlist-section {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    margin-top: 20px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+
+.activity {
+    width: 75%;
+}
+
+.other-section {
+    width: 25%;
+    margin-top: 20px;
 }
 
 .earnings-link {
@@ -47,7 +85,6 @@
     color: #343d4c;
     max-width: 350px;
 }
-
 p {
     margin: 0px;
 }
@@ -310,7 +347,7 @@ p {
     margin-top: 20px;
 }
 
-.manual-section {
+.create-section {
     border-radius: 8px;
     background: #FFF;
     box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
@@ -350,7 +387,7 @@ p {
     text-align: center;
 }
 
-.add-manual {
+.create-activity {
     width: 100%;
     color: #00AAF0;
     font-family: Nunito;
@@ -438,3 +475,174 @@ p {
     height: 32px;
     border:none;
 }
+@media screen and (min-width: 431px) and (max-width: 768px) {
+    .dashboard-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .experience-box {
+        width: 300px;
+    }
+
+    .section-1 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .activity {
+        order: 1;
+        width: 100%;
+    }
+
+    .other-section {
+        order: 0;
+    }
+
+    .other-section {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: auto;
+    }
+    .create-section,
+    .attendance-section{
+        grid-column: span 1;
+    }
+
+    .profile-section {
+        grid-column: span 2;
+    }
+
+    .create-section {
+        margin-top: 0;
+    }
+
+    .attendance-section {
+        margin-top: 0;
+    }
+
+    .create-section {
+        margin-top: 0;
+    }
+
+    .profile-section {
+        margin-top: 0;
+        order: 2;
+    }
+
+    .activities-section {
+        margin-top: 0;
+    }
+
+    .create-activity {
+        margin-top: 2.3rem;
+    }
+
+    .manual-count {
+        margin-top: 54px;
+        margin-bottom: 54px;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 580px) {
+    .create-activity {
+        margin-top: 3.5rem;
+    }
+
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 492px) and (max-width: 648px) {
+    .manual-count {
+        margin-top: 45px;
+        margin-bottom: 45px;
+    }
+
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 491px) {
+    .manual-count {
+        margin-top: 35px;
+        margin-bottom: 35px;
+    }
+
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 430px) {
+    .mobile-other-section {
+        display: block;
+    }
+        .mobile-other-section .profile-section{
+            display: block;
+        }
+    .dashboard-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .experience-box {
+        width: 300px;
+    }
+
+    .section-1 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .activity {
+        order: 1;
+        width: 100%;
+    }
+
+    .other-section {
+        order: 0;
+    }
+
+    .other-section {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: auto;
+    }
+
+    .create-section {
+        margin-top: 0;
+        width: 250px;
+    }
+
+    .attendance-section {
+        margin-top: 0;
+        width: 250px;
+    }
+
+    .create-section {
+        margin-top: 0;
+    }
+
+    .profile-section {
+        margin-top: 0;
+        display: none;
+    }
+
+    .activities-section {
+        margin-top: 0;
+    }
+
+    .create-activity {
+        margin-top: 3.5rem;
+    }
+}
+

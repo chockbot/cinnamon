@@ -86,56 +86,78 @@
         </div>
     </div>
 </div>
-<div class="row ms-1">
-    <div class="activitiest-section col-9">
-        <div class="title">Activities</div>
-        <Divider />
-        <div class="activity-header">
-            <p class="header">Title</p>
-            <p class="header">Type</p>
-            <p class="header">Status</p>
-            <p class="header ms-5">Action</p>
+<div class="section-1">
+    <div class="activity">
+        <div class="activities-section">
+            <div class="title">Activities</div>
+            <Divider />
+            <div class="activity-header">
+                <p class="header">Title</p>
+                <p class="header">Type</p>
+                <p class="header">Status</p>
+                <p class="header ms-3">Action</p>
+            </div>
+            <Divider />
+            <div class="activity-table">
+                @foreach (var item in OTEActivities)
+                {
+                    <div class="activity-details">
+                        <div class="activity-title">
+                            <p class="activity-text">@item.EventName</p>
+                        </div>
+                        @*Activity Type*@
+                        @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                        {
+                            <div class="activity-type-face">
+                                <p class="activity-face">Face to Face</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="activity-type-online">
+                                <p class="activity-online">Online</p>
+                            </div>
+                        }
+                        @*Schedule*@
+                        <div class="activity-title">
+                            <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        @*Activity Status & Action*@
+                        <div class="details-action ms-3 pe-2">
+                            <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
+                        </div>
+                    </div>
+                    <Divider />
+                }
+            </div>
         </div>
-        <Divider />
-        <div class="activity-table">
-            @foreach (var item in OTEActivities)
-            {
-                <div class="activity-details">
-                    <div class="activity-title">
-                        <p class="activity-text">@item.EventName</p>
-                    </div>
-                    @*Activity Type*@
-                    @if (!string.IsNullOrEmpty(item.PinnedLocation))
-                    {
-                        <div class="activity-type-face">
-                            <p class="activity-face">Face to Face</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="activity-type-online">
-                            <p class="activity-online">Online</p>
-                        </div>
-                    }
-                    @*Schedule*@
-                    <div class="activity-title">
-                        <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
-                    </div>
-                    @*Activity Status & Action*@
-                    <div class="details-action ms-5">
-                        <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
-                    </div>
+        <div class="mobile-other-section mt-3">
+            <div class="profile-section">
+                <p class="manual-title">Profile</p>
+                <p class="manual-text">67% Completed</p>
+                <div class="profile-pic">
+                    <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                    <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                    <p class="manual-text">@profile.Email</p>
                 </div>
-                <Divider />
-            }
+                <div class="manual-option">
+                    <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="other-section col-3">
-        <div class="manual-section">
+    <div class="other-section">
+        <div class="create-section">
+            <p class="manual-title">Start a new event?</p>
+            <div class="manual-option mt-3">
+                <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+            </div>
+        </div>
+        <div class="attendance-section">
             <p class="manual-title">Schedule</p>
             <p class="manual-text">No Schedule for Today.</p>
             <div class="manual-option">
-                <button class="add-manual">Scan Tickets</button>
+                <button class="check-attendance">Scan Tickets</button>
             </div>
         </div>
         <div class="profile-section">
@@ -150,34 +172,9 @@
                 <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
             </div>
         </div>
-        <div class="attendance-section">
-            <p class="manual-title">Upcoming Events</p>
-            @if (OTEActivities.Count != 0)
-            {
-                @if (OTEActivities.Count >= 2)
-                {
-                    <ul>
-                        <li class="manual-text">@OTEActivities[0].EventName</li>
-                        <li class="manual-text">@OTEActivities[1].EventName</li>
-                    </ul>
-                }
-                else
-                {
-                    <ul>
-                        <li class="manual-text">@OTEActivities[0].EventName</li>
-                    </ul>
-                }
-            }
-            else
-            {
-                <p class="manual-text">No upcoming events</p>
-            }
-            <div class="manual-option">
-                <button class="check-attendance" @onclick="NavigateToCreate">Create New</button>
-            </div>
-        </div>
     </div>
 </div>
+<br/>
 @code {
     [Parameter]
     public string Token { get; set; }
