@@ -75,7 +75,7 @@
             </table>
             <input type="text" id="create-activity-title" @bind="Model.Activity.Title" class="form-control @RequiredCheck(Model.Activity.Title)" />
             <small class="form-text text-muted sub-details d-none d-sm-block d-md-block d-lg-block d-xl-block">Create a title for your class, activity or experience!</small>
-            <small class="form-text text-muted sub-details pull-right" id="label-title-editor"></small>
+            @* <small class="form-text text-muted sub-details pull-right" id="label-title-editor"></small> *@
         </div>
         <div class="form-group">
             <table class="field-heading-section">
@@ -93,7 +93,7 @@
             </table>
             <textarea id="create-activity-description" @bind="Model.Activity.Description" class="@RequiredMin(Model.Activity.Description,20)"></textarea>
             <small class="form-text text-muted sub-details d-none d-sm-block d-md-block d-lg-block d-xl-block">Describe what you will offer!</small>
-            <small class="form-text text-muted sub-details pull-right" id="label-description-editor"></small>
+            @* <small class="form-text text-muted sub-details pull-right" id="label-description-editor"></small> *@
         </div>
         <div class="col col-12">
             <label for="category" class="form-control-label label-top-margin font-20 m-font-18 mb-1">Category</label>
@@ -167,8 +167,8 @@
         if (!Model.ExperienceHasError && string.IsNullOrEmpty(text)) return "form-control";
         if (Model.ExperienceHasError && string.IsNullOrEmpty(text)) return "form-control invalid";
 
-        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
-        if (Model.ExperienceHasError && length < min) return "form-control invalid";
+        //var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        //if (Model.ExperienceHasError && length < min) return "form-control invalid";
         return "form-control";
     }
 
@@ -176,7 +176,7 @@
     {
         if (string.IsNullOrEmpty(Model.Activity.Title)) return false;
         if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
-        if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
+        // if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
         if (Model.Activity.ExperienceCategoryId <= 0) return false;
         if (Model.Activity.SubCategoryId <= 0) return false;
 
@@ -197,11 +197,11 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Overview Page");
 
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
 
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
 
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
