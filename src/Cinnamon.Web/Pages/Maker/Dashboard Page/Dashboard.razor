@@ -11,6 +11,7 @@
 @using Microsoft.JSInterop
 @using Cinnamon.Web.Components
 @using Microsoft.AspNetCore.Components.Web
+@using Cinnamon.Web.Models.Account;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -40,31 +41,17 @@
         </div>
         
         <section class="customer-profile-details">
-           @* <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile.Block.OnTablet">
-                <div class="swiper-wrapper">
-                    <div class='swiper-slide @(selectedTab == "activity" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "activity" ? "active" : "")' @onclick='() => selectedTab = "activity"'>
-                            activities
-                        </div>
-                    </div>
-                    <div class='swiper-slide @(selectedTab == "event" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "event" ? "active" : "")' @onclick='() => selectedTab = "event"'>
-                            events
-                        </div>
-                    </div>
-                </div>
-            </Div>*@
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                 <Items>
-                    <Tab Name="activity" TextTransform="TextTransform.Capitalize">activities</Tab>
                     <Tab Name="event" TextTransform="TextTransform.Capitalize">events</Tab>
+                    <Tab Name="activity" TextTransform="TextTransform.Capitalize">activities</Tab>
                 </Items>
                 <Content>
-                    <TabPanel Name="activity">
-                        <GenXP overAllTotal="@overAllTotal" Token="@token"></GenXP>
-                    </TabPanel>
                     <TabPanel Name="event">
-                        <Event overAllTotal="@overAllTotal" Token="@token"></Event>
+                        <Event overAllTotal="@overAllTotal" Token="@token" HasPayoutAccount="hasPayout" />
+                    </TabPanel>
+                    <TabPanel Name="activity">
+                        <GenXP overAllTotal="@overAllTotal" Token="@token" HasPayoutAccount="hasPayout"/>
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -96,6 +83,10 @@
 
     private List<OteActivity> oteActivities = new List<OteActivity>();
 
+    private PayoutAccountModel PayoutAccount { get; set; }
+
+    private bool hasPayout { get; set; } = false;
+
     private double cnt = 0;
 
     string token = string.Empty;
@@ -110,7 +101,7 @@
 
     private int TotalTicketSold = 0;
 
-    private string selectedTab = "activity";
+    private string selectedTab = "event";
 
     private int selectedQuestion = 1;
 
@@ -148,7 +139,19 @@
             profile.Id = customer.Id;
             profile.FirstName = customer.FirstName;
             profile.LastName = customer.LastName;
-
+            //Get Payout Details
+            var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(token);
+            if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+            {
+                var payoutAccount = fetchPayoutAccount.Result.Result;
+                PayoutAccount = new PayoutAccountModel
+                    {
+                        AccountHolder = payoutAccount.AccountHolder,
+                        AccountNumber = payoutAccount.AccountNumber,
+                        Id = payoutAccount.Id
+                    };
+            }
+            hasPayout = PayoutAccount is not null ? true : false;
             //Get Total Earnings 
             var earnings = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
                 {
@@ -190,6 +193,7 @@
             totalSales       = String.Format("{0:N}", amount);
             totalDirectSales = String.Format("{0:N}", directAmount);
             overAllTotal     = String.Format("{0:N}", total);
+
         }
         catch (Exception e)
         {
@@ -275,5 +279,4 @@
         if(forceDisable) return "xp-actions justify-content-end";
         else return "xp-actions";
     }
-
 }

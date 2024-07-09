@@ -86,57 +86,95 @@
         </div>
     </div>
 </div>
-<div class="section-1">
-    <div class="activity">
-        <div class="activities-section">
-            <div class="title">Activities</div>
-            <Divider />
-            <div class="activity-header">
-                <p class="header">Title</p>
-                <p class="header">Type</p>
-                <p class="header">Status</p>
-                <p class="header ms-3">Action</p>
+@if(profile.Id != 0)
+{
+    <div class="section-1">
+        <div class="activity">
+            <div class="activities-section">
+                <div class="title">Activities</div>
+                <Divider />
+                <div class="activity-header">
+                    <p class="header">Title</p>
+                    <p class="header">Type</p>
+                    <p class="header">Status</p>
+                    <p class="header ms-3">Action</p>
+                </div>
+                <Divider />
+                <div class="activity-table">
+                    @foreach (var item in OTEActivities)
+                    {
+                        <div class="activity-details">
+                            <div class="activity-title">
+                                <p class="activity-text">@item.EventName</p>
+                            </div>
+                            @*Activity Type*@
+                            @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                            {
+                                <div class="activity-type-face">
+                                    <p class="activity-face">Face to Face</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="activity-type-online">
+                                    <p class="activity-online">Online</p>
+                                </div>
+                            }
+                            @*Schedule*@
+                            <div class="activity-title">
+                                <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
+                            </div>
+                            @*Activity Status & Action*@
+                            <div class="details-action ms-3 pe-2">
+                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
+                            </div>
+                        </div>
+                        <Divider />
+                    }
+                </div>
             </div>
-            <Divider />
-            <div class="activity-table">
-                @foreach (var item in OTEActivities)
-                {
-                    <div class="activity-details">
-                        <div class="activity-title">
-                            <p class="activity-text">@item.EventName</p>
+            <div class="mobile-other-section mt-3">
+                <div class="profile-section">
+                    <p class="manual-title">Profile</p>
+                    <p class="manual-text">@profilePercentage Completed</p>
+                    <div class="profile-pic">
+                        <div class="d-flex justify-content-center">
+                            <CircularProgress Id='@($"progress-{profile.FirstName}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
+                                <img class="profile-img" src="@profile.ProfilePath" />
+                            </CircularProgress>
                         </div>
-                        @*Activity Type*@
-                        @if (!string.IsNullOrEmpty(item.PinnedLocation))
-                        {
-                            <div class="activity-type-face">
-                                <p class="activity-face">Face to Face</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="activity-type-online">
-                                <p class="activity-online">Online</p>
-                            </div>
-                        }
-                        @*Schedule*@
-                        <div class="activity-title">
-                            <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
-                        </div>
-                        @*Activity Status & Action*@
-                        <div class="details-action ms-3 pe-2">
-                            <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
-                        </div>
+                        <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                        <p class="manual-text">@profile.Email</p>
                     </div>
-                    <Divider />
-                }
+                    <div class="manual-option">
+                        <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="mobile-other-section mt-3">
+        <div class="other-section">
+            <div class="create-section">
+                <p class="manual-title">Start a new event?</p>
+                <div class="manual-option mt-3">
+                    <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                </div>
+            </div>
+            <div class="attendance-section">
+                <p class="manual-title">Schedule</p>
+                <p class="manual-text">No Schedule for Today.</p>
+                <div class="manual-option">
+                    <button class="check-attendance">Scan Tickets</button>
+                </div>
+            </div>
             <div class="profile-section">
                 <p class="manual-title">Profile</p>
-                <p class="manual-text">67% Completed</p>
+                <p class="manual-text">@profilePercentage Completed</p>
                 <div class="profile-pic">
-                    <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                    <div class="d-flex justify-content-center">
+                        <CircularProgress Id='@($"progress-{profile.Id}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
+                            <img class="profile-img" src="@profile.ProfilePath" />
+                        </CircularProgress>
+                    </div>
                     <p class="profile-name">@profile.FirstName @profile.LastName</p>
                     <p class="manual-text">@profile.Email</p>
                 </div>
@@ -146,34 +184,7 @@
             </div>
         </div>
     </div>
-    <div class="other-section">
-        <div class="create-section">
-            <p class="manual-title">Start a new event?</p>
-            <div class="manual-option mt-3">
-                <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
-            </div>
-        </div>
-        <div class="attendance-section">
-            <p class="manual-title">Schedule</p>
-            <p class="manual-text">No Schedule for Today.</p>
-            <div class="manual-option">
-                <button class="check-attendance">Scan Tickets</button>
-            </div>
-        </div>
-        <div class="profile-section">
-            <p class="manual-title">Profile</p>
-            <p class="manual-text">67% Completed</p>
-            <div class="profile-pic">
-                <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
-                <p class="profile-name">@profile.FirstName @profile.LastName</p>
-                <p class="manual-text">@profile.Email</p>
-            </div>
-            <div class="manual-option">
-                <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
-            </div>
-        </div>
-    </div>
-</div>
+}
 <br/>
 @code {
     [Parameter]
@@ -182,10 +193,16 @@
     [Parameter]
     public string overAllTotal { get; set; }
 
+    [Parameter]
+    public bool HasPayoutAccount { get; set; }
+
     public List<OteActivity> OTEActivities = new List<OteActivity>();
 
     private CustomerProfile profile = new CustomerProfile();
 
+    private string color = "#FFA942";
+
+    private string profilePercentage { get; set; } = "0%";
 
     protected override async Task OnInitializedAsync()
     {
@@ -210,7 +227,7 @@
         profile.ProfilePath = customer.ProfileImg;
         profile.IsVerified  = customer.IsVerified;
         profile.Email       = customer.Email;
-
+        profile.About       = customer.About;
         //GEt OTE Event
         await GetOTEActivities();
     }
@@ -253,5 +270,28 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote");
     }
-    
+    private int GetSessionPercentage()
+    {
+        double checkItem = 0;
+        double denominator = 4;
+        if (profile.IsVerified == 2)
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(profile.About))
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(profile.ProfileImg))
+        {
+            checkItem += 1;
+        }
+        if (HasPayoutAccount)
+        {
+            checkItem += 1;
+        }
+        //Get Payout Details
+        profilePercentage = $"{(int)((checkItem / denominator) * 100)}%";
+        return (int)((checkItem / denominator) * 100);
+    }
 }
