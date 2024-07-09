@@ -1,7 +1,9 @@
 ﻿.dashboard-header {
     margin-top: 2rem;
 }
-
+.mobile-other-section{
+    display: none;
+}
 .dashboard-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -22,7 +24,35 @@
     background: #FFF;
     box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
 }
-
+.section-1 {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+.activities-section {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    margin-top: 20px;
+    height:auto;
+    max-height:715px;
+    overflow-y: scroll;
+}
+.studentlist-section {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    margin-top: 20px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+.activity {
+    width: 75%;
+}
+.other-section {
+    width: 25%;
+    margin-top: 20px;
+}
 .earnings-link {
     color: #00AAF0;
     text-decoration: underline;
@@ -70,6 +100,7 @@ p {
     font-size: 16px;
     font-weight: 500;
     color: #717171;
+    position: sticky;
 }
 
 .amount-calculate {
@@ -145,20 +176,6 @@ p {
     background: rgba(252, 71, 85, 0.10);
     color: #FC4755;
     font-size: 12px;
-}
-.activitiest-section {
-
-    
-}
-.activitiest-section {
-    margin-top: 20px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 16px;
-    border-bottom-left-radius: 16px;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
 }
 .title {
     color: #343D4C;
@@ -287,10 +304,28 @@ p {
     background-color: transparent;
     border: none;
 }
-.other-section{
-    margin-top:20px;
+.create-section {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    padding: 20px 16px 20px 16px;
+}
+.attendance-section {
+    margin-top: 20px;
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    padding: 20px 16px 20px 16px;
 }
 .manual-section {
+    margin-top: 20px;
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
+    padding: 20px 16px 20px 16px;
+}
+.profile-section {
+    margin-top: 20px;
     border-radius: 8px;
     background: #FFF;
     box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
@@ -338,14 +373,20 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
 }
-.attendance-section {
-    margin-top: 20px;
-    border-radius: 8px;
-    background: #FFF;
-    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
-    padding: 20px 16px 20px 16px;
-}
+
 .check-attendance {
+    width: 100%;
+    color: #FC4755;
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: rgba(252, 71, 85, 0.10);
+    border: none;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.create-activity {
     width: 100%;
     color: #7D87EA;
     font-family: Nunito;
@@ -356,13 +397,6 @@ p {
     border: none;
     padding-top: 9px;
     padding-bottom: 9px;
-}
-.profile-section {
-    margin-top: 20px;
-    border-radius: 8px;
-    background: #FFF;
-    box-shadow: 0px 0px 47px 0px rgba(217, 217, 217, 0.60);
-    padding: 20px 16px 20px 16px;
 }
 .profile-pic {
     text-align: center;
@@ -443,6 +477,158 @@ p {
     font-size: 12px;
     font-weight: 600;
     height: 1.5rem;
-    border: none;
+    border: none;    
+}
+@media screen and (min-width: 431px) and (max-width: 768px) {
+    .dashboard-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .experience-box{
+        width:300px;
+    }
+    .section-1 {
+        display: flex;
+        flex-direction: column;
+    }
+    .activity{
+        order: 1;
+        width: 100%;
+    }
+    .other-section{
+        order: 0;
+    }
+    .other-section {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: auto;
+    }
+    .create-section{
+        margin-top:0;
+    }
+    .attendance-section {
+        margin-top: 0;
+    }
+    .manual-section {
+        margin-top: 0;
+    }
+    .profile-section {
+        margin-top: 0;
+    }
+    .activities-section{
+        margin-top:0;
+    }
+    .create-activity{
+        margin-top:2.3rem;
+    }
+    .manual-count{
+        margin-top:54px;
+        margin-bottom: 54px;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 580px) {
+    .create-activity {
+        margin-top: 3.5rem;
+    }
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 492px) and (max-width: 648px) {
+    .manual-count {
+        margin-top: 45px;
+        margin-bottom: 45px;
+    }
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 491px) {
+    .manual-count {
+        margin-top: 35px;
+        margin-bottom: 35px;
+    }
+    .mobile-other-section {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 430px){
+    .mobile-other-section {
+        display: block;
+    }
+    .dashboard-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .experience-box {
+        width: 300px;
+    }
+
+    .section-1 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .activity {
+        order: 1;
+        width: 100%;
+    }
+
+    .other-section {
+        order: 0;
+    }
+
+    .other-section {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: auto;
+    }
+
+    .create-section {
+        margin-top: 0;
+        width: 250px;
+    }
+
+    .attendance-section {
+        margin-top: 0;
+        width: 250px;
+    }
+
+    .manual-section {
+        margin-top: 0;
+        display: none;
+    }
+
+    .mobile-other-section .manual-section {
+        display: block;
         
+    }
+    .mobile-other-section .profile-section {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .profile-section {
+        margin-top: 0;
+        display: none;
+    }
+
+    .activities-section {
+        margin-top: 0;
+    }
+
+    .create-activity {
+        margin-top: 3.5rem;
+    }
 }

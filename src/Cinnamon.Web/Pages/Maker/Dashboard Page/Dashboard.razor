@@ -40,7 +40,7 @@
         </div>
         
         <section class="customer-profile-details">
-            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile.Block.OnTablet">
+           @* <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile.Block.OnTablet">
                 <div class="swiper-wrapper">
                     <div class='swiper-slide @(selectedTab == "activity" ? "swiper-slide-active" : "")'>
                         <div class='tab-item @(selectedTab == "activity" ? "active" : "")' @onclick='() => selectedTab = "activity"'>
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-            </Div>
+            </Div>*@
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                 <Items>
                     <Tab Name="activity" TextTransform="TextTransform.Capitalize">activities</Tab>

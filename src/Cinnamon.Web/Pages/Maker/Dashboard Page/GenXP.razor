@@ -87,80 +87,181 @@
         </div>
     </div>
 </div>
-<div class="row ms-1">
-    <div class="activitiest-section col-9">
-        <div class="title">Activities</div>
-        <Divider/>
-        <div class="activity-header">
-            <p class="header">Title</p>
-            <p class="header">Type</p>
-            <p class="header">Status</p>
-            <p class="header">Action</p>
-        </div>
-        <Divider />
-        <div class="activity-table">
-            @foreach (var item in GeneralActivities)
-            {
-                <div class="activity-details">
-                    <div class="activity-title">
-                        <p class="activity-text">@item.Title</p>
+<div class="section-1">
+    <div class="activity">
+        <div class="activities-section">
+            <div class="title">Activities</div>
+            <Divider />
+            <div class="activity-header">
+                <p class="header">Title</p>
+                <p class="header">Type</p>
+                <p class="header">Status</p>
+                <p class="header">Action</p>
+            </div>
+            <Divider />
+            <div class="activity-table">
+                @foreach (var item in GeneralActivities)
+                {
+                    <div class="activity-details">
+                        <div class="activity-title">
+                            <p class="activity-text">@item.Title</p>
+                        </div>
+                        @*Activity Type*@
+                        @if (item.ExperienceTypeId == 1)
+                        {
+                            <div class="activity-type-face">
+                                <p class="activity-face">Face to Face</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="activity-type-online">
+                                <p class="activity-online">Online</p>
+                            </div>
+                        }
+                        @*Activity Status & Action*@
+                        @if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
+                        {
+                            <div class="status">
+                                <span class="active-text">Active</span>
+                            </div>
+                            <div class="activity-action">
+                                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                    <img class="action-btn" src="images/Dashboard/edit.png" />
+                                </a>
+                            </div>
+                        }
+                        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
+                        {
+                            <div class="status">
+                                <span class="inactive-text">Inactive</span>
+                            </div>
+                            <div class="activity-action">
+                                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                    <img class="action-btn" src="images/Dashboard/edit.png" />
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="status">
+                                <span class="progress-text"> In progress</span>
+                            </div>
+                            <div class="inprogress-action">
+                                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                    <img class="action-btn" src="images/Dashboard/edit.png" />
+                                </a>
+                                <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
+                                    <img class="action-btn" src="images/Dashboard/delete.png" />
+                                </button>
+                            </div>
+                        }
                     </div>
-                    @*Activity Type*@
-                    @if (item.ExperienceTypeId == 1)
-                    {
-                        <div class="activity-type-face">
-                            <p class="activity-face">Face to Face</p>
+                    <Divider />
+                }
+            </div>
+        </div>
+        <div class="studentlist-section mt-3">
+            <div class="d-flex justify-content-between">
+                <div class="title">Student List</div>
+                <button class="manage-student" @onclick="NavigateToManage">Manage Student</button>
+            </div>
+
+            <Divider />
+            <div class="activity-header">
+                <p class="header">Name</p>
+                <p class="header">Category</p>
+                <p class="header">Recent Enrollment</p>
+            </div>
+            <Divider />
+            <div class="activity-table">
+                @foreach (var item in FilteredStudents)
+                {
+                    <div class="activity-details">
+                        <div class="activity-title">
+                            <p class="activity-text">@item.Name</p>
                         </div>
-                    }  
-                    else
-                    {
-                        <div class="activity-type-online">
-                            <p class="activity-online">Online</p>
+                        @if (item.StudentType == StudentType.Cinnamon)
+                        {
+                            <div class="activity-type-face">
+                                <p class="activity-face">Cinnamon Enrollment</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="activity-type-online">
+                                <p class="activity-online">Manual Enrollment</p>
+                            </div>
+                        }
+                        <div class="activity-title">
+                            <p class="activity-text">@item.Title</p>
                         </div>
+                    </div>
+                    <Divider />
+                }
+            </div>
+            <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                    <PaginationLink>
+                        <span aria-hidden="true">«</span>
+                    </PaginationLink>
+                </PaginationItem>
+                @{
+                    for (var i = 1; i <= Pagination.TotalPages; i++)
+                    {
+                        var pageNumberAsString = i.ToString();
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
                     }
-                    @*Activity Status & Action*@
-                    @if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
-                    {
-                        <div class="status">
-                            <span class="active-text">Active</span>
-                        </div>
-                        <div class="activity-action">
-                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                <img class="action-btn" src="images/Dashboard/edit.png"/>
-                            </a>
-                        </div>
-                    }
-                    else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
-                    {
-                        <div class="status">
-                            <span class="inactive-text">Inactive</span>
-                        </div>
-                        <div class="activity-action">
-                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                <img class="action-btn" src="images/Dashboard/edit.png" />
-                            </a>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="status">
-                            <span class="progress-text"> In progress</span>
-                        </div>
-                        <div class="inprogress-action">
-                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                <img class="action-btn" src="images/Dashboard/edit.png" />
-                            </a> 
-                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
-                                <img class="action-btn" src="images/Dashboard/delete.png" />
-                            </button>
-                        </div>
-                    }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                    <PaginationLink>
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+        </div>
+        <div class="mobile-other-section mt-3">
+            <div class="manual-section">
+                <p class="manual-title">Manual Enrollment</p>
+                <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
+                <div class="manual-option">
+                    <p class="manual-count">+@directSalesData.Count()</p>
+                    <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
                 </div>
-                <Divider />
-            }
+
+            </div>
+            <div class="profile-section">
+                <p class="manual-title">Profile</p>
+                <p class="manual-text">67% Completed</p>
+                <div class="profile-pic">
+                    <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                    <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                    <p class="manual-text">@profile.Email</p>
+                </div>
+                <div class="manual-option">
+                    <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="other-section col-3">
+    <div class="other-section">
+        <div class="create-section">
+            <p class="manual-title mb-2">Start a new activity?</p>
+            <div class="manual-option">
+                <button class="create-activity" @onclick="NavigateToCreation">Create New</button>
+            </div>
+        </div>
+        <div class="attendance-section">
+            <p class="manual-title">Check Attendance</p>
+            <p class="manual-text">Check your student attendance today.</p>
+            <div class="manual-option">
+                <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
+            </div>
+        </div>
         <div class="manual-section">
             <p class="manual-title">Manual Enrollment</p>
             <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
@@ -169,13 +270,6 @@
                 <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
             </div>
             
-        </div>
-        <div class="attendance-section">
-            <p class="manual-title">Check Attendance</p>
-            <p class="manual-text">Check your student attendance today.</p>
-            <div class="manual-option">
-                <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
-            </div>
         </div>
         <div class="profile-section">
             <p class="manual-title">Profile</p>
@@ -189,72 +283,6 @@
                 <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
             </div>
         </div>
-    </div>
-</div>
-
-<div class="row ms-1">
-    <div class="activitiest-section col-9">
-        <div class="d-flex justify-content-between">
-            <div class="title">Student List</div>
-            <button class="manage-student" @onclick="NavigateToManage">Manage Student</button>
-        </div>
-        
-        <Divider />
-        <div class="activity-header">
-            <p class="header">Name</p>
-            <p class="header">Category</p>
-            <p class="header">Recent Enrollment</p>
-        </div>
-        <Divider />
-        <div class="activity-table">
-            @foreach (var item in FilteredStudents)
-            {
-                <div class="activity-details">
-                    <div class="activity-title">
-                        <p class="activity-text">@item.Name</p>
-                    </div>
-                    @if (item.StudentType == StudentType.Cinnamon)
-                    {
-                        <div class="activity-type-face">
-                            <p class="activity-face">Cinnamon Enrollment</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="activity-type-online">
-                            <p class="activity-online">Manual Enrollment</p>
-                        </div>
-                    }
-                    <div class="activity-title">
-                        <p class="activity-text">@item.Title</p>
-                    </div>
-                </div>
-                <Divider />
-            }
-        </div>
-        <Pagination Class="pagination-section" Style="margin-top: 20px;">
-            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                <PaginationLink>
-                    <span aria-hidden="true">«</span>
-                </PaginationLink>
-            </PaginationItem>
-            @{
-                for (var i = 1; i <= Pagination.TotalPages; i++)
-                {
-                    var pageNumberAsString = i.ToString();
-                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                            @pageNumberAsString
-                        </PaginationLink>
-                    </PaginationItem>
-                }
-            }
-            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                <PaginationLink>
-                    <span aria-hidden="true">»</span>
-                </PaginationLink>
-            </PaginationItem>
-        </Pagination>
     </div>
 </div>
 <br />
@@ -410,6 +438,10 @@
     private void NavigateToAttendance()
     {
         NavigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("/Creation");
     }
     private async Task GetStudents(int pageIndex)
     {
