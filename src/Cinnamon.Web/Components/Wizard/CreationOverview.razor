@@ -170,8 +170,8 @@
         if (!Model.HasError && string.IsNullOrEmpty(text)) return "form-control";
         if (Model.HasError && string.IsNullOrEmpty(text)) return "form-control invalid";
 
-        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
-        if (Model.HasError && length < min) return "form-control invalid";
+        // var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        // if (Model.HasError && length < min) return "form-control invalid";
         return "form-control";
     }
 
@@ -179,7 +179,7 @@
     {
         if (string.IsNullOrEmpty(Model.Activity.Title)) return false;
         if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
-        if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
+        //if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
         if (Model.Activity.ExperienceCategoryId <= 0) return false;
         if (Model.Activity.SubCategoryId <= 0) return false;
 
@@ -200,11 +200,11 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Overview Page");
 
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
 
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
+            // await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
 
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
