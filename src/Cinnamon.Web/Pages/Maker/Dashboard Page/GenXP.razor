@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Components
 @using Microsoft.AspNetCore.Components.Web
 @using Cinnamon.Web.Models.Dashboard
+@using Cinnamon.Web.Models.Account;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -397,8 +398,9 @@
     [Parameter]
     public int NoOfEnrollees { get; set; }
 
-    [Parameter]
-    public bool HasPayoutAccount { get; set; }
+    public bool HasPayoutAccount { get; set; } = false;
+
+    private PayoutAccountModel PayoutAccount { get; set; }
 
     public List<Activity> GeneralActivities = new List<Activity>();
 
@@ -437,21 +439,30 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-        var customer = result.Result.Result;
-        profile.Id = customer.Id;
-        profile.FirstName = customer.FirstName;
-        profile.LastName = customer.LastName;
-        profile.Handler = customer.Handler;
-        profile.ProfilePath = customer.ProfileImg;
-        profile.IsVerified = customer.IsVerified;
 
-        profile.FirstName = customer.FirstName;
-        profile.LastName = customer.LastName;
-        profile.Handler = customer.Handler;
+        //Get Payout Details
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Token);
+        if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            PayoutAccount = new PayoutAccountModel
+                {
+                    AccountHolder = payoutAccount.AccountHolder,
+                    AccountNumber = payoutAccount.AccountNumber,
+                    Id = payoutAccount.Id
+                };
+        }
+        HasPayoutAccount = PayoutAccount is not null ? true : false;
+        //Get Profile Details
+        var customer = result.Result.Result;
+        profile.Id          = customer.Id;
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
         profile.ProfilePath = customer.ProfileImg;
-        profile.IsVerified = customer.IsVerified;
-        profile.Email = customer.Email;
-        profile.About = customer.About;
+        profile.IsVerified  = customer.IsVerified;
+        profile.Email       = customer.Email;
+        profile.About       = customer.About;
 
         //Get Enrolled Students
         await GetStudents(1);
@@ -655,7 +666,7 @@
         {
             checkItem += 1;
         }
-        if (!string.IsNullOrEmpty(profile.ProfileImg))
+        if (!string.IsNullOrEmpty(profile.ProfilePath))
         {
             checkItem += 1;
         }

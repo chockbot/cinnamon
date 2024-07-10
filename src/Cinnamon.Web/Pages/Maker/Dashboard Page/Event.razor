@@ -11,6 +11,7 @@
 @using Cinnamon.Web.Components
 @using Microsoft.AspNetCore.Components.Web
 @using Cinnamon.Web.Components.Common
+@using Cinnamon.Web.Models.Account;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -375,12 +376,13 @@
     [Parameter]
     public string overAllTotal { get; set; }
 
-    [Parameter]
-    public bool HasPayoutAccount { get; set; }
+    public bool HasPayoutAccount { get; set; } = false;
 
     public List<OteActivity> OTEActivities = new List<OteActivity>();
 
     private CustomerProfile profile = new CustomerProfile();
+
+    private PayoutAccountModel PayoutAccount { get; set; }
 
     private string color = "#FFA942";
 
@@ -427,6 +429,20 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        //Get Payout Details
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Token);
+        if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            PayoutAccount = new PayoutAccountModel
+                {
+                    AccountHolder = payoutAccount.AccountHolder,
+                    AccountNumber = payoutAccount.AccountNumber,
+                    Id = payoutAccount.Id
+                };
+        }
+        HasPayoutAccount = PayoutAccount is not null ? true : false;
+        //Get Profile Details
         var customer        = result.Result.Result;
         profile.Id          = customer.Id;
         profile.FirstName   = customer.FirstName;
@@ -434,9 +450,9 @@
         profile.Handler     = customer.Handler;
         profile.ProfilePath = customer.ProfileImg;
         profile.IsVerified  = customer.IsVerified;
-        profile.IsMaker     = customer.IsMaker;
         profile.Email       = customer.Email;
         profile.About       = customer.About;
+
         //Get OTE Event
         await GetOTEActivities();
         //Load Calendar
@@ -505,7 +521,7 @@
         {
             checkItem += 1;
         }
-        if (!string.IsNullOrEmpty(profile.ProfileImg))
+        if (!string.IsNullOrEmpty(profile.ProfilePath))
         {
             checkItem += 1;
         }

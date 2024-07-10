@@ -11,7 +11,6 @@
 @using Microsoft.JSInterop
 @using Cinnamon.Web.Components
 @using Microsoft.AspNetCore.Components.Web
-@using Cinnamon.Web.Models.Account;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -59,10 +58,10 @@
                 </Items>
                 <Content>
                     <TabPanel Name="event">
-                        <Event overAllTotal="@overAllTotal" Token="@token" HasPayoutAccount="hasPayout" />
+                        <Event overAllTotal="@overAllTotal" Token="@token"/>
                     </TabPanel>
                     <TabPanel Name="activity">
-                        <GenXP overAllTotal="@overAllTotal" Token="@token" HasPayoutAccount="hasPayout"/>
+                        <GenXP overAllTotal="@overAllTotal" Token="@token"/>
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -95,10 +94,6 @@
     private List<OteActivity> oteActivities = new List<OteActivity>();
 
     private List<ChatRoom> chatRooms = new List<ChatRoom>();
-
-    private PayoutAccountModel PayoutAccount { get; set; }
-
-    private bool hasPayout { get; set; } = false;
 
     private double cnt = 0;
 
@@ -156,19 +151,6 @@
             profile.Id        = customer.Id;
             profile.FirstName = customer.FirstName;
             profile.LastName  = customer.LastName;
-            //Get Payout Details
-            var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(token);
-            if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
-            {
-                var payoutAccount = fetchPayoutAccount.Result.Result;
-                PayoutAccount = new PayoutAccountModel
-                    {
-                        AccountHolder = payoutAccount.AccountHolder,
-                        AccountNumber = payoutAccount.AccountNumber,
-                        Id = payoutAccount.Id
-                    };
-            }
-            hasPayout = PayoutAccount is not null ? true : false;
             //Get Total Earnings 
             var earnings = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
                 {
