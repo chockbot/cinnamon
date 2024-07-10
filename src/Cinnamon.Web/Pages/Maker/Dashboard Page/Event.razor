@@ -163,7 +163,6 @@
                     </div>
                 </div>
             </div>
-        <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
         </div>
     </div>
 </div>
@@ -227,7 +226,8 @@
             </div>
         </div>
     </div>
-    <div class="other-section">
+
+    <div class="other-section desktop-other-switch">
         <div class="create-section">
             <p class="manual-title">Start a new event?</p>
             <div class="manual-option mt-3">
@@ -254,6 +254,46 @@
             </div>
         </div>
     </div>
+
+    <!-- For Mobile Swiper -->
+    <div class="other-section mobile-switch">
+        <div class="schedule-swiper">
+            <div class="swiper-wrapper mobile-swiper">
+                <div class="swiper-slide">
+                    <div class="create-section">
+                        <p class="manual-title">Start a new event?</p>
+                        <div class="manual-option mt-3">
+                            <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="attendance-section">
+                        <p class="manual-title">Schedule</p>
+                        <p class="manual-text">No Schedule for Today.</p>
+                        <div class="manual-option">
+                            <button class="check-attendance">Scan Tickets</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="profile-section">
+                        <p class="manual-title">Profile</p>
+                        <p class="manual-text">67% Completed</p>
+                        <div class="profile-pic">
+                            <img class="rounded-2 rounded-circle profile-img" src="@profile.ProfilePath" />
+                            <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                            <p class="manual-text">@profile.Email</p>
+                        </div>
+                        <div class="manual-option">
+                            <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <br/>
 @code {
@@ -300,7 +340,7 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
         }
     }
     
