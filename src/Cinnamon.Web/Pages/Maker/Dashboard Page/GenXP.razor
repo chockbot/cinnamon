@@ -207,11 +207,14 @@
                                 <div class="status">
                                     <span class="active-text">Active</span>
                                 </div>
-                                <div class="activity-action">
+                                 <div class="activity-action">
                                     <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                        <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        <Tooltip Text="Edit">
+                                            <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        </Tooltip>
                                     </a>
-                                </div>
+                                 </div>
+                                
                             }
                             else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
                             {
@@ -220,9 +223,12 @@
                                 </div>
                                 <div class="activity-action">
                                     <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                        <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        <Tooltip Text="Edit">
+                                            <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        </Tooltip>
                                     </a>
                                 </div>
+                               
                             }
                             else
                             {
@@ -230,12 +236,16 @@
                                     <span class="progress-text"> In progress</span>
                                 </div>
                                 <div class="inprogress-action">
-                                    <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                        <img class="action-btn" src="images/Dashboard/edit.png" />
-                                    </a>
-                                    <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
-                                        <img class="action-btn" src="images/Dashboard/delete.png" />
-                                    </button>
+                                    <Tooltip Text="Edit">
+                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
+                                            <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        </a>
+                                    </Tooltip>
+                                    <Tooltip Text="Delete">
+                                        <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
+                                            <img class="action-btn" src="images/Dashboard/delete.png" />
+                                        </button>
+                                    </Tooltip>
                                 </div>
                             }
                         </div>
@@ -547,8 +557,9 @@
     }
     private void NavigateToCreation()
     {
-        NavigationManager.NavigateTo("/Creation");
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.GeneralExperience);
     }
+
     private async Task GetStudents(int pageIndex)
     {
         //Get Enrolled Students

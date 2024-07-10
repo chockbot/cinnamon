@@ -266,8 +266,17 @@
                                 <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
                             </div>
                             @*Activity Status & Action*@
-                            <div class="details-action ms-3 pe-2">
-                                <button class="view-details" @onclick="@(() => NavigateToEventDetails(item.Handler, item.OteDateId))">View Details</button>
+                            <div class="details-action ms-5 pe-2">
+                                <Tooltip Text="Edit">
+                                    <a button class="update-button me-2" href="/experiences/ote/@item.Handler">
+                                        <img class="action-btn" src="images/Dashboard/edit.png" />
+                                    </a>
+                                </Tooltip>
+                                <Tooltip Text="View">
+                                    <a button class="update-button" href="/maker/dashboard/events/@item.Handler/?date=@item.OteDateId">
+                                        <img class="action-btn" src="images/Dashboard/details.png" />
+                                    </a>
+                                </Tooltip>
                             </div>
                         </div>
                         <Divider />
@@ -293,8 +302,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="other-section desktop-other-switch">
+        <div class="other-section">
             <div class="create-section">
                 <p class="manual-title">Start a new event?</p>
                 <div class="manual-option mt-3">
@@ -357,32 +365,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- For Mobile Swiper -->
-        <div class="other-section mobile-switch">
-            <div class="schedule-swiper">
-                <div class="swiper-wrapper mobile-swiper">
-                    <div class="swiper-slide">
-                        <div class="create-section">
-                            <p class="manual-title">Start a new event?</p>
-                            <div class="manual-option mt-3">
-                                <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="attendance-section">
-                            <p class="manual-title">Schedule</p>
-                            <p class="manual-text">No Schedule for Today.</p>
-                            <div class="manual-option">
-                                <button class="check-attendance">Scan Tickets</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 }
 <br/>
