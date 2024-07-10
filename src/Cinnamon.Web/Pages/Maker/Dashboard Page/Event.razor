@@ -70,7 +70,7 @@
                 <div class="col-12 d-flex">
                     <div class="col-8 d-block justify-content-start">
                         <p class="box-title">Registration</p>
-                        <p class="amount">50</p>
+                        <p class="amount">@registrationCount</p>
                     </div>
                     <div class="col-4 d-flex justify-content-end">
                         <img class="earning-icon" src="images/Dashboard/students.png" />
@@ -78,10 +78,17 @@
                 </div>
                 <div class="col-12 d-flex">
                     <div class="col-7 d-flex justify-content-start">
-                        <p class="description-student">This Month</p>
-                    </div>
+                        @if (selectedEvent.Id != 0)
+                        {
+                            <p class="description-student">No. of registration in @selectedEvent.EventName</p>
+                        }
+                        else
+                        {
+                            <p class="description-student">Select event to view number of registration.</p>
+                        }
+                        </div>
                     <div class="col-5 d-flex justify-content-end">
-                        <a class="earnings-link-student" href="/maker/dashboard/managestudents">See all</a>
+                        <a class="earnings-link-student" href="maker/dashboard/events/@selectedEvent.Handler/?date=@selectedEvent.OteDateId">See all</a>
                     </div>
                 </div>
             </div>
@@ -146,7 +153,7 @@
                             <div class="col-12 d-flex">
                                 <div class="col-8 d-block justify-content-start">
                                     <p class="box-title">Registration</p>
-                                    <p class="amount">50</p>
+                                    <p class="amount">@registrationCount</p>
                                 </div>
                                 <div class="col-4 d-flex justify-content-end">
                                     <img class="earning-icon" src="images/Dashboard/students.png" />
@@ -154,10 +161,17 @@
                             </div>
                             <div class="col-12 d-flex">
                                 <div class="col-7 d-flex justify-content-start">
-                                    <p class="description-student">This Month</p>
+                                    @if (selectedEvent.Id != 0)
+                                    {
+                                        <p class="description-student">No. of registration in @selectedEvent.EventName</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="description-student">Select event to view number of registration.</p>
+                                    }
                                 </div>
                                 <div class="col-5 d-flex justify-content-end">
-                                    <a class="earnings-link-student" href="/maker/dashboard/managestudents">See all</a>
+                                    <a class="earnings-link-student" href="maker/dashboard/events/@selectedEvent.Handler/?date=@selectedEvent.OteDateId">See all</a>
                                 </div>
                             </div>
                         </div>
@@ -419,6 +433,10 @@
 
     public OteActivity selectedEvent = new OteActivity();
 
+    public int registrationCount { get; set; } = 0;
+
+    public List<OteSchedule> ticketList = new List<OteSchedule>();
+
     protected override async Task OnInitializedAsync()
     {
         var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
@@ -483,6 +501,7 @@
                         ForceDisable     = a.ForceDisable,
                     };
             }).Where(e => !e.ForceDisable).ToList();
+            await SelectSchedule(OTEActivities[0]);
         }
     }
     private void NavigateToEventDetails(string handler, int selectedId)
@@ -628,9 +647,29 @@
         public int Month { get; set; }
         public int Year { get; set; }
     }
-    public void SelectSchedule(OteActivity oteActivity)
+    public async Task SelectSchedule(OteActivity oteActivity)
     {
         selectedEvent = oteActivity;
+        //Get Ticket Details
+        var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
+            {
+                ActivityId = selectedEvent.Id,
+                DateId = selectedEvent.OteDateId
+            }, Token);
+        if (ticketResult.Succeeded && ticketResult.Result != null && ticketResult.Result.IsSuccess)
+        {
+            ticketList = ticketResult.Result.Result.Select(s => new OteSchedule
+                {
+                    ActivityId = s.ActivityId,
+                    From = s.From,
+                    OtePricing = new OtePricing
+                    {
+                        MaxSlots = s.OtePricingDTO.MaxSlots,
+                        Sold = s.OtePricingDTO.Sold,
+                    }
+                }).ToList();
+        }
+        registrationCount = ticketList.Sum(s => s.OtePricing.Sold);
     }
     public void NavigateToScanTickets(string Handler, int OteDateId)
     {
