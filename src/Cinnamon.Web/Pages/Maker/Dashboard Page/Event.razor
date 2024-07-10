@@ -303,7 +303,8 @@
                 </div>
             </div>
         </div>
-        <div class="other-section">
+
+        <div class="other-section desktop-switch">
             <div class="create-section">
                 <p class="manual-title">Start a new event?</p>
                 <div class="manual-option mt-3">
@@ -366,6 +367,83 @@
                 </div>
             </div>
         </div>
+
+        <!-- Swiper for mobile -->
+        <div class="other-section mobile-switch">
+            <div class="schedule-swiper-mobile">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="create-section">
+                            <p class="manual-title">Start a new event?</p>
+                            <div class="manual-option mt-3">
+                                <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="attendance-section">
+                            <p class="manual-title">Schedule</p>
+                            <p class="manual-text">
+                                @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                                {
+                                    var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                                    @currentEvent.EventName
+                                }
+                                else
+                                {
+                                    @if (selectedEvent.Id != 0)
+                                    {
+                                        @selectedEvent.EventName
+                                    }
+                                    else
+                                    {
+                                        <text>No schedule for today.</text>
+                                    }
+                                }
+                            </p>
+                            <div class="manual-option">
+                                @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                                {
+                                    var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))">Scan Tickets</button>
+                                }
+                                else
+                                {
+                                    @if (selectedEvent.Id != 0)
+                                    {
+                                        <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))">Scan Tickets</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="check-attendance" disabled>Scan Tickets</button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="profile-section">
+                            <p class="manual-title">Profile</p>
+                            <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
+                            <div class="profile-pic">
+                                <div class="d-flex justify-content-center">
+                                    <CircularProgress Id='@($"progress-{profile.Id}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
+                                        <img class="profile-img" src="@profile.ProfilePath" />
+                                    </CircularProgress>
+                                </div>
+                                <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                                <p class="manual-text">@profile.Email</p>
+                            </div>
+                            <div class="manual-option">
+                                <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 }
 <br/>
@@ -465,7 +543,8 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile",".schedule-swiper-mobile");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper",".schedule-swiper");
         }
     }
 
