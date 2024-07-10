@@ -164,18 +164,17 @@
                     </div>
                 </div>
             </div>
-        <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
         </div>
     </div>
 </div>
-<!--Create Calendar-->
-@if(profile.Id != 0)
+@if (profile.Id != 0)
 {
     <div class="section-1">
+
         <div class="activity">
             <div class="calendar-events">
                 <div class="title">Events</div>
-                <Divider/>
+                <Divider />
                 <div class="@WrapperClass">
                     <div class="calendar-header d-flex align-items-center justify-content-between">
                         <div class="text-center font-20 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
@@ -281,7 +280,8 @@
                 </div>
             </div>
         </div>
-        <div class="other-section">
+
+        <div class="other-section desktop-other-switch">
             <div class="create-section">
                 <p class="manual-title">Start a new event?</p>
                 <div class="manual-option mt-3">
@@ -291,7 +291,7 @@
             <div class="attendance-section">
                 <p class="manual-title">Schedule</p>
                 <p class="manual-text">
-                    @if(OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                    @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                     {
                         var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
                         @currentEvent.EventName
@@ -309,7 +309,7 @@
                     }
                 </p>
                 <div class="manual-option">
-                    @if(OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                    @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                     {
                         var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
                         <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))">Scan Tickets</button>
@@ -344,6 +344,32 @@
                 </div>
             </div>
         </div>
+
+        <!-- For Mobile Swiper -->
+        <div class="other-section mobile-switch">
+            <div class="schedule-swiper">
+                <div class="swiper-wrapper mobile-swiper">
+                    <div class="swiper-slide">
+                        <div class="create-section">
+                            <p class="manual-title">Start a new event?</p>
+                            <div class="manual-option mt-3">
+                                <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="attendance-section">
+                            <p class="manual-title">Schedule</p>
+                            <p class="manual-text">No Schedule for Today.</p>
+                            <div class="manual-option">
+                                <button class="check-attendance">Scan Tickets</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 }
 <br/>
@@ -424,7 +450,7 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
         }
     }
 

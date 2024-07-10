@@ -116,7 +116,7 @@
                         </div>
                     </div>
                 </div>
-                <div class ="swiper-slide">
+                <div class="swiper-slide">
                     <div class="experience-box">
                         <div class="experience-content">
                             <div class="col-12 d-flex">
@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-        <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
+            <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
         </div>
     </div>
 </div>
@@ -249,63 +249,63 @@
                     <button class="manage-student" @onclick="NavigateToManage">Manage Student</button>
                 </div>
 
-            <Divider />
-            <div class="activity-header">
-                <p class="header">Name</p>
-                <p class="header">Category</p>
-                <p class="header">Recent Enrollment</p>
-            </div>
-            <Divider />
-            <div class="activity-table">
-                @foreach (var item in FilteredStudents)
-                {
-                    <div class="activity-details">
-                        <div class="activity-title">
-                            <p class="activity-text">@item.Name</p>
-                        </div>
-                        @if (item.StudentType == StudentType.Cinnamon)
-                        {
-                            <div class="activity-type-face">
-                                <p class="activity-face">Cinnamon Enrollment</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="activity-type-online">
-                                <p class="activity-online">Manual Enrollment</p>
-                            </div>
-                        }
-                        <div class="activity-title">
-                            <p class="activity-text">@item.Title</p>
-                        </div>
-                    </div>
-                    <Divider />
-                }
-            </div>
-            <Pagination Class="pagination-section" Style="margin-top: 20px;">
-                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                    <PaginationLink>
-                        <span aria-hidden="true">«</span>
-                    </PaginationLink>
-                </PaginationItem>
-                @{
-                    for (var i = 1; i <= Pagination.TotalPages; i++)
+                <Divider />
+                <div class="activity-header">
+                    <p class="header">Name</p>
+                    <p class="header">Category</p>
+                    <p class="header">Recent Enrollment</p>
+                </div>
+                <Divider />
+                <div class="activity-table">
+                    @foreach (var item in FilteredStudents)
                     {
-                        var pageNumberAsString = i.ToString();
-                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                @pageNumberAsString
-                            </PaginationLink>
-                        </PaginationItem>
+                        <div class="activity-details">
+                            <div class="activity-title">
+                                <p class="activity-text">@item.Name</p>
+                            </div>
+                            @if (item.StudentType == StudentType.Cinnamon)
+                            {
+                                <div class="activity-type-face">
+                                    <p class="activity-face">Cinnamon Enrollment</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="activity-type-online">
+                                    <p class="activity-online">Manual Enrollment</p>
+                                </div>
+                            }
+                            <div class="activity-title">
+                                <p class="activity-text">@item.Title</p>
+                            </div>
+                        </div>
+                        <Divider />
                     }
-                }
-                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                    <PaginationLink>
-                        <span aria-hidden="true">»</span>
-                    </PaginationLink>
-                </PaginationItem>
-            </Pagination>
-        </div>
+                </div>
+                <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                        <PaginationLink>
+                            <span aria-hidden="true">«</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                    @{
+                        for (var i = 1; i <= Pagination.TotalPages; i++)
+                        {
+                            var pageNumberAsString = i.ToString();
+                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                    @pageNumberAsString
+                                </PaginationLink>
+                            </PaginationItem>
+                        }
+                    }
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                        <PaginationLink>
+                            <span aria-hidden="true">»</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                </Pagination>
+            </div>
             <div class="mobile-other-section mt-3">
                 <div class="manual-section">
                     <p class="manual-title">Manual Enrollment</p>
@@ -428,20 +428,20 @@
             return;
         }
         var customer = result.Result.Result;
-        profile.Id          = customer.Id;
-        profile.FirstName   = customer.FirstName;
-        profile.LastName    = customer.LastName;
-        profile.Handler     = customer.Handler;
+        profile.Id = customer.Id;
+        profile.FirstName = customer.FirstName;
+        profile.LastName = customer.LastName;
+        profile.Handler = customer.Handler;
         profile.ProfilePath = customer.ProfileImg;
-        profile.IsVerified  = customer.IsVerified;
+        profile.IsVerified = customer.IsVerified;
 
-        profile.FirstName   = customer.FirstName;
-        profile.LastName    = customer.LastName;
-        profile.Handler     = customer.Handler;
+        profile.FirstName = customer.FirstName;
+        profile.LastName = customer.LastName;
+        profile.Handler = customer.Handler;
         profile.ProfilePath = customer.ProfileImg;
-        profile.IsVerified  = customer.IsVerified;
-        profile.Email       = customer.Email;
-        profile.About       = customer.About;
+        profile.IsVerified = customer.IsVerified;
+        profile.Email = customer.Email;
+        profile.About = customer.About;
 
         //Get Enrolled Students
         await GetStudents(1);
@@ -503,31 +503,31 @@
             {
                 // map only required fields
                 return new Activity
-                {
-                    ActivityId = a.ActivityId,
-                    IsPublished = a.IsPublished,
-                    Title = a.Title,
-                    Description = a.Description,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    ExperienceCreationType = a.ExperienceCreationType,
-                    Handler = a.Handler,
-                    CityName = a.CityName,
-                    CreatedOn = a.CreatedOn,
-                    Images = a.Images.Select(i =>
                     {
-                        return new ActivityImage
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title,
+                        Description = a.Description,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceCreationType = a.ExperienceCreationType,
+                        Handler = a.Handler,
+                        CityName = a.CityName,
+                        CreatedOn = a.CreatedOn,
+                        Images = a.Images.Select(i =>
                         {
-                            Id = i.Id,
-                            ImageSrc = i.ImageSrc,
-                            Name = i.Name
-                        };
-                    }).ToList(),
-                    Status = a.Status,
-                    OngoingStudents = a.OngoingStudents,
-                    CompletedStudents = a.CompletedStudents,
-                    NumberOfReviews = a.NumberOfReviews,
-                    ForceDisable = a.ForceDisable
-                };
+                            return new ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }).ToList(),
+                        Status = a.Status,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
+                        ForceDisable = a.ForceDisable
+                    };
             }).ToList();
         }
         GeneralActivities = activities.Where(a => a.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience).OrderByDescending(a => a.CreatedOn).ToList();
@@ -553,34 +553,34 @@
     {
         //Get Enrolled Students
         var result = await dashboardApiHandler.GetEnrolledStudentsByProvider(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetEnrolledStudentsByProviderArgs
-        {
-            ProviderId   = profile.Id,
-            CountPerPage = 20,
-            PageIndex    = pageIndex,
-            SearchBy     = SearchBy,
-            SearchValue  = SearchValue,
-            ActivityId   = Model.selectedFilter
-        }, Token);
+            {
+                ProviderId = profile.Id,
+                CountPerPage = 20,
+                PageIndex = pageIndex,
+                SearchBy = SearchBy,
+                SearchValue = SearchValue,
+                ActivityId = Model.selectedFilter
+            }, Token);
 
         manageStudents = result.Result.Result.Select(s =>
         {
             return new ManageStudentsData
-            {
-                Id                  = s.Id,
-                ActivityId          = s.ActivityId,
-                ScheduleId          = s.ScheduleId,
-                Name                = s.Name,
-                Title               = s.ActivityName,
-                StudentNo           = s.StudentNo,
-                Remarks             = s.Remarks,
-                SessionsAttended    = s.SessionsAttended,
-                NumberOfSessions    = s.NumberOfSessions,
-                ExpirationDateStart = s.ExpirationStartDate,
-                ExpirationDateEnd   = s.ExpirationEndDate,
-                HasExpiration       = s.HasExpiration,
-                LastAttendance      = s.LastAttendance,
-                StudentType         = s.StudentType,
-            }; 
+                {
+                    Id = s.Id,
+                    ActivityId = s.ActivityId,
+                    ScheduleId = s.ScheduleId,
+                    Name = s.Name,
+                    Title = s.ActivityName,
+                    StudentNo = s.StudentNo,
+                    Remarks = s.Remarks,
+                    SessionsAttended = s.SessionsAttended,
+                    NumberOfSessions = s.NumberOfSessions,
+                    ExpirationDateStart = s.ExpirationStartDate,
+                    ExpirationDateEnd = s.ExpirationEndDate,
+                    HasExpiration = s.HasExpiration,
+                    LastAttendance = s.LastAttendance,
+                    StudentType = s.StudentType,
+                };
         }).ToList();
 
         Pagination = result.Result.Pagination;
