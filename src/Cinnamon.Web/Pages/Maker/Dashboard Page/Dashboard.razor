@@ -153,9 +153,9 @@
                 return;
             }
             var customer = result.Result.Result;
-            profile.Id = customer.Id;
+            profile.Id        = customer.Id;
             profile.FirstName = customer.FirstName;
-            profile.LastName = customer.LastName;
+            profile.LastName  = customer.LastName;
             //Get Payout Details
             var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(token);
             if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
@@ -173,8 +173,8 @@
             var earnings = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
                 {
                     Id       = profile.Id,
-                    DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
-                }, Model.Token);
+                    DateFrom = DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"),
+                }, token);
             if (earnings.Succeeded && earnings.Result != null && earnings.Result.IsSuccess)
             {
                 salesData = earnings.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
@@ -190,8 +190,8 @@
             var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
             {
                 ProviderId = profile.Id,
-                DateFrom = new DateTime(2000, 1, 1).ToString("yyyyMMddHHmmss"),
-            }, Model.Token);
+                DateFrom = DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"),
+            }, token);
             if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
             {
                 directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
