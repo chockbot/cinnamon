@@ -566,7 +566,7 @@
     </ConfirmDialog>
 
 @code
-{
+    {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -936,10 +936,11 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name = modelPricing.Name;
-                            existingTicket.Price = modelPricing.Price;
-                            existingTicket.MaxSlots = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            existingTicket.Name             = modelPricing.Name;
+                            existingTicket.Price            = modelPricing.Price;
+                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.RequiredApproval = modelPricing.RequiredApproval;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -951,10 +952,11 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.TempId == modelPricing.TempId);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name = modelPricing.Name;
-                            existingTicket.Price = modelPricing.Price;
-                            existingTicket.MaxSlots = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            existingTicket.Name             = modelPricing.Name;
+                            existingTicket.Price            = modelPricing.Price;
+                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.RequiredApproval = modelPricing.RequiredApproval;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -1062,13 +1064,14 @@
     {
         modelPricing = new Pricing
             {
-                Id         = ticket.Id,
-                Name       = ticket.Name,
-                Price      = ticket.Price,
-                MaxSlots   = ticket.MaxSlots,
-                AbsorbFees = ticket.AbsorbFees,
-                IsNew      = ticket.IsNew,
-                TempId     = ticket.TempId
+                Id               = ticket.Id,
+                Name             = ticket.Name,
+                Price            = ticket.Price,
+                MaxSlots         = ticket.MaxSlots,
+                AbsorbFees       = ticket.AbsorbFees,
+                IsNew            = ticket.IsNew,
+                TempId           = ticket.TempId,
+                RequiredApproval = ticket.RequiredApproval
             };
         isEditing = true;
         await ticketModal.Show();
