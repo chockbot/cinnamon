@@ -279,4 +279,25 @@ public class OteTicketController : ControllerBase
             return new JsonResult(new CountBookedTicketsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("BookedCustomers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(BookedCustomersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BookedCustomers([FromQuery] BookedCustomersArgs args)
+    {
+        try
+        {
+            var result = await oteTicketRepository.BookedCustomers(args.ActivityId, args.DateId, args.Limit, args.Offset);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new BookedCustomersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BookedCustomersResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BookedCustomersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

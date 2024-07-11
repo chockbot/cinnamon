@@ -275,4 +275,22 @@ public class OteTicketRepository : IOteTicketRepository
             return AppResult<int>.CreateFailed(ex, "An error occured when counting the booked tickets.");
         }
     }
+
+    public async Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int? limit, int? offset)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.BookedCustomers(activityId, dateId, limit ?? int.MaxValue, offset ?? 0);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateSucceeded(result.Result, "Successfully get booked customers.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(ex, "An error occured when getting booked customers.");
+        }
+    }
 }

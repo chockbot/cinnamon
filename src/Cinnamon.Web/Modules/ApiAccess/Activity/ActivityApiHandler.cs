@@ -1464,4 +1464,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<ActivityQuestionsResult>.CreateFailed(ex, "An error occured when getting activity questions.");
         }
     }
+
+    public async Task<AppResult<TopBookedCustomersResult>> TopBookedCustomers(TopBookedCustomersArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/TopBookedCustomers")
+                .SetQueryParams(args)
+                .GetJsonAsync<TopBookedCustomersResult>();
+
+            return AppResult<TopBookedCustomersResult>.CreateSucceeded(result, "Successfully get top booked customers.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, "An error occured when getting top booked customers.");
+        }
+    }
 }

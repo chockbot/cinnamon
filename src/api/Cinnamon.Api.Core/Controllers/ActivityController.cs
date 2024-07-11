@@ -92,6 +92,7 @@ public class ActivityController : ControllerBase
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IProviderQuestionsHandler providerQuestionsHandler;
     private readonly IActivityQuestionsHandler activityQuestionsHandler;
+    private readonly ITopBookedCustomersHandler topBookedCustomersHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -123,7 +124,7 @@ public class ActivityController : ControllerBase
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
         IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
         IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler,
-        IActivityQuestionsHandler activityQuestionsHandler)
+        IActivityQuestionsHandler activityQuestionsHandler, ITopBookedCustomersHandler topBookedCustomersHandler)
     {
         _logger = logger;
 
@@ -194,6 +195,7 @@ public class ActivityController : ControllerBase
         this.providerQuestionsHandler = providerQuestionsHandler;
         this.updateOteWaitlistHandler = updateOteWaitlistHandler;
         this.activityQuestionsHandler = activityQuestionsHandler; 
+        this.topBookedCustomersHandler = topBookedCustomersHandler;
     }
 
     [Route("CreateActivity")]
@@ -3611,6 +3613,46 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("TopBookedCustomers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(TopBookedCustomersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> TopBookedCustomers([FromQuery] TopBookedCustomersArgs args)
+    {
+        try
+        {
+            DateTime selectedDate = DateTime.ParseExact(args.BookedDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+            var result = await topBookedCustomersHandler.ExecuteAsync(new Services.ActivityService.Interactors.TopBookedCustomersArgs {
+                ActivityId = args.ActivityId,
+                BookedDate = selectedDate
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new TopBookedCustomersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new TopBookedCustomersResult
+            {
+                IsSuccess = true,
+                Result = new TopBookedCustomersDTO {
+                    TopBooked = result.Result.TopBooked.Select(b => new CoreDto.Customer.BasicProfileDTO {
+                        Email = b.Email,
+                        FirstName = b.FirstName,
+                        LastName = b.LastName,
+                        ProfileImage = b.ProfileImage
+                    }),
+                    TotalBooked = result.Result.TotalBooked
+                },
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new TopBookedCustomersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
