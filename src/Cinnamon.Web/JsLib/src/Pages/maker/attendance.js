@@ -13,7 +13,7 @@ export function initSwiper(selector, scrollbarSelector) {
   });
 }
 
-export function initSwiperMobile(selector, scrollbarSelector) {
+export function initSwiperMobile(selector) {
   const swiper = new Swiper(selector, {
     slidesPerView: "auto",
     spaceBetween: 30,
@@ -21,10 +21,9 @@ export function initSwiperMobile(selector, scrollbarSelector) {
     keyboard: {
       enabled: true,
     },
-    scrollbar: {
-      el: scrollbarSelector,
-      hide: false,
-    },
+    scrollbar: false,
+    observer: true,
+    observeParents: true,
   });
 }
 

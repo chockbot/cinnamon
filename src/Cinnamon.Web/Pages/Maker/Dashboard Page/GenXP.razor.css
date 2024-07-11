@@ -1,18 +1,16 @@
-﻿.swiper-switch {
-    display: none;
-}
-
-.mobile-switch {
-    display: none;
-}
-
-.dashboard-header {
+﻿.dashboard-header {
     margin-top: 2rem;
+}
+.swiper-switch{
+    display: none;
 }
 .swiper-scrollbar {
     display: none;
 }
-.mobile-other-section{
+.mobile-other-section {
+    display: none;
+}
+.swiper-switch-mobile{
     display: none;
 }
 .dashboard-wrapper {
@@ -501,107 +499,28 @@ p {
     height: 1.5rem;
     border: none;    
 }
-@media screen and (min-width: 431px) and (max-width: 768px) {
-    .dashboard-wrapper {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-    }
-    .experience-box{
-        width:300px;
-    }
-    .section-1 {
-        display: flex;
-        flex-direction: column;
-    }
-    .activity{
-        order: 1;
-        width: 100%;
-    }
-    .other-section{
-        order: 0;
-    }
-    .other-section {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        height: auto;
-    }
-    .create-section{
-        margin-top:0;
-    }
-    .attendance-section {
-        margin-top: 0;
-    }
-    .manual-section {
-        margin-top: 0;
-    }
-    .profile-section {
-        margin-top: 0;
-    }
-    .activities-section{
-        margin-top:0;
-    }
-    .create-activity{
-        margin-top:2.3rem;
-    }
-    .manual-count{
-        margin-top:54px;
-        margin-bottom: 54px;
-    }
-}
 
-@media screen and (min-width: 431px) and (max-width: 580px) {
-    .create-activity {
-        margin-top: 3.5rem;
+@media screen and (min-width: 0px) and (max-width: 430px) {
+    .dashboard-header .swiper-wrapper {
+        width: 300px !important;
     }
-    .mobile-other-section {
+    .mobile-wrapper .swiper-wrapper {
+        width: 300px !important;
+    }
+    .desktop-switch {
         display: none;
     }
-}
-
-@media screen and (min-width: 492px) and (max-width: 648px) {
-    .manual-count {
-        margin-top: 45px;
-        margin-bottom: 45px;
-    }
-    .mobile-other-section {
-        display: none;
-    }
-}
-
-@media screen and (min-width: 431px) and (max-width: 491px) {
-    .manual-count {
-        margin-top: 35px;
-        margin-bottom: 35px;
-    }
-    .mobile-other-section {
-        display: none;
-    }
-}
-
-@media screen and (min-width: 0px) and (max-width: 430px){
-
-    .swiper-wrapper.mobile-wrapper {
-        width: 270px !important;
-    }
-
-    .swiper-wrapper.mobile-swiper {
-        width: 250px !important;
-    }
-
-    .mobile-switch {
+    .swiper-switch{
         display: block;
     }
-
-    .other-section.desktop-other-switch {
-        display: none;
-    }
-
-    .mobile-other-section {
+    .swiper-switch-mobile {
         display: block;
+        margin-top: 1rem;
     }
+    .swiper-switch-mobile {
+        margin-top: 1rem;
+    }
+
     .dashboard-wrapper {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -622,26 +541,23 @@ p {
         width: 100%;
     }
 
-    .other-section {
-        order: 0;
-    }
 
-    .other-section {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+    ::deep .other-section-mobile .mobile-wrapper {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         height: auto;
+    }
+    .create-section,
+    .attendance-section {
+        width: 310px;
     }
 
     .create-section {
         margin-top: 0;
-        width: 250px;
     }
 
     .attendance-section {
         margin-top: 0;
-        width: 250px;
     }
 
     .manual-section {
@@ -651,8 +567,8 @@ p {
 
     .mobile-other-section .manual-section {
         display: block;
-        
     }
+
     .mobile-other-section .profile-section {
         display: block;
         margin-top: 20px;
@@ -668,23 +584,112 @@ p {
     }
 
     .create-activity {
-        margin-top: 3.5rem;
+        margin-top: 2.5rem;
     }
 }
 
-@media screen and (min-width: 0px) and (max-width: 769px) {
-    .swiper-switch {
-        display: block;
-    }
-
-    .swiper-wrapper {
+@media screen and (min-width: 431px) and (max-width: 768px) {
+    .dashboard-header .swiper-wrapper {
         width: 300px !important;
     }
-
-    .desktop-switch {
+    .dashboard-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .experience-box {
+        width: 300px;
+    }
+    
+    .section-1 {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .activity {
+        order: 1;
+        width: 100%;
+    }
+    
+    .other-section {
+        order: 0;
+    }
+    
+    .other-section {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: auto;
+    }
+    
+    .create-section {
+        margin-top: 0;
+    }
+    
+    .attendance-section {
+        margin-top: 0;
+    }
+    
+    .manual-section {
+        margin-top: 0;
+    }
+    
+    .profile-section {
+        margin-top: 0;
+    }
+    
+    .activities-section {
+        margin-top: 0;
+    }
+    
+    .create-activity {
+        margin-top: 2.5rem;
+    }
+    
+    .manual-count {
+        margin-top: 54px;
+        margin-bottom: 54px;
+    }
+    
+    .other-section-mobile {
         display: none;
     }
 }
+
+@media screen and (min-width: 431px) and (max-width: 580px) {
+        .create-activity {
+            margin-top: 2.5rem;
+        }
+
+        .other-section-mobile {
+            display: none;
+        }
+    }
+
+@media screen and (min-width: 492px) and (max-width: 648px) {
+        .manual-count {
+            margin-top: 45px;
+            margin-bottom: 45px;
+        }
+
+        .mobile-other-section {
+            display: none;
+        }
+    }
+
+@media screen and (min-width: 431px) and (max-width: 491px) {
+        .manual-count {
+            margin-top: 35px;
+            margin-bottom: 35px;
+        }
+
+        .mobile-other-section {
+            display: none;
+        }
+    }
+
 @media only screen and (max-width: 890px) {
     #explore-category-scrollbar {
         display: none;

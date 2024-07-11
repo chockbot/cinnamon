@@ -318,7 +318,7 @@
                 </Pagination>
             </div>
             <div class="mobile-other-section mt-3">
-                <div class="manual-section">
+                <div class="manual-section mb-3">
                     <p class="manual-title">Manual Enrollment</p>
                     <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
                     <div class="manual-option">
@@ -344,6 +344,7 @@
                 </div>
             </div>
         </div>
+
         <div class="other-section desktop-switch">
             <div class="create-section">
                 <p class="manual-title mb-2">Start a new activity?</p>
@@ -384,59 +385,35 @@
                 </div>
             </div>
         </div>
-
-        <!-- swiper for mobile -->
-        <div class="other-section mobile-switch">
-            <div class="schedule-swiper-mobile">
-                <div class="swiper-wrapper mobile-wrapper">
-                    <div class="swiper-slide">
-                        <div class="create-section">
-                            <p class="manual-title mb-2">Start a new activity?</p>
-                            <div class="manual-option">
-                                <button class="create-activity" @onclick="NavigateToCreation">Create New</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="attendance-section">
-                            <p class="manual-title">Check Attendance</p>
-                            <p class="manual-text">Check your student attendance today.</p>
-                            <div class="manual-option">
-                                <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="manual-section">
-                            <p class="manual-title">Manual Enrollment</p>
-                            <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
-                            <div class="manual-option">
-                                <p class="manual-count">+@directSalesData.Count()</p>
-                                <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="profile-section">
-                            <p class="manual-title">Profile</p>
-                            <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
-                            <div class="profile-pic">
-                                <div class="d-flex justify-content-center">
-                                    <CircularProgress Id='@($"progress-{profile.Id}-1")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
-                                        <img class="profile-img" src="@profile.ProfilePath" />
-                                    </CircularProgress>
+        <!-- swiper for mobile & tablet-->
+        <div class="other-section-mobile swiper-switch-mobile">
+            <div class="mobile-wrapper">
+                <div class="schedule-swiper-mobile">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="create-section">
+                                <p class="manual-title mb-2">Start a new activity?</p>
+                                <div class="manual-option">
+                                    <button class="create-activity" @onclick="NavigateToCreation">Create New</button>
                                 </div>
-                                <p class="profile-name">@profile.FirstName @profile.LastName</p>
-                                <p class="manual-text">@profile.Email</p>
-                            </div>
-                            <div class="manual-option">
-                                <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
                             </div>
                         </div>
-                    </div>
+                        <div class="swiper-slide">
+                            <div class="attendance-section">
+                                <p class="manual-title">Check Attendance</p>
+                                <p class="manual-text">Check your student attendance today.</p>
+                                <div class="manual-option">
+                                    <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                    <div class="swiper-scrollbar"></div>
                 </div>
             </div>
+            
         </div>
+
     </div>
 }
 <br />

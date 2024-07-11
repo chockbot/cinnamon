@@ -87,6 +87,9 @@
 .swiper-switch {
     display: none;
 }
+.swiper-switch-mobile{
+    display: none;
+}
 
 .mobile-switch {
     display: none;
@@ -293,7 +296,6 @@ p {
 .description-student {
     display: inline-flex;
     padding: 4px 10px;
-    justify-content: center;
     border-radius: 4px;
     background: rgba(252, 71, 85, 0.10);
     color: #FC4755;
@@ -636,7 +638,7 @@ p {
     }
     .create-section,
     .attendance-section{
-        grid-column: span 1;
+        
     }
 
     .profile-section {
@@ -674,40 +676,18 @@ p {
     }
 }
 
-@media screen and (min-width: 431px) and (max-width: 580px) {
-    .create-activity {
-        margin-top: 3.5rem;
-    }
-}
-
-@media screen and (min-width: 492px) and (max-width: 648px) {
-    .manual-count {
-        margin-top: 45px;
-        margin-bottom: 45px;
-    }
-}
-
-@media screen and (min-width: 431px) and (max-width: 491px) {
-    .manual-count {
-        margin-top: 35px;
-        margin-bottom: 35px;
-    }
-}
-
 @media screen and (min-width: 0px) and (max-width: 430px) {
 
-    .mobile-switch {
-        display: block;
-    }
-
-    .other-section.desktop-other-switch {
+    .desktop-switch-mobile{
         display: none;
     }
-
-    .swiper-wrapper.mobile-swiper {
-        width: 250px !important;
+    .swiper-switch-mobile{
+        display: block;
+        margin-top: 1rem;
     }
-
+    .other-section-mobile .swiper-wrapper {
+        width: 300px !important;
+    }
     .mobile-other-section {
         display: block;
     }
@@ -734,35 +714,25 @@ p {
         width: 100%;
     }
 
-    .other-section {
-        order: 0;
-    }
-
-    .other-section {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+    ::deep .other-section-mobile .mobile-wrapper {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         height: auto;
     }
-
-    .create-section {
-        margin-top: 0;
-        width: 100%;
-    }
-
+    .create-section,
     .attendance-section {
-        margin-top: 0;
-        width: 100%;
+        width: 310px;
     }
 
     .create-section {
         margin-top: 0;
     }
-
     .profile-section {
         margin-top: 0;
         display: none;
+    }
+    .attendance-section {
+        margin-top: 0;
     }
 
     .activities-section {
@@ -770,7 +740,7 @@ p {
     }
 
     .create-activity {
-        margin-top: 3.5rem;
+        margin-top: 2rem;
     }
     .calendar-events {
         margin-top: 0px;
@@ -835,7 +805,7 @@ p {
         display: block;
     }
 
-    .swiper-wrapper {
+    .dashboard-header .swiper-wrapper {
         width: 300px !important;
     }
 
@@ -892,6 +862,26 @@ p {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px 50px 50px 50px;
         justify-content: center;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 580px) {
+    .create-activity {
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (min-width: 492px) and (max-width: 648px) {
+    .manual-count {
+        margin-top: 45px;
+        margin-bottom: 45px;
+    }
+}
+
+@media screen and (min-width: 431px) and (max-width: 491px) {
+    .manual-count {
+        margin-top: 35px;
+        margin-bottom: 35px;
     }
 }
 
