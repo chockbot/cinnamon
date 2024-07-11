@@ -88,7 +88,7 @@ public class CreateOteWaitlistHandler : ICreateOteWaitlistHandler
                 ProviderId = activity.Owner?.Id,
                 TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OtePending.ToString()
             });
-            if(dynamicContentRes.Succeeded && dynamicContentRes.Result is not null && !dynamicContentRes.Result.IsSuccess)
+            if(dynamicContentRes.Succeeded && dynamicContentRes.Result is not null && dynamicContentRes.Result.IsSuccess)
             {
                 var defaultTemplate = dynamicContentRes.Result.Result.FirstOrDefault();
                 if(defaultTemplate is not null)
