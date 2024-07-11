@@ -1,4 +1,51 @@
-﻿.ote-pricing-wrapper .modal-body .calendar-wrapper .grid-item .day.clicked {
+﻿/*Empty setup*/
+.empty-events {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 70vh;
+}
+.empty-options {
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    display: block;
+}
+.no-text {
+    color: #000;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+    margin-bottom: 10px;
+}
+.no-sub-text {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+}
+.empty-create {
+    color: #FFF;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+    border-radius: 36px;
+    background: #34A853;
+    display: inline-flex;
+    padding: 14.5px 40px;
+    justify-content: center;
+    align-items: center;
+    border:none;
+}
+.ote-pricing-wrapper .modal-body .calendar-wrapper .grid-item .day.clicked {
     background-color: rgba(75, 183, 73, 1) !important;
     color: #fff !important;
 }
@@ -304,6 +351,7 @@ p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: default;
 }
 
 .activitiest-section {
@@ -677,6 +725,35 @@ p {
 }
 
 @media screen and (min-width: 0px) and (max-width: 430px) {
+    .no-text {
+        color: #000;
+        font-family: Nunito;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: normal;
+        margin-bottom: 10px;
+    }
+
+    .no-sub-text {
+        font-size: 18px;
+    }
+
+    .empty-create {
+        color: #FFF;
+        font-family: Nunito;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: normal;
+        border-radius: 36px;
+        background: #34A853;
+        display: inline-flex;
+        padding: 14.5px 40px;
+        justify-content: center;
+        align-items: center;
+        border: none;
+    }
 
     .desktop-switch-mobile{
         display: none;
@@ -721,7 +798,7 @@ p {
     }
     .create-section,
     .attendance-section {
-        width: 310px;
+        width: 300px;
     }
 
     .create-section {
