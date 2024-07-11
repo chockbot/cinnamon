@@ -171,13 +171,10 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         }
     }
 
-    public async Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int? limit, int? offset)
+    public async Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int limit, int offset)
     {
         try
         {
-            limit = limit ?? int.MaxValue;
-            offset = offset ?? 0;
-
             string dateIdFilter = string.Empty;
             if(dateId.HasValue)
             {
