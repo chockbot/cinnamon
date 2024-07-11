@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Components;
 @using Cinnamon.Web.Components.Common;
+@using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 @using Humanizer;
 @inject INotificationService NotificationService;
 @inject IActivityApiHandler activityHandler;
@@ -43,9 +44,27 @@
                     </div>
                 </div>
                 <div class="provider-details d-flex mt-2">
-                    <div class="review-section">
-                        <img src="images/star-tag-small.png" class="star-icon">
-                        <span class="details-text">@activity.Sold booked</span>
+                    <div class="book-details d-flex align-items-center my-2">
+                        @if(topBookedCustomers.TopBooked is not null && topBookedCustomers.TopBooked.Any())
+                        {
+                            foreach(var booked in topBookedCustomers.TopBooked)
+                            {
+                                <div class="booked-avatar-wrapper">
+                                    <Tooltip Text="@CustomerName(booked)">
+                                        <img class="booked-avatar" src="@booked.ProfileImage" alt="avatar-circle" />
+                                    </Tooltip>
+                                </div>
+                            }
+
+                            if(topBookedCustomers.TotalBooked > 10)
+                            {
+                                <span class="ms-3 font-16">and @(topBookedCustomers.TotalBooked - 10) Booked</span>
+                            }
+                            else 
+                            {
+                                <span class="ms-3 font-16">@topBookedCustomers.TotalBooked Booked</span>
+                            }
+                        }
                     </div>
                     @if (provider.IsVerified == 2)
                     {
@@ -403,6 +422,7 @@
     private bool IsLimit { get; set; }
     private bool IsOnWaitlist { get; set; }
     private int capacityLimit { get; set; }
+    private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new ();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -422,6 +442,7 @@
             await LoadIsInclusiveOte();
             await LoadProfile();
             await LoadFavorite();
+            await LoadTopBooked();
             if (activity.IsCapacity)
             {
                 await LoadWaitlist();
@@ -1083,6 +1104,38 @@
         {
             await confirmDialogRef.Close();
         }
+    }
+
+    private async Task LoadTopBooked()
+    {
+        var result = await activityHandler.TopBookedCustomers(new Framework.ApiCommand.ApiCore.Activity.Request.TopBookedCustomersArgs {
+            ActivityId = activity.Id,
+            BookedDate = selectedDate.ToString("yyyyMMddhhmmss")
+        });
+        if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            topBookedCustomers = result.Result.Result;
+        }
+    }
+
+    private string CustomerName(CoreDto.Customer.BasicProfileDTO profile)
+    {
+        return $"{Capitalize(profile.FirstName)} {Capitalize(profile.LastName)}";
+    }
+
+    private string Capitalize(string value)
+    {
+        if(string.IsNullOrEmpty(value)) return string.Empty;
+
+        var result = value
+                        .Split(" ")
+                        .Where(s => !string.IsNullOrEmpty(s.Trim()))
+                        .Select(s => {
+                            string firsrChar = s.Substring(0,1);
+                            return $"{firsrChar.ToUpper()}{s.Substring(1)}";
+                        });
+        
+        return String.Join(" ", result);
     }
 
     private class TicketItem
