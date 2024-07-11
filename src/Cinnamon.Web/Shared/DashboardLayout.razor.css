@@ -6,6 +6,25 @@
   text-align: center;
   align-items: center;
 }
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background: var(--primary);
+    color: #ffffff;
+}
+.nav-text.active {
+    color: white;
+}
+.icon-home.active {
+    color: white;
+    filter: brightness(0) invert(1);
+}
+.sub-nav-link .nav-text.active {
+    color: white;
+}
+
+.sub-nav-link .icon-home.active {
+    color: white;
+    filter: brightness(0) invert(1);
+}
 .icon-home {
     color: #D9D9D9;
 }
@@ -42,7 +61,6 @@
     font-size: 18px;
     padding-left: 22px;
 }
-
 .nav-link {
   display: flex;
   width: 100%;
@@ -61,17 +79,16 @@
 }
 
 .item-link:hover span {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .item-link:hover {
   background: var(--primary);
   color: #ffffff;
 }
-
 .item-link.sidebar-header:hover {
-  background-color: transparent;
-  color: var(--primary);
+    background-color: transparent;
+    color: var(--primary);
 }
 
 .item-link.sidebar-header:hover span {
