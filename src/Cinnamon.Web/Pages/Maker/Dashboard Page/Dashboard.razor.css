@@ -1,6 +1,25 @@
 .customer-profile-details {
     margin-top: 59px;
 }
+.btn-notif{
+    border: none;
+    background-color:transparent;
+}
+.new-message-count-badge {
+    background: #ad2323;
+    width: 16px;
+    height: 16px;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 13.3333px;
+    line-height: 18px;
+    color: #ffffff;
+    position: absolute;
+    border-radius: 50%;
+    right: 55%;
+    top: 4%;
+}
 ::deep .customer-profile-details .nav {
     justify-content: start;
     gap: 50px;
@@ -19,7 +38,8 @@
 }
 .notif-items{
     display: flex;
-    gap:31px;
+    gap:10px;
+    position:relative;
 }
 .img-icon {
     width: 28px;
@@ -51,4 +71,15 @@
 .event-details-wrapper {
     margin-right: 0px;
     margin-left: 0px;
+}
+@media only screen and (max-width: 576px) {
+    ::deep .customer-profile-details .nav.nav-tabs {
+        display: flex;
+        gap:20px;
+    }
+}
+@media only screen and (max-width: 1024px) {
+    .dashboard-welcome {
+        margin-top: 1rem;
+    }
 }
