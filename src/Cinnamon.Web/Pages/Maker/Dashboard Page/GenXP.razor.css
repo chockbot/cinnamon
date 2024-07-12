@@ -433,7 +433,8 @@ p {
     margin-bottom: 20px;
 }
 .manual-option{
-   text-align: center;  
+    margin-top:10px;
+    text-align: center;  
 }
 .add-manual {
     width: 100%;
@@ -447,7 +448,31 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
 }
+.add-manual span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+.add-manual span:after {
+    content: "\00bb";
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+.add-manual:hover span {
+    padding-right: 20px;
+}
 
+.add-manual:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+.add-manual:active {
+    transform: translateY(4px);
+}
 .check-attendance {
     width: 100%;
     color: #FC4755;
@@ -460,6 +485,34 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
 }
+.check-attendance span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+    .check-attendance span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+.check-attendance:hover span {
+    padding-right: 20px;
+}
+
+    .check-attendance:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.check-attendance:active {
+    transform: translateY(4px);
+}
 .create-activity {
     width: 100%;
     color: #7D87EA;
@@ -471,6 +524,34 @@ p {
     border: none;
     padding-top: 9px;
     padding-bottom: 9px;
+}
+.create-activity span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+    .create-activity span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+.create-activity:hover span {
+    padding-right: 20px;
+}
+
+    .create-activity:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.create-activity:active {
+    transform: translateY(4px);
 }
 .profile-pic {
     text-align: center;
@@ -499,6 +580,31 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
     cursor:pointer;
+}
+.view-profile span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+    .view-profile span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+.view-profile:hover span {
+    padding-right: 20px;
+}
+
+    .view-profile:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+.view-profile:active {
+    transform: translateY(4px);
 }
 
 ::deep .pagination-section{
@@ -602,7 +708,7 @@ p {
     }
     .create-section,
     .attendance-section {
-        width: 300px;
+        width: 310px;
     }
 
     .create-section {
@@ -637,14 +743,25 @@ p {
     }
 
     .create-activity {
-        margin-top: 2.5rem;
+        margin-top: 2.4rem;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 768px) {
+    .swiper-switch {
+        display: block;
+    }
+
+    .dashboard-header .swiper-wrapper {
+        width: 300px !important;
+    }
+
+    .desktop-switch {
+        display: none;
     }
 }
 
 @media screen and (min-width: 431px) and (max-width: 768px) {
-    .dashboard-header .swiper-wrapper {
-        width: 300px !important;
-    }
     .dashboard-wrapper {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -696,11 +813,7 @@ p {
     .activities-section {
         margin-top: 0;
     }
-    
-    .create-activity {
-        margin-top: 2.5rem;
-    }
-    
+   
     .manual-count {
         margin-top: 54px;
         margin-bottom: 54px;
@@ -711,26 +824,37 @@ p {
     }
 }
 
-@media screen and (min-width: 431px) and (max-width: 580px) {
-        .create-activity {
-            margin-top: 2.5rem;
-        }
-
-        .other-section-mobile {
-            display: none;
-        }
+@media screen and (min-width: 431px) and (max-width: 445px) {
+    .other-section-mobile {
+        display: none;
     }
+    .create-activity{
+        margin-top:2.2rem;
+    }
+}
+
+@media screen and (min-width: 445px) and (max-width: 647px) {
+    .create-activity {
+        margin-top: 3.7rem;
+    }
+}
+
+@media screen and (min-width: 648px) and (max-width: 768px) {
+    .create-activity {
+        margin-top: 2.5rem;
+    }
+}
 
 @media screen and (min-width: 492px) and (max-width: 648px) {
-        .manual-count {
-            margin-top: 45px;
-            margin-bottom: 45px;
-        }
-
-        .mobile-other-section {
-            display: none;
-        }
+    .manual-count {
+        margin-top: 45px;
+        margin-bottom: 45px;
     }
+
+    .mobile-other-section {
+        display: none;
+    }
+}
 
 @media screen and (min-width: 431px) and (max-width: 491px) {
         .manual-count {

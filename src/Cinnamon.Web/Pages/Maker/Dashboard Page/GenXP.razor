@@ -325,7 +325,7 @@
                         <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
                         <div class="manual-option">
                             <p class="manual-count">+@directSalesData.Count()</p>
-                            <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
+                            <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())"><span>Add Student</span></button>
                         </div>
                     </div>
                     <div class="profile-section">
@@ -341,7 +341,7 @@
                             <p class="manual-text">@profile.Email</p>
                         </div>
                         <div class="manual-option">
-                            <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                            <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
                         </div>
                     </div>
                 </div>
@@ -351,14 +351,14 @@
                 <div class="create-section">
                     <p class="manual-title mb-2">Start a new activity?</p>
                     <div class="manual-option">
-                        <button class="create-activity" @onclick="NavigateToCreation">Create New</button>
+                        <button class="create-activity" @onclick="NavigateToCreation"><span>Create New</span></button>
                     </div>
                 </div>
                 <div class="attendance-section">
                     <p class="manual-title">Check Attendance</p>
                     <p class="manual-text">Check your student attendance today.</p>
                     <div class="manual-option">
-                        <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
+                        <button class="check-attendance" @onclick="NavigateToAttendance"><span>Check Attendance</span></button>
                     </div>
                 </div>
                 <div class="manual-section">
@@ -366,7 +366,7 @@
                     <p class="manual-text">Add your students to Cinnamon even if they did not purchase through the platform</p>
                     <div class="manual-option">
                         <p class="manual-count">+@directSalesData.Count()</p>
-                        <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())">Add Student</button>
+                        <button class="add-manual" @onclick="@(() => NavigateToDirectStudent())"><span>Add Student</span></button>
                     </div>
 
                 </div>
@@ -383,7 +383,7 @@
                         <p class="manual-text">@profile.Email</p>
                     </div>
                     <div class="manual-option">
-                        <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                        <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
                     </div>
                 </div>
             </div>
@@ -396,7 +396,7 @@
                                 <div class="create-section">
                                     <p class="manual-title mb-2">Start a new activity?</p>
                                     <div class="manual-option">
-                                        <button class="create-activity" @onclick="NavigateToCreation">Create New</button>
+                                        <button class="create-activity" @onclick="NavigateToCreation"><span>Create New</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +405,7 @@
                                     <p class="manual-title">Check Attendance</p>
                                     <p class="manual-text">Check your student attendance today.</p>
                                     <div class="manual-option">
-                                        <button class="check-attendance" @onclick="NavigateToAttendance">Check Attendance</button>
+                                        <button class="check-attendance" @onclick="NavigateToAttendance"><span>Check Attendance</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -533,13 +533,9 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile",".schedule-swiper-mobile");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper",".schedule-swiper");
-        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile", ".schedule-swiper-mobile");
     }
-
 
     private async Task DeleteActivity(int activityId)
     {
