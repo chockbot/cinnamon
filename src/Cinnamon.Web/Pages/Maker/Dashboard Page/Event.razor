@@ -82,7 +82,7 @@
                         <div class="col-7 d-flex justify-content-start">
                             @if (selectedEvent.Id != 0)
                             {
-                                string name = $"No.of registration in {selectedEvent.EventName}";
+                                string name = $"No .of registration in {selectedEvent.EventName}";
                                 <Tooltip Text="@name" Multiline>
                                 <p class="description-student">No. of registration in @selectedEvent.EventName</p>
                             </Tooltip>
@@ -177,7 +177,7 @@
                                     <div class="col-7 d-flex justify-content-start">
                                         @if (selectedEvent.Id != 0)
                                         {
-                                            string name = $"No.of registration in {selectedEvent.EventName}";
+                                            string name = $"No .of registration in {selectedEvent.EventName}";
                                             <Tooltip Text="@name" Multiline>
                                             <p class="description-student">No. of registration in @selectedEvent.EventName</p>
                                         </Tooltip>
@@ -336,7 +336,7 @@
                             <p class="manual-text">@profile.Email</p>
                         </div>
                         <div class="manual-option">
-                            <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                            <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
                         </div>
                     </div>
                 </div>
@@ -346,7 +346,7 @@
                 <div class="create-section">
                     <p class="manual-title">Start a new event?</p>
                     <div class="manual-option mt-3">
-                        <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                        <button class="create-activity" @onclick="NavigateToCreate"><span>Create New</span></button>
                     </div>
                 </div>
                 <div class="attendance-section">
@@ -375,11 +375,11 @@
                             var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
                             if (!currentEvent.IsMultiple)
                             {
-                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))">Scan Tickets</button>
+                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))"><span>Scan Tickets</span></button>
                             }
                             else
                             {
-                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())">Scan Tickets</button>
+                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
                             }
 
                         }
@@ -389,16 +389,16 @@
                             {
                                 if (!selectedEvent.IsMultiple)
                                 {
-                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))">Scan Tickets</button>
+                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))"><span>Scan Tickets</span></button>
                                 }
                                 else
                                 {
-                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())">Scan Tickets</button>
+                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
                                 }
                             }
                             else
                             {
-                                <button class="check-attendance" disabled>Scan Tickets</button>
+                                <button class="check-attendance" disabled><span>Scan Tickets</span></button>
                             }
                         }
                     </div>
@@ -416,7 +416,7 @@
                         <p class="manual-text">@profile.Email</p>
                     </div>
                     <div class="manual-option">
-                        <button class="view-profile" @onclick="NavigateToProfile">View Profile</button>
+                        <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
                     </div>
                 </div>
             </div>
@@ -460,11 +460,11 @@
                                             var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
                                             if (!currentEvent.IsMultiple)
                                             {
-                                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))">Scan Tickets</button>
+                                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))"><span>Scan Tickets</span></button>
                                             }
                                             else
                                             {
-                                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())">Scan Tickets</button>
+                                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
                                             }
 
                                         }
@@ -474,16 +474,16 @@
                                             {
                                                 if (!selectedEvent.IsMultiple)
                                                 {
-                                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))">Scan Tickets</button>
+                                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))"><span>Scan Tickets</span></button>
                                                 }
                                                 else
                                                 {
-                                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())">Scan Tickets</button>
+                                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
                                                 }
                                             }
                                             else
                                             {
-                                                <button class="check-attendance" disabled>Scan Tickets</button>
+                                                <button class="check-attendance" disabled><span>Scan Tickets</span></button>
                                             }
                                         }
                                     </div>

@@ -341,13 +341,12 @@ p {
 }
 
 .description-student {
-    display: inline-flex;
     padding: 4px 10px;
     border-radius: 4px;
     background: rgba(252, 71, 85, 0.10);
     color: #FC4755;
     font-size: 12px;
-    max-width: 260px;
+    max-width: 30ch;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -567,6 +566,35 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
 }
+.create-activity span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+    .create-activity span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+.create-activity:hover span {
+    padding-right: 20px;
+}
+
+    .create-activity:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.create-activity:active {
+    transform: translateY(4px);
+}
+
 
 .attendance-section {
     margin-top: 20px;
@@ -587,6 +615,34 @@ p {
     border: none;
     padding-top: 9px;
     padding-bottom: 9px;
+}
+.check-attendance span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.check-attendance span:after {
+    content: "\00bb";
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.check-attendance:hover span {
+    padding-right: 20px;
+}
+
+    .check-attendance:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.check-attendance:active {
+    transform: translateY(4px);
 }
 
 .profile-section {
@@ -627,6 +683,32 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
     cursor: pointer;
+}
+.view-profile span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+    .view-profile span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+.view-profile:hover span {
+    padding-right: 20px;
+}
+
+    .view-profile:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+.view-profile:active {
+    transform: translateY(4px);
 }
 
 .view-details {
@@ -798,7 +880,7 @@ p {
     }
     .create-section,
     .attendance-section {
-        width: 300px;
+        width: 310px;
     }
 
     .create-section {
@@ -877,7 +959,7 @@ p {
     }
 }
 
-@media screen and (min-width: 0px) and (max-width: 769px) {
+@media screen and (min-width: 0px) and (max-width: 768px) {
     .swiper-switch {
         display: block;
     }
@@ -965,6 +1047,24 @@ p {
 @media only screen and (max-width: 890px) {
     #explore-category-scrollbar {
         display: none;
+    }
+}
+
+@media screen and (min-width: 1099px) and (max-width: 1215px) {
+    .description-student {
+        max-width: 25ch;
+    }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1100px) {
+    .description-student {
+        max-width: 20ch;
+    }
+}
+
+@media screen and (min-width: 769px) and (max-width: 940px) {
+    .description-student {
+        max-width: 20ch;
     }
 }
 
