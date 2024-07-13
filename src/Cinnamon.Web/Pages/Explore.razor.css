@@ -3,6 +3,118 @@
   font-family: 'Poppins', sans-serif;
 }
 
+@font-face {
+  font-family: 'Rockwell Bold';
+  src: url('/fonts/rockwell-cufofonts/fonnts.com-Rockwell_Bold.ttf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Nunito Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100,
+    "YTLC" 500;
+}
+
+.partners-logo-container {
+  display: flex;
+  justify-content: center;
+  gap: 6.18%;
+}
+
+.partners-text {
+  color: #343D4C;
+  font-family: "Nunito Sans";
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+}
+
+.partners-text-container {
+  display: flex;
+  justify-content: center;
+}
+
+.tablet-toggle {
+  display: none;
+}
+
+.provider-section {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 157px;
+  margin-left: 80px;
+}
+
+.provider-text {
+    color: #E8E8E8;
+    font-family: 'Rockwell Bold', sans-serif;
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+    margin-top: 20px;
+    margin-left: 30px;
+    width: 500px;
+}
+
+.provider-sub-text {
+    color: rgba(243, 246, 252, 0.87);
+    font-family: "Nunito Sans";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    width: 562px;
+    margin-left: 30px;
+    margin-bottom: 0px;
+
+}
+
+.provider-buttons {
+	justify-content: space-between;
+}
+
+.buy-tickets-button {
+	background-color: #4285F4;
+	color: white;
+	margin-left: 25px;
+	padding: 15px 15px;
+	border-radius: 12px;
+	margin-top: 2rem;
+	font-family: Nunito;
+	font-size: 19.2px;
+	font-weight: 700;
+	text-align: left;
+	cursor: pointer;
+  border-style: none;
+  transition: transform 0.3s ease;
+}
+
+.buy-tickets-button:hover {
+    transform: scale(1.05);
+}
+
+.buy-tickets-button:active {
+  transform: scale(0.95);
+}
+  ::deep .section-1-image {
+    display: block;
+    object-fit: cover;
+    width: 100vw;
+    height: 90vh;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
+}
+
 .upper-search-bar {
   margin-bottom: 0px !important;
 }
@@ -388,6 +500,7 @@
 
 .header-container {
   display: flex;
+  z-index: 5;
   justify-content: center;
   background: url('images/explore-page-images/header-image-background-desktop-1440.svg') 100% / cover no-repeat;
   height: 200px;
@@ -417,6 +530,7 @@
   justify-content: space-evenly;
   gap: 5%;
   margin-bottom: 32px;
+  margin-top: 74px;
 }
 
 .event-organizer-join-desktop-title {
@@ -442,8 +556,8 @@
 }
 
 .event-organizer-invite-card {
-  width: 378px;
-  height: 516px;
+  width: 588px;
+  height: 347px;
   flex-shrink: 0;
 }
 
@@ -457,15 +571,15 @@
   align-items: center;
 }
 
-.event-organizer-info {
+.event-organizer-info{
   display: flex;
-  height: 393px;
+  height: 224px;
   flex-direction: column;
   justify-content: space-around;
   position: relative;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  padding: 10%;
+  align-items: center;
 }
 
 .event-organizer-info::before {
@@ -482,13 +596,37 @@
   border-top-right-radius: 16px;
 }
 
-.event-organizer-info-title {
+.event-organizer-info-collab{
   display: flex;
+  height: 224px;
+  flex-direction: column;
+  justify-content: space-around;
+  position: relative;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  align-items: center;
+}
+
+.event-organizer-info-collab::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: url('images/explore-page-images/event-organizer-title-bg2.jpg') 50% / cover no-repeat;
+  opacity: 0.2; /* Adjust the opacity as needed */
+  z-index: -1; /* Place the pseudo-element behind the content */
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.event-organizer-info-title {
   color: #343D4C;
   text-align: center;
   text-shadow: 0px 18px 44px rgba(0, 0, 0, 0.25);
   font-family: Poppins;
-  font-size: 48px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 900;
   line-height: normal;
@@ -948,7 +1086,6 @@
 /* sub-footer */
 .section-3 {
   border-radius: 16px 16px 0px 0px;
-  background: #f3f6fc;
   width: 100%;
   flex-shrink: 0;
 }
@@ -1559,7 +1696,44 @@ img.img-icon {
 }
 
 /* Extra small devices (portrait phones, less than 576px) */
-@media (min-width: 0px) and (max-width: 425px) {
+@media (min-width: 0px) and (max-width: 426px) {
+
+  .tablet-toggle {
+    display: none !important;
+  }
+  
+  .partners-logo-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  .partner-logo {
+    flex: 0 1 auto;
+    margin: 5px;
+  }
+  .tablet-toggle {
+    display: none !important;
+  }
+
+  .provider-text {
+    width: 300px;
+    font-size: 25px;
+  }
+
+  .provider-section {
+    font-size: 16px;
+    justify-content: center;
+    margin-left: 1rem;
+    top: 5%;
+  }
+
+  ::deep .section-1-image {
+		object-fit: cover;
+		width: 100%;
+		height: 536px;
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
+	}
 
   .upcoming-events-info-text-main {
     font-size: 26px;
@@ -1649,6 +1823,7 @@ img.img-icon {
   }
   .event-organizer-info-title {
     font-size: 35px;
+    padding: 10px
   }
 
   .event-organizer-invite-card {
@@ -1658,12 +1833,19 @@ img.img-icon {
   }
   .event-organizer-info {
     width: 300px;
-    height: 291px;
+    height: 176px;
+  }
+
+  .event-organizer-info-collab {
+    width: 300px;
+    height: 176px;
   }
 
   .event-organizer-join {
     width: 300px;
     height: 104px;
+    margin-bottom: 23.75px;
+
   }
 
   .sub-header-image {
@@ -2185,7 +2367,28 @@ img.img-icon {
 }
 
 /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 425px) and (max-width: 766px) {
+@media (min-width: 426px) and (max-width: 766px) {
+  .desktop-toggle {
+    display: none;
+  }
+
+  .tablet-toggle {
+    display: block;
+  }
+
+  .provider-section {
+    font-size: 16px;
+    justify-content: center;
+    margin-left: 1rem;
+    top: 5%;
+  }
+
+  ::deep .section-1-image {
+		object-fit: cover;
+		width: 100%;
+		height: 828px;
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), linear-gradient(0deg, rgba(255, 169, 66, 0.07), rgba(255, 169, 66, 0.07));
+	}
 
   .footer-text {
     display: flex;
@@ -2241,20 +2444,6 @@ img.img-icon {
   .header-container {
     background: url('images/explore-page-images/header-image-background-mobile.svg') 100% / cover no-repeat;
   }
-  
-  .event-organizer-invite-card {
-    display: contents;
-
-  }
-  .event-organizer-info {
-    width: 384px;
-    height: 291px;
-  }
-
-  .event-organizer-join {
-    width: 384px;
-    height: 104px;
-  }
 
   .sub-header-image {
     height: 384px;
@@ -2269,10 +2458,7 @@ img.img-icon {
     margin-top: 40px;
   }
 
-  .sub-header-container {
-    flex-direction: column;
-    align-items: center;
-  }
+
 
   .desktop-test {
     display: none;
@@ -2734,6 +2920,14 @@ img.img-icon {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 767px) and (max-width: 1023px) {
 
+  .desktop-toggle {
+    display: none;
+  }
+
+  .tablet-toggle {
+    display: block;
+  }
+
   .section-1 .categories .schedule-swiper.no-search-toggle {
     width: 100%;
     display: flex;
@@ -2799,12 +2993,6 @@ img.img-icon {
     width: 400px;
   }
 
-  .event-organizer-join-sub-container {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-  }
-
   .event-organizer-join-title {
     margin-bottom: 0px;
   }
@@ -2818,32 +3006,9 @@ img.img-icon {
     padding-top: 10%;
   }
 
-  .event-organizer-join {
-    display: flex;
-    justify-content: space-between;
-    width: 339px;
-    height: 266px;
-    padding: 20px;
-    border-radius: 0px 16px 16px 0px;
-  }
-
-  .event-organizer-invite-card {
-    display: flex;
-    flex-direction: row;
-    width: 687px;
-    height: 266px;
-    margin-top: 30px;
-  }
-
   .event-organizer-info::before {
     border-top-right-radius: 0px;
     border-bottom-left-radius: 16px;
-  }
-
-  .sub-header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .sub-header-image {
@@ -2860,12 +3025,6 @@ img.img-icon {
     margin-top: 40px;
   }
 
-  .event-organizer-info {
-    align-items: center;
-    padding: 0px;
-    width: 359px;
-    height: 266px;
-  }
 
   .event-organizer-info-title {
     margin-bottom: 0px;
@@ -3283,6 +3442,8 @@ img.img-icon {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+  
   .top-row {
     background-color: white;
     border-bottom: 1px solid var(--lineColor);
@@ -3832,6 +3993,30 @@ img.img-icon {
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
 
+  .event-organizer-invite-card {
+    width: 449px;
+    height: 347px;
+    flex-shrink: 0;
+  }
+
+  .event-organizer-info {
+    width:449px;
+    height: 224px;
+    flex-shrink: 0;
+  }
+
+  .event-organizer-info-collab {
+    width:449px;
+    height: 224px;
+    flex-shrink: 0;
+  }
+
+  .event-organizer-join {
+    width: 449px;
+    height: 123px;
+    flex-shrink: 0;
+  }
+
   .header-container {
     background: url('images/explore-page-images/header-image-background-desktop-1024.svg') 100% / cover no-repeat;
   }
@@ -3860,32 +4045,9 @@ img.img-icon {
     padding-top: 10%;
   }
 
-  .event-organizer-join {
-    display: flex;
-    justify-content: space-between;
-    width: 370px;
-    height: 266px;
-    padding: 20px;
-    border-radius: 0px 16px 16px 0px;
-  }
-
-  .event-organizer-invite-card {
-    display: flex;
-    flex-direction: row;
-    width: 930px;
-    height: 266px;
-    margin-top: 30px;
-  }
-
   .event-organizer-info::before {
     border-top-right-radius: 0px;
     border-bottom-left-radius: 16px;
-  }
-
-  .sub-header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .sub-header-image {
@@ -3897,13 +4059,6 @@ img.img-icon {
     background-position: center;
     margin-bottom: 24px;
     margin-top: 40px;
-  }
-
-  .event-organizer-info {
-    align-items: center;
-    padding: 0px;
-    width: 559px;
-    height: 266px;
   }
 
   .event-organizer-info-title {
