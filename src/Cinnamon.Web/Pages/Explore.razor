@@ -25,6 +25,7 @@
 @inject IJSRuntime jsRuntime
 @inject Cinnamon.Web.Config.Config AppConfig;
 @inject IChatApiHandler chatApiHandler;
+
 @implements IDisposable
 @inject AutoMapper.IMapper mapper;
 
@@ -1030,14 +1031,14 @@
                                                         
                                                         var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
                                                         <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                            <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                             <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                                                         </div>
                                                     }
@@ -1049,12 +1050,12 @@
                                                 @if (@act.ExperienceCreationTypeId == 3)
                                                 {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/date-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 } else {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/tag-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
                                                     </div>
                                                 }
@@ -1272,14 +1273,14 @@
                                                         
                                                         var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
                                                         <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                            <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                             <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                                                         </div>
                                                     }
@@ -1291,12 +1292,12 @@
                                                 @if (@act.ExperienceCreationTypeId == 3)
                                                 {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/date-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 } else {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/tag-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
                                                     </div>
                                                 }
@@ -1515,7 +1516,7 @@
                                                         
                                                         var address = string.IsNullOrEmpty(act.Address.PinnedLocation) ? act.Address.City + ", " + act.Address.Region : act.Address.PinnedLocation;
                                                         <div class="address-holder">
-                                                            <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                            <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                             <p class="card-title2 mb-0 in-person text-capitalize">@address</p>
                                                         </div>
                                                         
@@ -1523,7 +1524,7 @@
                                                     else
                                                     {
                                                         <div class="address-holder">
-                                                        <img src="images/explore-page-images/location-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/location-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                                                         </div>
                                                         
@@ -1537,12 +1538,12 @@
                                                 @if (@act.ExperienceCreationTypeId == 3)
                                                 {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/date-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/date-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@formattedDate</p>
                                                     </div>
                                                 } else {
                                                     <div class="address-holder">
-                                                        <img src="images/explore-page-images/tag-explore.png" class="location-icon" />
+                                                        <img src="images/explore-page-images/tag-explore.svg" class="location-icon" />
                                                         <p class="card-title2 mb-0 in-person text-capitalize">@GetPriceLabel(act.Price)</p>
                                                     </div>
                                                 }
@@ -1602,6 +1603,17 @@
         <!--End of Desktop 1440px onwards -->
     </div>
     <!--Section 3-->
+
+    @if (wordpressPosts != null)
+    {
+        foreach (var post in wordpressPosts)
+        {
+            <div>
+                <h2>@post.Title</h2>
+                <p>@post.Content</p>
+            </div>
+        }
+    }
     <div class="partners">
         <div class="section-3">
             <div class="partners-container">
@@ -1625,31 +1637,51 @@
             <!-- For much larger screens -->
             <div class="footer-container-wider align-items-footer">
                 <div class="footer-info">
-                    <a href="" class="app-name-footer">@Resources.App.appName</a>
-                    <p>Automate and simplify your Events Planning operations with easy and 
-                       secure options with Cinnamon!</p>
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                    <div class="footer-email-input">
+                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
+                        <button class="footer-email-button">Subscribe</button>
+                    </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
-                        <p class="footer-text">Company</p>
+                        <p class="footer-title-text">About</p>
                         <div class="footer-nav">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                            <a class="footer-button-help" @onclick="NavigateToHelp">Help</a>
+                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
                         </div>
                     </div>
                     <div class="footer-text-support-container">
-                        <p class="footer-text">Connect with Us</p>
+                        <p class="footer-title-text">Events & Solutions</p>
                         <div class="footer-email-social-container">
+                            <div class="footer-nav-2">
+                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
                             <div class="footer-support-email">
                                 <i class="far fa-envelope"></i>
                                 <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
                             </div>
+                        </div>
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Ways You Can Pay</p> 
                             <div class="footer-final-social-media">
-                                <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                                <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                                <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                                <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                                <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
                             </div> 
                         </div>
                     </div>
@@ -1657,41 +1689,62 @@
             <!-- end of larger screens -->
             <div class="footer-container align-items-footer">
                 <div class="footer-info">
-                    <a href="" class="app-name-footer">@Resources.App.appName</a>
-                    <p>Automate and simplify your Events Planning operations with easy and 
-                       secure options with Cinnamon!</p>
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                    <div class="footer-email-input">
+                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
+                        <button class="footer-email-button">Subscribe</button>
+                    </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
-                        <p class="footer-text">Company</p>
-                        <div class="footer-nav">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                            <a class="footer-button-help" @onclick="NavigateToHelp">Help</a>
+                        <p class="footer-title-text-nav" @onclick="ToggleAboutUs">About</p>
+                        <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
+                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
+                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
+                        </div>
+                    </div>
+                    <div class="footer-text-events-container">
+                        <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
+                        <div class="footer-email-social-container">
+                        <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
+                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
+                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                            </div>
                         </div>
                     </div>
                     <div class="footer-text-support-container">
-                        <p class="footer-text">Connect with Us</p>
                         <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
                             <div class="footer-support-email">
                                 <i class="far fa-envelope"></i>
                                 <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
                             </div>
+                        </div>
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Ways You Can Pay</p> 
                             <div class="footer-final-social-media">
-                                <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
-                                <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                                <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
-                                <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                                <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
                             </div> 
                         </div>
                     </div>
             </div>
-            <div class="line-container">
-                <div class="line"></div>
-            </div>
             <div class="footer-final">
                 <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>   
+                    <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                    <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>
@@ -1809,6 +1862,8 @@
     private bool hasNewMessages = false;
     private int itemsPerPage = 20;
     private int newMessagesCount = 0;
+    private bool isAboutUsVisible = false;
+    private bool isEventVisible = false;
     [Inject] HubConnection hubConnection { get; set; }
 
     List<ChatRoom> chatRooms = new List<ChatRoom>();
@@ -1849,6 +1904,8 @@
     private Modal? filterModal;
 
     private Filters filters = new ();
+
+    private List<WordPressPost> wordpressPosts;
 
     protected override async Task OnInitializedAsync()
     {
@@ -1910,6 +1967,8 @@
             };
 
         NavigationManager.LocationChanged += LocationChanged;
+
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -2624,4 +2683,7 @@
     {
         await jsRuntime.InvokeVoidAsync("open", "https://cinnamon.ph/explore/ote/free-group-meditation-every-thursday", "_blank");
     }
+
+    void ToggleAboutUs() => isAboutUsVisible = !isAboutUsVisible;
+    void ToggleEvents() => isEventVisible = !isEventVisible;
 }
