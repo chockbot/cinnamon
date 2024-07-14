@@ -298,9 +298,16 @@
                                 else
                                 {
                                     <div class="schedule-footer">
-                                        <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
-                                             <span>Buy Ticket</span>
-                                        </button>
+                                        <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                            class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" 
+                                            Clicked="ProceedToPayment">
+                                            <LoadingTemplate>
+                                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                            </LoadingTemplate>
+                                            <ChildContent>
+                                                Buy Ticket
+                                            </ChildContent>
+                                        </Button>
                                     </div>
                                 }
                             }
@@ -436,7 +443,7 @@
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center">
             <div>
-                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Success</p>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Pending</p>
             </div>
         </ModalHeader>
 
@@ -450,6 +457,32 @@
         <ModalFooter class="justify-content-center">
             <Button class="bg-white-200 color-grey-100" 
                 Clicked="() => modalPurchaseWithConfirmation.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalPurchaseWithoutConfirmation">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration Success</p>
+            </div>
+        </ModalHeader>
+
+        <ModalBody class="px-4">
+            <p class="font-16 font-weight-700 color-black-100 mb-0">
+                You have successfully registered for the event. 
+                We have sent you an email containing your tickets and additional event details. 
+                Please check your inbox for further information. 
+                If you do not see the email, make sure to check your spam or junk folder. We look forward to seeing you at the event!
+            </p>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-center">
+            <Button class="bg-white-200 color-grey-100" 
+                Clicked="() => modalPurchaseWithoutConfirmation.Close(CloseReason.UserClosing)">
                 Close
             </Button>
         </ModalFooter>
@@ -499,6 +532,8 @@
     private Validations? phoneValidation;
     private PersonalValidation personalForm = new();
     private Modal? modalPurchaseWithConfirmation;
+    private Modal? modalPurchaseWithoutConfirmation;
+    bool submitting = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -940,6 +975,9 @@
                 return;
             }
 
+            submitting = true;
+            StateHasChanged();
+
             var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
                 CardInformation = null,
@@ -958,11 +996,15 @@
                 })
             }, token);
 
+            submitting = false;
+
             if(!submitFreePurchase.Succeeded || submitFreePurchase.Result is null || !submitFreePurchase.Result.IsSuccess)
             {
                 await NotificationService.Error(submitFreePurchase.Result?.ErrorInfo?.Message ?? submitFreePurchase.Message, "Error");
                 return;
             }
+
+            await ClearAnswers();
 
             var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
@@ -972,23 +1014,7 @@
             }
             else 
             {
-                await modalPurchaseWithConfirmation?.Show();
-            }
-
-            if(!haveApprovalTicket)
-            {
-                if (submitFreePurchase.Result.Result.Action == 1)
-                {
-                    NavigationManager.NavigateTo(submitFreePurchase.Result.Result.Url);
-                }
-                else if(submitFreePurchase.Result.Result.Action == 0)
-                {
-                    NavigationManager.NavigateTo(submitFreePurchase.Result.Result.Url);
-                }
-                else
-                {
-                    NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submitFreePurchase.Result.Result.Id}");
-                }
+                await modalPurchaseWithoutConfirmation?.Show();
             }
         }
         catch (Exception ex)
@@ -1003,6 +1029,15 @@
         {
             return selectedTickets.Sum(t => t.Value.Count);
         }
+    }
+
+    private Task ClearAnswers()
+    {
+        foreach (var item in activityQuestions)
+        {
+            item.Answer = string.Empty;
+        }
+        return Task.CompletedTask;
     }
 
     private Task AddSelectedTicket(OtePricing pricing, int limitTicket)
