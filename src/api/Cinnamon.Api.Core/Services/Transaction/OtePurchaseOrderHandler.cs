@@ -171,12 +171,12 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected ticket."), "Unable to identify selected ticket.");
                 }
 
-                if(ticketPrice.TicketSold >= ticketPrice.MaxSlots)
+                if(ticketPrice.TicketSold >= ticketPrice.MaxSlots && !ticketPrice.IsUnlimited)
                 {
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
                 }
 
-                if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count)
+                if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count && !ticketPrice.IsUnlimited)
                 {
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(
                         new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
@@ -193,7 +193,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Code = qrcode,
                         ImageData = GenerateQRCode(qrcode),
                         OteDateId = ticketPrice.OteDateId,
-                        RequiredApproval = ticketPrice.RequiredApproval
+                        RequiredApproval = ticketPrice.RequiredApproval,
                     });
                 }
             }

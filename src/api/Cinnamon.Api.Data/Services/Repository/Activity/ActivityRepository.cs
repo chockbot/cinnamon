@@ -1803,13 +1803,14 @@ public class ActivityRepository : IActivityRepository
                     DateStart = d.DateStart.SetKindUtc(),
                     OteSchedulePricing = pricingsGroup.Select(p => {
                         return new OteSchedulePricing {
-                            Description = p.Description,
-                            IsAbsorbFees = p.IsAbsorbFees,
-                            MaxSlots = p.MaxSlots,
-                            Price = p.Price,
-                            Name = p.Name,
-                            RequiredApproval = p.RequiredApproval,
-                            OteSchedule = schedule,
+                            Description             = p.Description,
+                            IsAbsorbFees            = p.IsAbsorbFees,
+                            MaxSlots                = p.MaxSlots,
+                            Price                   = p.Price,
+                            Name                    = p.Name,
+                            RequiredApproval        = p.RequiredApproval,
+                            IsUnlimited             = p.IsUnlimited,
+                            OteSchedule             = schedule,
                             OteSchedulePricingGroup = p
                         };
                     }).ToList(),
