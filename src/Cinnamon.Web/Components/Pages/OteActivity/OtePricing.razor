@@ -446,21 +446,22 @@
                         </Validation>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is5">
-                        <Validation>
-                            <Field>
-                                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
-                                    max slots
-                                </FieldLabel>
-                                <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </NumericPicker>
-                                </FieldBody>
-                            </Field>
-                        </Validation>
+                        <Field>
+                            <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                                max slots
+                            </FieldLabel>
+                            <FieldBody>
+                                <NumericPicker Placeholder="∞" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
+                                               class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
+                                </NumericPicker>
+                                <div class="unli-flag d-flex">
+                                    <div class="form-check form-switch">
+                                        <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" class="form-check-input" />
+                                    </div>
+                                    <p class="unli-text">Unlimited Slots</p>
+                                </div>
+                            </FieldBody>
+                        </Field>
                     </Column>
                 </Row>
                 <Row VerticalGutter="5" class="mb-1">
@@ -702,14 +703,15 @@
             {
                 return new ModelData.ItemPrice
                 {
-                    AbsorbFees = p.AbsorbFees,
-                    MaxSlots = p.MaxSlots,
-                    Price = p.Price,
-                    Description = p.Description,
-                    Id = p.Id,
-                    Name = p.Name,
-                    TicketSold = p.TicketSold,
-                    RequiredApproval = p.RequiredApproval
+                    AbsorbFees       = p.AbsorbFees,
+                    MaxSlots         = p.MaxSlots,
+                    Price            = p.Price,
+                    Description      = p.Description,
+                    Id               = p.Id,
+                    Name             = p.Name,
+                    TicketSold       = p.TicketSold,
+                    RequiredApproval = p.RequiredApproval,
+                    IsUnlimited      = p.IsUnlimited
                 };
             }).ToList(),
             CustomAcceptedBody = customAcceptedMessageOrig,
@@ -733,7 +735,8 @@
                     Price = item.Price,
                     Name = item.Name,
                     TicketSold = item.TicketSold,
-                    RequiredApproval = item.RequiredApproval
+                    RequiredApproval = item.RequiredApproval,
+                    IsUnlimited = item.IsUnlimited
                 });
         }
         customAcceptedMessageOrig = data.CustomAcceptedBody;
@@ -817,6 +820,7 @@
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
             public bool RequiredApproval {get; set;}
+            public bool IsUnlimited { get; set; }
         }
     }
 
@@ -849,6 +853,7 @@
         public int EventTicketLimit { get; set; }
         public int IsLimit { get; set; } = 1;
         public int TicketSold { get; set; }
+        public bool IsUnlimited { get; set; }
         public bool IsOpen { get; set; } = true;
         public bool IsCapacity { get; set; } = false;
         public int CapacityCount { get; set; }
@@ -941,6 +946,7 @@
                             existingTicket.MaxSlots         = modelPricing.MaxSlots;
                             existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
                             existingTicket.RequiredApproval = modelPricing.RequiredApproval;
+                            existingTicket.IsUnlimited      = modelPricing.IsUnlimited;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -957,6 +963,7 @@
                             existingTicket.MaxSlots         = modelPricing.MaxSlots;
                             existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
                             existingTicket.RequiredApproval = modelPricing.RequiredApproval;
+                            existingTicket.IsUnlimited = modelPricing.IsUnlimited;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -1071,7 +1078,8 @@
                 AbsorbFees       = ticket.AbsorbFees,
                 IsNew            = ticket.IsNew,
                 TempId           = ticket.TempId,
-                RequiredApproval = ticket.RequiredApproval
+                RequiredApproval = ticket.RequiredApproval,
+                IsUnlimited      = ticket.IsUnlimited
             };
         isEditing = true;
         await ticketModal.Show();

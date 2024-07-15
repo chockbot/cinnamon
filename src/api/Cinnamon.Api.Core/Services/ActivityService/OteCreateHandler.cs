@@ -235,6 +235,7 @@ public class OteCreateHandler : IOteCreateHandler
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }).ToList(),

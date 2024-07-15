@@ -11,4 +11,5 @@ public class OtePricingGroupDTO
     public string Name {get; set;}
     public int TicketSold {get; set;}
     public bool RequiredApproval {get; set;}
+    public bool IsUnlimited { get; set; }
 }

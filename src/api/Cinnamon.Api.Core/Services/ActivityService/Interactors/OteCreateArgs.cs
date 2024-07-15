@@ -99,6 +99,7 @@ public class OteCreateArgs : IInteractor
         public decimal Price {get; set;}
 
         public bool RequiredApproval {get; set;}
+        public bool IsUnlimited { get; set; }
     }
 
     public class OteOnlinEvent
