@@ -192,7 +192,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Price = ticketPrice.Price,
                         Code = qrcode,
                         ImageData = GenerateQRCode(qrcode),
-                        OteDateId = ticketPrice.OteDateId
+                        OteDateId = ticketPrice.OteDateId,
+                        RequiredApproval = ticketPrice.RequiredApproval
                     });
                 }
             }
@@ -353,43 +354,52 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 .SetQueryParam("Ticket", ticketQueryString)
                 .SetQueryParam("Status","failed");
 
-            if(overallTotal == 0)
+            var noNeedPaymentGateway = overallTotal == 0;
+            if(noNeedPaymentGateway)
             {
-                // var finishTransaction = await oteFinishTransactionHandler.ExecuteAsync(new OteFinishTransactionArgs {
-                //     TransactionId = result.Result.Result.Id
-                // });
-                // if(!finishTransaction.Succeeded || finishTransaction.Result is null)
-                // {
-                //     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(finishTransaction.Message), finishTransaction.Message);
-                // }
-
-                var waitlistPayload = new {
-                    Tickets = selectedTickets.Select(t => new {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Price = t.Price,
-                        OteDateId = t.OteDateId,
-                        Date = oteDate.DateStart
-                    }),
-                    Questions = args.Questions?.Select(q => new {
-                        Question = q.Question,
-                        Answer = q.Answer
-                    })
-                };
-                var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
-
-                var createWaitlistRes = await createOteWaitlist.ExecuteAsync(new ActivityService.Interactors.CreateOteWaitlistArgs {
-                    ActivityId = oteActivity.Id,
-                    CustomerId = id,
-                    CustomerName = $"{currentUser.FirstName} {currentUser.LastName}",
-                    Payload = waitlistSerializedPayload,
-                    ProviderId = provider?.Id ?? 0,
-                    Status = 1
-                });
-                if(!createWaitlistRes.Succeeded || createWaitlistRes.Result is null)
+                var freeTicketsWithoutApproval = validSelectedTickets.Where(t => t.Price == 0 && !t.RequiredApproval);
+                if(freeTicketsWithoutApproval.Any())
                 {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(
-                        new ApplicationException("Unable to create waitlist"), "Unable to create waitlist");
+                    var finishTransaction = await oteFinishTransactionHandler.ExecuteAsync(new OteFinishTransactionArgs {
+                        TransactionId = result.Result.Result.Id
+                    });
+                    if(!finishTransaction.Succeeded || finishTransaction.Result is null)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                    }
+                }
+
+                var freeTicketsWithApproval = validSelectedTickets.Where(t => t.Price == 0 && t.RequiredApproval);
+                if(freeTicketsWithApproval.Any())
+                {
+                    var waitlistPayload = new {
+                        Tickets = freeTicketsWithApproval.Select(t => new {
+                            Id = t.Id,
+                            Name = t.Name,
+                            Price = t.Price,
+                            OteDateId = t.OteDateId,
+                            Date = oteDate.DateStart
+                        }),
+                        Questions = args.Questions?.Select(q => new {
+                            Question = q.Question,
+                            Answer = q.Answer
+                        })
+                    };
+                    var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
+
+                    var createWaitlistRes = await createOteWaitlist.ExecuteAsync(new ActivityService.Interactors.CreateOteWaitlistArgs {
+                        ActivityId = oteActivity.Id,
+                        CustomerId = id,
+                        CustomerName = $"{currentUser.FirstName} {currentUser.LastName}",
+                        Payload = waitlistSerializedPayload,
+                        ProviderId = provider?.Id ?? 0,
+                        Status = 1
+                    });
+                    if(!createWaitlistRes.Succeeded || createWaitlistRes.Result is null)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                            new ApplicationException("Unable to create waitlist"), "Unable to create waitlist");
+                    }
                 }
 
                 return AppResult<OtePurchaseOrderResult>.CreateSucceeded(new OtePurchaseOrderResult {
@@ -495,5 +505,6 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
+        public bool RequiredApproval {get; set;}
     }
 }

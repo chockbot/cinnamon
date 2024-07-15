@@ -130,9 +130,11 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
             var oteDate = oteDateRes.Result.Result;
 
+            var ticketsToCreate = deserializedPayload.Tickets.Where(t => !t.RequiredApproval);
+
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
-                Tickets = deserializedPayload.Tickets.Select(t => {
+                Tickets = ticketsToCreate.Select(t => {
                     return new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
                         ActivityId = oteActivity.Id,
                         Amount = t.Price,
@@ -191,7 +193,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
             var tickets = new Dictionary<int, TicketSummary>();
-            foreach(var item in deserializedPayload.Tickets)
+            foreach(var item in ticketsToCreate)
             {
                 if(!tickets.ContainsKey(item.Id))
                 {
@@ -299,6 +301,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public string Name {get; set;}
         public string Code {get; set;}
         public string ImageData {get; set;}
+        public bool RequiredApproval {get; set;}
     }
 
     private class TicketSummary 
