@@ -218,6 +218,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IGetDirectStudentSalesHandler, Services.TransactionService.GetDirectStudentSalesHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IApprovedFreeWaitListHandler, Services.TransactionService.ApprovedFreeWaitListHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IApprovedPaidWaitListHandler, Services.TransactionService.ApprovedPaidWaitListHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IApprovedWaitListHandler, Services.TransactionService.ApprovedWaitListHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
