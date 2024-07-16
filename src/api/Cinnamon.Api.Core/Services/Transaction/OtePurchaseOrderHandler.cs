@@ -383,7 +383,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Questions = args.Questions?.Select(q => new {
                             Question = q.Question,
                             Answer = q.Answer
-                        })
+                        }),
+                        TransactionId = result.Result.Result.Id
                     };
                     var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
 

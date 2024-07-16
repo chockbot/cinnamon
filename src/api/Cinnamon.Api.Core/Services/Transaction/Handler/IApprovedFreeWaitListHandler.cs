@@ -5,6 +5,6 @@ using Cinnamon.Framework.Interactor;
 
 namespace Cinnamon.Api.Core.Services.TransactionService.Handlers;
 
-public interface IApprovedWaitListHandler : IInteractorHandler<ApprovedWaitListArgs,AppResult<ApprovedWaitListResult>> 
+public interface IApprovedFreeWaitListHandler : IInteractorHandler<ApprovedFreeWaitListArgs,AppResult<ApprovedFreeWaitListResult>> 
 {
 }
