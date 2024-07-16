@@ -121,7 +121,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
     {
         try
         {
-            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", b.\"TicketSold\" ,b.\"Price\", b.\"Id\" as PricingId, b.\"RequiredApproval\" \r\n" +
+            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", b.\"TicketSold\" ,b.\"Price\", b.\"Id\" as PricingId, b.\"RequiredApproval\", b.\"IsUnlimited\" \r\n" +
                 "FROM public.\"OteSchedules\" AS a\r\n" +
                 "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
                 "WHERE a.\"ActivityId\" = " + activityId + " and b.\"OteDateId\" = " + dateId + ";";
@@ -157,6 +157,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                                 Price                 = Convert.ToDecimal(item["Price"]),
                                 OteSchedulePricingsId = Convert.ToInt32(item["PricingId"]),
                                 RequiredApproval      = Convert.ToBoolean(item["RequiredApproval"]),
+                                IsUnlimited           = Convert.ToBoolean(item["IsUnlimited"]),
                             }
                         }).ToList();
                     }

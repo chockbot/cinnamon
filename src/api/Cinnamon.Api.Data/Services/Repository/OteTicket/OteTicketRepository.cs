@@ -140,7 +140,8 @@ public class OteTicketRepository : IOteTicketRepository
                         Available             = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
                         Price                 = s.OteSchedulePricingDTO.Price,
                         OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId,
-                        RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval
+                        RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval,
+                        IsUnlimited           = s.OteSchedulePricingDTO.IsUnlimited
                     }
                 };
                 return ticketDTO;

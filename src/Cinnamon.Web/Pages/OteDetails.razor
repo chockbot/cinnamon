@@ -148,6 +148,57 @@
                                 <p class="waitlist-sub-leave">If you can no longer join,  <span><a class="user-leave" @onclick="() => confirmDialogRef.Open()">you can leave the waitlist</a></span>.</p>
                             </div>
                         }
+                        else if(IsApprovedWaitlist)
+                        {
+                            @*Header*@
+                            <div class="schedule-body">
+                                <div class="schedule-location">
+                                    <div class="d-flex align-items-center event-schedule-time">
+                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
+                                        <label class="ote-schedule me-1">Duration:</label>
+                                        <label class="ote-schedule-details">
+                                            @EventDurationString
+                                        </label>
+                                    </div>
+                                    <div class="d-flex align-items-center event-schedule-time">
+                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
+                                        <label class="ote-schedule me-1">Time Start:</label>
+                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                    </div>
+                                    <div class="d-flex align-items-center event-schedule-place">
+                                        <img class="me-2" src="images/ote/location.png" alt="clock">
+                                        <label class="ote-schedule me-1">Location:</label>
+                                        @if (activity.ExperienceTypeId == 1)
+                                        {
+                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                            <label class="ote-schedule-details">@address</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="ote-schedule-details">Online</label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            @*Body*@
+                            <div class="waitlist-section">
+                                <div class="ticket-waitlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <g clip-path="url(#clip0_578_514)">
+                                            <path d="M10.0007 19.6666C15.3394 19.6666 19.6673 15.3387 19.6673 9.99992C19.6673 4.66117 15.3394 0.333252 10.0007 0.333252C4.6619 0.333252 0.333984 4.66117 0.333984 9.99992C0.333984 15.3387 4.6619 19.6666 10.0007 19.6666Z" fill="#4BB749" />
+                                            <path d="M8.08762 14.0234L5.82095 11.8094C5.77193 11.7617 5.73295 11.7047 5.70634 11.6417C5.67973 11.5787 5.66602 11.5111 5.66602 11.4427C5.66602 11.3743 5.67973 11.3066 5.70634 11.2437C5.73295 11.1807 5.77193 11.1237 5.82095 11.076L6.57262 10.3427C6.67342 10.245 6.80827 10.1904 6.94862 10.1904C7.08897 10.1904 7.22382 10.245 7.32462 10.3427L8.67395 11.6617L12.4583 5.90836C12.5364 5.79226 12.6565 5.71108 12.7934 5.68196C12.9302 5.65285 13.073 5.6781 13.1916 5.75236L14.0863 6.31436C14.1447 6.35029 14.1953 6.39759 14.2352 6.45345C14.275 6.50932 14.3032 6.57261 14.318 6.63957C14.3329 6.70653 14.3342 6.7758 14.3218 6.84328C14.3095 6.91075 14.2837 6.97505 14.246 7.03236L9.76495 13.847C9.67516 13.9804 9.55722 14.0925 9.41943 14.1754C9.28164 14.2583 9.12736 14.3099 8.96745 14.3267C8.80754 14.3435 8.64588 14.3251 8.49387 14.2727C8.34186 14.2203 8.20319 14.1352 8.08762 14.0234Z" fill="#F3F6FC" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_578_514">
+                                                <rect width="20" height="20" fill="white" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                    <p class="close-text">You request has been approved</p>
+                                </div>
+                                <p class="waitlist-sub-text">An approval email has been sent to <span><a class="user-email">@ProfileEmail</a></span>. Check your email to proceed purchasing your tickets.</p>
+                            </div>
+                        }
                         else
                         {
                             <div class="schedule-body">
@@ -191,22 +242,6 @@
                                         </div>
                                         @foreach (var item in AvailablePriceList)
                                         {
-                                            if (ticketCount != 0 && IsLimit)
-                                            {
-                                                if (ticketCount == activity.EventTicketLimit)
-                                                {
-                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                }
-                                                else
-                                                {
-                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                            }
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
                                                 <p class="align-items-center">
@@ -241,26 +276,98 @@
                                                 </p>
                                                 @if (activity.IsEventSoldOut)
                                                 {
-                                                    <div data-disabled="@(capacityLimit <= 0)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
-                                                        <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
-                                                            <span class="item-action">-</span>
-                                                        </span>
-                                                        <span class="p-2 border-right-1-solid counter-item">
-                                                            @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
-                                                        </span>
-                                                        <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-2 counter-item prevent-select" style="background-color:#F3F6FC;">
-                                                            @if (activity.EventTicketLimit != 0 && currentLogin is not null)
+                                                    if (!item.IsUnlimited)
+                                                    {
+                                                        if (IsLimit)
+                                                        {
+                                                            if (ticketCount != 0)
                                                             {
-                                                                <Tooltip Text="@stringMaxTicket" Multiline>
-                                                                <span class="item-action p-2">+</span>
-                                                            </Tooltip>
+                                                                if (ticketCount <= capacityLimit)
+                                                                {
+                                                                    if (ticketCount == activity.EventTicketLimit)
+                                                                    {
+                                                                        stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "ticket is" : "tickets are")} available to add.";
+                                                                }
                                                             }
                                                             else
                                                             {
-                                                                <span class="item-action p-2">+</span>
+                                                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
                                                             }
-                                                        </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "ticket is" : "tickets are")} available to add.";
+                                                        }
+
+                                                        <div data-disabled="@(capacityLimit <= 0)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                                            <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                                <span class="item-action">-</span>
+                                                            </span>
+                                                            <span class="p-2 border-right-1-solid counter-item">
+                                                                @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
+                                                            </span>
+                                                            <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-2 counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                                <Tooltip Text="@stringMaxTicket" Multiline>
+                                                                <span class="item-action p-2">+</span>
+                                                            </Tooltip>
+                                                            </span>
                                                     </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (IsLimit)
+                                                        {
+                                                            if (ticketCount != 0)
+                                                            {
+                                                                if (ticketCount == activity.EventTicketLimit)
+                                                                {
+                                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                                }
+                                                                else
+                                                                {
+                                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            stringMaxTicket = string.Empty;
+                                                        }
+                                                        <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                                            <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                                <span class="item-action">-</span>
+                                                            </span>
+                                                            <span class="p-2 border-right-1-solid counter-item">
+                                                                @(selectedTickets.ContainsKey(item.Id) ? selectedTickets[item.Id].Count : 0)
+                                                            </span>
+                                                            <span @onclick="() => AddSelectedTicket(item, ticketCount)" class="p-2 counter-item prevent-select" style="background-color:#F3F6FC;">
+                                                                @if (!string.IsNullOrEmpty(stringMaxTicket))
+                                                                {
+                                                                     <Tooltip Text="@stringMaxTicket" Multiline>
+                                                                        <span class="item-action p-2">+</span>
+                                                                    </Tooltip>
+                                                                }
+                                                                else
+                                                                {
+                                                                     <span class="item-action p-2">+</span>
+                                                                }
+
+                                                            </span>
+                                                    </div>
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -275,8 +382,8 @@
                                                             @if (activity.EventTicketLimit != 0 && currentLogin is not null)
                                                             {
                                                                 <Tooltip Text="@stringMaxTicket" Multiline>
-                                                                <span class="item-action p-2">+</span>
-                                                            </Tooltip>
+                                                                    <span class="item-action p-2">+</span>
+                                                                </Tooltip>
                                                             }
                                                             else
                                                             {
@@ -335,7 +442,7 @@
                             </div>
                         }
                     </div>
-
+                     
                     @*Important Information*@
                     <section id="important-information" class="mt-3">
                         <p class="event-schedule">Important Information</p>
@@ -542,12 +649,15 @@
     private int SelectedScheduleId { get; set; }
     private IEnumerable<TicketItem> otesItems { get; set; }
     private List<int> WaitlistIds = new List<int>();
+    private List<int> ApprovedWaitlistIds = new List<int>();
     private List<OteWaitlist> oteWaitlists = new List<OteWaitlist>();
     private int ticketCount { get; set; }
     private string stringMaxTicket { get; set; }
     private bool IsLimit { get; set; }
     private bool IsOnWaitlist { get; set; }
+    private bool IsApprovedWaitlist { get; set; }
     private int capacityLimit { get; set; }
+    private int waitListCount { get; set; } = 0;
 
     private List<ActivityQuestion> activityQuestions = new();
     private Modal? modalQuestions;
@@ -1290,22 +1400,6 @@
     private async Task LoadWaitlist()
     {
         //0-NO STATUS 1-PENDING 2-APPROVED 3-DECLINED
-        var pendingWaitlists = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
-        {
-            ProviderId = provider.Id,
-            ActivityId = activity.Id,
-            Status = new[] {1}
-        }, token);
-        if (pendingWaitlists.Succeeded && pendingWaitlists.Result is not null && pendingWaitlists.Result.IsSuccess)
-        {
-            IsOnWaitlist = pendingWaitlists.Result.Result.Any(a => a.CustomerId == ProfileId);
-            var oteWaitlistDTOs = pendingWaitlists.Result.Result.Where(a => a.CustomerId == ProfileId);
-            foreach (var item in oteWaitlistDTOs)
-            {
-                WaitlistIds.Add(item.Id);
-            }
-        }
-
         //Get pending and approved
         var waitlist = await activityHandler.GetOteWaitlistByProvider(new Framework.ApiCommand.ApiCore.Activity.Request.GetOteWaitlistByProviderArgs
             {
@@ -1319,15 +1413,45 @@
             {
                 return new OteWaitlist
                 {
-                    Id = s.Id
+                    Id = s.Id,
+                    Status = s.Status,
+                    CustomerId = s.CustomerId,
+                    Payload = s.Payload
                 };
             }).ToList();
         }
+        //Get Waitlist Order
+        foreach(var item in oteWaitlists)
+        {
+            var deserializedPayload = JsonConvert.DeserializeObject<Payload>(item.Payload);
+            if (deserializedPayload != null)
+            {
+                foreach (var ticket in deserializedPayload.Tickets)
+                {
+                    waitListCount += ticket.Count;
+                }
+            }
+        }
+        //Pending Waitlist
+        IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
+        var oteWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == ProfileId && a.Status == 1);
+        foreach (var item in oteWaitlistDTOs)
+        {
+            WaitlistIds.Add(item.Id);
+        }
+        //Approved Waitlist
+        IsApprovedWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 2);
+        var oteApprovedWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == ProfileId && a.Status == 2);
+        foreach (var item in oteApprovedWaitlistDTOs)
+        {
+            ApprovedWaitlistIds.Add(item.Id);
+        }
+
         //Check capacity limit
         if (activity.IsEventSoldOut)
         {
             int soldLimitedTickets = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
-            capacityLimit = (activity.Pricings.Sum(a => a.MaxSlots) + activity.CapacityCount) - soldLimitedTickets - oteWaitlists.Count();
+            capacityLimit = (activity.Pricings.Sum(a => a.MaxSlots) + activity.CapacityCount) - soldLimitedTickets - waitListCount;
         }
         else
         {
@@ -1492,15 +1616,6 @@
         public string EventName { get; set; }
     }
 
-    private class TicketDetails
-    {
-        public int Id { get; set; }
-
-        public int Count { get; set; }
-
-        public DateTime Date { get; set; }
-    }
-
     private class ActivityQuestion 
     {
         public int Id {get; set;}
@@ -1532,5 +1647,26 @@
         public int Id {get; set;}
         public string Question {get; set;}
         public string Answer {get; set;}
+    }
+    public class Payload
+    {
+        public IEnumerable<TicketDetails> Tickets { get; set; }
+        public IEnumerable<QuestionDetails> Questions { get; set; }
+    }
+
+    public class TicketDetails
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int OteDateId { get; set; }
+        public int Count { get; set; }
+        public DateTime Date { get; set; }
+    }
+
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 }
