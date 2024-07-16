@@ -16,7 +16,7 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
     {
         try
         {
-            throw new NotImplementedException();
+            
         }
         catch (Exception ex)
         {
