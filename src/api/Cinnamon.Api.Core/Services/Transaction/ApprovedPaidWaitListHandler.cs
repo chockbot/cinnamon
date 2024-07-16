@@ -17,18 +17,16 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IGetActivityHandler getActivityHandler;
-    private readonly IOteFindByHandler oteFindByHandler;
     private readonly ApplicationConfig applicationConfig;
 
     public ApprovedPaidWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IGetActivityHandler getActivityHandler,
-        IOteFindByHandler oteFindByHandler, ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.getActivityHandler = getActivityHandler;
-        this.oteFindByHandler = oteFindByHandler;
         this.applicationConfig = applicationConfig;
     }
     
