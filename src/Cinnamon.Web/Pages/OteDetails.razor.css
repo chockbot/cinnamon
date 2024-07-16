@@ -112,8 +112,11 @@ a {
   color: white;
   background: #343d4c;
 }
-.schedule-body {
-  /*padding: 24px;*/
+.schedule-location {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 24px;
 }
 .schedule-header-title {
   color: #fff;
@@ -193,12 +196,6 @@ a {
   padding-right: 24px;
   padding-left: 24px;
   align-items: center;
-}
-.event-schedule-time {
-  padding: 24px 24px 0px 24px;
-}
-.event-schedule-place {
-  padding: 24px;
 }
 .ticket-details-header {
   display: grid;
@@ -801,8 +798,26 @@ svg {
   .close-text {
     line-height: 25px;
   }
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
 }
 @media (min-width: 768px) and (max-width: 991px) {
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
   ::deep .cover-photo-img {
     width: 100%;
     height: auto;
