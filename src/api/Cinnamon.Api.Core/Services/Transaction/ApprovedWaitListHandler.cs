@@ -179,6 +179,8 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
                 EventDate = oteDate.Date,
                 EventLocation = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.PinnedLocation}".Trim(),
                 EventName = oteActivity.EventName,
+                ApprovedLink = resultLink,
+                PaidTicket = havePaidTickets
             });           
 
             return AppResult<ApprovedWaitListResult>.CreateSucceeded(new ApprovedWaitListResult {Link = resultLink}, "Successfully approved waitlist.");
