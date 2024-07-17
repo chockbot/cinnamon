@@ -18,6 +18,28 @@ public class OteWaitlistController : ControllerBase
         this.oteWaitlistRepository = oteWaitlistRepository;
         this.mapper = mapper;
     }
+
+    [Route("{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetWaitListResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetWaitList(int id)
+    {
+        try
+        {
+            var result = await oteWaitlistRepository.GetWaitList(id);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetWaitListResult { ErrorInfo = new ErrorInfo { Message = result.Message } }); 
+            }
+
+            return new JsonResult(new GetWaitListResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetWaitListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("CreateOteWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateOteWaitlistResult), StatusCodes.Status200OK)]

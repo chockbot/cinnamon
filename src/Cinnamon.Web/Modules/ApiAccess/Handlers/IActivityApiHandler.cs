@@ -76,4 +76,5 @@ public interface IActivityApiHandler
     Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token);
     Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args);
     Task<AppResult<TopBookedCustomersResult>> TopBookedCustomers(TopBookedCustomersArgs args);
+    Task<AppResult<ApproveWaitListResult>> ApprovedWaitList(ApprovedWaitListArgs args, string token);
 }
