@@ -24,11 +24,13 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IPurchaseOrderData purchaseOrderData;
 
     public ApprovedFreeWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IOteTicketData oteTicketData,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler,
-        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig)
+        ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig,
+        IPurchaseOrderData purchaseOrderData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -38,6 +40,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         this.getActivityHandler = getActivityHandler;
         this.tokenGeneratedData = tokenGeneratedData;
         this.applicationConfig = applicationConfig;
+        this.purchaseOrderData = purchaseOrderData;
     }
 
     public AppResult<ApprovedFreeWaitListResult> Execute(ApprovedFreeWaitListArgs args)
@@ -96,6 +99,21 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                     new ApplicationException("Unable to locate selected tickets."), "Unable to locate selected tickets.");
             }
 
+            var purchaseOrderRes = await purchaseOrderData.GetPurchaseOrderById(deserializedPayload.TransactionId);
+            if(!purchaseOrderRes.Succeeded || purchaseOrderRes.Result is null || !purchaseOrderRes.Result.IsSuccess)
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("Unable to locate transaction."), "Unable to locate transaction.");
+            }
+            var purchaseOrder = purchaseOrderRes.Result.Result;
+
+            var purchaseOrderPayload = jsonSerializationProvider.Deserialize<PurchaseOrderPayload>(purchaseOrder.Payload);
+            if(purchaseOrderPayload is null || string.IsNullOrEmpty(purchaseOrderPayload.Guid) || string.IsNullOrEmpty(purchaseOrderPayload.Token))
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("Invalid transaction payload."), "Invalid transaction payload.");
+            }
+
             foreach(var item in deserializedPayload.Tickets)
             {
                 var qrcode = CreateCode();
@@ -128,23 +146,15 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                     new ApplicationException("An error occured when creating tickets."), "An error occured when creating tickets.");
             }
 
-            // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
             var tokenGeneratedPayload = new {
                 PurchaseOrderId = deserializedPayload.TransactionId
             };
             var serializedTokenPayload = jsonSerializationProvider.Serialize(tokenGeneratedPayload);
 
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = guid.ToString(),
+                Guid = purchaseOrderPayload.Guid,
                 Payload = serializedTokenPayload,
-                Token = encodedToken,
+                Token = purchaseOrderPayload.Token,
                 TokenType = "OTE-TICKET"
             });
             if(!createTokenRes.Succeeded || createTicketRes.Result is null || !createTicketRes.Result.IsSuccess)
@@ -157,8 +167,8 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
             var url = applicationConfig.FrontendUrl
                 .AppendPathSegment("transactions")
                 .AppendPathSegment("ote-tickets")
-                .AppendPathSegment(guid.ToString())
-                .AppendPathSegment(encodedToken);
+                .AppendPathSegment(purchaseOrderPayload.Guid)
+                .AppendPathSegment(purchaseOrderPayload.Token);
 
             IDictionary<int, int> ticketSolds = new Dictionary<int, int>();
 
@@ -234,5 +244,11 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
     {
         public IEnumerable<Ticket> Tickets {get; set;}
         public int TransactionId {get; set;}
-    }
+   }
+
+   private class PurchaseOrderPayload 
+   {
+        public string Guid {get; set;}
+        public string Token {get; set;}
+   }
 }
