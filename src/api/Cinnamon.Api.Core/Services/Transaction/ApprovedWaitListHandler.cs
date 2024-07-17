@@ -79,34 +79,6 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
 
             bool havePaidTickets = deserializedPayload.Tickets.Any(t => t.Price > 0);
 
-            string resultLink = string.Empty;
-
-            if(havePaidTickets)
-            {
-                var approvedPaidRes = await approvedPaidWaitListHandler.ExecuteAsync(new ApprovedPaidWaitListArgs {
-                    WaitListId = args.WaitListId
-                });
-                if(!approvedPaidRes.Succeeded || approvedPaidRes.Result is null)
-                {
-                    return AppResult<ApprovedWaitListResult>.CreateFailed(new ApplicationException(approvedPaidRes.Message), approvedPaidRes.Message);
-                }
-
-                resultLink = approvedPaidRes.Result.PurchaseLink;
-            }
-
-            if(!havePaidTickets)
-            {
-                var approvedFreeRes = await approvedFreeWaitListHandler.ExecuteAsync(new ApprovedFreeWaitListArgs {
-                    WaitListId = args.WaitListId
-                });
-                if(!approvedFreeRes.Succeeded || approvedFreeRes.Result is null)
-                {
-                    return AppResult<ApprovedWaitListResult>.CreateFailed(new ApplicationException(approvedFreeRes.Message), approvedFreeRes.Message);
-                }
-
-                resultLink = approvedFreeRes.Result.TicketLink;
-            }
-
             var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
                 ActivityId = waitlist.ActivityId,
                 IncludeCustomer = true,
@@ -137,6 +109,50 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
                     new ApplicationException("Unable to find ote date id."), "Unable to find ote date id.");
             }
 
+            string resultLink = string.Empty;
+
+            if(havePaidTickets)
+            {
+                var approvedPaidRes = await approvedPaidWaitListHandler.ExecuteAsync(new ApprovedPaidWaitListArgs {
+                    WaitListId = args.WaitListId
+                });
+                if(!approvedPaidRes.Succeeded || approvedPaidRes.Result is null)
+                {
+                    return AppResult<ApprovedWaitListResult>.CreateFailed(new ApplicationException(approvedPaidRes.Message), approvedPaidRes.Message);
+                }
+
+                resultLink = approvedPaidRes.Result.PurchaseLink;
+            }
+
+            if(!havePaidTickets)
+            {
+                var approvedFreeRes = await approvedFreeWaitListHandler.ExecuteAsync(new ApprovedFreeWaitListArgs {
+                    WaitListId = args.WaitListId
+                });
+                if(!approvedFreeRes.Succeeded || approvedFreeRes.Result is null)
+                {
+                    return AppResult<ApprovedWaitListResult>.CreateFailed(new ApplicationException(approvedFreeRes.Message), approvedFreeRes.Message);
+                }
+
+                resultLink = approvedFreeRes.Result.TicketLink;
+            }
+
+            var updateWaitListRes = await activityData.UpdateOteWaitlist(new Framework.ApiCommand.ApiData.OteWaitlist.Request.UpdateOteWaitlistArgs {
+                ActivityId = waitlist.ActivityId,
+                CustomerId = waitlist.CustomerId,
+                CustomerName =  waitlist.CustomerName,
+                Id = waitlist.Id,
+                Payload = waitlist.Payload,
+                ProviderId = waitlist.ProviderId,
+                ScheduleId = waitlist.ScheduleId,
+                Status = 2
+            });
+            if(!updateWaitListRes.Succeeded || updateWaitListRes.Result is null || !updateWaitListRes.Result.IsSuccess)
+            {
+                return AppResult<ApprovedWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured when approving waitlist."), "An error occured when approving waitlist.");
+            }
+
             string subject = string.Empty, body = string.Empty;
 
             // get custom subject and custom body for approve waitlist
@@ -163,7 +179,7 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
                 EventDate = oteDate.Date,
                 EventLocation = oteActivity.ExperienceTypeId == 2 ? "Online" : $"{oteActivity.PinnedLocation}".Trim(),
                 EventName = oteActivity.EventName,
-            });
+            });           
 
             return AppResult<ApprovedWaitListResult>.CreateSucceeded(new ApprovedWaitListResult {Link = resultLink}, "Successfully approved waitlist.");
         }
