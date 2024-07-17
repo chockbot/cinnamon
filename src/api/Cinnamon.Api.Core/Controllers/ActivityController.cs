@@ -3618,7 +3618,7 @@ public class ActivityController : ControllerBase
     }
 
     [Route("ApprovedWaitList")]
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(typeof(ApproveWaitListResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> ApprovedWaitList([FromBody] ApprovedWaitListArgs args)
     {

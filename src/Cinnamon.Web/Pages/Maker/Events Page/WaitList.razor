@@ -313,27 +313,18 @@
 
     public async Task ApprovedWaitlist()
     {
-        var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
-            {
-                Id            = WaitlistDetails.Id,
-                ActivityId    = WaitlistDetails.ActivityId,
-                ScheduleId    = WaitlistDetails.ScheduleId,
-                CustomerId    = WaitlistDetails.CustomerId,
-                CustomerEmail = WaitlistDetails.CustomerEmail,
-                CustomerName  = WaitlistDetails.CustomerName,
-                ProviderId    = WaitlistDetails.ProviderId,
-                EventDate     = WaitlistDetails.EventDate,
-                Status        = 2,
-                Payload       = WaitlistDetails.Payload
-            }, Token);
+        var approveWaitlist = await activityApiHandler.ApprovedWaitList(new Framework.ApiCommand.ApiCore.Activity.Request.ApprovedWaitListArgs {
+            WaitListId = WaitlistDetails.Id
+        }, Token);
+
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
             await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Success("Successfully approved waitlist.", "Success");
-
         }
     }
+    
     public async Task DeclineWaitlist()
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
