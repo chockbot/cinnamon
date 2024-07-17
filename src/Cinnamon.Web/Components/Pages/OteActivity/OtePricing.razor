@@ -260,8 +260,7 @@
             <p class="font-20 font-weight-700 color-black-100 mb-0">Registration</p>
         </ModalHeader>
         <ModalBody class="px-4">
-            <p class="approval-text">Close registration to stop accepting new guests, including anyone who may have been invited.</p>
-            <p class="approval-text">Please note that capacity and availability settings apply when registration is open.</p>
+            <p class="approval-text">Close registration to stop accepting new guests or stop selling tickets. Please note that capacity, availability and registration question settings apply when registration is open.</p>
             <div class="accept-reg">
                 <p class="approval">Accept Registration</p>
                 <div class="form-check form-switch">
@@ -364,14 +363,14 @@
 <Modal @ref="capacityModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            <p class="font-20 font-weight-700 color-black-100 mb-0">Max Capacity</p>
+            <p class="font-20 font-weight-700 color-black-100 mb-0">Waitlist</p>
         </ModalHeader>
         <ModalBody class="px-4">
-            <p class="approval-text">Auto-close registration when the capacity is reached. Only approved guests count toward the cap.</p>
-            <p class="field-title">Capacity</p>
+            <p class="approval-text">When turned on, customers can join the waitlist up to the number indicated below.</p>
+            <p class="field-title">Number of waitlist slot</p>
              <NumericPicker Placeholder="0" ShowStepButtons="false" TValue="int" class="capacity-input" @bind-Value="ModelState.CapacityCount" Disabled="!ModelState.IsCapacity"></NumericPicker>
             <div class="accept-capacity">
-                <p class="approval">Over-Capacity Waitlist</p>
+                <p class="approval">Waitlist</p>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(ModelState.IsCapacity)" @onchange="((e) => CheckCapacity(e))">
                 </div>

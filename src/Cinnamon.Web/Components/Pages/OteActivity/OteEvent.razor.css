@@ -1,3 +1,45 @@
+/*switch css*/
+.switch-light.switch-candy span span, .switch-light.switch-candy input:checked ~ span span:first-child, .switch-toggle.switch-candy label {
+    width: 100px;
+    text-shadow: none;
+    color: #717171;
+    padding: 8px;
+}
+
+.switch-toggle.switch-candy, .switch-light.switch-candy > span {
+    background-color: #E5E5E5;
+    border-radius: 8px;
+    box-shadow: none;
+}
+    .switch-light.switch-candy span span, .switch-light.switch-candy input:checked ~ span span:first-child, .switch-toggle.switch-candy label {
+        font-weight: bold;
+        text-align: center;
+        width: 120px;
+    }
+
+.switch-candy a {
+    background-color: white;
+    border-radius: 8px;
+    color: #343D4C;
+    border: 1px solid #E5E5E5;
+}
+
+.switch-light.switch-candy input ~ span span:first-child, .switch-light.switch-candy input:checked ~ span span:nth-child(2), .switch-candy input:checked + label {
+    padding: 8px;
+    border-radius: 8px;
+    color: #717171;
+}
+
+.switch-light.switch-candy span span[b-mhgi7i39ne], .switch-light.switch-candy input:checked ~ span span:first-child[b-mhgi7i39ne], .switch-toggle.switch-candy label[b-mhgi7i39ne] {
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.location-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .create-title {
     color: #343D4C;
     font-size: 20px;
@@ -213,4 +255,12 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
+}
+
+@media only screen and (min-width: 0px) and (max-width: 1399px) {
+    .location-section {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        margin-bottom: 20px;
+    }
 }
