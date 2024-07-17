@@ -138,8 +138,14 @@
             <div class="d-flex mt-2 justify-content-center gap-1">
                 @if(WaitlistDetails.Status == 1)
                 {
-                    <Button class="ticket-approve" Clicked="ApprovedWaitlist">
-                        Approve
+                    <Button class="ticket-approve" Disabled="approving" 
+                        Loading="approving" Clicked="ApprovedWaitlist">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Approve
+                        </ChildContent>
                     </Button>
                     <Button class="ticket-decline" Clicked="DeclineWaitlist">
                         Decline
@@ -216,6 +222,8 @@
     public OteWaitlist WaitlistDetails { get; set; }
 
     private Offcanvas? offcanvas;
+
+    private bool approving = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -313,9 +321,13 @@
 
     public async Task ApprovedWaitlist()
     {
+        approving = true;
+
         var approveWaitlist = await activityApiHandler.ApprovedWaitList(new Framework.ApiCommand.ApiCore.Activity.Request.ApprovedWaitListArgs {
             WaitListId = WaitlistDetails.Id
         }, Token);
+
+        approving = false;
 
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
