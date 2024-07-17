@@ -117,7 +117,6 @@ public class CreateOteArgs
         [Required]
         public bool IsAbsorbFees {get; set;}
 
-        [Required]
         public int MaxSlots {get; set;}
 
         [Required]
@@ -125,6 +124,8 @@ public class CreateOteArgs
 
         [Required]
         public bool RequiredApproval {get; set;}
+        [Required]
+        public bool IsUnlimited { get; set; }
     }
 
     public class OteOnlineEvent

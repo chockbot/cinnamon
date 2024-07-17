@@ -16,4 +16,5 @@ public class OtePricingDTO
     public int OteSchedulePricingsId { get; set; }
     public int OteSchedulePricingGroupId { get; set; }
     public bool RequiredApproval {get; set;}
+    public bool IsUnlimited { get; set; }
 }

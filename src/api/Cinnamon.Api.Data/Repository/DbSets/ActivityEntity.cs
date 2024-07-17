@@ -376,6 +376,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							priceGroup.MaxSlots = price.MaxSlots;
 							priceGroup.Price = price.Price;
 							priceGroup.Name = price.Name;
+							priceGroup.IsUnlimited = price.IsUnlimited;
 							priceGroup.RequiredApproval = price.RequiredApproval;
 
 							var priceList = result.OteSchedule.OteSchedulePricing.Where(p => p.OteSchedulePricingGroupId == priceGroup.Id);
@@ -388,6 +389,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 									ticketPrice.MaxSlots = price.MaxSlots;
 									ticketPrice.Price = price.Price;
 									ticketPrice.Name = price.Name;
+									ticketPrice.IsUnlimited = price.IsUnlimited;
 									ticketPrice.RequiredApproval = price.RequiredApproval;
 								}
 							}
@@ -403,6 +405,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 							Name = p.Name,
 							Price = p.Price,
 							RequiredApproval = p.RequiredApproval,
+							IsUnlimited = p.IsUnlimited,
 							OteSchedule = result.OteSchedule
 						};
 					});
@@ -422,6 +425,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 								TicketSold = item.TicketSold,
 								OteSchedule = result.OteSchedule,
 								OteSchedulePricingGroup = item,
+								IsUnlimited = item.IsUnlimited,
 								RequiredApproval = item.RequiredApproval
 							});
 						}

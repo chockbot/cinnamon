@@ -80,22 +80,61 @@
         </Validations>
         <Divider/>
         @*Location*@
-        <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
-           Location
-        </FieldLabel>
-        <div id="event-type" class="d-flex mb-3 m-margin-bottom-30">
-        <RadioGroup TValue="int" Name="experience-type" CheckedValue="@ModelState.SelectedType" CheckedValueChanged="CheckExperienceTypeChanged">
-            <p class="font-20 d-none m-d-block color-black-100 mb-1">Type of experience</p>
-            <label for="type-online" class="bg-white-100 border-radius-10 prevent-select me-4
-                text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200 m-margin-right-5">
-                <Radio class="checkbox-round" ElementId="type-online" TValue="int" Value="2">Online</Radio>
-            </label>
-            <label for="type-in-person" class="bg-white-100 border-radius-10 prevent-select 
-                text-capitalize cursor-pointer m-border-width-1 m-border-style-solid m-border-radius-5 m-border-color-grey-200">
-                <Radio class="checkbox-round" ElementId="type-in-person" TValue="int" Value="1">In-Person</Radio>
-            </label>
-        </RadioGroup>
-    </div>
+        <div class="location-section">
+            <div class="event-type">
+                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                    Location
+                </FieldLabel>
+                <div id="event-type" class="d-flex mb-3 m-margin-bottom-30">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="switch-light switch-candy" onclick="">
+                            <input type="checkbox" @onchange="CheckboxChanged" checked="@(ModelState.SelectedType == 1 ? true : false)">
+                            <span>
+                                <span>Online</span>
+                                <span>Face to Face</span>
+                                <a></a>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="display-preference">
+                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                    Display Preferences
+                </FieldLabel>
+                <fieldset>
+                    @if(ModelState.imageItems.Count != 0)
+                    {
+                        <div class="switch-toggle switch-candy">
+                            <input id="public" @onchange="@(()=>CheckboxChanged(2))" name="view" type="radio" checked=@ModelState.IsPublic>
+                            <label for="public">Public</label>
+
+                            <input id="private" @onchange="@(()=>CheckboxChanged(3))" name="view" type="radio" checked=@ModelState.IsPrivate>
+                            <label for="private">Private</label>
+
+                            <input id="coming-soon" @onchange="@(()=>CheckboxChanged(1))" name="view" type="radio" checked=@ModelState.IsComingSoon>
+                            <label for="coming-soon">Coming Soon</label>
+                            <a></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="switch-toggle switch-candy">
+                            <input id="public" @onchange="@(()=>CheckboxChanged(2))" name="view" type="radio" checked>
+                            <label for="public">Public</label>
+
+                            <input id="private" @onchange="@(()=>CheckboxChanged(3))" name="view" type="radio">
+                            <label for="private">Private</label>
+
+                            <input id="coming-soon" @onchange="@(()=>CheckboxChanged(1))" name="view" type="radio">
+                            <label for="coming-soon">Coming Soon</label>
+                            <a></a>
+                        </div>
+                    }
+
+                </fieldset>
+            </div>
+        </div>
         <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
            Event Location
         </FieldLabel>
@@ -175,29 +214,6 @@
             </Column>
         </Row>
         <Divider />
-        <FieldLabel class="font-20 text-capitalize color-black-100 mb-3 m-font-18">
-            Display Preferrence
-        </FieldLabel>
-        <div class="mb-2">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="public-details-page" checked="@ModelState.IsPublic" @onchange="@(()=>CheckboxChanged(2))" value="2">
-                <label class="form-check-label" for="public-details-page">
-                    Public
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="private-details-page" checked="@ModelState.IsPrivate" @onchange="@(()=>CheckboxChanged(3))" value="3">
-                <label class="form-check-label" for="private-details-page">
-                    Private
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="display-type" id="coming-soon" checked="@ModelState.IsComingSoon" @onchange="@(()=>CheckboxChanged(1))" value="1">
-                <label class="form-check-label" for="coming-soon">
-                    Display a Coming Soon Page
-                </label>
-            </div>
-        </div>
     </div>
     <ImageCropper @ref="imageCropper" />
     <OteRouteButtons NextButtonExtraClass="m-width-100" HavePrevious="false" OnNextClick="NextClick" />
@@ -218,6 +234,7 @@
     public Validation? eventNameValidation;
     public Validation? eventDescriptionValidation;
     public bool showErrors = false;
+    private bool isOnline = false;
     public IDictionary<string, Barangay> barangays = new Dictionary<string, Barangay>();
     public IDictionary<string, Region> regions = new Dictionary<string, Region>();
     public IDictionary<string, City> cities = new Dictionary<string, City>();
@@ -250,6 +267,10 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadRegions();
+        if (ModelState is null)
+        {
+            ModelState.IsPublic = true;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -619,6 +640,7 @@
             RegionName     = ModelState.Region.Name,
             ComingSoon     = ModelState.ComingSoon,
             IsPublish      = ModelState.Publish,
+
         };
         return data;
     }
@@ -721,8 +743,8 @@
         public string CityCode {get; set;}
         public string BarangayName {get; set;}
         public string BarangayCode {get; set;}
-        public bool IsPublish { get; set; }
-        public bool ComingSoon { get; set; }
+        public bool IsPublish { get; set; } = true;
+        public bool ComingSoon { get; set; } =false;
         public IList<ImageItem> images { get; set; }
         //Display Preferrence
         public bool IsPublic => IsPublish && !ComingSoon;
@@ -772,9 +794,9 @@
         public IList<ImageItem> imageItems = new List<ImageItem>();
 
         //Display Preferrence
-        public bool IsPublic { get; set; }
-        public bool IsPrivate { get; set; }
-        public bool IsComingSoon { get; set; }
+        public bool IsPublic { get; set; } = true;
+        public bool IsPrivate { get; set; } = false;
+        public bool IsComingSoon { get; set; } = false;
 
     }
 
@@ -880,9 +902,9 @@
         //delete old images
         var oldSeatPlanImage = ModelState.imageItems.Where(i => i.Order == 100);
         foreach (var item in oldSeatPlanImage)
-            {
-                deletedIds.Add(item.Id);
-            }
+        {
+            deletedIds.Add(item.Id);
+        }
         var options = new
         {
             imgSelector = $"#{setplanPhoto.ImageSrcId}",
@@ -899,7 +921,7 @@
         try
         {
             var selectors = new List<ImageSelector>();
-             if (coverPhoto.Display)
+            if (coverPhoto.Display)
             {
                 selectors.Add(new ImageSelector
                     {
@@ -963,6 +985,16 @@
             ModelState.Publish      = true;
             ModelState.ComingSoon   = true;
             ModelState.IsComingSoon = true;
+        }
+    }
+    private async Task CheckboxChanged(ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            ModelState.SelectedType = isChecked ? 1 : 2;
+            showErrors = false;
+            ClearLocationFields();
+            await formValidation.ClearAll();
         }
     }
 }

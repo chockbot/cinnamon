@@ -26,15 +26,28 @@
             </div>
             <Divider/>
             <div class="ticket-availability">
-                @if(ticket.OtePricing.MaxSlots <= ticket.OtePricing.Sold)
+                @if (!ticket.OtePricing.IsUnlimited)
                 {
-                    <div class="sold-ticket">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none">
-                            <circle cx="5" cy="5.5" r="5" fill="#AD0C0C" />
-                        </svg>
-                        <p class="sold-value">Sold Out</p>
-                    </div>
-                    <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                    @if (ticket.OtePricing.MaxSlots <= ticket.OtePricing.Sold)
+                    {
+                        <div class="sold-ticket">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none">
+                                <circle cx="5" cy="5.5" r="5" fill="#AD0C0C" />
+                            </svg>
+                            <p class="sold-value">Sold Out</p>
+                        </div>
+                        <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                    }
+                    else
+                    {
+                        <div class="sold-ticket">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" fill="none">
+                                <circle cx="5" cy="5.5" r="5" fill="#009220" />
+                            </svg>
+                            <p class="sold-value">Available</p>
+                        </div>
+                        <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                    }
                 }
                 else
                 {
@@ -44,8 +57,9 @@
                         </svg>
                         <p class="sold-value">Available</p>
                     </div>
-                    <p class="sold-value">@ticket.OtePricing.Sold/@ticket.OtePricing.MaxSlots</p>
+                    <p class="sold-value">@ticket.OtePricing.Sold/∞</p>
                 }
+                
             </div>
         </div>
     }

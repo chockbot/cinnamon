@@ -123,8 +123,6 @@ public class CreateOteActivityArgs
         [Required]
         public bool IsAbsorbFees {get; set;}
 
-        [Required]
-        [Range(1, int.MaxValue)]
         public int MaxSlots {get; set;}
 
         [Required]
@@ -132,6 +130,8 @@ public class CreateOteActivityArgs
 
         [Required]
         public bool RequiredApproval {get; set;}
+        [Required]
+        public bool IsUnlimited { get; set; }
     }
 
     public class OteOnlineEvent

@@ -112,8 +112,11 @@ a {
   color: white;
   background: #343d4c;
 }
-.schedule-body {
-  /*padding: 24px;*/
+.schedule-location {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 24px;
 }
 .schedule-header-title {
   color: #fff;
@@ -194,12 +197,6 @@ a {
   padding-left: 24px;
   align-items: center;
 }
-.event-schedule-time {
-  padding: 24px 24px 0px 24px;
-}
-.event-schedule-place {
-  padding: 24px;
-}
 .ticket-details-header {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -224,16 +221,27 @@ a {
   font-weight: 400;
   line-height: normal;
 }
+.ticket-unli {
+    border-radius: 4px;
+    background: #EDFFED;
+    padding: 5px;
+    color: #34A853;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
+}
 .ticket-sold-out {
-  border-radius: 4px;
-  background: #f35252;
-  padding: 5px;
-  color: #fff;
-  text-align: center;
-  font-family: Nunito;
-  font-size: 10px;
-  font-weight: 700;
-  vertical-align: central;
+    border-radius: 4px;
+    background: #f35252;
+    padding: 5px;
+    color: #fff;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 10px;
+    font-weight: 700;
+    vertical-align: central;
 }
 .tickets-left {
   border-radius: 4px;
@@ -366,7 +374,7 @@ svg {
   height: 24px;
 }
 .ticket-waitlist {
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   display: flex;
   gap: 10px;
@@ -388,12 +396,13 @@ svg {
   margin-bottom: 2rem;
 }
 .waitlist-section {
-  padding-top: 10px;
-  padding-left: 24px;
-  padding-bottom: 10px;
-  background-color: #f3f6fc;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+    padding-top: 10px;
+    padding-left: 24px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    background-color: #f3f6fc;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
 .user-leave {
   text-decoration: underline;
@@ -790,8 +799,26 @@ svg {
   .close-text {
     line-height: 25px;
   }
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
 }
 @media (min-width: 768px) and (max-width: 991px) {
+    .schedule-location {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 16px;
+        padding-right: 0;
+    }
   ::deep .cover-photo-img {
     width: 100%;
     height: auto;

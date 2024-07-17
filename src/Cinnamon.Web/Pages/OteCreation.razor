@@ -725,6 +725,7 @@
                             MaxSlots = p.MaxSlots ?? 0,
                             Price = p.Price ?? 0m,
                             Name = p.Name,
+                            IsUnlimited = p.IsUnlimited,
                             RequiredApproval = p.RequiredApproval
                         };
                     }),
@@ -838,12 +839,13 @@
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
-                        Description  = p.Description ?? string.Empty,
-                        Id           = p.Id,
-                        IsAbsorbFees = p.AbsorbFees,
-                        MaxSlots     = p.MaxSlots ?? 0,
-                        Price        = p.Price ?? 0m,
-                        Name         = p.Name,
+                        Description      = p.Description ?? string.Empty,
+                        Id               = p.Id,
+                        IsAbsorbFees     = p.AbsorbFees,
+                        MaxSlots         = p.MaxSlots ?? 0,
+                        Price            = p.Price ?? 0m,
+                        Name             = p.Name,
+                        IsUnlimited      = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),
@@ -1086,18 +1088,20 @@
         pricingModel.IsOpen           = ote.OteSchedule.IsOpen;
         pricingModel.IsCapacity       = ote.OteSchedule.IsCapacity;
         pricingModel.CapacityCount    = ote.OteSchedule.CapacityCount;
+
         await otePricing?.SetState(new OtePricing.ModelData {
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings
                 .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);
                 return new OtePricing.ModelData.ItemPrice {
-                    AbsorbFees = p.IsAbsorbFees,
-                    Description = p.Description,
-                    Id = p.Id,
-                    MaxSlots = p.MaxSlots,
-                    Price = p.Price,
-                    Name = p.Name,
-                    TicketSold = totalTicketsSold,
+                    AbsorbFees       = p.IsAbsorbFees,
+                    Description      = p.Description,
+                    Id               = p.Id,
+                    MaxSlots         = p.MaxSlots,
+                    Price            = p.Price,
+                    Name             = p.Name,
+                    TicketSold       = totalTicketsSold,
+                    IsUnlimited      = p.IsUnlimited,
                     RequiredApproval = p.RequiredApproval
                 };
             }).ToList(),
