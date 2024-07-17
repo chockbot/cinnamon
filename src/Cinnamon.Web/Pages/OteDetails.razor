@@ -276,38 +276,38 @@
                                                 </p>
                                                 @if (activity.IsEventSoldOut)
                                                 {
-                                                    if (!item.IsUnlimited)
+                                                    if (IsLimit)
                                                     {
-                                                        if (IsLimit)
+                                                        if (ticketCount != 0)
                                                         {
-                                                            if (ticketCount != 0)
+                                                            if (ticketCount == activity.EventTicketLimit)
                                                             {
-                                                                if (ticketCount <= capacityLimit)
-                                                                {
-                                                                    if (ticketCount == activity.EventTicketLimit)
-                                                                    {
-                                                                        stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "ticket is" : "tickets are")} available to add.";
-                                                                }
+                                                                stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
                                                             }
                                                             else
                                                             {
-                                                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "ticket is" : "tickets are")} available to add.";
+                                                            stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
                                                         }
-
+                                                    }
+                                                    else
+                                                    {
+                                                        if (capacityLimit <= 0)
+                                                        {
+                                                            stringMaxTicket = "";
+                                                        }
+                                                        else
+                                                        {
+                                                             stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "customer" : "customers")} can join waitlist.";
+                                                        }
+                                                    }
+                                                    //Ticket Add and Subtract
+                                                    if (!item.IsUnlimited)
+                                                    {
                                                         <div data-disabled="@(capacityLimit <= 0)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                             <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
                                                                 <span class="item-action">-</span>
@@ -344,7 +344,7 @@
                                                         }
                                                         else
                                                         {
-                                                            stringMaxTicket = string.Empty;
+                                                            stringMaxTicket = "";
                                                         }
                                                         <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                             <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
@@ -364,13 +364,34 @@
                                                                 {
                                                                      <span class="item-action p-2">+</span>
                                                                 }
-
                                                             </span>
-                                                    </div>
+                                                        </div>
                                                     }
                                                 }
                                                 else
                                                 {
+                                                    if (IsLimit)
+                                                    {
+                                                        if (ticketCount != 0)
+                                                        {
+                                                            if (ticketCount == activity.EventTicketLimit)
+                                                            {
+                                                                stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                            }
+                                                            else
+                                                            {
+                                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        stringMaxTicket = "";
+                                                    }
                                                     <div data-disabled="@(item.MaxSlots <= item.TicketSold && !item.IsUnlimited)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                         <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
                                                             <span class="item-action">-</span>
@@ -392,7 +413,6 @@
                                                         </span>
                                                     </div>
                                                 }
-
                                             </div>
                                             <Divider />
                                         }
@@ -1123,8 +1143,15 @@
 
     private Task AddSelectedTicket(OtePricing pricing, int limitTicket)
     {
-        if (pricing.IsUnlimited)
+        if (pricing.IsUnlimited || activity.IsEventSoldOut)
         {
+            if (activity.IsEventSoldOut && !pricing.IsUnlimited)
+            {
+                if (capacityLimit <= 0)
+                {
+                    return Task.CompletedTask;
+                }
+            }
             if (selectedTickets.ContainsKey(pricing.Id))
             {
                 if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
@@ -1151,11 +1178,12 @@
                 {
                     selectedTickets.Add(pricing.Id, new TicketInfo
                         {
-                            Count       = 1,
-                            Id          = pricing.Id,
-                            Price       = pricing.Price,
-                            Name        = pricing.Name,
-                            IsUnlimited = pricing.IsUnlimited
+                            Count            = 1,
+                            Id               = pricing.Id,
+                            Price            = pricing.Price,
+                            Name             = pricing.Name,
+                            RequiredApproval = pricing.RequiredApproval,
+                            IsUnlimited      = pricing.IsUnlimited
                         });
                 }
 
@@ -1164,100 +1192,51 @@
         }
         else
         {
-            if (activity.IsEventSoldOut)
+            if (pricing.TicketSold >= pricing.MaxSlots)
             {
-                if (capacityLimit <= 0)
+                return Task.CompletedTask;
+            }
+            if (selectedTickets.ContainsKey(pricing.Id))
+            {
+                if (selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
                 {
                     return Task.CompletedTask;
                 }
-                if (selectedTickets.ContainsKey(pricing.Id))
+                if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
                 {
-                    if (selectedTickets[pricing.Id].Count >= (capacityLimit))
-                    {
-                        return Task.CompletedTask;
-                    }
-                    if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    selectedTickets[pricing.Id].Count++;
+                    return Task.CompletedTask;
                 }
-                else
+                if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
                 {
-                    if (limitTicket == 0 && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    else if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    else
-                    {
-                        selectedTickets.Add(pricing.Id, new TicketInfo
-                            {
-                                Count = 1,
-                                Id = pricing.Id,
-                                Price = pricing.Price,
-                                Name = pricing.Name,
-                                IsUnlimited = pricing.IsUnlimited
-                            });
-                    }
-
+                    return Task.CompletedTask;
                 }
-                return Task.CompletedTask;
+                selectedTickets[pricing.Id].Count++;
             }
             else
             {
-                if (pricing.TicketSold >= pricing.MaxSlots)
+                if (limitTicket == 0 && IsLimit && currentLogin is not null)
                 {
                     return Task.CompletedTask;
                 }
-                if (selectedTickets.ContainsKey(pricing.Id))
+                else if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
                 {
-                    if (selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
-                    {
-                        return Task.CompletedTask;
-                    }
-                    if (selectedTickets[pricing.Id].Count >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    selectedTickets[pricing.Id].Count++;
+                    return Task.CompletedTask;
                 }
                 else
                 {
-                    if (limitTicket == 0 && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    else if (selectedTickets.Sum(a => a.Value.Count) >= limitTicket && IsLimit && currentLogin is not null)
-                    {
-                        return Task.CompletedTask;
-                    }
-                    else
-                    {
-                        selectedTickets.Add(pricing.Id, new TicketInfo
-                            {
-                                Count = 1,
-                                Id = pricing.Id,
-                                Price = pricing.Price,
-                                Name = pricing.Name,
-                                IsUnlimited = pricing.IsUnlimited
-                            });
-                    }
-
+                    selectedTickets.Add(pricing.Id, new TicketInfo
+                        {
+                            Count            = 1,
+                            Id               = pricing.Id,
+                            Price            = pricing.Price,
+                            Name             = pricing.Name,
+                            RequiredApproval = pricing.RequiredApproval,
+                            IsUnlimited      = pricing.IsUnlimited
+                        });
                 }
-                return Task.CompletedTask;
+
             }
+            return Task.CompletedTask;
         }
     }
 
@@ -1420,18 +1399,6 @@
                 };
             }).ToList();
         }
-        //Get Waitlist Order
-        foreach(var item in oteWaitlists)
-        {
-            var deserializedPayload = JsonConvert.DeserializeObject<Payload>(item.Payload);
-            if (deserializedPayload != null)
-            {
-                foreach (var ticket in deserializedPayload.Tickets)
-                {
-                    waitListCount += ticket.Count;
-                }
-            }
-        }
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
         var oteWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1450,14 +1417,10 @@
         //Check capacity limit
         if (activity.IsEventSoldOut)
         {
-            int soldLimitedTickets = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
-            capacityLimit = (activity.Pricings.Sum(a => a.MaxSlots) + activity.CapacityCount) - soldLimitedTickets - waitListCount;
-        }
-        else
-        {
-            capacityLimit = (activity.Pricings.Sum(a => a.MaxSlots) + activity.CapacityCount);
+            capacityLimit = activity.CapacityCount - oteWaitlists.Count;
         }
     }
+
     private async Task RemoveFromWaitlist()
     {
         bool allSucceeded = true;
