@@ -14,6 +14,7 @@ using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using System.Globalization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DynamicContent;
+using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -92,6 +93,7 @@ public class ActivityController : ControllerBase
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IProviderQuestionsHandler providerQuestionsHandler;
     private readonly IActivityQuestionsHandler activityQuestionsHandler;
+    private readonly IApprovedWaitListHandler approvedWaitListHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -123,7 +125,7 @@ public class ActivityController : ControllerBase
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
         IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
         IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler,
-        IActivityQuestionsHandler activityQuestionsHandler)
+        IActivityQuestionsHandler activityQuestionsHandler, IApprovedWaitListHandler approvedWaitListHandler)
     {
         _logger = logger;
 
@@ -193,7 +195,8 @@ public class ActivityController : ControllerBase
         this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
         this.providerQuestionsHandler = providerQuestionsHandler;
         this.updateOteWaitlistHandler = updateOteWaitlistHandler;
-        this.activityQuestionsHandler = activityQuestionsHandler; 
+        this.activityQuestionsHandler = activityQuestionsHandler;
+        this.approvedWaitListHandler = approvedWaitListHandler;
     }
 
     [Route("CreateActivity")]
@@ -3611,6 +3614,34 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ApprovedWaitList")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ApproveWaitListResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ApprovedWaitList([FromBody] ApprovedWaitListArgs args)
+    {
+        try
+        {
+            var result = await approvedWaitListHandler.ExecuteAsync(new Services.TransactionService.Interactors.ApprovedWaitListArgs {
+                WaitListId = args.WaitListId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ApproveWaitListResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ApproveWaitListResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Link,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ApproveWaitListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
