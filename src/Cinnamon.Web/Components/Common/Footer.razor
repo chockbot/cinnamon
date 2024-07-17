@@ -1,89 +1,148 @@
 ﻿@namespace Cinnamon.Web.Components.Common
 @inject NavigationManager NavigationManager;
 
-<div class="footer mt-5">
-    <div class="section-4">
-        <div class="footer-container align-items-footer">
-            <div class="footer-info">
-                <p>
-                    Automate and simplify your Events Planning operations with easy and
-                    secure options with Cinnamon!
-                </p>
-            </div>
-            <div class="footer-text-media-container">
-                <div class="footer-nav">
-                    <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                    <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="section-4">
+            <!-- For much larger screens -->
+            <div class="footer-container-wider align-items-footer">
+                <div class="footer-info">
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                    <div class="footer-email-input">
+                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
+                        <button class="footer-email-button">Subscribe</button>
+                    </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
-                <div class="footer-support-email">
-                    <i class="far fa-envelope"></i>
-                    <p>support@cinnamon.ph</p>
+                    <div class="footer-text-about-container">
+                        <p class="footer-title-text">About</p>
+                        <div class="footer-nav">
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <p class="footer-title-text">Events & Solutions</p>
+                        <div class="footer-email-social-container">
+                            <div class="footer-nav-2">
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                        </div>
+                        <div class="footer-email-social-container"> 
+                            <p class="footer-title-text">Ways You Can Pay</p> 
+                            <div class="footer-final-social-media">
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
+                            </div> 
+                        </div>
+                    </div>
+            </div>
+            <!-- end of larger screens -->
+            <div class="footer-container align-items-footer">
+                <div class="footer-info">
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                    <div class="footer-email-input">
+                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
+                        <button class="footer-email-button">Subscribe</button>
+                    </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
+                    <div class="footer-text-about-container">
+                        <p class="footer-title-text-nav" @onclick="ToggleAboutUs">About</p>
+                        <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
+                        </div>
+                    </div>
+                    <div class="footer-text-events-container">
+                        <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
+                        <div class="footer-email-social-container">
+                        <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                        </div>
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Ways You Can Pay</p> 
+                            <div class="footer-final-social-media">
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
+                            </div> 
+                        </div>
+                    </div>
             </div>
-        </div>
-        <div class="line-container">
-            <div class="line"></div>
-        </div>
-        <div class="footer-final">
-            <div class="footer-logo">
-                <img src="images/explore-page-images/cinnamon-footer.png" />
-            </div>
-            <div class="footer-copyright">
-                <p>Copyright © 2023. All rights reserved.</p>
-            </div>
-            <div class="footer-final-social-media">
-                <i class="fab fa-facebook"></i>
-                <i class="fab fa-linkedin"></i>
-                <i class="fab fa-tiktok"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-youtube"></i>
-            </div>
-        </div>
-        <!-- For tablet view -->
-        <div class="footer-final-tablet">
-            <div class="footer-column">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
-                </div>
+            <div class="footer-final">
                 <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>
+                    <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                    <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div>
-            </div>
-            <div class="footer-final-social-media">
-                <i class="fab fa-facebook"></i>
-                <i class="fab fa-linkedin"></i>
-                <i class="fab fa-tiktok"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-youtube"></i>
-            </div>
-        </div>
-        <!-- end of tablet view -->
-        <!-- For Mobile view -->
-        <div class="footer-final-mobile">
-            <div class="footer-column">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
-                </div>
-                <div class="footer-final-social-media">
-                    <i class="fab fa-facebook" href="https://www.facebook.com/cinnamonexperience" target="_blank"></i>
-                    <i class="fab fa-linkedin" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"></i>
-                    <i class="fab fa-tiktok"></i>
-                    <i class="fab fa-instagram" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"></i>
-                    <i class="fab fa-youtube" target="_blank"></i>
-                </div>
-            </div>
-            <div class="footer-copyright">
-                <p>Copyright © 2023. All rights reserved.</p>
             </div>
         </div>
     </div>
-</div>
-
+    
 @code {
+    private bool isAboutUsVisible = false;
+    private bool isEventVisible = false;
 
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/help");
+    }
+
+    void ToggleAboutUs() => isAboutUsVisible = !isAboutUsVisible;
+    void ToggleEvents() => isEventVisible = !isEventVisible;
+
+    private void NavigateToPrivacyPolicy()
+    {
+        NavigationManager.NavigateTo("/help?section=privacy");
+    }
+
+    private void NavigateToTermsConditions()
+    {
+        NavigationManager.NavigateTo("/help?section=terms");
     }
 }
