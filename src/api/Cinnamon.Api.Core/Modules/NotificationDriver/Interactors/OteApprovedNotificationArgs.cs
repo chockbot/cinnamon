@@ -10,4 +10,6 @@ public class OteApprovedNotificationArgs : IInteractor
     public string CustomerEmail {get; set;}
     public DateTime EventDate {get; set;}
     public string EventLocation {get; set;}
+    public string ApprovedLink {get; set;}
+    public bool PaidTicket {get; set;}
 }
