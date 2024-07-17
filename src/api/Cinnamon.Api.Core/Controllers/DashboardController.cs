@@ -606,7 +606,8 @@ public class DashboardController : ControllerBase
                             Available             = s.OtePricingDTO.Available,
                             Price                 = s.OtePricingDTO.Price,
                             OteSchedulePricingsId = s.OtePricingDTO.OteSchedulePricingsId,
-                            RequiredApproval      = s.OtePricingDTO.RequiredApproval
+                            RequiredApproval      = s.OtePricingDTO.RequiredApproval,
+                            IsUnlimited           = s.OtePricingDTO.IsUnlimited
                         }
                     };
                 })
