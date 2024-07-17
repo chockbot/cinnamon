@@ -30,7 +30,8 @@ public class OteApprovedNotificationHandler : IOteApprovedNotificationHandler
     {
         try
         {
-            var emailBody = helper.GetTemplate(args.EventName, args.Body, args.CustomerName, args.EventDate, args.EventLocation);
+            var emailBody = helper.GetTemplate(args.EventName, args.Body, args.CustomerName, 
+                args.EventDate, args.EventLocation, args.ApprovedLink, args.PaidTicket);
             
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {

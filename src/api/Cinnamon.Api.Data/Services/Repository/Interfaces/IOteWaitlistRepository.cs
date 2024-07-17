@@ -10,4 +10,5 @@ public interface IOteWaitlistRepository
     Task<AppResult<OteWaitlistDTO>> CreateOteWaitlist(OteWaitlistDTO oteWaitlistDTO);
     Task<AppResult<OteWaitlistDTO>> UpdateOteWaitlist(OteWaitlistDTO oteWaitlistDTO);
     Task<AppResult<bool>> DeleteOteWaitlist(int Id);
+    Task<AppResult<OteWaitlistDTO>> GetWaitList(int id);
 }

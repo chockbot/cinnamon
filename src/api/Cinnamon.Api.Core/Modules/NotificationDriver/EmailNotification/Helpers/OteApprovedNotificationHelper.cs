@@ -2,7 +2,8 @@ namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers
 
 public class OteApprovedNotificationHelper
 {
-    public string GetTemplate(string eventName, string body, string customerName, DateTime eventDate, string eventLocation)
+    public string GetTemplate(string eventName, string body, string customerName, 
+        DateTime eventDate, string eventLocation, string approvedUrl, bool paidTicket)
     {
         string defaultBody = $@"
             <p style='margin: 0'>
@@ -10,10 +11,28 @@ public class OteApprovedNotificationHelper
             </p>
 
             <p style='margin-bottom: 1rem'>
-                Please bring a copy of this email as your ticket for entry. We look
+                Please bring a copy of your your ticket for entry. We look
                 forward to seeing you at the festival!
             </p>
         ";
+
+        string urlLinkSection = string.Empty;
+        if(paidTicket)
+        {
+            urlLinkSection = $@"
+                <p style='margin-bottom: 1rem'>
+                    Please follow the <a href='{approvedUrl}'>link</> to purchase the approved ticket.
+                </p>
+            ";
+        }
+        else 
+        {
+            urlLinkSection = $@"
+                <p style='margin-bottom: 1rem'>
+                    Use this <a href='{approvedUrl}'>Ticket Link</a> to view your ticket.
+                </p>
+            ";
+        }
 
         return $@"
         <div
@@ -58,6 +77,8 @@ public class OteApprovedNotificationHelper
                 </p>
 
                 {(string.IsNullOrEmpty(body) ? defaultBody : body)}
+
+                {urlLinkSection}
 
                 <p style='margin-bottom: 1rem'>Warm regards,</p>
 
