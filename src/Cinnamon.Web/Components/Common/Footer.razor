@@ -4,6 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
     <!--Footer-->
     <div class="footer">
         <div class="section-4">
@@ -21,22 +22,22 @@
                     <div class="footer-text-about-container">
                         <p class="footer-title-text">About</p>
                         <div class="footer-nav">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
                     </div>
                     <div class="footer-text-support-container">
                         <p class="footer-title-text">Events & Solutions</p>
                         <div class="footer-email-social-container">
                             <div class="footer-nav-2">
-                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
                             </div>
                         </div>
                     </div>
@@ -48,7 +49,7 @@
                                 <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
                             </div>
                         </div>
-                        <div class="footer-email-social-container">
+                        <div class="footer-email-social-container"> 
                             <p class="footer-title-text">Ways You Can Pay</p> 
                             <div class="footer-final-social-media">
                                 <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
@@ -73,22 +74,22 @@
                     <div class="footer-text-about-container">
                         <p class="footer-title-text-nav" @onclick="ToggleAboutUs">About</p>
                         <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
                     </div>
                     <div class="footer-text-events-container">
                         <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
                         <div class="footer-email-social-container">
                         <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
-                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
                             </div>
                         </div>
                     </div>
@@ -134,4 +135,14 @@
 
     void ToggleAboutUs() => isAboutUsVisible = !isAboutUsVisible;
     void ToggleEvents() => isEventVisible = !isEventVisible;
+
+    private void NavigateToPrivacyPolicy()
+    {
+        NavigationManager.NavigateTo("/help?section=privacy");
+    }
+
+    private void NavigateToTermsConditions()
+    {
+        NavigationManager.NavigateTo("/help?section=terms");
+    }
 }

@@ -45,19 +45,59 @@
     </ExtraMeta>
 </SeoMeta>
 
+@if (isSearchBarVisible)
+{
+    <div class="full-screen-cover" @onclick="HandleClickOutside"></div>
+}
+
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
     <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
         <div class="app-name col-lg-2 col-md-2">
             <a href="" class="app-name">@Resources.App.appName</a>
+            <div class="app-name-link">
+                <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
+                <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
+                <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
+                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                {
+                    <div class="dropdown">
+                        <button class="creation-dropdown" @onclick="ToggleDropdown">
+                            <a class="cinnamon-link create-experience">Create Experience <i class="fas fa-caret-down"></i></a>
+                        </button>
+                        @if (IsDropdownVisible)
+                        {
+                        <ul class="dropdown-menu" style="margin-left: 10%; display:block;">
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToCreation" Text="Create Event" />
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToCreation" Text="Create Activity" />
+                            </li>
+                        </ul>
+                        }
+                    </div>
+                } else {
+
+                }
+            </div>
         </div>
+
         <!--Menu-->
         <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-2 d-flex justify-content-end col-1 d-flex justify-content-end navbar-selection dropdown-section">
             <!-- Desktop -->
-                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                        <a class="cinnamon-link" href="https://cinnamon.ph/blog/">Blogs</a>
-                        <a class="cinnamon-link" @onclick="NavigateToHelp">Help</a>
+            <form class="search-bar" @onsubmit=Search>
+                <div class="input-group p-1">
+                    <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                        <div class="input-group-append border-0">
+                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                            </button>
+                        </div>
+                </div>
+            </form>
+
                         @if (!isLogin)
                         {
                         <button class="btn-login" @onclick="() => signinModal.Show()">
@@ -178,10 +218,15 @@
             </div>
             }
             <!-- Mobile -->
+            <div class="mobile-button-search" >
+                <button type="button" class="search-button btn btn-link text-success mobile-search" @onclick="ToggleSearchBarVisibility">
+                    <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                </button>
+            </div>
             <div class="dropdown-mobile">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
-                        @if (AuthState != null && AuthState.Identity.IsAuthenticated)
+                        @if (AuthState != null && AuthState.Identity.IsAuthenticated && CustomerModel.CustomerProfile != null)
                         {
                         <img class = "rounded-2 rounded-circle profile-img-mobile" src="@CustomerModel.CustomerProfile.ProfileImg">
                         } else {
@@ -296,12 +341,16 @@
                     }
                 </ul>
             </div>
-        </div>
-    </div> 
+        </div>    
+    </div>
+        <form class="search-bar-mobile" style="@GetSearchBarStyle()" @onsubmit="Search">
+            <div class="input-group p-1">
+                <input type="text" @ref="searchInputRef" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+            </div>
+        </form>
     <!-- Header -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-
 <div class="top-section" style="position:relative;display:flex">
     <Carousel @bind-SelectedSlide="@selectedSlide" Crossfade Interval="10000" ShowControls="false">
         <CarouselSlide Name="1">
@@ -363,91 +412,91 @@
 </div>
     } else 
     {
-    <div class="header">
-        <div class="header-container">
-            <div class="header-info">
-                @if (!showCategorySwiper)
-                {
-                <h1 class="header-info-text">Skip the FOMO: Secure Your Tickets Now!</h1>
-                } else {
-                <h1 class="header-info-text">Level Up Your Skills:  Get a Tutor Today!</h1>
-                }
-            </div>
-        </div>
-    </div>
-    <!-- Search Bar -->
-    <div class="search-bar-container" style="background: linear-gradient(to bottom, #F6F9FF 50%, transparent 50%);">
-    <form class="search-bar upper-search-bar" @onsubmit=Search>
-        <div class="input-group p-1">
-            <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                <div class="input-group-append border-0">
-                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                        <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                    </button>
-                </div>
-        </div>
-         </form>
-    </div>
+
     }
+
     <!-- End of Header -->
     <!-- New Announcement Like Cards -->
     @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
     {
-    <div class="container desktop-toggle">
-        <div class="section-1">
-            <div class="categories">
-                <div class="sub-header-container">
-                    <div class="event-organizer-invite-card">
-                        <div class="event-organizer-info">
-                            <p class="event-organizer-info-title">Be an Event Organizer!</p>
+        <div class="container desktop-toggle">
+            <div class="section-1">
+                <div class="categories">
+                    <div class="sub-header-container">
+                        <div class="event-organizer-invite-card">
+                            <div class="event-organizer-info">
+                                <p class="event-organizer-info-title">Be an Event Organizer!</p>
+                            </div>
+                            @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                            {
+                            	<div class="event-organizer-join" @onclick="NavigateToDashboard">
+                                    <p class="event-organizer-join-title">Join Our Team!</p>
+                                    @if (!showCategorySwiper) 
+                            	    {
+                                    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                    } else 
+                            	    {
+                                    	<p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
+                                    }
+                                </div>
+                            }
+                            else
+                            {   
+                            	<div class="event-organizer-join" @onclick="NavigateToOnboarding">
+                            	    <p class="event-organizer-join-title">Join Our Team!</p>
+                            	    @if (!showCategorySwiper) 
+                            	    {
+                            	    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                            	    } else 
+                            	    {
+                            	    	<p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
+                            	    }
+                            	</div>
+                            }
                         </div>
-                        <div class="event-organizer-join">
-                            <p class="event-organizer-join-title">Join Our Team!</p>
-                            <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                        </div>
-                    </div>
-                    <div class="event-organizer-invite-card">
-                        <div class="event-organizer-info-collab">
-                            <p class="event-organizer-info-title">Collaborate with Us</p>
-                        </div>
-                        <div class="event-organizer-join">
-                            <p class="event-organizer-join-title">Let's Talk!</p>
-                            <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                        <div class="event-organizer-invite-card">
+                            <div class="event-organizer-info-collab">
+                                <p class="event-organizer-info-title">Collaborate with Us</p>
+                            </div>
+                            <div class="event-organizer-join">
+                                <p class="event-organizer-join-title">Let's Talk!</p>
+                                <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container tablet-toggle">
-        <div class="section-1">
-            <div class="categories">
-                <div class="sub-header-container">
-                    <div class="schedule-swiper">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide category justify-content-center">
-                                <div class="w-100">
-                                    <div class="event-organizer-invite-card">
-                                        <div class="event-organizer-info">
-                                            <p class="event-organizer-info-title">Be an Event Organizer!</p>
-                                        </div>
-                                        <div class="event-organizer-join">
-                                            <p class="event-organizer-join-title">Join Our Team!</p>
-                                            <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+        <div class="container tablet-toggle">
+            <div class="section-1">
+                <div class="categories">
+                    <div class="sub-header-container">
+                        <div class="schedule-swiper">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide category justify-content-center">
+                                    <div class="w-100">
+                                        <div class="event-organizer-invite-card">
+                                            <div class="event-organizer-info">
+                                                <p class="event-organizer-info-title">Be an Event Organizer!</p>
+                                            </div>
+                                            <div class="event-organizer-join">
+                                                <p class="event-organizer-join-title">Join Our Team!</p>
+                                                <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="swiper-slide  category justify-content-center">
-                                <div class="w-100">
-                                    <div class="event-organizer-invite-card">
-                                        <div class="event-organizer-info-collab">
-                                            <p class="event-organizer-info-title">Collaborate with Us</p>
-                                        </div>
-                                        <div class="event-organizer-join">
-                                            <p class="event-organizer-join-title">Let's Talk!</p>
-                                            <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                                <div class="swiper-slide  category justify-content-center">
+                                    <div class="w-100">
+                                        <div class="event-organizer-invite-card">
+                                            <div class="event-organizer-info-collab">
+                                                <p class="event-organizer-info-title">Collaborate with Us</p>
+                                            </div>
+                                            <div class="event-organizer-join">
+                                                <p class="event-organizer-join-title">Let's Talk!</p>
+                                                <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -457,7 +506,6 @@
                 </div>
             </div>
         </div>
-    </div>
     } else 
     {
 
@@ -535,7 +583,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(3))">
                                         <img src="images/explore-page-images/Language.svg" class="static-category-selector-img">
@@ -544,7 +592,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(4))">
                                         <img src="images/explore-page-images/Music.svg" class="static-category-selector-img">
@@ -553,7 +601,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(5))">
                                         <img src="images/explore-page-images/Skills.svg" class="static-category-selector-img">
@@ -562,7 +610,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(6))">
                                         <img src="images/explore-page-images/SPED.svg" class="static-category-selector-img">
@@ -571,7 +619,7 @@
                                 </div>
                         </div>
 
-                                                <div class="swiper-slide category justify-content-center">
+                        <div class="swiper-slide category justify-content-center">
                                 <div class="w-100">
                                     <a class="static-category-effect button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(7))">
                                         <img src="images/explore-page-images/Sports.svg" class="static-category-selector-img">
@@ -637,45 +685,29 @@
                         }
 
                     </div>
-                    <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                 </div>
             </div>
-        @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
-        {
-            <!-- Search Bar -->
-            <div class="search-bar-container">
-            <form class="search-bar" @onsubmit=Search>
-                <div class="input-group p-1">
-                    <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                        <div class="input-group-append border-0">
-                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                            </button>
-                        </div>
-                </div>
-                 </form>
-            </div>
-        }
+            
             @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
             {
     
             } else {
-            <div class="container">
-            <div class="upcoming-events">
-                <div class="upcoming-events-container">
-                    <div class="upcoming-events-info">
-                        <p class="upcoming-events-info-text">Search Results for "@searchValue"</p>
+            <div class="container search-results">
+                <div class="upcoming-events">
+                    <div class="upcoming-events-container">
+                        <div class="upcoming-events-info">
+                            <p class="upcoming-events-info-text">Search Results for "@searchValue"</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="search-selector-container">
-                <a class="search-selector-a" id="category.Id">
-                    <p class="search-selector @((!showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
-                </a>
-                <a class="search-selector-a" id="category.Id">
-                    <p class="search-selector @((showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(1))">General Activities</p>
-                </a>
-            </div>
+                <div class="search-selector-container">
+                    <a class="search-selector-a" id="category.Id">
+                        <p class="search-selector @((!showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(3))">Upcoming Events</p>
+                    </a>
+                    <a class="search-selector-a" id="category.Id">
+                        <p class="search-selector @((showCategorySwiper) ? "underline-active" : "")" @onclick="@(() => ShowOTE(1))">General Activities</p>
+                    </a>
+                </div>
             </div>
             }
 
@@ -1610,6 +1642,7 @@
         <div class="posts-featured-title">
             <p class="posts-featured-text">FEATURED STORIES</p>
         </div>
+
     @if (wordpressPosts != null && wordpressPosts.Any())
     {
         <div class="posts-container">
@@ -1684,22 +1717,22 @@
                     <div class="footer-text-about-container">
                         <p class="footer-title-text">About</p>
                         <div class="footer-nav">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
                     </div>
                     <div class="footer-text-support-container">
                         <p class="footer-title-text">Events & Solutions</p>
                         <div class="footer-email-social-container">
                             <div class="footer-nav-2">
-                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
                             </div>
                         </div>
                     </div>
@@ -1711,7 +1744,7 @@
                                 <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
                             </div>
                         </div>
-                        <div class="footer-email-social-container">
+                        <div class="footer-email-social-container"> 
                             <p class="footer-title-text">Ways You Can Pay</p> 
                             <div class="footer-final-social-media">
                                 <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
@@ -1736,22 +1769,22 @@
                     <div class="footer-text-about-container">
                         <p class="footer-title-text-nav" @onclick="ToggleAboutUs">About</p>
                         <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
-                            <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About us</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">FAQs</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Team</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Privacy Policy</a>
-                            <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Terms & Condition</a>
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs">Team</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
                     </div>
                     <div class="footer-text-events-container">
                         <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
                         <div class="footer-email-social-container">
                         <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
-                                <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">Create an Event</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Advertise with us</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Sell tickets online</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Payment system</a>
-                                <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Collaborate</a>
+                                <a class="footer-button-about">Create an Event</a>
+                                <a class="footer-button-blogs">Advertise with us</a>
+                                <a class="footer-button-blogs">Sell tickets online</a>
+                                <a class="footer-button-blogs">Payment system</a>
+                                <a class="footer-button-blogs">Collaborate</a>
                             </div>
                         </div>
                     </div>
@@ -1941,6 +1974,10 @@
     private Filters filters = new ();
     private string errorMessage;
     private List<Post> wordpressPosts = new List<Post>();
+    private bool isSearchBarVisible = false;
+    private bool IsDropdownVisible = false;
+    private ElementReference searchInputRef;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -2027,7 +2064,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await LoadWelcomeDialog();
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
         await InitializeSwiper();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -2358,6 +2395,7 @@
         experienceCategoryId = null;
         pageIndex = 0;
         itemsPerPage = 20;
+        isSearchBarVisible = false;
         await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
 
         IsSearchPerformed = true;
@@ -2395,11 +2433,6 @@
     private void NavigateToAccount()
     {
         NavigationManager.NavigateTo("/customer/profile");
-    }
-
-    private void NavigateToCreation()
-    {
-        NavigationManager.NavigateTo("/Creation");
     }
 
     private void NavigateToOnboarding()
@@ -2735,4 +2768,61 @@
 
     void ToggleAboutUs() => isAboutUsVisible = !isAboutUsVisible;
     void ToggleEvents() => isEventVisible = !isEventVisible;
+
+    private string GetSearchBarStyle()
+    {
+        return isSearchBarVisible ? "display: flex;" : "display: none;";
+    }
+
+    private void NavigateToPrivacyPolicy()
+    {
+        NavigationManager.NavigateTo("/help?section=privacy");
+    }
+    
+    private void NavigateToTermsConditions()
+    {
+        NavigationManager.NavigateTo("/help?section=terms");
+    }
+
+    private void HandleClickOutside()
+    {
+        if (isSearchBarVisible)
+        {
+            isSearchBarVisible = false;
+            StateHasChanged();
+        }
+    }
+    private void ToggleDropdown()
+    {
+        IsDropdownVisible = !IsDropdownVisible;
+    }
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.GeneralExperience);
+    }
+    private void NavigateToOTECreation()
+    {
+        NavigationManager.NavigateTo("/experiences/ote");
+    }
+
+
+    private async Task ToggleSearchBarVisibility()
+    {
+        if (!isSearchBarVisible)
+        {
+            isSearchBarVisible = true;
+            StateHasChanged(); // Ensure the component re-renders
+
+            // Wait for the next rendering cycle to complete
+            await Task.Yield();
+
+            // Set focus on the search input
+            await searchInputRef.FocusAsync();
+        }
+        else
+        {
+            isSearchBarVisible = false;
+        }
+    }
 }
