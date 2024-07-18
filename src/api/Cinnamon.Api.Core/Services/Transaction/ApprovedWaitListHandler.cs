@@ -101,7 +101,8 @@ public class ApprovedWaitListHandler : IApprovedWaitListHandler
             var oteActivity = oteActivityRes.Result;
 
             var firstTicket = deserializedPayload.Tickets.First();
-            var oteDate = oteActivity.OteDates.First(d => d.Id == firstTicket.OteDateId);
+            var ticketPricing = oteActivity.Pricings.First(p => p.Id == firstTicket.Id);
+            var oteDate = oteActivity.OteDates.First(d => d.Id == ticketPricing.OteDateId);
 
             if(oteDate is null)
             {
