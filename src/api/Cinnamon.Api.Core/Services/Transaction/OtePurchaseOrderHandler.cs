@@ -369,7 +369,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     }
                 }
 
-                var freeTicketsWithApproval = selectedTickets.Where(t => t.Price == 0 && t.RequiredApproval);
+                var freeTicketsWithApproval = selectedTickets
+                                                .Where(t => t.Price == 0 && t.RequiredApproval);                
                 if(freeTicketsWithApproval.Any())
                 {
                     var waitlistPayload = new {

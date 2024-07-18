@@ -53,6 +53,13 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
             }
             var waitlist = waitListRes.Result.Result;
 
+            var deserializedPayload = jsonSerializationProvider.Deserialize<PayloadData>(waitlist.Payload);
+            if(deserializedPayload is null || deserializedPayload.Tickets is null || deserializedPayload.Tickets.Count() == 0)
+            {
+                return AppResult<ApprovedPaidWaitListResult>.CreateFailed(
+                    new ApplicationException("Unable to locate selected tickets."), "Unable to locate selected tickets.");
+            }
+
             var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
                 ActivityId = waitlist.ActivityId,
                 IncludeCustomer = true
@@ -70,9 +77,17 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
 
             // create link for ticket details
             var url = applicationConfig.FrontendUrl
-                .AppendPathSegment("explore")
+                .AppendPathSegment("payment")
                 .AppendPathSegment("ote")
                 .AppendPathSegment(activity.Handler);
+
+            string ticketQueryString = string.Empty;
+            foreach(var ticket in deserializedPayload.Tickets)
+            {
+                ticketQueryString += $"{ticket.Id}-{ticket.Count}-{ticket.Date.ToString("dd MMMM yyyy")}-{ticket.Date.ToString("hh:mm tt").ToUpper()}-0,";
+            }
+
+            url = url.SetQueryParam("ticket", ticketQueryString);
             
             return AppResult<ApprovedPaidWaitListResult>.CreateSucceeded(new ApprovedPaidWaitListResult {PurchaseLink = url}, "Successfully approved paid wait list.");
         }
@@ -82,4 +97,28 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
         }
     }
 
+    private class Ticket 
+    {
+        public int Id {get; set;}
+        public string Name {get; set;}
+        public int OteDateId {get; set;}
+        public int Count {get; set;}
+        public DateTime Date {get; set;}
+
+        // extra options
+        public string ImageData {get; set;}
+        public string QRCode {get; set;}
+    }
+
+    private class PayloadData 
+    {
+        public IEnumerable<Ticket> Tickets {get; set;}
+        public int TransactionId {get; set;}
+    }
+
+   private class PurchaseOrderPayload 
+   {
+        public string Guid {get; set;}
+        public string Token {get; set;}
+   }
 }
