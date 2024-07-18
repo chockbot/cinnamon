@@ -429,38 +429,65 @@
                             </div>
                             @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                             {
-                            	<div class="event-organizer-join" @onclick="NavigateToDashboard">
-                                    <p class="event-organizer-join-title">Join Our Team!</p>
-                                    @if (!showCategorySwiper) 
-                            	    {
-                                    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                                    } else 
-                            	    {
-                                    	<p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
-                                    }
+                                <div class="event-organizer-container">
+                                	<div class="event-organizer-join" @onclick="NavigateToDashboard">
+                                        <p class="event-organizer-join-title">Join Our Team!</p>
+                                        @if (!showCategorySwiper) 
+                                	    {
+                                        	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                        } else 
+                                	    {
+                                        	<p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
+                                        }
+                                    </div>
+                                    <div class="arrow-right" @onclick="NavigateToDashboard">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
                                 </div>
                             }
                             else
-                            {   
-                            	<div class="event-organizer-join" @onclick="NavigateToOnboarding">
-                            	    <p class="event-organizer-join-title">Join Our Team!</p>
-                            	    @if (!showCategorySwiper) 
-                            	    {
-                            	    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                            	    } else 
-                            	    {
-                            	    	<p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
-                            	    }
-                            	</div>
+                            {  
+                                <div class="event-organizer-container">
+                                	<div class="event-organizer-join" @onclick="NavigateToOnboarding">
+                                	    <p class="event-organizer-join-title">Join Our Team!</p>
+                                	    @if (!showCategorySwiper) 
+                                	    {
+                                	    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                	    } else 
+                                	    {
+                                	    	<p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
+                                	    }
+                                	</div>
+                                    <div class="arrow-right" @onclick="NavigateToOnboarding">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
                             }
                         </div>
                         <div class="event-organizer-invite-card">
                             <div class="event-organizer-info-collab">
                                 <p class="event-organizer-info-title">Collaborate with Us</p>
                             </div>
-                            <div class="event-organizer-join">
-                                <p class="event-organizer-join-title">Let's Talk!</p>
-                                <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                            <div class="event-organizer-container">
+                                <div class="event-organizer-join">
+                                    <p class="event-organizer-join-title">Let's Talk!</p>
+                                    <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                                </div>
+                                <div class="arrow-right">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -480,10 +507,50 @@
                                             <div class="event-organizer-info">
                                                 <p class="event-organizer-info-title">Be an Event Organizer!</p>
                                             </div>
-                                            <div class="event-organizer-join">
-                                                <p class="event-organizer-join-title">Join Our Team!</p>
-                                                <p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
-                                            </div>
+                                            @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                            {
+                                                <div class="event-organizer-container">
+                                                	<div class="event-organizer-join" @onclick="NavigateToDashboard">
+                                                        <p class="event-organizer-join-title">Join Our Team!</p>
+                                                        @if (!showCategorySwiper) 
+                                                	    {
+                                                        	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                                        } else 
+                                                	    {
+                                                        	<p class="event-organizer-join-sub-title activity-provider-switch">Create your first experience in Cinnamon!</p>
+                                                        }
+                                                    </div>
+                                                    <div class="arrow-right" @onclick="NavigateToDashboard">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {  
+                                                <div class="event-organizer-container">
+                                                	<div class="event-organizer-join" @onclick="NavigateToOnboarding">
+                                                	    <p class="event-organizer-join-title">Join Our Team!</p>
+                                                	    @if (!showCategorySwiper) 
+                                                	    {
+                                                	    	<p class="event-organizer-join-sub-title">Create your first event in Cinnamon!</p>
+                                                	    } else 
+                                                	    {
+                                                	    	<p class="event-organizer-join-sub-title">Create your first experience in Cinnamon!</p>
+                                                	    }
+                                                	</div>
+                                                    <div class="arrow-right" @onclick="NavigateToOnboarding">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -493,9 +560,18 @@
                                             <div class="event-organizer-info-collab">
                                                 <p class="event-organizer-info-title">Collaborate with Us</p>
                                             </div>
-                                            <div class="event-organizer-join">
-                                                <p class="event-organizer-join-title">Let's Talk!</p>
-                                                <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                                            <div class="event-organizer-container">
+                                                <div class="event-organizer-join">
+                                                    <p class="event-organizer-join-title">Let's Talk!</p>
+                                                    <p class="event-organizer-join-sub-title">Become a Part of our Community</p>
+                                                </div>
+                                                <div class="arrow-right">
+                                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="40" height="40" rx="20" fill="currentColor"/>
+                                            <path d="M14.167 20H25.8337" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M20 14.1665L25.8333 19.9998L20 25.8332" stroke="#2C7865" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2722,7 +2798,7 @@
     {
         experienceCategoryId = null;
         pageIndex = 0;
-        itemsPerPage = 20;
+        itemsPerPage = 21;
 
         await Task.WhenAll(new Task[] { FetchActivities(false)});
         await CloseFilter();
