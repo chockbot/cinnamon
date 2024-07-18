@@ -2005,7 +2005,7 @@
     private bool showOverlayPopularActivities = false;
     private bool hasNoMoreRecords = false;
     private bool hasNewMessages = false;
-    private int itemsPerPage = 20;
+    private int itemsPerPage = 21;
     private int newMessagesCount = 0;
     private bool isAboutUsVisible = false;
     private bool isEventVisible = false;
@@ -2470,7 +2470,7 @@
     {
         experienceCategoryId = null;
         pageIndex = 0;
-        itemsPerPage = 20;
+        itemsPerPage = 21;
         isSearchBarVisible = false;
         await Task.WhenAll(new Task[] {FetchPopularActivities(null), FetchActivities(false)});
 
@@ -2481,7 +2481,7 @@
     {
         experienceCategoryId = id;
         pageIndex = 0;
-        itemsPerPage = 20;
+        itemsPerPage = 21;
 
         if (experienceCategoryId == 1)
         {
@@ -2497,7 +2497,7 @@
         searchValue = string.Empty;
         experienceCategoryId = null;
         pageIndex = 0;
-        itemsPerPage = 20;
+        itemsPerPage = 21;
         await FetchActivities(false);
     }
 
