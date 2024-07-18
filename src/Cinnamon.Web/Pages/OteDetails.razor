@@ -261,29 +261,36 @@
                                         </div>
                                         @foreach (var item in AvailablePriceList)
                                         {
-                                            if (ticketCount != 0 && IsLimit)
+                                            if (currentLogin is not null)
                                             {
-                                                if (ticketCount == activity.EventTicketLimit)
+                                                if (ticketCount != 0 && IsLimit)
                                                 {
-                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                    if (ticketCount == activity.EventTicketLimit)
+                                                    {
+                                                        stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                    }
+                                                    else
+                                                    {
+                                                        stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                                    }
+
                                                 }
                                                 else
                                                 {
-                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                }
+                                                    if (!IsLimit)
+                                                    {
+                                                        stringMaxTicket = "";
+                                                    }
+                                                    else
+                                                    {
+                                                        stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                                    }
 
+                                                }
                                             }
                                             else
                                             {
-                                                if (!IsLimit)
-                                                {
-                                                    stringMaxTicket = "";
-                                                }
-                                                else
-                                                {
-                                                    stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                                }
-                                                
+                                                 stringMaxTicket = "";
                                             }
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
