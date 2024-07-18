@@ -430,18 +430,32 @@
                                         else
                                         {
                                             <div class="schedule-footer">
-                                                <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
-                                                    <span>Buy Ticket</span>
-                                                </button>
+                                                <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                    class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" 
+                                                    Clicked="ProceedToPayment">
+                                                    <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Buy Ticket
+                                                    </ChildContent>
+                                                </Button>
                                             </div>
                                         }
                                     }
                                     else
                                     {
                                         <div class="schedule-footer">
-                                            <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
-                                                <span>Buy Ticket</span>
-                                            </button>
+                                            <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" 
+                                                Clicked="ProceedToPayment">
+                                                <LoadingTemplate>
+                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                </LoadingTemplate>
+                                                <ChildContent>
+                                                    Buy Ticket
+                                                </ChildContent>
+                                            </Button>
                                         </div>
                                     }
                                 }
