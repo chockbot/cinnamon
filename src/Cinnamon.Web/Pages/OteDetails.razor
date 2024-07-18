@@ -261,6 +261,30 @@
                                         </div>
                                         @foreach (var item in AvailablePriceList)
                                         {
+                                            if (ticketCount != 0 && IsLimit)
+                                            {
+                                                if (ticketCount == activity.EventTicketLimit)
+                                                {
+                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
+                                                }
+                                                else
+                                                {
+                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                if (!IsLimit)
+                                                {
+                                                    stringMaxTicket = "";
+                                                }
+                                                else
+                                                {
+                                                    stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
+                                                }
+                                                
+                                            }
                                             <div class="ticket-details">
                                                 <p class="ticket-name">@item.Name</p>
                                                 <p class="align-items-center">
@@ -271,19 +295,28 @@
                                                 <p class="align-items-center">
                                                     @if (!item.IsUnlimited)
                                                     {
-                                                        @if (item.MaxSlots <= item.TicketSold)
+                                                        @if(activity.IsEventSoldOut)
                                                         {
-                                                            <span class="ticket-sold-out">
-                                                                sold out
-                                                            </span>
+                                                            @if (capacityLimit >= 1)
+                                                            {
+                                                                <span class="ticket-waitlist-status">
+                                                                    waitlist
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="ticket-sold-out">
+                                                                    sold out
+                                                                </span>
+                                                            }
                                                         }
-                                                        @* display count left *@
-                                                        @if (item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
+                                                        else
                                                         {
-                                                            <span class="tickets-left">
+                                                             <span class="tickets-left">
                                                                 Only @(item.MaxSlots - item.TicketSold) ticket/s left
-                                                            </span>
+                                                             </span>
                                                         }
+
                                                     }
                                                     else
                                                     {
@@ -295,37 +328,8 @@
                                                 </p>
                                                 @if (activity.IsEventSoldOut)
                                                 {
-                                                    if (IsLimit)
-                                                    {
-                                                        if (ticketCount != 0)
-                                                        {
-                                                            if (ticketCount == activity.EventTicketLimit)
-                                                            {
-                                                                stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                            }
-                                                            else
-                                                            {
-                                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (capacityLimit <= 0)
-                                                        {
-                                                            stringMaxTicket = "";
-                                                        }
-                                                        else
-                                                        {
-                                                             stringMaxTicket = $"Only {capacityLimit} {(capacityLimit == 1 ? "customer" : "customers")} can join waitlist.";
-                                                        }
-                                                    }
                                                     //Ticket Add and Subtract
-                                                    if (!item.IsUnlimited)
+                                                    @if (!item.IsUnlimited)
                                                     {
                                                         <div data-disabled="@(capacityLimit <= 0)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                             <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
@@ -343,28 +347,6 @@
                                                     }
                                                     else
                                                     {
-                                                        if (IsLimit)
-                                                        {
-                                                            if (ticketCount != 0)
-                                                            {
-                                                                if (ticketCount == activity.EventTicketLimit)
-                                                                {
-                                                                    stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                                }
-                                                                else
-                                                                {
-                                                                    stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            stringMaxTicket = "";
-                                                        }
                                                         <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                             <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
                                                                 <span class="item-action">-</span>
@@ -389,28 +371,6 @@
                                                 }
                                                 else
                                                 {
-                                                    if (IsLimit)
-                                                    {
-                                                        if (ticketCount != 0)
-                                                        {
-                                                            if (ticketCount == activity.EventTicketLimit)
-                                                            {
-                                                                stringMaxTicket = $"Max {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")} per customer.";
-                                                            }
-                                                            else
-                                                            {
-                                                                stringMaxTicket = $"You can only purchase {ticketCount} {(ticketCount == 1 ? "ticket" : "tickets")}.";
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        stringMaxTicket = "";
-                                                    }
                                                     <div data-disabled="@(item.MaxSlots <= item.TicketSold && !item.IsUnlimited)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                                         <span @onclick="() => RemoveSelectedTicket(item)" class="p-2 border-right-1-solid counter-item prevent-select" style="background-color:#F3F6FC;">
                                                             <span class="item-action">-</span>
