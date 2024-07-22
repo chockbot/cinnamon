@@ -430,18 +430,32 @@
                                         else
                                         {
                                             <div class="schedule-footer">
-                                                <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
-                                                    <span>Buy Ticket</span>
-                                                </button>
+                                                <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                    class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" 
+                                                    Clicked="ProceedToPayment">
+                                                    <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Buy Ticket
+                                                    </ChildContent>
+                                                </Button>
                                             </div>
                                         }
                                     }
                                     else
                                     {
                                         <div class="schedule-footer">
-                                            <button class="btn-buy-ticket" @onclick="() => ProceedToPayment()">
-                                                <span>Buy Ticket</span>
-                                            </button>
+                                            <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                class="border-radius-10 bg-orange-100 color-white-100 font-20 font-weight-700" 
+                                                Clicked="ProceedToPayment">
+                                                <LoadingTemplate>
+                                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                </LoadingTemplate>
+                                                <ChildContent>
+                                                    Buy Ticket
+                                                </ChildContent>
+                                            </Button>
                                         </div>
                                     }
                                 }
@@ -497,6 +511,7 @@
         </div>
         
     </div>
+    <br/>
     <Footer></Footer>
 }
 
@@ -670,10 +685,10 @@
     private Validations? questionValidation;
     private Validations? phoneValidation;
     private PersonalValidation personalForm = new();
+    private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new ();
     private Modal? modalPurchaseWithConfirmation;
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
-    private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new ();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
