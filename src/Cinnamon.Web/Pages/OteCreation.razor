@@ -57,7 +57,9 @@
             <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
         </div>
         <Row>
-            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex == 0 && oteEvent is not null ? "d-block" : "d-none")' Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" 
+                class='@(currentIndex == 0 && oteEvent is not null ? "d-block" : "d-none")' 
+                Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center.AlignItems.Start">
                 <label for="@oteEvent.coverPhoto.FileId" class="cursor-pointer w-100">
                     <InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none" OnChange="oteEvent.LoadCoverPhotoFile" />
                     <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
@@ -1356,6 +1358,7 @@
         await HideModal();
         await loadingIndicator.Hide();
     }
+
     private async Task SetDefaultCoverPhoto()
     {
         //Get Random Image in MaterialList
@@ -1364,25 +1367,31 @@
         int randomIndex = random.Next(list.Count);
         File randomItem = list[randomIndex];
         await LoadDefaultCoverPhoto(randomItem);
-
     }
 
     private async Task LoadDefaultCoverPhoto(File item)
     {
-        // Fetch file content from Google Drive
-        FileContent = await googleDriveService.GetFileContent(item.Id);
+        try
+        {
+            // Fetch file content from Google Drive
+            FileContent = await googleDriveService.GetFileContent(item.Id);
 
-        // Determine file type
-        var fileInfo = await googleDriveService.GetFileInfo(item.Id);
-        FileType = fileInfo.Type;
-        FileName = fileInfo.Name;
+            // Determine file type
+            var fileInfo = await googleDriveService.GetFileInfo(item.Id);
+            FileType = fileInfo.Type;
+            FileName = fileInfo.Name;
 
-        // If you need to display the file content directly, you can convert it to Base64
-        Base64EncodedFile = Convert.ToBase64String(FileContent);
+            // If you need to display the file content directly, you can convert it to Base64
+            Base64EncodedFile = Convert.ToBase64String(FileContent);
 
-        //Preview
-        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
-        oteEvent.coverPhoto.Display = true;
-        StateHasChanged();
+            //Preview
+            await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
+            oteEvent.coverPhoto.Display = true;
+            StateHasChanged();
+        }
+        catch (System.Exception)
+        {
+            // handler error when trying to invoke the client srcript but the page was redirected to another
+        }
     }
 }
