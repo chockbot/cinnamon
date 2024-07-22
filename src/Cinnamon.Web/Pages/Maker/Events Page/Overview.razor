@@ -18,14 +18,22 @@
                     </div>
                     <div class="event-schedule-details">
                         <img class="event-img" src="images/ote/event-location.png" />
-                        @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
+                        @if (Activity.ExperienceTypeId == 1)
                         {
-                            <p class="event-location">@Activity.PinnedLocation</p>
+                            @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
+                            {
+                                <p class="event-location">@Activity.PinnedLocation</p>
+                            }
+                            else
+                            {
+                                <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
+                            }
                         }
                         else
                         {
-                            <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
+                            <p class="event-location">Online</p>
                         }
+                        
                     </div>
                     <div class="event-buttons">
                         <button class="btn-event">View Event Page</button>
