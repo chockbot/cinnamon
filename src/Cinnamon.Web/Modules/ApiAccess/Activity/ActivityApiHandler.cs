@@ -1464,4 +1464,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<ActivityQuestionsResult>.CreateFailed(ex, "An error occured when getting activity questions.");
         }
     }
+
+    public async Task<AppResult<ApproveWaitListResult>> ApprovedWaitList(ApprovedWaitListArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/ApprovedWaitList")
+                .PostJsonAsync(args)
+                .ReceiveJson<ApproveWaitListResult>();
+
+            return AppResult<ApproveWaitListResult>.CreateSucceeded(result, "Successfully called approved waitlist api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<ApproveWaitListResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ApproveWaitListResult>.CreateFailed(ex, "An error occured when calling approved waitlist api.");
+        }
+    }
 }

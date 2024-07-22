@@ -53,11 +53,11 @@ public class SendInviteEventHandler : ISendInviteEventHandler
                     content = args.Content
                 },
                 start = new {
-                    dateTime = args.DateStart.ToString("yyyy-MM-ddThh:mm:ss"),
+                    dateTime = args.DateStart.ToString("yyyy-MM-ddTHH:mm:ss"),
                     timeZone = "Asia/Singapore"
                 },
                 end = new {
-                    dateTime = args.DateEnd.ToString("yyyy-MM-ddThh:mm:ss"),
+                    dateTime = args.DateEnd.ToString("yyyy-MM-ddTHH:mm:ss"),
                     timeZone = "Asia/Singapore"
                 },
                 location = new {

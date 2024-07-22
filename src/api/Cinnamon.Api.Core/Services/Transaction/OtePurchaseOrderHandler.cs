@@ -369,7 +369,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     }
                 }
 
-                var freeTicketsWithApproval = validSelectedTickets.Where(t => t.Price == 0 && t.RequiredApproval);
+                var freeTicketsWithApproval = selectedTickets
+                                                .Where(t => t.Price == 0 && t.RequiredApproval);                
                 if(freeTicketsWithApproval.Any())
                 {
                     var waitlistPayload = new {
@@ -383,7 +384,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                         Questions = args.Questions?.Select(q => new {
                             Question = q.Question,
                             Answer = q.Answer
-                        })
+                        }),
+                        TransactionId = result.Result.Result.Id
                     };
                     var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
 

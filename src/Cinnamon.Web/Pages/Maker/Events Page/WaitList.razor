@@ -138,8 +138,14 @@
             <div class="d-flex mt-2 justify-content-center gap-1">
                 @if(WaitlistDetails.Status == 1)
                 {
-                    <Button class="ticket-approve" Clicked="ApprovedWaitlist">
-                        Approve
+                    <Button class="ticket-approve" Disabled="approving" 
+                        Loading="approving" Clicked="ApprovedWaitlist">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Approve
+                        </ChildContent>
                     </Button>
                     <Button class="ticket-decline" Clicked="DeclineWaitlist">
                         Decline
@@ -216,6 +222,8 @@
     public OteWaitlist WaitlistDetails { get; set; }
 
     private Offcanvas? offcanvas;
+
+    private bool approving = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -313,27 +321,22 @@
 
     public async Task ApprovedWaitlist()
     {
-        var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
-            {
-                Id            = WaitlistDetails.Id,
-                ActivityId    = WaitlistDetails.ActivityId,
-                ScheduleId    = WaitlistDetails.ScheduleId,
-                CustomerId    = WaitlistDetails.CustomerId,
-                CustomerEmail = WaitlistDetails.CustomerEmail,
-                CustomerName  = WaitlistDetails.CustomerName,
-                ProviderId    = WaitlistDetails.ProviderId,
-                EventDate     = WaitlistDetails.EventDate,
-                Status        = 2,
-                Payload       = WaitlistDetails.Payload
-            }, Token);
+        approving = true;
+
+        var approveWaitlist = await activityApiHandler.ApprovedWaitList(new Framework.ApiCommand.ApiCore.Activity.Request.ApprovedWaitListArgs {
+            WaitListId = WaitlistDetails.Id
+        }, Token);
+
+        approving = false;
+
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
             await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Success("Successfully approved waitlist.", "Success");
-
         }
     }
+    
     public async Task DeclineWaitlist()
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs

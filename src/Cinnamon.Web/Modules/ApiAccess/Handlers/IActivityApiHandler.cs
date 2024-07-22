@@ -75,4 +75,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token);
     Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token);
     Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args);
+    Task<AppResult<ApproveWaitListResult>> ApprovedWaitList(ApprovedWaitListArgs args, string token);
 }

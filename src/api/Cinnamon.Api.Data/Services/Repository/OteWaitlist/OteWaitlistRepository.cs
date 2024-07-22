@@ -18,6 +18,25 @@ public class OteWaitlistRepository : IOteWaitlistRepository
         this.mapper = mapper;
     }
 
+    public async Task<AppResult<OteWaitlistDTO>> GetWaitList(int id)
+    {
+        try
+        {
+            var result = await dataStore.OteWaitlist.GetByIdAsync(id);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<OteWaitlistDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<OteWaitlistDTO>(result.Result);
+            return AppResult<OteWaitlistDTO>.CreateSucceeded(dto, "Successfully get watlist by id.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OteWaitlistDTO>.CreateFailed(ex, "An error occured when getting waitlist by id.");
+        }
+    }
+
     public async Task<AppResult<OteWaitlistDTO>> CreateOteWaitlist(OteWaitlistDTO oteWaitlistDTO)
     {
         try
