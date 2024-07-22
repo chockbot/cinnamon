@@ -48,7 +48,7 @@
                                     <span>@item.TicketName</span>
                                 </TableRowCell>
                                 <TableRowCell class="tr-name">
-                                    <span>@item.TicketPrice</span>
+                                    <span>@(item.TicketPrice <= 0 ? "FREE" : item.TicketPrice.ToString("#,##0.00"))</span>
                                 </TableRowCell>
                                 @switch (item.Status)
                                 {

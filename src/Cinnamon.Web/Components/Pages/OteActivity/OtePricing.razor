@@ -1231,6 +1231,7 @@
 
     private Task CloseCustomQuestion()
     {
+        formQuestion.Question = string.Empty;
         return modalCustomQuestion?.Close(CloseReason.UserClosing);
     }
 
@@ -1241,6 +1242,7 @@
             Required = formQuestion.Required,
             IsNew = true
         });
+        formQuestion.Question = string.Empty;
         return CloseCustomQuestion();
     }
 

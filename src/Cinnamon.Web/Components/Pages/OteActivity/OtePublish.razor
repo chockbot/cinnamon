@@ -266,7 +266,11 @@
                                 <MemoEdit @bind-Text="feedbackNotification.Body" Rows="7" Placeholder="Add custom message here." />
                             </FieldBody>
                         </Field>
-                        <p class="font-14 color-grey-100 my-3">What did you think of Autumn Harvest Festival?</p>
+                        <p class="font-14 color-grey-100 my-3">
+                            What did you think of 
+                            <span class="text-capitalize">@EventName</span>
+                            ?
+                        </p>
                         <div class="d-flex">
                             <span class="font-24 d-block px-2 py-1 white-bg-shadow me-2">&#128544;</span>
                             <span class="font-24 d-block px-2 py-1 white-bg-shadow me-2">&#128542;</span>
@@ -585,6 +589,16 @@
         feedbackNotification.Body = feedbackNotificationOrig.Body;
         feedbackNotification.Subject = feedbackNotificationOrig.Subject;
         return HideOffcanvas();
+    }
+
+    private string EventName 
+    {
+        get 
+        {
+            if(Summary is not null && Summary.EventData is not null) return Summary.EventData.Name;
+
+            return string.Empty;
+        }
     }
 
     public class BookedDate

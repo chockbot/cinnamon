@@ -334,7 +334,14 @@
                 isAllFieldsValid = false;
             }
         }
-
+        //Event Category
+        if (ModelState.SelectedCategory <= 0)
+        {
+            message += "<li>Event category is required.</li>";
+            errorMessage = message;
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+            return false;
+        }
         //Display Preferrence
         bool validPrefference = ModelState.IsPrivate || ModelState.IsPublic || ModelState.IsComingSoon;
         if (!validPrefference)
