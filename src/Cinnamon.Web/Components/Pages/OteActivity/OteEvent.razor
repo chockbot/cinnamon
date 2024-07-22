@@ -33,7 +33,7 @@
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventNameValidation?.Messages)</p>
-                                    <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Max of 15 words (0/15)</p>
+                                    @* <p id="event-name-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Max of 15 words (0/15)</p> *@
                                 </div>
                             </Feedback>
                         </TextEdit>
@@ -51,7 +51,7 @@
                             <Feedback>
                                 <div class="invalid-feedback d-flex justify-content-between">
                                     <p class="mb-0">@JoinErrorMessages(eventDescriptionValidation?.Messages)</p>
-                                    <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Min of 10 words (0/10)</p>
+                                    @* <p id="event-description-words-count" class="text-end mb-0 font-14 color-grey-100 m-font-12">Min of 10 words (0/10)</p> *@
                                 </div>
                             </Feedback>
                         </MemoEdit>
@@ -280,26 +280,26 @@
             if (firstRender)
             {
                 await Task.Delay(300);
-                var minObj = new
-                {
-                    inputSelector = "#event-name-words-input",
-                    labelSelector = "#event-name-words-count",
-                    labelFormat = "Max of 15 words (###/15)",
-                    count = 15,
-                    isPrevent = true
-                };
-                await JS.InvokeVoidAsync("MyLib.Utils.countWords", minObj);
+                // var minObj = new
+                // {
+                    // inputSelector = "#event-name-words-input",
+                    // labelSelector = "#event-name-words-count",
+                    // labelFormat = "Max of 15 words (###/15)",
+                    // count = 15,
+                    // isPrevent = true
+                // };
+                // await JS.InvokeVoidAsync("MyLib.Utils.countWords", minObj);
 
-                var maxObj = new
-                {
-                    inputSelector = "#event-description-words-input",
-                    labelSelector = "#event-description-words-count",
-                    labelFormat = "Min of 10 words (###/10)",
-                    count = 10,
-                    isPrevent = false,
-                    continueCount = true
-                };
-                await JS.InvokeVoidAsync("MyLib.Utils.countWords", maxObj);
+                // var maxObj = new
+                // {
+                    // inputSelector = "#event-description-words-input",
+                    // labelSelector = "#event-description-words-count",
+                    // labelFormat = "Min of 10 words (###/10)",
+                    // count = 10,
+                    // isPrevent = false,
+                    // continueCount = true
+                // };
+                // await JS.InvokeVoidAsync("MyLib.Utils.countWords", maxObj);
             }
         }
         catch (System.Exception)
@@ -314,32 +314,24 @@
         var isHaveCoverPhoto = coverPhoto.Display;
         var message = string.Empty;
         var isAllFieldsValid = true;
+
         if (!isHaveCoverPhoto)
         {
             isAllFieldsValid = false;
             message += "<li>Required cover photo</li>";
         }
         errorMessage = message;
-        StateHasChanged();
-        await Task.Delay(300); // add delay to populate is-invalid class
-        if (!isAllFieldsValid)
-        {
-            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
-            return false;
-        }
 
         //Location
         if (ModelState.SelectedType == 1)
         {
             bool validPinnedLocation = ModelState.SelectedType == 1 && !string.IsNullOrEmpty(ModelState.PinnedLocation);
-            StateHasChanged();
-            await Task.Delay(300);
+            
             if (!validPinnedLocation)
             {
                 message += "<li>Location is required.</li>";
                 errorMessage = message;
-                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
-                return false;
+                isAllFieldsValid = false;
             }
         }
         //Event Category
@@ -356,23 +348,29 @@
         {
             message += "<li>Display Preferrence is required.</li>";
             errorMessage = message;
-            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
-            return false;
+            isAllFieldsValid = false;
         }
+
         //Event Details
         if (formValidation is not null)
         {
             bool valid = await formValidation.ValidateAll();
             isNextClick = true;
-            StateHasChanged();
-            await Task.Delay(300); // add delay to populate is-invalid class
             if (!valid)
             {
-                await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+                isAllFieldsValid = false;
             }
-            return valid;
         }
-        return false;
+
+        if (!isAllFieldsValid)
+        {
+            await Task.Delay(500);
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-event-wrapper .is-invalid");
+        }
+
+        StateHasChanged();
+
+        return isAllFieldsValid;
     }
 
     private string CategoryClass
@@ -764,11 +762,11 @@
     public class FormModel
     {
         [Required(ErrorMessage = "The event name field is mandatory.")]
-        [LimitWords(Max = 15, ErrorMessage = "Max words limit is 15.")]
+        // [LimitWords(Max = 15, ErrorMessage = "Max words limit is 15.")]
         public string EventName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The event description field is mandatory.")]
-        [LimitWords(Min = 10, Max = int.MaxValue, ErrorMessage = "Minimum words limit is 10.")]
+        // [LimitWords(Min = 10, Max = int.MaxValue, ErrorMessage = "Minimum words limit is 10.")]
         public string Description {get; set;} = string.Empty;
 
         public int SelectedCategory {get; set;} = 0;
