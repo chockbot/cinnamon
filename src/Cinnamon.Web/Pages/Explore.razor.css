@@ -182,6 +182,9 @@
 
 .posts-featured-title {
   margin-bottom: 42px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .posts-featured-text {
@@ -191,6 +194,36 @@
   font-style: normal;
   font-weight: 900;
   line-height: normal;
+}
+
+.posts-link {
+  text-decoration: none;
+}
+
+.posts-see-all-text {
+  color: #343D4C;
+  font-family: "Nunito Sans";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  cursor: pointer;
+  position: relative;
+}
+
+.posts-see-all-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: #343D4C;
+  transition: width 0.3s ease-in-out;
+}
+
+.posts-see-all-text:hover::after {
+  width: 100%;
 }
 
 .posts-container {
@@ -206,7 +239,7 @@
 .posts-container .schedule-swiper {
   width: 100%;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   position: relative;
 }
 
@@ -2054,6 +2087,14 @@ img.img-icon {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 426px) {
+  .posts-featured-text {
+    font-size: 22px;
+  }
+
+  .posts-container .schedule-swiper {
+    justify-content: left;
+  }
+
 
   .event-organizer-container {
     width: 300px;
@@ -2815,6 +2856,11 @@ img.img-icon {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 426px) and (max-width: 766px) {
 
+  .posts-container .schedule-swiper {
+    justify-content: left;
+  }
+
+
   .static-category-selector-img {
     width: 56px;
     height: 56px;
@@ -3442,6 +3488,11 @@ img.img-icon {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 767px) and (max-width: 1023px) {
+
+  .posts-container .schedule-swiper {
+    justify-content: left;
+  }
+
 
   .search-bar-mobile {
     display: none !important;
@@ -4607,6 +4658,9 @@ img.img-icon {
 }
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+  .posts-container .schedule-swiper {
+    justify-content: left;
+  }
 
   .search-bar-mobile {
     display: none !important;
@@ -4827,6 +4881,10 @@ img.img-icon {
 
 /* For search bar to stay on middle */
 @media (min-width: 320px) and (max-width: 370px) {
+
+  .posts-featured-text {
+    font-size: 18px;
+  }
 
   .app-name {
     font-size: 20px;
