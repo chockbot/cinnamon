@@ -60,7 +60,8 @@ public class GetTicketDetailsHandler : IGetTicketDetailsHandler
                             Available             = s.OteSchedulePricingDTO.Available,
                             Price                 = s.OteSchedulePricingDTO.Price,
                             OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId,
-                            RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval
+                            RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval,
+                            IsUnlimited           = s.OteSchedulePricingDTO.IsUnlimited
                         }
                     };
                 })

@@ -8,6 +8,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.OteTicket.Request;
 using Cinnamon.Api.Data.Services.Repository.OnlineEvent;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -409,6 +410,7 @@ public class ActivityController : ControllerBase
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
+                    IsUnlimited = p.IsUnlimited,
                     RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
@@ -482,6 +484,7 @@ public class ActivityController : ControllerBase
                     MaxSlots = p.MaxSlots,
                     Price = p.Price,
                     Name = p.Name,
+                    IsUnlimited = p.IsUnlimited,
                     RequiredApproval = p.RequiredApproval
                 };
             }).ToList();
@@ -554,6 +557,7 @@ public class ActivityController : ControllerBase
     [Route("OteActivity/{handler}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteActivityByHandlerResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetOteActivityByHandler(string handler, [FromQuery] GetOteActivityArgs args)
     {
         try

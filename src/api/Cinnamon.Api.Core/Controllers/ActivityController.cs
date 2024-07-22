@@ -2674,6 +2674,7 @@ public class ActivityController : ControllerBase
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),
@@ -2779,6 +2780,7 @@ public class ActivityController : ControllerBase
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),

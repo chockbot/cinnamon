@@ -12,7 +12,7 @@ public class OteSchedulePricing : BaseEntity
     public int? OteDateId {get; set;}
     public int? OteSchedulePricingGroupId {get; set;}
     public bool RequiredApproval {get; set;}
-
+    public bool IsUnlimited { get; set; }
     public virtual OteSchedule OteSchedule {get; set;}
     public virtual OteDate? OteDate  {get; set;}
     public virtual OteSchedulePricingGroup? OteSchedulePricingGroup {get; set;}

@@ -56,19 +56,19 @@
                                     <p class="font-20 font-weight-700 color-black-100 mb-2">@item.Name</p>
                                     <p class="font-20 font-weight-700 color-green-100 mb-0 d-flex align-items-center">
                                         <span>@((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</span>
-                                        @if(item.MaxSlots <= item.TicketSold)
+                                        @*@if(item.MaxSlots <= item.TicketSold)
                                         {
                                             <span class="ms-2 text-uppercase bg-red-200 font-10 color-white-100 border-radius-10 py-1 px-2">
                                                 sold out
                                             </span>
-                                        }
+                                        }*@
                                         @* display count left *@
-                                        @if(item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
+                                        @*@if(item.MaxSlots > item.TicketSold && (item.MaxSlots - item.TicketSold) <= 10)
                                         {
                                             <span class="ms-2 text-uppercase bg-orange-100 font-10 color-white-100 border-radius-10 py-1 px-2">
                                                 Only @(item.MaxSlots - item.TicketSold) ticket/s left
                                             </span>
-                                        }
+                                        }*@
                                     </p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
