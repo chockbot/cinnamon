@@ -203,6 +203,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IDeleteOteWaitlistHandler, Services.ActivityService.DeleteOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IProviderQuestionsHandler, Services.ActivityService.ProviderQuestionsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IActivityQuestionsHandler, Services.ActivityService.ActivityQuestionsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ITopBookedCustomersHandler, Services.ActivityService.TopBookedCustomersHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

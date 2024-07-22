@@ -225,4 +225,25 @@ public class OteTicketData : IOteTicketData
 			return AppResult<CountBookedTicketsResult>.CreateFailed(ex, "An error occured when getting ticket booked count.");
 		}
 	}
+
+	public async Task<AppResult<BookedCustomersResult>> BookedCustomers(BookedCustomersArgs args)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"OteTicket/BookedCustomers")
+							.SetQueryParams(args)
+							.GetJsonAsync<BookedCustomersResult>();
+
+			return AppResult<BookedCustomersResult>.CreateSucceeded(result, "Successfully get booked customers.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<BookedCustomersResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<BookedCustomersResult>.CreateFailed(ex, "An error occured when getting booked customers.");
+		}
+	}
 }
