@@ -305,7 +305,12 @@ public class TransactionController : ControllerBase
                         Count = t.Count,
                         Id = t.Id
                     };
-                })
+                }),
+                Questions = args.Questions is not null ? args.Questions.Select(q => new Services.TransactionService.Interactors.OtePurchaseOrderArgs.ActivityQuestion {
+                    Answer = q.Answer ?? string.Empty,
+                    Id = q.Id,
+                    Question = q.Question
+                }) : null
             });
 
             if(!result.Succeeded || result.Result == null)

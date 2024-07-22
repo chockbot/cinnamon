@@ -1,0 +1,854 @@
+﻿@layout EmptyLayout
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote
+@using Microsoft.JSInterop
+@using Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Cinnamon.Web.Components.Common
+@using Cinnamon.Web.Models.Account;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject ITransactionApiHandler transactionApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IJSRuntime jsRuntime
+@attribute [Authorize]
+
+@if(OTEActivities.Count != 0)
+{
+    <div class="dashboard-header desktop-switch">
+        <div class="dashboard-wrapper">
+            <div class="experience-box">
+                <div class="experience-content">
+                    <div class="col-12 d-flex">
+                        <div class="col-8 d-block justify-content-start">
+                            <p class="box-title">Total Sales</p>
+                            <p class="amount">&#8369;@overAllTotal</p>
+                        </div>
+                        <div class="col-4 d-flex justify-content-end">
+                            <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex">
+                        <div class="col-7 d-flex justify-content-start">
+                            <p class="description">This Month</p>
+                        </div>
+                        <div class="col-5 d-flex justify-content-end">
+                            <a class="earnings-link" href="/maker/dashboard/grosssale">See all</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="experience-box">
+                <div class="experience-content">
+                    <div class="col-12 d-flex">
+                        <div class="col-8 d-block justify-content-start">
+                            <p class="box-title">Events</p>
+                            <p class="amount">@OTEActivities.Count()</p>
+                        </div>
+                        <div class="col-4 d-flex justify-content-end">
+                            <img class="earning-icon" src="images/Dashboard/activity.png" />
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex">
+                        <div class="col-7 d-flex justify-content-start">
+                            <p class="description-activity">All Events</p>
+                        </div>
+                        <div class="col-5 d-flex justify-content-end">
+                            <a class="earnings-link-activity" href="/maker/dashboard/events">See all</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="experience-box">
+                <div class="experience-content">
+                    <div class="col-12 d-flex">
+                        <div class="col-8 d-block justify-content-start">
+                            <p class="box-title">Registration</p>
+                            <p class="amount">@registrationCount</p>
+                        </div>
+                        <div class="col-4 d-flex justify-content-end">
+                            <img class="earning-icon" src="images/Dashboard/students.png" />
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex">
+                        <div class="col-7 d-flex justify-content-start">
+                            @if (selectedEvent.Id != 0)
+                            {
+                                string name = $"No .of registration in {selectedEvent.EventName}";
+                                <Tooltip Text="@name" Multiline>
+                                <p class="description-student">No. of registration in @selectedEvent.EventName</p>
+                            </Tooltip>
+                            }
+                            else
+                            {
+                                <Tooltip Text="Select event to view number of registration." Multiline>
+                                <p class="description-student">Select event to view number of registration.</p>
+                            </Tooltip>
+                            }
+                        </div>
+                        <div class="col-5 d-flex justify-content-end">
+                            @if (!selectedEvent.IsMultiple)
+                            {
+                                <a class="earnings-link-student" href="maker/dashboard/events/@selectedEvent.Handler/?date=@selectedEvent.OteDateId">See all</a>
+                            }
+                            else
+                            {
+                                <a class="earnings-link-student" href="/maker/dashboard/events">See all</a>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- swiper for tablet & mobile -->
+    <div class="dashboard-header swiper-switch">
+        <div class="dashboard-wrapper">
+            <div class="schedule-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="experience-box">
+                            <div class="experience-content">
+                                <div class="col-12 d-flex">
+                                    <div class="col-8 d-block justify-content-start">
+                                        <p class="box-title">Total Sales</p>
+                                        <p class="amount">&#8369;@overAllTotal</p>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-end">
+                                        <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex">
+                                    <div class="col-7 d-flex justify-content-start">
+                                        <p class="description">This Month</p>
+                                    </div>
+                                    <div class="col-5 d-flex justify-content-end">
+                                        <a class="earnings-link" href="/maker/dashboard/grosssale">See all</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="experience-box">
+                            <div class="experience-content">
+                                <div class="col-12 d-flex">
+                                    <div class="col-8 d-block justify-content-start">
+                                        <p class="box-title">Events</p>
+                                        <p class="amount">@OTEActivities.Count()</p>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-end">
+                                        <img class="earning-icon" src="images/Dashboard/activity.png" />
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex">
+                                    <div class="col-7 d-flex justify-content-start">
+                                        <p class="description-activity">All Events</p>
+                                    </div>
+                                    <div class="col-5 d-flex justify-content-end">
+                                        <a class="earnings-link-activity" href="/maker/dashboard/events">See all</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="experience-box">
+                            <div class="experience-content">
+                                <div class="col-12 d-flex">
+                                    <div class="col-8 d-block justify-content-start">
+                                        <p class="box-title">Registration</p>
+                                        <p class="amount">@registrationCount</p>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-end">
+                                        <img class="earning-icon" src="images/Dashboard/students.png" />
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex">
+                                    <div class="col-7 d-flex justify-content-start">
+                                        @if (selectedEvent.Id != 0)
+                                        {
+                                            string name = $"No .of registration in {selectedEvent.EventName}";
+                                            <Tooltip Text="@name" Multiline>
+                                            <p class="description-student">No. of registration in @selectedEvent.EventName</p>
+                                        </Tooltip>
+                                        }
+                                        else
+                                        {
+                                            <Tooltip Text="Select event to view number of registration." Multiline>
+                                            <p class="description-student">Select event to view number of registration.</p>
+                                        </Tooltip>
+
+                                        }
+                                    </div>
+                                    <div class="col-5 d-flex justify-content-end">
+                                        @if (!selectedEvent.IsMultiple)
+                                        {
+                                            <a class="earnings-link-student" href="maker/dashboard/events/@selectedEvent.Handler/?date=@selectedEvent.OteDateId">See all</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="earnings-link-student" href="/maker/dashboard/events">See all</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (profile.Id != 0)
+    {
+        <div class="section-1">
+            <div class="activity">
+                <div class="calendar-events">
+                    <div class="title">Event Calendar</div>
+                    <Divider />
+                    <div class="@WrapperClass">
+                        <div class="calendar-header d-flex align-items-center justify-content-between">
+                            <div class="text-center font-20 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
+                            <div class="button-calendar">
+                                <Button Clicked="PrevMonthClick">
+                                    <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
+                                </Button>
+                                <Button Clicked="NextMonthClick">
+                                    <img style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid-container">
+                            <div class="grid-item header">sun</div>
+                            <div class="grid-item header">mon</div>
+                            <div class="grid-item header">tue</div>
+                            <div class="grid-item header">wed</div>
+                            <div class="grid-item header">thu</div>
+                            <div class="grid-item header">fri</div>
+                            <div class="grid-item header">sat</div>
+                            @foreach (var item in calendarItems)
+                            {
+                                <div class="grid-item" @key="item">
+                                    @if (!item.Empty)
+                                    {
+                                        <span class="@DayClass(item.Selected, item.Date)">
+                                            @NumberString(item.Date.Day)
+                                        </span>
+                                        @if (item.Selected)
+                                        {
+                                            @foreach (var name in item.Title)
+                                            {
+                                                <Tooltip Text="@name.EventName">
+                                                    <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
+                                                </Tooltip>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="activities-section">
+                    <div class="title">Event List</div>
+                    <Divider />
+                    <div class="activity-header">
+                        <p class="header">Title</p>
+                        <p class="header">Type</p>
+                        <p class="header">Status</p>
+                        <p class="header ms-3">Action</p>
+                    </div>
+                    <Divider />
+                    <div class="activity-table">
+                        @foreach (var item in OTEActivities)
+                        {
+                            <div class="activity-details">
+                                <div class="activity-title">
+                                    <p class="activity-text">@item.EventName</p>
+                                </div>
+                                @*Activity Type*@
+                                @if (!string.IsNullOrEmpty(item.PinnedLocation))
+                                {
+                                    <div class="activity-type-face">
+                                        <p class="activity-face">Face to Face</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="activity-type-online">
+                                        <p class="activity-online">Online</p>
+                                    </div>
+                                }
+                                @*Schedule*@
+                                <div class="activity-title">
+                                    <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
+                                </div>
+                                @*Activity Status & Action*@
+                                <div class="details-action ms-5 pe-2">
+                                    <Tooltip Text="Edit">
+                                        <a button class="update-button me-2" href="/experiences/ote/@item.Handler">
+                                            <img class="action-btn" src="images/Dashboard/edit.png" />
+                                        </a>
+                                    </Tooltip>
+                                    @if (!item.IsMultiple)
+                                    {
+                                        <Tooltip Text="View">
+                                            <a button class="update-button" href="/maker/dashboard/events/@item.Handler/?date=@item.OteDateId">
+                                                <img class="action-btn" src="images/Dashboard/details.png" />
+                                            </a>
+                                        </Tooltip>
+                                    }
+                                    else
+                                    {
+                                        <Tooltip Text="View">
+                                            <a button class="update-button" href="/maker/dashboard/events">
+                                                <img class="action-btn" src="images/Dashboard/details.png" />
+                                            </a>
+                                        </Tooltip>
+                                    }
+                                </div>
+                            </div>
+                            <Divider />
+                        }
+                    </div>
+                </div>
+                <div class="mobile-other-section mt-3">
+                    <div class="profile-section">
+                        <p class="manual-title">Profile</p>
+                        <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
+                        <div class="profile-pic">
+                            <div class="d-flex justify-content-center">
+                                <CircularProgress Id='@($"progress-{profile.FirstName}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
+                                    <img class="profile-img" src="@profile.ProfilePath" />
+                                </CircularProgress>
+                            </div>
+                            <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                            <p class="manual-text">@profile.Email</p>
+                        </div>
+                        <div class="manual-option">
+                            <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="other-section desktop-switch-mobile">
+                <div class="create-section">
+                    <p class="manual-title">Start a new event?</p>
+                    <div class="manual-option mt-3">
+                        <button class="create-activity" @onclick="NavigateToCreate"><span>Create New</span></button>
+                    </div>
+                </div>
+                <div class="attendance-section">
+                    <p class="manual-title">Schedule</p>
+                    <p class="manual-text">
+                        @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                        {
+                            var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                            @currentEvent.EventName
+                        }
+                        else
+                        {
+                            @if (selectedEvent.Id != 0)
+                            {
+                                @selectedEvent.EventName
+                            }
+                            else
+                            {
+                                <text>No schedule for today.</text>
+                            }
+                        }
+                    </p>
+                    <div class="manual-option">
+                        @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                        {
+                            var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                            if (!currentEvent.IsMultiple)
+                            {
+                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))"><span>Scan Tickets</span></button>
+                            }
+                            else
+                            {
+                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
+                            }
+
+                        }
+                        else
+                        {
+                            @if (selectedEvent.Id != 0)
+                            {
+                                if (!selectedEvent.IsMultiple)
+                                {
+                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))"><span>Scan Tickets</span></button>
+                                }
+                                else
+                                {
+                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
+                                }
+                            }
+                            else
+                            {
+                                <button class="check-attendance" disabled><span>Scan Tickets</span></button>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <p class="manual-title">Profile</p>
+                    <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
+                    <div class="profile-pic">
+                        <div class="d-flex justify-content-center">
+                            <CircularProgress Id='@($"progress-{profile.Id}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
+                                <img class="profile-img" src="@profile.ProfilePath" />
+                            </CircularProgress>
+                        </div>
+                        <p class="profile-name">@profile.FirstName @profile.LastName</p>
+                        <p class="manual-text">@profile.Email</p>
+                    </div>
+                    <div class="manual-option">
+                        <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="other-section-mobile swiper-switch-mobile">
+                <div class="mobile-wrapper">
+                    <div class="schedule-swiper-mobile">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="create-section">
+                                    <p class="manual-title">Start a new event?</p>
+                                    <div class="manual-option mt-3">
+                                        <button class="create-activity" @onclick="NavigateToCreate">Create New</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="attendance-section">
+                                    <p class="manual-title">Schedule</p>
+                                    <p class="manual-text">
+                                        @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                                        {
+                                            var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                                            @currentEvent.EventName
+                                        }
+                                        else
+                                        {
+                                            @if (selectedEvent.Id != 0)
+                                            {
+                                                @selectedEvent.EventName
+                                            }
+                                            else
+                                            {
+                                                <text>No schedule for today.</text>
+                                            }
+                                        }
+                                    </p>
+                                    <div class="manual-option">
+                                        @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
+                                        {
+                                            var currentEvent = OTEActivities.Where(a => a.ScheduleTo.Date == DateTime.Now.Date).FirstOrDefault();
+                                            if (!currentEvent.IsMultiple)
+                                            {
+                                                <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(currentEvent.Handler, currentEvent.OteDateId))"><span>Scan Tickets</span></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            @if (selectedEvent.Id != 0)
+                                            {
+                                                if (!selectedEvent.IsMultiple)
+                                                {
+                                                    <button class="check-attendance" @onclick="@(() => NavigateToScanTickets(selectedEvent.Handler, selectedEvent.OteDateId))"><span>Scan Tickets</span></button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="check-attendance" @onclick="@(() => NavigateToEvents())"><span>Scan Tickets</span></button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button class="check-attendance" disabled><span>Scan Tickets</span></button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <br />
+}
+else
+{
+    <div class="empty-events">
+        <div class="empty-options">
+            <p class="no-text">No Events Yet!</p>
+            <p class="no-sub-text">Create your first event by clicking the button below.</p>
+            <button class="empty-create" @onclick="NavigateToCreate">Create Event</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Token { get; set; }
+
+    [Parameter]
+    public string overAllTotal { get; set; }
+
+    public bool HasPayoutAccount { get; set; } = false;
+
+    public List<OteActivity> OTEActivities = new List<OteActivity>();
+
+    private CustomerProfile profile = new CustomerProfile();
+
+    private PayoutAccountModel PayoutAccount { get; set; }
+
+    private string color = "#FFA942";
+
+    private string profilePercentage { get; set; } = "0%";
+
+    public DateTime CurrentDate { get; set; } = DateTime.Now;
+
+    public IEnumerable<DateTime> SelectedDates { get; set; } = Enumerable.Empty<DateTime>();
+
+    public bool ViewOnly { get; set; }
+
+    public EventCallback<DateTime> OnSelectedDate { get; set; }
+
+    public EventCallback<CalendarCurrentMonth> OnPreviousMonthChanged { get; set; }
+
+    public EventCallback<CalendarCurrentMonth> OnNextMonthChanged { get; set; }
+
+    public bool StrikeOutNotSelected { get; set; }
+
+    public bool UnHighlightLoadedDates { get; set; }
+
+    public bool Flat { get; set; }
+
+    public bool StoreClickedItems { get; set; }
+
+    private IList<CalendarItem> calendarItems = new List<CalendarItem>();
+
+    private DateTime activeDate;
+
+    private Dictionary<DateTime, CalendarItem> clickedItems = new();
+
+    public OteActivity selectedEvent = new OteActivity();
+
+    public int registrationCount { get; set; } = 0;
+
+    public List<OteSchedule> ticketList = new List<OteSchedule>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        //Get Payout Details
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Token);
+        if (fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            PayoutAccount = new PayoutAccountModel
+                {
+                    AccountHolder = payoutAccount.AccountHolder,
+                    AccountNumber = payoutAccount.AccountNumber,
+                    Id = payoutAccount.Id
+                };
+        }
+        HasPayoutAccount = PayoutAccount is not null ? true : false;
+        //Get Profile Details
+        var customer        = result.Result.Result;
+        profile.Id          = customer.Id;
+        profile.FirstName   = customer.FirstName;
+        profile.LastName    = customer.LastName;
+        profile.Handler     = customer.Handler;
+        profile.ProfilePath = customer.ProfileImg;
+        profile.IsVerified  = customer.IsVerified;
+        profile.Email       = customer.Email;
+        profile.About       = customer.About;
+
+        //Get OTE Event
+        await GetOTEActivities();
+        //Load Calendar
+        activeDate = CurrentDate;
+        LoadCalendarItems();
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile", ".schedule-swiper-mobile");
+    }
+
+    private void NavigateToProfile()
+    {
+        NavigationManager.NavigateTo("/customer/profile");
+    }
+    private async Task GetOTEActivities()
+    {
+        //Get OTE Details
+        var resultOTE = await activityApiHandler.GetOtePerDay(Token);
+        if (resultOTE.Succeeded && resultOTE.Result != null && resultOTE.Result.IsSuccess)
+        {
+            var groupedActivities = resultOTE.Result.Result
+            .Where(a => !a.ForceDisable) // Filter out disabled activities
+            .GroupBy(a => a.Handler);
+
+            // List for unique handlers
+            var uniqueHandlerActivities = groupedActivities
+            .Where(g => g.Count() == 1)
+            .Select(g => g.First())
+            .Select(a => new OteActivity
+            {
+                Id               = a.ActivityId,
+                ExperienceTypeId = a.ExperienceTypeId,
+                EventName        = a.Title,
+                Description      = a.Description,
+                Handler          = a.Handler,
+                CityName         = a.CityName,
+                RegionName       = a.RegionName,
+                PinnedLocation   = a.PinnedLocation,
+                EventImage       = a.EventImage,
+                ScheduleFrom     = a.DateStart,
+                ScheduleTo       = a.DateEnd,
+                OteDateId        = a.DateId,
+                ForceDisable     = a.ForceDisable,
+                IsMultiple       = false
+            }).ToList();
+            //Add To OTEActivities
+            OTEActivities.AddRange(uniqueHandlerActivities);
+
+            var multipleHandlerActivities = groupedActivities
+            .Where(g => g.Count() > 1)
+            .Select(group =>
+            {
+                var firstActivity = group.First();
+                return new OteActivity
+                {
+                    Id               = firstActivity.ActivityId,
+                    ExperienceTypeId = firstActivity.ExperienceTypeId,
+                    EventName        = firstActivity.Title,
+                    Description      = firstActivity.Description,
+                    Handler          = firstActivity.Handler,
+                    CityName         = firstActivity.CityName,
+                    RegionName       = firstActivity.RegionName,
+                    PinnedLocation   = firstActivity.PinnedLocation,
+                    EventImage       = firstActivity.EventImage,
+                    ScheduleFrom     = group.Min(a => a.DateStart), // Use the earliest start date
+                    ScheduleTo       = group.Max(a => a.DateEnd), // Use the latest end date
+                    OteDateId        = firstActivity.DateId,
+                    ForceDisable     = firstActivity.ForceDisable,
+                    IsMultiple       = true
+                };
+            }).ToList();
+            //Add To OTEActivities
+            OTEActivities.AddRange(multipleHandlerActivities);
+            if (OTEActivities.Count != 0)
+            {
+                await SelectSchedule(OTEActivities[0]);
+            }
+        }
+    }
+    private void NavigateToEventDetails(string handler, int selectedId)
+    {
+        NavigationManager.NavigateTo($"/maker/dashboard/events/{handler}/?date={selectedId}");
+    }
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote");
+    }
+    private int GetSessionPercentage()
+    {
+        double checkItem = 0;
+        double denominator = 4;
+        if (profile.IsVerified == 2)
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(profile.About))
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(profile.ProfilePath))
+        {
+            checkItem += 1;
+        }
+        if (HasPayoutAccount)
+        {
+            checkItem += 1;
+        }
+        //Get Payout Details
+        profilePercentage = $"{(int)((checkItem / denominator) * 100)}%";
+        return (int)((checkItem / denominator) * 100);
+    }
+    private void NavigateToGetVerified()
+    {
+        NavigationManager.NavigateTo("/customer/user-verification/?redirect=redirect_account"); 
+    }
+    public void LoadCalendarItems()
+    {
+        calendarItems.Clear();
+        var now = activeDate;
+        var startDate = new DateTime(now.Year, now.Month, 1);
+        var endDate = startDate.AddMonths(1).AddDays(-1);
+        var skipCount = (int)startDate.DayOfWeek;
+
+        for (int i = 1; i < endDate.Day + (skipCount + 1); i++)
+        {
+            if (i <= skipCount)
+            {
+                calendarItems.Add(new CalendarItem
+                    {
+                        Empty = true
+                    });
+            }
+            else
+            {
+                var currentDateTime = DateTime.UtcNow;
+                var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
+                var selected = OTEActivities.Any(a => a.ScheduleFrom.Date == date.Date);
+                var titles = OTEActivities.Where(a => a.ScheduleFrom.Date == date.Date).ToList();
+                calendarItems.Add(new CalendarItem
+                    {
+                        Empty = false,
+                        Date = date,
+                        Selected = selected,
+                        Title = titles
+                    });
+            }
+        }
+    }
+
+    private async Task NextMonthClick()
+    {
+        if (activeDate != DateTime.MaxValue)
+        {
+            var date = activeDate.AddMonths(1);
+            activeDate = date;
+
+            LoadCalendarItems();
+            if (OnNextMonthChanged.HasDelegate)
+            {
+                await OnNextMonthChanged.InvokeAsync(new CalendarCurrentMonth
+                    {
+                        Month = date.Month,
+                        Year = date.Year
+                    });
+            }
+        }
+    }
+
+    private async Task PrevMonthClick()
+    {
+        if (activeDate.Date != DateTime.MinValue)
+        {
+            var date = activeDate.AddMonths(-1);
+            activeDate = date;
+
+            LoadCalendarItems();
+            if (OnPreviousMonthChanged.HasDelegate)
+            {
+                await OnPreviousMonthChanged.InvokeAsync(new CalendarCurrentMonth
+                    {
+                        Month = date.Month,
+                        Year = date.Year
+                    });
+            }
+        }
+    }
+    private string DayClass(bool selected, DateTime? date = null)
+    {
+        string result = "day prevent-select";
+        if (selected)
+        {
+            result += $" selected rounded-circle";
+        }
+        return result;
+    }
+    private string WrapperClass
+    {
+        get
+        {
+            string result = "calendar-wrapper";
+            if (Flat) result += " flat";
+            return result;
+        }
+    }
+    private string NumberString(int number)
+    {
+        if (number.ToString().Length > 1) return number.ToString();
+        return $"0{number}";
+    }
+    private class CalendarItem
+    {
+        public DateTime Date { get; set; }
+        public bool Empty { get; set; }
+        public bool Selected { get; set; }
+        public List<OteActivity> Title { get; set; }
+    }
+
+    public class CalendarCurrentMonth
+    {
+        public int Month { get; set; }
+        public int Year { get; set; }
+    }
+    public async Task SelectSchedule(OteActivity oteActivity)
+    {
+        selectedEvent = oteActivity;
+        //Get Ticket Details
+        var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
+            {
+                ActivityId = selectedEvent.Id,
+                DateId = selectedEvent.OteDateId
+            }, Token);
+        if (ticketResult.Succeeded && ticketResult.Result != null && ticketResult.Result.IsSuccess)
+        {
+            ticketList = ticketResult.Result.Result.Select(s => new OteSchedule
+                {
+                    ActivityId = s.ActivityId,
+                    From = s.From,
+                    OtePricing = new OtePricing
+                    {
+                        MaxSlots = s.OtePricingDTO.MaxSlots,
+                        Sold = s.OtePricingDTO.Sold,
+                    }
+                }).ToList();
+        }
+        registrationCount = ticketList.Sum(s => s.OtePricing.Sold);
+    }
+    public void NavigateToScanTickets(string Handler, int OteDateId)
+    {
+        NavigationManager.NavigateTo($"/maker/dashboard/events/{Handler}/verification/?date={OteDateId}");
+    }
+    public void NavigateToEvents()
+    {
+        NavigationManager.NavigateTo("maker/dashboard/events");
+    }
+}

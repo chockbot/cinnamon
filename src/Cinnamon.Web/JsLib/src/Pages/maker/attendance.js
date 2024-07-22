@@ -13,6 +13,20 @@ export function initSwiper(selector, scrollbarSelector) {
   });
 }
 
+export function initSwiperMobile(selector) {
+  const swiper = new Swiper(selector, {
+    slidesPerView: "auto",
+    spaceBetween: 30,
+    grabCursor: true,
+    keyboard: {
+      enabled: true,
+    },
+    scrollbar: false,
+    observer: true,
+    observeParents: true,
+  });
+}
+
 export function initSwiperHelpPage(selector) {
   const swiper = new Swiper(selector, {
     slidesPerView: "auto",
@@ -64,5 +78,6 @@ export function initCircularProgress(selector, percentage) {
 export default {
   initSwiper,
   initSwiperHelpPage,
+  initSwiperMobile,
   initCircularProgress,
 };

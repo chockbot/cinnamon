@@ -566,7 +566,7 @@
     </ConfirmDialog>
 
 @code
-{
+    {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -595,8 +595,8 @@
     private bool DisplayDelete = true;
     private Modal? modalFeeBreakdown { get; set; }
     private Modal modalError { get; set; }
-    private Modal registrationModal { get; set; }
-    private Modal capacityModal { get; set; }
+    public Modal registrationModal { get; set; }
+    public Modal capacityModal { get; set; }
     private Modal ticketModal { get; set; }
     private Modal ticketUpdateModal { get; set; }
     private ModalTicketPricing modalTicketPricing = new();
@@ -615,7 +615,7 @@
     private string customAcceptedMessageOrig = string.Empty;
     private string customDeclinedMesasgeOrig = string.Empty;
 
-    private Modal? modalCustomQuestion;
+    public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
 
@@ -936,10 +936,11 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name = modelPricing.Name;
-                            existingTicket.Price = modelPricing.Price;
-                            existingTicket.MaxSlots = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            existingTicket.Name             = modelPricing.Name;
+                            existingTicket.Price            = modelPricing.Price;
+                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.RequiredApproval = modelPricing.RequiredApproval;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -951,10 +952,11 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.TempId == modelPricing.TempId);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name = modelPricing.Name;
-                            existingTicket.Price = modelPricing.Price;
-                            existingTicket.MaxSlots = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
+                            existingTicket.Name             = modelPricing.Name;
+                            existingTicket.Price            = modelPricing.Price;
+                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.RequiredApproval = modelPricing.RequiredApproval;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -1062,13 +1064,14 @@
     {
         modelPricing = new Pricing
             {
-                Id         = ticket.Id,
-                Name       = ticket.Name,
-                Price      = ticket.Price,
-                MaxSlots   = ticket.MaxSlots,
-                AbsorbFees = ticket.AbsorbFees,
-                IsNew      = ticket.IsNew,
-                TempId     = ticket.TempId
+                Id               = ticket.Id,
+                Name             = ticket.Name,
+                Price            = ticket.Price,
+                MaxSlots         = ticket.MaxSlots,
+                AbsorbFees       = ticket.AbsorbFees,
+                IsNew            = ticket.IsNew,
+                TempId           = ticket.TempId,
+                RequiredApproval = ticket.RequiredApproval
             };
         isEditing = true;
         await ticketModal.Show();
@@ -1109,19 +1112,19 @@
         return offcanvas.Close(CloseReason.UserClosing);
     }
 
-    private Task OnPendingEmailTemplateClick()
+    public Task OnPendingEmailTemplateClick()
     {
         selectedEmailTemplate = 0;
         return ShowOffcanvas();
     }
 
-    private Task OnAcceptedTemplateClick()
+    public Task OnAcceptedTemplateClick()
     {
         selectedEmailTemplate = 1;
         return ShowOffcanvas();
     }
 
-    private Task OnDeclinedTemplateClick()
+    public Task OnDeclinedTemplateClick()
     {
         selectedEmailTemplate = 2;
         return ShowOffcanvas();

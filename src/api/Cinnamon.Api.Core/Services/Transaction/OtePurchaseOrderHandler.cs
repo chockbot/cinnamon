@@ -3,6 +3,7 @@ using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
@@ -30,12 +31,17 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly ILogger<OtePurchaseOrderHandler> logger;
     private readonly ApplicationConfig applicationConfig;
     private readonly ITokenGeneratedData tokenGeneratedData;
+    private readonly IActivityQuestionsHandler activityQuestionsHandler;
+    private readonly ICreateOteWaitlistHandler createOteWaitlist;
+    private readonly IGetProfileHandler getProfileHandler;
+
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData, ILogger<OtePurchaseOrderHandler> logger,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler,
-        ITokenGeneratedData tokenGeneratedData)
+        ITokenGeneratedData tokenGeneratedData, IActivityQuestionsHandler activityQuestionsHandler,
+        ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -51,18 +57,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.applicationConfig = applicationConfig;
         this.oteFinishTransactionHandler = oteFinishTransactionHandler;
         this.tokenGeneratedData = tokenGeneratedData;
+        this.activityQuestionsHandler = activityQuestionsHandler;
+        this.createOteWaitlist = createOteWaitlist;
+        this.getProfileHandler = getProfileHandler;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
     {
-        try
-        {
-            return ExecuteAsync(args).Result;
-        }
-        catch (Exception ex)
-        {
-            return AppResult<OtePurchaseOrderResult>.CreateFailed(ex, "An error occured when purchasing one time event");
-        }
+        return ExecuteAsync(args).Result;
     }
 
     public async Task<AppResult<OtePurchaseOrderResult>> ExecuteAsync(OtePurchaseOrderArgs args)
@@ -70,13 +72,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         try
         {
             // get customer id saved in claims
-            var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
-            if(customerId == null)
+            var currentUserRes = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
+            if(!currentUserRes.Succeeded || currentUserRes.Result is null)
             {
                 return AppResult<OtePurchaseOrderResult>.CreateFailed(
                     new ApplicationException("Unable to determine current account login"), "Unable to determine current account login");
             }
-            int id = Convert.ToInt32(customerId);
+            var currentUser = currentUserRes.Result;
+            int id = Convert.ToInt32(currentUser.Id);
 
             bool isEmptyTicket = args.Tickets.Count() == 0;
             if(isEmptyTicket)
@@ -85,12 +88,14 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
 
             var checkActivityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                ActivityId = args.ActivityId
+                ActivityId = args.ActivityId,
+                IncludeCustomer = true
             });
             if(!checkActivityRes.Succeeded || checkActivityRes.Result is null)
             {
                 return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected one time event."), "Unable to identify selected one time event.");
             }
+            var provider = checkActivityRes.Result.Owner;
 
             var oteHandlerRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs {
                 Handler = checkActivityRes.Result.Handler,
@@ -105,6 +110,16 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
             var oteActivity = oteHandlerRes.Result;
 
+            var activityQuestions = await activityQuestionsHandler.ExecuteAsync(new ActivityService.Interactors.ActivityQuestionsArgs {
+                ActivityId = oteActivity.Id
+            });
+            if(!activityQuestions.Succeeded || activityQuestions.Result is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                    new ApplicationException("Unable to get activity questions."), "Unable to get activity questions.");
+            }
+            var questions = activityQuestions.Result.Questions;
+
             // filter tickets available only to ticket date
             var defaultDatePricing = oteActivity.Pricings.FirstOrDefault(p => p.Id == args.Tickets.First().Id);
             if(defaultDatePricing is null)
@@ -112,6 +127,23 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected one time event."), "Unable to identify selected one time event.");
             }
             var fileteredAvailableTickets = oteActivity.Pricings.Where(p => p.OteDateId == defaultDatePricing.OteDateId);
+
+            var selectedTicketIds = args.Tickets.Select(t => t.Id);
+            var validSelectedTickets = fileteredAvailableTickets.Where(t => selectedTicketIds.Contains(t.Id));
+
+            // should not able to purchase with the mix of free and paid tickets
+            var invalidSelectedTickets = validSelectedTickets.Count() == 0 && validSelectedTickets.Any(t => t.Price == 0) && validSelectedTickets.Any(t => t.Price != 0);
+            if(invalidSelectedTickets)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Combining free and paid tickets is not permitted."), "Combining free and paid tickets is not permitted.");
+            }
+
+            var oteDate = oteActivity.OteDates.FirstOrDefault(d => d.Id == defaultDatePricing.OteDateId);
+            if(oteDate is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                    new ApplicationException("Unable to get ote date. Please contact support."), "Unable to get ote date. Please contact support.");
+            }
 
             var checkInclusivePaymentRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
                 CustomerId = oteActivity.ProviderId
@@ -169,7 +201,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             decimal providerFeePercent = args.PaymentMethod == "CARD" ? 5 : 3;
             decimal paymentProviderFee = isInclusivePayment ? 0 : subTotal * (providerFeePercent / 100); //.05m;
             decimal discount = 0;
-            decimal serviceFee = isInclusivePayment ? 0 : 15; //50;
+            decimal serviceFee = subTotal <= 0 ? 0 : (isInclusivePayment ? 0 : 15); //50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
@@ -275,7 +307,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 isInclusivePayment,
                 OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
                 Guid = guid.ToString(),
-                Token = encodedToken
+                Token = encodedToken,
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -323,16 +355,45 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             if(overallTotal == 0)
             {
-                var finishTransaction = await oteFinishTransactionHandler.ExecuteAsync(new OteFinishTransactionArgs {
-                    TransactionId = result.Result.Result.Id
+                // var finishTransaction = await oteFinishTransactionHandler.ExecuteAsync(new OteFinishTransactionArgs {
+                //     TransactionId = result.Result.Result.Id
+                // });
+                // if(!finishTransaction.Succeeded || finishTransaction.Result is null)
+                // {
+                //     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                // }
+
+                var waitlistPayload = new {
+                    Tickets = selectedTickets.Select(t => new {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Price = t.Price,
+                        OteDateId = t.OteDateId,
+                        Date = oteDate.DateStart
+                    }),
+                    Questions = args.Questions?.Select(q => new {
+                        Question = q.Question,
+                        Answer = q.Answer
+                    })
+                };
+                var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
+
+                var createWaitlistRes = await createOteWaitlist.ExecuteAsync(new ActivityService.Interactors.CreateOteWaitlistArgs {
+                    ActivityId = oteActivity.Id,
+                    CustomerId = id,
+                    CustomerName = $"{currentUser.FirstName} {currentUser.LastName}",
+                    Payload = waitlistSerializedPayload,
+                    ProviderId = provider?.Id ?? 0,
+                    Status = 1
                 });
-                if(!finishTransaction.Succeeded || finishTransaction.Result is null)
+                if(!createWaitlistRes.Succeeded || createWaitlistRes.Result is null)
                 {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                    return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                        new ApplicationException("Unable to create waitlist"), "Unable to create waitlist");
                 }
 
                 return AppResult<OtePurchaseOrderResult>.CreateSucceeded(new OtePurchaseOrderResult {
-                    Action = 0,
+                    Action = 1,
                     Id = result.Result.Result.Id,
                     Url = successUrl
                 }, "Successfully request purchase order details.");

@@ -6,6 +6,25 @@
   text-align: center;
   align-items: center;
 }
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background: var(--primary);
+    color: #ffffff;
+}
+.nav-text.active {
+    color: white;
+}
+.icon-home.active {
+    color: white;
+    filter: brightness(0) invert(1);
+}
+.sub-nav-link .nav-text.active {
+    color: white;
+}
+
+.sub-nav-link .icon-home.active {
+    color: white;
+    filter: brightness(0) invert(1);
+}
 .icon-home {
     color: #D9D9D9;
 }
@@ -42,7 +61,6 @@
     font-size: 18px;
     padding-left: 22px;
 }
-
 .nav-link {
   display: flex;
   width: 100%;
@@ -61,17 +79,16 @@
 }
 
 .item-link:hover span {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .item-link:hover {
   background: var(--primary);
   color: #ffffff;
 }
-
 .item-link.sidebar-header:hover {
-  background-color: transparent;
-  color: var(--primary);
+    background-color: transparent;
+    color: var(--primary);
 }
 
 .item-link.sidebar-header:hover span {
@@ -163,95 +180,119 @@
 @media screen and (min-width: 1024px) {
 }
 /* For Tablet View */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  .app-name {
-    color: var(--primary);
-    font-family: "Backline";
-    font-size: 30px;
-    text-decoration: none;
-    text-align: center;
-    align-items: center;
-  }
-
-  .side-bar-header {
-    display: flex;
-    align-items: center;
-    padding-top: 40px;
-    justify-content: center;
-  }
-
-  .side-bar {
-    position: fixed;
-    z-index: 1;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    border: none;
-    text-decoration: none;
-    box-sizing: border-box;
-    width: 200px;
-    background-color: #f3f6fc;
-    transition: left 0.5s ease-in-out;
-  }
-
-  .icon-home {
-    width: 22px;
-    height: 22px;
-  }
-
-  .nav-text {
-    color: #343d4c;
-    font-family: "Nunito";
-    font-weight: 600;
-    font-size: 16px;
-    padding-left: 10px;
-  }
-
-  .nav-link {
-    display: flex;
-    width: 100%;
-    padding: 20px;
-    padding-left: 19px;
-    padding-right: 19px;
-    align-items: center;
-  }
-
-  .item-link:hover img {
-    filter: brightness(0) invert(1);
-  }
-
-  .item-link:hover span {
-    color: #ffffff;
-  }
-
-  .item-link:hover {
-    background: var(--primary);
-    color: #ffffff;
-  }
-
-    .contact {
-        cursor: pointer;
-        background-color: #435065;
-    }
-
-    .contact span {
-        color: #D9D9D9;
-        font-family: "Nunito";
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .experiences-title {
+        font-family: Nunito;
+        font-size: 14px;
         font-weight: 600;
-        font-size: 16px;
-        text-decoration: none;
-        padding-left: 12px;
+        color: #605D67;
     }
 
-  .body-content {
-    margin-left: 200px;
-  }
+    .header-mobile {
+        display: flex;
+        /* align-items: center; */
+        padding-top: 15px;
+        flex-direction: column;
+    }
 
-  .hamburger,
-  .close,
-  #toggle {
-    display: none;
-  }
+    .hamburger {
+        padding-right: 12px;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+        .hamburger:hover img {
+            filter: brightness(0) invert(1);
+        }
+
+        .hamburger:hover {
+            background: var(--primary);
+        }
+
+    .app-name-mobile {
+        color: var(--primary);
+        font-family: "Backline";
+        font-size: 32px;
+        text-decoration: none;
+        text-align: center;
+        align-items: center;
+        padding: 0px !important;
+        /* margin-left: 15px; */
+    }
+
+    .side-bar-header {
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        justify-content: center;
+    }
+
+    .close {
+        margin-right: 12px !important;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+        .close:hover img {
+            filter: brightness(0) invert(1);
+        }
+
+        .close:hover {
+            background: var(--primary);
+        }
+
+    .side-bar {
+        position: absolute;
+        z-index: 1;
+        margin: 0;
+        padding: 0;
+        outline: none;
+        border: none;
+        text-decoration: none;
+        box-sizing: border-box;
+        left: -260px;
+        width: 260px;
+        background-color: #f3f6fc;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        transition: left 0.5s ease-in-out;
+    }
+
+    .body-content {
+        margin-left: 0px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .hamburger,
+    .close {
+        display: inline;
+    }
+
+    .toggle-icon {
+        width: 25px;
+        height: 25px;
+    }
+
+    .close-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .maker-dashboard {
+        margin: 0px;
+    }
+
+    #toggle {
+        display: none;
+    }
+
+        #toggle:checked ~ .button {
+        }
+
+        #toggle:checked ~ .side-bar {
+            left: 0;
+        }
 }
 
 /* For Mobile Portrait View */
@@ -368,11 +409,125 @@
   }
 }
 
-.sidebar-header {
-  margin-top: 1rem;
-  margin-bottom: 0rem;
-  display: flex;
-  align-items: center;
-  justify-content:center;
-  padding-left: 0;
+@media screen and (min-width:617px) and (max-width:767px) {
+    .experiences-title {
+        font-family: Nunito;
+        font-size: 14px;
+        font-weight: 600;
+        color: #605D67;
+    }
+
+    .header-mobile {
+        display: flex;
+        /* align-items: center; */
+        padding-top: 15px;
+        flex-direction: column;
+    }
+
+    .hamburger {
+        padding-right: 12px;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+        .hamburger:hover img {
+            filter: brightness(0) invert(1);
+        }
+
+        .hamburger:hover {
+            background: var(--primary);
+        }
+
+    .app-name-mobile {
+        color: var(--primary);
+        font-family: "Backline";
+        font-size: 32px;
+        text-decoration: none;
+        text-align: center;
+        align-items: center;
+        padding: 0px !important;
+        /* margin-left: 15px; */
+    }
+
+    .side-bar-header {
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        justify-content: center;
+    }
+
+    .close {
+        margin-right: 12px !important;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+        .close:hover img {
+            filter: brightness(0) invert(1);
+        }
+
+        .close:hover {
+            background: var(--primary);
+        }
+
+    .side-bar {
+        position: absolute;
+        z-index: 1;
+        margin: 0;
+        padding: 0;
+        outline: none;
+        border: none;
+        text-decoration: none;
+        box-sizing: border-box;
+        left: -260px;
+        width: 260px;
+        background-color: #f3f6fc;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        transition: left 0.5s ease-in-out;
+    }
+
+    .body-content {
+        margin-left: 0px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .hamburger,
+    .close {
+        display: inline;
+    }
+
+    .toggle-icon {
+        width: 25px;
+        height: 25px;
+    }
+
+    .close-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .maker-dashboard {
+        margin: 0px;
+    }
+
+    #toggle {
+        display: none;
+    }
+
+        #toggle:checked ~ .button {
+        }
+
+        #toggle:checked ~ .side-bar {
+            left: 0;
+        }
 }
+    .sidebar-header {
+        margin-top: 1rem;
+        margin-bottom: 0rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 0;
+    }

@@ -74,4 +74,5 @@ public interface IActivityApiHandler
     Task<AppResult<DeleteOteWaitlistResult>> DeleteOteWaitlist(DeleteOteWaitlistArgs args, string token);
     Task<AppResult<GetEmailTemplateResult>> GetEmailTemplate(GetEmailTemplateArgs args, string token);
     Task<AppResult<ProviderQuestionsResult>> ProviderQuestions(ProviderQuestionsArgs args, string token);
+    Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args);
 }

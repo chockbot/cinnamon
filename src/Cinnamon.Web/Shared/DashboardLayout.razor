@@ -33,16 +33,16 @@
                             <label>Main</label>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
-                                <img class="icon-home" src="images/Dashboard Icon/dashboard-icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "dashboard" ? "active" : "inactive")" @onclick="NavigateToDashboard">
+                                <img class="icon-home @(currentPage == "dashboard" ? "active" : "inactive")" src="images/Dashboard Icon/dashboard-icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "dashboard" ? "active" : "inactive")">Dashboard</span>
                             </a>
                         </li>
                         <li class="experiences-title">
                             <label>Experiences</label>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToEvents">
-                                <img class="icon-home" src="images/Dashboard Icon/experience-icon.png"> <span class="ms-1 d-sm-inline nav-text">My Events</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "events" ? "active" : "inactive")" @onclick="NavigateToEvents">
+                                <img class="icon-home @(currentPage == "events" ? "active" : "inactive")" src="images/Dashboard Icon/experience-icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "events" ? "active" : "inactive")">My Events</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -53,13 +53,13 @@
                             </a>
                             <ul class="submenu" style="display:@GetSubMenuDisplay()">
                                 <li class="sub-nav-link">
-                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
-                                        <img class="icon-home" src="images/Dashboard Icon/schedule.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "attendance" ? "active" : "inactive")" @onclick="NavigateToAttendance">
+                                        <img class="icon-home @(currentPage == "attendance" ? "active" : "inactive")" src="images/Dashboard Icon/schedule.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "attendance" ? "active" : "inactive")">Attendance</span>
                                     </a>
                                 </li>
                                 <li class="sub-nav-link">
-                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToManage">
-                                        <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
+                                    <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "manage" ? "active" : "inactive")" @onclick="NavigateToManage">
+                                        <img class="icon-home @(currentPage == "manage" ? "active" : "inactive")" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "manage" ? "active" : "inactive")">Manage Students</span>
                                     </a>
                                 </li>
                             </ul>
@@ -81,23 +81,23 @@
                             </a>
                         </li>*@
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToCoupons">
-                                <img class="icon-home" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Coupons</span>
+                            <a id="" data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "coupon" ? "active" : "inactive")" @onclick="NavigateToCoupons">
+                                <img class="icon-home @(currentPage == "coupon" ? "active" : "inactive")" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "coupon" ? "active" : "inactive")">Coupons</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToReports">
-                                <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link @(currentPage == "reports" ? "active" : "inactive")" @onclick="NavigateToReports">
+                                <img class="icon-home @(currentPage == "reports" ? "active" : "inactive")" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "reports" ? "active" : "inactive")">Reports</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAccount">
-                                <img class="icon-home" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text">Account</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "account" ? "active" : "inactive")" @onclick="NavigateToAccount">
+                                <img class="icon-home @(currentPage == "account" ? "active" : "inactive")" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "account" ? "active" : "inactive")">Account</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToBadges">
-                                <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link @(currentPage == "badge" ? "active" : "inactive")" @onclick="NavigateToBadges">
+                                <img class="icon-home @(currentPage == "badge" ? "active" : "inactive")" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text @(currentPage == "badge" ? "active" : "inactive")">Badges</span>
                             </a>
                         </li>
                         @*<li class="nav-item">
@@ -174,6 +174,8 @@
 
     private bool isCollapsed = true;
 
+    private string currentPage = "dashboard"; // Default page
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -199,52 +201,63 @@
 
     private void NavigateToDashboard()
     {
+        currentPage = "dashboard";
         navigationManager.NavigateTo("/maker/dashboard");
     }
 
     private void NavigateToAccount()
     {
+        currentPage = "account";
         navigationManager.NavigateTo("/customer/profile");
     }
     private void NavigateToManage()
     {
+        currentPage = "manage";
         navigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void NavigateToMessages()
     {
+        currentPage = "messages";
         navigationManager.NavigateTo("/maker/dashboard/messages");
     }
     private void NavigateToAttendance()
     {
+        currentPage = "attendance";
         navigationManager.NavigateTo("/maker/dashboard/attendance");
     }
 
     private void NavigateToPremium()
     {
+        currentPage = "premium";
         navigationManager.NavigateTo("/maker/dashboard/coming-soon");
     }
 
     private void NavigateToBadges()
     {
+        currentPage = "badge";
         navigationManager.NavigateTo("/maker/dashboard/badges");
     }
 
     private void NavigateToReports()
     {
+        currentPage = "reports";
         navigationManager.NavigateTo("/maker/dashboard/reports");
     }
 
     private void NavigateToHelp()
     {
+        currentPage = "help";
         navigationManager.NavigateTo("/maker/dashboard/help");
     }
 
     private void NavigateToCoupons()
     {
+        currentPage = "coupon";
         navigationManager.NavigateTo("/maker/dashboard/coupons");
     }
     private void NavigateToEvents()
     {
+        currentPage = "events";
         navigationManager.NavigateTo("/maker/dashboard/events");
     }
     private void NavigateToContact()

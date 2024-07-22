@@ -91,6 +91,7 @@ public class ActivityController : ControllerBase
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IProviderQuestionsHandler providerQuestionsHandler;
+    private readonly IActivityQuestionsHandler activityQuestionsHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -121,7 +122,8 @@ public class ActivityController : ControllerBase
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
         IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
-        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler)
+        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler,
+        IActivityQuestionsHandler activityQuestionsHandler)
     {
         _logger = logger;
 
@@ -191,6 +193,7 @@ public class ActivityController : ControllerBase
         this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
         this.providerQuestionsHandler = providerQuestionsHandler;
         this.updateOteWaitlistHandler = updateOteWaitlistHandler;
+        this.activityQuestionsHandler = activityQuestionsHandler; 
     }
 
     [Route("CreateActivity")]
@@ -3455,7 +3458,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
+    [AllowAnonymous]
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -3577,6 +3580,37 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("ActivityQuestions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ActivityQuestionsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ActivityQuestions([FromQuery] ActivityQuestionsArgs args)
+    {
+        try
+        {
+            var result = await activityQuestionsHandler.ExecuteAsync(new Services.ActivityService.Interactors.ActivityQuestionsArgs {
+                ActivityId = args.ActivityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<ProviderQuestionDTO>>(result.Result.Questions);
+
+            return new JsonResult(new ActivityQuestionsResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
