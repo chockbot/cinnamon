@@ -10,6 +10,6 @@ public class OteSchedulePricingGroup : BaseEntity
     public string Name {get; set;}
     public int TicketSold {get; set;}
     public bool RequiredApproval {get; set;}
-
+    public bool IsUnlimited { get; set; }
     public virtual OteSchedule OteSchedule {get; set;}
 }

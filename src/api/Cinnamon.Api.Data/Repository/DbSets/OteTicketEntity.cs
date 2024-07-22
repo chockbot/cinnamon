@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteSchedule;
 using System;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OteTicket;
+using Npgsql;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -121,7 +123,7 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
     {
         try
         {
-            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", b.\"TicketSold\" ,b.\"Price\", b.\"Id\" as PricingId \r\n" +
+            string query = "SELECT a.\"Id\",  a.\"ActivityId\", a.\"From\",  a.\"To\", a.\"Recurrences\", b.\"Name\", b.\"Description\", b.\"MaxSlots\", b.\"TicketSold\" ,b.\"Price\", b.\"Id\" as PricingId, b.\"RequiredApproval\", b.\"IsUnlimited\" \r\n" +
                 "FROM public.\"OteSchedules\" AS a\r\n" +
                 "JOIN public.\"OteSchedulePricings\" AS b ON b.\"OteScheduleId\" = a.\"Id\"\r\n" +
                 "WHERE a.\"ActivityId\" = " + activityId + " and b.\"OteDateId\" = " + dateId + ";";
@@ -155,7 +157,9 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
                                 MaxSlots              = Convert.ToInt32(item["MaxSlots"]),
                                 Sold                  = Convert.ToInt32(item["TicketSold"]),
                                 Price                 = Convert.ToDecimal(item["Price"]),
-                                OteSchedulePricingsId = Convert.ToInt32(item["PricingId"])
+                                OteSchedulePricingsId = Convert.ToInt32(item["PricingId"]),
+                                RequiredApproval      = Convert.ToBoolean(item["RequiredApproval"]),
+                                IsUnlimited           = Convert.ToBoolean(item["IsUnlimited"]),
                             }
                         }).ToList();
                     }
@@ -166,6 +170,75 @@ public class OteTicketEntity : GenericEntity<OteTicket>, IOteTicket
         catch (Exception ex)
         {
             return AppResult<IEnumerable<OteScheduleDTO>>.CreateFailed(ex, "An error occured when trying to get ticket details");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int limit, int offset)
+    {
+        try
+        {
+            string dateIdFilter = string.Empty;
+            if(dateId.HasValue)
+            {
+                dateIdFilter = " and ot.\"OteDateId\" = @dateId ";
+            }
+
+            string query = "with perCustomer as " +
+                            "( " +
+                                "select ot.\"Id\", ot.\"ActivityId\", ot.\"CustomerId\", ot.\"OteDateId\", " +
+                                    "Row_Number() over (partition by ot.\"ActivityId\", ot.\"OteDateId\", ot.\"CustomerId\" " +
+                                           "order by ot.\"Id\" desc) as \"RowCnt\" " +
+                                "from public.\"OteTickets\" ot " +
+                                "where ot.\"OteDateId\" is not null and ot.\"ActivityId\" = @activityId " + dateIdFilter +
+                            ") " +
+                            "select tc.*, cc.\"FirstName\", cc.\"LastName\", cc.\"Email\", cc.\"ProfilePath\" " +
+                            "from perCustomer tc " +
+                            "join public.\"Customers\" cc " +
+                                "on cc.\"Id\" = tc.\"CustomerId\" " +
+                            "where tc.\"RowCnt\" = 1 " +
+                            "limit @limit offset @offset ";
+            
+            IList<BookedCustomerDTO> listResult = new List<BookedCustomerDTO>();
+            using (var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.Add(new NpgsqlParameter("activityId", activityId));
+                command.Parameters.Add(new NpgsqlParameter("limit", limit));
+                command.Parameters.Add(new NpgsqlParameter("offset", offset));
+                if(dateId.HasValue)
+                {
+                    command.Parameters.Add(new NpgsqlParameter("dateId", dateId.Value));
+                }
+
+                applicationContext.Database.OpenConnection();
+
+                using (var dr = await command.ExecuteReaderAsync())
+                {
+                    if (dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+                        //Get Activity
+                        listResult = dt.AsEnumerable().Select(item => new BookedCustomerDTO {
+                            ActivityId = Convert.ToInt32(item["ActivityId"]),
+                            CustomerId = Convert.ToInt32(item["CustomerId"]),
+                            DateId = Convert.ToInt32(item["OteDateId"]),
+                            FirstName = item["FirstName"].ToString() ?? string.Empty,
+                            LastName = item["LastName"].ToString() ?? string.Empty,
+                            Email = item["Email"].ToString() ?? string.Empty,
+                            ProfileImage = item["ProfilePath"].ToString() ?? string.Empty,
+                            Id = Convert.ToInt32(item["Id"])
+                        }).ToList();
+                    }
+                }
+            }
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateSucceeded(listResult, "Successfully get ticket details");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(ex, "An error occured when getting booked customers.");
         }
     }
 }

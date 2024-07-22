@@ -50,11 +50,33 @@
                                 <TableRowCell class="tr-name">
                                     <span>@item.TicketPrice</span>
                                 </TableRowCell>
-                                <TableRowCell class="tr-name">
-                                    <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
-                                        Update
-                                    </button>
-                                </TableRowCell>
+                                @switch (item.Status)
+                                {
+                                    case 1:
+                                        <TableRowCell class="tr-name">
+                                            <button class="btn-action" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Update
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    case 2:
+                                        <TableRowCell class="approved-waitlist">
+                                            <button class="btn-approved" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Approved
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    case 3:
+                                        <TableRowCell class="declined-waitlist">
+                                            <button class="btn-declined" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                Declined
+                                            </button>
+                                        </TableRowCell>
+                                        break;
+                                    default:
+                                        break;
+                                }
+                               
                             </TableRow>
                         }
                     </TableBody>
@@ -78,6 +100,20 @@
         <Divider class="m-0" />
         <div class="details">
             <p class="title">Waitlist Approval</p>
+            @switch (WaitlistDetails.Status)
+            {
+                case 1:
+                    <p class="waitlist-status">Waitlist</p>
+                break;
+                case 2:
+                    <p class="waitlist-approved">Approved</p>
+                break;
+                case 3:
+                    <p class="waitlist-declined">Declined</p>
+                break;
+                default:
+                break;
+            }
         </div>
         <div class="customer-details">
             <img class="profile-img" src="@WaitlistDetails.CustomerProfile" />
@@ -89,20 +125,77 @@
         <div class="registration">
             <p class="name">Registration Time</p>
             <p class="reg-time">@DateTime.Now.ToString("MMM dd, hh:mm tt")</p>
-
-            <p class="name">Details:</p>
-            <ul>
-                <li class="name">@WaitlistDetails.TicketName</li>
-                <li class="name">@WaitlistDetails.TicketPrice</li>
-            </ul>
-            <div class="d-flex justify-content-center gap-1">
-                <Button class="ticket-approve" Clicked="ApprovedWaitlist">
-                    Approve
-                </Button>
-                <Button class="ticket-decline" Clicked="DeclineWaitlist">
-                    Decline
-                </Button>
+            @if(WaitlistDetails.Registrations.Count() != 0)
+            {
+                foreach (var reg in WaitlistDetails.Registrations)
+                {
+                    <div class="registration-section mt-1">
+                         <p class="name">@reg.Question</p>
+                         <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
+                    </div>
+                }
+            }
+            <div class="d-flex mt-2 justify-content-center gap-1">
+                @if(WaitlistDetails.Status == 1)
+                {
+                    <Button class="ticket-approve" Disabled="approving" 
+                        Loading="approving" Clicked="ApprovedWaitlist">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Approve
+                        </ChildContent>
+                    </Button>
+                    <Button class="ticket-decline" Clicked="DeclineWaitlist">
+                        Decline
+                    </Button>
+                }
             </div>
+        </div>
+        <div class="timeline-section">
+            <p class="timeline-title">Timeline</p>
+                @if (WaitlistDetails.Status == 1)
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br/>
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+                else if (WaitlistDetails.Status == 2)
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br/>
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                        <li class="name mt-2">
+                            <span>Registered Approved from @EventName</span>
+                            <br />
+                            <span>@WaitlistDetails.ChangedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+                else
+                {
+                    <ul>
+                        <li class="name">
+                            <span>Registered (Pending Approval)</span>
+                            <br />
+                            <span>@WaitlistDetails.CreatedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                        <li class="name mt-2">
+                            <span>Registered Declined from @EventName</span>
+                            <br />
+                            <span>@WaitlistDetails.ChangedOn.ToString("MMM dd, hh:mm tt")</span>
+                        </li>
+                    </ul>
+                }
+
         </div>
     </OffcanvasBody>
     </Offcanvas>
@@ -121,22 +214,27 @@
     [Parameter]
     public int ActivityId { get; set; }
 
+    [Parameter]
+    public string EventName { get; set; }
+
     public List<OteWaitlist> OteWaitlist = new List<OteWaitlist>();
 
     public OteWaitlist WaitlistDetails { get; set; }
 
     private Offcanvas? offcanvas;
 
+    private bool approving = false;
+
     protected override async Task OnInitializedAsync()
     {
         await GetWaitlist();
         foreach (var item in OteWaitlist)
         {
-            var deserializedPayload = JsonConvert.DeserializeObject<IEnumerable<TicketDetails>>(item.Payload);
+            var deserializedPayload = JsonConvert.DeserializeObject<Payload>(item.Payload);
             if (deserializedPayload != null)
             {
                 var ticketNames = new List<string>();
-                foreach (var ticket in deserializedPayload)
+                foreach (var ticket in deserializedPayload.Tickets)
                 {
                     // Get Ticket Details
                     item.EventDate = ticket.Date;
@@ -147,6 +245,14 @@
                         ticketNames.Add(ticketDetails.OtePricing.Name); 
                     }
                 }
+                if(deserializedPayload.Questions.Count() != 0)
+                {
+                    item.Registrations.AddRange(deserializedPayload.Questions.Select(reg => new Models.Ote.OteWaitlist.Registration
+                    {
+                        Answer = reg.Answer,
+                        Question = reg.Question
+                    }));
+                }
                 item.TicketName = ticketNames.Count > 1 ? string.Join(", ", ticketNames) : ticketNames.FirstOrDefault();
             }
             else
@@ -156,16 +262,25 @@
         }
     } 
 
-    private class TicketDetails
+    public class Payload
     {
-        [JsonProperty("Id")]
+        public IEnumerable<TicketDetails> Tickets { get; set; }
+        public IEnumerable<QuestionDetails> Questions { get; set; }
+    }
+
+    public class TicketDetails
+    {
         public int Id { get; set; }
-
-        [JsonProperty("Count")]
-        public int Count { get; set; }
-
-        [JsonProperty("Date")]
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int OteDateId { get; set; }
         public DateTime Date { get; set; }
+    }
+
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
     }
 
     private Task OnPendingWaitlistClick()
@@ -206,27 +321,22 @@
 
     public async Task ApprovedWaitlist()
     {
-        var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
-            {
-                Id            = WaitlistDetails.Id,
-                ActivityId    = WaitlistDetails.ActivityId,
-                ScheduleId    = WaitlistDetails.ScheduleId,
-                CustomerId    = WaitlistDetails.CustomerId,
-                CustomerEmail = WaitlistDetails.CustomerEmail,
-                CustomerName  = WaitlistDetails.CustomerName,
-                ProviderId    = WaitlistDetails.ProviderId,
-                EventDate     = WaitlistDetails.EventDate,
-                Status        = 2,
-                Payload       = WaitlistDetails.Payload
-            }, Token);
+        approving = true;
+
+        var approveWaitlist = await activityApiHandler.ApprovedWaitList(new Framework.ApiCommand.ApiCore.Activity.Request.ApprovedWaitListArgs {
+            WaitListId = WaitlistDetails.Id
+        }, Token);
+
+        approving = false;
+
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
-            await GetWaitlist();
+            await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Success("Successfully approved waitlist.", "Success");
-
         }
     }
+    
     public async Task DeclineWaitlist()
     {
         var approveWaitlist = await activityApiHandler.UpdateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteWaitlistArgs
@@ -244,7 +354,7 @@
             }, Token);
         if (approveWaitlist.Succeeded && approveWaitlist.Result is not null && approveWaitlist.Result.IsSuccess)
         {
-            await GetWaitlist();
+            await OnInitializedAsync();
             await CloseOffCanvas();
             await NotificationService.Error("Successfully declined waitlist.", "Success");
         }
@@ -255,7 +365,7 @@
         {
             ProviderId = ProviderId,
             ActivityId = ActivityId,
-            Status = new[] {1}
+            Status = new[] {1,2,3}
         }, Token);
         if (waitlists.Succeeded && waitlists.Result is not null && waitlists.Result.IsSuccess)
         {
@@ -268,8 +378,10 @@
                 Payload      = e.Payload,
                 ProviderId   = e.ProviderId,
                 ScheduleId   = e.ScheduleId,
-                Status       = e.Status
-            }).ToList();
+                Status       = e.Status,
+                ChangedOn    = e.ChangedOn,
+                CreatedOn    = e.CreatedOn
+            }).OrderByDescending(a => a.CreatedOn).ToList();
         }
     }
 }

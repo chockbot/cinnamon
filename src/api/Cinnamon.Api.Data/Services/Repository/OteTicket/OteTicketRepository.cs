@@ -139,7 +139,9 @@ public class OteTicketRepository : IOteTicketRepository
                         Sold                  = s.OteSchedulePricingDTO.Sold,
                         Available             = s.OteSchedulePricingDTO.MaxSlots - s.OteSchedulePricingDTO.Sold,
                         Price                 = s.OteSchedulePricingDTO.Price,
-                        OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId
+                        OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId,
+                        RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval,
+                        IsUnlimited           = s.OteSchedulePricingDTO.IsUnlimited
                     }
                 };
                 return ticketDTO;
@@ -272,6 +274,24 @@ public class OteTicketRepository : IOteTicketRepository
         catch (Exception ex)
         {
             return AppResult<int>.CreateFailed(ex, "An error occured when counting the booked tickets.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<BookedCustomerDTO>>> BookedCustomers(int activityId, int? dateId, int? limit, int? offset)
+    {
+        try
+        {
+            var result = await dataStore.OteTicket.BookedCustomers(activityId, dateId, limit ?? int.MaxValue, offset ?? 0);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateSucceeded(result.Result, "Successfully get booked customers.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<BookedCustomerDTO>>.CreateFailed(ex, "An error occured when getting booked customers.");
         }
     }
 }

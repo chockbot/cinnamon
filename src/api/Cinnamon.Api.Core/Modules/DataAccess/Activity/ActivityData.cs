@@ -695,4 +695,24 @@ public class ActivityData: IActivityData
 			return AppResult<DeleteOteWaitlistResult>.CreateFailed(ex, "An error occurred when deleting ote waitlist");
 		}
 	}
+
+	public async Task<AppResult<GetWaitListResult>> GetOteWaitList(int id)
+	{
+		try
+		{
+			var result = await flurlClient
+							.Request($"OteWaitlist/{id}")
+							.GetJsonAsync<GetWaitListResult>();
+
+			return AppResult<GetWaitListResult>.CreateSucceeded(result, "Successfully getting get ote waitlist.");
+		}
+		catch (FlurlHttpException ex)
+		{
+			return AppResult<GetWaitListResult>.CreateFailed(ex, ex.Message);
+		}
+		catch (Exception ex)
+		{
+			return AppResult<GetWaitListResult>.CreateFailed(ex, "An error occured when getting ote waitlist.");
+		}
+	}
 }

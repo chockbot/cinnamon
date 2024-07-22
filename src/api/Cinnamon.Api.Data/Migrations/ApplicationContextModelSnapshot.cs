@@ -2422,6 +2422,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("IsAbsorbFees")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsUnlimited")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MaxSlots")
                         .HasColumnType("integer");
 
@@ -2483,6 +2486,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsAbsorbFees")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsUnlimited")
                         .HasColumnType("boolean");
 
                     b.Property<int>("MaxSlots")

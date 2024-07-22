@@ -1443,4 +1443,69 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateOteWaitlistResult>.CreateFailed(ex, "An error occured when calling uupdate ote waitlist api");
         }
     }
+
+    public async Task<AppResult<ActivityQuestionsResult>> ActivityQuestions(ActivityQuestionsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/ActivityQuestions")
+                .SetQueryParams(args)
+                .GetJsonAsync<ActivityQuestionsResult>();
+
+            return AppResult<ActivityQuestionsResult>.CreateSucceeded(result, "Successfully get activity questions.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityQuestionsResult>.CreateFailed(ex, "An error occured when getting activity questions.");
+        }
+    }
+
+    public async Task<AppResult<ApproveWaitListResult>> ApprovedWaitList(ApprovedWaitListArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/ApprovedWaitList")
+                .PostJsonAsync(args)
+                .ReceiveJson<ApproveWaitListResult>();
+
+            return AppResult<ApproveWaitListResult>.CreateSucceeded(result, "Successfully called approved waitlist api.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<ApproveWaitListResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ApproveWaitListResult>.CreateFailed(ex, "An error occured when calling approved waitlist api.");
+        }
+    }
+
+    public async Task<AppResult<TopBookedCustomersResult>> TopBookedCustomers(TopBookedCustomersArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/TopBookedCustomers")
+                .SetQueryParams(args)
+                .GetJsonAsync<TopBookedCustomersResult>();
+
+            return AppResult<TopBookedCustomersResult>.CreateSucceeded(result, "Successfully get top booked customers.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TopBookedCustomersResult>.CreateFailed(ex, "An error occured when getting top booked customers.");
+        }
+    }
 }

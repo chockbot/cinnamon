@@ -44,6 +44,7 @@ public class OteFindByHandlerResult
         public int TicketSold {get; set;}
         public int OteSchedulePricingGroupId { get; set; }
         public bool RequiredApproval {get; set;}
+        public bool IsUnlimited { get; set; }
     }
 
     public class Image 
@@ -97,6 +98,7 @@ public class OteFindByHandlerResult
         public string Name {get; set;}
         public int TicketSold {get; set;}
         public bool RequiredApproval {get; set;}
+        public bool IsUnlimited { get; set; }
     }
     public class OteOnlineEvent
     {

@@ -1,0 +1,111 @@
+.customer-profile-details {
+    margin-top: 59px;
+}
+.btn-notif{
+    border: none;
+    background-color:transparent;
+}
+.new-message-count-badge {
+    background: #ad2323;
+    width: 16px;
+    height: 16px;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 13.3333px;
+    line-height: 18px;
+    color: #ffffff;
+    position: absolute;
+    border-radius: 50%;
+    right: 55%;
+    top: 4%;
+}
+::deep .customer-profile-details .nav {
+    justify-content: start;
+    gap: 50px;
+}
+::deep .customer-profile-details .nav-tabs .nav-link {
+    font-size: 20px;
+}::deep button {
+    transition: transform .25s;
+}
+::deep button:active {
+    transform: scale(.94);
+}
+.dashboard-welcome {
+    display: flex;
+    justify-content: space-between;
+}
+.notif-items{
+    display: flex;
+    gap:10px;
+    position:relative;
+}
+.img-icon {
+    width: 28px;
+    height: 28px;
+}
+.img-icon-notif {
+    width: 25px;
+    height: 25px;
+}
+.welcome-text {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: normal;
+    margin-bottom: 0;
+    margin-bottom: 4px;
+}
+.welcome-sub-text {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 0;
+}
+.event-details-wrapper {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+@media screen and (min-width: 0px) and (max-width: 430px) {
+    .welcome-text {
+        font-size: 18px;
+    }
+    .welcome-sub-text {
+        font-size: 16px;
+    }
+    .customer-profile-details {
+        margin-top: 20px;
+    }
+}
+@media screen and (min-width: 430px) and (max-width: 768px) {
+    .welcome-text {
+        font-size: 20px;
+    }
+
+    .welcome-sub-text {
+        font-size: 18px;
+    }
+
+    .customer-profile-details {
+        margin-top: 30px;
+    }
+}
+@media only screen and (max-width: 576px) {
+    ::deep .customer-profile-details .nav.nav-tabs {
+        display: flex;
+        gap: 20px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .dashboard-welcome {
+        margin-top: 1rem;
+    }
+}

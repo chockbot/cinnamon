@@ -202,6 +202,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IOteEmailThankYouHandler, Services.ActivityService.OteEmailThankYouHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteOteWaitlistHandler, Services.ActivityService.DeleteOteWaitlistHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IProviderQuestionsHandler, Services.ActivityService.ProviderQuestionsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IActivityQuestionsHandler, Services.ActivityService.ActivityQuestionsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ITopBookedCustomersHandler, Services.ActivityService.TopBookedCustomersHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -215,6 +217,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IOtePurchaseOrderDetailsHandler, Services.TransactionService.OtePurchaseOrderDetailsHandler>();
         services.AddTransient<Services.TransactionService.Handlers.ITransactionRedirectionHandler, Services.TransactionService.TransactionRedirectionHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetDirectStudentSalesHandler, Services.TransactionService.GetDirectStudentSalesHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IApprovedFreeWaitListHandler, Services.TransactionService.ApprovedFreeWaitListHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IApprovedPaidWaitListHandler, Services.TransactionService.ApprovedPaidWaitListHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IApprovedWaitListHandler, Services.TransactionService.ApprovedWaitListHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();

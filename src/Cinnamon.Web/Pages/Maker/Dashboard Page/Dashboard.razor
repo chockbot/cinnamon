@@ -1,0 +1,316 @@
+@layout DashboardLayout
+@page "/maker/dashboard"
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@using Cinnamon.Web.Models.Ote
+@using Microsoft.JSInterop
+@using Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject ITransactionApiHandler transactionApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IChatApiHandler chatApiHandler;
+@inject IJSRuntime jsRuntime
+@attribute [Authorize]
+
+<PageTitle>Dashboard | CinnamonPH</PageTitle>
+<SeoMeta Title="Dashboard" Subject="Dashboard" Url="/maker/dashboard" />
+
+@if (Model != null)
+{
+    <div class="event-details-wrapper">
+        <div class="dashboard-welcome">
+            <div class="welcome-section">
+                <p class="welcome-text">Welcome back, @profile.FirstName @profile.LastName!</p>
+                <p class="welcome-sub-text">Track your sales activity, leads and deals here.</p>
+            </div>
+            <div class="notif-section">
+                <div class="notif-items">
+                    <button class="btn-notif" @onclick="NavigateToNotification">
+                        <img class="img-icon" src="images/Dashboard/email.png"/>
+                        @if (newMessagesCount != 0)
+                        {
+                            <span class="new-message-count-badge">
+                                @newMessagesCount
+                            </span>
+                        }
+                    </button>
+                    <button class="btn-notif" @onclick="NavigateToMessage">
+                        <img class="img-icon-notif" src="images/Dashboard/notif.png" />
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <section class="customer-profile-details">
+            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Name="event" TextTransform="TextTransform.Capitalize">events</Tab>
+                    <Tab Name="activity" TextTransform="TextTransform.Capitalize">activities</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="event">
+                        <Event overAllTotal="@overAllTotal" Token="@token"/>
+                    </TabPanel>
+                    <TabPanel Name="activity">
+                        <GenXP overAllTotal="@overAllTotal" Token="@token"/>
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </section>    
+    </div>
+}
+
+@code
+{
+    private DashboardModel Model { get; set; } = new();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public List<Activity> GeneralActivities = new List<Activity>();
+
+    public List<Activity> OTEActivities = new List<Activity>();
+
+    public List<Activity> AppointmentActvities = new List<Activity>();
+
+    private List<GrossSales> salesData = new List<GrossSales>();
+
+    private List<GrossSales> directSalesData = new List<GrossSales>();
+
+    public Activity activity = new Activity();
+
+    private List<ExperienceCreationType> experienceCreationTypes = new List<ExperienceCreationType>();
+
+    public CustomerProfile profile = new CustomerProfile();
+
+    private List<OteActivity> oteActivities = new List<OteActivity>();
+
+    private List<ChatRoom> chatRooms = new List<ChatRoom>();
+
+    private double cnt = 0;
+
+    string token = string.Empty;
+
+    private bool IsNotVerified { get; set; }
+
+    private int NoOfEnrollees = 0;
+
+    private double NoOfCompleted = 0;
+
+    private int NoOfReviews = 0;
+
+    private int TotalTicketSold = 0;
+
+    private string selectedTab = "event";
+
+    private int selectedQuestion = 1;
+
+    private string badgeName1 = "Rare";
+
+    private string badgeName2 = "Epic";
+
+    private string totalSales { get; set; }
+
+    private string totalDirectSales { get; set; }
+
+    private string overAllTotal { get; set; }
+
+    private bool hasNewMessages = false;
+
+    private int newMessagesCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+            token = user.FindFirstValue("Token");
+            if (token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var customer = result.Result.Result;
+            profile.Id        = customer.Id;
+            profile.FirstName = customer.FirstName;
+            profile.LastName  = customer.LastName;
+            //Get Total Earnings 
+            var earnings = await transactionApiHandler.GetGrossSalesByProvider(new Framework.ApiCommand.ApiCore.Transaction.Request.GetGrossSalesByProviderArgs
+                {
+                    Id       = profile.Id,
+                    DateFrom = DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"),
+                }, token);
+            if (earnings.Succeeded && earnings.Result != null && earnings.Result.IsSuccess)
+            {
+                salesData = earnings.Result.Result.OrderBy(a => a.PurchaseDate).Select(e =>
+                {
+                    return new GrossSales
+                        {
+                            PurchaseDate = e.PurchaseDate,
+                            Total = e.Total
+                        };
+                }).ToList();
+            }
+            //Get Total Earning in Direct Students
+            var directEarnings = await transactionApiHandler.GetDirectStudentSales(new Framework.ApiCommand.ApiCore.Transaction.Request.GetDirectStudentSalesArgs
+            {
+                ProviderId = profile.Id,
+                DateFrom = DateTime.Today.AddMonths(-1).ToString("yyyyMMddHHmmss"),
+            }, token);
+            if (directEarnings.Succeeded && directEarnings.Result != null && directEarnings.Result.IsSuccess)
+            {
+                directSalesData = directEarnings.Result.Result.OrderBy(a => a.CreatedOn).Select(e =>
+                {
+                    return new GrossSales
+                    {
+                        PurchaseDate = e.CreatedOn,
+                        Total = e.Amount
+                    };
+                }).ToList();
+            }
+            var amount       = salesData.Sum(a => a.Total);
+            var directAmount = directSalesData.Sum(a => a.Total);
+            var total        = amount + directAmount;
+            //Overall Total Earnings
+            totalSales       = String.Format("{0:N}", amount);
+            totalDirectSales = String.Format("{0:N}", directAmount);
+            overAllTotal     = String.Format("{0:N}", total);
+
+            //Get Message Notif
+            await GetChatRoomsByUserId();
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+    }
+
+    private async Task GetChatRoomsByUserId()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
+            {
+                UserId = profile.Id
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            chatRooms = result.Result.Result.Select(c => new ChatRoom
+                {
+                    HasNewMessage    = c.HasNewMessage,
+                }).ToList();
+
+            hasNewMessages = chatRooms.Any(c => c.HasNewMessage);
+            newMessagesCount = chatRooms.Count(c => c.HasNewMessage);
+        }
+    }
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+
+    private void CheckUnCheckAllStudent(Activity activity)
+    {
+        activity.IsPublished = !activity.IsPublished;
+        var res = activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+            {
+                IsPublished = activity.IsPublished,
+                ActivityId = activity.ActivityId,
+                Status = Enums.ActivityStatus.Submitted,
+            }, Model.Token);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init");
+    }
+
+    private void NavigateToUserVerification()
+    {
+        NavigationManager.NavigateTo("customer/user-verification/?redirect=redirect_dashboard");
+    }
+
+    private void NavigateToOTECreation()
+    {
+        NavigationManager.NavigateTo("/experiences/ote");
+    }
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.GeneralExperience);
+    }
+
+    private void NavigateToAppointment()
+    {
+        NavigationManager.NavigateTo("/creation/" + Enums.ExperienceCreationType.ExperienceViaAppointment);
+    }
+
+    private void NavigateToGrossSale()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/grosssale");
+    }
+
+    private void ToggleAnswer(int questionNumber)
+    {
+        if (selectedQuestion == questionNumber)
+        {
+            selectedQuestion = 0; // Hide the answer if the same question is clicked again
+        }
+        else
+        {
+            selectedQuestion = questionNumber;
+        }
+    }
+
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/help");
+    }
+
+    private void NavigateToDirectStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/enrollee-masterlist/direct-student");
+    }
+
+    private void NavigateToMessage()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/messages");
+    }
+
+    private void NavigateToNotification()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/messages");
+    }
+
+    public double GetPercentage()
+    {
+        return Math.Round(NoOfCompleted / 125 * 100);
+    }
+
+    private string GetBtnActionClass(bool forceDisable)
+    {
+        if(forceDisable) return "xp-actions justify-content-end";
+        else return "xp-actions";
+    }
+}

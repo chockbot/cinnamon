@@ -59,7 +59,9 @@ public class GetTicketDetailsHandler : IGetTicketDetailsHandler
                             MaxSlots              = s.OteSchedulePricingDTO.MaxSlots,
                             Available             = s.OteSchedulePricingDTO.Available,
                             Price                 = s.OteSchedulePricingDTO.Price,
-                            OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId
+                            OteSchedulePricingsId = s.OteSchedulePricingDTO.OteSchedulePricingsId,
+                            RequiredApproval      = s.OteSchedulePricingDTO.RequiredApproval,
+                            IsUnlimited           = s.OteSchedulePricingDTO.IsUnlimited
                         }
                     };
                 })

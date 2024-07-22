@@ -16,8 +16,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.SignalR.Client;
 using Serilog;
+using Cinnamon.Framework.Providers;
+using Cinnamon.Web.Utils;
 
- var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+// json serialization provider
+builder.Services.AddScoped<IJsonSerializationProvider, DefaultJsonSerialization>();
+
+builder.Services.AddScoped<ILocalStorage, LocalStorage>();
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>();

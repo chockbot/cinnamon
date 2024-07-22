@@ -14,6 +14,7 @@ using CoreDto = Cinnamon.Framework.ApiCommand.ApiCore.DTO;
 using System.Globalization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.DynamicContent;
+using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -91,6 +92,9 @@ public class ActivityController : ControllerBase
     private readonly IDeleteOteWaitlistHandler deleteOteWaitlistHandler;
     private readonly IEmailTemplateHandler emailTemplateHandler;
     private readonly IProviderQuestionsHandler providerQuestionsHandler;
+    private readonly IActivityQuestionsHandler activityQuestionsHandler;
+    private readonly IApprovedWaitListHandler approvedWaitListHandler;
+    private readonly ITopBookedCustomersHandler topBookedCustomersHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -121,7 +125,9 @@ public class ActivityController : ControllerBase
         IOteTicketBookedCountHandler oteTicketBookedCountHandler, IOteScheduleDatesHandler oteScheduleDatesHandler,
         ICreateOteWaitlistHandler createOteWaitlistHandler, IGetOteWaitlistByProviderHandler getOteWaitlistByProviderHandler, 
         IDeleteOteWaitlistHandler deleteOteWaitlistHandler,IEmailTemplateHandler emailTemplateHandler,
-        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler)
+        IProviderQuestionsHandler providerQuestionsHandler, IUpdateOteWaitlistHandler updateOteWaitlistHandler,
+        IActivityQuestionsHandler activityQuestionsHandler, IApprovedWaitListHandler approvedWaitListHandler,
+        ITopBookedCustomersHandler topBookedCustomersHandler)
     {
         _logger = logger;
 
@@ -191,6 +197,9 @@ public class ActivityController : ControllerBase
         this.deleteOteWaitlistHandler = deleteOteWaitlistHandler;
         this.providerQuestionsHandler = providerQuestionsHandler;
         this.updateOteWaitlistHandler = updateOteWaitlistHandler;
+        this.activityQuestionsHandler = activityQuestionsHandler;
+        this.approvedWaitListHandler = approvedWaitListHandler;
+        this.topBookedCustomersHandler = topBookedCustomersHandler;
     }
 
     [Route("CreateActivity")]
@@ -2671,6 +2680,7 @@ public class ActivityController : ControllerBase
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),
@@ -2776,6 +2786,7 @@ public class ActivityController : ControllerBase
                         MaxSlots = p.MaxSlots,
                         Price = p.Price,
                         Name = p.Name,
+                        IsUnlimited = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),
@@ -3455,7 +3466,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new UpdateOteWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
+    [AllowAnonymous]
     [Route("GetWaitlistByProvider")]
     [HttpGet]
     [ProducesResponseType(typeof(GetOteWaitlistByProviderResult), StatusCodes.Status200OK)]
@@ -3577,6 +3588,105 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ProviderQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("ActivityQuestions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(ActivityQuestionsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ActivityQuestions([FromQuery] ActivityQuestionsArgs args)
+    {
+        try
+        {
+            var result = await activityQuestionsHandler.ExecuteAsync(new Services.ActivityService.Interactors.ActivityQuestionsArgs {
+                ActivityId = args.ActivityId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var mapResults = mapper.Map<IEnumerable<ProviderQuestionDTO>>(result.Result.Questions);
+
+            return new JsonResult(new ActivityQuestionsResult
+            {
+                IsSuccess = true,
+                Result = mapResults,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ActivityQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ApprovedWaitList")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ApproveWaitListResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ApprovedWaitList([FromBody] ApprovedWaitListArgs args)
+    {
+        try
+        {
+            var result = await approvedWaitListHandler.ExecuteAsync(new Services.TransactionService.Interactors.ApprovedWaitListArgs {
+                WaitListId = args.WaitListId
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ApproveWaitListResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ApproveWaitListResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Link,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ApproveWaitListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("TopBookedCustomers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(TopBookedCustomersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> TopBookedCustomers([FromQuery] TopBookedCustomersArgs args)
+    {
+        try
+        {
+            DateTime selectedDate = DateTime.ParseExact(args.BookedDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+            var result = await topBookedCustomersHandler.ExecuteAsync(new Services.ActivityService.Interactors.TopBookedCustomersArgs {
+                ActivityId = args.ActivityId,
+                BookedDate = selectedDate
+            });
+
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new TopBookedCustomersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new TopBookedCustomersResult
+            {
+                IsSuccess = true,
+                Result = new TopBookedCustomersDTO {
+                    TopBooked = result.Result.TopBooked.Select(b => new CoreDto.Customer.BasicProfileDTO {
+                        Email = b.Email,
+                        FirstName = b.FirstName,
+                        LastName = b.LastName,
+                        ProfileImage = b.ProfileImage
+                    }),
+                    TotalBooked = result.Result.TotalBooked
+                },
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new TopBookedCustomersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

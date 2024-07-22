@@ -319,11 +319,50 @@
                         if (eventType == EventType.InPerson)
                         {
                             currentIndex = 3;
+                            otePublish?.OnSelectedScheduledEmail(0);
                         }
                         else
                         {
                             currentIndex = 4;
+                            otePublish?.OnSelectedScheduledEmail(0);
                         }
+                        break;
+                    case 3:
+                        summary = GetSummary();
+                        if (eventType == EventType.InPerson)
+                        {
+                            currentIndex = 3;
+                            otePublish?.OnSelectedScheduledEmail(1);
+                        }
+                        else
+                        {
+                            currentIndex = 4;
+                            otePublish?.OnSelectedScheduledEmail(1);
+                        }
+                        break;
+                    case 4:
+                        currentIndex = 1;
+                        otePricing?.modalCustomQuestion.Show();
+                        break;
+                    case 5:
+                        currentIndex = 1;
+                        otePricing?.registrationModal.Show();
+                        break;
+                    case 6:
+                        currentIndex = 1;
+                        otePricing?.capacityModal.Show();
+                        break;
+                    case 7:
+                        currentIndex = 1;
+                        otePricing?.OnPendingEmailTemplateClick();
+                        break;
+                    case 8:
+                        currentIndex = 1;
+                        otePricing?.OnAcceptedTemplateClick();
+                        break;
+                    case 9:
+                        currentIndex = 1;
+                        otePricing?.OnDeclinedTemplateClick();
                         break;
                     default:
                         break;
@@ -426,7 +465,7 @@
             SetValidItem(currentIndex, valid);
             if (valid)
             {
-                SetActiveItem(2);
+                SetActiveItem(1);
                 StateHasChanged();
             }
         }
@@ -686,6 +725,7 @@
                             MaxSlots = p.MaxSlots ?? 0,
                             Price = p.Price ?? 0m,
                             Name = p.Name,
+                            IsUnlimited = p.IsUnlimited,
                             RequiredApproval = p.RequiredApproval
                         };
                     }),
@@ -799,12 +839,13 @@
                 },
                 Pricings = pricing.ItemPrices.Select(p => {
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.OteUpdatePricing {
-                        Description  = p.Description ?? string.Empty,
-                        Id           = p.Id,
-                        IsAbsorbFees = p.AbsorbFees,
-                        MaxSlots     = p.MaxSlots ?? 0,
-                        Price        = p.Price ?? 0m,
-                        Name         = p.Name,
+                        Description      = p.Description ?? string.Empty,
+                        Id               = p.Id,
+                        IsAbsorbFees     = p.AbsorbFees,
+                        MaxSlots         = p.MaxSlots ?? 0,
+                        Price            = p.Price ?? 0m,
+                        Name             = p.Name,
+                        IsUnlimited      = p.IsUnlimited,
                         RequiredApproval = p.RequiredApproval
                     };
                 }),
@@ -1047,18 +1088,20 @@
         pricingModel.IsOpen           = ote.OteSchedule.IsOpen;
         pricingModel.IsCapacity       = ote.OteSchedule.IsCapacity;
         pricingModel.CapacityCount    = ote.OteSchedule.CapacityCount;
+
         await otePricing?.SetState(new OtePricing.ModelData {
             ItemPrices            = ote.OteSchedule.OteSchedulePricingGroups.Select(p => {
                  int totalTicketsSold = ote.Pricings
                 .Where(pricing => pricing.OteSchedulePricingGroupId == p.Id).Sum(pricing => pricing.TicketSold);
                 return new OtePricing.ModelData.ItemPrice {
-                    AbsorbFees = p.IsAbsorbFees,
-                    Description = p.Description,
-                    Id = p.Id,
-                    MaxSlots = p.MaxSlots,
-                    Price = p.Price,
-                    Name = p.Name,
-                    TicketSold = totalTicketsSold,
+                    AbsorbFees       = p.IsAbsorbFees,
+                    Description      = p.Description,
+                    Id               = p.Id,
+                    MaxSlots         = p.MaxSlots,
+                    Price            = p.Price,
+                    Name             = p.Name,
+                    TicketSold       = totalTicketsSold,
+                    IsUnlimited      = p.IsUnlimited,
                     RequiredApproval = p.RequiredApproval
                 };
             }).ToList(),

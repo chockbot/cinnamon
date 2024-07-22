@@ -2,10 +2,10 @@
 @using Cinnamon.Web.Models.Ote
 
 <div class="overview-section">
-    <Row>
-        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop">
-            <div class="overview-details d-flex">
-                <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+            <div class="overview-details">
+                <div class="event-image-section">
+                    <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+                </div>
                 <div class="event-details">
                     <p class="event-title">When & Where</p>
                     <div class="event-schedule-details">
@@ -18,14 +18,22 @@
                     </div>
                     <div class="event-schedule-details">
                         <img class="event-img" src="images/ote/event-location.png" />
-                        @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
+                        @if (Activity.ExperienceTypeId == 1)
                         {
-                            <p class="event-location">@Activity.PinnedLocation</p>
+                            @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
+                            {
+                                <p class="event-location">@Activity.PinnedLocation</p>
+                            }
+                            else
+                            {
+                                <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
+                            }
                         }
                         else
                         {
-                            <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
+                            <p class="event-location">Online</p>
                         }
+                        
                     </div>
                     <div class="event-buttons">
                         <button class="btn-event">View Event Page</button>
@@ -33,16 +41,12 @@
                     </div>
                 </div>
             </div>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop">
             <div class="ticket-details m-margin-top-30">
                 <p class="event-title">Tickets</p>
                 <p class="event-schedule">Total Ticket Slots: @TotalSlots</p>
                 <p class="event-schedule">Available: @TotalAvailable</p>
                 <p class="event-schedule">Sold: @TotalSold</p>
             </div>
-        </Column>
-    </Row>
 </div>
 
 
