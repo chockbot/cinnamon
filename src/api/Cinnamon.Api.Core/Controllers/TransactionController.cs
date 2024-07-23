@@ -24,10 +24,13 @@ public class TransactionController : ControllerBase
     private readonly IMapper mapper;
     private readonly ITransactionRedirectionHandler transactionRedirectionHandler;
     private readonly IGetDirectStudentSalesHandler getDirectStudentSalesHandler;
+    private readonly IOteRequestPaymentHandler oteRequestPaymentHandler;
 
-    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler,
-        IGetPayoutsByProviderHandler getPayoutsByProviderHandler, IOtePurchaseOrderHandler otePurchaseOrderHandler,
-        IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler, IGetDirectStudentSalesHandler getDirectStudentSalesHandler)
+    public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, 
+        IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler, IGetPayoutsByProviderHandler getPayoutsByProviderHandler, 
+        IOtePurchaseOrderHandler otePurchaseOrderHandler, IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, 
+        IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler, 
+        IGetDirectStudentSalesHandler getDirectStudentSalesHandler, IOteRequestPaymentHandler oteRequestPaymentHandler)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
@@ -37,7 +40,8 @@ public class TransactionController : ControllerBase
         this.otePurchaseOrderDetailsHandler = otePurchaseOrderDetailsHandler;
         this.mapper = mapper;
         this.transactionRedirectionHandler = transactionRedirectionHandler;
-        this.getDirectStudentSalesHandler = getDirectStudentSalesHandler;   
+        this.getDirectStudentSalesHandler = getDirectStudentSalesHandler;
+        this.oteRequestPaymentHandler = oteRequestPaymentHandler;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -392,6 +396,45 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new TransactionRedirectionResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("PaymentRequest")]
+    [HttpPost]
+    [ProducesResponseType(typeof(PaymentRequestResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PaymentRequest([FromBody] PaymentRequestArgs args)
+    {
+        try
+        {
+            var date = DateTime.ParseExact(args.SelectedDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+            var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs {
+                ActivityId = args.ActivityId,
+                Guid = args.Guid,
+                SelectedDate = date,
+                Token = args.Token,
+                SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket {
+                    TicketCount = t.TicketCount,
+                    TicketId = t.TicketId
+                })
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new PaymentRequestResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var dto = mapper.Map<PaymentRequestDTO>(result.Result);
+
+            return new JsonResult(new PaymentRequestResult 
+            {
+                IsSuccess = true, 
+                Result = dto
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new PaymentRequestResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
