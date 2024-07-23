@@ -9,6 +9,7 @@ public static class ServiceExtenstion
     {
         services.AddTransient<Providers.IContainerProvider, Providers.ContainerProvider>();
         services.AddTransient<Providers.IJsonSerializationProvider, Providers.DefaultJsonSerialization>();
+        services.AddTransient<Providers.ITokenGeneratorProvider, Providers.TokenGeneratorProvider>();
 
         // low level modules
         services.AddTransient<Modules.EmailDriver.Handlers.ISendMailHandler, Modules.EmailDriver.MicrosoftGraph.SendMailByMicrosoftGraph>();
