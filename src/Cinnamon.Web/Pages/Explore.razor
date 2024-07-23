@@ -1781,46 +1781,60 @@
     <div class="container word-press-posts">
         <div class="posts-featured-title">
             <p class="posts-featured-text">FEATURED STORIES</p>
+            <a class="posts-link" target="_blank" href="https://cinnamon.ph/blog/">
+                <p class="posts-see-all-text">See All</p>
+            </a>
         </div>
 
-    @if (wordpressPosts != null && wordpressPosts.Any())
-    {
-        <div class="posts-container">
-            <div class="schedule-swiper">
-                <div class="swiper-wrapper">
-                    @foreach (var post in wordpressPosts)
-                    {
-                        <div class="swiper-slide">
-                            <div class="w-100">
-                                <a class="post-link" href="@post.Link" target="_blank">
-                                    <div class="post">
-                                        @if (post.ImageLink == null)
-                                        {
-                                            <img class="post-featured-image" src="images\explore-page-images\default-wordpress-banner.svg" />
-                                        }
-                                        else 
-                                        {
-                                            <img class="post-featured-image" src="@post.ImageLink" alt="Media description" />
-                                        }
-                                        <p class="post-title">@((MarkupString)post.Title.Rendered)</p>
-                                        <p class="post-excerpt">@((MarkupString)post.Excerpt.Rendered)</p>
-                                        <p class="post-read-more">
-                                            <a class="post-redirect" href="@post.Link" target="_blank">Read More...</a>
-                                        </p>
-                                    </div>
-                                </a>
+        @if (wordpressPosts != null && wordpressPosts.Any())
+        {
+            <div class="posts-container">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper">
+                        @{
+                            int postCount = 0;
+                        }
+                        @foreach (var post in wordpressPosts)
+                        {
+                            if (postCount >= 3)
+                            {
+                                break;
+                            }
+                            postCount++;
+
+                            <div class="swiper-slide">
+                                <div class="w-100">
+                                    <a class="post-link" href="@post.Link" target="_blank">
+                                        <div class="post">
+                                            @if (post.ImageLink == null)
+                                            {
+                                                <img class="post-featured-image" src="images\explore-page-images\default-wordpress-banner.svg" />
+                                            }
+                                            else 
+                                            {
+                                                <img class="post-featured-image" src="@post.ImageLink" alt="Media description" />
+                                            }
+                                            <p class="post-title">@((MarkupString)post.Title.Rendered)</p>
+                                            <p class="post-excerpt">@((MarkupString)post.Excerpt.Rendered)</p>
+                                            <p class="post-read-more">
+                                                <a class="post-redirect" href="@post.Link" target="_blank">Read More...</a>
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <p>No posts found.</p>
-    }
+        }
+        else
+        {
+            <p>No posts found.</p>
+        }
     </div>
+
+    
 
     <!--Section 3-->
     <div class="partners">
@@ -1830,11 +1844,21 @@
                     <p class="partners-text">Partners</p>
                 </div>
                 <div class="partners-logo-container">
-                        <img src="images\explore-page-images\partner-logos\CTE-cebu.svg" class="partner-logo" />
-                        <img src="images\explore-page-images\partner-logos\xendit.svg" class="partner-logo" />
-                        <img src="images\explore-page-images\partner-logos\cares.svg" class="partner-logo" />
-                        <img src="images\explore-page-images\partner-logos\sovereign.svg" class="partner-logo" />
-                        <img src="images\explore-page-images\partner-logos\fhmoms.svg" class="partner-logo" />
+                        <a class="partner-links" href="https://www.facebook.com/UCMAINCTE" target=_blank>
+                            <img src="images\explore-page-images\partner-logos\CTE-cebu.svg" class="partner-logo" />
+                        </a>
+                        <a class="partner-links" href="https://www.xendit.co/en/" target=_blank>
+                            <img src="images\explore-page-images\partner-logos\xendit.svg" class="partner-logo" />
+                        </a>
+                        <a class="partner-links" href="https://www.facebook.com/profile.php?id=100088168962719" target=_blank>
+                            <img src="images\explore-page-images\partner-logos\cares.svg" class="partner-logo" />
+                        </a>
+                        <a class="partner-links" href="https://sovereigngracemusic.com" target=_blank>
+                            <img src="images\explore-page-images\partner-logos\sovereign.svg" class="partner-logo" />
+                        </a>
+                        <a class="partner-links" href="https://fhmoms.com" target=_blank>
+                            <img src="images\explore-page-images\partner-logos\fhmoms.svg" class="partner-logo" />
+                        </a>
 
                 </div>
             </div>
@@ -1867,11 +1891,14 @@
                         <p class="footer-title-text">Events & Solutions</p>
                         <div class="footer-email-social-container">
                             <div class="footer-nav-2">
-                                <a class="footer-button-about">Create an Event</a>
-                                <a class="footer-button-blogs">Advertise with us</a>
-                                <a class="footer-button-blogs">Sell tickets online</a>
-                                <a class="footer-button-blogs">Payment system</a>
-                                <a class="footer-button-blogs">Collaborate</a>
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                    <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a href="https://www.xendit.co/en/customers/" target=_blank class="footer-button-blogs">Payment system</a>
                             </div>
                         </div>
                     </div>
@@ -1918,11 +1945,14 @@
                         <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
                         <div class="footer-email-social-container">
                         <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
-                                <a class="footer-button-about">Create an Event</a>
-                                <a class="footer-button-blogs">Advertise with us</a>
-                                <a class="footer-button-blogs">Sell tickets online</a>
-                                <a class="footer-button-blogs">Payment system</a>
-                                <a class="footer-button-blogs">Collaborate</a>
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a class="footer-button-blogs" href="https://www.xendit.co/en/customers/" target=_blank>Payment system</a>
                             </div>
                         </div>
                     </div>
