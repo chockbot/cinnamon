@@ -320,18 +320,17 @@
             </div>
         </div>
     </div>
-    <!-- Search Bar -->
-    <div class="search-bar-container" style="background: linear-gradient(to bottom, #F6F9FF 50%, transparent 50%);">
-    <form class="search-bar upper-search-bar" @onsubmit=Search>
-        <div class="input-group p-1">
-            <input type="text" placeholder="Search Event" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
-                <div class="input-group-append border-0">
-                    <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
-                        <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
-                    </button>
-                </div>
-        </div>
-         </form>
+    <div class="search-bar-container">
+        <form class="search-bar" @onsubmit=Search>
+            <div class="input-group p-1">
+                <input type="text" placeholder="Search Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                    <div class="input-group-append border-0">
+                        <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                            <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                        </button>
+                    </div>
+            </div>
+        </form>
     </div>
     }
     <!-- End of Header -->
@@ -570,6 +569,9 @@
             </div>
         @if (!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
         {
+
+            @if (!showCategorySwiper)
+            {
             <!-- Search Bar -->
             <div class="search-bar-container">
             <form class="search-bar" @onsubmit=Search>
@@ -583,6 +585,22 @@
                 </div>
                  </form>
             </div>
+            } else {
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+            <form class="search-bar" @onsubmit=Search>
+                <div class="input-group p-1">
+                    <input type="text" placeholder="Search Activities" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
+                        <div class="input-group-append border-0">
+                            <button type="button" @onclick="Search" class="search-button btn btn-link text-success">
+                                <img src="images/explore-page-images/search-icon-explore.svg" alt="search-icon" />
+                            </button>
+                        </div>
+                </div>
+                 </form>
+            </div>
+            }
+
         }
             @if(!IsSearchPerformed || string.IsNullOrEmpty(searchValue))
             {
@@ -1543,7 +1561,7 @@
                         <div class="sub-footer-media">
                         <a href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                         <a href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                        <a href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
                         <a href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                         </div>
@@ -1584,7 +1602,7 @@
                             <div class="footer-final-social-media">
                                 <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                                 <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                                <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                                <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
                                 <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
                                 <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                             </div> 
@@ -1616,9 +1634,9 @@
                             <div class="footer-final-social-media">
                                 <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                                 <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                                <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                                <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
                                 <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                                <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                                <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                             </div> 
                         </div>
                     </div>
