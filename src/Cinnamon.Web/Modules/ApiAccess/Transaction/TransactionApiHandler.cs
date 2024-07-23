@@ -196,4 +196,27 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<GetDirectStudentSalesResult>.CreateFailed(ex, "An error occurred when getting direct student sales api");
         }
     }
+
+    public async Task<AppResult<PaymentRequestResult>> PaymentRequest(PaymentRequestArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Transaction/PaymentRequest")
+                .PostJsonAsync(args)
+                .ReceiveJson<PaymentRequestResult>();
+
+            return AppResult<PaymentRequestResult>.CreateSucceeded(result, "Successfully posting submit payment request api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<PaymentRequestResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<PaymentRequestResult>.CreateFailed(ex, "An error occured when posting submit payment request api");
+        }
+    }
 }

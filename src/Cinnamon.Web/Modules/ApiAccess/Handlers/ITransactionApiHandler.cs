@@ -15,4 +15,5 @@ public interface ITransactionApiHandler
     Task<AppResult<OteGetPurchaseOrderResult>> GetOtePurchaseOrder(int id, string token);
     Task<AppResult<TransactionRedirectionResult>> TransactionRedirection(TransactionRedirectionArgs args);
     Task<AppResult<GetDirectStudentSalesResult>> GetDirectStudentSales(GetDirectStudentSalesArgs args, string token);
+    Task<AppResult<PaymentRequestResult>> PaymentRequest(PaymentRequestArgs args, string token);
 } 
