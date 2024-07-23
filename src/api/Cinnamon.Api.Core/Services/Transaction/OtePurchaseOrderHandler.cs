@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
@@ -10,7 +8,6 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
 using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -34,6 +31,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IActivityQuestionsHandler activityQuestionsHandler;
     private readonly ICreateOteWaitlistHandler createOteWaitlist;
     private readonly IGetProfileHandler getProfileHandler;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
@@ -41,7 +39,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler,
         ITokenGeneratedData tokenGeneratedData, IActivityQuestionsHandler activityQuestionsHandler,
-        ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler)
+        ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler,
+        ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -60,6 +59,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.activityQuestionsHandler = activityQuestionsHandler;
         this.createOteWaitlist = createOteWaitlist;
         this.getProfileHandler = getProfileHandler;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -289,12 +289,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var purchaseToken = tokenGeneratorProvider.Generator();
             
             // serialize students data to use later
             var payloadData = new {
@@ -307,8 +302,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 },
                 isInclusivePayment,
                 OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
-                Guid = guid.ToString(),
-                Token = encodedToken,
+                Guid = purchaseToken.Guid,
+                Token = purchaseToken.Token,
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -412,12 +407,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
 
             // generate token and guid for transaction redirection details
-            var validGuid = Guid.NewGuid();
-            var validTimestamp = DateTime.UtcNow;
-            byte[] validTtime = BitConverter.GetBytes(validTimestamp.ToBinary());
-            byte[] validKey = validGuid.ToByteArray();
-            var validToken = Convert.ToBase64String(validTtime.Concat(validKey).ToArray());
-            var validEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(validToken));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
             var payload = new 
             {
                 ActivityId = result.Result.Result.ActivityId,
@@ -428,9 +418,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
 
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = validGuid.ToString(),
+                Guid = tokenGenerated.Guid,
                 Payload = tokenSerializedPayload,
-                Token = validEncodedToken,
+                Token = tokenGenerated.Token,
                 TokenType = "TRANSACTION-REQUEST",
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -441,8 +431,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             var paymentRedirectUrl = applicationConfig.FrontendUrl
                                         .AppendPathSegment($"/transaction/finalize")
-                                        .SetQueryParam("Guid", validGuid.ToString())
-                                        .SetQueryParam("Token", validEncodedToken);
+                                        .SetQueryParam("Guid", tokenGenerated.Guid)
+                                        .SetQueryParam("Token", tokenGenerated.Token);
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
