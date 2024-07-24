@@ -25,12 +25,14 @@ public class TransactionController : ControllerBase
     private readonly ITransactionRedirectionHandler transactionRedirectionHandler;
     private readonly IGetDirectStudentSalesHandler getDirectStudentSalesHandler;
     private readonly IOteRequestPaymentHandler oteRequestPaymentHandler;
+    private readonly IGetOteRequestPaymentHandler getOteRequestPayment;
 
     public TransactionController(IPurchaseOrderHandler purchaseOrderHandler, IGetPurchaseOrderHandler getPurchaseOrderHandler, 
         IGetGrossSalesByProviderHandler getGrossSalesByProviderHandler, IGetPayoutsByProviderHandler getPayoutsByProviderHandler, 
         IOtePurchaseOrderHandler otePurchaseOrderHandler, IOtePurchaseOrderDetailsHandler otePurchaseOrderDetailsHandler, 
         IMapper mapper, ITransactionRedirectionHandler transactionRedirectionHandler, 
-        IGetDirectStudentSalesHandler getDirectStudentSalesHandler, IOteRequestPaymentHandler oteRequestPaymentHandler)
+        IGetDirectStudentSalesHandler getDirectStudentSalesHandler, IOteRequestPaymentHandler oteRequestPaymentHandler,
+        IGetOteRequestPaymentHandler getOteRequestPayment)
     {
         this.purchaseOrderHandler = purchaseOrderHandler;
         this.getPurchaseOrderHandler = getPurchaseOrderHandler;
@@ -42,6 +44,7 @@ public class TransactionController : ControllerBase
         this.transactionRedirectionHandler = transactionRedirectionHandler;
         this.getDirectStudentSalesHandler = getDirectStudentSalesHandler;
         this.oteRequestPaymentHandler = oteRequestPaymentHandler;
+        this.getOteRequestPayment = getOteRequestPayment;
     }
 
     [Route("SubmitPurchaseOrder")]
@@ -435,6 +438,37 @@ public class TransactionController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new PaymentRequestResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("PaymentRequest")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRequestPaymentResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRequestPayment([FromQuery] GetRequestPaymentArgs args)
+    {
+        try
+        {
+            var result = await getOteRequestPayment.ExecuteAsync(new Services.TransactionService.Interactors.OteGetRequestPaymentArgs {
+                Guid = args.Guid,
+                Token = args.Token
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRequestPaymentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var dto = mapper.Map<PaymentRequestDTO>(result.Result);
+
+            return new JsonResult(new GetRequestPaymentResult 
+            {
+                IsSuccess = true, 
+                Result = dto
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRequestPaymentResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
