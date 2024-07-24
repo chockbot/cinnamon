@@ -327,9 +327,9 @@
                                                     }
                                                     else
                                                     {
-                                                        <span class="ticket-unli">
-                                                            unlimited
-                                                        </span>
+                                                         <span class="ticket-unli">
+                                                             unlimited
+                                                         </span>
                                                     }
 
                                                 </p>
@@ -1165,7 +1165,21 @@
                 {
                     return Task.CompletedTask;
                 }
-                selectedTickets[pricing.Id].Count++;
+                if (pricing.IsUnlimited)
+                {
+                    if (selectedTickets.Sum(a => a.Value.Count) < 50)
+                    {
+                        selectedTickets[pricing.Id].Count++;
+                    }
+                    else
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+                else
+                {
+                    selectedTickets[pricing.Id].Count++;
+                }
             }
             else
             {
