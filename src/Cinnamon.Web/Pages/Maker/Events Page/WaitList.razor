@@ -125,14 +125,32 @@
         <div class="registration">
             <p class="name">Registration Time</p>
             <p class="reg-time">@DateTime.Now.ToString("MMM dd, hh:mm tt")</p>
+            <p class="name">Order Details:</p>
+            <div class="details-box">
+                    <div class="ticket-purchase-details">
+                        <p class="name">Ticket</p>
+                        <p class="name">Total</p>
+                    </div>
+                    <Divider />
+                    @foreach (var tix in ticketList)
+                    {
+                        <div class="ticket-purchase-details">
+                            <p class="name">@tix.Name x @tix.Count</p>
+                            <p class="name">@(tix.Price == 0 ? "Free" : WaitlistDetails.TicketPrice)</p>
+                        </div>
+                    }
+            </div>
             @if(WaitlistDetails.Registrations.Count() != 0)
             {
                 foreach (var reg in WaitlistDetails.Registrations)
                 {
-                    <div class="registration-section mt-1">
-                         <p class="name">@reg.Question</p>
-                         <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
-                    </div>
+                    @if(!string.IsNullOrEmpty(reg.Question))
+                    {
+                        <div class="registration-section mt-1">
+                            <p class="name">@reg.Question</p>
+                            <MemoEdit @bind-Text="reg.Answer" Rows="3" ReadOnly/>
+                        </div>
+                    }
                 }
             }
             <div class="d-flex mt-2 justify-content-center gap-1">
@@ -221,6 +239,8 @@
 
     public OteWaitlist WaitlistDetails { get; set; }
 
+    public List<TicketDetails> ticketList = new List<TicketDetails>();
+
     private Offcanvas? offcanvas;
 
     private bool approving = false;
@@ -238,13 +258,11 @@
                 {
                     // Get Ticket Details
                     item.EventDate = ticket.Date;
-                    var ticketDetails = OteTickets.FirstOrDefault(a => a.OtePricing.OteSchedulePricingsId == ticket.Id);
-                    if (ticketDetails != null)
-                    {
-                        item.TicketPrice += ticketDetails.OtePricing.Price; 
-                        ticketNames.Add(ticketDetails.OtePricing.Name); 
-                    }
+                    //Total Price
+                    item.TicketPrice += ticket.Price;
+                    ticketNames.Add(ticket.Name);
                 }
+                //Questions and Answer
                 if(deserializedPayload.Questions.Count() != 0)
                 {
                     item.Registrations.AddRange(deserializedPayload.Questions.Select(reg => new Models.Ote.OteWaitlist.Registration
@@ -275,6 +293,7 @@
         public double Price { get; set; }
         public int OteDateId { get; set; }
         public DateTime Date { get; set; }
+        public int Count { get; set; }
     }
 
     public class QuestionDetails
@@ -308,8 +327,18 @@
 
     public async Task UpdateTicketStatus(OteWaitlist waitlist)
     {
+        ticketList.Clear();
         WaitlistDetails = waitlist;
-        //Get Cuustomer Details
+        //Deserialize Payload Ticket Details
+        var deserializedPayload = JsonConvert.DeserializeObject<Payload>(waitlist.Payload);
+        if (deserializedPayload != null)
+        {
+            foreach (var ticket in deserializedPayload.Tickets)
+            {
+                ticketList.Add(ticket);
+            }
+        }
+        //Get Customer Details
         var result = await accountApiHandler.GetCustomerById(waitlist.CustomerId);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {

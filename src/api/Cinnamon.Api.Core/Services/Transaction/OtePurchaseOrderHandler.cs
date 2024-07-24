@@ -390,12 +390,13 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     var waitlistSerializedPayload = jsonSerializationProvider.Serialize(waitlistPayload);
 
                     var createWaitlistRes = await createOteWaitlist.ExecuteAsync(new ActivityService.Interactors.CreateOteWaitlistArgs {
-                        ActivityId = oteActivity.Id,
-                        CustomerId = id,
+                        ActivityId   = oteActivity.Id,
+                        CustomerId   = id,
                         CustomerName = $"{currentUser.FirstName} {currentUser.LastName}",
-                        Payload = waitlistSerializedPayload,
-                        ProviderId = provider?.Id ?? 0,
-                        Status = 1
+                        Payload      = waitlistSerializedPayload,
+                        ProviderId   = provider?.Id ?? 0,
+                        Status       = 1,
+                        Type         = "Free"
                     });
                     if(!createWaitlistRes.Succeeded || createWaitlistRes.Result is null)
                     {
