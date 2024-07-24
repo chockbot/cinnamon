@@ -327,9 +327,9 @@
                                                     }
                                                     else
                                                     {
-                                                        <span class="ticket-unli">
-                                                            unlimited
-                                                        </span>
+                                                         <span class="ticket-unli">
+                                                             unlimited
+                                                         </span>
                                                     }
 
                                                 </p>
@@ -709,7 +709,6 @@
             await LoadProfile();
             await LoadFavorite();
             await LoadActivityQuestions();
-
             await LoadTopBooked();
             if (activity.IsCapacity)
             {
@@ -1165,7 +1164,21 @@
                 {
                     return Task.CompletedTask;
                 }
-                selectedTickets[pricing.Id].Count++;
+                if (pricing.IsUnlimited)
+                {
+                    if (selectedTickets.Sum(a => a.Value.Count) < 50)
+                    {
+                        selectedTickets[pricing.Id].Count++;
+                    }
+                    else
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+                else
+                {
+                    selectedTickets[pricing.Id].Count++;
+                }
             }
             else
             {
@@ -1395,12 +1408,13 @@
             {
                 return new OteWaitlist
                 {
-                    Id = s.Id,
-                    Status = s.Status,
+                    Id         = s.Id,
+                    Status     = s.Status,
                     CustomerId = s.CustomerId,
-                    Payload = s.Payload
+                    Payload    = s.Payload,
+                    Type       = s.Type
                 };
-            }).ToList();
+            }).Where(a => a.Type == "Paid").ToList();
         }
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1501,8 +1515,8 @@
             }),
             Questions = activityQuestions.Select(q => new {
                 Id = q.Id,
-                Question = q.Question,
-                Answer = q.Answer
+                Question = string.Empty,
+                Answer = string.Empty
             })
         };
 
@@ -1517,6 +1531,7 @@
             CustomerName = ProfileName,
             ProviderId   = provider.Id,
             Status       = 1,
+            Type         = "Paid",
             Payload      = serializedPayload
         },token);
 
@@ -1565,15 +1580,7 @@
         if(!validForms) return;
 
         await modalQuestions?.Close(CloseReason.UserClosing);
-
-        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
-        {
-             await ProceedToJoinWaitlist();
-        }
-        else 
-        {
-            await ProceedToFreePurchase();
-        }
+        await ProceedToFreePurchase();
     }
 
     private async Task LoadTopBooked()
