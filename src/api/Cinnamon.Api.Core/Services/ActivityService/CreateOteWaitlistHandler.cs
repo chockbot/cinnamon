@@ -67,13 +67,14 @@ public class CreateOteWaitlistHandler : ICreateOteWaitlistHandler
             
             var oteWaitlist = await activityData.CreateOteWaitlist(new Framework.ApiCommand.ApiData.OteWaitlist.Request.CreateOteWaitlistArgs
             {
-                ActivityId = args.ActivityId,
-                CustomerId = args.CustomerId,
+                ActivityId   = args.ActivityId,
+                CustomerId   = args.CustomerId,
                 CustomerName = args.CustomerName,
-                Payload = args.Payload,
-                ProviderId = args.ProviderId,
-                ScheduleId = args.ScheduleId,
-                Status = args.Status,
+                Payload      = args.Payload,
+                ProviderId   = args.ProviderId,
+                ScheduleId   = args.ScheduleId,
+                Status       = args.Status,
+                Type         = args.Type
             });
             if (!oteWaitlist.Succeeded || oteWaitlist.Result is null || !oteWaitlist.Result.IsSuccess)
             {

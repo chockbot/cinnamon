@@ -709,7 +709,6 @@
             await LoadProfile();
             await LoadFavorite();
             await LoadActivityQuestions();
-
             await LoadTopBooked();
             if (activity.IsCapacity)
             {
@@ -1409,12 +1408,13 @@
             {
                 return new OteWaitlist
                 {
-                    Id = s.Id,
-                    Status = s.Status,
+                    Id         = s.Id,
+                    Status     = s.Status,
                     CustomerId = s.CustomerId,
-                    Payload = s.Payload
+                    Payload    = s.Payload,
+                    Type       = s.Type
                 };
-            }).ToList();
+            }).Where(a => a.Type == "Paid").ToList();
         }
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1515,8 +1515,8 @@
             }),
             Questions = activityQuestions.Select(q => new {
                 Id = q.Id,
-                Question = q.Question,
-                Answer = q.Answer
+                Question = string.Empty,
+                Answer = string.Empty
             })
         };
 
@@ -1531,6 +1531,7 @@
             CustomerName = ProfileName,
             ProviderId   = provider.Id,
             Status       = 1,
+            Type         = "Paid",
             Payload      = serializedPayload
         },token);
 
@@ -1579,15 +1580,7 @@
         if(!validForms) return;
 
         await modalQuestions?.Close(CloseReason.UserClosing);
-
-        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
-        {
-             await ProceedToJoinWaitlist();
-        }
-        else 
-        {
-            await ProceedToFreePurchase();
-        }
+        await ProceedToFreePurchase();
     }
 
     private async Task LoadTopBooked()
