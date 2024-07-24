@@ -1,10 +1,47 @@
 ﻿@namespace Cinnamon.Web.Components.Common
-@inject NavigationManager NavigationManager;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Web.Components
+@using System.Text
+@using System.Linq;
+@using System.Globalization
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Modules.Services
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.WordPress
+@using Cinnamon.Web.Modules.Services.Handlers
+@using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IJSRuntime jsRuntime
+@inject Cinnamon.Web.Config.Config AppConfig;
+@inject IChatApiHandler chatApiHandler;
+@inject IWordPressServicesHandler WordPressServices
+@inject ISystemApiHandler systemApiHandler
+@inject AutoMapper.IMapper mapper;
+
 
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
+    @if (showModal)
+    {
+        <div class="modal" style="display: block;">
+            <div class="modal-content">
+                <span class="close" @onclick="CloseModal">&times;</span>
+                <p class="@subscriptionResultClass">@subscriptionResultMessage</p>
+            </div>
+        </div>
+    }
     <!--Footer-->
     <div class="footer">
         <div class="section-4">
@@ -13,10 +50,10 @@
                 <div class="footer-info">
                     <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
                     <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
-                    <div class="footer-email-input">
-                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
-                        <button class="footer-email-button">Subscribe</button>
-                    </div>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
                     <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
@@ -24,7 +61,6 @@
                         <div class="footer-nav">
                             <a class="footer-button-about">About us</a>
                             <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
-                            <a class="footer-button-blogs">Team</a>
                             <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
                             <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
@@ -33,11 +69,14 @@
                         <p class="footer-title-text">Events & Solutions</p>
                         <div class="footer-email-social-container">
                             <div class="footer-nav-2">
-                                <a class="footer-button-about">Create an Event</a>
-                                <a class="footer-button-blogs">Advertise with us</a>
-                                <a class="footer-button-blogs">Sell tickets online</a>
-                                <a class="footer-button-blogs">Payment system</a>
-                                <a class="footer-button-blogs">Collaborate</a>
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                    <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a href="https://www.xendit.co/en/customers/" target=_blank class="footer-button-blogs">Payment system</a>
                             </div>
                         </div>
                     </div>
@@ -65,10 +104,10 @@
                 <div class="footer-info">
                     <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
                     <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
-                    <div class="footer-email-input">
-                        <input type="email" class="footer-email-input-box" placeholder="Enter your email address" />
-                        <button class="footer-email-button">Subscribe</button>
-                    </div>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
                     <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
@@ -76,7 +115,6 @@
                         <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
                             <a class="footer-button-about">About us</a>
                             <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
-                            <a class="footer-button-blogs">Team</a>
                             <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
                             <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
                         </div>
@@ -85,11 +123,14 @@
                         <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
                         <div class="footer-email-social-container">
                         <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
-                                <a class="footer-button-about">Create an Event</a>
-                                <a class="footer-button-blogs">Advertise with us</a>
-                                <a class="footer-button-blogs">Sell tickets online</a>
-                                <a class="footer-button-blogs">Payment system</a>
-                                <a class="footer-button-blogs">Collaborate</a>
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a class="footer-button-blogs" href="https://www.xendit.co/en/customers/" target=_blank>Payment system</a>
                             </div>
                         </div>
                     </div>
@@ -116,9 +157,9 @@
                 <div class="footer-copyright">
                     <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                     <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                    <a class="social-media-href-button" href="https://www.tiktok.com/cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
                     <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a class="social-media-href-button" href="https://www.youtube.com/cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>
@@ -127,6 +168,19 @@
 @code {
     private bool isAboutUsVisible = false;
     private bool isEventVisible = false;
+    private string mailchimpEmail;
+    private string subscriptionResultMessage;
+    private string subscriptionResultClass;
+    private bool showModal;
+    public Profile CustomerModel = new Profile();
+    public ClaimsPrincipal AuthState { get; set; }
+    private bool isLogin { get; set; } = false;
+    [Inject] HubConnection hubConnection { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSigninUser();
+    }
 
     private void NavigateToHelp()
     {
@@ -144,5 +198,106 @@
     private void NavigateToTermsConditions()
     {
         NavigationManager.NavigateTo("/help?section=terms");
+    }
+
+    private void NavigateToOnboarding()
+    {
+        NavigationManager.NavigateTo("/Onboarding");
+    }
+
+    private void NavigateToOTECreation()
+    {
+        NavigationManager.NavigateTo("/experiences/ote");
+    }
+
+    private async Task SubscribeUserToMailchimp()
+    {
+
+        var args = new SubscribeToMailchimpArgs
+        {
+            EmailAddress = mailchimpEmail
+        };
+
+        var result = await systemApiHandler.SubscribeToMailchimp(args);
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            subscriptionResultMessage = "Subscription successful!";
+            subscriptionResultClass = "success";
+            mailchimpEmail = string.Empty;
+        }
+        else
+        {
+            subscriptionResultMessage = "Subscription failed. Please try again.";
+            subscriptionResultClass = "error";
+        }
+
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task LoadSigninUser()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+
+            isLogin = true;
+
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        ProfileImg = args.ProfileImg,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
+
+                if (hubConnection.State == HubConnectionState.Disconnected)
+                {
+                    try
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+
+                        while (true)
+                        {
+                            try
+                            {
+                                await hubConnection.StartAsync();
+
+                                break;
+                            }
+                            catch (ObjectDisposedException e)
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                            catch
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
