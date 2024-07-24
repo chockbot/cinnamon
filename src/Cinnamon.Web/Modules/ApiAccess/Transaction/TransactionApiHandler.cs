@@ -219,4 +219,27 @@ public class TransactionApiHandler : ITransactionApiHandler
             return AppResult<PaymentRequestResult>.CreateFailed(ex, "An error occured when posting submit payment request api");
         }
     }
+
+    public async Task<AppResult<GetRequestPaymentResult>> GetRequestPayment(GetRequestPaymentArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Transaction/PaymentRequest")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetRequestPaymentResult>();
+
+            return AppResult<GetRequestPaymentResult>.CreateSucceeded(result, "Successfully getting request payment details.");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GetRequestPaymentResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetRequestPaymentResult>.CreateFailed(ex, "An error occurred when getting request payment details.");
+        }
+    }
 }

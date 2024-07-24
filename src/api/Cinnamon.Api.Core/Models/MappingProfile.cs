@@ -128,5 +128,7 @@ public class MappingProfile : Profile
         // for payment request
         CreateMap<TransactionResults.OteRequestPaymentResult.RequestPaymentTicket, CoreDto.PurchaseOrder.PaymentRequestDTO.RequestPaymentTicket>();
         CreateMap<TransactionResults.OteRequestPaymentResult, CoreDto.PurchaseOrder.PaymentRequestDTO>();
+        CreateMap<TransactionResults.OteGetRequestPaymentResult.RequestPaymentTicket, CoreDto.PurchaseOrder.PaymentRequestDTO.RequestPaymentTicket>();
+        CreateMap<TransactionResults.OteGetRequestPaymentResult, CoreDto.PurchaseOrder.PaymentRequestDTO>();
     }
 }

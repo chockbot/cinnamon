@@ -16,4 +16,5 @@ public interface ITransactionApiHandler
     Task<AppResult<TransactionRedirectionResult>> TransactionRedirection(TransactionRedirectionArgs args);
     Task<AppResult<GetDirectStudentSalesResult>> GetDirectStudentSales(GetDirectStudentSalesArgs args, string token);
     Task<AppResult<PaymentRequestResult>> PaymentRequest(PaymentRequestArgs args, string token);
+    Task<AppResult<GetRequestPaymentResult>> GetRequestPayment(GetRequestPaymentArgs args, string token);
 } 
