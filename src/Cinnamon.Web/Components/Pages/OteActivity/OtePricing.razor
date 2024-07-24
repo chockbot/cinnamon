@@ -440,7 +440,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" @onchange="CheckboxChanged" checked="@(modelPricing.IsFree == true ? false : true)">
+                            <input type="checkbox" @onchange="CheckboxChanged">
                             <span>
                                 <span>Free</span>
                                 <span>Paid</span>
@@ -867,7 +867,7 @@
     public class Pricing
     {
         [PriceIfNotFree]
-        public decimal? Price { get; set; } = null;
+        public decimal? Price { get; set; } = 0;
 
         [MaxSlotsIfNotUnlimited]
         public int? MaxSlots { get; set; } = null;
@@ -916,7 +916,7 @@
 
             if (!pricing.IsFree && pricing.Price <= 0 || !pricing.IsFree && pricing.Price == null)
             {
-                return new ValidationResult("If the event is not free, the price must be greater than 1.");
+                return new ValidationResult("If the ticket is not free, the price must be greater than 0.");
             }
             return ValidationResult.Success;
         }
@@ -929,7 +929,7 @@
 
             if (!pricing.IsUnlimited && pricing.MaxSlots <= 0 || !pricing.IsUnlimited && pricing.MaxSlots == null)
             {
-                return new ValidationResult("If the ticket is not unlimited, the max slot must be greater than 1.");
+                return new ValidationResult("If the ticket is not unlimited, the max slot must be greater than 0.");
             }
             return ValidationResult.Success;
         }
