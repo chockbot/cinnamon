@@ -18,6 +18,7 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Models.WordPress
 @using Cinnamon.Web.Modules.Services.Handlers
+@using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Framework.Enums
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -29,6 +30,7 @@
 @inject Cinnamon.Web.Config.Config AppConfig;
 @inject IChatApiHandler chatApiHandler;
 @inject IWordPressServicesHandler WordPressServices
+@inject ISystemApiHandler systemApiHandler
 @implements IDisposable
 @inject AutoMapper.IMapper mapper;
 
@@ -1864,6 +1866,16 @@
             </div>
         </div
     </div>
+
+    @if (showModal)
+    {
+        <div class="modal" style="display: block;">
+            <div class="modal-content">
+                <span class="close" @onclick="CloseModal">&times;</span>
+                <p class="@subscriptionResultClass">@subscriptionResultMessage</p>
+            </div>
+        </div>
+    }
     <!--Footer-->
     <div class="footer">
         <div class="section-4">
@@ -1872,10 +1884,10 @@
                 <div class="footer-info">
                     <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
                     <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
-                    <div class="footer-email-input">
-                        <input type="email" class="footer-email-input-box" placeholder="Coming soon!" disabled/>
-                        <button class="footer-email-button">Subscribe</button>
-                    </div>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
                     <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
@@ -1926,10 +1938,10 @@
                 <div class="footer-info">
                     <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
                     <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
-                    <div class="footer-email-input">
-                        <input type="email" class="footer-email-input-box" placeholder="Coming soon!" disabled />
-                        <button class="footer-email-button">Subscribe</button>
-                    </div>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
                     <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
                     <div class="footer-text-about-container">
@@ -1979,7 +1991,7 @@
                 <div class="footer-copyright">
                     <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
                     <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
-                    <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamonph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
                     <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
                     <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div>
@@ -2145,6 +2157,10 @@
     private bool isSearchBarVisible = false;
     private bool IsDropdownVisible = false;
     private ElementReference searchInputRef;
+    private string mailchimpEmail;
+    private string subscriptionResultMessage;
+    private string subscriptionResultClass;
+    private bool showModal;
 
 
     protected override async Task OnInitializedAsync()
@@ -2992,5 +3008,34 @@
         {
             isSearchBarVisible = false;
         }
+    }
+
+    private async Task SubscribeUserToMailchimp()
+    {
+
+        var args = new SubscribeToMailchimpArgs
+        {
+            EmailAddress = mailchimpEmail
+        };
+
+        var result = await systemApiHandler.SubscribeToMailchimp(args);
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            subscriptionResultMessage = "Subscription successful!";
+            subscriptionResultClass = "success";
+            mailchimpEmail = string.Empty;
+        }
+        else
+        {
+            subscriptionResultMessage = "Subscription failed. Please try again.";
+            subscriptionResultClass = "error";
+        }
+
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
     }
 }
