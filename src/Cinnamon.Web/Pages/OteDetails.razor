@@ -1061,19 +1061,19 @@
             return;
         }
 
-        string guid = token = string.Empty;
+        string guid = string.Empty, webToken = string.Empty;
 
         var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
         if(getTracker is not null)
         {
             guid = getTracker.Guid;
-            token = getTracker.Token;
+            webToken = getTracker.Token;
         }
 
         var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
             ActivityId = activity.Id,
             Guid = guid,
-            Token = token,
+            Token = webToken,
             SelectedDate = selectedDate,
             SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket {
                 TicketCount = t.Value.Count,
