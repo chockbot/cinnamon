@@ -409,12 +409,10 @@ public class TransactionController : ControllerBase
     {
         try
         {
-            var date = DateTime.ParseExact(args.SelectedDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-
             var result = await oteRequestPaymentHandler.ExecuteAsync(new Services.TransactionService.Interactors.OteRequestPaymentArgs {
                 ActivityId = args.ActivityId,
                 Guid = args.Guid,
-                SelectedDate = date,
+                SelectedDate = args.SelectedDate,
                 Token = args.Token,
                 SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket {
                     TicketCount = t.TicketCount,

@@ -8,7 +8,7 @@ public class PaymentRequestArgs
     public int ActivityId {get; set;}
 
     [Required]
-    public string SelectedDate {get; set;} // format yyyyMMddHHmmss
+    public DateTime SelectedDate {get; set;}
 
     [Required]
     public IEnumerable<RequestPaymentTicket> SelectedTickets {get; set;} = Enumerable.Empty<RequestPaymentTicket>();
