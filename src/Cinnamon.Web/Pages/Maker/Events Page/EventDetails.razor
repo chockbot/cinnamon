@@ -601,6 +601,7 @@
         selectedTab = name;
         return Task.CompletedTask;
     }
+
     private void NavigateToTickets()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{1}");
@@ -611,12 +612,13 @@
     }
 
     private async Task HandleMouseMove(MouseEventArgs e)
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", "registrationDiv", e);
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
     }
 
     private async Task HandleMouseLeave(MouseEventArgs e)
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "registrationDiv");
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
     }
 }
+ 
