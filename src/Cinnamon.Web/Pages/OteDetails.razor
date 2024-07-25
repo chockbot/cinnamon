@@ -38,13 +38,13 @@
                 <div class="cover-photo">
                     <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
                 </div>
-                <div class="d-flex align-items-center mt-3 me-2 me-md-5">
+                <a href='@($"/maker/profile/{provider.Handler}")' class="d-flex align-items-center mt-3 me-2 me-md-5">
                     <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
                     <div class="ms-3">
                         <label class="font-16 font-weight-400 color-grey-100 m-font-14">Experience by</label>
                         <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-14">@provider.FirstName @provider.LastName</p>
                     </div>
-                </div>
+                </a>
                 <div class="provider-details d-flex mt-2">
                     <div class="book-details d-flex align-items-center my-2">
                         @if(topBookedCustomers.TopBooked is not null && topBookedCustomers.TopBooked.Any())
