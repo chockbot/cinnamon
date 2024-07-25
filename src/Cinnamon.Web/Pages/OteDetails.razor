@@ -32,7 +32,7 @@
 
 @if(activity is not null)
 {
-    <div class="container details-page-section">
+    <div class="container details-page-section ote-details-page-wrapper">
         <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                 <div class="cover-photo">
@@ -111,43 +111,55 @@
                     <h3 class="event-schedule">Date & Time</h3>
                     <div class="schedule-section">
                         <div class="schedule-header">
-                            <p class="schedule-header-title">Select date and tickets</p>
-                            <div class="calendar-section">
-                                <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                            </div>
+                            <Row class="align-items-center">
+                                <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                    <p class="schedule-header-title">Select date and tickets</p>
+                                    <div class="calendar-section">
+                                        <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" 
+                                            SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                    </div>
+                                </Column>
+                                <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                    <Row class="mb-3">
+                                        <Column class="schedule-event-duration" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                            <div class="d-flex align-items-center event-schedule-time">
+                                                <img class="me-2" src="images/ote/clock-repeat-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Duration:</label>
+                                                <label class="ote-schedule-details">
+                                                    @EventDurationString
+                                                </label>
+                                            </div>
+                                        </Column>
+                                        <Column class="schedule-event-time" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                            <div class="d-flex align-items-center event-schedule-time">
+                                                <img class="me-2" src="images/ote/clock-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Time Start:</label>
+                                                <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                            <div class="d-flex align-items-center event-schedule-place">
+                                                <img class="me-2" src="images/ote/location-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Location:</label>
+                                                @if (activity.ExperienceTypeId == 1)
+                                                {
+                                                    string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                    <label class="ote-schedule-details text-capitalize">@address</label>
+                                                }
+                                                else
+                                                {
+                                                    <label class="ote-schedule-details">Online</label>
+                                                }
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
                         </div>
                         @if(IsOnWaitlist)
                         {
-                            @*Header*@
-                            <div class="schedule-body">
-                               <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                         <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                         <label class="ote-schedule me-1">Duration:</label>
-                                         <label class="ote-schedule-details">
-                                             @EventDurationString
-                                         </label>
-                                     </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details text-capitalize">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                               </div>
-                            </div>
                             @*Body*@
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
@@ -169,36 +181,6 @@
                         }
                         else if(IsApprovedWaitlist)
                         {
-                            @*Header*@
-                            <div class="schedule-body">
-                                <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                        <label class="ote-schedule me-1">Duration:</label>
-                                        <label class="ote-schedule-details">
-                                            @EventDurationString
-                                        </label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
                             @*Body*@
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
@@ -221,34 +203,6 @@
                         else
                         {
                             <div class="schedule-body">
-                                @*Header*@
-                                <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                        <label class="ote-schedule me-1">Duration:</label>
-                                        <label class="ote-schedule-details">
-                                            @EventDurationString
-                                        </label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details text-capitalize">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                                </div>
                                 @*Body*@
                                 @if (activity.IsOpen)
                                 {
