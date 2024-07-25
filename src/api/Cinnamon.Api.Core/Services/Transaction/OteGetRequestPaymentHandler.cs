@@ -100,7 +100,12 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
                     TicketCount = t.Count,
                     TicketId = t.Id
                 }),
-                Token = args.Token
+                Token = args.Token,
+                Questions = deserializedPayload.Questions?.Select(q => new OteGetRequestPaymentResult.ProviderQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
+                })
             }, "Successfully get payment request details.");
         }
         catch (Exception ex)
@@ -115,11 +120,19 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
         public int ActivityId {get; set;}
         public int DateId {get; set;}
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
+        public IEnumerable<ProviderQuestion>? Questions {get; set;}
     }
 
     private class Ticket
     {
         public int Id {get; set;}
         public int Count {get; set;}
+    }
+
+    private class ProviderQuestion
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public string? Answer {get; set;}
     }
 }
