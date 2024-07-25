@@ -1017,37 +1017,28 @@
         }
     }
 
-    private async Task ProceedToPayment()
+    private Task ProceedToPayment()
     {
         if(selectedTickets.Count <= 0)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
-            return;
+            return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
         if(havePaidAndFreeTicket)
         {
-            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
-            return;
+            return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
-
-        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
-        if(haveApprovalTicket)
-        {
-            await modalQuestions?.Show();
-        }
-        else if(isFreeWithoutApproval)
-        {
-            await ProceedToFreePurchase();
-        }
-        else 
-        {
-            await ProceedToPaymentOption();
-        }
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions) return modalQuestions?.Show();
+
+        if(isFreeWithoutApproval) return ProceedToFreePurchase();
+
+        return ProceedToPaymentOption();
     }
 
     private async Task ProceedToPaymentOption()
@@ -1078,7 +1069,12 @@
             SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket {
                 TicketCount = t.Value.Count,
                 TicketId = t.Value.Id
-            })           
+            }),
+            Questions = activityQuestions.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
+                Answer = q.Answer,
+                Question = q.Question,
+                Id = q.Id
+            })
         }, token);
         if(!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
         {
@@ -1596,14 +1592,25 @@
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
-        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
+        bool proceedToWaitList = (activity.IsCapacity) && (activity.CapacityCount <= activity.Sold);
+
+        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+
+        if(proceedToWaitList || haveApprovalTicket)
         {
-             await ProceedToJoinWaitlist();
+            await ProceedToJoinWaitlist();
+            return;
         }
-        else 
+
+        if(isFreeWithoutApproval) 
         {
             await ProceedToFreePurchase();
+            return;
         }
+
+        await ProceedToPaymentOption();
     }
 
     private async Task LoadTopBooked()
