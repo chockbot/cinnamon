@@ -423,9 +423,16 @@
                                         if (activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                         {
                                             <div class="schedule-footer">
-                                                <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
-                                                    <span>Join Waitlist</span>
-                                                </button>
+                                                <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                    class="border-radius-10 bg-blue-100 color-white-100 font-20 font-weight-700" 
+                                                    Clicked="JoinWaitlist">
+                                                    <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Join Waitlist
+                                                    </ChildContent>
+                                                </Button>
                                             </div>
                                         }
                                         else
@@ -1019,6 +1026,14 @@
 
     private Task ProceedToPayment()
     {
+        if(currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            signInReturnUrl = oteDetailsUrl;
+            
+            return loginModal.Show();
+        }
+
         if(selectedTickets.Count <= 0)
         {
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
@@ -1043,15 +1058,6 @@
 
     private async Task ProceedToPaymentOption()
     {
-        if(currentLogin is null)
-        {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            signInReturnUrl = oteDetailsUrl;
-            
-            await loginModal.Show();
-            return;
-        }
-
         submitting = true;
         StateHasChanged();
 
@@ -1103,14 +1109,6 @@
     {
         try
         {
-            if (currentLogin is null)
-            {
-                string oteDetailsUrl = $"/explore/ote/{Handler}";
-                await loginModal.Show();
-                signInReturnUrl = oteDetailsUrl;
-                return;
-            }
-
             submitting = true;
             StateHasChanged();
 
@@ -1486,6 +1484,14 @@
 
     private async Task JoinWaitlist()
     {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            await loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return;
+        }
+
         //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         //Get Selected Ticket
         var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
@@ -1499,29 +1505,20 @@
             await NotificationService.Error("Select a ticket to proceed.", "Oops!");
             return;
         }
-        
-        var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-        
-        if(haveApprovalTicket)
+
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions)
         {
             await modalQuestions?.Show();
+            return;
         }
-        else
-        {
-            await ProceedToJoinWaitlist();
-        }    
+
+        await ProceedToJoinWaitlist(); 
     }
 
     private async Task ProceedToJoinWaitlist()
     {
-        if (currentLogin is null)
-        {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
-            signInReturnUrl = oteDetailsUrl;
-            return;
-        }
-
         var payload = new 
         {
             Tickets = selectedTickets.Select(t => new {
@@ -1539,6 +1536,9 @@
         };
 
         var serializedPayload = JsonConvert.SerializeObject(payload);
+
+        submitting = true;
+        StateHasChanged();
 
         //Add to Waitlist
         var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
@@ -1558,6 +1558,9 @@
             await NotificationService.Success("Successfully added to waitlist.", "Success");
             await LoadWaitlist();
         }
+
+        submitting = false;
+        StateHasChanged();
     }
 
     private async Task ConfirmDeleteChanged(bool value)
@@ -1598,7 +1601,7 @@
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
-        bool proceedToWaitList = (activity.IsCapacity) && (activity.CapacityCount <= activity.Sold);
+        bool proceedToWaitList = activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
 
         bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
