@@ -1,21 +1,21 @@
-using System.Text;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Services.AccountService.Handlers;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
 public class OteCreateSharedLinkHandler : IOteCreateSharedLinkHandler
 {
     private readonly IOteTicketData oteTicketData;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
-    public OteCreateSharedLinkHandler(IOteTicketData oteTicketData)
+    public OteCreateSharedLinkHandler(IOteTicketData oteTicketData, ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.oteTicketData = oteTicketData;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
 
     public AppResult<OteCreateSharedLinkResult> Execute(OteCreateSharedLinkArgs args)
@@ -28,18 +28,13 @@ public class OteCreateSharedLinkHandler : IOteCreateSharedLinkHandler
         try
         {
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
 
             var createShareLinkRes = await oteTicketData.CreateSharedLink(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateSharedLinkArgs {
                 ActivityId = args.ActivityId,
-                Guid = guid.ToString(),
+                Guid = tokenGenerated.Guid,
                 OteDateId = args.OteDateId,
-                Token = encodedToken
+                Token = tokenGenerated.Token
             });
             if(!createShareLinkRes.Succeeded || createShareLinkRes.Result is null || !createShareLinkRes.Result.IsSuccess)
             {
@@ -48,8 +43,8 @@ public class OteCreateSharedLinkHandler : IOteCreateSharedLinkHandler
             }
 
             return AppResult<OteCreateSharedLinkResult>.CreateSucceeded(new OteCreateSharedLinkResult {
-                Guid = guid.ToString(),
-                Token = encodedToken
+                Guid = tokenGenerated.Guid,
+                Token = tokenGenerated.Token
             }, "Successfully create shared link.");
         }
         catch (Exception ex)

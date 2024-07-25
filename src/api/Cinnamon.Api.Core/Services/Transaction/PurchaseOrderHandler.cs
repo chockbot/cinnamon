@@ -7,9 +7,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
-using System.Text;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -28,13 +26,15 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ILogger logger;
     private readonly ApplicationConfig applicationConfig;
     private readonly ITokenGeneratedData tokenGeneratedData;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData,
-        ILogger<PurchaseOrderHandler> logger, ApplicationConfig applicationConfig, ITokenGeneratedData tokenGeneratedData)
+        ILogger<PurchaseOrderHandler> logger, ApplicationConfig applicationConfig, ITokenGeneratedData tokenGeneratedData,
+        ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -49,6 +49,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.logger = logger;
         this.applicationConfig = applicationConfig;
         this.tokenGeneratedData = tokenGeneratedData;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -295,12 +296,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 .SetQueryParam("Status", "failed");
             
             // generate token and guid for transaction redirection details
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
             var payload = new 
             {
                 ActivityId = result.Result.Result.ActivityId,
@@ -311,9 +307,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
 
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = guid.ToString(),
+                Guid = tokenGenerated.Guid,
                 Payload = tokenSerializedPayload,
-                Token = encodedToken,
+                Token = tokenGenerated.Token,
                 TokenType = "TRANSACTION-REQUEST",
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -324,8 +320,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             var paymentRedirectUrl = applicationConfig.FrontendUrl
                                         .AppendPathSegment($"/transaction/finalize")
-                                        .SetQueryParam("Guid", guid.ToString())
-                                        .SetQueryParam("Token", encodedToken);
+                                        .SetQueryParam("Guid", tokenGenerated.Guid)
+                                        .SetQueryParam("Token", tokenGenerated.Token);
 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,
