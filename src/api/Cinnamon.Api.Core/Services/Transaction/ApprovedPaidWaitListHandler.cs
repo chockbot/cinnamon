@@ -91,7 +91,8 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
                 SelectedTickets = deserializedPayload.Tickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
                     TicketCount = t.Count,
                     TicketId = t.Id
-                })
+                }),
+                ForceCreateTicket = true
             });
             if(!createRequestPaymentRes.Succeeded || createRequestPaymentRes.Result is null)
             {
