@@ -12,22 +12,12 @@ namespace Cinnamon.Api.Core.Services.TransactionService;
 public class OteRequestPaymentHandler : IOteRequestPaymentHandler
 {
     private readonly IGetProfileHandler getProfileHandler;
-    private readonly IJsonSerializationProvider jsonSerializationProvider;
-    private readonly IGetActivityHandler getActivityHandler;
-    private readonly IOteFindByHandler oteFindByHandler;
-    private readonly ITokenGeneratedData tokenGeneratedData;
-    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
+    private readonly IOteCreateRequestPaymentHandler oteCreateRequestPaymentHandler;
 
-    public OteRequestPaymentHandler(IGetProfileHandler getProfileHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler, 
-        ITokenGeneratedData tokenGeneratedData, ITokenGeneratorProvider tokenGeneratorProvider)
+    public OteRequestPaymentHandler(IGetProfileHandler getProfileHandler, IOteCreateRequestPaymentHandler oteCreateRequestPaymentHandler)
     {
         this.getProfileHandler = getProfileHandler;
-        this.jsonSerializationProvider = jsonSerializationProvider;
-        this.getActivityHandler = getActivityHandler;
-        this.oteFindByHandler = oteFindByHandler;
-        this.tokenGeneratedData = tokenGeneratedData;
-        this.tokenGeneratorProvider = tokenGeneratorProvider;
+        this.oteCreateRequestPaymentHandler = oteCreateRequestPaymentHandler;
     }
 
     public AppResult<OteRequestPaymentResult> Execute(OteRequestPaymentArgs args)
@@ -46,155 +36,42 @@ public class OteRequestPaymentHandler : IOteRequestPaymentHandler
             }
             var profile = profileRes.Result;
 
-            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                ActivityId = args.ActivityId
-            });
-            if(!activityRes.Succeeded || activityRes.Result is null)
-            {
-                return AppResult<OteRequestPaymentResult>.CreateFailed(new ApplicationException(activityRes.Message), activityRes.Message);
-            }
-
-            var oteActivityRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs {
-                Handler = activityRes.Result.Handler,
-                IncludePricing = true,
-                IncludeSchedule = true
-            });
-            if(!oteActivityRes.Succeeded || oteActivityRes.Result is null)
-            {
-                return AppResult<OteRequestPaymentResult>.CreateFailed(new ApplicationException(oteActivityRes.Message), oteActivityRes.Message);
-            }
-            var oteActivity = oteActivityRes.Result;
-
-            var oteDate = oteActivity.OteDates.FirstOrDefault(d => d.Date.Date == args.SelectedDate.Date);
-            if(oteDate is null)
-            {
-                return AppResult<OteRequestPaymentResult>.CreateFailed(
-                    new ApplicationException("Invalid selected event date."), "Invalid selected event date.");
-            }
-
-            var dateTickets = oteActivity.Pricings.Where(p => p.OteDateId == oteDate.Id);
-            List<Ticket> validTickets = new();
-
-            foreach(var ticket in args.SelectedTickets.DistinctBy(t => t.TicketId))
-            {
-                var dateTicket = dateTickets.FirstOrDefault(t => t.Id == ticket.TicketId);
-                if(dateTicket is not null)
-                {
-                    validTickets.Add(new Ticket {
-                        Count = ticket.TicketCount,
-                        Id = ticket.TicketId
-                    });
-                }
-            }
-
-            var payload = new PayloadData {
-                CustomerId = profile.Id,
+            var createPaymentRequestRes = await oteCreateRequestPaymentHandler.ExecuteAsync(new OteCreateRequestPaymentArgs {
                 ActivityId = args.ActivityId,
-                DateId = oteDate.Id,
-                Tickets = validTickets.Select(t => new Ticket {
-                    Count = t.Count,
-                    Id = t.Id
+                CustomerId = profile.Id,
+                Guid = args.Guid,
+                Token = args.Token,
+                SelectedDate = args.SelectedDate,
+                SelectedTickets = args.SelectedTickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
+                    TicketCount = t.TicketCount,
+                    TicketId = t.TicketId
                 }),
-                Questions = args.Questions?.Select(q => new ProviderQuestion {
+                Questions = args.Questions?.Select(q => new OteCreateRequestPaymentArgs.ProviderQuestion {
                     Answer = q.Answer,
                     Question = q.Question,
                     Id = q.Id
                 })
-            };
-
-            bool updateTokenPayload = !string.IsNullOrEmpty(args.Guid) && !string.IsNullOrEmpty(args.Token);
-            var serializedPayload = jsonSerializationProvider.Serialize(payload);
-
-            const string TOKEN_TYPE = "REQUEST-PAYMENT";
-
-            if(updateTokenPayload)
+            });
+            if(!createPaymentRequestRes.Succeeded || createPaymentRequestRes.Result is null)
             {
-                var getTokenRes = await tokenGeneratedData.GetTokenGenerated(args.Guid, args.Token);
-                if(!getTokenRes.Succeeded || getTokenRes.Result is null || !getTokenRes.Result.IsSuccess)
-                {
-                    return AppResult<OteRequestPaymentResult>.CreateFailed(
-                        new ApplicationException("Invalid guid and token. Invalid request."), "Invalid guid and token. Invalid request.");
-                }
-                var token = getTokenRes.Result.Result;
-
-                if(!token.TokenType.Equals(TOKEN_TYPE, StringComparison.OrdinalIgnoreCase))
-                {
-                    return AppResult<OteRequestPaymentResult>.CreateFailed(
-                        new ApplicationException("Invalid guid and token. Invalid request."), "Invalid guid and token. Invalid request.");
-                }
-
-                var deserializedData = jsonSerializationProvider.Deserialize<PayloadData>(token.Payload);
-                if(deserializedData is null || deserializedData.CustomerId != profile.Id)
-                {
-                    return AppResult<OteRequestPaymentResult>.CreateFailed(
-                        new ApplicationException("Invalid guid and token. Invalid request."), "Invalid guid and token. Invalid request.");
-                }
-
-                var updateTokenRes = await tokenGeneratedData.UpdateToken(new Framework.ApiCommand.ApiData.TokenGenerated.Request.UpdateTokenArgs {
-                    Payload = serializedPayload
-                }, token.Id);
-                if(!updateTokenRes.Succeeded || updateTokenRes.Result is null || !updateTokenRes.Result.IsSuccess)
-                {
-                    return AppResult<OteRequestPaymentResult>.CreateFailed(
-                        new ApplicationException("An error occured when creating request payment."), "An error occured when creating request payment.");
-                }
+                return AppResult<OteRequestPaymentResult>.CreateFailed(new ApplicationException(createPaymentRequestRes.Message), createPaymentRequestRes.Message);
             }
-
-            if(!updateTokenPayload)
-            {
-                var generatedToken = tokenGeneratorProvider.Generator();
-                args.Guid = generatedToken.Guid;
-                args.Token = generatedToken.Token;
-
-                var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                    Guid = args.Guid,
-                    Payload = serializedPayload,
-                    Token = args.Token,
-                    TokenType = TOKEN_TYPE
-                });
-                if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
-                {
-                    return AppResult<OteRequestPaymentResult>.CreateFailed(
-                        new ApplicationException("An error occured when creating request payment."), "An error occured when creating request payment.");
-                }
-            }
+            var createdRequest = createPaymentRequestRes.Result;
 
             return AppResult<OteRequestPaymentResult>.CreateSucceeded(new OteRequestPaymentResult {
-                ActivityId = args.ActivityId,
-                Guid = args.Guid,
-                SelectedDate = args.SelectedDate,
-                SelectedTickets = validTickets.Select(t => new OteRequestPaymentResult.RequestPaymentTicket {
-                    TicketCount = t.Count,
-                    TicketId = t.Id
+                ActivityId = createdRequest.ActivityId,
+                Guid = createdRequest.Guid,
+                SelectedDate = createdRequest.SelectedDate,
+                SelectedTickets = createdRequest.SelectedTickets.Select(t => new OteRequestPaymentResult.RequestPaymentTicket {
+                    TicketCount = t.TicketCount,
+                    TicketId = t.TicketId
                 }),
-                Token = args.Token,
+                Token = createdRequest.Token,
             }, "Successfully request payment");
         }
         catch (Exception ex)
         {
             return AppResult<OteRequestPaymentResult>.CreateFailed(ex, "An error occured in OteRequestPaymentHandler.");
         }
-    }
-
-    private class PayloadData 
-    {
-        public int CustomerId {get; set;}
-        public int ActivityId {get; set;}
-        public int DateId {get; set;}
-        public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
-        public IEnumerable<ProviderQuestion>? Questions {get; set;}
-    }
-
-    private class Ticket
-    {
-        public int Id {get; set;}
-        public int Count {get; set;}
-    }
-
-    private class ProviderQuestion
-    {
-        public int Id {get; set;}
-        public string Question {get; set;}
-        public string? Answer {get; set;}
     }
 }
