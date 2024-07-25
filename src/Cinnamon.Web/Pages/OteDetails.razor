@@ -1052,6 +1052,9 @@
             return;
         }
 
+        submitting = true;
+        StateHasChanged();
+
         string guid = string.Empty, webToken = string.Empty;
 
         var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
@@ -1087,6 +1090,9 @@
             Guid = requestedToken.Guid,
             Token = requestedToken.Token
         });
+
+        submitting = false;
+        StateHasChanged();
 
         string paymentUrl = $"/payment/ote/{Handler}/?guid={requestedToken.Guid}&token={requestedToken.Token}";
 
@@ -1594,17 +1600,17 @@
 
         bool proceedToWaitList = (activity.IsCapacity) && (activity.CapacityCount <= activity.Sold);
 
-        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
-        if(proceedToWaitList || haveApprovalTicket)
+        if(proceedToWaitList)
         {
             await ProceedToJoinWaitlist();
             return;
         }
 
-        if(isFreeWithoutApproval) 
+        if(isFreeWithoutApproval || freeWithApproval)
         {
             await ProceedToFreePurchase();
             return;
