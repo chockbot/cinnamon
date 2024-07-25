@@ -1,7 +1,4 @@
-using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
-using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;

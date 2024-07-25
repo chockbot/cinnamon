@@ -18,16 +18,18 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IGetActivityHandler getActivityHandler;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IOteCreateRequestPaymentHandler createRequestPaymentHandler;
 
     public ApprovedPaidWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IGetActivityHandler getActivityHandler,
-        ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig, IOteCreateRequestPaymentHandler createRequestPaymentHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.getActivityHandler = getActivityHandler;
         this.applicationConfig = applicationConfig;
+        this.createRequestPaymentHandler = createRequestPaymentHandler;
     }
     
     public AppResult<ApprovedPaidWaitListResult> Execute(ApprovedPaidWaitListArgs args)
@@ -75,19 +77,36 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
             }
             var activity = activityRes.Result;
 
+            var firstTicket = deserializedPayload.Tickets.FirstOrDefault();
+            if(firstTicket is null)
+            {
+                return AppResult<ApprovedPaidWaitListResult>.CreateFailed(
+                    new ApplicationException("Invalid waitlist data. Invalid request."), "Invalid waitlist data. Invalid request.");
+            }
+
+            var createRequestPaymentRes = await createRequestPaymentHandler.ExecuteAsync(new OteCreateRequestPaymentArgs {
+                ActivityId = waitlist.ActivityId,
+                CustomerId = waitlist.CustomerId,
+                SelectedDate = firstTicket.Date,
+                SelectedTickets = deserializedPayload.Tickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
+                    TicketCount = t.Count,
+                    TicketId = t.Id
+                })
+            });
+            if(!createRequestPaymentRes.Succeeded || createRequestPaymentRes.Result is null)
+            {
+                return AppResult<ApprovedPaidWaitListResult>.CreateFailed(
+                    new ApplicationException(createRequestPaymentRes.Message), createRequestPaymentRes.Message);
+            }
+            var createdToken = createRequestPaymentRes.Result;
+
             // create link for ticket details
             var url = applicationConfig.FrontendUrl
                 .AppendPathSegment("payment")
                 .AppendPathSegment("ote")
-                .AppendPathSegment(activity.Handler);
-
-            string ticketQueryString = string.Empty;
-            foreach(var ticket in deserializedPayload.Tickets)
-            {
-                ticketQueryString += $"{ticket.Id}-{ticket.Count}-{ticket.Date.ToString("dd MMMM yyyy")}-{ticket.Date.ToString("hh:mm tt").ToUpper()}-0,";
-            }
-
-            url = url.SetQueryParam("ticket", ticketQueryString);
+                .AppendPathSegment(activity.Handler)
+                .SetQueryParam("guid", createdToken.Guid)
+                .SetQueryParam("token", createdToken.Token);
             
             return AppResult<ApprovedPaidWaitListResult>.CreateSucceeded(new ApprovedPaidWaitListResult {PurchaseLink = url}, "Successfully approved paid wait list.");
         }
@@ -115,10 +134,4 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
         public IEnumerable<Ticket> Tickets {get; set;}
         public int TransactionId {get; set;}
     }
-
-   private class PurchaseOrderPayload 
-   {
-        public string Guid {get; set;}
-        public string Token {get; set;}
-   }
 }
