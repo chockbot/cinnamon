@@ -1056,20 +1056,8 @@
         return ProceedToPaymentOption();
     }
 
-    private async Task ProceedToPaymentOption()
+    private async Task<PaymentTracker> CreatePaymentTracker(string guid = "", string webToken = "")
     {
-        submitting = true;
-        StateHasChanged();
-
-        string guid = string.Empty, webToken = string.Empty;
-
-        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
-        if(getTracker is not null)
-        {
-            guid = getTracker.Guid;
-            webToken = getTracker.Token;
-        }
-
         var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
             ActivityId = activity.Id,
             Guid = guid,
@@ -1087,20 +1075,43 @@
         }, token);
         if(!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
         {
-            await NotificationService.Error("An error occured. Please contact support.", "Error");
-            return;
+            return null;
         }
         var requestedToken = requestPaymentRes.Result.Result;
 
-        await TrackPaymentRequest(new PaymentTracker {
+        return new PaymentTracker {
             Guid = requestedToken.Guid,
             Token = requestedToken.Token
-        });
+        };
+    }
+
+    private async Task ProceedToPaymentOption()
+    {
+        submitting = true;
+        StateHasChanged();
+
+        string guid = string.Empty, webToken = string.Empty;
+
+        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
+        if(getTracker is not null)
+        {
+            guid = getTracker.Guid;
+            webToken = getTracker.Token;
+        }
+
+        var createTracker = await CreatePaymentTracker(getTracker.Guid, getTracker.Token);
+        if(createTracker is null)
+        {
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
+            return;
+        }
+
+        await TrackPaymentRequest(createTracker);
 
         submitting = false;
         StateHasChanged();
 
-        string paymentUrl = $"/payment/ote/{Handler}/?guid={requestedToken.Guid}&token={requestedToken.Token}";
+        string paymentUrl = $"/payment/ote/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
 
         NavigationManager.NavigateTo(paymentUrl);
     }
@@ -1111,6 +1122,13 @@
         {
             submitting = true;
             StateHasChanged();
+
+            var createTracker = await CreatePaymentTracker();
+            if(createTracker is null)
+            {
+                await NotificationService.Error("An error occured. Please contact support.", "Error");
+                return;
+            }
 
             var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1127,7 +1145,9 @@
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
-                })
+                }),
+                Guid = createTracker.Guid,
+                Token = createTracker.Token
             }, token);
 
             submitting = false;

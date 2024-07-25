@@ -980,13 +980,20 @@
     {
         if(forceCreate)
         {
-            selectedTickets.Add(pricing.Id, new TicketInfo
+            if(selectedTickets.ContainsKey(pricing.Id))
             {
-                Count = 1,
-                Id = pricing.Id,
-                Price = pricing.Price,
-                RequiredApproval = pricing.RequiredApproval
-            });
+                selectedTickets[pricing.Id].Count++;
+            }
+            else 
+            {
+                selectedTickets.Add(pricing.Id, new TicketInfo
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    RequiredApproval = pricing.RequiredApproval
+                });
+            }
             return Task.CompletedTask;
         }
 
@@ -1091,7 +1098,9 @@
                         Count = t.Value.Count,
                         Id = t.Value.Id
                     };
-                })
+                }),
+                Guid = Guid,
+                Token = Token
             }, token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1119,7 +1128,7 @@
                 }
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
