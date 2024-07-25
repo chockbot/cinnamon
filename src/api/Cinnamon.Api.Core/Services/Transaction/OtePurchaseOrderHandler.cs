@@ -32,6 +32,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly ICreateOteWaitlistHandler createOteWaitlist;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly ITokenGeneratorProvider tokenGeneratorProvider;
+    private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
 
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
@@ -40,7 +41,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler,
         ITokenGeneratedData tokenGeneratedData, IActivityQuestionsHandler activityQuestionsHandler,
         ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler,
-        ITokenGeneratorProvider tokenGeneratorProvider)
+        ITokenGeneratorProvider tokenGeneratorProvider, IGetOteRequestPaymentHandler getOteRequestPaymentHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -60,6 +61,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.createOteWaitlist = createOteWaitlist;
         this.getProfileHandler = getProfileHandler;
         this.tokenGeneratorProvider = tokenGeneratorProvider;
+        this.getOteRequestPaymentHandler = getOteRequestPaymentHandler;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -161,6 +163,16 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
             var customer = customerAccountRes.Result.Result;
 
+            var requestedPaymentRes = await getOteRequestPaymentHandler.ExecuteAsync(new OteGetRequestPaymentArgs {
+                Guid = args.Guid,
+                Token = args.Token
+            });
+            if(!requestedPaymentRes.Succeeded || requestedPaymentRes.Result is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(requestedPaymentRes.Message), requestedPaymentRes.Message);
+            }
+            var requestedPayment = requestedPaymentRes.Result;
+
             var selectedTickets = new List<Ticket>();
             // validate selected tickets
             foreach(var ticket in args.Tickets)
@@ -171,15 +183,19 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected ticket."), "Unable to identify selected ticket.");
                 }
 
-                if(ticketPrice.TicketSold >= ticketPrice.MaxSlots && !ticketPrice.IsUnlimited)
+                // check ticket availablity if not force to create
+                if(!requestedPayment.ForceCreateTicket)
                 {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
-                }
+                    if(ticketPrice.TicketSold >= ticketPrice.MaxSlots && !ticketPrice.IsUnlimited)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
+                    }
 
-                if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count && !ticketPrice.IsUnlimited)
-                {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(
-                        new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
+                    if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count && !ticketPrice.IsUnlimited)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                            new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
+                    }
                 }
 
                 // create selected ticket instance

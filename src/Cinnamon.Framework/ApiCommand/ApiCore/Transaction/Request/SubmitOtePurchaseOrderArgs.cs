@@ -19,6 +19,10 @@ public class SubmitOtePurchaseOrderArgs
 
     public IEnumerable<ActivityQuestion>? Questions {get; set;}
 
+    public string Guid {get; set;}
+
+    public string Token {get; set;}
+
     public class OteCardDetails 
     {
         [CreditCard(ErrorMessage = "Provide valid card number")]
