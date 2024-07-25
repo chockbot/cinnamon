@@ -13,6 +13,8 @@ public class OteCreateRequestPaymentArgs : IInteractor
 
     public IEnumerable<ProviderQuestion>? Questions {get; set;}
 
+    public bool ForceCreateTicket {get; set;}
+
     public class RequestPaymentTicket 
     {
         public int TicketId {get; set;}

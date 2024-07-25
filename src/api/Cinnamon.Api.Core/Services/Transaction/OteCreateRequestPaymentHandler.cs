@@ -89,7 +89,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                     Answer = q.Answer,
                     Question = q.Question,
                     Id = q.Id
-                })
+                }),
+                ForceCreateTicket = args.ForceCreateTicket
             };
 
             bool updateTokenPayload = !string.IsNullOrEmpty(args.Guid) && !string.IsNullOrEmpty(args.Token);
@@ -173,6 +174,7 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
         public int DateId {get; set;}
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
         public IEnumerable<ProviderQuestion>? Questions {get; set;}
+        public bool ForceCreateTicket {get; set;}
     }
 
     private class Ticket
