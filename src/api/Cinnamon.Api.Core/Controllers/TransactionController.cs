@@ -417,6 +417,11 @@ public class TransactionController : ControllerBase
                 SelectedTickets = args.SelectedTickets.Select(t => new Services.TransactionService.Interactors.OteRequestPaymentArgs.RequestPaymentTicket {
                     TicketCount = t.TicketCount,
                     TicketId = t.TicketId
+                }),
+                Questions = args.Questions?.Select(q => new Services.TransactionService.Interactors.OteRequestPaymentArgs.ProviderQuestion {
+                    Answer = q.Answer,
+                    Id = q.Id,
+                    Question = q.Question
                 })
             });
 

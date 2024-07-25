@@ -17,6 +17,8 @@ public class PaymentRequestArgs
 
     public string? Token {get; set;}
 
+    public IEnumerable<ProviderQuestion>? Questions {get; set;}
+
     public class RequestPaymentTicket 
     {
         [Required]
@@ -24,5 +26,16 @@ public class PaymentRequestArgs
 
         [Required]
         public int TicketCount {get; set;}
+    }
+
+    public class ProviderQuestion 
+    {
+        [Required]
+        public int Id {get; set;}
+
+        [Required]
+        public string Question {get; set;}
+
+        public string? Answer {get; set;}
     }
 }

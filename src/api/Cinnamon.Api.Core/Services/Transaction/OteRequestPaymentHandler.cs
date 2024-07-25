@@ -94,6 +94,11 @@ public class OteRequestPaymentHandler : IOteRequestPaymentHandler
                 Tickets = validTickets.Select(t => new Ticket {
                     Count = t.Count,
                     Id = t.Id
+                }),
+                Questions = args.Questions?.Select(q => new ProviderQuestion {
+                    Answer = q.Answer,
+                    Question = q.Question,
+                    Id = q.Id
                 })
             };
 
@@ -177,11 +182,19 @@ public class OteRequestPaymentHandler : IOteRequestPaymentHandler
         public int ActivityId {get; set;}
         public int DateId {get; set;}
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
+        public IEnumerable<ProviderQuestion>? Questions {get; set;}
     }
 
     private class Ticket
     {
         public int Id {get; set;}
         public int Count {get; set;}
+    }
+
+    private class ProviderQuestion
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public string? Answer {get; set;}
     }
 }
