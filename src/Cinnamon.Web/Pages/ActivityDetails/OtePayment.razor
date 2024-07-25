@@ -1131,7 +1131,7 @@
         {
             if(activity is null) return true;
 
-            if(activity.Pricings.Any(p => p.MaxSlots > p.TicketSold))
+            if(selectedTickets.Count > 0)
             {
                 return false;
             }
