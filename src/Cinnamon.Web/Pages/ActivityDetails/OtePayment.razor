@@ -694,7 +694,7 @@
                     TicketSold = sTicket.TicketSold,
                     RequiredApproval = sTicket.RequiredApproval
                 };
-                await AddSelectedTicket(otePricing);
+                await AddSelectedTicket(otePricing, tracker.ForceCreateTicket);
             }
         }
     }
@@ -976,8 +976,20 @@
         }
     }
 
-    private Task AddSelectedTicket(OtePricing pricing)
+    private Task AddSelectedTicket(OtePricing pricing, bool forceCreate = false)
     {
+        if(forceCreate)
+        {
+            selectedTickets.Add(pricing.Id, new TicketInfo
+            {
+                Count = 1,
+                Id = pricing.Id,
+                Price = pricing.Price,
+                RequiredApproval = pricing.RequiredApproval
+            });
+            return Task.CompletedTask;
+        }
+
         if (pricing.TicketSold >= pricing.MaxSlots)
         {
             return Task.CompletedTask;
@@ -1011,12 +1023,12 @@
             else
             {
                 selectedTickets.Add(pricing.Id, new TicketInfo
-                    {
-                        Count = 1,
-                        Id = pricing.Id,
-                        Price = pricing.Price,
-                        RequiredApproval = pricing.RequiredApproval
-                    });
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    RequiredApproval = pricing.RequiredApproval
+                });
             }
 
         }
