@@ -224,6 +224,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IApprovedWaitListHandler, Services.TransactionService.ApprovedWaitListHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IOteRequestPaymentHandler, Services.TransactionService.OteRequestPaymentHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetOteRequestPaymentHandler, Services.TransactionService.OteGetRequestPaymentHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOteCreateRequestPaymentHandler, Services.TransactionService.OteCreateRequestPaymentHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();

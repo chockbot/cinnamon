@@ -14,6 +14,9 @@ public class OtePurchaseOrderArgs : IInteractor
 
     public IEnumerable<ActivityQuestion>? Questions {get; set;}
 
+    public string Guid {get; set;}
+    public string Token {get; set;}
+
     public class CardDetails 
     {
         public string CardNumber {get; set;}

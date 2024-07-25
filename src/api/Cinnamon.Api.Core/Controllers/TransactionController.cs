@@ -317,7 +317,9 @@ public class TransactionController : ControllerBase
                     Answer = q.Answer ?? string.Empty,
                     Id = q.Id,
                     Question = q.Question
-                }) : null
+                }) : null,
+                Guid = args.Guid,
+                Token = args.Token
             });
 
             if(!result.Succeeded || result.Result == null)

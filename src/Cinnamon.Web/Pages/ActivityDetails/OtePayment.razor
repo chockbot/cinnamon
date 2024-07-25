@@ -694,7 +694,7 @@
                     TicketSold = sTicket.TicketSold,
                     RequiredApproval = sTicket.RequiredApproval
                 };
-                await AddSelectedTicket(otePricing);
+                await AddSelectedTicket(otePricing, tracker.ForceCreateTicket);
             }
         }
     }
@@ -976,8 +976,27 @@
         }
     }
 
-    private Task AddSelectedTicket(OtePricing pricing)
+    private Task AddSelectedTicket(OtePricing pricing, bool forceCreate = false)
     {
+        if(forceCreate)
+        {
+            if(selectedTickets.ContainsKey(pricing.Id))
+            {
+                selectedTickets[pricing.Id].Count++;
+            }
+            else 
+            {
+                selectedTickets.Add(pricing.Id, new TicketInfo
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    RequiredApproval = pricing.RequiredApproval
+                });
+            }
+            return Task.CompletedTask;
+        }
+
         if (pricing.TicketSold >= pricing.MaxSlots)
         {
             return Task.CompletedTask;
@@ -1011,12 +1030,12 @@
             else
             {
                 selectedTickets.Add(pricing.Id, new TicketInfo
-                    {
-                        Count = 1,
-                        Id = pricing.Id,
-                        Price = pricing.Price,
-                        RequiredApproval = pricing.RequiredApproval
-                    });
+                {
+                    Count = 1,
+                    Id = pricing.Id,
+                    Price = pricing.Price,
+                    RequiredApproval = pricing.RequiredApproval
+                });
             }
 
         }
@@ -1079,7 +1098,9 @@
                         Count = t.Value.Count,
                         Id = t.Value.Id
                     };
-                })
+                }),
+                Guid = Guid,
+                Token = Token
             }, token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1107,7 +1128,7 @@
                 }
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
@@ -1119,7 +1140,7 @@
         {
             if(activity is null) return true;
 
-            if(activity.Pricings.Any(p => p.MaxSlots > p.TicketSold))
+            if(selectedTickets.Count > 0)
             {
                 return false;
             }

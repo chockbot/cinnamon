@@ -105,7 +105,8 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
-                })
+                }),
+                ForceCreateTicket = deserializedPayload.ForceCreateTicket
             }, "Successfully get payment request details.");
         }
         catch (Exception ex)
@@ -121,6 +122,7 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
         public int DateId {get; set;}
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
         public IEnumerable<ProviderQuestion>? Questions {get; set;}
+        public bool ForceCreateTicket {get; set;}
     }
 
     private class Ticket
