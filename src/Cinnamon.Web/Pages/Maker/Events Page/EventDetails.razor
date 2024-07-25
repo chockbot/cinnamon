@@ -34,12 +34,13 @@
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details" @onclick="NavigateToRegistration">
+            <div class="div-option-details" id="registrationDiv" @onmousemove="HandleMouseMove" @onmouseleave="HandleMouseLeave" @onclick="NavigateToRegistration">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((activity.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
+                <div class="effect"></div>
             </div>
             <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
@@ -607,5 +608,15 @@
     private void NavigateToRegistration()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{5}");
+    }
+
+    private async Task HandleMouseMove(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", "registrationDiv", e);
+    }
+
+    private async Task HandleMouseLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "registrationDiv");
     }
 }
