@@ -21,6 +21,7 @@
 @inject IJSRuntime JS;
 @inject IChatApiHandler chatApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorage localStorage;
 
 <PageTitle>@(activity?.EventName ?? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH") | CinnamonPH</PageTitle>
 <SeoMeta Title="@(activity?.EventName ?? string.Empty)"
@@ -640,7 +641,7 @@
 </Modal>
 
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     private OteActivity? activity;
@@ -689,6 +690,8 @@
     private Modal? modalPurchaseWithConfirmation;
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
+
+    private const string TRACKER_ID = "checkout";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1013,55 +1016,84 @@
         }
     }
 
-    private async Task ProceedToPayment()
+    private Task ProceedToPayment()
     {
         if(selectedTickets.Count <= 0)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
-            return;
+            return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
         if(havePaidAndFreeTicket)
         {
-            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
-            return;
+            return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
-
-        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
-        if(haveApprovalTicket)
-        {
-            await modalQuestions?.Show();
-        }
-        else if(isFreeWithoutApproval)
-        {
-            await ProceedToFreePurchase();
-        }
-        else 
-        {
-            await ProceedToPaymentOption();
-        }
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions) return modalQuestions?.Show();
+
+        if(isFreeWithoutApproval) return ProceedToFreePurchase();
+
+        return ProceedToPaymentOption();
     }
 
     private async Task ProceedToPaymentOption()
     {
-        string queryValue = string.Empty;
-        foreach(var item in selectedTickets)
-        {
-            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()}-{ticketCount},";
-        }
-
-        string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
         if(currentLogin is null)
         {
             string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
             signInReturnUrl = oteDetailsUrl;
+            
+            await loginModal.Show();
             return;
         }
+
+        submitting = true;
+        StateHasChanged();
+
+        string guid = string.Empty, webToken = string.Empty;
+
+        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
+        if(getTracker is not null)
+        {
+            guid = getTracker.Guid;
+            webToken = getTracker.Token;
+        }
+
+        var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
+            ActivityId = activity.Id,
+            Guid = guid,
+            Token = webToken,
+            SelectedDate = selectedDate,
+            SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket {
+                TicketCount = t.Value.Count,
+                TicketId = t.Value.Id
+            }),
+            Questions = activityQuestions.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
+                Answer = q.Answer,
+                Question = q.Question,
+                Id = q.Id
+            })
+        }, token);
+        if(!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
+        {
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
+            return;
+        }
+        var requestedToken = requestPaymentRes.Result.Result;
+
+        await TrackPaymentRequest(new PaymentTracker {
+            Guid = requestedToken.Guid,
+            Token = requestedToken.Token
+        });
+
+        submitting = false;
+        StateHasChanged();
+
+        string paymentUrl = $"/payment/ote/{Handler}/?guid={requestedToken.Guid}&token={requestedToken.Token}";
 
         NavigationManager.NavigateTo(paymentUrl);
     }
@@ -1580,7 +1612,26 @@
         if(!validForms) return;
 
         await modalQuestions?.Close(CloseReason.UserClosing);
-        await ProceedToFreePurchase();
+
+        bool proceedToWaitList = (activity.IsCapacity) && (activity.CapacityCount <= activity.Sold);
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+
+        if(proceedToWaitList)
+        {
+            await ProceedToJoinWaitlist();
+            return;
+        }
+
+        if(isFreeWithoutApproval || freeWithApproval)
+        {
+            await ProceedToFreePurchase();
+            return;
+        }
+
+        await ProceedToPaymentOption();
     }
 
     private async Task LoadTopBooked()
@@ -1615,6 +1666,17 @@
         return String.Join(" ", result);
     }
 
+    private async Task TrackPaymentRequest(PaymentTracker track)
+    {
+        await localStorage.SetItem(TRACKER_ID, track);
+    }
+
+    private class PaymentTracker 
+    {
+        public string Guid {get; set;}
+        public string Token {get; set;}
+    }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }
@@ -1641,24 +1703,6 @@
         public string Phone {get; set;}
     }
 
-    private class StorageData 
-    {
-        public int ActivityId {get; set;}
-        public IEnumerable<StorageQuestion> Questions {get; set;} 
-    }
-
-    private class StorageQuestion 
-    {
-        public int Id {get; set;}
-        public string Question {get; set;}
-        public string Answer {get; set;}
-    }
-    public class Payload
-    {
-        public IEnumerable<TicketDetails> Tickets { get; set; }
-        public IEnumerable<QuestionDetails> Questions { get; set; }
-    }
-
     public class TicketDetails
     {
         public int Id { get; set; }
@@ -1667,11 +1711,5 @@
         public int OteDateId { get; set; }
         public int Count { get; set; }
         public DateTime Date { get; set; }
-    }
-
-    public class QuestionDetails
-    {
-        public string Question { get; set; }
-        public string Answer { get; set; }
     }
 }
