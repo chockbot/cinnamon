@@ -85,17 +85,19 @@
                 
                 <Row VerticalGutter="20" HorizontalGutter="20">
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <label @onclick="() => OnSelectedScheduledEmail(0)" 
-                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer">
-                            <img class="me-3" src="images/ote/red-bell.png" alt="bell">
-                            <span class="font-16 color-black-100">Add Reminder Email</span>
+                        <label id="reminderDiv" @onmousemove="ReminderHoverMove" @onmouseleave="ReminderHoverLeave" @onclick="() => OnSelectedScheduledEmail(0)" 
+                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+                            <img class="me-3 image-holder" src="images/ote/red-bell.png " alt="bell">
+                            <span class="font-16 color-black-100 text-box">Add Reminder Email</span>
+                            <div class="effect hover1"></div>
                         </label>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <label @onclick="() => OnSelectedScheduledEmail(1)" 
-                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer">
-                            <img class="me-3" src="images/ote/yellow-star.png" alt="bell">
-                            <span class="font-16 color-black-100">Add Feedback Email</span>
+                        <label id="feedbackDiv" @onmousemove="FeedbackHoverMove" @onmouseleave="FeedbackHoverLeave" @onclick="() => OnSelectedScheduledEmail(1)" 
+                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+                            <img class="me-3 image-holder" src="images/ote/yellow-star.png" alt="bell">
+                            <span class="font-16 color-black-100 text-box">Add Feedback Email</span>
+                            <div class="effect hover2"></div>
                         </label>
                     </Column>
                 </Row>
@@ -114,7 +116,7 @@
                                     ticket events?
                                 </p>
                                 <div class="publish-read-more">
-                                    <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                    <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white read-more-btn" Type="ButtonType.Button">
                                         Read more
                                     </Button>
                                 </div>
@@ -128,7 +130,7 @@
                                     from this event?
                                 </p>
                                 <div class="publish-read-more">
-                                    <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                    <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white read-more-btn" Type="ButtonType.Button">
                                         Read more
                                     </Button>
                                 </div>
@@ -623,5 +625,22 @@
 
             return dates;
         }
+    }
+
+    private async Task ReminderHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#reminderDiv");
+    }
+    private async Task ReminderHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#reminderDiv");
+    }
+    private async Task FeedbackHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#feedbackDiv");
+    }
+    private async Task FeedbackHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#feedbackDiv");
     }
 }
