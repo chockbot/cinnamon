@@ -320,6 +320,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
                 Guid = purchaseToken.Guid,
                 Token = purchaseToken.Token,
+                Waitlisted = requestedPayment.Waitlisted,
+                WaitListId = requestedPayment.WaitListId
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
