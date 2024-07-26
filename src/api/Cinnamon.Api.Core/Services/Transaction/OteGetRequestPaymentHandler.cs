@@ -106,7 +106,9 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
                     Id = q.Id,
                     Question = q.Question
                 }),
-                ForceCreateTicket = deserializedPayload.ForceCreateTicket
+                ForceCreateTicket = deserializedPayload.ForceCreateTicket,
+                Waitlisted = deserializedPayload.Waitlisted,
+                WaitListId = deserializedPayload.WaitListId
             }, "Successfully get payment request details.");
         }
         catch (Exception ex)
@@ -123,6 +125,9 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
         public IEnumerable<ProviderQuestion>? Questions {get; set;}
         public bool ForceCreateTicket {get; set;}
+
+        public bool Waitlisted {get; set;}
+        public int WaitListId {get; set;}
     }
 
     private class Ticket

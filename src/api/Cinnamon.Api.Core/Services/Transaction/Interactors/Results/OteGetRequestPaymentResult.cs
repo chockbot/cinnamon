@@ -10,6 +10,9 @@ public class OteGetRequestPaymentResult
     public IEnumerable<ProviderQuestion>? Questions {get; set;}
     public bool ForceCreateTicket {get; set;}
 
+    public bool Waitlisted {get; set;}
+    public int WaitListId {get; set;}
+
     public class RequestPaymentTicket 
     {
         public int TicketId {get; set;}
