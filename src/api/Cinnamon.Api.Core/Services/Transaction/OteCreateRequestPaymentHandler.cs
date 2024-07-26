@@ -90,7 +90,9 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                     Question = q.Question,
                     Id = q.Id
                 }),
-                ForceCreateTicket = args.ForceCreateTicket
+                ForceCreateTicket = args.ForceCreateTicket,
+                Waitlisted = args.Waitlisted,
+                WaitListId = args.WaitListId
             };
 
             bool updateTokenPayload = !string.IsNullOrEmpty(args.Guid) && !string.IsNullOrEmpty(args.Token);
@@ -175,6 +177,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
         public IEnumerable<Ticket> Tickets {get; set;} = Enumerable.Empty<Ticket>();
         public IEnumerable<ProviderQuestion>? Questions {get; set;}
         public bool ForceCreateTicket {get; set;}
+        public bool Waitlisted {get; set;}
+        public int WaitListId {get; set;}
     }
 
     private class Ticket

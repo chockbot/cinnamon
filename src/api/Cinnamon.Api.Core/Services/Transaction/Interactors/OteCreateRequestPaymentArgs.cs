@@ -11,6 +11,9 @@ public class OteCreateRequestPaymentArgs : IInteractor
     public string? Guid {get; set;}
     public string? Token {get; set;}
 
+    public bool Waitlisted {get; set;}
+    public int WaitListId {get; set;}
+
     public IEnumerable<ProviderQuestion>? Questions {get; set;}
 
     public bool ForceCreateTicket {get; set;}
