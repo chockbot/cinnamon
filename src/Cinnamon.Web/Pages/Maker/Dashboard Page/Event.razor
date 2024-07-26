@@ -221,12 +221,12 @@
                         <p class="header">Title</p>
                         <p class="header">Share</p>
                         <p class="header">Type</p>
-                        <p class="header">Status</p>
+                        <p class="header">Date</p>
                         <p class="header ms-3">Action</p>
                     </div>
                     <Divider />
                     <div class="activity-table">
-                        @foreach (var item in OTEActivities)
+                        @foreach (var item in OTEActivities.OrderBy(a => a.ScheduleFrom))
                         {
                             <div class="activity-details">
                                 <div class="activity-title">
@@ -369,7 +369,7 @@
                     </div>
                 </div>
                 <div class="attendance-section">
-                    <p class="manual-title">Schedule</p>
+                    <p class="manual-title">Schedule - @selectedDate.ToString("MMMM dd, yyyy")</p>
                     <p class="manual-text">
                         @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                         {
@@ -498,7 +498,7 @@
                             </div>
                             <div class="swiper-slide">
                                 <div class="attendance-section">
-                                    <p class="manual-title">Schedule</p>
+                                    <p class="manual-title">Schedule - @selectedDate.ToString("MMMM dd, yyyy")</p>
                                     <p class="manual-text">
                                         @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                                         {
@@ -627,6 +627,8 @@ else
 
     public List<OteActivity> OTEActivities = new List<OteActivity>();
 
+    public List<OteActivity> CalendarActivities = new List<OteActivity>();
+
     private CustomerProfile profile = new CustomerProfile();
 
     private PayoutAccountModel PayoutAccount { get; set; }
@@ -658,6 +660,7 @@ else
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
 
     private DateTime activeDate;
+    private DateTime selectedDate;
 
     private Dictionary<DateTime, CalendarItem> clickedItems = new();
 
@@ -778,9 +781,33 @@ else
             }).ToList();
             //Add To OTEActivities
             OTEActivities.AddRange(multipleHandlerActivities);
-            if (OTEActivities.Count != 0)
+
+            //Calendar Schedule Plot
+            CalendarActivities = resultOTE.Result.Result
+            .Where(a => !a.ForceDisable).Select(s =>
             {
-                await SelectSchedule(OTEActivities[0]);
+                return new OteActivity
+                {
+                        Id               = s.ActivityId,
+                        ExperienceTypeId = s.ExperienceTypeId,
+                        EventName        = s.Title,
+                        Description      = s.Description,
+                        Handler          = s.Handler,
+                        CityName         = s.CityName,
+                        RegionName       = s.RegionName,
+                        PinnedLocation   = s.PinnedLocation,
+                        EventImage       = s.EventImage,
+                        ScheduleFrom     = s.DateStart,
+                        ScheduleTo       = s.DateEnd,
+                        OteDateId        = s.DateId,
+                        ForceDisable     = s.ForceDisable
+                };
+            }).ToList();
+
+            if (CalendarActivities.Count != 0)
+            {
+                await SelectSchedule(CalendarActivities[0]);
+                selectedDate = CalendarActivities[0].ScheduleFrom;
             }
         }
     }
@@ -841,8 +868,8 @@ else
             {
                 var currentDateTime = DateTime.UtcNow;
                 var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
-                var selected = OTEActivities.Any(a => a.ScheduleFrom.Date == date.Date);
-                var titles = OTEActivities.Where(a => a.ScheduleFrom.Date == date.Date).ToList();
+                var selected = CalendarActivities.Any(a => a.ScheduleFrom.Date == date.Date);
+                var titles = CalendarActivities.Where(a => a.ScheduleFrom.Date == date.Date).ToList();
                 calendarItems.Add(new CalendarItem
                     {
                         Empty = false,
@@ -891,6 +918,7 @@ else
             }
         }
     }
+
     private string DayClass(bool selected, DateTime? date = null)
     {
         string result = "day prevent-select";
@@ -930,6 +958,7 @@ else
     public async Task SelectSchedule(OteActivity oteActivity)
     {
         selectedEvent = oteActivity;
+        selectedDate = oteActivity.ScheduleFrom;
         //Get Ticket Details
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
             {
@@ -950,6 +979,7 @@ else
                 }).ToList();
         }
         registrationCount = ticketList.Sum(s => s.OtePricing.Sold);
+        
     }
     public void NavigateToScanTickets(string Handler, int OteDateId)
     {
