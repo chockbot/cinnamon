@@ -329,14 +329,18 @@
 .option-img {
     width: 40px;
     height: 44px;
+    z-index: 2;
 }
+
 .option-name{
     display: block;
     margin-top: auto;
     margin-bottom: auto;
+    z-index: 2;
 }
 
 .div-option-details {
+    position: relative;
     display: flex;
     gap: 20px;
     background-color: #FFF;
@@ -344,7 +348,36 @@
     padding: 10px;
     cursor: pointer;
     box-shadow: 0px 4px 48px 0px #D9D9D999;
+    overflow: hidden;
 }
+
+.effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 200px;
+  filter: blur(10px);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+.effect.hover1 {
+  background: radial-gradient(circle, #CFFFCE 0%, #34a8534f 100%);
+}
+
+.effect.hover2 {
+  background: radial-gradient(circle, #ffaa427a 0%, #FFF3E1 100%);
+}
+
+.effect.hover3 {
+  background: radial-gradient(circle, #00D0927a 0%, #CFFFCE 100%);
+}
+
 
 .accept-reg {
     display: flex;
@@ -378,6 +411,7 @@
 ::deep .customer-profile-details .nav-tabs .nav-link {
     font-size: 20px;
 }
+
 .personal-tab-swiper .swiper-slide {
     width: auto !important;
 }
@@ -406,6 +440,7 @@
             border: none;
             color: #343D4C;
         }
+        
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
 
