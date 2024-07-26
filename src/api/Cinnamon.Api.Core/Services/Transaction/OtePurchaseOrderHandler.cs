@@ -381,16 +381,22 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 }
 
                 var freeTicketsWithApproval = selectedTickets
-                                                .Where(t => t.Price == 0 && t.RequiredApproval);                
+                                                .Where(t => t.Price == 0 && t.RequiredApproval)
+                                                .GroupBy(t => t.Id);
                 if(freeTicketsWithApproval.Any())
                 {
                     var waitlistPayload = new {
-                        Tickets = freeTicketsWithApproval.Select(t => new {
-                            Id = t.Id,
-                            Name = t.Name,
-                            Price = t.Price,
-                            OteDateId = t.OteDateId,
-                            Date = oteDate.DateStart
+                        Tickets = freeTicketsWithApproval.Select(t => {
+                            var first = t.First();
+                            var ticket = new {
+                                Id = first.Id,
+                                Name = first.Name,
+                                Price = first.Price,
+                                OteDateId = first.OteDateId,
+                                Date = oteDate.DateStart,
+                                Count = t.Count()
+                            };
+                            return ticket;
                         }),
                         Questions = args.Questions?.Select(q => new {
                             Question = q.Question,
