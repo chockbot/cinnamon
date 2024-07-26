@@ -1,16 +1,12 @@
 using Cinnamon.Api.Core.Config;
-using Cinnamon.Api.Core.Hubs;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
-using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
-using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit;
 
@@ -22,15 +18,10 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IOteFinishTransactionHandler oteFinishTransactionHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
-    private readonly ICreateChatRoomHandler createChatRoomHandler;
-    private readonly IHubContext<ChatHub> chathub;
-    private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
 
     public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData,
         IFinishTransactionHandler finishTransactionHandler, IGetActivityHandler getActivityHandler,
-        IOteFinishTransactionHandler oteFinishTransactionHandler, IJsonSerializationProvider jsonSerializationProvider,
-        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub,
-        IGetCustomerByIdHandler getCustomerByIdHandler)
+        IOteFinishTransactionHandler oteFinishTransactionHandler, IJsonSerializationProvider jsonSerializationProvider)
     {
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
@@ -38,9 +29,6 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
         this.getActivityHandler = getActivityHandler;
         this.oteFinishTransactionHandler = oteFinishTransactionHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
-        this.createChatRoomHandler = createChatRoomHandler;
-        this.chathub = chathub;
-        this.getCustomerByIdHandler = getCustomerByIdHandler;
     }
 
     public AppResult<VerifyCallbackResult> Execute(VerifyCallbackArgs args)
@@ -88,15 +76,6 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                 return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Unable to identify activity id."), "Unable to identify activity id.");
             }
             var activity = activityRes.Result;
-
-            var customerInfoRes = await getCustomerByIdHandler.ExecuteAsync(new AccountService.Interactors.GetCustomerByIdArgs {
-                Id = purchaseOrder.CustomerId
-            });
-            if(!customerInfoRes.Succeeded || customerInfoRes.Result is null)
-            {
-                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Unable to identify customer by id."), "Unable to identify customer by id.");
-            }
-            var customer = customerInfoRes.Result;
 
             // status already changed can't be altered
             if(getPurchaseOrder.Result.Result.Status != 0)
@@ -153,19 +132,6 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                     {
                         return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(oteFinishResult.Message), oteFinishResult.Message);
                     }
-                }
-
-                var groupName = Guid.NewGuid().ToString();
-                var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
-                    ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
-                    ChatType = Framework.Enums.Enums.ChatType.GroupChat,
-                    FromUserId = purchaseOrder.CustomerId,
-                    GroupName = groupName,
-                    ToUserId = activity.Owner?.Id ?? 0
-                });
-                if(createChatRes.Succeeded && createChatRes.Result is not null)
-                {
-                    await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
                 }
             }
 
