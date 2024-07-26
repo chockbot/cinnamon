@@ -69,10 +69,10 @@
                                     </TableRowCell>
                                     <TableRowCell class="tr-ticket">
                                         <span>@item.Title</span>
-                                        <span>@item.Amount</span>
+                                        <span>@(item.Amount == 0 ? "Free" : item.Amount)</span>
                                     </TableRowCell>
                                     <TableRowCell class="tr-amount">
-                                        <span>@item.Amount</span>
+                                        <span>@(item.Amount == 0 ? "Free" : item.Amount)</span>
                                     </TableRowCell>
                                     <TableRowCell class="tr-button">
                                         <div class="btn-status">
