@@ -33,15 +33,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    @if (showModal)
-    {
+    @if (showModal) {
         <div class="modal" style="display: block;">
             <div class="modal-content">
-                <span class="close" @onclick="CloseModal">&times;</span>
+                <div class="header-modal">
+                    <div class="modal-img-container">
+                        <img src="images\explore-page-images\cinnamon-modal-logo.svg" class="modal-img">
+                    </div>
+                    <div class="header-modal-text">
+                        <p class="header-modal-subtext">Cinnamon.ph</p>
+                        <p class="header-modal-title">@subscriptionResultTitle</p> 
+                    </div>
+                </div>
                 <p class="@subscriptionResultClass">@subscriptionResultMessage</p>
+                <button class="btn-close-modal" @onclick="CloseModal">
+                    Dismiss Message
+                </button>
             </div>
         </div>
     }
+
     <!--Footer-->
     <div class="footer">
         <div class="section-4">
@@ -171,6 +182,7 @@
     private string mailchimpEmail;
     private string subscriptionResultMessage;
     private string subscriptionResultClass;
+    private string subscriptionResultTitle;
     private bool showModal;
     public Profile CustomerModel = new Profile();
     public ClaimsPrincipal AuthState { get; set; }
@@ -221,14 +233,16 @@
         var result = await systemApiHandler.SubscribeToMailchimp(args);
         if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            subscriptionResultMessage = "Subscription successful!";
+            subscriptionResultMessage = "You're now officially part of the Cinnamon Ph community! Get ready for exclusive offers, tips, and updates delivered straight to your inbox";
             subscriptionResultClass = "success";
+            subscriptionResultTitle = "Thanks for Subscribing!";
             mailchimpEmail = string.Empty;
         }
         else
         {
-            subscriptionResultMessage = "Subscription failed. Please try again.";
+            subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
             subscriptionResultClass = "error";
+            subscriptionResultTitle = "Already a Subscriber...";
         }
 
         showModal = true;

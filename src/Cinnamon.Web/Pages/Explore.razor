@@ -1163,8 +1163,16 @@
 
                                                     } else {
                                                     <div class="OTE-booking-count">
-                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                        <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        @if (@act.ExperienceCreationTypeId == 3)
+                                                        {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        }
+                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                        }
                                                     </div>
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
@@ -1418,8 +1426,16 @@
 
                                                     } else {
                                                     <div class="OTE-booking-count">
-                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                        <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        @if (@act.ExperienceCreationTypeId == 3)
+                                                        {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        }
+                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                        }
                                                     </div>
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
@@ -1673,8 +1689,16 @@
 
                                                     } else {
                                                     <div class="OTE-booking-count">
-                                                        <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                        <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        @if (@act.ExperienceCreationTypeId == 3)
+                                                        {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                        }
+                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                        }
                                                     </div>
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
@@ -1867,12 +1891,22 @@
         </div
     </div>
 
-    @if (showModal)
-    {
+    @if (showModal) {
         <div class="modal" style="display: block;">
             <div class="modal-content">
-                <span class="close" @onclick="CloseModal">&times;</span>
+                <div class="header-modal">
+                    <div class="modal-img-container">
+                        <img src="images\explore-page-images\cinnamon-modal-logo.svg" class="modal-img">
+                    </div>
+                    <div class="header-modal-text">
+                        <p class="header-modal-subtext">Cinnamon.ph</p>
+                        <p class="header-modal-title">@subscriptionResultTitle</p> 
+                    </div>
+                </div>
                 <p class="@subscriptionResultClass">@subscriptionResultMessage</p>
+                <button class="btn-close-modal" @onclick="CloseModal">
+                    Dismiss Message
+                </button>
             </div>
         </div>
     }
@@ -2065,9 +2099,9 @@
 <ModalLogin ReturnUrl="@redirectUrl" @ref="signinModal" IsFBLogin=isLoginFB />
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
-<WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
-<ReviewModal @ref=ReviewModalRef/>
-<ModalFBUpdate @ref="fbUpdateModal"></ModalFBUpdate>
+<WelcomeModal @ref="WelcomeModalRef" UserTriggered="OnSkipMaker" />
+<ReviewModal @ref="ReviewModalRef"/>
+<ModalFBUpdate @ref=fbUpdateModal></ModalFBUpdate>
 <UpdatePasswordModal @ref=updatePasswordModal Token=@CustomerModel.Token Birthdate=@Birthday />
 
 @code
@@ -2160,6 +2194,7 @@
     private string mailchimpEmail;
     private string subscriptionResultMessage;
     private string subscriptionResultClass;
+    private string subscriptionResultTitle;
     private bool showModal;
 
 
@@ -3021,14 +3056,16 @@
         var result = await systemApiHandler.SubscribeToMailchimp(args);
         if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
         {
-            subscriptionResultMessage = "Subscription successful!";
+            subscriptionResultMessage = "You're now officially part of the Cinnamon Ph community! Get ready for exclusive offers, tips, and updates delivered straight to your inbox";
             subscriptionResultClass = "success";
+            subscriptionResultTitle = "Thanks for Subscribing!";
             mailchimpEmail = string.Empty;
         }
         else
         {
-            subscriptionResultMessage = "Subscription failed. Please try again.";
+            subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
             subscriptionResultClass = "error";
+            subscriptionResultTitle = "Already a Subscriber...";
         }
 
         showModal = true;
