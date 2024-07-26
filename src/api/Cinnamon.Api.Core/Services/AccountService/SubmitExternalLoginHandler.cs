@@ -3,11 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Interactors;
 using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
@@ -18,14 +18,17 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
     private readonly IExternalLoginTokenData externalLoginTokenData;
     private readonly ApplicationConfig applicationConfig;
     private readonly IIsAccountBlockedHandler isAccountBlockedHandler;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public SubmitExternalLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig, 
-        IExternalLoginTokenData externalLoginTokenData, IIsAccountBlockedHandler isAccountBlockedHandler)
+        IExternalLoginTokenData externalLoginTokenData, IIsAccountBlockedHandler isAccountBlockedHandler,
+        ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.customerData = customerData;
         this.externalLoginTokenData = externalLoginTokenData;
         this.applicationConfig = applicationConfig;
         this.isAccountBlockedHandler = isAccountBlockedHandler;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
 
     public AppResult<ExternalLoginResult> Execute(ExternalLoginArgs args)
@@ -121,21 +124,14 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
         try
         {
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-
-            // generate token
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] guidKey = guid.ToByteArray();
-            var loginToken = Convert.ToBase64String(time.Concat(guidKey).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(loginToken));
+            var generatedToken = tokenGeneratorProvider.Generator();
 
             // generate guid token
             var createToken = await externalLoginTokenData.CreateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.CreateExterLoginTokenArgs {
                 DateGenerated = DateTime.Now,
                 Email = args.Email,
-                Token = loginToken,
-                Guid = guid.ToString(),
+                Token = generatedToken.Token,
+                Guid = generatedToken.Guid,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 IsEmptyUsername = args.IsEmptyUsername
@@ -153,7 +149,7 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
 
             return AppResult<ExternalLoginResult>.CreateSucceeded(new ExternalLoginResult {
                 IsNew = true,
-                GeneratedNewToken = encodedToken,
+                GeneratedNewToken = generatedToken.Token,
                 GeneratedNewGuid = createToken.Result.Result.Guid,
                 IsEmptyUsername = args.IsEmptyUsername
             }, "Account not yet registered need to create the account using email");

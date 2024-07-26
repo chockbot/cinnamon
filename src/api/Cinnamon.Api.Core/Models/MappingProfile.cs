@@ -124,5 +124,12 @@ public class MappingProfile : Profile
         // for provider custom questions
         CreateMap<ActivityResults.ProviderQuestionsResult.Question, CoreDto.DynamicContent.ProviderQuestionDTO>();
         CreateMap<ActivityResults.ActivityQuestionsResult.Question, CoreDto.DynamicContent.ProviderQuestionDTO>();
+
+        // for payment request
+        CreateMap<TransactionResults.OteRequestPaymentResult.RequestPaymentTicket, CoreDto.PurchaseOrder.PaymentRequestDTO.RequestPaymentTicket>();
+        CreateMap<TransactionResults.OteRequestPaymentResult, CoreDto.PurchaseOrder.PaymentRequestDTO>();
+        CreateMap<TransactionResults.OteGetRequestPaymentResult.RequestPaymentTicket, CoreDto.PurchaseOrder.PaymentRequestDTO.RequestPaymentTicket>();
+        CreateMap<TransactionResults.OteGetRequestPaymentResult.ProviderQuestion, CoreDto.PurchaseOrder.PaymentRequestDTO.ProviderQuestion>();
+        CreateMap<TransactionResults.OteGetRequestPaymentResult, CoreDto.PurchaseOrder.PaymentRequestDTO>();
     }
 }

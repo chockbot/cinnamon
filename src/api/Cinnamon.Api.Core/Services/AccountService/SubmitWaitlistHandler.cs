@@ -4,10 +4,9 @@ using Cinnamon.Api.Core.Services.AccountService.Interactors;
 using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Request;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
 using Flurl;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
+using Cinnamon.Api.Core.Providers;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -16,13 +15,15 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
     private readonly IWaitListData waitListData;
     private readonly ISendVerifyEmailHandler sendVerifyEmailHandler;
     private readonly ICustomerData customerData;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public SubmitWaitlistHandler(IWaitListData waitListData, ISendVerifyEmailHandler sendVerifyEmailHandler,
-        ICustomerData customerData)
+        ICustomerData customerData, ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.waitListData = waitListData;
         this.sendVerifyEmailHandler = sendVerifyEmailHandler;
         this.customerData = customerData;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
 
     public AppResult<SubmitWaitlistResult> Execute(SubmitWaitlistArgs args)
@@ -72,19 +73,12 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
             }
             
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-
-            // generate token
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
             
             var createRes = await waitListData.CreateWaitlist(new CreateWaitlistArgs {
                 Email = args.Email,
-                Token = token.ToString(),
-                Guid = guid.ToString()
+                Token = tokenGenerated.Token,
+                Guid = tokenGenerated.Guid
             });
 
             if(!createRes.Succeeded || createRes.Result == null)
@@ -93,7 +87,7 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
             }
             var created = createRes.Result.Result;
 
-            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = guid.ToString(), token = encodedToken}).ToString();
+            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = tokenGenerated.Guid, token = tokenGenerated.Token}).ToString();
 
             // send email verification link
             var sendEmailRes = await sendVerifyEmailHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.SendVerifyEmailArgs {
@@ -109,7 +103,7 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
             return AppResult<SubmitWaitlistResult>.CreateSucceeded(new SubmitWaitlistResult {
                 Email = created.Email,
                 Guid = created.Guid,
-                Token = encodedToken,
+                Token = tokenGenerated.Token,
                 Id = created.Id,
                 VerificationLink = verificationLink
             }, "Successfully submit waitlist");

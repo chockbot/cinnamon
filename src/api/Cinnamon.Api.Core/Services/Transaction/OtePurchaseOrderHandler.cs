@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Text;
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
@@ -10,7 +8,6 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
 using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -34,6 +31,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
     private readonly IActivityQuestionsHandler activityQuestionsHandler;
     private readonly ICreateOteWaitlistHandler createOteWaitlist;
     private readonly IGetProfileHandler getProfileHandler;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
+    private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
 
     public OtePurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, ICustomerData customerData,
         IHttpContextAccessor httpContext, IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
@@ -41,7 +40,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
         ApplicationConfig applicationConfig, IOteFinishTransactionHandler oteFinishTransactionHandler,
         ITokenGeneratedData tokenGeneratedData, IActivityQuestionsHandler activityQuestionsHandler,
-        ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler)
+        ICreateOteWaitlistHandler createOteWaitlist, IGetProfileHandler getProfileHandler,
+        ITokenGeneratorProvider tokenGeneratorProvider, IGetOteRequestPaymentHandler getOteRequestPaymentHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
@@ -60,6 +60,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
         this.activityQuestionsHandler = activityQuestionsHandler;
         this.createOteWaitlist = createOteWaitlist;
         this.getProfileHandler = getProfileHandler;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
+        this.getOteRequestPaymentHandler = getOteRequestPaymentHandler;
     }
     
     public AppResult<OtePurchaseOrderResult> Execute(OtePurchaseOrderArgs args)
@@ -161,6 +163,16 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
             var customer = customerAccountRes.Result.Result;
 
+            var requestedPaymentRes = await getOteRequestPaymentHandler.ExecuteAsync(new OteGetRequestPaymentArgs {
+                Guid = args.Guid,
+                Token = args.Token
+            });
+            if(!requestedPaymentRes.Succeeded || requestedPaymentRes.Result is null)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException(requestedPaymentRes.Message), requestedPaymentRes.Message);
+            }
+            var requestedPayment = requestedPaymentRes.Result;
+
             var selectedTickets = new List<Ticket>();
             // validate selected tickets
             foreach(var ticket in args.Tickets)
@@ -171,15 +183,19 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                     return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Unable to identify selected ticket."), "Unable to identify selected ticket.");
                 }
 
-                if(ticketPrice.TicketSold >= ticketPrice.MaxSlots && !ticketPrice.IsUnlimited)
+                // check ticket availablity if not force to create
+                if(!requestedPayment.ForceCreateTicket)
                 {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
-                }
+                    if(ticketPrice.TicketSold >= ticketPrice.MaxSlots && !ticketPrice.IsUnlimited)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(new ApplicationException("Tickets already sold out."), "Tickets already sold out.");
+                    }
 
-                if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count && !ticketPrice.IsUnlimited)
-                {
-                    return AppResult<OtePurchaseOrderResult>.CreateFailed(
-                        new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
+                    if((ticketPrice.MaxSlots - ticketPrice.TicketSold) < ticket.Count && !ticketPrice.IsUnlimited)
+                    {
+                        return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                            new ApplicationException("Some of the tickets already sold. Refresh the page and update your tickets."), "Some of the tickets already sold. Refresh the page and update your tickets.");
+                    }
                 }
 
                 // create selected ticket instance
@@ -289,12 +305,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var purchaseToken = tokenGeneratorProvider.Generator();
             
             // serialize students data to use later
             var payloadData = new {
@@ -307,8 +318,10 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 },
                 isInclusivePayment,
                 OteScheduleId = oteActivity.Pricings.First().OteScheduleId,
-                Guid = guid.ToString(),
-                Token = encodedToken,
+                Guid = purchaseToken.Guid,
+                Token = purchaseToken.Token,
+                Waitlisted = requestedPayment.Waitlisted,
+                WaitListId = requestedPayment.WaitListId
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -370,16 +383,22 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 }
 
                 var freeTicketsWithApproval = selectedTickets
-                                                .Where(t => t.Price == 0 && t.RequiredApproval);                
+                                                .Where(t => t.Price == 0 && t.RequiredApproval)
+                                                .GroupBy(t => t.Id);
                 if(freeTicketsWithApproval.Any())
                 {
                     var waitlistPayload = new {
-                        Tickets = freeTicketsWithApproval.Select(t => new {
-                            Id = t.Id,
-                            Name = t.Name,
-                            Price = t.Price,
-                            OteDateId = t.OteDateId,
-                            Date = oteDate.DateStart
+                        Tickets = freeTicketsWithApproval.Select(t => {
+                            var first = t.First();
+                            var ticket = new {
+                                Id = first.Id,
+                                Name = first.Name,
+                                Price = first.Price,
+                                OteDateId = first.OteDateId,
+                                Date = oteDate.DateStart,
+                                Count = t.Count()
+                            };
+                            return ticket;
                         }),
                         Questions = args.Questions?.Select(q => new {
                             Question = q.Question,
@@ -413,12 +432,7 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
 
             // generate token and guid for transaction redirection details
-            var validGuid = Guid.NewGuid();
-            var validTimestamp = DateTime.UtcNow;
-            byte[] validTtime = BitConverter.GetBytes(validTimestamp.ToBinary());
-            byte[] validKey = validGuid.ToByteArray();
-            var validToken = Convert.ToBase64String(validTtime.Concat(validKey).ToArray());
-            var validEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(validToken));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
             var payload = new 
             {
                 ActivityId = result.Result.Result.ActivityId,
@@ -429,9 +443,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             var tokenSerializedPayload = jsonSerializationProvider.Serialize(payload);
 
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = validGuid.ToString(),
+                Guid = tokenGenerated.Guid,
                 Payload = tokenSerializedPayload,
-                Token = validEncodedToken,
+                Token = tokenGenerated.Token,
                 TokenType = "TRANSACTION-REQUEST",
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -442,8 +456,8 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
 
             var paymentRedirectUrl = applicationConfig.FrontendUrl
                                         .AppendPathSegment($"/transaction/finalize")
-                                        .SetQueryParam("Guid", validGuid.ToString())
-                                        .SetQueryParam("Token", validEncodedToken);
+                                        .SetQueryParam("Guid", tokenGenerated.Guid)
+                                        .SetQueryParam("Token", tokenGenerated.Token);
                 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
                 Amount = overallTotal - creditAmount,

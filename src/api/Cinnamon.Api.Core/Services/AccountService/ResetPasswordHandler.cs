@@ -1,12 +1,11 @@
-using System.Text;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Interactors;
 using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -16,14 +15,17 @@ public class ResetPasswordHandler : IResetPasswordHandler
     private readonly IResetPasswordData resetPasswordData;
     private readonly IResetPasswordNotificationHandler resetPasswordNotificationHandler;
     private readonly IIsAccountBlockedHandler isAccountBlockedHandler;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public ResetPasswordHandler(ICustomerData customerData, IResetPasswordData resetPasswordData,
-        IResetPasswordNotificationHandler resetPasswordNotificationHandler, IIsAccountBlockedHandler isAccountBlockedHandler)
+        IResetPasswordNotificationHandler resetPasswordNotificationHandler, IIsAccountBlockedHandler isAccountBlockedHandler,
+        ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.customerData = customerData;
         this.resetPasswordData = resetPasswordData;
         this.resetPasswordNotificationHandler = resetPasswordNotificationHandler;
         this.isAccountBlockedHandler = isAccountBlockedHandler;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
 
     public AppResult<ResetPasswordResult> Execute(ResetPasswordArgs args)
@@ -71,21 +73,14 @@ public class ResetPasswordHandler : IResetPasswordHandler
             }
 
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-
-            // generate token
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
 
             // save guid, token, generatedToken
             var createTokens = await resetPasswordData.CreateResetPassword(new Framework.ApiCommand.ApiData.ResetPassword.Request.CreateResetPasswordArgs {
                 Email = args.Email,
                 GeneratedToken = tokenRes.Result.Result,
-                Guid = guid.ToString(),
-                Token = token.ToString(),
+                Guid = tokenGenerated.Guid,
+                Token = tokenGenerated.Token,
                 IsUsed = false
             });
             if(!createTokens.Succeeded || createTokens.Result == null || !createTokens.Result.IsSuccess)
@@ -94,7 +89,7 @@ public class ResetPasswordHandler : IResetPasswordHandler
             }
             var savedTokens = createTokens.Result.Result;
 
-            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = guid.ToString(), token = encodedToken}).ToString();
+            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = tokenGenerated.Guid, token = tokenGenerated.Token}).ToString();
 
             // send email verfication link
             var sendEmailLink = await resetPasswordNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.ResetPasswordNotificationArgs {
