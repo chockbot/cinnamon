@@ -1,4 +1,19 @@
-﻿.ticket-options{
+﻿.text-box {
+    position: relative;
+    z-index: 2;
+}
+
+.image-holder{
+    position: relative;
+    z-index: 2;
+}
+
+.line-effect {
+    position: relative;
+    z-index: 2;
+}
+
+.ticket-options{
     display: flex;
     justify-content:end;
 }
@@ -14,14 +29,25 @@
     margin-top: 37px;
 }
 ::deep .btn-question {
-    background-color: #F3F6FC;
+    background: #F3F6FC;  
+    color: #34A853 !important;
     border-radius: 8px;
     padding: 10px 16px;
+    transition: ease-in-out 0.3s;
 }
+
+::deep .btn-question:hover {
+    background: #34A853;
+    color: #F3F6FC !important;
+}
+
+
+
 .btn-event {
     border-radius: 6px;
     background: #FFF;
-    box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
+    box-shadow: 0px 4px 10px 0px #A3A3A3;
+    border: 0.5px solid #A3A3A3;
     display: inline-flex;
     padding: 10px 16px;
     justify-content: center;
@@ -31,8 +57,13 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    border: none;
+    transition: box-shadow 0.3s ease;
 }
+
+.btn-event:hover {
+    box-shadow: none;
+}
+
 .ticket-details-section {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -87,8 +118,11 @@ svg {
     background-color: #34A853;
     border: none;
 }
+
 .email-box {
+    position: relative;
     box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
+    overflow: hidden;
 }
 
 .sub-text {
@@ -160,3 +194,30 @@ svg {
         gap: 20px;
     }
 }
+
+.effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    filter: blur(20px);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    z-index: 1;
+  }
+  
+  .effect.hover1 {
+    background: radial-gradient(circle, #51BCA0 0%, #2EAAC74f 100%);
+  }
+  
+  .effect.hover2 {
+    background: radial-gradient(circle, #4BB7497a 0%, #AAF5A9 100%);
+  }
+  
+  .effect.hover3 {
+    background: radial-gradient(circle, #F748507a 0%, #FFC1C4 100%);
+  }
