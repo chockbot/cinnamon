@@ -1099,7 +1099,7 @@
             webToken = getTracker.Token;
         }
 
-        var createTracker = await CreatePaymentTracker(getTracker.Guid, getTracker.Token);
+        var createTracker = await CreatePaymentTracker(guid, webToken);
         if(createTracker is null)
         {
             await NotificationService.Error("An error occured. Please contact support.", "Error");
