@@ -83,15 +83,25 @@
 .option-img {
   width: 40px;
   height: 44px;
+  z-index: 2;
 }
+
+.option-name {
+  position: relative;
+  z-index: 2;
+}
+
 .div-option-details {
+  position: relative;
   display: flex;
   gap: 20px;
   background-color: #fff;
   border-radius: 8px;
   padding: 6px;
   cursor: pointer;
+  overflow: hidden;
 }
+
 .accept-reg {
   display: flex;
   gap: 20px;
@@ -164,6 +174,20 @@
   display: flex;
   gap: 16px;
 }
+
+::deep .btn-question {
+  background: #CFFFCE;  
+  color: #34A853 !important;
+  border-radius: 8px;
+  padding: 10px 16px;
+  transition: ease-in-out 0.3s;
+}
+
+::deep .btn-question:hover {
+  background: #34A853;
+  color: #F3F6FC !important;
+}
+
 ::deep .btn-cancel {
   border-radius: 8px;
   background-color: #f3f6fc;
@@ -268,9 +292,9 @@
   cursor: pointer;
   user-select: none;
 }
-
+/*
 @media only screen (min-width: 618px) and (max-width: 767px) {
-  /*.ticket-box {
+  .ticket-box {
     height: auto;
   }
   .ticket-section {
@@ -319,8 +343,8 @@
     text-transform: capitalize;
     cursor: pointer;
     user-select: none;
-  }*/
 }
+*/
 
 @media only screen and (max-width: 407px) {
   .ticket-options {
@@ -421,4 +445,80 @@
 
 .white-bg-shadow {
   box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.6);
+}
+
+.effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+.effect.hover1 {
+  width: 100px;
+  height: 100px;
+  filter: blur(10px);
+  background: radial-gradient(circle, #34a8534f 0%, #CFFFCE 100%);
+}
+
+.effect.hover2 {
+  width: 100px;
+  height: 100px;
+  filter: blur(10px);
+  background: radial-gradient(circle, #ffaa427a 0%, #FFF3E1 100%);
+}
+
+.effect.hover3 {
+  width: 100px;
+  height: 100px;
+  filter: blur(10px);
+  background: radial-gradient(circle, #00D0927a 0%, #CFFFCE 100%);
+}
+
+.effect.hover4 {
+  width: 250px;
+  height: 250px;
+  filter: blur(40px);
+  background: radial-gradient(circle, #00D0927a 0%, #CFFFCE 100%);
+}
+
+.effect.hover5 {
+  width: 250px;
+  height: 250px;
+  filter: blur(40px);
+  background: radial-gradient(circle, #5aff57ba 0%, #CFFFCE 100%);
+}
+
+.effect.hover6 {
+  width: 250px;
+  height: 250px;
+  filter: blur(40px);
+  background: radial-gradient(circle, #fe4463b4 0%, #FFC1C4 100%);
+}
+
+.text-box {
+  position: relative;
+  z-index: 2;
+  transition: ease-in-out 0.3s;
+}
+
+.image-holder{
+  position: relative;
+  z-index: 2;
+}
+
+.line-effect {
+  position: relative;
+  z-index: 2;
+  transition: ease-in-out 0.3s;
+}
+
+.email-box {
+  position: relative;
+  overflow: hidden;
 }
