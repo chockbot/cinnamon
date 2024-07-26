@@ -1,6 +1,7 @@
 ﻿@layout EmptyLayout;
 @using Cinnamon.Web.Models.Ote
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
@@ -75,27 +76,30 @@
 
     <Row HorizontalGutter="10">
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToPending">
-                <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" @onclick="NavigateToPending">
+                <img class="mb-2 image-holder" src="images/ote/tiny-clock.png" alt="clock">
+                <div class="line-effect div-line mb-1"></div>
+                <div class="line-effect div-line-75 mb-2"></div>
+                <p class="font-16 color-grey-100 mb-0 text-box">Pending Approval / Waitlist</p>
+                <div class="effect hover1"></div>
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToAccepted">
-                <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Going</p>
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave" @onclick="NavigateToAccepted">
+                <img class="mb-2 image-holder" src="images/ote/tiny-check.png" alt="check">
+                <div class="line-effect div-line mb-1"></div>
+                <div class="line-effect div-line-75 mb-2"></div>
+                <p class="font-16 color-grey-100 mb-0 text-box">Going</p>
+                <div class="effect hover2"></div>
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToDeclined">
-                <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Declined</p>
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave" @onclick="NavigateToDeclined">
+                <img class="mb-2 image-holder" src="images/ote/tiny-close.png" alt="close">
+                <div class="line-effect div-line mb-1"></div>
+                <div class="line-effect div-line-75 mb-2"></div>
+                <p class="font-16 color-grey-100 mb-0 text-box">Declined</p>
+                <div class="effect hover3"></div>
             </div>
         </Column>
     </Row>
@@ -141,7 +145,7 @@
 
     <div>
         <Button Clicked="NavigateToQuestions" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
-            + <span class="ms-2">Add Questions</span>
+            + <span class="btn-question-text ms-2">Add Questions</span>
         </Button>
     </div>
 </div>
@@ -186,5 +190,29 @@
     private void NavigateToDeclined()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{9}");
+    }
+    private async Task PendingHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
+    }
+    private async Task PendingHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
+    }
+    private async Task GoingHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
+    }
+    private async Task GoingHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
+    }
+    private async Task DeclinedHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
+    }
+    private async Task DeclinedHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
     }
 }

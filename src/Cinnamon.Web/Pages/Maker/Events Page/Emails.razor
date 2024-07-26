@@ -1,21 +1,24 @@
 ﻿@layout EmptyLayout;
 @using Cinnamon.Web.Models.Ote
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 
 <div class="container">
     <div class="border-radius-10 p-4 m-3 m-bg-white-100 m-padding-0 mb-3">
         <Row VerticalGutter="20" HorizontalGutter="20">
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label @onclick="NavigateToRemider" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+                <label id="reminderDiv" @onmousemove="ReminderHoverMove" @onmouseleave="ReminderHoverLeave" @onclick="NavigateToRemider" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
                     <img class="me-3" src="images/ote/red-bell.png" alt="bell">
-                    <span class="font-16 color-black-100">Add Reminder Email</span>
+                    <span class="email-text font-16 color-black-100">Add Reminder Email</span>
+                    <div class="effect hover1"></div>
                 </label>
             </Column>
-            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label @onclick="NavigateToFeedback" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
+            <Column @onmousemove="FeedbackHoverMove" @onmouseleave="FeedbackHoverLeave" ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                <label id="feedbackDiv" @onclick="NavigateToFeedback" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
                     <img class="me-3" src="images/ote/yellow-star.png" alt="bell">
-                    <span class="font-16 color-black-100">Add Feedback Email</span>
+                    <span class="email-text font-16 color-black-100">Add Feedback Email</span>
+                    <div class="effect hover2"></div>
                 </label>
             </Column>
         </Row>
@@ -33,5 +36,22 @@
     private void NavigateToFeedback()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{Handler}/{3}");
+    }
+
+    private async Task ReminderHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#reminderDiv");
+    }
+    private async Task ReminderHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#reminderDiv");
+    }
+    private async Task FeedbackHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#feedbackDiv");
+    }
+    private async Task FeedbackHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#feedbackDiv");
     }
 }

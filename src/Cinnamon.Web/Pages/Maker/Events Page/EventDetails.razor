@@ -34,26 +34,28 @@
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details" id="registrationDiv" @onmousemove="HandleMouseMove" @onmouseleave="HandleMouseLeave" @onclick="NavigateToRegistration">
+            <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="NavigateToRegistration">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((activity.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
-                <div class="effect"></div>
+                <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
+            <div class="div-option-details" id="shareQrDiv" @onmousemove="ShareQRHoverMove" @onmouseleave="ShareQRHoverLeave" @onclick="@(() => GenerateLinkShowModal())">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Share QR Scanner Link</p>
                 </div>
+                <div class="effect hover2"></div>
             </div>
-            <a class="verify-ticket" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+            <a class="verify-ticket" id="scanDiv" @onmousemove="ScanHoverMove" @onmouseleave="ScanHoverLeave" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
                 <div class="div-option-details">
                     <img class="option-img" src="images/ote/add.png" alt="cover-photo">
                     <div class="option-name">
                         <p class="registration">Scan Tickets</p>
                     </div>
+                    <div class="effect hover3"></div>
                 </div>
             </a>
         </div>
@@ -610,15 +612,29 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{5}");
     }
-
-    private async Task HandleMouseMove(MouseEventArgs e)
+    private async Task RegistrationHoverMove(MouseEventArgs e)
     { 
         await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
     }
-
-    private async Task HandleMouseLeave(MouseEventArgs e)
+    private async Task RegistrationHoverLeave(MouseEventArgs e)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
+    }
+    private async Task ShareQRHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#shareQrDiv");
+    }
+    private async Task ShareQRHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#shareQrDiv");
+    }
+    private async Task ScanHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#scanDiv");
+    }
+    private async Task ScanHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#scanDiv");
     }
 }
  
