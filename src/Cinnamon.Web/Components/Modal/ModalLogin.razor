@@ -61,7 +61,7 @@
                         <a href="Policy" style="color:#FFA942" @onclick="CloseEmailModal">Privacy Policy</a>
                     </p>
                     <Divider/>
-                    @if (!IsFBLogin)
+                    @* @if (!IsFBLogin)
                     {
                         <div class="d-flex justify-content-center facebook-login">
                             <img src="images/social-media-icons/facebook.png" class="img-icon" />
@@ -74,7 +74,7 @@
                             <img src="images/info-icon.png" class="img-icon" />
                             <p>Facebook sign-up has been disabled as part of our ongoing efforts to enhance user experience and security on the platform.</p>
                         </div>
-                    }
+                    } *@
 
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
                         <AlertDescription>An error occured. Please try again later</AlertDescription>
