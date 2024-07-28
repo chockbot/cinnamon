@@ -151,28 +151,82 @@
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnPendingEmailTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
+                        <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+                    @if(string.IsNullOrEmpty(customPendingMessageOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnAcceptedTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-check.png" alt="check">
+                        <p class="font-16 color-grey-100 mb-0">Going</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Going</p>
+                    @if(string.IsNullOrEmpty(customAcceptedMessageOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnDeclinedTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-close.png" alt="close">
+                        <p class="font-16 color-grey-100 mb-0">Declined</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Declined</p>
+                    @if(string.IsNullOrEmpty(customDeclinedMesasgeOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
         </Row>
@@ -596,7 +650,7 @@
     </ConfirmDialog>
 
 @code
-    {
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -1208,12 +1262,23 @@
         return CloseOffCanvas();
     }
 
-    private Task OnOffCanvasSave()
+    private async Task OnOffCanvasSave()
     {
-        if(selectedEmailTemplate == 0) return SavePendingTemplate();
-        if(selectedEmailTemplate == 1) return SaveAcceptedTemplate();
-
-        return SaveDeclinedTemplate();
+        switch(selectedEmailTemplate)
+        {
+            case 0:
+                await SavePendingTemplate();
+                await NotificationService.Success("Custom pending email template updated.","Success");
+                break;
+            case 1:
+                await SavePendingTemplate();
+                await NotificationService.Success("Custom approved email template updated.","Success");
+                break;
+            default:
+                await SaveDeclinedTemplate();
+                await NotificationService.Success("Custom declined email template updated.","Success");
+                break;
+        }
     }
 
     private Task OnOffCanvasCancel()
