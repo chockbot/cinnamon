@@ -483,17 +483,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
-/***/ "./src/utils/hoverEffect.js":
-/*!**********************************!*\
-  !*** ./src/utils/hoverEffect.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__),\n/* harmony export */   \"hideEffect\": () => (/* binding */ hideEffect),\n/* harmony export */   \"moveEffect\": () => (/* binding */ moveEffect)\n/* harmony export */ });\nasync function moveEffect(event, inputSelector) {\n  debugger;\n  const button = document.querySelector(inputSelector);\n  const effect = button.querySelector('.effect');\n  const rect = button.getBoundingClientRect();\n  const x = event.clientX - rect.left;\n  const y = event.clientY - rect.top;\n  effect.style.left = `${x}px`;\n  effect.style.top = `${y}px`;\n  effect.style.transform = 'translate(-50%, -50%) scale(1)';\n  effect.style.opacity = '1';\n}\nasync function hideEffect(inputSelector) {\n  debugger;\n  const button = document.querySelector(inputSelector);\n  const effect = button.querySelector('.effect');\n  effect.style.transform = 'translate(-50%, -50%) scale(0)';\n  effect.style.opacity = '0';\n}\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  moveEffect,\n  hideEffect\n});\n\n//# sourceURL=webpack://MyLib/./src/utils/hoverEffect.js?");
-
-/***/ }),
-
 /***/ "./src/utils/index.js":
 /*!****************************!*\
   !*** ./src/utils/index.js ***!
