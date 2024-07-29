@@ -114,31 +114,34 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                     new ApplicationException("Invalid transaction payload."), "Invalid transaction payload.");
             }
 
+            int oteScheduleId = oteActivity.OteDates.First().OteScheduleId;
+
+            List<Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs> ticketsToCreate = new();
+
             foreach(var item in deserializedPayload.Tickets)
             {
-                var qrcode = CreateCode();
-
-                item.ImageData = GenerateQRCode(qrcode);
-                item.QRCode = qrcode;
+                for(int i = 0; i < item.Count; i++)
+                {
+                    var qrcode = CreateCode();
+                    ticketsToCreate.Add(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
+                        ActivityId = waitlist.ActivityId,
+                        Amount = 0,
+                        CustomerId = waitlist.CustomerId,
+                        OteDateId = item.OteDateId,
+                        OteScheduleId = oteScheduleId,
+                        OteSchedulePricingId = item.Id,
+                        PurchaseOrderId = deserializedPayload.TransactionId,
+                        QRCode = qrcode,
+                        QRImageData = GenerateQRCode(qrcode),
+                        Status = "UNVERIFIED",
+                        Title = item.Name
+                    });
+                }
             }
-
-            int oteScheduleId = oteActivity.OteDates.First().OteScheduleId;
 
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
-                Tickets = deserializedPayload.Tickets.Select(t => new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
-                    ActivityId = waitlist.ActivityId,
-                    Amount = 0,
-                    CustomerId = waitlist.CustomerId,
-                    OteDateId = t.OteDateId,
-                    OteScheduleId = oteScheduleId,
-                    OteSchedulePricingId = t.Id,
-                    PurchaseOrderId = deserializedPayload.TransactionId,
-                    QRCode = t.QRCode,
-                    QRImageData = t.ImageData,
-                    Status = "UNVERIFIED",
-                    Title = t.Name
-                })
+                Tickets = ticketsToCreate
             });
             if(!createTicketRes.Succeeded || createTicketRes.Result is null || !createTicketRes.Result.IsSuccess)
             {
@@ -170,25 +173,11 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                 .AppendPathSegment(purchaseOrderPayload.Guid)
                 .AppendPathSegment(purchaseOrderPayload.Token);
 
-            IDictionary<int, int> ticketSolds = new Dictionary<int, int>();
-
-            foreach (var ticket in deserializedPayload.Tickets)
-            {
-                if(!ticketSolds.ContainsKey(ticket.Id))
-                {
-                    ticketSolds.Add(ticket.Id, 1);
-                }
-                else 
-                {
-                    ticketSolds[ticket.Id] += 1;
-                }
-            }
-
             // update tickets sold
             var addTicketSoldRes = await activityData.AddTicketSolds(new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs {
-                TicketSolds = ticketSolds.Select(t => new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs.AddTicketSold {
-                    Id = t.Key,
-                    TicketSold = t.Value
+                TicketSolds = deserializedPayload.Tickets.Select(t => new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs.AddTicketSold {
+                    Id = t.Id,
+                    TicketSold = t.Count
                 })
             });
             if(!addTicketSoldRes.Succeeded || addTicketSoldRes.Result is null || !addTicketSoldRes.Result.IsSuccess)
@@ -234,10 +223,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         public int Id {get; set;}
         public string Name {get; set;}
         public int OteDateId {get; set;}
-
-        // extra options
-        public string ImageData {get; set;}
-        public string QRCode {get; set;}
+        public int Count {get; set;}
     }
 
     private class PayloadData 

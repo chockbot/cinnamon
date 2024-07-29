@@ -58,6 +58,7 @@
         <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
         <div class="ticket-options">
             <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="() => registrationModal.Show()">
+            <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="() => registrationModal.Show()">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
@@ -153,6 +154,7 @@
         <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
                     @onclick="OnPendingEmailTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
@@ -181,6 +183,7 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
                     @onclick="OnAcceptedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-check.png" alt="check">
@@ -208,6 +211,7 @@
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
                     @onclick="OnDeclinedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
@@ -285,8 +289,8 @@
         </Row>
 
         <div>
-            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3">
-                + <span class="ms-2">Add Questions</span>
+            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
+                + <span class="btn-question-text ms-2">Add Questions</span>
             </Button>
 
             @foreach (var question in questions)
@@ -500,7 +504,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" @onchange="CheckboxChanged" checked="@(modelPricing.IsFree == true ? false : true)">
+                            <input type="checkbox" @onchange="CheckboxChanged">
                             <span>
                                 <span>Free</span>
                                 <span>Paid</span>
@@ -534,22 +538,27 @@
                         </Validation>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is5">
-                        <Field>
-                            <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
-                                max slots
-                            </FieldLabel>
-                            <FieldBody>
-                                <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
-                                               class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
-                                </NumericPicker>
-                                <div class="unli-flag d-flex">
-                                    <div class="form-check form-switch">
-                                        <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" class="form-check-input" />
+                        <Validation>
+                            <Field>
+                                <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
+                                    max slots
+                                </FieldLabel>
+                                <FieldBody>
+                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </NumericPicker>
+                                    <div class="unli-flag d-flex">
+                                        <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Slots</p>
+                                        <div class="form-check form-switch">
+                                            <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
+                                        </div>
                                     </div>
-                                    <p class="unli-text">Unlimited Slots</p>
-                                </div>
-                            </FieldBody>
-                        </Field>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
                     </Column>
                 </Row>
                 <Row VerticalGutter="5" class="mb-1">
@@ -628,7 +637,7 @@
             </div>
         </ModalBody>
     </ModalContent>
-    </Modal>
+</Modal>
 
 <Modal @ref="modalError">
     <ModalContent Centered class="border-radius-15">
@@ -653,7 +662,7 @@
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-    </ConfirmDialog>
+</ConfirmDialog>
 
 @code
 {
@@ -882,6 +891,7 @@
     {
         return DateTime.Today.Add(time).ToString("hh:mmtt");
     }
+
     public class ModelData
     {
         public IList<ItemPrice> ItemPrices { get; set; } = new List<ItemPrice>();
@@ -920,12 +930,10 @@
 
     public class Pricing
     {
-        [Required(ErrorMessage = "The price field is mandatory.")]
-        [Range(0, int.MaxValue, ErrorMessage = "The price field is mandatory.")]
+        [PriceIfNotFree]
         public decimal? Price { get; set; } = 0;
 
-        [Required(ErrorMessage = "The max slots field is mandatory.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Please specify the maximum slot number.")]
+        [MaxSlotsIfNotUnlimited]
         public int? MaxSlots { get; set; } = null;
 
         [Required(ErrorMessage = "The absorb fees field is mandatory.")]
@@ -962,6 +970,33 @@
         }
 
         public bool RequiredApproval {get; set;}
+    }
+
+    public class PriceIfNotFreeAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var pricing = (Pricing)validationContext.ObjectInstance;
+
+            if (!pricing.IsFree && pricing.Price <= 0 || !pricing.IsFree && pricing.Price == null)
+            {
+                return new ValidationResult("If the ticket is not free, the price must be greater than 0.");
+            }
+            return ValidationResult.Success;
+        }
+    }
+    public class MaxSlotsIfNotUnlimitedAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var pricing = (Pricing)validationContext.ObjectInstance;
+
+            if (!pricing.IsUnlimited && pricing.MaxSlots <= 0 || !pricing.IsUnlimited && pricing.MaxSlots == null)
+            {
+                return new ValidationResult("If the ticket is not unlimited, the max slot must be greater than 0.");
+            }
+            return ValidationResult.Success;
+        }
     }
 
     private class ModalTicketPricing
@@ -1130,10 +1165,12 @@
         }
         StateHasChanged();
     }
+
     private async Task CheckRegistration(ChangeEventArgs e)
     {
         ModelState.IsOpen = (bool)e.Value;
     }
+
     private async Task CheckCapacity(ChangeEventArgs e)
     {
         ModelState.IsCapacity = (bool)e.Value;
@@ -1142,6 +1179,7 @@
             ModelState.CapacityCount = 0;
         }
     }
+
     private void onClickMenu(int ticketId)
     {
         if (activeMenuId == ticketId)
@@ -1172,30 +1210,18 @@
                 TempId           = ticket.TempId,
                 RequiredApproval = ticket.RequiredApproval,
                 IsUnlimited      = ticket.IsUnlimited,
-                IsFree           = ticket.Price != 0 ? false : true
+                IsFree           = ticket.IsFree
             };
         isEditing = true;
         await ticketModal.Show();
     }
+
     private async Task OnCancelEdit()
     {
         await ticketModal.Hide();
         pricingFormValidation.ClearAll();
         isEditing = false;
         modelPricing = new Pricing();
-    }
-
-    private void CheckboxChanged(ChangeEventArgs e)
-    {
-        modelPricing.IsFree = !(bool)e.Value;
-        if (modelPricing.IsFree)
-        {
-            modelPricing.Price = 0;
-        }
-        else 
-        {
-            modelPricing.RequiredApproval = false;
-        }
     }
 
     private Task OffCanvasClosing(OffcanvasClosingEventArgs e)
