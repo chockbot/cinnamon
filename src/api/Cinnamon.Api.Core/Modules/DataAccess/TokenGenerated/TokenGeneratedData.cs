@@ -56,4 +56,25 @@ public class TokenGeneratedData : ITokenGeneratedData
             return AppResult<GetTokenResult>.CreateFailed(ex, "An error occured when getting token generated.");
         }
     }
+
+    public async Task<AppResult<UpdateTokenResult>> UpdateToken(UpdateTokenArgs args, int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"TokenGenerated/{id}")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateTokenResult>();
+
+            return AppResult<UpdateTokenResult>.CreateSucceeded(result, "Successfully posting update token generated api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateTokenResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateTokenResult>.CreateFailed(ex, "An error occured when posting update token generated api");
+        }
+    }
 }

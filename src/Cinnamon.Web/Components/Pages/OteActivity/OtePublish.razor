@@ -7,6 +7,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject NavigationManager NavigationManager;
 @inject IActivityApiHandler activityApiHandler
+@inject IJSRuntime JS;
 @implements IOteComponent;
 @inject INotificationService NotificationService
 @inject IJSRuntime JS
@@ -16,66 +17,71 @@
         @if (Summary is not null)
         {
             <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0 mb-3">
-                <div>
-                    @*Title*@
-                    <p class="event-name">@Summary.EventData.Name</p>
-                    @*Location*@
-                    @if (Summary.EventData.ExperienceType == 1)
-                    {
-                        string address = string.IsNullOrEmpty(Summary.EventData.PinnedLocation) ? $"{Summary.EventData.BarangayName + ", " + Summary.EventData.CityName + ", " + Summary.EventData.RegionName}" : Summary.EventData.PinnedLocation;
+                <p class="font-20 font-weight-700 color-black-100">Overview</p>
+                <div class="summary-section">
+                    @*<div class="event-image">
+                        <input type="hidden" id="@Summary.InputDataId" name="@Summary.InputDataId" class="img-event" />
+                        <img id="@Summary.ImageSrcId" class="cover-image" src="@Summary.ImageSrc" alt="cover-photo">
+                    </div>*@
+                    <div class="event-details">
                         <div>
-                            <p class="event-details ">
-                                @address
-                            </p>
+                            @*Title*@
+                            <p class="event-name">@Summary.EventData.Name</p>
+                            @*Location*@
+                            @if (Summary.EventData.ExperienceType == 1)
+                            {
+                                string address = string.IsNullOrEmpty(Summary.EventData.PinnedLocation) ? $"{Summary.EventData.BarangayName + ", " + Summary.EventData.CityName + ", " + Summary.EventData.RegionName}" : Summary.EventData.PinnedLocation;
+                                <div>
+                                    <p class="event-details ">
+                                        @address
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <p class="event-details">
+                                        Online
+                                    </p>
+                                </div>
+                            }
+                            @*Schedule*@
+                            <div>
+                                <p class="event-details">
+                                    @if (Summary.ScheduleData.Recurrences != "do-not-repeat")
+                                    {
+                                        string eventSchedule = $"{Summary.ScheduleData.DurationStart?.ToString("MMM dd")} - {Summary.ScheduleData.DurationEnd?.ToString("MMM dd, yyyy")}";
+                                        @eventSchedule
+                                    }
+                                    else if (Summary.ScheduleData != null)
+                                    {
+                                        @Summary.ScheduleData.DateFrom.ToString("MMM dd, yyyy")
+                                    }
+                                </p>
+                                <p class="event-details text-uppercase">
+                                    @Summary.ScheduleData.DateFrom.ToString("hh:mm tt")
+                                </p>
+                            </div>
                         </div>
-                    }
-                    else
-                    {
+                        @*Calendar*@
+                        @if (Summary.ScheduleData.Recurrences != "do-not-repeat")
+                        {
+                            <button class="view-calendar" @onclick="() => ViewCalendar()">View Calendar</button>
+                        }
+                        @*Tickets*@
                         <div>
-                            <p class="event-details">
-                                Online
-                            </p>
+                            <p class="prices-title">Ticket Prices</p>
+                            @foreach (var item in Summary.PricingData.ItemPrices)
+                            {
+                                <div class="ticket-details">
+                                    <p class="event-details">@item.Name</p>
+                                    <p class="event-details"> @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</p>
+                                </div>
+                            }
                         </div>
-                    }
-                    @*Schedule*@
-                    <div>
-                        <p class="event-details">
-                            @if (scheduleDates != null && scheduleDates.Count > 2)
-                            {
-                                string eventSchedule = $"{Summary.ScheduleData.DurationStart?.ToString("MMM dd")} - {Summary.ScheduleData.DurationEnd?.ToString("MMM dd, yyyy")}";
-                                @eventSchedule
-                            }
-                            else if (Summary.ScheduleData != null)
-                            {
-                                @Summary.ScheduleData.DateFrom.ToString("MMM dd, yyyy")
-                            }
-                        </p>
-                        <p class="event-details text-uppercase">
-                            @Summary.ScheduleData.DateTo.ToString("hh:mm tt")
-                        </p>
                     </div>
                 </div>
-
-                @*Calendar*@
-                @if (scheduleDates != null && scheduleDates.Count > 2)
-                {
-                    <button class="view-calendar" @onclick="() => ViewCalendar()">View Calendar</button>                    
-                }
-
-
-                @*Tickets*@
-                <div>
-                    <p class="prices-title">Ticket Prices</p>
-                    @foreach (var item in Summary.PricingData.ItemPrices)
-                    {
-                        <div class="ticket-details">
-                            <p class="event-details">@item.Name</p>
-                            <p class="event-details"> @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")</p>
-                        </div>
-                    }
-                </div>
             </div>
-
             <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0 mb-3">
                 <p class="font-20 font-weight-700 color-black-100">Scheduled Emails</p>
                 
@@ -138,7 +144,6 @@
                     </Column>
                 </Row>
             </div>
-
             <div class="border-radius-10 p-4 bg-white-200 m-bg-white-100 m-padding-0">
                 <div>
                     <p class="font-20 font-weight-700 color-black-100">Here are some important things you need to know:</p>
@@ -153,7 +158,7 @@
                                     ticket events?
                                 </p>
                                 <div class="publish-read-more">
-                                    <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                    <Button Clicked="() => userFlowModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white read-more-btn" Type="ButtonType.Button">
                                         Read more
                                     </Button>
                                 </div>
@@ -167,7 +172,7 @@
                                     from this event?
                                 </p>
                                 <div class="publish-read-more">
-                                    <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white" Type="ButtonType.Button">
+                                    <Button Clicked="() => moneyFlowsModal.ShowModal()" class="px-4 py-1 rounded-pill bg-orange-100 color-white-100 font-14 font-weight-700 hover-color-white read-more-btn" Type="ButtonType.Button">
                                         Read more
                                     </Button>
                                 </div>
@@ -207,22 +212,16 @@
                         <button type="button" style="top: 13px; right: 20px;" class="btn-close position-absolute" @onclick="() => HideCalendar()" />
                     </ModalHeader>
                     <ModalBody>
-                        <Calendar @ref="summaryCalendar"
-                                        Flat
-                                  SelectedDates="scheduleDates.Select(s => s.NewDate)"
-                                        ViewOnly
-                                  OnNextMonthChanged="OnCurrentMonthChanged"
-                                  OnPreviousMonthChanged="OnCurrentMonthChanged" />
+                        <Calendar ViewOnly StrikeOutNotSelected
+                      SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="SelectedDates.FirstOrDefault()" />
                     </ModalBody>
                 </ModalContent>
             </Modal>
         }
     </section>
 </LoadingIndicator>
-
 <UserFlowModal @ref=userFlowModal Image="user-flow-ote.webp" MobileImage="user-flow-ote-mobile.png"/>
 <UserFlowModal @ref=moneyFlowsModal Image="money-flow-ote.webp" MobileImage="money-flow-ote-mobile.png" />
-
 <Offcanvas @ref="rightsideOffcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
     <OffcanvasHeader class="px-0 py-4 bg-white-100">
         <div class="px-3 d-flex justify-content-between position-relative w-100">
@@ -380,6 +379,33 @@
     private ScheduleNotification reminderNotificationOrig = new();
     private ScheduleNotification feedbackNotificationOrig = new();
 
+    private DateTime selectedDate;
+    private bool displayCalendar { get; set; }
+    public EventCallback<DateTime> OnSelectedDate { get; set; }
+    private IList<DateTime> SelectedDates
+    {
+        get
+        {
+            IList<DateTime> dates = new List<DateTime>();
+            if (GeneratedDates is not null)
+            {
+                dates = GeneratedDates.Select(d => d.DateStart).ToList();
+            }
+            return dates;
+        }
+    }
+    private async Task SelectedDate(DateTime date)
+    {
+        if (SelectedDates.Any(d => d.Date == date.Date))
+        {
+            displayCalendar = true;
+            selectedDate = date;
+            if (OnSelectedDate.HasDelegate)
+            {
+                await OnSelectedDate.InvokeAsync(date);
+            }
+        }
+    }
     public Task<bool> FieldValid()
     {
         bool result = true;
@@ -496,79 +522,14 @@
         public OtePricing.ModelData PricingData { get; set; }
         public OtePublish.ModelData PublishData { get; set; }
         public OteOnlineEvent.ModelData OnlineData { get; set; }
+        //public string ImageSrcId { get; set; }
+        //public string InputDataId { get; set; }
+        //public string ImageSrc { get; set; }
 
         // extra options
         public IEnumerable<BookedDate> BookedDates { get; set; }
     }
-    private async Task OnCurrentMonthChanged(Calendar.CalendarCurrentMonth value)
-    {
-        var from = new DateTime(value.Year, value.Month, 1);
-        var to = from.LastDayOfMonth();
-
-        Dictionary<int, DateSchedule> dates = new();
-        if (Summary is not null && Summary.ScheduleData is not null && Summary.ScheduleData.BookedDates is not null)
-        {
-            foreach (var item in Summary.ScheduleData.BookedDates)
-            {
-                if (!dates.ContainsKey(item.Id))
-                {
-                    dates.Add(item.Id, new DateSchedule
-                        {
-                            Id = item.Id,
-                            NewDate = item.NewDate,
-                            OldDate = item.Date
-                        });
-                }
-            }
-        }
-
-        var dateItems = await LoadScheduleDates(from, to);
-        if (dateItems.Count() > 0)
-        {
-            scheduleDates.Clear();
-
-            foreach (var item in dateItems)
-            {
-                if (dates.ContainsKey(item.Id))
-                {
-                    var date = dates[item.Id];
-                    item.NewDate = date.NewDate;
-                }
-                scheduleDates.Add(item);
-            }
-
-            summaryCalendar.LoadCalendarItems();
-        }
-    }
-
-    private async Task<IEnumerable<DateSchedule>> LoadScheduleDates(DateTime from, DateTime to)
-    {
-        try
-        {
-            var result = await activityApiHandler.OteScheduleDates(new Framework.ApiCommand.ApiCore.Activity.Request.OteScheduleDatesArgs
-                {
-                    ActivityId = activityId,
-                    From = from.ToString("yyyyMMdd"),
-                    To = to.ToString("yyyyMMdd")
-                }, Token);
-            if (result.Succeeded && result.Result is not null && result.Result.IsSuccess && result.Result.Result.Count() > 0)
-            {
-                return result.Result.Result.Select(d => new DateSchedule
-                    {
-                        Id = d.Id,
-                        NewDate = d.Date,
-                        OldDate = d.Date
-                    });
-            }
-
-            return Enumerable.Empty<DateSchedule>();
-        }
-        catch (Exception ex)
-        {
-            return Enumerable.Empty<DateSchedule>();
-        }
-    }
-
+  
     private Task ShowOffcanvas()
     {
         return rightsideOffcanvas?.Show();
@@ -695,6 +656,43 @@
         public string Subject {get; set;}
         public string Body {get; set;}
     }
+
+    private IEnumerable<GenerateRecurrenceDate.DateItem> GeneratedDates
+    {
+        get
+        {
+            IEnumerable<GenerateRecurrenceDate.DateItem> dates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
+
+            if (Summary is not null && Summary.ScheduleData is not null)
+            {
+                var every     = Summary.ScheduleData.DurationEvery ?? 0;
+                var dateStart = Summary.ScheduleData.DurationStart ?? DateTime.Now;
+                var dateEnd   = Summary.ScheduleData.DurationEnd ?? DateTime.Now; ;
+
+                var timeStart     = dateStart.TimeOfDay;
+                var timeDuration  = Summary.ScheduleData.DateTo - Summary.ScheduleData.DateFrom;
+                string weekString = Summary.ScheduleData.WeekString ?? string.Empty;
+
+                var monthSelection = Summary.ScheduleData.MonthSelection ?? 0;
+                var onDayDate      = Summary.ScheduleData.OnDayDate ?? 0;
+                var monthRepeat    = Summary.ScheduleData.MonthRepeat ?? string.Empty;
+                var monthDay       = Summary.ScheduleData.MonthDay ?? string.Empty;
+
+                dates = Summary.ScheduleData.Recurrences switch
+                {
+                    "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+                    "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+                    "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
+                    "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection,
+                        onDayDate, monthRepeat, monthDay),
+                    _ => recurrenceHelper.GenerateNoRepeat(Summary.ScheduleData.DateFrom, Summary.ScheduleData.DateTo)
+                };
+            }
+
+            return dates;
+        }
+    }
+
     private async Task ReminderHoverMove(MouseEventArgs e)
     { 
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#reminderDiv");
