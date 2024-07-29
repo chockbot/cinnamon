@@ -15,4 +15,5 @@ public class ApplicationConfig
     public ActivitySummary ActivitySummary {get; set;}
     public EventReminder EventReminder {get; set;}
     public EventThankYou EventThankYou {get; set;}
+    public MailChimpConfig MailChimpConfig {get; set;}
 }

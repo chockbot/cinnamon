@@ -1,5 +1,6 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.System.Response;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 
@@ -11,5 +12,5 @@ public interface ISystemApiHandler
     Task<AppResult<GetEventBuyerPoliciesResult>> GetEventBuyerPolicies();
     Task<AppResult<GetEventSellerPoliciesResult>> GetEventSellerPolicies();
     Task<AppResult<GetPrivacyPoliciesResult>> GetPrivacyPolicies();
-
+    Task<AppResult<SubscribeToMailchimpResult>> SubscribeToMailchimp(SubscribeToMailchimpArgs args);
 } 

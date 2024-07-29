@@ -1,89 +1,317 @@
 ﻿@namespace Cinnamon.Web.Components.Common
-@inject NavigationManager NavigationManager;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Web.Components
+@using System.Text
+@using System.Linq;
+@using System.Globalization
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Modules.Services
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.WordPress
+@using Cinnamon.Web.Modules.Services.Handlers
+@using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IJSRuntime jsRuntime
+@inject Cinnamon.Web.Config.Config AppConfig;
+@inject IChatApiHandler chatApiHandler;
+@inject IWordPressServicesHandler WordPressServices
+@inject ISystemApiHandler systemApiHandler
+@inject AutoMapper.IMapper mapper;
 
-<div class="footer mt-5">
-    <div class="section-4">
-        <div class="footer-container align-items-footer">
-            <div class="footer-info">
-                <p>
-                    Automate and simplify your Events Planning operations with easy and
-                    secure options with Cinnamon!
-                </p>
-            </div>
-            <div class="footer-text-media-container">
-                <div class="footer-nav">
-                    <a class="footer-button-about" href="https://cinnamon.ph/blog/cinnamon/">About</a>
-                    <a class="footer-button-blogs" href="https://cinnamon.ph/blog/">Blogs</a>
-                    <a class="footer-button-help" href="#" @onclick="NavigateToHelp">Help</a>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    @if (showModal) {
+        <div class="modal" style="display: block;">
+            <div class="modal-content">
+                <div class="header-modal">
+                    <div class="modal-img-container">
+                        <img src="images\explore-page-images\cinnamon-modal-logo.svg" class="modal-img">
+                    </div>
+                    <div class="header-modal-text">
+                        <p class="header-modal-subtext">Cinnamon.ph</p>
+                        <p class="header-modal-title">@subscriptionResultTitle</p> 
+                    </div>
                 </div>
-                <div class="footer-support-email">
-                    <i class="far fa-envelope"></i>
-                    <p>support@cinnamon.ph</p>
-                </div>
+                <p class="@subscriptionResultClass">@subscriptionResultMessage</p>
+                <button class="btn-close-modal" @onclick="CloseModal">
+                    Dismiss Message
+                </button>
             </div>
         </div>
-        <div class="line-container">
-            <div class="line"></div>
-        </div>
-        <div class="footer-final">
-            <div class="footer-logo">
-                <img src="images/explore-page-images/cinnamon-footer.png" />
-            </div>
-            <div class="footer-copyright">
-                <p>Copyright © 2023. All rights reserved.</p>
-            </div>
-            <div class="footer-final-social-media">
-                <i class="fab fa-facebook"></i>
-                <i class="fab fa-linkedin"></i>
-                <i class="fab fa-tiktok"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-youtube"></i>
-            </div>
-        </div>
-        <!-- For tablet view -->
-        <div class="footer-final-tablet">
-            <div class="footer-column">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
+    }
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="section-4">
+            <!-- For much larger screens -->
+            <div class="footer-container-wider align-items-footer">
+                <div class="footer-info">
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
                 </div>
+                    <div class="footer-text-about-container">
+                        <p class="footer-title-text">About</p>
+                        <div class="footer-nav">
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <p class="footer-title-text">Events & Solutions</p>
+                        <div class="footer-email-social-container">
+                            <div class="footer-nav-2">
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                    <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a href="https://www.xendit.co/en/customers/" target=_blank class="footer-button-blogs">Payment system</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                        </div>
+                        <div class="footer-email-social-container"> 
+                            <p class="footer-title-text">Ways You Can Pay</p> 
+                            <div class="footer-final-social-media">
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
+                            </div> 
+                        </div>
+                    </div>
+            </div>
+            <!-- end of larger screens -->
+            <div class="footer-container align-items-footer">
+                <div class="footer-info">
+                    <p class="footer-title-text">SUBSCRIBE TO OUR NEWSLETTER</p>
+                    <p class="footer-sub-newsletter-text">Receive the latest updates from upcoming events and news from us!!</p>
+                        <div class="footer-email-input">
+                            <input type="email" class="footer-email-input-box" @bind="mailchimpEmail" placeholder="Enter your email" />
+                            <button class="footer-email-button" @onclick="SubscribeUserToMailchimp">Subscribe</button>
+                        </div>
+                    <p class="footer-sub-newsletter-text2">By signing up, you agree to receive the latest updates and news via email</p>
+                </div>
+                    <div class="footer-text-about-container">
+                        <p class="footer-title-text-nav" @onclick="ToggleAboutUs">About</p>
+                        <div class="@($"footer-nav {(isAboutUsVisible ? "active" : " ")}")">
+                            <a class="footer-button-about">About us</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToHelp">FAQs</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToPrivacyPolicy">Privacy Policy</a>
+                            <a class="footer-button-blogs" @onclick="NavigateToTermsConditions">Terms & Condition</a>
+                        </div>
+                    </div>
+                    <div class="footer-text-events-container">
+                        <p class="footer-title-text-nav" @onclick="ToggleEvents">Events & Solutions</p>
+                        <div class="footer-email-social-container">
+                        <div class="@($"footer-nav-2 {(isEventVisible ? "active" : " ")}")">
+                                @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                <a class="footer-button-about" @onclick="NavigateToOTECreation">Create an Event</a>
+                                } else {
+                                <a class="footer-button-about" @onclick="NavigateToOnboarding">Create an Event</a> 
+                                }
+                                <a class="footer-button-blogs" target="_blank" href="mailto:support@cinnamon.ph">Advertise with us</a>
+                                <a class="footer-button-blogs" href="https://www.xendit.co/en/customers/" target=_blank>Payment system</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-text-support-container">
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Contact Us</p>
+                            <div class="footer-support-email">
+                                <i class="far fa-envelope"></i>
+                                <a class="cinnamon-support-email" target="_blank" href="mailto:support@cinnamon.ph">support@cinnamon.ph</a>
+                            </div>
+                        </div>
+                        <div class="footer-email-social-container">
+                            <p class="footer-title-text">Ways You Can Pay</p> 
+                            <div class="footer-final-social-media">
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\visa.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\mastercard.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\jcb.svg" />
+                                <img class="payment-logos" src="images\explore-page-images\payment-logos\amex.svg" />
+                            </div> 
+                        </div>
+                    </div>
+            </div>
+            <div class="footer-final">
                 <div class="footer-copyright">
-                    <p>Copyright © 2023. All rights reserved.</p>
+                    <a class="social-media-href-button" href="https://www.facebook.com/cinnamonexperience" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a class="social-media-href-button" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"<i class="fab fa-linkedin"></i></a>
+                    <a class="social-media-href-button" href="https://www.tiktok.com/@@cinnamon.ph" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="social-media-href-button" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a class="social-media-href-button" href="https://www.youtube.com/@@cinnamonph" target="_blank"><i class="fab fa-youtube"></i></a>
                 </div>
-            </div>
-            <div class="footer-final-social-media">
-                <i class="fab fa-facebook"></i>
-                <i class="fab fa-linkedin"></i>
-                <i class="fab fa-tiktok"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-youtube"></i>
-            </div>
-        </div>
-        <!-- end of tablet view -->
-        <!-- For Mobile view -->
-        <div class="footer-final-mobile">
-            <div class="footer-column">
-                <div class="footer-logo">
-                    <img src="images/explore-page-images/cinnamon-footer.png" />
-                </div>
-                <div class="footer-final-social-media">
-                    <i class="fab fa-facebook" href="https://www.facebook.com/cinnamonexperience" target="_blank"></i>
-                    <i class="fab fa-linkedin" href="https://www.linkedin.com/company/cinnamonexperience/" target="_blank"></i>
-                    <i class="fab fa-tiktok"></i>
-                    <i class="fab fa-instagram" href="https://www.instagram.com/cinnamonexperienceph/" target="_blank"></i>
-                    <i class="fab fa-youtube" target="_blank"></i>
-                </div>
-            </div>
-            <div class="footer-copyright">
-                <p>Copyright © 2023. All rights reserved.</p>
             </div>
         </div>
     </div>
-</div>
-
+    
 @code {
+    private bool isAboutUsVisible = false;
+    private bool isEventVisible = false;
+    private string mailchimpEmail;
+    private string subscriptionResultMessage;
+    private string subscriptionResultClass;
+    private string subscriptionResultTitle;
+    private bool showModal;
+    public Profile CustomerModel = new Profile();
+    public ClaimsPrincipal AuthState { get; set; }
+    private bool isLogin { get; set; } = false;
+    [Inject] HubConnection hubConnection { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSigninUser();
+    }
 
     private void NavigateToHelp()
     {
         NavigationManager.NavigateTo("/help");
+    }
+
+    void ToggleAboutUs() => isAboutUsVisible = !isAboutUsVisible;
+    void ToggleEvents() => isEventVisible = !isEventVisible;
+
+    private void NavigateToPrivacyPolicy()
+    {
+        NavigationManager.NavigateTo("/help?section=privacy");
+    }
+
+    private void NavigateToTermsConditions()
+    {
+        NavigationManager.NavigateTo("/help?section=terms");
+    }
+
+    private void NavigateToOnboarding()
+    {
+        NavigationManager.NavigateTo("/Onboarding");
+    }
+
+    private void NavigateToOTECreation()
+    {
+        NavigationManager.NavigateTo("/experiences/ote");
+    }
+
+    private async Task SubscribeUserToMailchimp()
+    {
+
+        var args = new SubscribeToMailchimpArgs
+        {
+            EmailAddress = mailchimpEmail
+        };
+
+        var result = await systemApiHandler.SubscribeToMailchimp(args);
+        if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+        {
+            subscriptionResultMessage = "You're now officially part of the Cinnamon Ph community! Get ready for exclusive offers, tips, and updates delivered straight to your inbox";
+            subscriptionResultClass = "success";
+            subscriptionResultTitle = "Thanks for Subscribing!";
+            mailchimpEmail = string.Empty;
+        }
+        else
+        {
+            subscriptionResultMessage = "You're already on our list! Keep an eye on your inbox for exciting updates, special discounts, and valuable insights.";
+            subscriptionResultClass = "error";
+            subscriptionResultTitle = "Already a Subscriber...";
+        }
+
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task LoadSigninUser()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+
+            isLogin = true;
+
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        ProfileImg = args.ProfileImg,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
+
+                if (hubConnection.State == HubConnectionState.Disconnected)
+                {
+                    try
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+
+                        while (true)
+                        {
+                            try
+                            {
+                                await hubConnection.StartAsync();
+
+                                break;
+                            }
+                            catch (ObjectDisposedException e)
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                            catch
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

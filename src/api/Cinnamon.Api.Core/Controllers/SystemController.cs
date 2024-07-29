@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Framework.ApiCommand.ApiCore.System.Response;
 using Cinnamon.Api.Core.Services.SystemService.Handlers;
 using Cinnamon.Api.Core.Services.AdminService.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -15,12 +17,17 @@ public class SystemController : ControllerBase
     private readonly IGetSystemDateHandler getSystemDateHandler;
     private readonly IGetAnnouncementsHandler getAnnouncementsHandler;
     private readonly IGetDynamicContentHandler getDynamicContentHandler;
+    private readonly IMailchimpServices mailchimpHandler;
 
-    public SystemController(IGetSystemDateHandler getSystemDateHandler, IGetAnnouncementsHandler getAnnouncementsHandler, IGetDynamicContentHandler getDynamicContentHandler)
+    public SystemController(IGetSystemDateHandler getSystemDateHandler,
+        IGetAnnouncementsHandler getAnnouncementsHandler, IGetDynamicContentHandler getDynamicContentHandler,
+        IMailchimpServices mailchimpHandler)
+
     {
         this.getSystemDateHandler = getSystemDateHandler;
         this.getAnnouncementsHandler = getAnnouncementsHandler;
         this.getDynamicContentHandler = getDynamicContentHandler;
+        this.mailchimpHandler = mailchimpHandler;
     }
 
     [Route("GetServerDate")]
@@ -229,6 +236,35 @@ public class SystemController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetAnnouncementsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [AllowAnonymous]
+    [Route("SubcribeToMailchimp")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubscribeToMailchimpResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubscribeToMailchimp([FromBody] SubscribeToMailchimpArgs args)
+    {
+        try
+        {
+            var result = await mailchimpHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MailchimpArgs {
+                Email = args.EmailAddress
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubscribeToMailchimpResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new SubscribeToMailchimpResult
+                {
+                    IsSuccess = true, 
+                    Result = result.Succeeded
+                } );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubscribeToMailchimpResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
