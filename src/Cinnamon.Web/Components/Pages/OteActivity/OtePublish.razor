@@ -9,6 +9,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IJSRuntime JS;
 @implements IOteComponent;
+@inject INotificationService NotificationService
 
 <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <section class="ote-publish-wrapper">
@@ -85,20 +86,58 @@
                 
                 <Row VerticalGutter="20" HorizontalGutter="20">
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <label id="reminderDiv" @onmousemove="ReminderHoverMove" @onmouseleave="ReminderHoverLeave" @onclick="() => OnSelectedScheduledEmail(0)" 
-                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
-                            <img class="me-3 image-holder" src="images/ote/red-bell.png " alt="bell">
-                            <span class="font-16 color-black-100 text-box">Add Reminder Email</span>
-                            <div class="effect hover1"></div>
-                        </label>
+                        <div @onclick="() => OnSelectedScheduledEmail(0)" 
+                            class="bg-white-100 p-2 border-radius-10 cursor-pointer">
+                            <div class="d-flex align-items-center mb-2">
+                                <img class="me-2" src="images/ote/red-bell.png" alt="bell">
+                                <span class="font-16 color-black-100">Add Reminder Email</span>
+                            </div>
+                            <div class="div-line mb-2"></div>
+                            <div class="div-line-75 mb-2"></div>
+                            @if(ReminderEmailNotSet)
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="small-circle-red me-2">
+                                    </div>
+                                    <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                                </div>
+                            }
+                            else 
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="small-circle-green me-2">
+                                    </div>
+                                    <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                                </div>
+                            }
+                        </div>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <label id="feedbackDiv" @onmousemove="FeedbackHoverMove" @onmouseleave="FeedbackHoverLeave" @onclick="() => OnSelectedScheduledEmail(1)" 
-                            class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
-                            <img class="me-3 image-holder" src="images/ote/yellow-star.png" alt="bell">
-                            <span class="font-16 color-black-100 text-box">Add Feedback Email</span>
-                            <div class="effect hover2"></div>
-                        </label>
+                        <div @onclick="() => OnSelectedScheduledEmail(1)" 
+                            class="bg-white-100 p-2 border-radius-10 cursor-pointer">
+                            <div class="d-flex align-items-center mb-2">
+                                <img class="me-2" src="images/ote/yellow-star.png" alt="bell">
+                                <span class="font-16 color-black-100">Add Feedback Email</span>
+                            </div>
+                            <div class="div-line mb-2"></div>
+                            <div class="div-line-75 mb-2"></div>
+                            @if(FeedBackEmailNotSet)
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="small-circle-red me-2">
+                                    </div>
+                                    <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                                </div>
+                            }
+                            else 
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="small-circle-green me-2">
+                                    </div>
+                                    <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                                </div>
+                            }
+                        </div>
                     </Column>
                 </Row>
             </div>
@@ -504,11 +543,19 @@
         return ShowOffcanvas();
     }
 
-    private Task OnOffCanvasSaved()
+    private async Task OnOffCanvasSaved()
     {
-        if(selectedEmailSchedule == 0) return SaveEmailReminder();
-
-        return SaveEmailFeedback();
+        switch(selectedEmailSchedule)
+        {
+            case 0:
+                await SaveEmailReminder();
+                await NotificationService.Success("Custom reminder email template updated.","Success");
+                break;
+            default:
+                await SaveEmailFeedback();
+                await NotificationService.Success("Custom email feedback template updated.","Success");
+                break;
+        }
     }
 
     private Task OnOffCanvasCancelled()
@@ -548,6 +595,22 @@
         feedbackNotification.Body = feedbackNotificationOrig.Body;
         feedbackNotification.Subject = feedbackNotificationOrig.Subject;
         return HideOffcanvas();
+    }
+
+    private bool ReminderEmailNotSet
+    {
+        get 
+        {
+            return string.IsNullOrEmpty(reminderNotificationOrig.Subject) && string.IsNullOrEmpty(reminderNotificationOrig.Body);
+        }
+    }
+
+    private bool FeedBackEmailNotSet
+    {
+        get 
+        {
+            return string.IsNullOrEmpty(feedbackNotificationOrig.Body) && string.IsNullOrEmpty(feedbackNotificationOrig.Subject);
+        }
     }
 
     public class BookedDate
