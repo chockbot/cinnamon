@@ -109,10 +109,10 @@
                         <WaitList OteTickets="ticketList" Token=@Token ProviderId="ProviderId" ActivityId="activity.Id" EventName="@activity.EventName"/>
                     </TabPanel>
                     <TabPanel Name="tickets">
-                        <Tickets TicketList="ticketList" OteActivity="activity"></Tickets>
+                        <Tickets TicketList="ticketList" OteActivity="activity" Token=@Token></Tickets>
                     </TabPanel>
                     <TabPanel Name="emails">
-                        <Emails Handler=@activity.Handler></Emails>
+                        <Emails OteActivity="activity" Token=@Token></Emails>
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -237,6 +237,8 @@
         activity.IsOpen = act.OteSchedule.IsOpen;
         activity.IsCapacity = act.OteSchedule.IsCapacity;
         activity.CapacityCount = act.OteSchedule.CapacityCount;
+        activity.EmailFeedbackDays = act.OteSchedule.EmailFeedbackDays;
+        activity.EmailReminderDays = act.OteSchedule.EmailFeedbackDays;
 
         if(!string.IsNullOrEmpty(Date) && int.TryParse(Date, out int parsedDate))
         {
