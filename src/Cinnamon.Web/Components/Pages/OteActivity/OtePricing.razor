@@ -57,26 +57,29 @@
         </h3>
         <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
         <div class="ticket-options">
-            <div class="div-option-details" @onclick="() => registrationModal.Show()">
+            <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="() => registrationModal.Show()">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
+                <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details" @onclick="() => capacityModal.Show()">
+            <div class="div-option-details" id="waitlistDiv" @onmousemove="WaitlistHoverMove" @onmouseleave="WaitlistHoverLeave" @onclick="() => capacityModal.Show()">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Waitlist Capacity</p>
                     <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
                 </div>
+                <div class="effect hover2"></div>
             </div>
-            <div class="div-option-details" @onclick="() => ticketModal.Show()">
+            <div class="div-option-details" id="ticketsDiv" @onmousemove="TicketsHoverMove" @onmouseleave="TicketsHoverLeave" @onclick="() => ticketModal.Show()">
                 <img class="option-img" src="images/ote/add.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Add Tickets</p>
                     <p class="reg-status">@modelPricingList.Pricings.Count() tickets available</p>
                 </div>
+                <div class="effect hover3"></div>
             </div>
         </div>
         <div class="ticket-section mt-3">
@@ -149,44 +152,45 @@
 
         <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
                     @onclick="OnPendingEmailTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
                     @if(string.IsNullOrEmpty(customPendingMessageOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
-                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                            <p class="font-16 color-grey-100 mb-0 text-box">No message yet</p>
                         </div>
                     }
                     else 
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover4"></div>
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
                     @onclick="OnAcceptedTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-check.png" alt="check">
                         <p class="font-16 color-grey-100 mb-0">Going</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
                     @if(string.IsNullOrEmpty(customAcceptedMessageOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
@@ -194,26 +198,27 @@
                     }
                     else 
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover5"></div>
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
                     @onclick="OnDeclinedTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-close.png" alt="close">
                         <p class="font-16 color-grey-100 mb-0">Declined</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
                     @if(string.IsNullOrEmpty(customDeclinedMesasgeOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
@@ -221,12 +226,13 @@
                     }
                     else 
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover6"></div>
                 </div>
             </Column>
         </Row>
@@ -1315,5 +1321,54 @@
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
         public bool IsNew {get; set;} = false;
+    }
+
+    private async Task RegistrationHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
+    }
+    private async Task RegistrationHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
+    }
+    private async Task WaitlistHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#waitlistDiv");
+    }
+    private async Task WaitlistHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#waitlistDiv");
+    }
+    private async Task TicketsHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#ticketsDiv");
+    }
+    private async Task TicketsHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#ticketsDiv");
+    }
+    private async Task PendingHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
+    }
+    private async Task PendingHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
+    }
+    private async Task GoingHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
+    }
+    private async Task GoingHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
+    }
+    private async Task DeclinedHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
+    }
+    private async Task DeclinedHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
     }
 }
