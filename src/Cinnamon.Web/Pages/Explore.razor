@@ -1168,10 +1168,11 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                            
                                                         }
                                                     </div>
                                                     }
@@ -1431,10 +1432,10 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
                                                         }
                                                     </div>
                                                     }
@@ -1694,10 +1695,10 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0) {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1) {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews)</span>
+                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
                                                         }
                                                     </div>
                                                     }
