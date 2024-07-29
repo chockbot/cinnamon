@@ -1301,8 +1301,8 @@
                 await NotificationService.Success("Custom pending email template updated.", "Success");
                 break;
             case 1:
-                await SavePendingTemplate();
-                await NotificationService.Success("Custom approved email template updated.", "Success");
+                await SaveAcceptedTemplate();
+                await NotificationService.Success("Custom approved email template updated.","Success");
                 break;
             default:
                 await SaveDeclinedTemplate();
