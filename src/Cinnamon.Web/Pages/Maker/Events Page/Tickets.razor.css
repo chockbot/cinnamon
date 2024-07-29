@@ -1,22 +1,82 @@
-﻿.ticket-options{
+﻿ol, ul {
+    padding-left: 1.2rem;
+}
+.small-circle-green {
+    width: 10px;
+    height: 10px;
+    background-color: #009220;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.small-circle-red {
+    width: 10px;
+    height: 10px;
+    background-color: #ad0c0c;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.ticket-options{
     display: flex;
     justify-content:end;
 }
-
+.title-holder {
+    color: #717171;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.custom-text {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px;
+}
+.update-button-email {
+    margin-top: 20px;
+    border: none;
+    display: inline-flex;
+    padding: 9px 16px;
+    border-radius: 8px;
+    background: #E8F8FF;
+    color: #00AAF0;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+}
 .questions-holder {
     display: flex;
-    flex-direction: row;
-    gap: 144px;
+    justify-content: space-between;
+    width: 25%;
 }
 
 .event-buttons {
     gap: 16px;
     margin-top: 37px;
 }
+.email-title {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
 ::deep .btn-question {
-    background-color: #F3F6FC;
+    background-color: #E8F8FF;
+    color: #00AAF0;
     border-radius: 8px;
     padding: 10px 16px;
+    color: #00AAF0;
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1rem;
 }
 .btn-event {
     border-radius: 6px;
@@ -117,6 +177,9 @@ svg {
     .email-box {
         margin-top: 10px;
     }
+    .questions-holder {
+        width: 100%;
+    }
 }
 @media only screen and (max-width: 767px) {
     .ticket-box {
@@ -131,24 +194,32 @@ svg {
     .email-box {
         margin-top: 10px;
     }
+    .questions-holder {
+        width: 100%;
+    }
 }
-@media only screen and (max-width: 991px){
+@media only screen and (max-width: 991px) {
     .ticket-details-section {
         display: grid;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 20px;
     }
 }
-
 @media screen and (min-width: 0px) and (max-width: 375px) {
     .questions-holder {
         gap: 0px
+    }
+    .questions-holder {
+        width: 100%;
     }
 }
 
 @media screen and (min-width: 375px) and (max-width: 618px) {
     .questions-holder {
         gap: 73px;
+    }
+    .questions-holder {
+        width: 100%;
     }
 }
 
@@ -158,5 +229,13 @@ svg {
         display: grid;
         grid-template-columns: repeat(1, 1fr) !important;
         gap: 20px;
+    }
+    .questions-holder {
+        width: 100%;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 1670px) {
+    .questions-holder {
+        width: 50%;
     }
 }
