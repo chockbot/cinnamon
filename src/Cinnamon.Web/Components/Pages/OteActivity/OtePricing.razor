@@ -64,6 +64,7 @@
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
                 <div class="effect hover1"></div>
+                <div class="effect hover1"></div>
             </div>
             <div class="div-option-details" id="waitlistDiv" @onmousemove="WaitlistHoverMove" @onmouseleave="WaitlistHoverLeave" @onclick="() => capacityModal.Show()">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
@@ -152,44 +153,45 @@
 
         <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave"
-                     @onclick="OnPendingEmailTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
+                    @onclick="OnPendingEmailTemplateClick">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
                     <div class="line-effect div-line-75 mb-2"></div>
-                    @if (string.IsNullOrEmpty(customPendingMessageOrig))
+                    @if(string.IsNullOrEmpty(customPendingMessageOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
-                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                            <p class="font-16 color-grey-100 mb-0 text-box">No message yet</p>
                         </div>
                     }
                     else
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover4"></div>
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
-                     @onclick="OnAcceptedTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                    @onclick="OnAcceptedTemplateClick">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-check.png" alt="check">
                         <p class="font-16 color-grey-100 mb-0">Going</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
                     <div class="line-effect div-line-75 mb-2"></div>
-                    @if (string.IsNullOrEmpty(customAcceptedMessageOrig))
+                    @if(string.IsNullOrEmpty(customAcceptedMessageOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
@@ -197,26 +199,27 @@
                     }
                     else
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover5"></div>
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
-                     @onclick="OnDeclinedTemplateClick">
-                    <div class="d-flex align-items-center mb-2">
+                    @onclick="OnDeclinedTemplateClick">
+                    <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-close.png" alt="close">
                         <p class="font-16 color-grey-100 mb-0">Declined</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
                     <div class="line-effect div-line-75 mb-2"></div>
-                    @if (string.IsNullOrEmpty(customDeclinedMesasgeOrig))
+                    @if(string.IsNullOrEmpty(customDeclinedMesasgeOrig))
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-red me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
@@ -224,12 +227,13 @@
                     }
                     else
                     {
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="d-flex align-items-center mb-2 text-box">
                             <div class="small-circle-green me-2">
                             </div>
                             <p class="font-16 color-grey-100 mb-0">Message already set</p>
                         </div>
                     }
+                    <div class="effect hover6"></div>
                 </div>
             </Column>
         </Row>
@@ -1345,7 +1349,6 @@
         public string FieldType { get; set; } = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
         public bool IsNew { get; set; } = false;
     }
-
     private void CheckboxChanged(ChangeEventArgs e)
     {
         modelPricing.IsFree = !(bool)e.Value;
