@@ -110,7 +110,7 @@
                         @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
                     </p>
                     <div class="d-flex justify-content-between">
-                        @if(ticket.Price != 0)
+                        @if (ticket.Price != 0)
                         {
                             <div class="approval-section">
                                 <p class="approval">Absorb Fees</p>
@@ -127,16 +127,16 @@
                             <div class="approval-section">
                                 <p class="approval">Required Approval</p>
                                 <Tooltip Text="If enabled, guests need to be manually approved before receiving their tickets." Multiline>
-                                    <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
-                                </Tooltip>
-                            </div>
+                                <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
+                            </Tooltip>
+                        </div>
                             <div class="form-check form-switch">
                                 <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                             </div>
                         }
 
                     </div>
-                    
+
                 </div>
             }
         </div>
@@ -152,15 +152,15 @@
 
         <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
-                    @onclick="OnPendingEmailTemplateClick">
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave"
+                     @onclick="OnPendingEmailTemplateClick">
                     <div class="d-flex align-items-center mb-2">
                         <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
-                    @if(string.IsNullOrEmpty(customPendingMessageOrig))
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
+                    @if (string.IsNullOrEmpty(customPendingMessageOrig))
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-red me-2">
@@ -168,7 +168,7 @@
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
                         </div>
                     }
-                    else 
+                    else
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-green me-2">
@@ -180,14 +180,14 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
-                    @onclick="OnAcceptedTemplateClick">
+                     @onclick="OnAcceptedTemplateClick">
                     <div class="d-flex align-items-center mb-2">
                         <img class="me-2" src="images/ote/tiny-check.png" alt="check">
                         <p class="font-16 color-grey-100 mb-0">Going</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
-                    @if(string.IsNullOrEmpty(customAcceptedMessageOrig))
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
+                    @if (string.IsNullOrEmpty(customAcceptedMessageOrig))
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-red me-2">
@@ -195,7 +195,7 @@
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
                         </div>
                     }
-                    else 
+                    else
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-green me-2">
@@ -207,14 +207,14 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
-                    @onclick="OnDeclinedTemplateClick">
+                     @onclick="OnDeclinedTemplateClick">
                     <div class="d-flex align-items-center mb-2">
                         <img class="me-2" src="images/ote/tiny-close.png" alt="close">
                         <p class="font-16 color-grey-100 mb-0">Declined</p>
                     </div>
-                    <div class="div-line mb-1"></div>
-                    <div class="div-line-75 mb-2"></div>
-                    @if(string.IsNullOrEmpty(customDeclinedMesasgeOrig))
+                    <div class="line-effect div-line mb-1"></div>
+                    <div class="line-effect div-line-75 mb-2"></div>
+                    @if (string.IsNullOrEmpty(customDeclinedMesasgeOrig))
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-red me-2">
@@ -222,7 +222,7 @@
                             <p class="font-16 color-grey-100 mb-0">No message yet</p>
                         </div>
                     }
-                    else 
+                    else
                     {
                         <div class="d-flex align-items-center mb-2">
                             <div class="small-circle-green me-2">
@@ -249,8 +249,8 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                              Size="Size.Small" Placeholder="Required" Disabled />
                 </div>
             </Column>
         </Row>
@@ -262,8 +262,8 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                              Size="Size.Small" Placeholder="Required" Disabled />
                 </div>
             </Column>
         </Row>
@@ -275,8 +275,8 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center"
+                              Size="Size.Small" Placeholder="Required" Disabled />
                 </div>
             </Column>
         </Row>
@@ -288,7 +288,7 @@
 
             @foreach (var question in questions)
             {
-                <div class="bg-white-100 mb-2 p-3 border-radius-10">    
+                <div class="bg-white-100 mb-2 p-3 border-radius-10">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
                     </p>
@@ -331,10 +331,10 @@
             </div>
         </ModalFooter>
     </ModalContent>
-</Modal>
+    </Modal>
 
-@*Registration Modal*@
-<Modal @ref="registrationModal">
+    @*Registration Modal*@
+    <Modal @ref="registrationModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Registration</p>
@@ -359,20 +359,20 @@
             </div>
         </ModalFooter>
     </ModalContent>
-</Modal>
+    </Modal>
 
-<Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
+    <Offcanvas @ref="offcanvas" Closing="OffCanvasClosing" ShowBackdrop Placement="Placement.End">
     <OffcanvasHeader class="px-0 py-4 bg-white-100">
         <div class="px-3 d-flex justify-content-between position-relative w-100">
-            @if(selectedEmailTemplate == 0)
+            @if (selectedEmailTemplate == 0)
             {
                 <img src="images/ote/tiny-clock.png" alt="clock">
             }
-            @if(selectedEmailTemplate == 1)
+            @if (selectedEmailTemplate == 1)
             {
                 <img src="images/ote/tiny-check.png" alt="check">
             }
-            @if(selectedEmailTemplate == 2)
+            @if (selectedEmailTemplate == 2)
             {
                 <img src="images/ote/tiny-close.png" alt="close">
             }
@@ -382,12 +382,12 @@
     <OffcanvasBody class="px-0 pt-0">
         <Divider class="m-0" />
         <div class="p-3">
-            @if(selectedEmailTemplate == 0)
+            @if (selectedEmailTemplate == 0)
             {
                 <div id="pending-email-setup">
                     <p class="font-20 color-black-100 font-weight-900 mb-1">Pending Approval / Waitlist Email</p>
                     <p class="font-16 color-grey-100 mb-4">
-                        This email is sent when a guest registers for the event, notifying them that their registration is 
+                        This email is sent when a guest registers for the event, notifying them that their registration is
                         pending approval or that they are on the waitlist.
                     </p>
                     <div class="white-bg-shadow p-3 border-radius-10">
@@ -397,7 +397,7 @@
                 </div>
             }
 
-            @if(selectedEmailTemplate == 1)
+            @if (selectedEmailTemplate == 1)
             {
                 <div id="accepted-email-setup">
                     <p class="font-20 color-black-100 font-weight-900 mb-1">Confirmation Email</p>
@@ -411,7 +411,7 @@
                 </div>
             }
 
-            @if(selectedEmailTemplate == 2)
+            @if (selectedEmailTemplate == 2)
             {
                 <div id="declined-email-setup">
                     <p class="font-20 color-black-100 font-weight-900 mb-1">Declined Email</p>
@@ -448,7 +448,7 @@
         <ModalBody class="px-4">
             <p class="approval-text">When turned on, customers can join the waitlist up to the number indicated below.</p>
             <p class="field-title">Number of waitlist slot</p>
-             <NumericPicker Placeholder="0" ShowStepButtons="false" TValue="int" class="capacity-input" @bind-Value="ModelState.CapacityCount" Disabled="!ModelState.IsCapacity"></NumericPicker>
+            <NumericPicker Placeholder="0" ShowStepButtons="false" TValue="int" class="capacity-input" @bind-Value="ModelState.CapacityCount" Disabled="!ModelState.IsCapacity"></NumericPicker>
             <div class="accept-capacity">
                 <p class="approval">Waitlist</p>
                 <div class="form-check form-switch">
@@ -467,10 +467,10 @@
             </div>
         </ModalFooter>
     </ModalContent>
-</Modal>
+    </Modal>
 
-@*Add Ticket Modal*@
-<Modal @ref="ticketModal">
+    @*Add Ticket Modal*@
+    <Modal @ref="ticketModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">@((isEditing ? "Edit" : "Add") + " your Ticket")</p>
@@ -520,7 +520,7 @@
                                             <ValidationError />
                                         </Feedback>
                                     </NumericPicker>
-                                    @if(!modelPricing.IsFree)
+                                    @if (!modelPricing.IsFree)
                                     {
                                         <span class="font-14 font-weight-700 color-#343D4C-100">
                                             Buyer total: ₱ @(CalCulateBuyerTotal(modelPricing).ToString("#,##0.00"))
@@ -556,7 +556,7 @@
                 </Row>
                 <Row VerticalGutter="5" class="mb-1">
                     <Column ColumnSize="ColumnSize.Is12.Is12.OnDesktop">
-                        @if(modelPricing.IsFree)
+                        @if (modelPricing.IsFree)
                         {
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
@@ -630,9 +630,9 @@
             </div>
         </ModalBody>
     </ModalContent>
-</Modal>
+    </Modal>
 
-<Modal @ref="modalError">
+    <Modal @ref="modalError">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">Error Message</p>
@@ -645,20 +645,20 @@
             </div>
         </ModalBody>
     </ModalContent>
-</Modal>
+    </Modal>
 
-<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
-           OnConfirmationChanged="ConfirmDeleteChanged">
+    <ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No"
+               OnConfirmationChanged="ConfirmDeleteChanged">
     <HeaderContent>
         <p class="m-0">Confirm Action</p>
     </HeaderContent>
     <BodyContent>
         <p class="m-0">Are you sure you want to remove this ticket?</p>
     </BodyContent>
-</ConfirmDialog>
+    </ConfirmDialog>
 
-@code
-{
+    @code
+    {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -731,7 +731,7 @@
     {
         bool isSetLimit = true;
         bool checkTicket = true;
-        if(ModelState.IsLimit == 2)
+        if (ModelState.IsLimit == 2)
         {
             isSetLimit = ModelState.EventTicketLimit != 0;
         }
@@ -784,32 +784,32 @@
     public ModelData GetData()
     {
         ModelData data = new ModelData
-        {
-            EventTicketLimit = ModelState.EventTicketLimit,
-            IsLimit          = ModelState.EventTicketLimit != 0 ? 2 : 1,
-            IsOpen           = ModelState.IsOpen,
-            IsCapacity       = ModelState.IsCapacity,
-            CapacityCount    = ModelState.CapacityCount,
-            ItemPrices = modelPricingList.Pricings.Select(p =>
             {
-                return new ModelData.ItemPrice
+                EventTicketLimit = ModelState.EventTicketLimit,
+                IsLimit = ModelState.EventTicketLimit != 0 ? 2 : 1,
+                IsOpen = ModelState.IsOpen,
+                IsCapacity = ModelState.IsCapacity,
+                CapacityCount = ModelState.CapacityCount,
+                ItemPrices = modelPricingList.Pricings.Select(p =>
                 {
-                    AbsorbFees       = p.AbsorbFees,
-                    MaxSlots         = p.MaxSlots,
-                    Price            = p.Price,
-                    Description      = p.Description,
-                    Id               = p.Id,
-                    Name             = p.Name,
-                    TicketSold       = p.TicketSold,
-                    RequiredApproval = p.RequiredApproval,
-                    IsUnlimited      = p.IsUnlimited
-                };
-            }).ToList(),
-            CustomAcceptedBody = customAcceptedMessageOrig,
-            CustomDeclinedBody = customDeclinedMesasgeOrig,
-            CustomPendingBody = customPendingMessageOrig,
-            Questions = questions.Where(q => q.IsNew).ToList(),
-        };
+                    return new ModelData.ItemPrice
+                    {
+                        AbsorbFees = p.AbsorbFees,
+                        MaxSlots = p.MaxSlots,
+                        Price = p.Price,
+                        Description = p.Description,
+                        Id = p.Id,
+                        Name = p.Name,
+                        TicketSold = p.TicketSold,
+                        RequiredApproval = p.RequiredApproval,
+                        IsUnlimited = p.IsUnlimited
+                    };
+                }).ToList(),
+                CustomAcceptedBody = customAcceptedMessageOrig,
+                CustomDeclinedBody = customDeclinedMesasgeOrig,
+                CustomPendingBody = customPendingMessageOrig,
+                Questions = questions.Where(q => q.IsNew).ToList(),
+            };
         return data;
     }
 
@@ -838,13 +838,14 @@
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
 
-        if(data.Questions is not null && data.Questions.Count > 0)
+        if (data.Questions is not null && data.Questions.Count > 0)
         {
-            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
-                FieldType = q.FieldType,
-                Question = q.Question,
-                Required = q.Required
-            }));
+            questions.AddRange(data.Questions.Select(q => new CustomQuestion
+                {
+                    FieldType = q.FieldType,
+                    Question = q.Question,
+                    Required = q.Required
+                }));
         }
 
         return Task.CompletedTask;
@@ -895,11 +896,11 @@
         public bool IsCapacity { get; set; }
         public int CapacityCount { get; set; }
 
-        public string CustomPendingBody {get; set;}
-        public string CustomAcceptedBody {get; set;}
-        public string CustomDeclinedBody {get; set;}
+        public string CustomPendingBody { get; set; }
+        public string CustomAcceptedBody { get; set; }
+        public string CustomDeclinedBody { get; set; }
 
-        public List<CustomQuestion> Questions {get; set;}
+        public List<CustomQuestion> Questions { get; set; }
 
         public class ItemPrice
         {
@@ -911,7 +912,7 @@
             public string Name { get; set; }
             public int TicketSold { get; set; }
             public bool Disabled { get; set; } = false;
-            public bool RequiredApproval {get; set;}
+            public bool RequiredApproval { get; set; }
             public bool IsUnlimited { get; set; }
         }
     }
@@ -962,7 +963,7 @@
             }
         }
 
-        public bool RequiredApproval {get; set;}
+        public bool RequiredApproval { get; set; }
     }
 
     public class PriceIfNotFreeAttribute : ValidationAttribute
@@ -1059,13 +1060,13 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.Id == modelPricing.Id);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name             = modelPricing.Name;
-                            existingTicket.Price            = modelPricing.Price;
-                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
                             existingTicket.RequiredApproval = modelPricing.RequiredApproval;
-                            existingTicket.IsUnlimited      = modelPricing.IsUnlimited;
-                            existingTicket.IsFree           = modelPricing.IsFree;
+                            existingTicket.IsUnlimited = modelPricing.IsUnlimited;
+                            existingTicket.IsFree = modelPricing.IsFree;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -1077,13 +1078,13 @@
                         var existingTicket = modelPricingList.Pricings.FirstOrDefault(t => t.TempId == modelPricing.TempId);
                         if (existingTicket != null)
                         {
-                            existingTicket.Name             = modelPricing.Name;
-                            existingTicket.Price            = modelPricing.Price;
-                            existingTicket.MaxSlots         = modelPricing.MaxSlots;
-                            existingTicket.AbsorbFees       = modelPricing.AbsorbFees;
+                            existingTicket.Name = modelPricing.Name;
+                            existingTicket.Price = modelPricing.Price;
+                            existingTicket.MaxSlots = modelPricing.MaxSlots;
+                            existingTicket.AbsorbFees = modelPricing.AbsorbFees;
                             existingTicket.RequiredApproval = modelPricing.RequiredApproval;
-                            existingTicket.IsUnlimited      = modelPricing.IsUnlimited;
-                            existingTicket.IsFree           = modelPricing.IsFree;
+                            existingTicket.IsUnlimited = modelPricing.IsUnlimited;
+                            existingTicket.IsFree = modelPricing.IsFree;
                             await ticketModal.Hide();
                             isEditing = false;
                             modelPricing = new Pricing();
@@ -1194,16 +1195,16 @@
     {
         modelPricing = new Pricing
             {
-                Id               = ticket.Id,
-                Name             = ticket.Name,
-                Price            = ticket.Price,
-                MaxSlots         = ticket.MaxSlots,
-                AbsorbFees       = ticket.AbsorbFees,
-                IsNew            = ticket.IsNew,
-                TempId           = ticket.TempId,
+                Id = ticket.Id,
+                Name = ticket.Name,
+                Price = ticket.Price,
+                MaxSlots = ticket.MaxSlots,
+                AbsorbFees = ticket.AbsorbFees,
+                IsNew = ticket.IsNew,
+                TempId = ticket.TempId,
                 RequiredApproval = ticket.RequiredApproval,
-                IsUnlimited      = ticket.IsUnlimited,
-                IsFree           = ticket.IsFree
+                IsUnlimited = ticket.IsUnlimited,
+                IsFree = ticket.IsFree
             };
         isEditing = true;
         await ticketModal.Show();
@@ -1289,27 +1290,27 @@
 
     private async Task OnOffCanvasSave()
     {
-        switch(selectedEmailTemplate)
+        switch (selectedEmailTemplate)
         {
             case 0:
                 await SavePendingTemplate();
-                await NotificationService.Success("Custom pending email template updated.","Success");
+                await NotificationService.Success("Custom pending email template updated.", "Success");
                 break;
             case 1:
                 await SavePendingTemplate();
-                await NotificationService.Success("Custom approved email template updated.","Success");
+                await NotificationService.Success("Custom approved email template updated.", "Success");
                 break;
             default:
                 await SaveDeclinedTemplate();
-                await NotificationService.Success("Custom declined email template updated.","Success");
+                await NotificationService.Success("Custom declined email template updated.", "Success");
                 break;
         }
     }
 
     private Task OnOffCanvasCancel()
     {
-        if(selectedEmailTemplate == 0) return CancelPendingTemplate();
-        if(selectedEmailTemplate == 1) return CancelAcceptedTemplate();
+        if (selectedEmailTemplate == 0) return CancelPendingTemplate();
+        if (selectedEmailTemplate == 1) return CancelAcceptedTemplate();
 
         return CancelDeclinedTemplate();
     }
@@ -1321,25 +1322,28 @@
 
     private Task CloseCustomQuestion()
     {
+        formQuestion.Question = string.Empty;
         return modalCustomQuestion?.Close(CloseReason.UserClosing);
     }
 
     private Task AddQuestion()
     {
-        questions.Add(new CustomQuestion {
-            Question = formQuestion.Question,
-            Required = formQuestion.Required,
-            IsNew = true
-        });
+        questions.Add(new CustomQuestion
+            {
+                Question = formQuestion.Question,
+                Required = formQuestion.Required,
+                IsNew = true
+            });
+        formQuestion.Question = string.Empty;
         return CloseCustomQuestion();
     }
 
-    public class CustomQuestion 
+    public class CustomQuestion
     {
-        public string Question {get; set;}
-        public bool Required {get; set;}
-        public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
-        public bool IsNew {get; set;} = false;
+        public string Question { get; set; }
+        public bool Required { get; set; }
+        public string FieldType { get; set; } = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew { get; set; } = false;
     }
 
     private void CheckboxChanged(ChangeEventArgs e)
@@ -1362,7 +1366,7 @@
     }
 
     private async Task RegistrationHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
     }
     private async Task RegistrationHoverLeave(MouseEventArgs e)
@@ -1370,7 +1374,7 @@
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
     }
     private async Task WaitlistHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#waitlistDiv");
     }
     private async Task WaitlistHoverLeave(MouseEventArgs e)
@@ -1378,7 +1382,7 @@
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#waitlistDiv");
     }
     private async Task TicketsHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#ticketsDiv");
     }
     private async Task TicketsHoverLeave(MouseEventArgs e)
@@ -1386,7 +1390,7 @@
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#ticketsDiv");
     }
     private async Task PendingHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
     }
     private async Task PendingHoverLeave(MouseEventArgs e)
@@ -1394,7 +1398,7 @@
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
     }
     private async Task GoingHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
     }
     private async Task GoingHoverLeave(MouseEventArgs e)
@@ -1402,7 +1406,7 @@
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
     }
     private async Task DeclinedHoverMove(MouseEventArgs e)
-    { 
+    {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
     }
     private async Task DeclinedHoverLeave(MouseEventArgs e)
