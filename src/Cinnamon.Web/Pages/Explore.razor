@@ -1860,80 +1860,63 @@
         await InitializeSwiper();
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        //Check if login via FB
-        if (uri.AbsolutePath.Contains("facebook-login"))
+        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+        try
         {
-            if (IsNewUser == true)
+            if (userSuccess && tokenSuccess)
             {
-                isLoginFB = true;
-                await signinModal.Show();
-            }
-            else
-            {
-                await fbUpdateModal.Show();
-            }
-        }
-        else
-        {
-            var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
-            var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
-            try
-            {
-                if (userSuccess && tokenSuccess)
+                var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
+                    {
+                        Token = token,
+                        UserId = userId
+                    });
+                if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
                 {
-                    var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
-                        {
-                            Token = token,
-                            UserId = userId
-                        });
-                    if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
+                    // invalid guid
+                    return;
+                }
+        
+                // try to register again to check if already have account details
+                var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
                     {
-                        // invalid guid
-                        return;
-                    }
-
-                    // try to register again to check if already have account details
-                    var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs
-                        {
-                            Email = verifyRes.Result.Result.Email,
-                            ValidationRoute = AppConfig.BaseUrl + "/explore"
-                        });
-                    if (!checkRegistered.Succeeded || checkRegistered.Result == null)
+                        Email = verifyRes.Result.Result.Email,
+                        ValidationRoute = AppConfig.BaseUrl + "/explore"
+                    });
+                if (!checkRegistered.Succeeded || checkRegistered.Result == null)
+                {
+                    // error
+                    return;
+                }
+        
+                if (checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
+                {
+                    if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
                     {
-                        // error
-                        return;
-                    }
-
-                    if (checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
-                    {
-                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
+                        if (CustomerModel.CustomerProfile != null)
                         {
-                            if (CustomerModel.CustomerProfile != null)
-                            {
-                                Email        = CustomerModel.CustomerProfile.Email;
-                                NewEmail     = verifyRes.Result.Result.Email;
-                                Birthday     = CustomerModel.CustomerProfile.Birthdate;
-                                //Show update password modal
-                                updatePasswordModal.Show(Email, NewEmail);
-                            }
-                            else
-                            {
-                                 modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
-                            }
+                            Email        = CustomerModel.CustomerProfile.Email;
+                            NewEmail     = verifyRes.Result.Result.Email;
+                            Birthday     = CustomerModel.CustomerProfile.Birthdate;
+                            //Show update password modal
+                            updatePasswordModal.Show(Email, NewEmail);
                         }
-                        if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
+                        else
                         {
-                            await modalPassword.OpenModal(verifyRes.Result.Result.Email);
+                             modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
                         }
+                    }
+                    if (checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
+                    {
+                        await modalPassword.OpenModal(verifyRes.Result.Result.Email);
                     }
                 }
             }
-            catch (Exception e)
-            {
-                e.Message.ToString();
-            }
         }
-
+        catch (Exception e)
+        {
+            e.Message.ToString();
+        }
     }
 
     private async Task SendChatStatus()
