@@ -309,7 +309,7 @@
             if (!string.IsNullOrEmpty(Handler))
             {
                 await updateLoadingIndicator.Show();
-                await Task.Delay(2000);
+                await Task.Delay(500);
                 await LoadComponentState();
                 switch (Tab)
                 {
@@ -365,6 +365,10 @@
                     case 9:
                         currentIndex = 1;
                         otePricing?.OnDeclinedTemplateClick();
+                        break;
+                    case 10:
+                        currentIndex = 1;
+                        otePricing.IsEditRegistration = true;
                         break;
                     default:
                         break;
