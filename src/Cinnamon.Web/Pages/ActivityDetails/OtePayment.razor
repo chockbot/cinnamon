@@ -72,7 +72,7 @@
                                     </p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
-                                    <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                    <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                         <span class="p-1 border-right-1-solid counter-item prevent-select disabled">
                                             <span class="item-action">-</span>
                                         </span>
@@ -692,7 +692,8 @@
                     OteScheduleId = sTicket.OteScheduleId,
                     Price = sTicket.Price,
                     TicketSold = sTicket.TicketSold,
-                    RequiredApproval = sTicket.RequiredApproval
+                    RequiredApproval = sTicket.RequiredApproval,
+                    IsUnlimited = sTicket.IsUnlimited
                 };
                 await AddSelectedTicket(otePricing, tracker.ForceCreateTicket);
             }
@@ -978,7 +979,7 @@
 
     private Task AddSelectedTicket(OtePricing pricing, bool forceCreate = false)
     {
-        if(forceCreate)
+        if(forceCreate || pricing.IsUnlimited)
         {
             if(selectedTickets.ContainsKey(pricing.Id))
             {

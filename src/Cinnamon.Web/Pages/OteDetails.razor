@@ -998,13 +998,15 @@
             return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
 
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
         bool haveQuestions = activityQuestions.Count > 0;
 
         if(haveQuestions) return modalQuestions?.Show();
 
-        if(isFreeWithoutApproval) return ProceedToFreePurchase();
+        if(isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
 
         return ProceedToPaymentOption();
     }
