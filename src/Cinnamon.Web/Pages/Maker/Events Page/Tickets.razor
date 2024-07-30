@@ -247,9 +247,15 @@
                 
             }
         </div>
-        <Button Clicked="NavigateToQuestions" class="btn-question">
-           <span class="ms">Add Registration Questions</span>
-        </Button>
+        <div class="action-buttons">
+            <Button Clicked="NavigateToQuestions" class="btn-question">
+                <span class="ms">Add Registration Questions</span>
+            </Button>
+            <Button Clicked="NavigateToRegistration" class="btn-question">
+                <span class="ms">Edit Registration Questions</span>
+            </Button>
+        </div>
+        
     </div>
 </div>
 
@@ -362,6 +368,10 @@
     private void NavigateToDeclined()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{9}");
+    }
+    private void NavigateToRegistration()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{10}");
     }
     public class CustomQuestion
     {

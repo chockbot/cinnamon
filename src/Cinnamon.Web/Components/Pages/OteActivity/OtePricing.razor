@@ -474,13 +474,13 @@
     </Modal>
 
     @*Add Ticket Modal*@
-    <Modal @ref="ticketModal">
+<Modal @ref="ticketModal">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <p class="font-20 font-weight-700 color-black-100 mb-0">@((isEditing ? "Edit" : "Add") + " your Ticket")</p>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="pricingFormValidation" Mode="ValidationMode.Manual" Model="modelPricing">
+            <Validations @ref="pricingFormValidation" Mode="FormMode" Model="modelPricing">
                 <Validation>
                     <Field class="mb-4">
                         <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
@@ -512,14 +512,14 @@
                 </Field>
                 <Row VerticalGutter="10">
                     <Column ColumnSize="ColumnSize.Is7">
-                        <Validation>
+                        <Validation @ref="price">
                             <Field>
                                 <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
                                     price
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@modelPricing.IsFree">
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@modelPricing.IsFree" @onkeyup="PriceChanged">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -535,14 +535,14 @@
                         </Validation>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is5">
-                        <Validation>
+                        <Validation @ref="maxSlotValidation">
                             <Field>
                                 <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
                                     max slots
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots">
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" @onkeyup="MaxSlotsChanged">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -685,7 +685,10 @@
     private Validations? pricingFormValidation;
     private Validations? pringListFormValidation;
     private Validation? maxTicketLimit;
-    private bool showErrors = false;
+    private Validation? price;
+    private Validation maxSlotValidation;
+    public bool IsEditRegistration { get; set; } = false;
+    public bool showErrors { get; set; } = false;
     private int? activeMenuId;
     private string errorMessageAlert { get; set; }
     private bool DisplayDelete = true;
@@ -714,6 +717,14 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsEditRegistration)
+        {
+            await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
+        }
+    }
 
     private async Task NextClick()
     {
@@ -746,14 +757,15 @@
             await Task.Delay(300);
             errorMessage = "<li>Please add ticket/s to proceed.</li>";
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
+            showErrors = true;
             return false;
         }
         bool valid = isSetLimit && checkTicket;
-        showErrors = true;
         StateHasChanged();
         await Task.Delay(300); // add delay to populate is-invalid class
         if (!valid)
         {
+            showErrors = true;
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".ote-pricing-wrapper .is-invalid");
         }
         errorMessage = string.Empty;
@@ -934,7 +946,7 @@
         [MaxSlotsIfNotUnlimited]
         public int? MaxSlots { get; set; } = null;
 
-        [Required(ErrorMessage = "The absorb fees field is mandatory.")]
+         
         public bool AbsorbFees { get; set; }
 
         [Required(ErrorMessage = "The description field is mandatory.")]
@@ -974,11 +986,16 @@
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            OtePricing price = new OtePricing();
             var pricing = (Pricing)validationContext.ObjectInstance;
-
             if (!pricing.IsFree && pricing.Price <= 0 || !pricing.IsFree && pricing.Price == null)
             {
+                price.showErrors = true;
                 return new ValidationResult("If the ticket is not free, the price must be greater than 0.");
+            }
+            else
+            {
+                price.showErrors = false;
             }
             return ValidationResult.Success;
         }
@@ -987,11 +1004,16 @@
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            OtePricing price = new OtePricing();
             var pricing = (Pricing)validationContext.ObjectInstance;
-
             if (!pricing.IsUnlimited && pricing.MaxSlots <= 0 || !pricing.IsUnlimited && pricing.MaxSlots == null)
             {
+                price.showErrors = true;
                 return new ValidationResult("If the ticket is not unlimited, the max slot must be greater than 0.");
+            }
+            else
+            {
+                price.showErrors = false;
             }
             return ValidationResult.Success;
         }
@@ -1415,5 +1437,21 @@
     private async Task DeclinedHoverLeave(MouseEventArgs e)
     {
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
+    }
+    private void PriceChanged(object value)
+    {
+        ValidatePricing();
+    }
+
+    private void MaxSlotsChanged(object value)
+    {
+        ValidatePricing();
+    }
+
+    private async Task ValidatePricing()
+    {
+        var validationContext = new ValidationContext(modelPricing);
+        Validator.TryValidateObject(modelPricing, validationContext, null, true);
+        await pricingFormValidation.ValidateAll();
     }
 }
