@@ -50,11 +50,11 @@ public class SubmitVerifyEmailHandler : ISubmitVerifyEmailHandler
             if(!waitlist.IsVerified)
             {
                 // check token if the same
-                var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
-                if(decodedToken != waitlist.Token)
-                {
-                    return AppResult<SubmitVerifyEmailResult>.CreateFailed(new ApplicationException("Invalid userid or token"), "Invalid userid or token");
-                }
+                //var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
+                //if(decodedToken != waitlist.Token)
+                //{
+                //    return AppResult<SubmitVerifyEmailResult>.CreateFailed(new ApplicationException("Invalid userid or token"), "Invalid userid or token");
+                //}
 
                 var updated = await waitListData.UpdateWaitlist(new Framework.ApiCommand.ApiData.Waitlist.Request.UpdateWaitlistArgs {
                     Email = waitlist.Email,
