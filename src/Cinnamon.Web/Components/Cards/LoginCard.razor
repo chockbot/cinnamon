@@ -16,7 +16,7 @@
             <button class="btn-primary rounded-pill shadow-sm text-center" id="signup-waiting" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
                 <i id="email-spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Continue
             </button>
-            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a class="redirect-help" target="_blank" style="color:#FFA942" @onclick="NavigateToPrivacyPolicy">Terms and Conditions</a> and <a class="redirect-help" target="_blank" style="color:#FFA942" @onclick="NavigateToTermsConditions">Privacy Policy</a></p>
         </div>
     </form>
     <div class="divider">
@@ -110,5 +110,15 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
             await jsRuntime.InvokeVoidAsync("MyLib.Components.modal.login.init", "");
         }
+    }
+
+    private void NavigateToPrivacyPolicy()
+    {
+        NavigationManager.NavigateTo("/help?section=privacy");
+    }
+
+    private void NavigateToTermsConditions()
+    {
+        NavigationManager.NavigateTo("/help?section=terms");
     }
 } 
