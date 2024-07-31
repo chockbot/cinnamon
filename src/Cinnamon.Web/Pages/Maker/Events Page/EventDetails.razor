@@ -258,7 +258,7 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
-            await Task.Delay(1000);
+            await Task.Delay(2000);
             await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
