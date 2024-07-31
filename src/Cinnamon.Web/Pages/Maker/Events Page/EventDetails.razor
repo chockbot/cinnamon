@@ -19,6 +19,7 @@
 @inject IMapper mapper;
 @inject IJSRuntime jsRuntime
 @inject INotificationService NotificationService;
+@implements IAsyncDisposable
 @attribute [Authorize]
 
 <PageTitle>Event Details | CinnamonPH</PageTitle>
@@ -34,7 +35,7 @@
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="NavigateToRegistration">
+            <div class="div-option-details" id="hoverDiv" @onclick="NavigateToRegistration">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
@@ -42,14 +43,14 @@
                 </div>
                 <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details" id="shareQrDiv" @onmousemove="ShareQRHoverMove" @onmouseleave="ShareQRHoverLeave" @onclick="@(() => GenerateLinkShowModal())">
+            <div class="div-option-details" id="hoverDiv" @onclick="@(() => GenerateLinkShowModal())">
                 <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Share QR Scanner Link</p>
                 </div>
                 <div class="effect hover2"></div>
             </div>
-            <a class="verify-ticket" id="scanDiv" @onmousemove="ScanHoverMove" @onmouseleave="ScanHoverLeave" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+            <a class="verify-ticket" id="hoverDiv" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
                 <div class="div-option-details">
                     <img class="option-img" src="images/ote/add.svg" alt="cover-photo">
                     <div class="option-name">
@@ -175,6 +176,7 @@
 
     LoadingIndicator loadingIndicator;
     IJSObjectReference module;
+    IJSObjectReference hoverEffectModule;
     public List<OteTicket> oteCustomer = new List<OteTicket>();
     public List<OteTicket> FilteredCustomer = new();
     public List<OteSchedule> ticketList = new List<OteSchedule>();
@@ -258,6 +260,8 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+            await Task.Delay(2000);
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
@@ -614,29 +618,12 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{5}");
     }
-    private async Task RegistrationHoverMove(MouseEventArgs e)
-    { 
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
-    }
-    private async Task RegistrationHoverLeave(MouseEventArgs e)
+    public async ValueTask DisposeAsync()
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
-    }
-    private async Task ShareQRHoverMove(MouseEventArgs e)
-    { 
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#shareQrDiv");
-    }
-    private async Task ShareQRHoverLeave(MouseEventArgs e)
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#shareQrDiv");
-    }
-    private async Task ScanHoverMove(MouseEventArgs e)
-    { 
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#scanDiv");
-    }
-    private async Task ScanHoverLeave(MouseEventArgs e)
-    {
-        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#scanDiv");
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
     }
 }
  
