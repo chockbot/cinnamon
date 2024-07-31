@@ -4,8 +4,6 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Cinnamon.Framework.Extensions.DateTimeExtension;
-using Cinnamon.Framework.Common;
 using Ganss.XSS;
 using Cinnamon.Framework.Helpers;
 
