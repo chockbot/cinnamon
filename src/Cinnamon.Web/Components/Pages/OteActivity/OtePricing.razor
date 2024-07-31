@@ -10,6 +10,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IJSRuntime JS
 @implements IOteComponent
+@implements IAsyncDisposable
 
 <section class="ote-pricing-wrapper">
     @*Ticket Limit*@
@@ -57,26 +58,25 @@
         </h3>
         <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
         <div class="ticket-options">
-            <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="() => registrationModal.Show()">
-                <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
-                <div class="option-name">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => registrationModal.Show()">
+                <img class="option-img image-holder" src="images/ote/registration.png" alt="cover-photo">
+                <div class="option-name text-box">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
                 <div class="effect hover1"></div>
-                <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details" id="waitlistDiv" @onmousemove="WaitlistHoverMove" @onmouseleave="WaitlistHoverLeave" @onclick="() => capacityModal.Show()">
-                <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
-                <div class="option-name">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => capacityModal.Show()">
+                <img class="option-img image-holder" src="images/ote/capacity.png" alt="cover-photo">
+                <div class="option-name text-box">
                     <p class="registration">Waitlist Capacity</p>
                     <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
                 </div>
                 <div class="effect hover2"></div>
             </div>
-            <div class="div-option-details" id="ticketsDiv" @onmousemove="TicketsHoverMove" @onmouseleave="TicketsHoverLeave" @onclick="() => ticketModal.Show()">
-                <img class="option-img" src="images/ote/add.png" alt="cover-photo">
-                <div class="option-name">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => ticketModal.Show()">
+                <img class="option-img image-holder" src="images/ote/add.png" alt="cover-photo">
+                <div class="option-name text-box">
                     <p class="registration">Add Tickets</p>
                     <p class="reg-status">@modelPricingList.Pricings.Count() tickets available</p>
                 </div>
@@ -153,10 +153,10 @@
 
         <Row HorizontalGutter="10" class="mb-4">
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" 
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" 
                     @onclick="OnPendingEmailTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
-                        <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
+                        <img class="me-2 image-holder" src="images/ote/tiny-clock.png" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
@@ -181,7 +181,7 @@
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv"
                     @onclick="OnAcceptedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-check.png" alt="check">
@@ -209,7 +209,7 @@
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave"
+                <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv"
                     @onclick="OnDeclinedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
                         <img class="me-2" src="images/ote/tiny-close.png" alt="close">
@@ -661,8 +661,8 @@
     </BodyContent>
     </ConfirmDialog>
 
-    @code
-    {
+@code
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -717,14 +717,24 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
+    IJSObjectReference hoverEffectModule;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
+        }
+
         if (IsEditRegistration)
         {
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
         }
+
+
     }
+
 
     private async Task NextClick()
     {
@@ -1390,54 +1400,6 @@
         modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
     }
 
-    private async Task RegistrationHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#registrationDiv");
-    }
-    private async Task RegistrationHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#registrationDiv");
-    }
-    private async Task WaitlistHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#waitlistDiv");
-    }
-    private async Task WaitlistHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#waitlistDiv");
-    }
-    private async Task TicketsHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#ticketsDiv");
-    }
-    private async Task TicketsHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#ticketsDiv");
-    }
-    private async Task PendingHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
-    }
-    private async Task PendingHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
-    }
-    private async Task GoingHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
-    }
-    private async Task GoingHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
-    }
-    private async Task DeclinedHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
-    }
-    private async Task DeclinedHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
-    }
     private void PriceChanged(object value)
     {
         ValidatePricing();
@@ -1453,5 +1415,13 @@
         var validationContext = new ValidationContext(modelPricing);
         Validator.TryValidateObject(modelPricing, validationContext, null, true);
         await pricingFormValidation.ValidateAll();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
     }
 }
