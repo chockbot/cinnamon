@@ -279,16 +279,24 @@
         </Row>
 
         <div>
-            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3">
+            <Button Clicked="CreateQuestion" class="color-green-100 bg-white-100 font-16 mb-3">
                 + <span class="ms-2">Add Questions</span>
             </Button>
 
             @foreach (var question in questions)
             {
-                <div class="bg-white-100 mb-2 p-3 border-radius-10">    
+                <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
                     </p>
+                    <div class="ms-3 d-flex">
+                        <Button class="p-0" Clicked="() => UpdateQuestion(question)">
+                            <img src="images/ote/blue-small-edit.png" alt="edit">
+                        </Button>
+                        <Button class="p-0" Clicked="() => RemoveQuestion(question)">
+                            <img src="images/ote/red-small-delete.png" alt="delete">
+                        </Button>
+                    </div>
                 </div>
             }
         </div>
@@ -301,7 +309,14 @@
 <Modal @ref="modalCustomQuestion">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            @if(questionAction == QuestionAction.Edit)
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Edit Question</p>
+            }
+            else
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            }
         </ModalHeader>
         <ModalBody class="px-4">
             <Field class="mb-3">
@@ -322,7 +337,7 @@
                 <Button class="btn-cancel" Clicked="CloseCustomQuestion">
                     Cancel
                 </Button>
-                <Button class="btn-save" Clicked="AddQuestion">
+                <Button class="btn-save" Clicked="SaveQuestion">
                     Save
                 </Button>
             </div>
@@ -702,6 +717,16 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
+
+    enum QuestionAction
+    {
+        Edit,
+        Create
+    }
+
+    private List<CustomQuestion> deletedQuestions = new();
+
+    private QuestionAction questionAction = QuestionAction.Create;
 
     private async Task NextClick()
     {
@@ -1289,8 +1314,10 @@
         return CancelDeclinedTemplate();
     }
 
-    private Task ShowCustomQuestionModal()
+    private Task CreateQuestion()
     {
+        formQuestion = new CustomQuestion();
+        questionAction = QuestionAction.Create;
         return modalCustomQuestion?.Show();
     }
 
@@ -1301,7 +1328,9 @@
 
     private Task AddQuestion()
     {
+        var lastId = questions.Count == 0 ? 0 : questions.Max(q => q.Id);
         questions.Add(new CustomQuestion {
+            Id = lastId + 1,
             Question = formQuestion.Question,
             Required = formQuestion.Required,
             IsNew = true
@@ -1309,8 +1338,52 @@
         return CloseCustomQuestion();
     }
 
+    private Task SaveUpdated()
+    {
+        var question = questions.FirstOrDefault(q => q.Id == formQuestion.Id);
+        if(question is not null)
+        {
+            question.Question = formQuestion.Question;
+            question.Required = formQuestion.Required;
+        }
+        return CloseCustomQuestion();
+    }
+
+    private Task SaveQuestion()
+    {
+        if(questionAction == QuestionAction.Create)
+        {
+            return AddQuestion();
+        }
+
+        return SaveUpdated();
+    }
+
+    private Task RemoveQuestion(CustomQuestion question)
+    {
+        questions.Remove(question);
+        if(!question.IsNew)
+        {
+            deletedQuestions.Add(question);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateQuestion(CustomQuestion question)
+    {
+        formQuestion = new CustomQuestion {
+            FieldType = question.FieldType,
+            Id = question.Id,
+            Question = question.Question,
+            Required = question.Required
+        };
+        questionAction = QuestionAction.Edit;
+        return modalCustomQuestion?.Show();
+    }
+
     public class CustomQuestion 
     {
+        public int Id {get; set;}
         public string Question {get; set;}
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
