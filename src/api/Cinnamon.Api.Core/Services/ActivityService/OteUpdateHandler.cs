@@ -362,9 +362,9 @@ public class OteUpdateHandler : IOteUpdateHandler
             }
 
             // for custom questions
-            if(args.Questions is not null && args.Questions.Count() > 0)
+            if(args.NewQuestions is not null && args.NewQuestions.Count() > 0)
             {
-                var questionsRes = args.Questions.Select(q => providerCustomQuestionData.CreateCustomQuestion(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.CreateCustomQuestionArgs {
+                var questionsRes = args.NewQuestions.Select(q => providerCustomQuestionData.CreateCustomQuestion(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.CreateCustomQuestionArgs {
                     ActivityId = updateOte.Result.Result.Id,
                     FieldLabel = q.Question,
                     FieldType = q.FieldType,
@@ -374,6 +374,28 @@ public class OteUpdateHandler : IOteUpdateHandler
 
                 // dont check the result if error or success
                 await Task.WhenAll(questionsRes);
+            }
+
+            if(args.UpdatedQuestions is not null && args.UpdatedQuestions.Count() > 0)
+            {
+                // dont check the result if error or success
+                var updatedQuestions = await providerCustomQuestionData.UpdateCustomQuestions(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.UpdateCustomQuestionsArgs {
+                    Questions = args.UpdatedQuestions.Select(q => new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.UpdateCustomQuestionsArgs.UpdateCustomQuestion {
+                        Id = q.Id,
+                        FieldLabel = q.Question,
+                        FieldType = q.FieldType,
+                        ProviderId = currentUser.Result.Id,
+                        Required = q.Required
+                    })
+                });
+            }
+
+            if(args.DeletedQuestions is not null && args.DeletedQuestions.Count() > 0)
+            {
+                // dont check the result if error or success
+                var deletedQuestions = await providerCustomQuestionData.DeleteCustomQuestions(new Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request.DeleteCustomQuestionsArgs {
+                    Ids = args.DeletedQuestions
+                });
             }
 
             var feedbackTemplateRes = saveEmailTemplateHandler.ExecuteAsync(new SaveEmailTemplateArgs {

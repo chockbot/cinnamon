@@ -5,9 +5,9 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.ProviderCustomQuestion.Request;
 public class UpdateCustomQuestionsArgs 
 {
     [Required]
-    public IEnumerable<UpdateCustomQuestions> Questions {get; set;}
+    public IEnumerable<UpdateCustomQuestion> Questions {get; set;}
     
-    public class UpdateCustomQuestions
+    public class UpdateCustomQuestion
     {
         [Required]
         public int Id {get; set;}
