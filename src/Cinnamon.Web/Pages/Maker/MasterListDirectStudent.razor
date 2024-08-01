@@ -25,11 +25,9 @@
             <TextEdit Placeholder="Search" class="search-bar" TextChanged="@TextSearchChanged"></TextEdit>
         </div>
     </div>
-    @if (directStudents.Count != 0)
-    {
-        <div class="direct-student-section">
+    <div class="direct-student-section">
             <div class="table-list">
-                <Table @ref="tableDirectStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                <Table @ref="tableDirectStudents" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell class="name-header">
@@ -100,7 +98,6 @@
                 </Pagination>
             </div>
         </div>
-    }
 </div>
 
 @code 
