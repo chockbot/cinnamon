@@ -3,6 +3,7 @@ namespace Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 public class OteGetRequestPaymentResult 
 {
     public int ActivityId {get; set;}
+    public int CustomerId {get; set;}
     public DateTime SelectedDate {get; set;}
     public IEnumerable<RequestPaymentTicket> SelectedTickets {get; set;} = Enumerable.Empty<RequestPaymentTicket>();
     public string Guid {get; set;}
@@ -12,6 +13,8 @@ public class OteGetRequestPaymentResult
 
     public bool Waitlisted {get; set;}
     public int WaitListId {get; set;}
+
+    public bool Used {get; set;}
 
     public class RequestPaymentTicket 
     {

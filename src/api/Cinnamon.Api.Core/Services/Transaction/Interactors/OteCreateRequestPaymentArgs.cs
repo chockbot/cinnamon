@@ -18,6 +18,8 @@ public class OteCreateRequestPaymentArgs : IInteractor
 
     public bool ForceCreateTicket {get; set;}
 
+    public bool Used {get; set;}
+
     public class RequestPaymentTicket 
     {
         public int TicketId {get; set;}
