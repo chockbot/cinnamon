@@ -212,7 +212,14 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         ForceCreateTicket = oteRequestPayment.ForceCreateTicket,
                         Waitlisted = oteRequestPayment.Waitlisted,
                         WaitListId = oteRequestPayment.WaitListId,
-                        Used = true
+                        Used = true,
+                        Guid = oteRequestPayment.Guid,
+                        Token = oteRequestPayment.Token,
+                        Questions = oteRequestPayment.Questions?.Select(q => new OteCreateRequestPaymentArgs.ProviderQuestion {
+                            Answer = q.Answer,
+                            Id = q.Id,
+                            Question = q.Question
+                        })
                     });
                 }
             }
