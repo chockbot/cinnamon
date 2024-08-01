@@ -68,10 +68,8 @@
                             <Field>
                                 <FieldLabel class="font-weight-700 mb-1 font-16 m-font-12">Parent Email</FieldLabel>
                                 <FieldBody>
-                                    <Validation>
                                         <TextEdit type="email" @bind-Text="selectedStudent.Email" class="color-black-100 font-16 m-font-12" Size="Size.Small" 
                                             Placeholder="Optional email" />
-                                    </Validation>
                                 </FieldBody>
                             </Field>
                         </Column>
@@ -806,7 +804,6 @@
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
-        [EmailAddress(ErrorMessage = "Provide valid email")]
         public string? Email {get; set;}
 
         [Required(ErrorMessage = "Gender is required")]
