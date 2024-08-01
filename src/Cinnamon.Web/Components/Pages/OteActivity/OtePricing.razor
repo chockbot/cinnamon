@@ -501,7 +501,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" @onchange="CheckboxChanged">
+                            <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged">
                             <span>
                                 <span>Free</span>
                                 <span>Paid</span>
@@ -538,7 +538,7 @@
                         <Validation @ref="maxSlotValidation">
                             <Field>
                                 <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
-                                    max slots
+                                    Total Ticket Qty.
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
@@ -548,7 +548,7 @@
                                         </Feedback>
                                     </NumericPicker>
                                     <div class="unli-flag d-flex">
-                                        <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Slots</p>
+                                        <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Ticket</p>
                                         <div class="form-check form-switch">
                                             <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
                                         </div>
@@ -818,7 +818,7 @@
                         Name = p.Name,
                         TicketSold = p.TicketSold,
                         RequiredApproval = p.RequiredApproval,
-                        IsUnlimited = p.IsUnlimited
+                        IsUnlimited = p.IsUnlimited,
                     };
                 }).ToList(),
                 CustomAcceptedBody = customAcceptedMessageOrig,
@@ -835,15 +835,16 @@
         {
             modelPricingList.Pricings.Add(new Pricing
                 {
-                    AbsorbFees = item.AbsorbFees,
-                    Description = item.Description,
-                    Id = item.Id,
-                    MaxSlots = item.MaxSlots,
-                    Price = item.Price,
-                    Name = item.Name,
-                    TicketSold = item.TicketSold,
+                    AbsorbFees       = item.AbsorbFees,
+                    Description      = item.Description,
+                    Id               = item.Id,
+                    MaxSlots         = item.MaxSlots,
+                    Price            = item.Price,
+                    Name             = item.Name,
+                    TicketSold       = item.TicketSold,
                     RequiredApproval = item.RequiredApproval,
-                    IsUnlimited = item.IsUnlimited
+                    IsUnlimited      = item.IsUnlimited,
+                    IsFree           = item.IsFree
                 });
         }
         customAcceptedMessageOrig = data.CustomAcceptedBody;
@@ -930,6 +931,7 @@
             public bool Disabled { get; set; } = false;
             public bool RequiredApproval { get; set; }
             public bool IsUnlimited { get; set; }
+            public bool IsFree { get; set; }
         }
     }
 
@@ -946,7 +948,7 @@
         [MaxSlotsIfNotUnlimited]
         public int? MaxSlots { get; set; } = null;
 
-         
+
         public bool AbsorbFees { get; set; }
 
         [Required(ErrorMessage = "The description field is mandatory.")]
@@ -961,7 +963,7 @@
         public int IsLimit { get; set; } = 1;
         public int TicketSold { get; set; }
         public bool IsUnlimited { get; set; }
-        public bool IsFree { get; set; } = true;
+        public bool IsFree { get; set; }
         public bool IsOpen { get; set; } = true;
         public bool IsCapacity { get; set; } = false;
         public int CapacityCount { get; set; }
@@ -1126,6 +1128,7 @@
                     modelPricing.TempId = maxId;
                     modelPricing.Order = order;
                     modelPricing.IsNew = true;
+                    modelPricing.IsFree = true;
                     modelPricingList.Pricings.Add(modelPricing);
                     await ticketModal.Hide();
                     modelPricing = new Pricing();
@@ -1388,6 +1391,7 @@
     {
         modelPricing.IsUnlimited = (bool)e.Value;
         modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
+        MaxSlotsChanged(e);
     }
 
     private async Task RegistrationHoverMove(MouseEventArgs e)

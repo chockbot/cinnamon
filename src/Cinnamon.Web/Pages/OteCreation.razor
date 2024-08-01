@@ -1115,7 +1115,8 @@
                     Name             = p.Name,
                     TicketSold       = totalTicketsSold,
                     IsUnlimited      = p.IsUnlimited,
-                    RequiredApproval = p.RequiredApproval
+                    RequiredApproval = p.RequiredApproval,
+                    IsFree           = p.Price == 0 ? true : false
                 };
             }).ToList(),
             CustomAcceptedBody = acceptedBody,
