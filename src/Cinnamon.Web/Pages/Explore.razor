@@ -1162,19 +1162,22 @@
                                                     {
 
                                                     } else {
-                                                    <div class="OTE-booking-count">
                                                         @if (@act.ExperienceCreationTypeId == 3)
                                                         {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            </div>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
-                                                            
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0)  
+                                                        {
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                                <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                            </div>  
                                                         }
-                                                    </div>
+
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
                                                         <h4 class="card-title1 mb-0">@act.Title</h4>
@@ -1425,19 +1428,23 @@
                                                     @if (numberOfTickets == 0)
                                                     {
 
+
                                                     } else {
-                                                    <div class="OTE-booking-count">
                                                         @if (@act.ExperienceCreationTypeId == 3)
                                                         {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            </div>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0)  
+                                                        {
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                                <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                            </div>
                                                         }
-                                                    </div>
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
                                                         <h4 class="card-title1 mb-0">@act.Title</h4>
@@ -1689,18 +1696,21 @@
                                                     {
 
                                                     } else {
-                                                    <div class="OTE-booking-count">
                                                         @if (@act.ExperienceCreationTypeId == 3)
                                                         {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
+                                                            </div>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1) {
-                                                            <img src="images/expolore-rating-star.png" class="star-tag-badge" />
-                                                            <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
-                                                            <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0) 
+                                                        {
+                                                            <div class="OTE-booking-count">
+                                                                <img src="images/expolore-rating-star.png" class="star-tag-badge" />
+                                                                <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
+                                                                <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
+                                                            </div>
                                                         }
-                                                    </div>
                                                     }
                                                     <Tooltip Multiline=true Text=@act.Title>
                                                         <h4 class="card-title1 mb-0">@act.Title</h4>
@@ -1805,63 +1815,62 @@
         <!--End of Desktop 1440px onwards -->
     </div>
 
-    <div class="container word-press-posts">
-        <div class="posts-featured-title">
-            <p class="posts-featured-text">FEATURED STORIES</p>
-            <a class="posts-link" target="_blank" href="https://cinnamon.ph/blog/">
-                <p class="posts-see-all-text">See All</p>
-            </a>
-        </div>
+        <div class="container word-press-posts">
+            <div class="posts-featured-title">
+                <p class="posts-featured-text">FEATURED STORIES</p>
+                <a class="posts-link" target="_blank" href="https://cinnamon.ph/blog/">
+                    <p class="posts-see-all-text">See All</p>
+                </a>
+            </div>
 
-        @if (wordpressPosts != null && wordpressPosts.Any())
-        {
-            <div class="posts-container">
-                <div class="schedule-swiper">
-                    <div class="swiper-wrapper">
-                        @{
-                            int postCount = 0;
-                        }
-                        @foreach (var post in wordpressPosts)
-                        {
-                            if (postCount >= 3)
-                            {
-                                break;
+            @if (wordpressPosts != null && wordpressPosts.Any())
+            {
+                <div class="posts-container">
+                    <div class="schedule-swiper">
+                        <div class="swiper-wrapper">
+                            @{
+                                int postCount = 0;
                             }
-                            postCount++;
+                            @foreach (var post in wordpressPosts)
+                            {
+                                if (postCount >= 3)
+                                {
+                                    break;
+                                }
+                                postCount++;
 
-                            <div class="swiper-slide">
-                                <div class="w-100">
-                                    <a class="post-link" href="@post.Link" target="_blank">
-                                        <div class="post">
-                                            @if (post.ImageLink == null)
-                                            {
-                                                <img class="post-featured-image" src="images\explore-page-images\default-wordpress-banner.svg" />
-                                            }
-                                            else 
-                                            {
-                                                <img class="post-featured-image" src="@post.ImageLink" alt="Media description" />
-                                            }
-                                            <p class="post-title">@((MarkupString)post.Title.Rendered)</p>
-                                            <p class="post-excerpt">@((MarkupString)post.Excerpt.Rendered)</p>
-                                            <p class="post-read-more">
-                                                <a class="post-redirect" href="@post.Link" target="_blank">Read More...</a>
-                                            </p>
-                                        </div>
-                                    </a>
+                                <div class="swiper-slide" style="margin: 0px;">
+                                    <div class="w-100">
+                                        <a class="post-link" href="@post.Link" target="_blank">
+                                            <div class="post">
+                                                @if (post.ImageLink == null)
+                                                {
+                                                    <img class="post-featured-image" src="images\explore-page-images\default-wordpress-banner.svg" />
+                                                }
+                                                else 
+                                                {
+                                                    <img class="post-featured-image" src="@post.ImageLink" alt="Media description" />
+                                                }
+                                                <p class="post-title">@((MarkupString)post.Title.Rendered)</p>
+                                                <p class="post-excerpt">@((MarkupString)post.Excerpt.Rendered)</p>
+                                                <p class="post-read-more">
+                                                    <a class="post-redirect" href="@post.Link" target="_blank">Read More...</a>
+                                                </p>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <p>No posts found.</p>
-        }
-    </div>
+            }
+            else
+            {
+                <p>No posts found.</p>
+            }
+        </div>
 
-    
 
     <!--Section 3-->
     <div class="partners">
