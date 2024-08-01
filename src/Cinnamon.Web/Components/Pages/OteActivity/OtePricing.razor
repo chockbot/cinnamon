@@ -825,7 +825,9 @@
             CustomAcceptedBody = customAcceptedMessageOrig,
             CustomDeclinedBody = customDeclinedMesasgeOrig,
             CustomPendingBody = customPendingMessageOrig,
-            Questions = questions.Where(q => q.IsNew).ToList(),
+            NewQuestions = questions.Where(q => q.IsNew).ToList(),
+            UpdatedQuestions = questions.Where(q => !q.IsNew).ToList(),
+            DeletedQuestions = deletedQuestions.Select(q => q.Id).ToList()
         };
         return data;
     }
@@ -855,12 +857,13 @@
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
 
-        if(data.Questions is not null && data.Questions.Count > 0)
+        if(data.UpdatedQuestions is not null && data.UpdatedQuestions.Count > 0)
         {
-            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
+            questions.AddRange(data.UpdatedQuestions.Select(q => new CustomQuestion {
                 FieldType = q.FieldType,
                 Question = q.Question,
-                Required = q.Required
+                Required = q.Required,
+                Id = q.Id
             }));
         }
 
@@ -915,7 +918,9 @@
         public string CustomAcceptedBody {get; set;}
         public string CustomDeclinedBody {get; set;}
 
-        public List<CustomQuestion> Questions {get; set;}
+        public List<CustomQuestion> NewQuestions {get; set;}
+        public List<CustomQuestion> UpdatedQuestions {get; set;}
+        public List<int> DeletedQuestions {get; set;}
 
         public class ItemPrice
         {

@@ -385,7 +385,8 @@ public class OteUpdateHandler : IOteUpdateHandler
                         FieldLabel = q.Question,
                         FieldType = q.FieldType,
                         ProviderId = currentUser.Result.Id,
-                        Required = q.Required
+                        Required = q.Required,
+                        ActivityId = args.Activity.Id
                     })
                 });
             }
