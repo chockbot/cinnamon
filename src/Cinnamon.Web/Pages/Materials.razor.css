@@ -1,4 +1,15 @@
-﻿#btn-search {
+﻿.section-1 .categories .schedule-swiper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.categories .swiper-wrapper {
+	width: auto;
+}
+
+#btn-search {
 	background-color: #ffa942;
 	border-radius: 50%;
 	box-shadow: none;
@@ -183,6 +194,7 @@ button:focus {
 	margin-bottom: 1rem;
 	border-radius: 20px;
 	border: none;
+	overflow: hidden;
 }
 
 .schedule-swiper .swiper-wrapper {
@@ -202,6 +214,10 @@ button:focus {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
+	.section-1 .categories .schedule-swiper {
+		justify-content: left;
+	}
+	
 	.card-img.img-fluid {
 		width: 170px;
 		height: 223.39px;
@@ -279,6 +295,13 @@ button:focus {
 }
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+	.section-1 .categories .schedule-swiper {
+		width: 100%;
+		display: flex;
+		justify-content: left;
+		position: relative;
+	  }
+
 	.categories-container {
 		border: none;
 	}
@@ -381,6 +404,12 @@ button:focus {
 	}
 	.card-img-overlay {
 		height: 340px;
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1400px) {
+	.section-1 .categories .schedule-swiper {
+		justify-content: left;
 	}
 }
 
