@@ -55,7 +55,7 @@
         <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
             Tickets
         </h3>
-        <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
+        <p class="sub-text">Note: If tickets have already been purchased, users cannot delete or update other ticket details. You can only update the ticket name and total ticket quantity.</p>
         <div class="ticket-options">
             <div class="div-option-details" id="registrationDiv" @onmousemove="RegistrationHoverMove" @onmouseleave="RegistrationHoverLeave" @onclick="() => registrationModal.Show()">
                 <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
@@ -98,7 +98,7 @@
                                 </div>
                             </button>
                             <ul class="dropdown-menu @ShowMenu(ticketId)" aria-labelledby="dropdownMenuButton-@ticketId">
-                                <li class="dropdown-item" @onclick="() => OnEditTicket(ticket)">
+                                <li class="dropdown-item" @onclick="() => EditClick(ticket)">
                                     Edit
                                 </li>
                                 <li class="dropdown-item" @onclick="() => DeleteClick(ticket)">
@@ -487,7 +487,7 @@
                             ticket name
                         </FieldLabel>
                         <FieldBody>
-                            <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-16 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
+                            <TextEdit class="font-16 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
@@ -501,7 +501,7 @@
                     </FieldLabel>
                     <FieldBody>
                         <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged">
+                            <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged" disabled=@(modelPricing.TicketSold != 0 ? true : false)>
                             <span>
                                 <span>Free</span>
                                 <span>Paid</span>
@@ -519,7 +519,7 @@
                                 </FieldLabel>
                                 <FieldBody>
                                     <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@modelPricing.IsFree" @onkeyup="PriceChanged">
+                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" @onkeyup="PriceChanged" Disabled=@(modelPricing.IsFree || modelPricing.TicketSold != 0 ? true : false)>
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -541,7 +541,7 @@
                                     Total Ticket Qty.
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
+                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
                                                    class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" @onkeyup="MaxSlotsChanged">
                                         <Feedback>
                                             <ValidationError />
@@ -963,7 +963,7 @@
         public int IsLimit { get; set; } = 1;
         public int TicketSold { get; set; }
         public bool IsUnlimited { get; set; }
-        public bool IsFree { get; set; }
+        public bool IsFree { get; set; } = true;
         public bool IsOpen { get; set; } = true;
         public bool IsCapacity { get; set; } = false;
         public int CapacityCount { get; set; }
@@ -1141,14 +1141,19 @@
     private async Task DeleteClick(Pricing price)
     {
         priceToDelete = price;
+        if (price.TicketSold != 0)
+        {
+            await NotificationService.Info("This ticket has already been purchased; details cannot be deleted. You can only edit the ticket name and quantity.", "Information");
+            await OnEditTicket(price);
+            return;
+        }
         //delete created online event if meron
         if (Summary is not null)
         {
             var onlineTicket = Summary.OnlineData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
             if (onlineTicket is not null)
             {
-                errorMessageAlert = "Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.";
-                await modalError.Show();
+                await NotificationService.Info("Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.", "Information");
                 return;
             }
         }
@@ -1220,25 +1225,31 @@
         return activeMenuId == ticketId ? "show" : "";
     }
 
+    private async Task EditClick(Pricing pricing)
+    {
+        await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+        await OnEditTicket(pricing);
+    }
+
     private async Task OnEditTicket(Pricing ticket)
     {
         modelPricing = new Pricing
             {
-                Id = ticket.Id,
-                Name = ticket.Name,
-                Price = ticket.Price,
-                MaxSlots = ticket.MaxSlots,
-                AbsorbFees = ticket.AbsorbFees,
-                IsNew = ticket.IsNew,
-                TempId = ticket.TempId,
+                Id               = ticket.Id,
+                Name             = ticket.Name,
+                Price            = ticket.Price,
+                MaxSlots         = ticket.MaxSlots,
+                AbsorbFees       = ticket.AbsorbFees,
+                IsNew            = ticket.IsNew,
+                TempId           = ticket.TempId,
+                TicketSold       = ticket.TicketSold,
                 RequiredApproval = ticket.RequiredApproval,
-                IsUnlimited = ticket.IsUnlimited,
-                IsFree = ticket.IsFree
+                IsUnlimited      = ticket.IsUnlimited,
+                IsFree           = ticket.IsFree
             };
         isEditing = true;
         await ticketModal.Show();
     }
-
     private async Task OnCancelEdit()
     {
         await ticketModal.Hide();
