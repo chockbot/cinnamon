@@ -173,6 +173,12 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
             }
             var requestedPayment = requestedPaymentRes.Result;
 
+            if(requestedPayment.Used)
+            {
+                return AppResult<OtePurchaseOrderResult>.CreateFailed(
+                    new ApplicationException("Request payment already used."), "Request payment already used.");
+            }
+
             var selectedTickets = new List<Ticket>();
             // validate selected tickets
             foreach(var ticket in args.Tickets)
@@ -321,7 +327,9 @@ public class OtePurchaseOrderHandler : IOtePurchaseOrderHandler
                 Guid = purchaseToken.Guid,
                 Token = purchaseToken.Token,
                 Waitlisted = requestedPayment.Waitlisted,
-                WaitListId = requestedPayment.WaitListId
+                WaitListId = requestedPayment.WaitListId,
+                PaymentRequestToken = requestedPayment.Token, // to be used for ote finish transaction
+                PaymentRequestGuid = requestedPayment.Guid,   // to invalidate requested payment token
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
