@@ -1168,7 +1168,8 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0)  
+                                                        {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
                                                             <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
@@ -1425,6 +1426,7 @@
                                                     @if (numberOfTickets == 0)
                                                     {
 
+
                                                     } else {
                                                     <div class="OTE-booking-count">
                                                         @if (@act.ExperienceCreationTypeId == 3)
@@ -1432,7 +1434,8 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1)  {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0)  
+                                                        {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
                                                             <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
@@ -1695,7 +1698,8 @@
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="number-of-reviews">@($"{numberOfTickets} booked")</span>
                                                         }
-                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1) {
+                                                        else if (act.SummaryDetails.TotalReviews > 0 || @act.ExperienceCreationTypeId == 1 && act.SummaryDetails.ReviewAccumulated > 0) 
+                                                        {
                                                             <img src="images/expolore-rating-star.png" class="star-tag-badge" />
                                                             <span class="average-rating">@act.SummaryDetails.ReviewAccumulated</span>
                                                             <span class="number-of-reviews">(@act.SummaryDetails.TotalReviews) ● @($"{(numberOfTickets < 10 ? numberOfTickets.ToString() : numberOfTickets + "+")} enrolled")</span>
