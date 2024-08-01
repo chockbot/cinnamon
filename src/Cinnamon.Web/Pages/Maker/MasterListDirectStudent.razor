@@ -109,7 +109,11 @@
 
     private string token = string.Empty;
 
+    private CancellationTokenSource _cts = new CancellationTokenSource();
+
     private List<DirectStudentInfoDTO> directStudents = new();
+
+    private List<DirectStudentInfoDTO> filteredStudents = new List<DirectStudentInfoDTO>();
 
     public string currentPage = "1";
 
@@ -148,16 +152,25 @@
     {
         try
         {
-            directStudents.Clear();
-            var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs {
-                CountPerPage = counterPage,
-                PageIndex    = pageIndex,
-                SearchValue  = SearchValue 
-            }, token);
+            directStudents.Clear(); // Clear existing data
+            var result = await directStudentApiHandler.DirectStudents(new Framework.ApiCommand.ApiCore.DirectStudent.Request.DirectStudentInfoArgs
+                {
+                    CountPerPage = counterPage,
+                    PageIndex = pageIndex,
+                    SearchValue = SearchValue
+                }, token);
 
-            if(result.Succeeded && result.Result is not null && result.Result.IsSuccess)
+            if (result.Succeeded && result.Result is not null && result.Result.IsSuccess)
             {
-                directStudents.AddRange(result.Result.Result);
+                // Ensure unique records before adding
+                var newStudents = result.Result.Result;
+                foreach (var student in newStudents)
+                {
+                    if (!directStudents.Any(ds => ds.Id == student.Id))
+                    {
+                        directStudents.Add(student);
+                    }
+                }
                 Pagination = result.Result.Pagination;
             }
         }
@@ -170,8 +183,17 @@
     private async Task TextSearchChanged(string search)
     {
         SearchValue = search;
-        directStudents.Clear();
-        await LoadDirectStudents(1);
+        _cts.Cancel(); // Cancel any ongoing requests
+        _cts = new CancellationTokenSource();
+
+        try
+        {
+            await LoadDirectStudents(1);
+        }
+        catch (OperationCanceledException)
+        {
+            // Handle request cancellation
+        }
     }
 
     private bool IsActive(string page)
