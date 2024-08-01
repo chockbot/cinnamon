@@ -111,33 +111,16 @@
                         @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
                     </p>
                     <div class="d-flex justify-content-between">
-                        @if (ticket.Price != 0)
-                        {
-                            <div class="approval-section">
-                                <p class="approval">Absorb Fees</p>
-                                <Tooltip Text="Absorb Fees: Ticketing fees are deducted from your ticket revenue." Multiline>
+                        <div class="approval-section">
+                            <p class="approval">Required Approval</p>
+                            <Tooltip Text="If enabled, guests need to be manually approved before receiving their tickets." Multiline>
                                 <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
                             </Tooltip>
                         </div>
-                            <div class="form-check form-switch">
-                                <Switch @bind-Checked="ticket.AbsorbFees" TValue="bool" class="form-check-input" />
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="approval-section">
-                                <p class="approval">Required Approval</p>
-                                <Tooltip Text="If enabled, guests need to be manually approved before receiving their tickets." Multiline>
-                                <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
-                            </Tooltip>
+                        <div class="form-check form-switch">
+                            <Switch @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                         </div>
-                            <div class="form-check form-switch">
-                                <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
-                            </div>
-                        }
-
                     </div>
-
                 </div>
             }
         </div>
@@ -565,7 +548,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -576,6 +559,13 @@
                                 <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees"></Check>
                                 <p class="approval-text">Absorb Fees: Ticketing fees are deducted from your ticket revenue. <span><a class="learn-more" @onclick="() => ViewDetails(modelPricing)">Learn more...</a></span></p>
                             </div>
+                            <div class="accept-reg">
+                                <p class="approval">Required Approval</p>
+                                <div class="form-check form-switch">
+                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                </div>
+                            </div>
+                            <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                         }
                     </Column>
                 </Row>
