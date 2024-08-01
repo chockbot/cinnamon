@@ -759,7 +759,7 @@
                             TicketRestriction = a.TicketRestriction,
                         };
                     }) : null,
-                    Questions = pricing.Questions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.CustomQuestion {
+                    Questions = pricing.NewQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteArgs.CustomQuestion {
                         FieldType = q.FieldType,
                         Question = q.Question,
                         Required = q.Required
@@ -881,11 +881,18 @@
                     OldDate = s.Date,
                     Id = s.Id
                 }) : null,
-                Questions = pricing.Questions is not null ? pricing.Questions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
+                NewQuestions = pricing.NewQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
                     FieldType = q.FieldType,
                     Question = q.Question,
                     Required = q.Required
-                }) : null,
+                }),
+                DeletedQuestions = pricing.DeletedQuestions,
+                UpdatedQuestions = pricing.UpdatedQuestions.Select(q => new Framework.ApiCommand.ApiCore.Activity.Request.UpdateOteArgs.CustomQuestion {
+                    Id = q.Id,
+                    FieldType = q.FieldType,
+                    Question = q.Question,
+                    Required = q.Required
+                })
             }, token);
 
             await ProgressService.Go(-1);
@@ -1016,7 +1023,8 @@
                 FieldType = q.FieldType,
                 IsNew = false,
                 Question = q.FieldLabel,
-                Required = q.Required
+                Required = q.Required,
+                Id = q.Id
             }));
         }
 
@@ -1119,7 +1127,7 @@
             CustomAcceptedBody = acceptedBody,
             CustomDeclinedBody = declinedBody,
             CustomPendingBody = pendingBody,
-            Questions = providerQuestions
+            UpdatedQuestions = providerQuestions
         });
 
         //Schedule

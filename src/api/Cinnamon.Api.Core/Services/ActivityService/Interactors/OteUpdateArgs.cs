@@ -14,7 +14,11 @@ public class OteUpdateArgs : IInteractor
 
     public IEnumerable<OteReschedule>? OteReschedules {get; set;}
 
-    public IEnumerable<CustomQuestion>? Questions {get; set;}
+    public IEnumerable<CustomQuestion>? NewQuestions {get; set;}
+
+    public IEnumerable<CustomQuestion>? UpdatedQuestions {get; set;}
+
+    public IEnumerable<int>? DeletedQuestions {get; set;}
 
     public class OteActivity 
     {
@@ -135,6 +139,7 @@ public class OteUpdateArgs : IInteractor
 
     public class CustomQuestion 
     {
+        public int Id {get; set;}
         public string Question {get; set;}
         public string FieldType {get; set;}
         public bool Required {get; set;}
