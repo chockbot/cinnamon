@@ -286,16 +286,24 @@
         </Row>
 
         <div>
-            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
+            <Button Clicked="CreateQuestion" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
                 + <span class="btn-question-text ms-2">Add Questions</span>
             </Button>
 
             @foreach (var question in questions)
             {
-                <div class="bg-white-100 mb-2 p-3 border-radius-10">
+                <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
                     </p>
+                    <div class="ms-3 d-flex">
+                        <Button class="p-0" Clicked="() => UpdateQuestion(question)">
+                            <img src="images/ote/blue-small-edit.png" alt="edit">
+                        </Button>
+                        <Button class="p-0" Clicked="() => RemoveQuestion(question)">
+                            <img src="images/ote/red-small-delete.png" alt="delete">
+                        </Button>
+                    </div>
                 </div>
             }
         </div>
@@ -308,7 +316,14 @@
 <Modal @ref="modalCustomQuestion">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            @if(questionAction == QuestionAction.Edit)
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Edit Question</p>
+            }
+            else
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            }
         </ModalHeader>
         <ModalBody class="px-4">
             <Field class="mb-3">
@@ -329,7 +344,7 @@
                 <Button class="btn-cancel" Clicked="CloseCustomQuestion">
                     Cancel
                 </Button>
-                <Button class="btn-save" Clicked="AddQuestion">
+                <Button class="btn-save" Clicked="SaveQuestion">
                     Save
                 </Button>
             </div>
@@ -717,6 +732,17 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
+
+    enum QuestionAction
+    {
+        Edit,
+        Create
+    }
+
+    private List<CustomQuestion> deletedQuestions = new();
+
+    private QuestionAction questionAction = QuestionAction.Create;
+
     IJSObjectReference hoverEffectModule;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -734,7 +760,6 @@
 
 
     }
-
 
     private async Task NextClick()
     {
@@ -834,7 +859,9 @@
                 CustomAcceptedBody = customAcceptedMessageOrig,
                 CustomDeclinedBody = customDeclinedMesasgeOrig,
                 CustomPendingBody = customPendingMessageOrig,
-                Questions = questions.Where(q => q.IsNew).ToList(),
+                NewQuestions = questions.Where(q => q.IsNew).ToList(),
+                UpdatedQuestions = questions.Where(q => !q.IsNew).ToList(),
+                DeletedQuestions = deletedQuestions.Select(q => q.Id).ToList()
             };
         return data;
     }
@@ -864,14 +891,14 @@
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
 
-        if (data.Questions is not null && data.Questions.Count > 0)
+        if(data.UpdatedQuestions is not null && data.UpdatedQuestions.Count > 0)
         {
-            questions.AddRange(data.Questions.Select(q => new CustomQuestion
-                {
-                    FieldType = q.FieldType,
-                    Question = q.Question,
-                    Required = q.Required
-                }));
+            questions.AddRange(data.UpdatedQuestions.Select(q => new CustomQuestion {
+                FieldType = q.FieldType,
+                Question = q.Question,
+                Required = q.Required,
+                Id = q.Id
+            }));
         }
 
         return Task.CompletedTask;
@@ -926,7 +953,9 @@
         public string CustomAcceptedBody { get; set; }
         public string CustomDeclinedBody { get; set; }
 
-        public List<CustomQuestion> Questions { get; set; }
+        public List<CustomQuestion> NewQuestions {get; set;}
+        public List<CustomQuestion> UpdatedQuestions {get; set;}
+        public List<int> DeletedQuestions {get; set;}
 
         public class ItemPrice
         {
@@ -1351,8 +1380,10 @@
         return CancelDeclinedTemplate();
     }
 
-    private Task ShowCustomQuestionModal()
+    private Task CreateQuestion()
     {
+        formQuestion = new CustomQuestion();
+        questionAction = QuestionAction.Create;
         return modalCustomQuestion?.Show();
     }
 
@@ -1364,23 +1395,59 @@
 
     private Task AddQuestion()
     {
-        questions.Add(new CustomQuestion
-            {
-                Question = formQuestion.Question,
-                Required = formQuestion.Required,
-                IsNew = true
-            });
-        formQuestion.Question = string.Empty;
+        var lastId = questions.Count == 0 ? 0 : questions.Max(q => q.Id);
+        questions.Add(new CustomQuestion {
+            Id = lastId + 1,
+            Question = formQuestion.Question,
+            Required = formQuestion.Required,
+            IsNew = true
+        });
         return CloseCustomQuestion();
     }
 
-    public class CustomQuestion
+    private Task SaveUpdated()
     {
-        public string Question { get; set; }
-        public bool Required { get; set; }
-        public string FieldType { get; set; } = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
-        public bool IsNew { get; set; } = false;
+        var question = questions.FirstOrDefault(q => q.Id == formQuestion.Id);
+        if(question is not null)
+        {
+            question.Question = formQuestion.Question;
+            question.Required = formQuestion.Required;
+        }
+        return CloseCustomQuestion();
     }
+
+    private Task SaveQuestion()
+    {
+        if(questionAction == QuestionAction.Create)
+        {
+            return AddQuestion();
+        }
+
+        return SaveUpdated();
+    }
+
+    private Task RemoveQuestion(CustomQuestion question)
+    {
+        questions.Remove(question);
+        if(!question.IsNew)
+        {
+            deletedQuestions.Add(question);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateQuestion(CustomQuestion question)
+    {
+        formQuestion = new CustomQuestion {
+            FieldType = question.FieldType,
+            Id = question.Id,
+            Question = question.Question,
+            Required = question.Required
+        };
+        questionAction = QuestionAction.Edit;
+        return modalCustomQuestion?.Show();
+    }
+
     private void CheckboxChanged(ChangeEventArgs e)
     {
         modelPricing.IsFree = !(bool)e.Value;
@@ -1423,5 +1490,14 @@
         {
             await hoverEffectModule.DisposeAsync();
         }
+    }
+
+    public class CustomQuestion
+    {
+        public int Id {get; set;}
+        public string Question {get; set;}
+        public bool Required {get; set;}
+        public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew {get; set;} = false;
     }
 }

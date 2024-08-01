@@ -17,7 +17,11 @@ public class UpdateOteArgs
 
     public IEnumerable<OteUpdateReschedule>? OteReschedules {get; set;}
 
-    public IEnumerable<CustomQuestion>? Questions {get; set;}
+    public IEnumerable<CustomQuestion>? NewQuestions {get; set;}
+
+    public IEnumerable<CustomQuestion>? UpdatedQuestions {get; set;}
+
+    public IEnumerable<int>? DeletedQuestions {get; set;}
 
     public class OteUpdateActivity 
     {
@@ -152,6 +156,9 @@ public class UpdateOteArgs
 
     public class CustomQuestion 
     {
+        [Required]
+        public int Id {get; set;}
+
         [Required]
         public string Question {get; set;}
 
