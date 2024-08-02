@@ -1813,9 +1813,66 @@
             </div>
         </div>
         <!--End of Desktop 1440px onwards -->
+        
+    <!-- Desktop View -->
+    <div class="section-2-lg row wordpress-desktop">
+        <div class="desktop-card-view row d-flex justify-content-start">
+            <div class="container">
+                 <div class="word-press-posts ">
+                    <div class="posts-featured-title">
+                        <p class="posts-featured-text">FEATURED STORIES</p>
+                        <a class="posts-link" target="_blank" href="https://cinnamon.ph/blog/">
+                            <p class="posts-see-all-text">See All</p>
+                        </a>
+                    </div>
+
+                    @if (wordpressPosts != null && wordpressPosts.Any())
+                    {
+                        <div class="posts-container">
+                                    @{
+                                        int postCount = 0;
+                                    }
+                                    @foreach (var post in wordpressPosts)
+                                    {
+                                        if (postCount >= 3)
+                                        {
+                                            break;
+                                        }
+                                        postCount++;
+
+                                                <a class="post-link" href="@post.Link" target="_blank">
+                                                    <div class="post">
+                                                        @if (post.ImageLink == null)
+                                                        {
+                                                            <img class="post-featured-image" src="images\explore-page-images\default-wordpress-banner.svg" />
+                                                        }
+                                                        else 
+                                                        {
+                                                            <img class="post-featured-image" src="@post.ImageLink" alt="Media description" />
+                                                        }
+                                                        <p class="post-title">@((MarkupString)post.Title.Rendered)</p>
+                                                        <p class="post-excerpt">@((MarkupString)post.Excerpt.Rendered)</p>
+                                                        <p class="post-read-more">
+                                                            <a class="post-redirect" href="@post.Link" target="_blank">Read More...</a>
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                    }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No posts found.</p>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 
-        <div class="container word-press-posts">
+        <!--Tablet & Mobile View-->
+    <div class="section-2-lg row">
+        <div class="desktop-card-view row d-flex justify-content-start">
+        <div class="container word-press-posts wordpress-tablet-mobile-toggle">
             <div class="posts-featured-title">
                 <p class="posts-featured-text">FEATURED STORIES</p>
                 <a class="posts-link" target="_blank" href="https://cinnamon.ph/blog/">
@@ -1870,6 +1927,10 @@
                 <p>No posts found.</p>
             }
         </div>
+        </div>
+    </div>
+
+    </div>
 
 
     <!--Section 3-->
