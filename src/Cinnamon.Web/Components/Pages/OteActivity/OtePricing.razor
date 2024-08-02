@@ -1258,6 +1258,7 @@
 
     private Task SavePendingTemplate()
     {
+        customPendingMessage = customPendingMessage.Trim();
         customPendingMessageOrig = customPendingMessage;
         return CloseOffCanvas();
     }
@@ -1270,6 +1271,7 @@
 
     private Task SaveAcceptedTemplate()
     {
+        customAcceptedMessage = customAcceptedMessage.Trim();
         customAcceptedMessageOrig = customAcceptedMessage;
         return CloseOffCanvas();
     }
@@ -1282,6 +1284,7 @@
 
     private Task SaveDeclinedTemplate()
     {
+        customDeclinedMesasge = customDeclinedMesasge.Trim();
         customDeclinedMesasgeOrig = customDeclinedMesasge;
         return CloseOffCanvas();
     }
