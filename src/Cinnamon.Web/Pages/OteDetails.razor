@@ -1189,6 +1189,7 @@
 
     private Task ClearAnswers()
     {
+        personalForm.Phone = string.Empty;
         foreach (var item in activityQuestions)
         {
             item.Answer = string.Empty;
@@ -1620,6 +1621,8 @@
     {
         var validForms = await questionValidation.ValidateAll();
         if(!validForms) return;
+
+        await questionValidation.ClearAll();
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
