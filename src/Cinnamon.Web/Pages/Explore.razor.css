@@ -27,6 +27,16 @@
   font-style: italic;
 }
 
+.wordpress-tablet-mobile-toggle {
+  display: none;
+}
+
+.wordpress-desktop {
+  display: block;
+  margin-left: 0.3%;
+}
+
+
 .btn-close-modal {
   display: flex;
   padding: 18px 10px;
@@ -497,7 +507,7 @@
   flex-direction: column;
   bottom: 0;
   left: 0;
-  margin-bottom: 157px;
+  margin-bottom: 100px;
   margin-left: 80px;
 }
 
@@ -2224,6 +2234,14 @@ img.img-icon {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 426px) {
 
+  .wordpress-tablet-mobile-toggle {
+    display: block;
+  }
+  
+  .wordpress-desktop {
+    display: none;
+  }
+
   .modal-content {
 	width: 370px;
   }
@@ -2997,6 +3015,14 @@ img.img-icon {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 426px) and (max-width: 766px) {
 
+  .wordpress-tablet-mobile-toggle {
+    display: block;
+  }
+  
+  .wordpress-desktop {
+    display: none;
+  }
+
   .posts-container .schedule-swiper {
 	justify-content: left;
   }
@@ -3629,6 +3655,14 @@ img.img-icon {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 767px) and (max-width: 1023px) {
+
+  .wordpress-tablet-mobile-toggle {
+    display: block;
+  }
+  
+  .wordpress-desktop {
+    display: none;
+  }
 
   .posts-container .schedule-swiper {
 	justify-content: left;
@@ -4780,12 +4814,14 @@ img.img-icon {
 }
 
 @media (min-width: 1440px){
-  .posts-see-all-text {
-    margin-right: 60px;
-  }
-  
-  .posts-featured-text {
-    margin-left: 30px;
+  .post-link {
+    text-decoration: none;
+    width: 431.99px;
+    padding-left: 12px;
+    padding-right: 12px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
   }
   
   .search-bar-mobile {
@@ -4805,6 +4841,15 @@ img.img-icon {
 }
 /* For specific desktop screen */
 @media (min-width: 1024px) and (max-width: 1400px) {
+
+  .wordpress-tablet-mobile-toggle {
+    display: block;
+  }
+  
+  .wordpress-desktop {
+    display: none;
+  }
+  
   .posts-container .schedule-swiper {
 	justify-content: left;
   }
