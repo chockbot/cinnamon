@@ -578,32 +578,32 @@
     private Task SaveEmailReminder()
     {
         reminderNotificationOrig.Days = reminderNotification.Days;
-        reminderNotificationOrig.Body = reminderNotification.Body;
-        reminderNotificationOrig.Subject = reminderNotification.Subject;
+        reminderNotificationOrig.Body = reminderNotification.Body.Trim();
+        reminderNotificationOrig.Subject = reminderNotification.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task CancelEmailReminder()
     {
         reminderNotification.Days = reminderNotificationOrig.Days;
-        reminderNotification.Body = reminderNotificationOrig.Body;
-        reminderNotification.Subject = reminderNotificationOrig.Subject;
+        reminderNotification.Body = reminderNotificationOrig.Body.Trim();
+        reminderNotification.Subject = reminderNotificationOrig.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task SaveEmailFeedback()
     {
         feedbackNotificationOrig.Days = feedbackNotification.Days;
-        feedbackNotificationOrig.Body = feedbackNotification.Body;
-        feedbackNotificationOrig.Subject = feedbackNotification.Subject;
+        feedbackNotificationOrig.Body = feedbackNotification.Body.Trim();
+        feedbackNotificationOrig.Subject = feedbackNotification.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task CancelEmailFeedback()
     {
         feedbackNotification.Days = feedbackNotificationOrig.Days;
-        feedbackNotification.Body = feedbackNotificationOrig.Body;
-        feedbackNotification.Subject = feedbackNotificationOrig.Subject;
+        feedbackNotification.Body = feedbackNotificationOrig.Body.Trim();
+        feedbackNotification.Subject = feedbackNotificationOrig.Subject.Trim();
         return HideOffcanvas();
     }
 
