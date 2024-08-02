@@ -56,7 +56,7 @@
         <h3 class="text-capitalize font-24 font-weight-700 color-black-100 d-flex align-items-center m-font-20">
             Tickets
         </h3>
-        <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
+        <p class="sub-text">Note: If tickets have already been purchased, users cannot delete or update other ticket details. You can only update the ticket name and total ticket quantity.</p>
         <div class="ticket-options">
             <div class="div-option-details email-box" id="hoverDiv" @onclick="() => registrationModal.Show()">
                 <img class="option-img image-holder" src="images/ote/registration.png" alt="cover-photo">
@@ -98,7 +98,7 @@
                                 </div>
                             </button>
                             <ul class="dropdown-menu @ShowMenu(ticketId)" aria-labelledby="dropdownMenuButton-@ticketId">
-                                <li class="dropdown-item" @onclick="() => OnEditTicket(ticket)">
+                                <li class="dropdown-item" @onclick="() => EditClick(ticket)">
                                     Edit
                                 </li>
                                 <li class="dropdown-item" @onclick="() => DeleteClick(ticket)">
@@ -111,33 +111,16 @@
                         @((ticket.Price == 0) ? "Free" : $"₱{ticket.Price:N0}")
                     </p>
                     <div class="d-flex justify-content-between">
-                        @if (ticket.Price != 0)
-                        {
-                            <div class="approval-section">
-                                <p class="approval">Absorb Fees</p>
-                                <Tooltip Text="Absorb Fees: Ticketing fees are deducted from your ticket revenue." Multiline>
+                        <div class="approval-section">
+                            <p class="approval">Required Approval</p>
+                            <Tooltip Text="If enabled, guests need to be manually approved before receiving their tickets." Multiline>
                                 <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
                             </Tooltip>
                         </div>
-                            <div class="form-check form-switch">
-                                <Switch @bind-Checked="ticket.AbsorbFees" TValue="bool" class="form-check-input" />
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="approval-section">
-                                <p class="approval">Required Approval</p>
-                                <Tooltip Text="If enabled, guests need to be manually approved before receiving their tickets." Multiline>
-                                <img class="info-img" src="images/Dashboard/info.png" alt="cover-photo">
-                            </Tooltip>
+                        <div class="form-check form-switch">
+                            <Switch @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
                         </div>
-                            <div class="form-check form-switch">
-                                <Switch Disabled="ticket.Price != 0" @bind-Checked="ticket.RequiredApproval" TValue="bool" class="form-check-input" />
-                            </div>
-                        }
-
                     </div>
-
                 </div>
             }
         </div>
@@ -502,7 +485,7 @@
                             ticket name
                         </FieldLabel>
                         <FieldBody>
-                            <TextEdit ReadOnly="modelPricing.TicketSold != 0 ? true : false" class="font-16 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
+                            <TextEdit class="font-16 border-radius-10 m-border-radius-5 m-font-16" Rows="3" @bind-Text="modelPricing.Name">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
@@ -515,14 +498,29 @@
                         Ticket Type
                     </FieldLabel>
                     <FieldBody>
-                        <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" @onchange="CheckboxChanged">
-                            <span>
-                                <span>Free</span>
-                                <span>Paid</span>
-                                <a></a>
-                            </span>
-                        </label>
+                        @if(modelPricing.TicketSold > 0)
+                        {
+                            <label id="@modelPricing.Id" class="switch-light switch-candy">
+                                <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged" disabled>
+                                <span>
+                                    <span>Free</span>
+                                    <span>Paid</span>
+                                    <a></a>
+                                </span>
+                            </label>
+                        }
+                        else
+                        {
+                            <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
+                                <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged">
+                                <span>
+                                    <span>Free</span>
+                                    <span>Paid</span>
+                                    <a></a>
+                                </span>
+                            </label>
+                        }
+                        
                     </FieldBody>
                 </Field>
                 <Row VerticalGutter="10">
@@ -533,12 +531,25 @@
                                     price
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" ReadOnly="@modelPricing.IsFree" @onkeyup="PriceChanged">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </NumericPicker>
+                                    @if (modelPricing.TicketSold > 0)
+                                    {
+                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
+                                                       class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" Disabled>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </NumericPicker>
+                                    }
+                                    else
+                                    {
+                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
+                                                       class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" @onkeyup="PriceChanged" Disabled=@modelPricing.IsFree>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </NumericPicker>
+                                    }
+                                    
                                     @if (!modelPricing.IsFree)
                                     {
                                         <span class="font-14 font-weight-700 color-#343D4C-100">
@@ -553,17 +564,17 @@
                         <Validation @ref="maxSlotValidation">
                             <Field>
                                 <FieldLabel class="font-16 text-capitalize color-black-100 mb-1 m-font-16">
-                                    max slots
+                                    Total Ticket Qty.
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled="modelPricing.IsUnlimited"
+                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
                                                    class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" @onkeyup="MaxSlotsChanged">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </NumericPicker>
                                     <div class="unli-flag d-flex">
-                                        <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Slots</p>
+                                        <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Ticket</p>
                                         <div class="form-check form-switch">
                                             <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
                                         </div>
@@ -580,7 +591,7 @@
                             <div class="accept-reg">
                                 <p class="approval">Required Approval</p>
                                 <div class="form-check form-switch">
-                                    <Switch Disabled="modelPricing.Price != 0" TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
                                 </div>
                             </div>
                             <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
@@ -591,6 +602,13 @@
                                 <Check TValue="bool" Size="Size.Medium" @bind-Checked="modelPricing.AbsorbFees"></Check>
                                 <p class="approval-text">Absorb Fees: Ticketing fees are deducted from your ticket revenue. <span><a class="learn-more" @onclick="() => ViewDetails(modelPricing)">Learn more...</a></span></p>
                             </div>
+                            <div class="accept-reg">
+                                <p class="approval">Required Approval</p>
+                                <div class="form-check form-switch">
+                                    <Switch TValue="bool" @bind-Checked="modelPricing.RequiredApproval" class="form-check-input" />
+                                </div>
+                            </div>
+                            <p class="approval-text">If enabled, guests need to be manually approved before receiving their tickets.</p>
                         }
                     </Column>
                 </Row>
@@ -853,7 +871,7 @@
                         Name = p.Name,
                         TicketSold = p.TicketSold,
                         RequiredApproval = p.RequiredApproval,
-                        IsUnlimited = p.IsUnlimited
+                        IsUnlimited = p.IsUnlimited,
                     };
                 }).ToList(),
                 CustomAcceptedBody = customAcceptedMessageOrig,
@@ -872,15 +890,16 @@
         {
             modelPricingList.Pricings.Add(new Pricing
                 {
-                    AbsorbFees = item.AbsorbFees,
-                    Description = item.Description,
-                    Id = item.Id,
-                    MaxSlots = item.MaxSlots,
-                    Price = item.Price,
-                    Name = item.Name,
-                    TicketSold = item.TicketSold,
+                    AbsorbFees       = item.AbsorbFees,
+                    Description      = item.Description,
+                    Id               = item.Id,
+                    MaxSlots         = item.MaxSlots,
+                    Price            = item.Price,
+                    Name             = item.Name,
+                    TicketSold       = item.TicketSold,
                     RequiredApproval = item.RequiredApproval,
-                    IsUnlimited = item.IsUnlimited
+                    IsUnlimited      = item.IsUnlimited,
+                    IsFree           = item.IsFree
                 });
         }
         customAcceptedMessageOrig = data.CustomAcceptedBody;
@@ -969,6 +988,7 @@
             public bool Disabled { get; set; } = false;
             public bool RequiredApproval { get; set; }
             public bool IsUnlimited { get; set; }
+            public bool IsFree { get; set; }
         }
     }
 
@@ -985,7 +1005,7 @@
         [MaxSlotsIfNotUnlimited]
         public int? MaxSlots { get; set; } = null;
 
-         
+
         public bool AbsorbFees { get; set; }
 
         [Required(ErrorMessage = "The description field is mandatory.")]
@@ -1165,6 +1185,7 @@
                     modelPricing.TempId = maxId;
                     modelPricing.Order = order;
                     modelPricing.IsNew = true;
+                    modelPricing.IsFree = true;
                     modelPricingList.Pricings.Add(modelPricing);
                     await ticketModal.Hide();
                     modelPricing = new Pricing();
@@ -1177,14 +1198,19 @@
     private async Task DeleteClick(Pricing price)
     {
         priceToDelete = price;
+        if (price.TicketSold > 0)
+        {
+            await NotificationService.Info("This ticket has already been purchased; details cannot be deleted. You can only edit the ticket name and quantity.", "Information");
+            await OnEditTicket(price);
+            return;
+        }
         //delete created online event if meron
         if (Summary is not null)
         {
             var onlineTicket = Summary.OnlineData.TicketInfos.Where(a => a.TicketRestriction == priceToDelete.Name).FirstOrDefault();
             if (onlineTicket is not null)
             {
-                errorMessageAlert = "Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.";
-                await modalError.Show();
+                await NotificationService.Info("Ticket " + onlineTicket.TicketRestriction + " already contains information. Kindly remove the ticket information from the online event page in order to continue.", "Information");
                 return;
             }
         }
@@ -1256,25 +1282,34 @@
         return activeMenuId == ticketId ? "show" : "";
     }
 
+    private async Task EditClick(Pricing pricing)
+    {
+        if(pricing.TicketSold > 0)
+        {
+             await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+        }
+        await OnEditTicket(pricing);
+    }
+
     private async Task OnEditTicket(Pricing ticket)
     {
         modelPricing = new Pricing
             {
-                Id = ticket.Id,
-                Name = ticket.Name,
-                Price = ticket.Price,
-                MaxSlots = ticket.MaxSlots,
-                AbsorbFees = ticket.AbsorbFees,
-                IsNew = ticket.IsNew,
-                TempId = ticket.TempId,
+                Id               = ticket.Id,
+                Name             = ticket.Name,
+                Price            = ticket.Price,
+                MaxSlots         = ticket.MaxSlots,
+                AbsorbFees       = ticket.AbsorbFees,
+                IsNew            = ticket.IsNew,
+                TempId           = ticket.TempId,
+                TicketSold       = ticket.TicketSold,
                 RequiredApproval = ticket.RequiredApproval,
-                IsUnlimited = ticket.IsUnlimited,
-                IsFree = ticket.IsFree
+                IsUnlimited      = ticket.IsUnlimited,
+                IsFree           = ticket.IsFree
             };
         isEditing = true;
         await ticketModal.Show();
     }
-
     private async Task OnCancelEdit()
     {
         await ticketModal.Hide();
@@ -1465,6 +1500,7 @@
     {
         modelPricing.IsUnlimited = (bool)e.Value;
         modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
+        MaxSlotsChanged(e);
     }
 
     private void PriceChanged(object value)
