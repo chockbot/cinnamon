@@ -483,14 +483,29 @@
                         Ticket Type
                     </FieldLabel>
                     <FieldBody>
-                        <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
-                            <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged" disabled=@(modelPricing.TicketSold != 0 ? true : false)>
-                            <span>
-                                <span>Free</span>
-                                <span>Paid</span>
-                                <a></a>
-                            </span>
-                        </label>
+                        @if(modelPricing.TicketSold > 0)
+                        {
+                            <label id="@modelPricing.Id" class="switch-light switch-candy">
+                                <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged" disabled>
+                                <span>
+                                    <span>Free</span>
+                                    <span>Paid</span>
+                                    <a></a>
+                                </span>
+                            </label>
+                        }
+                        else
+                        {
+                            <label id="@modelPricing.Id" class="switch-light switch-candy" onclick="">
+                                <input type="checkbox" checked=@(!modelPricing.IsFree) @onchange="CheckboxChanged">
+                                <span>
+                                    <span>Free</span>
+                                    <span>Paid</span>
+                                    <a></a>
+                                </span>
+                            </label>
+                        }
+                        
                     </FieldBody>
                 </Field>
                 <Row VerticalGutter="10">
@@ -501,12 +516,25 @@
                                     price
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
-                                                   class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" @onkeyup="PriceChanged" Disabled=@(modelPricing.IsFree || modelPricing.TicketSold != 0 ? true : false)>
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </NumericPicker>
+                                    @if (modelPricing.TicketSold > 0)
+                                    {
+                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
+                                                       class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" Disabled>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </NumericPicker>
+                                    }
+                                    else
+                                    {
+                                        <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="decimal?" Size="Size.Medium"
+                                                       class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.Price" @onkeyup="PriceChanged" Disabled=@modelPricing.IsFree>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </NumericPicker>
+                                    }
+                                    
                                     @if (!modelPricing.IsFree)
                                     {
                                         <span class="font-14 font-weight-700 color-#343D4C-100">
@@ -1131,7 +1159,7 @@
     private async Task DeleteClick(Pricing price)
     {
         priceToDelete = price;
-        if (price.TicketSold != 0)
+        if (price.TicketSold > 0)
         {
             await NotificationService.Info("This ticket has already been purchased; details cannot be deleted. You can only edit the ticket name and quantity.", "Information");
             await OnEditTicket(price);
@@ -1217,7 +1245,10 @@
 
     private async Task EditClick(Pricing pricing)
     {
-        await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+        if(pricing.TicketSold > 0)
+        {
+             await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+        }
         await OnEditTicket(pricing);
     }
 
