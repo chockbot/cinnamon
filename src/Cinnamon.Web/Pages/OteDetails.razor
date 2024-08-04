@@ -506,18 +506,6 @@
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
-                <Validation>
-                    <Field class="mb-3">
-                        <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
-                        <FieldBody>
-                            <TextEdit @bind-Text="personalForm.Phone">
-                                <ValidationError />
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-            </Validations>
             <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
                 @foreach (var question in activityQuestions)
                 {
@@ -1666,6 +1654,18 @@
     {
         public string Guid {get; set;}
         public string Token {get; set;}
+    }
+
+    private bool HavePredefinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null;
+    }
+
+    private bool RequiredPredeinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null && predefinedQuestion.Required;
     }
 
     private class TicketItem
