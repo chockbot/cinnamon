@@ -246,8 +246,16 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @nameQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
@@ -259,8 +267,16 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @emailQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
@@ -272,8 +288,16 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @phoneQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
@@ -283,7 +307,7 @@
                 + <span class="ms-2">Add Questions</span>
             </Button>
 
-            @foreach (var question in questions)
+            @foreach (var question in FilteredQuestions)
             {
                 <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
@@ -728,6 +752,10 @@
 
     private QuestionAction questionAction = QuestionAction.Create;
 
+    private string nameQuestion = "Off";
+    private string emailQuestion = "Off";
+    private string phoneQuestion = "Off";
+
     private async Task NextClick()
     {
         if (OnNextClick.HasDelegate)
@@ -866,6 +894,8 @@
                 Id = q.Id
             }));
         }
+
+        SetPredefinedQuestionState();
 
         return Task.CompletedTask;
     }
@@ -1384,6 +1414,96 @@
         };
         questionAction = QuestionAction.Edit;
         return modalCustomQuestion?.Show();
+    }
+
+    private IEnumerable<CustomQuestion> FilteredQuestions 
+    {
+        get {
+            return questions.Where(q => q.Question != "##Name" && q.Question != "##Email" && q.Question != "##Phone");
+        }
+    }
+
+    private Task SetPredefinedQuestion(string question, string status)
+    {
+        var fieldType = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        switch (question)
+        {
+            case "##Name":
+                nameQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.Text.ToString();
+                break;
+            case "##Email":
+                emailQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.Email.ToString();
+                break;
+            case "##Phone":
+                phoneQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.PhoneNumber.ToString();
+                break;
+        }
+
+        var existingQuestion = questions.FirstOrDefault(q => q.Question == question);
+        if(status == "Off")
+        {
+            if(existingQuestion is not null)
+            {
+                RemoveQuestion(existingQuestion);
+            }
+        }
+        else 
+        {
+            if(existingQuestion is null)
+            {
+                var lastId = questions.Count == 0 ? 0 : questions.Max(q => q.Id);
+                questions.Add(new CustomQuestion {
+                    Id = lastId + 1,
+                    Question = question,
+                    Required = status == "Required",
+                    IsNew = true,
+                    FieldType = fieldType
+                });
+            }
+            else {
+                existingQuestion.Required = status == "Required";
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task SetPredefinedQuestionState()
+    {
+        var nameQuestion = questions.FirstOrDefault(q => q.Question == "##Name");
+        var emailQuestion = questions.FirstOrDefault(q => q.Question == "##Email");
+        var phoneQuestion = questions.FirstOrDefault(q => q.Question == "##Phone");
+
+        if(nameQuestion is not null)
+        {
+            this.nameQuestion = nameQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.nameQuestion = "Off";
+        }
+
+        if(emailQuestion is not null)
+        {
+            this.emailQuestion = emailQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.emailQuestion = "Off";
+        }
+
+        if(phoneQuestion is not null)
+        {
+            this.phoneQuestion = phoneQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.phoneQuestion = "Off";
+        }
+
+        return Task.CompletedTask;
     }
 
     public class CustomQuestion 
