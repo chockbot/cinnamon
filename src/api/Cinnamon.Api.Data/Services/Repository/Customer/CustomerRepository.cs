@@ -220,67 +220,80 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified,string searchValue, 
-        int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false, bool? hasVerification = false)
+public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, string searchValue, 
+    int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false, bool? hasVerification = false)
+{
+    try
     {
-        try
+        Expression<Func<Entities.Customer, bool>> filter = 
+            a => /*(isVerified.HasValue ? a.IsVerifiedBadge == 2 : true) &&*/
+                (hasVerification.HasValue ? 
+                    (hasVerification.Value ? (a.BackIdImagePath != null && a.FrontIdImagePath != null) : 
+                        (a.BackIdImagePath == null && a.FrontIdImagePath == null) ) : 
+                    true) &&
+                (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower())) &&
+                (isOfficialPartner.HasValue && isOfficialPartner.Value ? a.IsOfficialPartner == true : true);
+
+        var result = await dataStore.Customer.FindCustomerAsync(filter, searchValue, count, skip);
+
+        if (!result.Succeeded || result.Result == null)
         {
-            Expression<Func<Entities.Customer,bool>> filter = 
-                a => /*(isVerified.HasValue ? a.IsVerifiedBadge == 2 : true) &&*/
-                    (hasVerification.HasValue ? 
-                        (hasVerification.Value ? (a.BackIdImagePath != null && a.FrontIdImagePath != null) : 
-                            (a.BackIdImagePath == null && a.FrontIdImagePath == null) ) : 
-                        true) &&
-                    (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower())) &&
-                    (isOfficialPartner.HasValue && isOfficialPartner.Value ? a.IsOfficialPartner == true : true);
-
-            var result = await dataStore.Customer.FindCustomerAsync(filter,searchValue,count, skip);
-            if (!result.Succeeded || result.Result == null)
-            {
-                return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);
-            }
-
-            var customers = result.Result.Select(c =>
-            {
-                return new CustomerDTO
-                {
-                    About = c.About,
-                    Birthdate = c.Birthdate,
-                    DateJoined = c.CreatedOn,
-                    PhoneNumber = c.PhoneNumber,
-                    Email = c.Email,
-                    ExternalLogin = c.ExternalLogin,
-                    FirstName = c.FirstName,
-                    LastName = c.LastName,
-                    Id = c.Id,
-                    IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerifiedBadge,
-                    IsVerifiedObtainedDate = c.IsVerifiedDate,
-                    IsOG = c.IsOG,
-                    IsOGObtainedDate = c.IsOGDate,
-                    IsOfficial = c.IsOfficialPartner,
-                    IsOfficialObtainedDate = c.IsOfficialDate,
-                    ProfileImg = c.ProfilePath,
-                    Handler = c.Handler,
-                    BackIdImagePath = c.BackIdImagePath,
-                    FrontIdImagePath = c.FrontIdImagePath,
-                    TotalCredits = c.TotalCredits,
-                    CustomerPricing = new CustomerDTO.Pricing {
-                        Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
-                        IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
-                        InclusivePricing = c.CustomerPricing != null ? c.CustomerPricing.InclusivePricing : false
-                    },
-                    IsAccountBan = c.IsAccountBan
-                };
-            });
-
-            return AppResult<IEnumerable<CustomerDTO>>.CreateSucceeded(customers, "Successfully get customers");
+            return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);
         }
-        catch (Exception ex)
+        
+        var customers = result.Result.Select(c =>
         {
-            return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occured in getting customers");
-        }
+            return new CustomerDTO
+            {
+                About = c.About,
+                Birthdate = c.Birthdate,
+                DateJoined = c.CreatedOn,
+                PhoneNumber = c.PhoneNumber,
+                Email = c.Email,
+                ExternalLogin = c.ExternalLogin,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                Id = c.Id,
+                IsMaker = c.IsMaker,
+                IsVerified = c.IsVerifiedBadge,
+                IsVerifiedObtainedDate = c.IsVerifiedDate,
+                IsOG = c.IsOG,
+                IsOGObtainedDate = c.IsOGDate,
+                IsOfficial = c.IsOfficialPartner,
+                IsOfficialObtainedDate = c.IsOfficialDate,
+                ProfileImg = c.ProfilePath,
+                Handler = c.Handler,
+                BackIdImagePath = c.BackIdImagePath,
+                FrontIdImagePath = c.FrontIdImagePath,
+                TotalCredits = c.TotalCredits,
+                CustomerPricing = new CustomerDTO.Pricing {
+                    Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                    IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
+                    InclusivePricing = c.CustomerPricing != null ? c.CustomerPricing.InclusivePricing : false
+                },
+                IsAccountBan = c.IsAccountBan
+            };
+        });
+
+        // Sort the customers
+        var sortedCustomers = customers
+            .OrderByDescending(c => c.DateJoined)
+            .ThenBy(c => c.IsVerified)
+            .ThenBy(c => c.IsVerifiedObtainedDate);
+
+        // Apply pagination
+        var paginatedCustomers = sortedCustomers
+            .Skip(skip ?? 0)
+            .Take(count ?? sortedCustomers.Count());
+
+        return AppResult<IEnumerable<CustomerDTO>>.CreateSucceeded(paginatedCustomers, "Successfully retrieved customers");
     }
+    catch (Exception ex)
+    {
+        return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occurred in getting customers");
+    }
+}
+
 
     public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync()
     {
