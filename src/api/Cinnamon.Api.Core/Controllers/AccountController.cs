@@ -789,7 +789,8 @@ public class AccountController : ControllerBase
                     DateJoined = objResult.DateJoined,
                     Email = objResult.Email,
                     PhoneNumber = objResult.PhoneNumber,
-                    ConnectionId = objResult.ConnectionId
+                    ConnectionId = objResult.ConnectionId,
+                    Handler = objResult.Handler
                 },
                 IsSuccess = true,
             });
