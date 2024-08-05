@@ -72,7 +72,7 @@
                                     </p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
-                                    <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                    <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                         <span class="p-1 border-right-1-solid counter-item prevent-select disabled">
                                             <span class="item-action">-</span>
                                         </span>
@@ -692,9 +692,10 @@
                     OteScheduleId = sTicket.OteScheduleId,
                     Price = sTicket.Price,
                     TicketSold = sTicket.TicketSold,
-                    RequiredApproval = sTicket.RequiredApproval
+                    RequiredApproval = sTicket.RequiredApproval,
+                    IsUnlimited = sTicket.IsUnlimited
                 };
-                await AddSelectedTicket(otePricing, tracker.ForceCreateTicket);
+                await AddSelectedTicket(otePricing);
             }
         }
     }
@@ -976,68 +977,21 @@
         }
     }
 
-    private Task AddSelectedTicket(OtePricing pricing, bool forceCreate = false)
+    private Task AddSelectedTicket(OtePricing pricing)
     {
-        if(forceCreate)
+        if(selectedTickets.ContainsKey(pricing.Id))
         {
-            if(selectedTickets.ContainsKey(pricing.Id))
-            {
-                selectedTickets[pricing.Id].Count++;
-            }
-            else 
-            {
-                selectedTickets.Add(pricing.Id, new TicketInfo
-                {
-                    Count = 1,
-                    Id = pricing.Id,
-                    Price = pricing.Price,
-                    RequiredApproval = pricing.RequiredApproval
-                });
-            }
-            return Task.CompletedTask;
-        }
-
-        if (pricing.TicketSold >= pricing.MaxSlots)
-        {
-            return Task.CompletedTask;
-        }
-        if (selectedTickets.ContainsKey(pricing.Id))
-        {
-            if (selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
-            {
-                return Task.CompletedTask;
-            }
-            if (selectedTickets[pricing.Id].Count >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
-            if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
             selectedTickets[pricing.Id].Count++;
         }
-        else
+        else 
         {
-            if (ticketLimit == 0 && IsLimit)
+            selectedTickets.Add(pricing.Id, new TicketInfo
             {
-                return Task.CompletedTask;
-            }
-            else if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
-            else
-            {
-                selectedTickets.Add(pricing.Id, new TicketInfo
-                {
-                    Count = 1,
-                    Id = pricing.Id,
-                    Price = pricing.Price,
-                    RequiredApproval = pricing.RequiredApproval
-                });
-            }
-
+                Count = 1,
+                Id = pricing.Id,
+                Price = pricing.Price,
+                RequiredApproval = pricing.RequiredApproval
+            });
         }
         return Task.CompletedTask;
     }
