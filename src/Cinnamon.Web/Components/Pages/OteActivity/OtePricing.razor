@@ -1354,12 +1354,11 @@
 
     private Task AddQuestion()
     {
-        questions.Add(new CustomQuestion
-            {
-                Question = formQuestion.Question,
-                Required = formQuestion.Required,
-                IsNew = true
-            });
+        questions.Add(new CustomQuestion {
+            Question = formQuestion.Question,
+            Required = formQuestion.Required,
+            IsNew = true
+        });
         formQuestion.Question = string.Empty;
         return CloseCustomQuestion();
     }

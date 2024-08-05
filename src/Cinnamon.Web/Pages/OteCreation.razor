@@ -1372,6 +1372,7 @@
         await HideModal();
         await loadingIndicator.Hide();
     }
+
     private async Task SetDefaultCoverPhoto()
     {
         //Get Random Image in MaterialList
@@ -1380,25 +1381,31 @@
         int randomIndex = random.Next(list.Count);
         File randomItem = list[randomIndex];
         await LoadDefaultCoverPhoto(randomItem);
-
     }
 
     private async Task LoadDefaultCoverPhoto(File item)
     {
-        // Fetch file content from Google Drive
-        FileContent = await googleDriveService.GetFileContent(item.Id);
+        try
+        {
+            // Fetch file content from Google Drive
+            FileContent = await googleDriveService.GetFileContent(item.Id);
 
-        // Determine file type
-        var fileInfo = await googleDriveService.GetFileInfo(item.Id);
-        FileType = fileInfo.Type;
-        FileName = fileInfo.Name;
+            // Determine file type
+            var fileInfo = await googleDriveService.GetFileInfo(item.Id);
+            FileType = fileInfo.Type;
+            FileName = fileInfo.Name;
 
-        // If you need to display the file content directly, you can convert it to Base64
-        Base64EncodedFile = Convert.ToBase64String(FileContent);
+            // If you need to display the file content directly, you can convert it to Base64
+            Base64EncodedFile = Convert.ToBase64String(FileContent);
 
-        //Preview
-        await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
-        oteEvent.coverPhoto.Display = true;
-        StateHasChanged();
+            //Preview
+            await JS.InvokeVoidAsync("MyLib.Pages.activity.creation.previewBase64Image", $"#{oteEvent.coverPhoto.ImageSrcId}", $"#{oteEvent.coverPhoto.InputDataId}", Base64EncodedFile, FileType);
+            oteEvent.coverPhoto.Display = true;
+            StateHasChanged();
+        }
+        catch (System.Exception)
+        {
+            // handler error when trying to invoke the client srcript but the page was redirected to another
+        }
     }
 }
