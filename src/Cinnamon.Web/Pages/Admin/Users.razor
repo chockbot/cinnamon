@@ -207,7 +207,7 @@
         }
         else
         {
-            customers = customers.OrderByDescending(r => r.FirstName).ThenByDescending(r => r.LastName).ToList();
+            customers = customers.OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
         }
 
         Pagination = result.Result.Pagination;
