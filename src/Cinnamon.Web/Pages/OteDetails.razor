@@ -535,8 +535,87 @@
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @foreach (var question in activityQuestions)
+            <Validations @ref="predefinedQuestionValidation" Mode="ValidationMode.Manual" Model="predefinedQuestion">
+                @if(predefinedQuestion.HaveNameQuestion)
+                {
+                    @if(predefinedQuestion.RequiredNameQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HaveEmailQuestion)
+                {
+                    @if(predefinedQuestion.RequiredEmailQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HavePhoneQuestion)
+                {
+                    @if(predefinedQuestion.RequiredPhoneQuestion || string.IsNullOrEmpty(predefinedQuestion.PhoneAnswer))
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
+                @foreach (var question in filteredQuestions)
                 {
                     if(question.Required)
                     {
@@ -677,6 +756,10 @@
     private Modal? modalPurchaseWithConfirmation;
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
+
+    private PredefinedQuestion predefinedQuestion = new();
+    private Validations? predefinedQuestionValidation;
+    private List<ActivityQuestion> filteredQuestions = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1545,12 +1628,22 @@
             Question = q.FieldLabel,
             Required = q.Required
         }));
+
+        var filtered = activityQuestions
+            .Where(q => q.Question != predefinedQuestion.NameQuestion && 
+                q.Question != predefinedQuestion.EmailQuestion && 
+                q.Question != predefinedQuestion.PhoneQuestion);
+
+        filteredQuestions.AddRange(filtered); 
+
+        await LoadPredefinedQuestions();
     }
 
     private async Task SubmitAnswerQuestions()
     {
-        var validForms = await questionValidation.ValidateAll();
-        if(!validForms) return;
+        var validForms = await questionValidation?.ValidateAll();
+        var validPredefined = await predefinedQuestionValidation?.ValidateAll();
+        if(!validForms || !validPredefined) return;
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
@@ -1606,6 +1699,60 @@
     {
         var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
         return predefinedQuestion is not null && predefinedQuestion.Required;
+    }
+
+    private Task LoadPredefinedQuestions()
+    {
+        predefinedQuestion.HaveNameQuestion = HavePredefinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.HaveEmailQuestion = HavePredefinedQuestion(predefinedQuestion.EmailQuestion);    
+        predefinedQuestion.HavePhoneQuestion = HavePredefinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        predefinedQuestion.RequiredNameQuestion = RequiredPredeinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.RequiredEmailQuestion = RequiredPredeinedQuestion(predefinedQuestion.EmailQuestion);
+        predefinedQuestion.RequiredPhoneQuestion = RequiredPredeinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<ActivityQuestion> GetQuestions()
+    {
+        var questions = new List<ActivityQuestion>();
+
+        if(predefinedQuestion.HaveNameQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.NameAnswer,
+                Question = "Name",
+            });
+        }
+
+        if(predefinedQuestion.HaveEmailQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.EmailAnswer,
+                Question = "Email",
+            });
+        }
+
+        if(predefinedQuestion.HavePhoneQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.PhoneAnswer,
+                Question = "Phone",
+            });
+        }
+
+        questions.AddRange(filteredQuestions.Select(q => new ActivityQuestion {
+            Id = q.Id,
+            Answer = q.Answer,
+            Question = q.Question,
+            Required = q.Required
+        }));
+
+        return questions;
     }
 
     private class TicketItem
@@ -1666,5 +1813,31 @@
     {
         public string Question { get; set; }
         public string Answer { get; set; }
+    }
+
+    private class PredefinedQuestion 
+    {
+        public string NameQuestion {get; set;} = "##Name";
+        public string EmailQuestion {get; set;} = "##Email";
+        public string PhoneQuestion {get; set;} = "##Phone";
+
+        [Required(ErrorMessage = "Required your name")]
+        public string NameAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your email")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string EmailAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your mobile number")]
+        [RegularExpression(@"^(\+63|0)[0-9]{10}$", ErrorMessage = "Invalid mobile number")]
+        public string PhoneAnswer {get; set;} = string.Empty;
+
+        public bool HaveNameQuestion {get; set;}
+        public bool HaveEmailQuestion {get; set;}
+        public bool HavePhoneQuestion {get; set;}
+
+        public bool RequiredNameQuestion {get; set;}
+        public bool RequiredEmailQuestion {get; set;}
+        public bool RequiredPhoneQuestion {get; set;}
     }
 }
