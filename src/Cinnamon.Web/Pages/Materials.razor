@@ -39,10 +39,10 @@
                                 @foreach (var category in Categories)
                                 {
                                     <div class="swiper-slide category">
-                                        <div>
+                                        <div class="text-center">
                                         <a class="button carousel-list text-center" id="category.Id" @onclick="@(() => Filter(category.Id))">
                                             <img src=@category.Image class="img-icon text-center">
-                                            <p class="card-title">@category.Name</p>
+                                            <p class="card-title text-center">@category.Name</p>
                                         </a>
                                         </div>
                                     </div>
@@ -113,15 +113,16 @@ else
     {
         try
         {
-            Categories.Add(new Category { Id = "1m8Ur8T6eA-BBqNzr2GITsogsJzYD_FVA", Name = "Alphabets",         Image = "images/materials-categories/alphabets.png" });
-            Categories.Add(new Category { Id = "1hbF0jRC-wnc46kZqZSP6eHPzgHt8RUZ9", Name = "Animals",           Image = "images/materials-categories/animals.png" });
-            Categories.Add(new Category { Id = "1Q-9TPh3hKtjMbeH3VvIVUOeo0mjlaqiG", Name = "English Worksheet", Image = "images/materials-categories/english.png" });
-            Categories.Add(new Category { Id = "1Nx-fD2CsW8el_pr48sBJvkfOglJaQ-Gb", Name = "Filipino Worksheet",Image = "images/materials-categories/filipino.png" });
-            Categories.Add(new Category { Id = "1CVIpvj7hRpda6JFJQH507BSGmkokz3n8", Name = "People",            Image = "images/materials-categories/people.png" });
-            Categories.Add(new Category { Id = "1g87sISAjzsyjoLQy44OWgP_hWeDi1IPR", Name = "Plants",            Image = "images/materials-categories/plants.png" });
-            Categories.Add(new Category { Id = "1gfxmRfWZz43LiFZrcxrs94BdYIPxeRlr", Name = "Science Worksheet", Image = "images/materials-categories/science.png" });
-            Categories.Add(new Category { Id = "1cnkXQOyV-P-NtsdB8v6OFacH3WUUyTjX", Name = "Things",            Image = "images/materials-categories/things.png" });
-            Categories.Add(new Category { Id = "1uOmXk83VV-gYSWcrdcUDu5kondiyGzxV", Name = "Numbers",           Image = "images/materials-categories/numbers.png" });
+            Categories.Add(new Category { Id = "1m8Ur8T6eA-BBqNzr2GITsogsJzYD_FVA", Name = "Alphabets",         Image = "images/materials-categories/Alphabets.svg" });
+            Categories.Add(new Category { Id = "1hbF0jRC-wnc46kZqZSP6eHPzgHt8RUZ9", Name = "Animals",           Image = "images/materials-categories/Animals.svg" });
+            Categories.Add(new Category { Id = "1Q-9TPh3hKtjMbeH3VvIVUOeo0mjlaqiG", Name = "English Worksheet", Image = "images/materials-categories/English.svg" });
+            Categories.Add(new Category { Id = "1Nx-fD2CsW8el_pr48sBJvkfOglJaQ-Gb", Name = "Filipino Worksheet",Image = "images/materials-categories/Filipino.svg" });
+            Categories.Add(new Category { Id = "1uOmXk83VV-gYSWcrdcUDu5kondiyGzxV", Name = "Numbers",           Image = "images/materials-categories/Numbers.svg" });
+            Categories.Add(new Category { Id = "1CVIpvj7hRpda6JFJQH507BSGmkokz3n8", Name = "People",            Image = "images/materials-categories/People.svg" });
+            Categories.Add(new Category { Id = "1g87sISAjzsyjoLQy44OWgP_hWeDi1IPR", Name = "Plants",            Image = "images/materials-categories/Plants.svg" });
+            Categories.Add(new Category { Id = "1gfxmRfWZz43LiFZrcxrs94BdYIPxeRlr", Name = "Science Worksheet", Image = "images/materials-categories/Science.svg" });
+            Categories.Add(new Category { Id = "1cnkXQOyV-P-NtsdB8v6OFacH3WUUyTjX", Name = "Things",            Image = "images/materials-categories/Things.svg" });
+            
             await LoadFiles();
         }
         catch (Exception ex)
