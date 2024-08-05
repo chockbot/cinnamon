@@ -9,6 +9,7 @@ public static class ServiceExtenstion
     {
         services.AddTransient<Providers.IContainerProvider, Providers.ContainerProvider>();
         services.AddTransient<Providers.IJsonSerializationProvider, Providers.DefaultJsonSerialization>();
+        services.AddTransient<Providers.ITokenGeneratorProvider, Providers.TokenGeneratorProvider>();
 
         // low level modules
         services.AddTransient<Modules.EmailDriver.Handlers.ISendMailHandler, Modules.EmailDriver.MicrosoftGraph.SendMailByMicrosoftGraph>();
@@ -28,6 +29,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IOtePendingNotificationHandler, Modules.NotificationDriver.EmailNotification.OtePendingNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteApprovedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteApprovedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteDeclinedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteDeclinedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IMailchimpServices, Modules.NotificationDriver.MailChimp.MailchimpServices>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -220,6 +222,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IApprovedFreeWaitListHandler, Services.TransactionService.ApprovedFreeWaitListHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IApprovedPaidWaitListHandler, Services.TransactionService.ApprovedPaidWaitListHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IApprovedWaitListHandler, Services.TransactionService.ApprovedWaitListHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOteRequestPaymentHandler, Services.TransactionService.OteRequestPaymentHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IGetOteRequestPaymentHandler, Services.TransactionService.OteGetRequestPaymentHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IOteCreateRequestPaymentHandler, Services.TransactionService.OteCreateRequestPaymentHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();

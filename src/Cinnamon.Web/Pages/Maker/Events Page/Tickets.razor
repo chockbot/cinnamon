@@ -1,29 +1,45 @@
 ﻿@layout EmptyLayout;
 @using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
-        <button class="btn-event" @onclick="NavigateToCapacity"><span class="fw-bold">Event Capacity @((OteActivity.IsCapacity == true) ? $"{OteActivity.CapacityCount}" : "Off") &#x2022; Waitlist</span></button>
-        <button class="btn-event fw-bold" @onclick="NavigateToEvents">Manage Event</button>
+        <button class="btn-event" @onclick="NavigateToCapacity"><span class="fw-bold">Waitlist Capacity @OteActivity.CapacityCount &#x2022; @((OteActivity.IsCapacity == true) ? "ON" : "OFF")</span></button>
+        <button class="btn-event fw-bold" @onclick="NavigateToTickets">Edit Tickets</button>
     </div>
 </div>
 <div class="ticket-details-section">
     @foreach(var ticket in TicketList)
     {
-        <div class="ticket-box cursor-pointer" @onclick="NavigateToTickets">
+        <div class="ticket-box">
             <div class="ticket-section-name">
                 <p class="ticket-title">@ticket.OtePricing.Name</p>
             </div>
             <p class="ticket-price">
                 @((ticket.OtePricing.Price == 0) ? "Free" : $"₱{ticket.OtePricing.Price:N0}")
             </p>
-            <div class="approval-section">
-                <p class="sold-value">Required Approval</p>
-                <div class="form-check form-switch">
-                    <Switch @bind-Checked="ticket.OtePricing.RequiredApproval" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" ReadOnly/>
+            @if (ticket.OtePricing.Price == 0)
+            {
+                <div class="approval-section">
+                    <p class="sold-value">Required Approval</p>
+                    <div class="form-check form-switch">
+                        <Switch @bind-Checked="ticket.OtePricing.RequiredApproval" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" ReadOnly />
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="approval-section">
+                    <p class="sold-value">Absorb Fees</p>
+                    <div class="form-check form-switch">
+                        <Switch @bind-Checked="ticket.OtePricing.IsAbsorbFees" TValue="bool" class="form-check-input" ElementId="ticket.OtePricing.Id" ReadOnly />
+                    </div>
+                </div>
+            }
+
             <Divider/>
             <div class="ticket-availability">
                 @if (!ticket.OtePricing.IsUnlimited)
@@ -70,32 +86,99 @@
         Registration Emails
     </h3>
     <p class="sub-text">
-        Customize the emails sent when a guest registers for the event and for when you approve or decline their registration.
+        Here are the emails that will be sent when a guest registers for the event and for when you approve or decline their registration.
     </p>
 
     <Row HorizontalGutter="10">
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToPending">
-                <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" @onclick="NavigateToPending">
+                <div class="d-flex align-items-center mb-2 text-box">
+                    <p class="email-title">Pending/Waitlist</p>
+                </div>
+                <div class="line-effect div-line mb-2"></div>
+                <div class="line-effect div-line-75 mb-3"></div>
+                @if (string.IsNullOrEmpty(pendingBody))
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-red me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-green me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                    </div>
+                }
+                <div class="update-email d-flex justify-content-end text-box">
+                    <button class="update-button-email" @onclick=" NavigateToPending">Edit Email</button>
+                </div>
+                <div class="effect hover1"></div>
             </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToAccepted">
-                <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Going</p>
+        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave" @onclick="NavigateToAccepted">
+                <div class="d-flex align-items-center mb-2 text-box">
+                    <p class="email-title">Going</p>
+                </div>
+                <div class="line-effect div-line mb-2"></div>
+                <div class="line-effect div-line-75 mb-3"></div>
+                @if (string.IsNullOrEmpty(acceptedBody))
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-red me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-green me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                    </div>
+                }
+                <div class="update-email d-flex justify-content-end text-box">
+                    <button class="update-button-email" @onclick="NavigateToAccepted">
+                        Edit Email
+                    </button>
+                </div>
+                <div class="effect hover2"></div>
             </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToDeclined">
-                <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Declined</p>
+        <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave" @onclick="NavigateToDeclined">
+                <div class="d-flex align-items-center mb-2 text-box">
+                    <p class="email-title">Declined</p>
+                </div>
+                <div class="line-effect div-line mb-2"></div>
+                <div class="line-effect div-line-75 mb-3"></div>
+                @if (string.IsNullOrEmpty(declinedBody))
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-red me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center mb-2 text-box">
+                        <div class="small-circle-green me-2">
+                        </div>
+                        <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                    </div>
+                }
+                <div class="update-email d-flex justify-content-end text-box">
+                    <button class="update-button-email" @onclick="NavigateToDeclined">
+                        Edit Email
+                    </button>
+                </div>
+                <div class="effect hover3"></div>
             </div>
         </Column>
     </Row>
@@ -103,9 +186,15 @@
         Registration Questions
     </h3>
     <p class="sub-text mb-4">
-        We will ask guests the following questions when they register for the event.
+        Here are the questions that will be ask for the customers that will register for the event.
     </p>
-
+    <div class="registration-info">
+        <div class="question-section d-flex gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M17.7083 2.5H2.29167C1.0275 2.5 0 3.5275 0 4.79167V15.2083C0 16.4725 1.0275 17.5 2.29167 17.5H17.7083C18.9725 17.5 20 16.4725 20 15.2083V4.79167C20 3.5275 18.9725 2.5 17.7083 2.5ZM6.25 5.83333C7.39833 5.83333 8.33333 6.76833 8.33333 7.91667C8.33333 9.065 7.39833 10 6.25 10C5.10167 10 4.16667 9.065 4.16667 7.91667C4.16667 6.76833 5.10167 5.83333 6.25 5.83333ZM10 13.5417C10 13.8867 9.72 14.1667 9.375 14.1667H3.125C2.78 14.1667 2.5 13.8867 2.5 13.5417V13.125C2.5 11.8608 3.5275 10.8333 4.79167 10.8333H7.70833C8.9725 10.8333 10 11.8608 10 13.125V13.5417ZM16.875 14.1667H12.2917C11.9467 14.1667 11.6667 13.8867 11.6667 13.5417C11.6667 13.1967 11.9467 12.9167 12.2917 12.9167H16.875C17.22 12.9167 17.5 13.1967 17.5 13.5417C17.5 13.8867 17.22 14.1667 16.875 14.1667ZM16.875 10.8333H12.2917C11.9467 10.8333 11.6667 10.5533 11.6667 10.2083C11.6667 9.86333 11.9467 9.58333 12.2917 9.58333H16.875C17.22 9.58333 17.5 9.86333 17.5 10.2083C17.5 10.5533 17.22 10.8333 16.875 10.8333ZM16.875 7.5H12.2917C11.9467 7.5 11.6667 7.22 11.6667 6.875C11.6667 6.53 11.9467 6.25 12.2917 6.25H16.875C17.22 6.25 17.5 6.53 17.5 6.875C17.5 7.22 17.22 7.5 16.875 7.5Z" fill="#34A853" />
+            </svg>
+            <p class="custom-text">Personal Informations</p>
+        </div>
         <div class="questions-holder mb-2">
             <div class="title-holder">
                 <label for="">Name</label>
@@ -115,8 +204,6 @@
                           Size="Size.Small" Placeholder="Required" Disabled />
             </div>
         </div>
-
-
         <div class="questions-holder mb-2">
             <div class="title-holder">
                 <label for="">Email Address</label>
@@ -126,8 +213,6 @@
                           Size="Size.Small" Placeholder="Required" Disabled />
             </div>
         </div>
-
-
         <div class="questions-holder mb-2">
             <div class="title-holder">
                 <label for="">Phone Number</label>
@@ -137,23 +222,120 @@
                           Size="Size.Small" Placeholder="Required" Disabled />
             </div>
         </div>
-
-
-    <div>
-        <Button Clicked="NavigateToQuestions" class="color-green-100 bg-white-100 font-16 mb-3 btn-question">
-            + <span class="ms-2">Add Questions</span>
-        </Button>
+    </div>
+    <div class="registration-question">
+        <div class="question-section d-flex gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <g clip-path="url(#clip0_1597_2089)">
+                    <path d="M20 10.0002C20 4.47692 15.5228 0.00012207 10.0002 0.00012207C4.4772 0.00012207 0 4.47692 0 10.0002C0 15.5227 4.4772 19.9999 10.0002 19.9999C15.5228 19.9999 20 15.5227 20 10.0002Z" fill="#009220" />
+                    <path d="M5.83337 7.01455C5.83337 6.45684 6.00279 5.8917 6.3417 5.31928C6.68049 4.74685 7.17505 4.27278 7.82503 3.89698C8.47505 3.52131 9.23338 3.33337 10.1 3.33337C10.9055 3.33337 11.6167 3.49053 12.2334 3.80452C12.8501 4.11867 13.3263 4.5458 13.6626 5.08589C13.9986 5.62613 14.1667 6.21315 14.1667 6.84722C14.1667 7.3463 14.0709 7.78378 13.8792 8.15941C13.6875 8.5352 13.4596 8.85957 13.1958 9.13252C12.9319 9.40555 12.4583 9.86499 11.775 10.5108C11.5861 10.6928 11.4346 10.8529 11.3208 10.9908C11.2069 11.1288 11.1221 11.255 11.0667 11.3694C11.0111 11.484 10.9679 11.5984 10.9375 11.7129C10.9069 11.8274 10.8611 12.0286 10.8 12.3162C10.6944 12.9268 10.3638 13.2321 9.80834 13.2321C9.51942 13.2321 9.27631 13.1323 9.07917 12.9327C8.88192 12.7331 8.78335 12.4366 8.78335 12.0432C8.78335 11.55 8.85548 11.1229 9.00002 10.7618C9.14444 10.4007 9.33609 10.0837 9.57502 9.81072C9.8138 9.53769 10.1361 9.21336 10.5417 8.83757C10.8972 8.50883 11.1542 8.26073 11.3125 8.0934C11.4709 7.92606 11.6042 7.73977 11.7125 7.53416C11.8209 7.3287 11.8751 7.10566 11.8751 6.86485C11.8751 6.39519 11.7097 5.99892 11.3792 5.67595C11.0486 5.35314 10.6222 5.19158 10.1 5.19158C9.48881 5.19158 9.03882 5.35451 8.75001 5.68036C8.46109 6.00621 8.21669 6.48618 8.01667 7.12025C7.82776 7.78378 7.4694 8.1154 6.94165 8.1154C6.63043 8.1154 6.36794 7.99953 6.15415 7.76754C5.94029 7.53564 5.83337 7.28466 5.83337 7.01455ZM9.90005 16.6667C9.5611 16.6667 9.26528 16.5507 9.01254 16.3188C8.75968 16.087 8.63335 15.7626 8.63335 15.3457C8.63335 14.9758 8.75547 14.6647 9.00002 14.4122C9.24442 14.1598 9.54441 14.0335 9.90001 14.0335C10.25 14.0335 10.5444 14.1598 10.7833 14.4122C11.0221 14.6647 11.1417 14.9758 11.1417 15.3457C11.1417 15.7567 11.0167 16.0796 10.7667 16.3144C10.5167 16.5492 10.2278 16.6667 9.90005 16.6667Z" fill="white" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_1597_2089">
+                        <rect width="20" height="20" fill="white" />
+                    </clipPath>
+                </defs>
+            </svg>
+            <p class="custom-text">Custom Questions</p>
+        </div>
+        <div class="provider-questions">
+            @foreach (var question in providerQuestions)
+            {
+                <ol>
+                    <li class="title-holder"> @question.Question</li>
+                </ol>
+                
+            }
+        </div>
+        <div class="action-buttons">
+            <Button Clicked="NavigateToQuestions" class="btn-question">
+                <span class="ms">Add Registration Questions</span>
+            </Button>
+            <Button Clicked="NavigateToRegistration" class="btn-question">
+                <span class="ms">Edit Registration Questions</span>
+            </Button>
+        </div>
+        
     </div>
 </div>
+
+
 
 @code {
     [Parameter]
     public OteActivity OteActivity { get; set; }
 
+
+    [Parameter]
+    public string Token { get; set; }
+
     [Parameter]
     public IEnumerable<OteSchedule> TicketList { get; set; }
 
+    private List<CustomQuestion> providerQuestions = new List<CustomQuestion>();
+
     private int? activeMenuId;
+    private string pendingBody = string.Empty;
+    private string acceptedBody = string.Empty;
+    private string declinedBody = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Get Email
+        var pendingTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs
+            {
+                ActivityId = OteActivity.Id,
+                TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OtePending.ToString()
+            }, Token);
+
+        var acceptedTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs
+            {
+                ActivityId = OteActivity.Id,
+                TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteConfirmed.ToString()
+            }, Token);
+
+        var declinedTemplate = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs
+            {
+                ActivityId = OteActivity.Id,
+                TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteDeclined.ToString()
+            }, Token);
+
+        await Task.WhenAll(pendingTemplate, acceptedTemplate, declinedTemplate);
+        var pendingResult = pendingTemplate.Result;
+        var accpedtedResult = acceptedTemplate.Result;
+        var declinedResult = declinedTemplate.Result;
+
+        if (pendingResult.Succeeded && pendingResult.Result is not null && pendingResult.Result.IsSuccess)
+        {
+            pendingBody = pendingResult.Result.Result.Body;
+        }
+
+        if (accpedtedResult.Succeeded && accpedtedResult.Result is not null && accpedtedResult.Result.IsSuccess)
+        {
+            acceptedBody = accpedtedResult.Result.Result.Body;
+        }
+
+        if (declinedResult.Succeeded && declinedResult.Result is not null && declinedResult.Result.IsSuccess)
+        {
+            declinedBody = declinedResult.Result.Result.Body;
+        }
+
+        //Get provider questions
+        var providerQuestionsRes = await activityApiHandler.ProviderQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ProviderQuestionsArgs
+            {
+                ActivityId = OteActivity.Id
+            }, Token);
+        if (providerQuestionsRes.Succeeded && providerQuestionsRes.Result is not null && providerQuestionsRes.Result.IsSuccess)
+        {
+            providerQuestions.AddRange(providerQuestionsRes.Result.Result.Select(q => new CustomQuestion
+                {
+                    FieldType = q.FieldType,
+                    IsNew = false,
+                    Question = q.FieldLabel,
+                    Required = q.Required
+                }));
+        }
+    }
 
     private string ShowMenu(int ticketId)
     {
@@ -187,4 +369,47 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{9}");
     }
+    private void NavigateToRegistration()
+    {
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{10}");
+    }
+    public class CustomQuestion
+    {
+        public string Question { get; set; }
+        public bool Required { get; set; }
+        public string FieldType { get; set; } = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        public bool IsNew { get; set; } = false;
+    }
+    public class ScheduleNotification
+    {
+        public int Days { get; set; } = 1;
+        public string Subject { get; set; }
+        public string Body { get; set; }
+    }
+
+    private async Task PendingHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
+    }
+    private async Task PendingHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
+    }
+    private async Task GoingHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
+    }
+    private async Task GoingHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
+    }
+    private async Task DeclinedHoverMove(MouseEventArgs e)
+    { 
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
+    }
+    private async Task DeclinedHoverLeave(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
+    }
+
 }

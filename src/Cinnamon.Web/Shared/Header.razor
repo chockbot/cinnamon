@@ -15,13 +15,13 @@
 <div class="page-wrapper">
     <div class="page app-name-section">
         <main>
-            <div class="top-row px-4">
+            <div class="top-row px-2">
                 <!--App Name-->
                 <div class="app-name col-lg-3 col-md-3">
                     <a href="/explore" class="app-name">@Resources.App.appName</a>
                 </div>
                 <!--Menu-->
-                <div class="d-flex flex-row justify-content-end" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
+                <div class="d-flex gap-1" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
                     @if (Model.Profile != null && Model.Profile.IsMaker)
                     {
                         <div class="become">
@@ -51,7 +51,7 @@
                                 }
                             </div>
                         </button>
-                        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+                        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2" style="overflow: hidden;">
                             @if (Model.IsAuthenticated)
                             {
                                 if (Model.Profile != null && Model.Profile.IsMaker)

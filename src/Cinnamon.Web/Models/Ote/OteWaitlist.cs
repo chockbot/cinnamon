@@ -9,8 +9,10 @@ public class OteWaitlist
     public int ScheduleId { get; set; }
     public string Payload { get; set; }
     public int Status { get; set; }
+    public string Type { get; set; }
     public string TicketName { get; set; }
-    public decimal TicketPrice { get; set; }
+    public double TicketPrice { get; set; }
+    public int TicketCount { get; set; }
     public string CustomerProfile { get; set; }
     public string CustomerEmail { get; set; }
     public DateTime EventDate { get; set; }

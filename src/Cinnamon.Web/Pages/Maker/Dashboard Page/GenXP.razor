@@ -211,11 +211,16 @@
                                         <span class="active-text">Active</span>
                                     </div>
                                     <div class="activity-action">
-                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                            <Tooltip Text="Edit">
+                                         <Tooltip Text="Edit">
+                                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
                                                 <img class="action-btn" src="images/Dashboard/edit.png" />
-                                            </Tooltip>
-                                        </a>
+                                            </a>
+                                         </Tooltip>
+                                         <Tooltip Text="Go to details page">
+                                            <button class="delete-button" @onclick="() => NavigateToDetails(item.Handler)">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </button>
+                                        </Tooltip>
                                     </div>
 
                                 }
@@ -225,11 +230,16 @@
                                         <span class="inactive-text">Inactive</span>
                                     </div>
                                     <div class="activity-action">
-                                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
-                                            <Tooltip Text="Edit">
+                                         <Tooltip Text="Edit">
+                                            <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
                                                 <img class="action-btn" src="images/Dashboard/edit.png" />
-                                            </Tooltip>
-                                        </a>
+                                            </a>
+                                         </Tooltip>
+                                          <Tooltip Text="Go to details page">
+                                            <button class="delete-button" @onclick="() => NavigateToDetails(item.Handler)">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
+                                            </button>
+                                        </Tooltip>
                                     </div>
 
                                 }
@@ -238,7 +248,7 @@
                                     <div class="status">
                                         <span class="progress-text"> In progress</span>
                                     </div>
-                                    <div class="inprogress-action">
+                                    <div class="activity-action">
                                         <Tooltip Text="Edit">
                                             <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">
                                                 <img class="action-btn" src="images/Dashboard/edit.png" />
@@ -247,6 +257,11 @@
                                         <Tooltip Text="Delete">
                                             <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">
                                                 <img class="action-btn" src="images/Dashboard/delete.png" />
+                                            </button>
+                                        </Tooltip>
+                                        <Tooltip Text="Go to details page">
+                                            <button class="delete-button" @onclick="() => NavigateToDetails(item.Handler)">
+                                                <img class="action-btn" src="images/Dashboard/view.png" />
                                             </button>
                                         </Tooltip>
                                     </div>
@@ -725,5 +740,9 @@ else
     private void NavigateToGetVerified()
     {
         NavigationManager.NavigateTo("/customer/user-verification/?redirect=redirect_account");
+    }
+    private void NavigateToDetails(string handler)
+    {
+        NavigationManager.NavigateTo($"explore/{handler}");
     }
 }

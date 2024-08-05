@@ -72,7 +72,7 @@
                                     </p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4" class="item-pricings-slot">
-                                    <div data-disabled="@(item.MaxSlots <= item.TicketSold)" class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
+                                    <div class="d-flex border-1-solid item-counter-container text-center border-radius-5 overflow-hidden">
                                         <span class="p-1 border-right-1-solid counter-item prevent-select disabled">
                                             <span class="item-action">-</span>
                                         </span>
@@ -536,77 +536,19 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="modalQuestions">
-    <ModalContent Centered class="border-radius-15">
-        <ModalHeader class="justify-content-center pb-0">
-            <div>
-                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Waitlist Registration</p>
-                <p class="font-16 color-grey-100 mt-1 text-center">Please Fill up some questions to complete your registration</p>
-            </div>
-        </ModalHeader>
-        <ModalBody class="px-4">
-            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
-                <Validation>
-                    <Field class="mb-3">
-                        <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
-                        <FieldBody>
-                            <TextEdit @bind-Text="personalForm.Phone">
-                                <ValidationError />
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-            </Validations>
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @foreach (var question in activityQuestions)
-                {
-                    if(question.Required)
-                    {
-                        <Validation>
-                            <Field class="mb-3">
-                                <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
-                                <FieldBody>
-                                    <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." >
-                                        <ValidationError />
-                                    </MemoEdit>
-                                </FieldBody>
-                            </Field>
-                        </Validation>
-                    }
-                    else 
-                    {
-                        <Field class="mb-3">
-                            <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
-                            <FieldBody>
-                                <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." />
-                            </FieldBody>
-                        </Field>
-                    }
-                }
-            </Validations>
-        </ModalBody>
-        <ModalFooter>
-            <div class="button-footer">
-                <Button class="bg-white-200 color-grey-100 me-2" 
-                    Clicked="() => modalQuestions.Close(CloseReason.UserClosing)">
-                    Cancel
-                </Button>
-                <Button class="bg-orange-100 color-white-100" Clicked="SubmitAnserQuestions">
-                    Submit
-                </Button>
-            </div>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-
 @code
 {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
-    [Parameter, SupplyParameterFromQuery]
-    public string Ticket {get; set;}
+    
     [Parameter, SupplyParameterFromQuery]
     public string Status {get; set;}
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Guid {get; set;}
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token {get; set;}
 
     private OteActivity? activity;
     private int selectedTicketId = 0;
@@ -627,11 +569,7 @@
     private int ticketLimit { get; set; }
     private string stringMaxTicket { get; set; }
 
-    private List<ActivityQuestion> activityQuestions = new();
-    private Modal? modalQuestions;
-    private Validations? questionValidation;
-    private Validations? phoneValidation;
-    private PersonalValidation personalForm = new();
+    private const string TRACKER_ID = "checkout";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -668,7 +606,7 @@
         {
             await LoadOteDetails();
             await LoadProvideDetails();
-            await LoadActivityQuestions();
+            await LoadSelectedTickets();
         }
         catch (Exception ex)
         {
@@ -703,59 +641,62 @@
             activity.Pricings = activity.Pricings.OrderBy(t => t.Id);
             activity.EventTicketLimit = act.OteSchedule.EventTicketLimit;
             IsLimit = act.OteSchedule.EventTicketLimit != 0 ? true : false;
-
-            // load selected tickets if any
-            if(!string.IsNullOrEmpty(Ticket))
-            {
-                // filter ticket first
-                var selecteds = Ticket.Split(",").ToList();
-                if(selecteds.Count > 0)
-                {
-                    var ids = selecteds.First().Split("-");
-                    selectedDate = $"{ids[2]} | {ids[3]}";
-                    ticketLimit = int.Parse(ids[4]);
-                    if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
-                    {
-                        var defaultDatePricing = activity.Pricings.FirstOrDefault(p => p.Id == v1);
-                        if(defaultDatePricing is not null)
-                        {
-                            AvailableTickets = activity.Pricings.Where(p => p.OteDateId == defaultDatePricing.OteDateId);
-                        }
-                    }
-                }
-
-                // add filtered tickets
-                foreach(var item in selecteds)
-                {
-                    var ids = item.Split("-");
-                    if(ids.Count() > 1 && int.TryParse(ids[0], out int v1) && int.TryParse(ids[1], out int v2))
-                    {
-                        var sTicket = AvailableTickets.FirstOrDefault(t => t.Id == v1);
-                        if(sTicket is not null)
-                        {
-                            for(int i = 0; i < v2; i++)
-                            {
-                                var otePricing = new OtePricing {
-                                    Description = sTicket.Description,
-                                    Id = sTicket.Id,
-                                    IsAbsorbFees = sTicket.IsAbsorbFees,
-                                    MaxSlots = sTicket.MaxSlots,
-                                    Name = sTicket.Name,
-                                    OteScheduleId = sTicket.OteScheduleId,
-                                    Price = sTicket.Price,
-                                    TicketSold = sTicket.TicketSold,
-                                    RequiredApproval = sTicket.RequiredApproval
-                                };
-                                await AddSelectedTicket(otePricing);
-                            }
-                        }
-                    }
-                }
-            }
         }
-        catch (System.Exception)
+        catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task LoadSelectedTickets()
+    {
+        var trackerDetails = await transactionApiHandler.GetRequestPayment(new Framework.ApiCommand.ApiCore.Transaction.Request.GetRequestPaymentArgs {
+            Guid = Guid,
+            Token = Token
+        }, token);
+        if(!trackerDetails.Succeeded || trackerDetails.Result is null || !trackerDetails.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+        var tracker = trackerDetails.Result.Result;
+
+        // invalid selected activity
+        if(activity.Id != tracker.ActivityId)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+
+        var defaultDatePricing = activity.OteDates.FirstOrDefault(d => d.Date.Date == tracker.SelectedDate.Date);
+        if(defaultDatePricing is null)
+        {
+            NavigationManager.NavigateTo($"/explore/ote/{Handler}");
+            return;
+        }
+
+        // load selected tickets if any
+        AvailableTickets = activity.Pricings.Where(p => p.OteDateId == defaultDatePricing.Id);
+
+        foreach (var ticket in tracker.SelectedTickets)
+        {
+            for(int i = 0; i < ticket.TicketCount; i++)
+            {
+                var sTicket = AvailableTickets.FirstOrDefault(t => t.Id == ticket.TicketId);
+                var otePricing = new OtePricing {
+                    Description = sTicket.Description,
+                    Id = sTicket.Id,
+                    IsAbsorbFees = sTicket.IsAbsorbFees,
+                    MaxSlots = sTicket.MaxSlots,
+                    Name = sTicket.Name,
+                    OteScheduleId = sTicket.OteScheduleId,
+                    Price = sTicket.Price,
+                    TicketSold = sTicket.TicketSold,
+                    RequiredApproval = sTicket.RequiredApproval,
+                    IsUnlimited = sTicket.IsUnlimited
+                };
+                await AddSelectedTicket(otePricing);
+            }
         }
     }
 
@@ -1038,47 +979,19 @@
 
     private Task AddSelectedTicket(OtePricing pricing)
     {
-        if (pricing.TicketSold >= pricing.MaxSlots)
+        if(selectedTickets.ContainsKey(pricing.Id))
         {
-            return Task.CompletedTask;
-        }
-        if (selectedTickets.ContainsKey(pricing.Id))
-        {
-            if (selectedTickets[pricing.Id].Count >= (pricing.MaxSlots - pricing.TicketSold))
-            {
-                return Task.CompletedTask;
-            }
-            if (selectedTickets[pricing.Id].Count >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
-            if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
             selectedTickets[pricing.Id].Count++;
         }
-        else
+        else 
         {
-            if (ticketLimit == 0 && IsLimit)
+            selectedTickets.Add(pricing.Id, new TicketInfo
             {
-                return Task.CompletedTask;
-            }
-            else if (selectedTickets.Sum(a => a.Value.Count) >= ticketLimit && IsLimit)
-            {
-                return Task.CompletedTask;
-            }
-            else
-            {
-                selectedTickets.Add(pricing.Id, new TicketInfo
-                    {
-                        Count = 1,
-                        Id = pricing.Id,
-                        Price = pricing.Price,
-                        RequiredApproval = pricing.RequiredApproval
-                    });
-            }
-
+                Count = 1,
+                Id = pricing.Id,
+                Price = pricing.Price,
+                RequiredApproval = pricing.RequiredApproval
+            });
         }
         return Task.CompletedTask;
     }
@@ -1111,32 +1024,7 @@
             return;
         }
 
-        var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
-        if(havePaidAndFreeTicket)
-        {
-            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
-            return;
-        }
-
-        var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-
-        if(haveApprovalTicket)
-        {
-            // check if already answer the questions before if not then ask again.
-            var questions = await localStorage.GetItem<StorageData>("activityQuestions");
-            if(questions is null || questions.ActivityId != activity.Id)
-            {
-                await modalQuestions.Show();
-            }
-            else 
-            {
-                await SubmitTransaction();
-            }
-        }
-        else
-        {
-            await SubmitTransaction();
-        }
+        await SubmitTransaction();
     }
 
     private async Task SubmitTransaction()
@@ -1146,18 +1034,6 @@
             submitting = true;
 
             StateHasChanged();
-
-            var questionsData = await localStorage.GetItem<StorageData>("activityQuestions");
-            var questions = new List<ActivityQuestion>();
-
-            if(questionsData is not null && questionsData.ActivityId == activity.Id)
-            {
-                questions.AddRange(questionsData.Questions.Select(q => new ActivityQuestion {
-                    Answer = q.Answer,
-                    Id = q.Id,
-                    Question = q.Question
-                }));
-            }
 
             var submit = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1177,11 +1053,8 @@
                         Id = t.Value.Id
                     };
                 }),
-                Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
-                    Answer = q.Answer,
-                    Id = q.Id,
-                    Question = q.Question
-                })
+                Guid = Guid,
+                Token = Token
             }, token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1191,9 +1064,10 @@
             }
             else
             {
-                await localStorage.RemoveItem("activityQuestions");
-
                 submitting = false;
+
+                await localStorage.RemoveItem(TRACKER_ID);
+
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -1208,7 +1082,7 @@
                 }
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             await NotificationService.Error("An error occured. Contact Cinnamon support.", "Error");
         }
@@ -1220,7 +1094,7 @@
         {
             if(activity is null) return true;
 
-            if(activity.Pricings.Any(p => p.MaxSlots > p.TicketSold))
+            if(selectedTickets.Count > 0)
             {
                 return false;
             }
@@ -1233,42 +1107,6 @@
     {
         NavigationManager.NavigateTo($"/explore/ote/{activity.Handler}");
         return Task.CompletedTask;
-    }
-
-    private async Task LoadActivityQuestions()
-    {
-        var activityQuestionsRes = await activityHandler.ActivityQuestions(new Framework.ApiCommand.ApiCore.Activity.Request.ActivityQuestionsArgs {
-            ActivityId = activity.Id
-        });
-        if(!activityQuestionsRes.Succeeded || activityQuestionsRes.Result is null || !activityQuestionsRes.Result.IsSuccess)
-        {
-            NavigationManager.NavigateTo("/explore");
-            return;
-        }
-
-        activityQuestions.AddRange(activityQuestionsRes.Result.Result.Select(q => new ActivityQuestion {
-            FieldType = q.FieldType,
-            Id = q.Id,
-            Question = q.FieldLabel,
-            Required = q.Required
-        }));
-    }
-
-    private async Task SubmitAnserQuestions()
-    {
-        var validForms = (await questionValidation.ValidateAll()) && (await phoneValidation.ValidateAll());
-        if(!validForms) return;
-
-        await localStorage.SetItem("activityQuestions", new {
-            ActivityId = activity.Id,
-            Questions = activityQuestions.Select(q => new {
-                Id = q.Id,
-                Question = q.Question,
-                Answer = q.Answer
-            })
-        });
-
-        await SubmitTransaction();
     }
 
     private class CouponDetails 
@@ -1291,38 +1129,5 @@
         public int Count {get; set;}
         public decimal Price {get; set;}
         public bool RequiredApproval {get; set;}
-    }
-
-    private class ActivityQuestion 
-    {
-        public int Id {get; set;}
-
-        [Required]
-        public string Question {get; set;}
-        public string FieldType {get; set;}
-        public bool Required {get; set;}
-
-        // extra fields
-        [Required(ErrorMessage = "Please write your answer")]
-        public string Answer {get; set;}
-    }
-
-    private class StorageData 
-    {
-        public int ActivityId {get; set;}
-        public IEnumerable<StorageQuestion> Questions {get; set;} 
-    }
-
-    private class StorageQuestion 
-    {
-        public int Id {get; set;}
-        public string Question {get; set;}
-        public string Answer {get; set;}
-    }
-
-    private class PersonalValidation 
-    {
-        [Required(ErrorMessage = "Please provider your mobile number")]
-        public string Phone {get; set;}
     }
 }

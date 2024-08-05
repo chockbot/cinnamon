@@ -3,6 +3,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Cinnamon.Framework.ApiCommand.ApiCore.System.Request;
 using NuGet.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.System;
@@ -136,5 +137,24 @@ public class SystemApiHandler: ISystemApiHandler
         }
     }
 
+    public async Task<AppResult<SubscribeToMailchimpResult>> SubscribeToMailchimp(SubscribeToMailchimpArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("System/SubcribeToMailchimp")
+                .PostJsonAsync(args)
+                .ReceiveJson<SubscribeToMailchimpResult>();
 
+            return AppResult<SubscribeToMailchimpResult>.CreateSucceeded(result, "User has been subscribed to Mailchimp!");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SubscribeToMailchimpResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubscribeToMailchimpResult>.CreateFailed(ex, "Failed subscribing user to mailchimp.");
+        }
+    }
 }

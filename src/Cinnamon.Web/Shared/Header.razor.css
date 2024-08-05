@@ -1,4 +1,11 @@
-﻿.become {
+@font-face {
+    font-family: 'Sansita One';
+    src: url('/fonts/sansita-cufonfonts/SansitaOne.ttf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+  }
+
+.become {
   transition: transform 0.25s;
 }
 .become:active {
@@ -27,7 +34,7 @@
 }*/
 .page-wrapper {
   position: sticky !important;
-  z-index: 9999;
+  z-index: 1;
 }
 /*.top-row {
     background-color: white;
@@ -48,11 +55,12 @@
   text-overflow: ellipsis;
 }
 .app-name {
-  color: var(--primary);
-  font-family: "Backline";
-  font-size: 1.6vw;
-  text-decoration: none;
+    color: var(--primary);
+    font-family: 'Sansita One', sans-serif;
+    font-size: 32px;
+    text-decoration: none;
 }
+
 .become {
   font-weight: 900;
   text-align: center;
@@ -129,6 +137,7 @@ button:focus {
   .dropdown {
     font-family: "Nunito";
     font-size: 0.5vw;
+    align-content: center;
   }
   a.dropdown-item {
     margin-left: auto;
@@ -290,7 +299,7 @@ button:focus {
   }
 }
 
-@media screen and (min-width: 579px) and (max-width: 767px) {
+@media screen and (min-width: 430px) and (max-width: 767px) {
   .app-name {
     font-size: 2.5rem;
   }

@@ -21,6 +21,7 @@
 @inject IJSRuntime JS;
 @inject IChatApiHandler chatApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorage localStorage;
 
 <PageTitle>@(activity?.EventName ?? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH") | CinnamonPH</PageTitle>
 <SeoMeta Title="@(activity?.EventName ?? string.Empty)"
@@ -32,19 +33,19 @@
 
 @if(activity is not null)
 {
-    <div class="container details-page-section">
+    <div class="container details-page-section ote-details-page-wrapper">
         <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                 <div class="cover-photo">
                     <img class="cover-photo-img" src="@CoverImage" alt="cover-photo">
                 </div>
-                <div class="d-flex align-items-center mt-3 me-2 me-md-5">
+                <a href='@($"/maker/profile/{provider.Handler}")' class="d-flex align-items-center mt-3 me-2 me-md-5">
                     <img class="provider-avatar rounded-circle" src="@provider.ProfilePath" alt="avatar">
                     <div class="ms-3">
                         <label class="font-16 font-weight-400 color-grey-100 m-font-14">Experience by</label>
                         <p class="text-capitalize font-16 font-weight-700 color-black-100 mb-0 m-font-14">@provider.FirstName @provider.LastName</p>
                     </div>
-                </div>
+                </a>
                 <div class="provider-details d-flex mt-2">
                     <div class="book-details d-flex align-items-center my-2">
                         @if(topBookedCustomers.TopBooked is not null && topBookedCustomers.TopBooked.Any())
@@ -70,8 +71,8 @@
                     </div>
                     @if (provider.IsVerified == 2)
                     {
-                        <div class="verified-section">
-                            <img src="images/verified-badge.png" class="verified-icon">
+                        <div class="verified-section mt-2">
+                            <img src="images/verified-badge.svg" class="verified-icon">
                             <span class="details-text">Verified Profile</span>
                         </div>
                     }
@@ -111,43 +112,55 @@
                     <h3 class="event-schedule">Date & Time</h3>
                     <div class="schedule-section">
                         <div class="schedule-header">
-                            <p class="schedule-header-title">Select date and tickets</p>
-                            <div class="calendar-section">
-                                <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" SelectedDates="SelectedDates"ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
-                            </div>
+                            <Row class="align-items-center">
+                                <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                    <p class="schedule-header-title">Select date and tickets</p>
+                                    <div class="calendar-section">
+                                        <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" 
+                                            SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
+                                    </div>
+                                </Column>
+                                <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                    <Row class="mb-3">
+                                        <Column class="schedule-event-duration" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                                            <div class="d-flex align-items-center event-schedule-time">
+                                                <img class="me-2" src="images/ote/clock-repeat-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Duration:</label>
+                                                <label class="ote-schedule-details">
+                                                    @EventDurationString
+                                                </label>
+                                            </div>
+                                        </Column>
+                                        <Column class="schedule-event-time" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                            <div class="d-flex align-items-center event-schedule-time">
+                                                <img class="me-2" src="images/ote/clock-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Time Start:</label>
+                                                <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                            <div class="d-flex align-items-center event-schedule-place">
+                                                <img class="me-2" src="images/ote/location-white.png" alt="clock">
+                                                <label class="ote-schedule me-2">Location:</label>
+                                                @if (activity.ExperienceTypeId == 1)
+                                                {
+                                                    string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                                    <label class="ote-schedule-details text-capitalize">@address</label>
+                                                }
+                                                else
+                                                {
+                                                    <label class="ote-schedule-details">Online</label>
+                                                }
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
                         </div>
                         @if(IsOnWaitlist)
                         {
-                            @*Header*@
-                            <div class="schedule-body">
-                               <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                         <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                         <label class="ote-schedule me-1">Duration:</label>
-                                         <label class="ote-schedule-details">
-                                             @EventDurationString
-                                         </label>
-                                     </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details text-capitalize">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                               </div>
-                            </div>
                             @*Body*@
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
@@ -169,36 +182,6 @@
                         }
                         else if(IsApprovedWaitlist)
                         {
-                            @*Header*@
-                            <div class="schedule-body">
-                                <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                        <label class="ote-schedule me-1">Duration:</label>
-                                        <label class="ote-schedule-details">
-                                            @EventDurationString
-                                        </label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
                             @*Body*@
                             <div class="waitlist-section">
                                 <div class="ticket-waitlist">
@@ -221,34 +204,6 @@
                         else
                         {
                             <div class="schedule-body">
-                                @*Header*@
-                                <div class="schedule-location">
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock-repeat.png" alt="clock">
-                                        <label class="ote-schedule me-1">Duration:</label>
-                                        <label class="ote-schedule-details">
-                                            @EventDurationString
-                                        </label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-time">
-                                        <img class="me-2" src="images/ote/clock.png" alt="clock">
-                                        <label class="ote-schedule me-1">Time Start:</label>
-                                        <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
-                                    </div>
-                                    <div class="d-flex align-items-center event-schedule-place">
-                                        <img class="me-2" src="images/ote/location.png" alt="clock">
-                                        <label class="ote-schedule me-1">Location:</label>
-                                        @if (activity.ExperienceTypeId == 1)
-                                        {
-                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                            <label class="ote-schedule-details text-capitalize">@address</label>
-                                        }
-                                        else
-                                        {
-                                            <label class="ote-schedule-details">Online</label>
-                                        }
-                                    </div>
-                                </div>
                                 @*Body*@
                                 @if (activity.IsOpen)
                                 {
@@ -327,9 +282,9 @@
                                                     }
                                                     else
                                                     {
-                                                        <span class="ticket-unli">
-                                                            unlimited
-                                                        </span>
+                                                         <span class="ticket-unli">
+                                                             unlimited
+                                                         </span>
                                                     }
 
                                                 </p>
@@ -422,9 +377,16 @@
                                         if (activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                         {
                                             <div class="schedule-footer">
-                                                <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
-                                                    <span>Join Waitlist</span>
-                                                </button>
+                                                <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                    class="border-radius-10 bg-blue-100 color-white-100 font-20 font-weight-700" 
+                                                    Clicked="JoinWaitlist">
+                                                    <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Join Waitlist
+                                                    </ChildContent>
+                                                </Button>
                                             </div>
                                         }
                                         else
@@ -640,7 +602,7 @@
 </Modal>
 
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     private OteActivity? activity;
@@ -690,6 +652,8 @@
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
 
+    private const string TRACKER_ID = "checkout";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -709,7 +673,6 @@
             await LoadProfile();
             await LoadFavorite();
             await LoadActivityQuestions();
-
             await LoadTopBooked();
             if (activity.IsCapacity)
             {
@@ -1014,55 +977,96 @@
         }
     }
 
-    private async Task ProceedToPayment()
+    private Task ProceedToPayment()
     {
+        if(currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            signInReturnUrl = oteDetailsUrl;
+            
+            return loginModal.Show();
+        }
+
         if(selectedTickets.Count <= 0)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
-            return;
+            return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
         if(havePaidAndFreeTicket)
         {
-            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
-            return;
+            return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
 
-        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
-        if(haveApprovalTicket)
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions) return modalQuestions?.Show();
+
+        if(isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
+
+        return ProceedToPaymentOption();
+    }
+
+    private async Task<PaymentTracker> CreatePaymentTracker(string guid = "", string webToken = "")
+    {
+        var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
+            ActivityId = activity.Id,
+            Guid = guid,
+            Token = webToken,
+            SelectedDate = selectedDate,
+            SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket {
+                TicketCount = t.Value.Count,
+                TicketId = t.Value.Id
+            }),
+            Questions = activityQuestions.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
+                Answer = q.Answer,
+                Question = q.Question,
+                Id = q.Id
+            })
+        }, token);
+        if(!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
         {
-            await modalQuestions?.Show();
+            return null;
         }
-        else if(isFreeWithoutApproval)
-        {
-            await ProceedToFreePurchase();
-        }
-        else 
-        {
-            await ProceedToPaymentOption();
-        }
+        var requestedToken = requestPaymentRes.Result.Result;
+
+        return new PaymentTracker {
+            Guid = requestedToken.Guid,
+            Token = requestedToken.Token
+        };
     }
 
     private async Task ProceedToPaymentOption()
     {
-        string queryValue = string.Empty;
-        foreach(var item in selectedTickets)
+        submitting = true;
+        StateHasChanged();
+
+        string guid = string.Empty, webToken = string.Empty;
+
+        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
+        if(getTracker is not null)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()}-{ticketCount},";
+            guid = getTracker.Guid;
+            webToken = getTracker.Token;
         }
 
-        string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
-        if(currentLogin is null)
+        var createTracker = await CreatePaymentTracker(guid, webToken);
+        if(createTracker is null)
         {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
-            signInReturnUrl = oteDetailsUrl;
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
             return;
         }
+
+        await TrackPaymentRequest(createTracker);
+
+        submitting = false;
+        StateHasChanged();
+
+        string paymentUrl = $"/payment/ote/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
 
         NavigationManager.NavigateTo(paymentUrl);
     }
@@ -1071,16 +1075,15 @@
     {
         try
         {
-            if (currentLogin is null)
-            {
-                string oteDetailsUrl = $"/explore/ote/{Handler}";
-                await loginModal.Show();
-                signInReturnUrl = oteDetailsUrl;
-                return;
-            }
-
             submitting = true;
             StateHasChanged();
+
+            var createTracker = await CreatePaymentTracker();
+            if(createTracker is null)
+            {
+                await NotificationService.Error("An error occured. Please contact support.", "Error");
+                return;
+            }
 
             var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1097,7 +1100,9 @@
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
-                })
+                }),
+                Guid = createTracker.Guid,
+                Token = createTracker.Token
             }, token);
 
             submitting = false;
@@ -1165,7 +1170,21 @@
                 {
                     return Task.CompletedTask;
                 }
-                selectedTickets[pricing.Id].Count++;
+                if (pricing.IsUnlimited)
+                {
+                    if (selectedTickets.Sum(a => a.Value.Count) < 50)
+                    {
+                        selectedTickets[pricing.Id].Count++;
+                    }
+                    else
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+                else
+                {
+                    selectedTickets[pricing.Id].Count++;
+                }
             }
             else
             {
@@ -1395,12 +1414,13 @@
             {
                 return new OteWaitlist
                 {
-                    Id = s.Id,
-                    Status = s.Status,
+                    Id         = s.Id,
+                    Status     = s.Status,
                     CustomerId = s.CustomerId,
-                    Payload = s.Payload
+                    Payload    = s.Payload,
+                    Type       = s.Type
                 };
-            }).ToList();
+            }).Where(a => a.Type == "Paid").ToList();
         }
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1454,6 +1474,14 @@
 
     private async Task JoinWaitlist()
     {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            await loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return;
+        }
+
         //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         //Get Selected Ticket
         var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
@@ -1467,29 +1495,20 @@
             await NotificationService.Error("Select a ticket to proceed.", "Oops!");
             return;
         }
-        
-        var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-        
-        if(haveApprovalTicket)
+
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions)
         {
             await modalQuestions?.Show();
+            return;
         }
-        else
-        {
-            await ProceedToJoinWaitlist();
-        }    
+
+        await ProceedToJoinWaitlist(); 
     }
 
     private async Task ProceedToJoinWaitlist()
     {
-        if (currentLogin is null)
-        {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
-            signInReturnUrl = oteDetailsUrl;
-            return;
-        }
-
         var payload = new 
         {
             Tickets = selectedTickets.Select(t => new {
@@ -1501,12 +1520,15 @@
             }),
             Questions = activityQuestions.Select(q => new {
                 Id = q.Id,
-                Question = q.Question,
-                Answer = q.Answer
+                Question = string.Empty,
+                Answer = string.Empty
             })
         };
 
         var serializedPayload = JsonConvert.SerializeObject(payload);
+
+        submitting = true;
+        StateHasChanged();
 
         //Add to Waitlist
         var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
@@ -1517,6 +1539,7 @@
             CustomerName = ProfileName,
             ProviderId   = provider.Id,
             Status       = 1,
+            Type         = "Paid",
             Payload      = serializedPayload
         },token);
 
@@ -1526,6 +1549,9 @@
             await NotificationService.Success("Successfully added to waitlist.", "Success");
             await LoadWaitlist();
         }
+
+        submitting = false;
+        StateHasChanged();
     }
 
     private async Task ConfirmDeleteChanged(bool value)
@@ -1566,14 +1592,25 @@
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
-        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
+        bool proceedToWaitList = activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+
+        if(proceedToWaitList)
         {
-             await ProceedToJoinWaitlist();
+            await ProceedToJoinWaitlist();
+            return;
         }
-        else 
+
+        if(isFreeWithoutApproval || freeWithApproval)
         {
             await ProceedToFreePurchase();
+            return;
         }
+
+        await ProceedToPaymentOption();
     }
 
     private async Task LoadTopBooked()
@@ -1608,6 +1645,17 @@
         return String.Join(" ", result);
     }
 
+    private async Task TrackPaymentRequest(PaymentTracker track)
+    {
+        await localStorage.SetItem(TRACKER_ID, track);
+    }
+
+    private class PaymentTracker 
+    {
+        public string Guid {get; set;}
+        public string Token {get; set;}
+    }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }
@@ -1634,24 +1682,6 @@
         public string Phone {get; set;}
     }
 
-    private class StorageData 
-    {
-        public int ActivityId {get; set;}
-        public IEnumerable<StorageQuestion> Questions {get; set;} 
-    }
-
-    private class StorageQuestion 
-    {
-        public int Id {get; set;}
-        public string Question {get; set;}
-        public string Answer {get; set;}
-    }
-    public class Payload
-    {
-        public IEnumerable<TicketDetails> Tickets { get; set; }
-        public IEnumerable<QuestionDetails> Questions { get; set; }
-    }
-
     public class TicketDetails
     {
         public int Id { get; set; }
@@ -1660,11 +1690,5 @@
         public int OteDateId { get; set; }
         public int Count { get; set; }
         public DateTime Date { get; set; }
-    }
-
-    public class QuestionDetails
-    {
-        public string Question { get; set; }
-        public string Answer { get; set; }
     }
 }
