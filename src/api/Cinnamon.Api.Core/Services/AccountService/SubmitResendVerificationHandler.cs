@@ -1,12 +1,11 @@
-using System.Text;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Interactors;
 using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -15,13 +14,15 @@ public class SubmitResendVerificationHandler : ISubmitResendVerificationHandler
     private readonly IWaitListData waitListData;
     private readonly ISendVerifyEmailHandler sendVerifyEmailHandler;
     private readonly IResendEmailData resendEmailData;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public SubmitResendVerificationHandler(IWaitListData waitListData, ISendVerifyEmailHandler sendVerifyEmailHandler,
-        IResendEmailData resendEmailData)
+        IResendEmailData resendEmailData, ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.waitListData = waitListData;
         this.sendVerifyEmailHandler = sendVerifyEmailHandler;
         this.resendEmailData = resendEmailData;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
     
     public AppResult<SubmitResendVerificationResult> Execute(SubmitResendVerificationArgs args)
@@ -82,19 +83,12 @@ public class SubmitResendVerificationHandler : ISubmitResendVerificationHandler
             }
 
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-
-            // generate token
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
 
             var updateRes = await waitListData.UpdateWaitlist(new Framework.ApiCommand.ApiData.Waitlist.Request.UpdateWaitlistArgs {
                 Email = args.Email,
-                Guid = guid.ToString(),
-                Token = token.ToString()
+                Guid = tokenGenerated.Guid,
+                Token = tokenGenerated.Token
             });
 
             if(!updateRes.Succeeded || updateRes.Result == null)
@@ -103,7 +97,7 @@ public class SubmitResendVerificationHandler : ISubmitResendVerificationHandler
             }
             var updated = updateRes.Result.Result;
 
-            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = guid.ToString(), token = encodedToken}).ToString();
+            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = tokenGenerated.Guid, token = tokenGenerated.Token}).ToString();
 
             // send email verification link
             var sendEmailRes = await sendVerifyEmailHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.SendVerifyEmailArgs {
@@ -133,7 +127,7 @@ public class SubmitResendVerificationHandler : ISubmitResendVerificationHandler
             return AppResult<SubmitResendVerificationResult>.CreateSucceeded(new SubmitResendVerificationResult {
                 Email = updated.Email,
                 Guid = updated.Guid,
-                Token = encodedToken,
+                Token = tokenGenerated.Token,
                 Id = updated.Id,
                 VerificationLink = verificationLink
             }, "Successfully resend email");

@@ -463,9 +463,9 @@
 
     private string ImageSource { get; set; } = "images/Profile/user";
 
-    protected ModalUploadingProfile upload;
+    public ModalUploadingProfile upload { get; set; }
 
-    private bool isEditAbout = false;
+    public bool isEditAbout = false;
 
     private string aboutLocalState = string.Empty;
 
@@ -783,7 +783,7 @@
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
 
-    private void OnEditAboutClick()
+    public void OnEditAboutClick()
     {
         isEditAbout = !isEditAbout;
         if (isEditAbout)

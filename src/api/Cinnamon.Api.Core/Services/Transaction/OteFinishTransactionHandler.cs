@@ -155,6 +155,27 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
+            // update if waitlisted
+            if(deserializedPayload.Waitlisted && deserializedPayload.WaitListId > 0)
+            {
+                var getWaitlistRes = await activityData.GetOteWaitList(deserializedPayload.WaitListId);
+                if(getWaitlistRes.Succeeded && getWaitlistRes.Result is not null && getWaitlistRes.Result.IsSuccess)
+                {
+                    var waitlist = getWaitlistRes.Result.Result;
+                    
+                    var updateWaitlistStatusRes = await activityData.UpdateOteWaitlist(new Framework.ApiCommand.ApiData.OteWaitlist.Request.UpdateOteWaitlistArgs {
+                        ActivityId = waitlist.ActivityId,
+                        CustomerId = waitlist.CustomerId,
+                        CustomerName = waitlist.CustomerName,
+                        Id = waitlist.Id,
+                        Payload = waitlist.Payload,
+                        ProviderId = waitlist.ProviderId,
+                        ScheduleId = waitlist.ScheduleId,
+                        Status = 4 // approved and purchased the waitlist
+                    });
+                }
+            }
+
             var tokenGeneratedPayload = new TokenGeneratedPayload {
                 PurchaseOrderId = purchaseOrder.Id
             };
@@ -291,6 +312,9 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         public int OteScheduleId { get; set; }
         public string Guid {get; set;}
         public string Token {get; set;}
+
+        public bool Waitlisted {get; set;}
+        public int WaitListId {get; set;}
     }
 
     private class Ticket 

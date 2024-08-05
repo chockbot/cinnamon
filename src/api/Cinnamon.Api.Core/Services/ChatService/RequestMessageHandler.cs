@@ -1,4 +1,3 @@
-using System.Text;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
@@ -6,7 +5,6 @@ using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Api.Core.Services.ChatService.Interactors;
 using Cinnamon.Api.Core.Services.ChatService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Cinnamon.Api.Core.Services.ChatService;
 
@@ -15,13 +13,15 @@ public class RequestMessageHandler : IRequestMessageHandler
     private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly ITokenGeneratorProvider tokenGeneratorProvider;
 
     public RequestMessageHandler(IGetCustomerByIdHandler getCustomerByIdHandler, ITokenGeneratedData tokenGeneratedData,
-        IJsonSerializationProvider jsonSerializationProvider)
+        IJsonSerializationProvider jsonSerializationProvider, ITokenGeneratorProvider tokenGeneratorProvider)
     {
         this.getCustomerByIdHandler = getCustomerByIdHandler;
         this.tokenGeneratedData = tokenGeneratedData;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.tokenGeneratorProvider = tokenGeneratorProvider;
     }
     
     public AppResult<RequestMessageResult> Execute(RequestMessageArgs args)
@@ -49,12 +49,7 @@ public class RequestMessageHandler : IRequestMessageHandler
             }
 
             // generate token and guid
-            var guid = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow;
-            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-            byte[] key = guid.ToByteArray();
-            var token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var tokenGenerated = tokenGeneratorProvider.Generator();
 
             var payload = new {
                 ProviderId = customer.Id,
@@ -65,9 +60,9 @@ public class RequestMessageHandler : IRequestMessageHandler
             var serializePayload = jsonSerializationProvider.Serialize(payload);
 
             var createTokenRes = await tokenGeneratedData.CreateTokenGenerated(new Framework.ApiCommand.ApiData.TokenGenerated.Request.CreateTokenArgs {
-                Guid = guid.ToString(),
+                Guid = tokenGenerated.Guid,
                 Payload = serializePayload,
-                Token = encodedToken,
+                Token = tokenGenerated.Token,
                 TokenType = "MESSAGE-REQUEST"
             });
             if(!createTokenRes.Succeeded || createTokenRes.Result is null || !createTokenRes.Result.IsSuccess)
@@ -77,8 +72,8 @@ public class RequestMessageHandler : IRequestMessageHandler
             }
 
             return AppResult<RequestMessageResult>.CreateSucceeded(new RequestMessageResult {
-                Guid = guid.ToString(),
-                Token = encodedToken
+                Guid = tokenGenerated.Guid,
+                Token = tokenGenerated.Token
             }, "Successfully requested a message.");
         }
         catch (Exception ex)

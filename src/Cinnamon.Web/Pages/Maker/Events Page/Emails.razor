@@ -1,22 +1,71 @@
 ﻿@layout EmptyLayout;
 @using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 
 <div class="container">
     <div class="border-radius-10 p-4 m-3 m-bg-white-100 m-padding-0 mb-3">
         <Row VerticalGutter="20" HorizontalGutter="20">
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label @onclick="NavigateToRemider" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
-                    <img class="me-3" src="images/ote/red-bell.png" alt="bell">
-                    <span class="font-16 color-black-100">Add Reminder Email</span>
-                </label>
+                <div class="bg-white-100 border-radius-10 p-3 cursor-pointer email-box" id="reminderDiv" @onmousemove="ReminderHoverMove" @onmouseleave="ReminderHoverLeave" @onclick="NavigateToRemider">
+                    <div class="title-section text-box">
+                        <p class="email-title">Reminder Email</p>
+                    </div>
+                    <div class="line-effect div-line mb-2"></div>
+                    <div class="line-effect div-line-75 mb-3"></div>
+                    @if (string.IsNullOrEmpty(remiderDetails.Body))
+                    {
+                        <div class="d-flex align-items-center mb-2 text-box">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center mb-2 text-box">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
+                    <div class="update-email d-flex justify-content-end text-box">
+                        <button class="update-button-email" @onclick=" NavigateToRemider">Edit Email</button>
+                    </div>
+                    <div class="effect hover1"></div>
+                </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                <label @onclick="NavigateToFeedback" class="bg-white-100 d-flex align-items-center p-3 border-radius-10 cursor-pointer email-box">
-                    <img class="me-3" src="images/ote/yellow-star.png" alt="bell">
-                    <span class="font-16 color-black-100">Add Feedback Email</span>
-                </label>
+                <div class="bg-white-100 border-radius-10 p-3 cursor-pointer email-box" id="feedbackDiv" @onclick="NavigateToFeedback" @onmousemove="FeedbackHoverMove" @onmouseleave="FeedbackHoverLeave">
+                    <div class="title-section text-box">
+                        <p class="email-title">Feedback Email</p>
+                    </div>
+                    <div class="line-effect div-line mb-2"></div>
+                    <div class="line-effect div-line-75 mb-3"></div>
+                    @if (string.IsNullOrEmpty(remiderDetails.Body))
+                    {
+                        <div class="d-flex align-items-center mb-2 text-box">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center mb-2 text-box">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
+                    <div class="update-email d-flex justify-content-end text-box">
+                        <button class="update-button-email" @onclick=" NavigateToFeedback">Edit Email</button>
+                    </div>
+                    <div class="effect hover2"></div>
+                </div>
             </Column>
         </Row>
     </div>
@@ -24,14 +73,87 @@
 
 @code {
     [Parameter]
-    public string Handler { get; set; }
+    public OteActivity OteActivity { get; set; }
 
+    [Parameter]
+    public string Token { get; set; }
+
+    private ScheduleNotification remiderDetails = new ScheduleNotification();
+
+    private ScheduleNotification feedbackDetails = new ScheduleNotification();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var feedbackTemplateRes = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs
+            {
+                ActivityId = OteActivity.Id,
+                TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteThankYou.ToString()
+            }, Token);
+
+        var reminderTemplateRes = activityApiHandler.GetEmailTemplate(new Framework.ApiCommand.ApiCore.Activity.Request.GetEmailTemplateArgs
+            {
+                ActivityId = OteActivity.Id,
+                TemplateType = Cinnamon.Framework.Enums.EmailTemplateType.OteReminder.ToString()
+            }, Token);
+        await Task.WhenAll(feedbackTemplateRes, reminderTemplateRes);
+        var feedbackResult = feedbackTemplateRes.Result;
+        var reminderResult = reminderTemplateRes.Result;
+
+        feedbackDetails = new ScheduleNotification
+            {
+                Body = string.Empty,
+                Days = OteActivity.EmailFeedbackDays,
+                Subject = string.Empty
+            };
+
+        remiderDetails = new ScheduleNotification
+            {
+                Body = string.Empty,
+                Days = OteActivity.EmailReminderDays,
+                Subject = string.Empty
+            };
+        if (feedbackResult.Succeeded && feedbackResult.Result is not null && feedbackResult.Result.IsSuccess)
+        {
+            feedbackDetails.Body = feedbackResult.Result.Result.Body;
+            feedbackDetails.Subject = feedbackResult.Result.Result.Subject;
+        }
+
+        if (reminderResult.Succeeded && reminderResult.Result is not null && reminderResult.Result.IsSuccess)
+        {
+            remiderDetails.Body = reminderResult.Result.Result.Body;
+            remiderDetails.Subject = reminderResult.Result.Result.Subject;
+        }
+    }
     private void NavigateToRemider()
     {
-        NavigationManager.NavigateTo($"/experiences/ote/{Handler}/{2}");
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{2}");
     }
     private void NavigateToFeedback()
     {
-        NavigationManager.NavigateTo($"/experiences/ote/{Handler}/{3}");
+        NavigationManager.NavigateTo($"/experiences/ote/{OteActivity.Handler}/{3}");
     }
+    public class ScheduleNotification
+    {
+        public int Days { get; set; } = 1;
+        public string Subject { get; set; }
+        public string Body { get; set; }
+    }
+
+    private async Task ReminderHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#reminderDiv");
+    }
+    private async Task ReminderHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#reminderDiv");
+    }
+    private async Task FeedbackHoverMove(MouseEventArgs e)
+    { 
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#feedbackDiv");
+    }
+    private async Task FeedbackHoverLeave(MouseEventArgs e)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#feedbackDiv");
+    }
+
 }
