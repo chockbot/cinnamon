@@ -388,22 +388,7 @@
                         </div>
                     </div>
                 </div>
-                @if (chatHistories.Count == 0)
-                {
-                    <div class="row justify-content-center no-message-section text-center">
-                        <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                            <img src="images/messages/speech-bubble.svg" />
-                            <div class="divider"></div>
-                            <label class="no-conversation-title">
-                                No Conversation Yet
-                            </label>
-                            <label class="no-conversation-sub-title">
-                                You didn't make any conversation yet.
-                            </label>
-                        </div>
-                    </div>
-                }
-                else
+                if(chatHistories.Count > 0)
                 {
                     <div class="conversation-section">
                         <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
@@ -511,38 +496,56 @@
                         </label>
                     }
                 </div>
-                <div class="send-message-section">
-                    <table>
-                        <tr>
-                            <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
-                            <td class="input-section">
-                                <div class="input-group border p-1 rounded-pill-section">
-                                    <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
-                                    </div>
-                                </div>
-                          
-                            </td>
-                            <td class="send-section">
-                                <img id="send-message" src="images/messages/send-message.svg" />
-                            </td>
-                        </tr>
-                    </table>
-                </div>
             }
-            else
-            {
-                <div class="row justify-content-center no-message-section text-center">
-                    <div class="col-lg-3">
-                        <img src="images/messages/no-message.svg" />
-                        <div class="divider"></div>
-                        <label class="no-message-title">
-                            No Message Yet
-                        </label>
-                        <div class="divider"></div>
-                        <button id="btnFindFirstExperience" type="button" class="btn btn-primary border-0" @onclick=NavigateToExplore>Find your first experience</button>
-                    </div>
+        </div>
+
+        @if(chatRooms.Count == 0)
+        {
+            <div class="row justify-content-center no-message-section-yet text-center">
+                <div class="col-12 col-sm-12 col-md-6">
+                    <img src="images/messages/no-message.svg" />
+                    <div class="divider"></div>
+                    <label class="no-message-title">
+                        No Message Yet
+                    </label>
+                    <div class="divider"></div>
+                    <button id="btnFindFirstExperience" type="button" class="btn btn-primary border-0" @onclick=NavigateToExplore>Find your first experience</button>
                 </div>
-            }
+            </div>
+        }
+
+        @if (chatRooms.Count != 0 && chatHistories.Count == 0)
+        {
+            <div class="row justify-content-center no-message-section text-center">
+                <div class="col-12 col-md-6">
+                    <img src="images/messages/speech-bubble.svg" />
+                    <div class="divider"></div>
+                    <label class="no-conversation-title">
+                        No Conversation Yet
+                    </label>
+                    <label class="no-conversation-sub-title">
+                        You didn't make any conversation yet.
+                    </label>
+                </div>
+            </div>
+        }
+
+        <div class="send-message-section">
+            <table>
+                <tr>
+                    <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
+                    <td class="input-section">
+                        <div class="input-group border p-1 rounded-pill-section">
+                            <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
+                            </div>
+                        </div>
+                  
+                    </td>
+                    <td class="send-section">
+                        <img id="send-message" src="images/messages/send-message.svg" />
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
