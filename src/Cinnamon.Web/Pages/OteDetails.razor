@@ -506,8 +506,87 @@
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @foreach (var question in activityQuestions)
+            <Validations @ref="predefinedQuestionValidation" Mode="ValidationMode.Manual" Model="predefinedQuestion">
+                @if(predefinedQuestion.HaveNameQuestion)
+                {
+                    @if(predefinedQuestion.RequiredNameQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HaveEmailQuestion)
+                {
+                    @if(predefinedQuestion.RequiredEmailQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HavePhoneQuestion)
+                {
+                    @if(predefinedQuestion.RequiredPhoneQuestion || string.IsNullOrEmpty(predefinedQuestion.PhoneAnswer))
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+            </Validations>
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
+                @foreach (var question in filteredQuestions)
                 {
                     if(question.Required)
                     {
@@ -643,13 +722,17 @@
     private Modal? modalQuestions;
     private Validations? questionValidation;
     private Validations? phoneValidation;
-    private PersonalValidation personalForm = new();
+    
     private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new ();
     private Modal? modalPurchaseWithConfirmation;
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
 
     private const string TRACKER_ID = "checkout";
+
+    private PredefinedQuestion predefinedQuestion = new();
+    private Validations? predefinedQuestionValidation;
+    private List<ActivityQuestion> filteredQuestions = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1010,6 +1093,8 @@
 
     private async Task<PaymentTracker> CreatePaymentTracker(string guid = "", string webToken = "")
     {
+        var question = GetQuestions();
+
         var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
             ActivityId = activity.Id,
             Guid = guid,
@@ -1019,7 +1104,7 @@
                 TicketCount = t.Value.Count,
                 TicketId = t.Value.Id
             }),
-            Questions = activityQuestions.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
+            Questions = question.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
                 Answer = q.Answer,
                 Question = q.Question,
                 Id = q.Id
@@ -1082,6 +1167,8 @@
                 return;
             }
 
+            var questions = GetQuestions();
+
             var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
                 CardInformation = null,
@@ -1093,7 +1180,7 @@
                     Count = t.Value.Count,
                     Id = t.Value.Id
                 }),
-                Questions = activityQuestions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
+                Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
@@ -1139,7 +1226,10 @@
 
     private Task ClearAnswers()
     {
-        personalForm.Phone = string.Empty;
+        predefinedQuestion.NameAnswer = string.Empty;
+        predefinedQuestion.EmailAnswer = string.Empty;
+        predefinedQuestion.PhoneAnswer = string.Empty;
+        
         foreach (var item in activityQuestions)
         {
             item.Answer = string.Empty;
@@ -1507,6 +1597,8 @@
 
     private async Task ProceedToJoinWaitlist()
     {
+        var questions = GetQuestions();
+
         var payload = new 
         {
             Tickets = selectedTickets.Select(t => new {
@@ -1516,7 +1608,7 @@
                 Price = t.Value.Price,
                 Name = t.Value.Name,
             }),
-            Questions = activityQuestions.Select(q => new {
+            Questions = questions.Select(q => new {
                 Id = q.Id,
                 Question = string.Empty,
                 Answer = string.Empty
@@ -1581,14 +1673,25 @@
             Question = q.FieldLabel,
             Required = q.Required
         }));
+
+        var filtered = activityQuestions
+            .Where(q => q.Question != predefinedQuestion.NameQuestion && 
+                q.Question != predefinedQuestion.EmailQuestion && 
+                q.Question != predefinedQuestion.PhoneQuestion);
+
+        filteredQuestions.AddRange(filtered); 
+
+        await LoadPredefinedQuestions();
     }
 
     private async Task SubmitAnswerQuestions()
     {
-        var validForms = await questionValidation.ValidateAll();
-        if(!validForms) return;
+        var validForms = await questionValidation?.ValidateAll();
+        var validPredefined = await predefinedQuestionValidation?.ValidateAll();
+        if(!validForms || !validPredefined) return;
 
         await questionValidation.ClearAll();
+        await predefinedQuestionValidation.ClearAll();
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
@@ -1668,6 +1771,60 @@
         return predefinedQuestion is not null && predefinedQuestion.Required;
     }
 
+    private Task LoadPredefinedQuestions()
+    {
+        predefinedQuestion.HaveNameQuestion = HavePredefinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.HaveEmailQuestion = HavePredefinedQuestion(predefinedQuestion.EmailQuestion);    
+        predefinedQuestion.HavePhoneQuestion = HavePredefinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        predefinedQuestion.RequiredNameQuestion = RequiredPredeinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.RequiredEmailQuestion = RequiredPredeinedQuestion(predefinedQuestion.EmailQuestion);
+        predefinedQuestion.RequiredPhoneQuestion = RequiredPredeinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<ActivityQuestion> GetQuestions()
+    {
+        var questions = new List<ActivityQuestion>();
+
+        if(predefinedQuestion.HaveNameQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.NameAnswer,
+                Question = "Name",
+            });
+        }
+
+        if(predefinedQuestion.HaveEmailQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.EmailAnswer,
+                Question = "Email",
+            });
+        }
+
+        if(predefinedQuestion.HavePhoneQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.PhoneAnswer,
+                Question = "Phone",
+            });
+        }
+
+        questions.AddRange(filteredQuestions.Select(q => new ActivityQuestion {
+            Id = q.Id,
+            Answer = q.Answer,
+            Question = q.Question,
+            Required = q.Required
+        }));
+
+        return questions;
+    }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }
@@ -1702,5 +1859,37 @@
         public int OteDateId { get; set; }
         public int Count { get; set; }
         public DateTime Date { get; set; }
+    }
+
+    public class QuestionDetails
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
+
+    private class PredefinedQuestion 
+    {
+        public string NameQuestion {get; set;} = "##Name";
+        public string EmailQuestion {get; set;} = "##Email";
+        public string PhoneQuestion {get; set;} = "##Phone";
+
+        [Required(ErrorMessage = "Required your name")]
+        public string NameAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your email")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string EmailAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your mobile number")]
+        [RegularExpression(@"^(\+63|0)[0-9]{10}$", ErrorMessage = "Invalid mobile number")]
+        public string PhoneAnswer {get; set;} = string.Empty;
+
+        public bool HaveNameQuestion {get; set;}
+        public bool HaveEmailQuestion {get; set;}
+        public bool HavePhoneQuestion {get; set;}
+
+        public bool RequiredNameQuestion {get; set;}
+        public bool RequiredEmailQuestion {get; set;}
+        public bool RequiredPhoneQuestion {get; set;}
     }
 }
