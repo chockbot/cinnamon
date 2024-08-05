@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Components.Pages;
 @inject IJSRuntime jsRuntime;
 @inject ISystemApiHandler systemApiHandler;
+@using Microsoft.AspNetCore.WebUtilities
 
 <PageTitle>@Title | CinnamonPH</PageTitle>
 <SeoMeta Title="@Title" Subject="@Title" Url="/help" />
@@ -1033,6 +1034,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+		var uri = new Uri(NavigationManager.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        if (query.TryGetValue("section", out var section))
+        {
+            Section = section;
+        }
+		
         if (!string.IsNullOrEmpty(Section))
         {
             Section = Section.Trim().ToLower();
