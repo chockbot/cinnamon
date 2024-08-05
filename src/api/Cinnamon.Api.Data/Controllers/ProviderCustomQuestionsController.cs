@@ -62,4 +62,55 @@ public class ProviderCustomQuestionsController : ControllerBase
             return new JsonResult(new GetCustomQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("Bulk/Delete")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteCustomQuestionsResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> DeleteCustomQuestions([FromBody] DeleteCustomQuestionsArgs args)
+    {
+        try
+        {
+            var result = await providerCustomQuestionRepository.DeleteCustomQuestions(args.Ids);
+            if(!result.Succeeded)
+            {
+                return new JsonResult(new DeleteCustomQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteCustomQuestionsResult { IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteCustomQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Bulk/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateCustomQuestionsResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateCustomQuestions([FromBody] UpdateCustomQuestionsArgs args)
+    {
+        try
+        {
+            var dtos = args.Questions.Select(q => new Framework.ApiCommand.ApiData.DTO.ProviderCustomQuestion.ProviderCustomQuestionDTO {
+                ActivityId = q.ActivityId,
+                FieldLabel = q.FieldLabel,
+                FieldType = q.FieldType,
+                Id = q.Id,
+                ProviderId = q.ProviderId,
+                Required = q.Required
+            });
+            
+            var result = await providerCustomQuestionRepository.UpdateCustomerQuestions(dtos);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new UpdateCustomQuestionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateCustomQuestionsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateCustomQuestionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

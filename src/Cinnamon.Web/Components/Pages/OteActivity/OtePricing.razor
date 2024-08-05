@@ -151,28 +151,82 @@
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnPendingEmailTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-clock.png" alt="clock">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
+                        <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
+                    @if(string.IsNullOrEmpty(customPendingMessageOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnAcceptedTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-check.png" alt="check">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-check.png" alt="check">
+                        <p class="font-16 color-grey-100 mb-0">Going</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Going</p>
+                    @if(string.IsNullOrEmpty(customAcceptedMessageOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnDeclinedTemplateClick">
-                    <img class="mb-2" src="images/ote/tiny-close.png" alt="close">
+                    <div class="d-flex align-items-center mb-2">
+                        <img class="me-2" src="images/ote/tiny-close.png" alt="close">
+                        <p class="font-16 color-grey-100 mb-0">Declined</p>
+                    </div>
                     <div class="div-line mb-1"></div>
                     <div class="div-line-75 mb-2"></div>
-                    <p class="font-16 color-grey-100 mb-0">Declined</p>
+                    @if(string.IsNullOrEmpty(customDeclinedMesasgeOrig))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-red me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">No message yet</p>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="small-circle-green me-2">
+                            </div>
+                            <p class="font-16 color-grey-100 mb-0">Message already set</p>
+                        </div>
+                    }
                 </div>
             </Column>
         </Row>
@@ -192,8 +246,16 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @nameQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Name", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
@@ -205,8 +267,16 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @emailQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Email", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
@@ -218,23 +288,39 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
-                    <TextEdit Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center" 
-                        Size="Size.Small" Placeholder="Required" Disabled />
+                    <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
+                        <DropdownToggle Size="Size.Small">
+                            @phoneQuestion
+                        </DropdownToggle>
+                        <DropdownMenu class="border-radius-10 mt-1">
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Off")'>Off</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Optional")'>Optional</DropdownItem>
+                            <DropdownItem Clicked='() => SetPredefinedQuestion("##Phone", "Required")'>Required</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             </Column>
         </Row>
 
         <div>
-            <Button Clicked="ShowCustomQuestionModal" class="color-green-100 bg-white-100 font-16 mb-3">
+            <Button Clicked="CreateQuestion" class="color-green-100 bg-white-100 font-16 mb-3">
                 + <span class="ms-2">Add Questions</span>
             </Button>
 
-            @foreach (var question in questions)
+            @foreach (var question in FilteredQuestions)
             {
-                <div class="bg-white-100 mb-2 p-3 border-radius-10">    
+                <div @key="question" class="bg-white-100 mb-2 p-3 border-radius-10 d-flex justify-content-between align-items-center">
                     <p class="font-16 color-grey-100 mb-0">
                         @question.Question
                     </p>
+                    <div class="ms-3 d-flex">
+                        <Button class="p-0" Clicked="() => UpdateQuestion(question)">
+                            <img src="images/ote/blue-small-edit.png" alt="edit">
+                        </Button>
+                        <Button class="p-0" Clicked="() => RemoveQuestion(question)">
+                            <img src="images/ote/red-small-delete.png" alt="delete">
+                        </Button>
+                    </div>
                 </div>
             }
         </div>
@@ -247,7 +333,14 @@
 <Modal @ref="modalCustomQuestion">
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
-            <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            @if(questionAction == QuestionAction.Edit)
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Edit Question</p>
+            }
+            else
+            {
+                <p class="font-20 font-weight-700 color-black-100 mb-0">Add Question</p>
+            }
         </ModalHeader>
         <ModalBody class="px-4">
             <Field class="mb-3">
@@ -268,7 +361,7 @@
                 <Button class="btn-cancel" Clicked="CloseCustomQuestion">
                     Cancel
                 </Button>
-                <Button class="btn-save" Clicked="AddQuestion">
+                <Button class="btn-save" Clicked="SaveQuestion">
                     Save
                 </Button>
             </div>
@@ -596,7 +689,7 @@
     </ConfirmDialog>
 
 @code
-    {
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -648,6 +741,20 @@
     public Modal? modalCustomQuestion;
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
+
+    enum QuestionAction
+    {
+        Edit,
+        Create
+    }
+
+    private List<CustomQuestion> deletedQuestions = new();
+
+    private QuestionAction questionAction = QuestionAction.Create;
+
+    private string nameQuestion = "Off";
+    private string emailQuestion = "Off";
+    private string phoneQuestion = "Off";
 
     private async Task NextClick()
     {
@@ -746,7 +853,9 @@
             CustomAcceptedBody = customAcceptedMessageOrig,
             CustomDeclinedBody = customDeclinedMesasgeOrig,
             CustomPendingBody = customPendingMessageOrig,
-            Questions = questions.Where(q => q.IsNew).ToList(),
+            NewQuestions = questions.Where(q => q.IsNew).ToList(),
+            UpdatedQuestions = questions.Where(q => !q.IsNew).ToList(),
+            DeletedQuestions = deletedQuestions.Select(q => q.Id).ToList()
         };
         return data;
     }
@@ -776,14 +885,17 @@
         customDeclinedMesasge = data.CustomDeclinedBody;
         customPendingMessage = data.CustomPendingBody;
 
-        if(data.Questions is not null && data.Questions.Count > 0)
+        if(data.UpdatedQuestions is not null && data.UpdatedQuestions.Count > 0)
         {
-            questions.AddRange(data.Questions.Select(q => new CustomQuestion {
+            questions.AddRange(data.UpdatedQuestions.Select(q => new CustomQuestion {
                 FieldType = q.FieldType,
                 Question = q.Question,
-                Required = q.Required
+                Required = q.Required,
+                Id = q.Id
             }));
         }
+
+        SetPredefinedQuestionState();
 
         return Task.CompletedTask;
     }
@@ -836,7 +948,9 @@
         public string CustomAcceptedBody {get; set;}
         public string CustomDeclinedBody {get; set;}
 
-        public List<CustomQuestion> Questions {get; set;}
+        public List<CustomQuestion> NewQuestions {get; set;}
+        public List<CustomQuestion> UpdatedQuestions {get; set;}
+        public List<int> DeletedQuestions {get; set;}
 
         public class ItemPrice
         {
@@ -1208,12 +1322,23 @@
         return CloseOffCanvas();
     }
 
-    private Task OnOffCanvasSave()
+    private async Task OnOffCanvasSave()
     {
-        if(selectedEmailTemplate == 0) return SavePendingTemplate();
-        if(selectedEmailTemplate == 1) return SaveAcceptedTemplate();
-
-        return SaveDeclinedTemplate();
+        switch(selectedEmailTemplate)
+        {
+            case 0:
+                await SavePendingTemplate();
+                await NotificationService.Success("Custom pending email template updated.","Success");
+                break;
+            case 1:
+                await SaveAcceptedTemplate();
+                await NotificationService.Success("Custom approved email template updated.","Success");
+                break;
+            default:
+                await SaveDeclinedTemplate();
+                await NotificationService.Success("Custom declined email template updated.","Success");
+                break;
+        }
     }
 
     private Task OnOffCanvasCancel()
@@ -1224,8 +1349,10 @@
         return CancelDeclinedTemplate();
     }
 
-    private Task ShowCustomQuestionModal()
+    private Task CreateQuestion()
     {
+        formQuestion = new CustomQuestion();
+        questionAction = QuestionAction.Create;
         return modalCustomQuestion?.Show();
     }
 
@@ -1236,7 +1363,9 @@
 
     private Task AddQuestion()
     {
+        var lastId = questions.Count == 0 ? 0 : questions.Max(q => q.Id);
         questions.Add(new CustomQuestion {
+            Id = lastId + 1,
             Question = formQuestion.Question,
             Required = formQuestion.Required,
             IsNew = true
@@ -1244,8 +1373,142 @@
         return CloseCustomQuestion();
     }
 
+    private Task SaveUpdated()
+    {
+        var question = questions.FirstOrDefault(q => q.Id == formQuestion.Id);
+        if(question is not null)
+        {
+            question.Question = formQuestion.Question;
+            question.Required = formQuestion.Required;
+        }
+        return CloseCustomQuestion();
+    }
+
+    private Task SaveQuestion()
+    {
+        if(questionAction == QuestionAction.Create)
+        {
+            return AddQuestion();
+        }
+
+        return SaveUpdated();
+    }
+
+    private Task RemoveQuestion(CustomQuestion question)
+    {
+        questions.Remove(question);
+        if(!question.IsNew)
+        {
+            deletedQuestions.Add(question);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateQuestion(CustomQuestion question)
+    {
+        formQuestion = new CustomQuestion {
+            FieldType = question.FieldType,
+            Id = question.Id,
+            Question = question.Question,
+            Required = question.Required
+        };
+        questionAction = QuestionAction.Edit;
+        return modalCustomQuestion?.Show();
+    }
+
+    private IEnumerable<CustomQuestion> FilteredQuestions 
+    {
+        get {
+            return questions.Where(q => q.Question != "##Name" && q.Question != "##Email" && q.Question != "##Phone");
+        }
+    }
+
+    private Task SetPredefinedQuestion(string question, string status)
+    {
+        var fieldType = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
+        switch (question)
+        {
+            case "##Name":
+                nameQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.Text.ToString();
+                break;
+            case "##Email":
+                emailQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.Email.ToString();
+                break;
+            case "##Phone":
+                phoneQuestion = status;
+                fieldType = Cinnamon.Framework.Enums.FieldType.PhoneNumber.ToString();
+                break;
+        }
+
+        var existingQuestion = questions.FirstOrDefault(q => q.Question == question);
+        if(status == "Off")
+        {
+            if(existingQuestion is not null)
+            {
+                RemoveQuestion(existingQuestion);
+            }
+        }
+        else 
+        {
+            if(existingQuestion is null)
+            {
+                var lastId = questions.Count == 0 ? 0 : questions.Max(q => q.Id);
+                questions.Add(new CustomQuestion {
+                    Id = lastId + 1,
+                    Question = question,
+                    Required = status == "Required",
+                    IsNew = true,
+                    FieldType = fieldType
+                });
+            }
+            else {
+                existingQuestion.Required = status == "Required";
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task SetPredefinedQuestionState()
+    {
+        var nameQuestion = questions.FirstOrDefault(q => q.Question == "##Name");
+        var emailQuestion = questions.FirstOrDefault(q => q.Question == "##Email");
+        var phoneQuestion = questions.FirstOrDefault(q => q.Question == "##Phone");
+
+        if(nameQuestion is not null)
+        {
+            this.nameQuestion = nameQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.nameQuestion = "Off";
+        }
+
+        if(emailQuestion is not null)
+        {
+            this.emailQuestion = emailQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.emailQuestion = "Off";
+        }
+
+        if(phoneQuestion is not null)
+        {
+            this.phoneQuestion = phoneQuestion.Required ? "Required" : "Optional";
+        }
+        else 
+        {
+            this.phoneQuestion = "Off";
+        }
+
+        return Task.CompletedTask;
+    }
+
     public class CustomQuestion 
     {
+        public int Id {get; set;}
         public string Question {get; set;}
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
