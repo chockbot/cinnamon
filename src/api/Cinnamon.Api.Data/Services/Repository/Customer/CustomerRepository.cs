@@ -234,7 +234,7 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
                 (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower())) &&
                 (isOfficialPartner.HasValue && isOfficialPartner.Value ? a.IsOfficialPartner == true : true);
 
-        var result = await dataStore.Customer.FindCustomerAsync(filter, searchValue, count, skip);
+        var result = await dataStore.Customer.FindCustomerAsync(filter, searchValue, null, null);
 
         if (!result.Succeeded || result.Result == null)
         {
@@ -275,13 +275,11 @@ public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerif
             };
         });
 
-        // Sort the customers
         var sortedCustomers = customers
             .OrderByDescending(c => c.DateJoined)
             .ThenBy(c => c.IsVerified)
             .ThenBy(c => c.IsVerifiedObtainedDate);
 
-        // Apply pagination
         var paginatedCustomers = sortedCustomers
             .Skip(skip ?? 0)
             .Take(count ?? sortedCustomers.Count());
