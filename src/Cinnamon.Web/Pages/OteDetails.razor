@@ -112,50 +112,44 @@
                     <h3 class="event-schedule">Date & Time</h3>
                     <div class="schedule-section">
                         <div class="schedule-header">
+                            <p class="schedule-header-title">Select date and tickets</p>
                             <Row class="align-items-center">
                                 <Column class="schedule-header-left" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
-                                    <p class="schedule-header-title">Select date and tickets</p>
                                     <div class="calendar-section">
                                         <SelectCalendar CurrentDate="SelectedDates.FirstOrDefault()" 
                                             SelectedDates="SelectedDates" ViewOnly StrikeOutNotSelected OnSelectedDate="OnSelectedDateChanged" />
                                     </div>
                                 </Column>
                                 <Column class="schedule-header-right" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
-                                    <Row class="mb-3">
-                                        <Column class="schedule-event-duration" ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
-                                            <div class="d-flex align-items-center event-schedule-time">
-                                                <img class="me-2" src="images/ote/clock-repeat-white.png" alt="clock">
-                                                <label class="ote-schedule me-2">Duration:</label>
-                                                <label class="ote-schedule-details">
-                                                    @EventDurationString
-                                                </label>
-                                            </div>
-                                        </Column>
-                                        <Column class="schedule-event-time" ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                                    <Row>
+                                        <Column class="schedule-event-time">
                                             <div class="d-flex align-items-center event-schedule-time">
                                                 <img class="me-2" src="images/ote/clock-white.png" alt="clock">
-                                                <label class="ote-schedule me-2">Time Start:</label>
-                                                <label class="ote-schedule-details">@selectedDateStart.ToString("hh:mm tt")</label>
+                                                <div class="w-100">
+                                                    <p class="ote-schedule mb-0">
+                                                        Time Start: @selectedDateStart.ToString("hh:mm tt") (@EventDurationString)
+                                                    </p>
+                                                </div>
                                             </div>
                                         </Column>
                                     </Row>
-                                    <Row>
-                                        <Column ColumnSize="ColumnSize.Is12">
-                                            <div class="d-flex align-items-center event-schedule-place">
-                                                <img class="me-2" src="images/ote/location-white.png" alt="clock">
-                                                <label class="ote-schedule me-2">Location:</label>
-                                                @if (activity.ExperienceTypeId == 1)
-                                                {
-                                                    string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
-                                                    <label class="ote-schedule-details text-capitalize">@address</label>
-                                                }
-                                                else
-                                                {
-                                                    <label class="ote-schedule-details">Online</label>
-                                                }
-                                            </div>
-                                        </Column>
-                                    </Row>
+                                </Column>
+                            </Row>
+                            <Row class="mt-3">
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <div class="d-flex align-items-center event-schedule-place">
+                                        <img class="me-2" src="images/ote/location-white.png" alt="clock">
+                                        <label class="ote-schedule me-2">Location:</label>
+                                        @if (activity.ExperienceTypeId == 1)
+                                        {
+                                            string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                                            <label class="ote-schedule-details text-capitalize">@address</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="ote-schedule-details">Online</label>
+                                        }
+                                    </div>
                                 </Column>
                             </Row>
                         </div>
