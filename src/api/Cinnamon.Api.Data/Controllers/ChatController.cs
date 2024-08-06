@@ -363,6 +363,32 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new UpdateChatRoomNameResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
+        [Route("ChatMembers")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatMembersResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatMember([FromQuery] GetChatMemberArgs args)
+        {
+            try
+            {
+                var result = await _chatMemberRepository.GetChatMembers(args.ChatRoomId, args.UserId);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatMembersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new GetChatMembersResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatMembersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
     }
 }
     

@@ -199,5 +199,30 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                 return AppResult<bool>.CreateFailed(ex, "An error occured when updating all entities");
             }
         }
+
+        public async Task<AppResult<IEnumerable<ChatMemberDTO>>> GetChatMembers(int roomId, int userId)
+        {
+            try
+            {
+                var chatMembers = await dataStore.ChatMember.FindAsync(c => c.ChatRoomId == roomId && c.CustomerId == userId);
+                if(!chatMembers.Succeeded || chatMembers.Result == null)
+                {
+                    return AppResult<IEnumerable<ChatMemberDTO>>.CreateFailed(chatMembers.Error.Exception, chatMembers.Message);
+                }
+
+                return AppResult<IEnumerable<ChatMemberDTO>>.CreateSucceeded(chatMembers.Result.Select(c => new ChatMemberDTO
+                {
+                    Id = c.Id,
+                    ChatRoomId = c.ChatRoomId,
+                    CustomerId = c.CustomerId,
+                    HasLeft = c.HasLeft,
+                    ChatMemberType = c.ChatMemberType
+                }), "Successfully retrieved chat members");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<IEnumerable<ChatMemberDTO>>.CreateFailed(ex, "An error occured when retrieving chat members");
+            }
+        }
     }
 }
