@@ -11,4 +11,6 @@ public interface IChatRoomRepository
 {
    
     Task<AppResult<ChatRoomDTO>> Create(int fromUserId, int toUserId, Enums.ChatType chatType, string groupName, string chatName);
+
+    Task<AppResult<ChatRoomDTO>> UpdateChatRoomName(int chatRoomId, string newChatRoomName);
 }
