@@ -12,9 +12,10 @@ public class UpdateChatRoomNameHandler : IUpdateChatRoomNameHandler
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IChatRoomData chatRoomData;
 
-    public UpdateChatRoomNameHandler(IGetProfileHandler getProfileHandler)
+    public UpdateChatRoomNameHandler(IGetProfileHandler getProfileHandler, IChatRoomData chatRoomData)
     {
         this.getProfileHandler = getProfileHandler;
+        this.chatRoomData = chatRoomData;
     }
     
     public AppResult<UpdateChatRoomNameResult> Execute(UpdateChatRoomNameArgs args)
@@ -48,7 +49,7 @@ public class UpdateChatRoomNameHandler : IUpdateChatRoomNameHandler
                     new ApplicationException("User is not a member of the chat room"),"User is not a member of the chat room");
             }
 
-            bool isOwner = chatMembers.Result.Result.Any(c => c.ChatMemberType == 0);
+            bool isOwner = chatMembers.Result.Result.Any(c => c.ChatMemberType == 2);
 
             if(!isOwner)
             {

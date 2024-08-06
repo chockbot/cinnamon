@@ -195,7 +195,7 @@ public class ChatRoomData : IChatRoomData
         try
         {
             var result = await flurlClient
-                        .Request("Chat/ChatMembers")
+                        .Request("Chat/ChatMembersPerUser")
                         .SetQueryParams(args)
                         .GetJsonAsync<GetChatMembersResult>();
 

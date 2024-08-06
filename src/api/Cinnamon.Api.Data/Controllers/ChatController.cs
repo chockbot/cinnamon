@@ -364,7 +364,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
         }
 
-        [Route("ChatMembers")]
+        [Route("ChatMembersPerUser")]
         [HttpGet]
         [ProducesResponseType(typeof(GetChatMembersResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetChatMember([FromQuery] GetChatMemberArgs args)
