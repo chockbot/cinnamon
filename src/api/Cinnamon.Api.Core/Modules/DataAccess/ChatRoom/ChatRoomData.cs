@@ -168,4 +168,46 @@ public class ChatRoomData : IChatRoomData
             return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, "An error occured when posting get chat connections api");
         }
     }
+
+    public async Task<AppResult<UpdateChatRoomNameResult>> UpdateChatRoomName(UpdateChatRoomNameArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/Room/UpdateName")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateChatRoomNameResult>();
+
+            return AppResult<UpdateChatRoomNameResult>.CreateSucceeded(result, "Successfully posted update chat room api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateChatRoomNameResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateChatRoomNameResult>.CreateFailed(ex, "An error occured when posting update chat room api");
+        }
+    }
+
+    public async Task<AppResult<GetChatMembersResult>> GetChatRoomMembers(GetChatMemberArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/ChatMembersPerUser")
+                        .SetQueryParams(args)
+                        .GetJsonAsync<GetChatMembersResult>();
+
+            return AppResult<GetChatMembersResult>.CreateSucceeded(result, "Successfully posted get chat room members api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetChatMembersResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetChatMembersResult>.CreateFailed(ex, "An error occurred when posting get chat room members api");
+        }
+    }
 }

@@ -223,10 +223,9 @@ namespace Cinnamon.Api.Core.Hubs
             {
                 Id = fromUserId
             });
-
-            if (!string.IsNullOrEmpty(groupName))
+            if(toCustomerResult.Succeeded && toCustomerResult.Result != null)
             {
-                if (toCustomerResult.Succeeded && toCustomerResult.Result != null)
+                if(!string.IsNullOrEmpty(groupName) && !string.IsNullOrEmpty(toCustomerResult.Result.ConnectionId))
                 {
                     await Groups.RemoveFromGroupAsync(toCustomerResult.Result.ConnectionId, groupName);
                 }
