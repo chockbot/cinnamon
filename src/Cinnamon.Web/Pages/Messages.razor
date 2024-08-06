@@ -16,6 +16,7 @@
 @inject IJSRuntime jsRuntime;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILogger<Messages> logger
+@inject INotificationService NotificationService;
 
 @implements IDisposable
 
@@ -697,10 +698,10 @@
                 </Field>
             </ModalBody>
             <ModalFooter>
-                <Button class="bg-white-200 color-grey-100 border-radius-10 px-3">
+                <Button Clicked="CancelEditChatGroupName" class="bg-white-200 color-grey-100 border-radius-10 px-3">
                     Cancel
                 </Button>
-                <Button class="bg-orange-100 color-white-100 border-radius-10 px-3">
+                <Button Clicked="SaveChatGroupName" class="bg-orange-100 color-white-100 border-radius-10 px-3">
                     Save
                 </Button>
             </ModalFooter>
@@ -1681,5 +1682,43 @@
     {
         editedGroupChatName = chatMateChatName;
         return modalEditChatGroupName.Show();
+    }
+
+    private Task CancelEditChatGroupName()
+    {
+        editedGroupChatName = string.Empty;
+        return modalEditChatGroupName.Close(CloseReason.UserClosing);
+    }
+
+    private async Task SaveChatGroupName()
+    {
+        await UpdateChatGroupName();
+        await modalEditChatGroupName.Close(CloseReason.UserClosing);
+    }
+
+    private async Task UpdateChatGroupName()
+    {
+        try
+        {
+            var updateChatGroupName = await chatApiHandler.UpdateChatRoomName(new Framework.ApiCommand.ApiCore.ChatRoom.Request.UpdateChatRoomNameArgs 
+            {
+                ChatRoomName = editedGroupChatName,
+                ChatRoomId = selectedChatRoomId,
+            }, Token);
+            if(updateChatGroupName.Succeeded && updateChatGroupName.Result != null && updateChatGroupName.Result.IsSuccess)
+            {
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == selectedChatRoomId).ChatName = editedGroupChatName;
+                chatMateChatName = editedGroupChatName;
+                await NotificationService.Success("Chat group name updated successfully.", "Success");
+            }
+            else
+            {
+                await NotificationService.Error("An error occured. Please try again later.", "Error");
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
     }
 }
