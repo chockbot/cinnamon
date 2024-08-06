@@ -52,7 +52,7 @@ public class GoogleDriveService
             Id = file.Id,
             Name = file.Name,
             Type = file.MimeType,
-            ThumbnailLink = file.ImageMediaMetadata.ToString(),
+            ThumbnailLink = file.ThumbnailLink,
             ModifiedDate = file.ModifiedTime // Add modified time property
         }).OrderByDescending(file => file.ModifiedDate).ToList();
 
