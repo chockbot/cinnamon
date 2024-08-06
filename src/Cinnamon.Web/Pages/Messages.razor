@@ -587,7 +587,7 @@
                             <img src="@chatMateProfilePicture" class="profile-section-picture" />
                             <div class="divider"></div>
                             <label class="profile-section-name">
-                                @chatMateFullName
+                                <span>@chatMateFullName</span>
                             </label>
                             <div class="divider"></div>
                             <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
@@ -603,7 +603,13 @@
                             <img src="@chatMateProfilePicture" class="profile-section-picture" />
                             <div class="divider"></div>
                             <label class="profile-section-name">
-                                @chatMateChatName
+                                <span>@chatMateChatName</span>
+                                @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
+                                {
+                                    <Button class="p-1" Clicked="EditChatGroupName">
+                                        <img width="20" height="20" src="images/messages/small-edit-icon.svg" alt="icon" />
+                                    </Button>
+                                }
                             </label>
                             <div class="divider"></div>
                             <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
@@ -675,6 +681,31 @@
             }
         </div>
     </div>
+
+    <Modal @ref="modalEditChatGroupName">
+        <ModalContent Centered class="border-radius-10">
+            <ModalHeader class="justify-content-center" Border="Border.Is0">
+                <label class="guide-title text-center">
+                    Edit Chat Group Name
+                </label>
+            </ModalHeader>
+            <ModalBody class="pt-0">
+                <Field class="mb-3">
+                    <FieldBody>
+                        <TextEdit @bind-Text="editedGroupChatName" class="border-radius-10" />
+                    </FieldBody>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button class="bg-white-200 color-grey-100 border-radius-10 px-3">
+                    Cancel
+                </Button>
+                <Button class="bg-orange-100 color-white-100 border-radius-10 px-3">
+                    Save
+                </Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
 </div>
 
 @code 
@@ -726,6 +757,9 @@
     private bool showLeaveGroupConfirmation = false;
     private System.Threading.Timer? timer;
     private ChatMember maker = new ChatMember();
+
+    private Modal? modalEditChatGroupName;
+    private string editedGroupChatName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -1641,5 +1675,11 @@
                         c.FromFirstName.ToLower().Contains(trimmedSearch) ||
                         c.FromLastName.ToLower().Contains(trimmedSearch) );
         }    
+    }
+
+    private Task EditChatGroupName()
+    {
+        editedGroupChatName = chatMateChatName;
+        return modalEditChatGroupName.Show();
     }
 }
