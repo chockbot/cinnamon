@@ -345,7 +345,7 @@ namespace Cinnamon.Api.Data.Controllers
         [Route("Room/UpdateName")]
         [HttpPost]
         [ProducesResponseType(typeof(UpdateChatRoomNameResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateChatRoom([FromBody] UpdateChatRoomArgs args)
+        public async Task<IActionResult> UpdateChatRoom([FromBody] UpdateChatRoomNameArgs args)
         {
             try
             {

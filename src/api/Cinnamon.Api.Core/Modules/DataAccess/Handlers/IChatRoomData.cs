@@ -16,4 +16,5 @@ public interface IChatRoomData
     Task<AppResult<CreateChatConnectionResult>> CreateChatConnection(CreateChatConnectionArgs args);
     Task<AppResult<UpdateChatConnectionResult>> UpdateChatConnection(UpdateChatConnectionArgs args);
     Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args);
+    Task<AppResult<UpdateChatRoomNameResult>> UpdateChatRoomName(UpdateChatRoomNameArgs args);
 }
