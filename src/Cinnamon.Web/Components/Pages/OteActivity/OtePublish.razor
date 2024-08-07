@@ -401,6 +401,10 @@
     {
         if (firstRender)
         {
+            
+        }
+        else
+        {
             await Task.Delay(5000);
             await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         }

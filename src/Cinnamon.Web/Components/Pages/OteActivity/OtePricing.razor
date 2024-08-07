@@ -662,7 +662,7 @@
     </ConfirmDialog>
 
 @code
-{
+    {
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -721,6 +721,10 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
+            
+        }
+        else
         {
             await Task.Delay(2000);
             await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
