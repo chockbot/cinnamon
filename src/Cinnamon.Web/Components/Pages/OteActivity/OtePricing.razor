@@ -718,7 +718,6 @@
     private List<CustomQuestion> questions = new();
     private CustomQuestion formQuestion = new();
     IJSObjectReference hoverEffectModule;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -731,8 +730,6 @@
         {
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
         }
-
-
     }
 
 
