@@ -62,7 +62,8 @@
                    
                         <label class="w-100">
                             @*<InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none"/>*@
-                            <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
+                            <LoadingIndicator @ref="loadingIndicator">
+                                <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
                                 <div class='empty-image-container bg-white-100'>
                                     <div class="text-center">
                                         <img src="images/ote/gallery-icon.png" alt="gallery-icon">
@@ -73,7 +74,8 @@
                                 <div class="delete-section d-flex justify-content-between">
                                     <p class="delete-text">Upload Cover Photo</p>
                                 </div>
-                            </div>
+                                </div>
+                        </LoadingIndicator>
                             <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
                                 <div class='@(oteEvent.coverPhoto.Display ? "col-12 text-center" : "d-none")' id="@oteEvent.coverPhoto.ContainerId">
                                     <div class="image-section">
