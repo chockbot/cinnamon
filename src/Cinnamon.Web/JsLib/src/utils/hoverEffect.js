@@ -1,5 +1,4 @@
 export async function moveEffect(event) {
-    debugger;
     const button = event.currentTarget;
     const effect = button.querySelector('.effect');
     const rect = button.getBoundingClientRect();
@@ -13,7 +12,6 @@ export async function moveEffect(event) {
 }
 
 export async function hideEffect(event) {
-    debugger;
     const button = event.currentTarget;
     const effect = button.querySelector('.effect');
     effect.style.transform = 'translate(-50%, -50%) scale(0)';
@@ -21,7 +19,6 @@ export async function hideEffect(event) {
 }
 
 export function addHoverEffect(selector) {
-    debugger;
     const elements = document.querySelectorAll(selector);
     elements.forEach(element => {
         element.addEventListener('mousemove', moveEffect);
