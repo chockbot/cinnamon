@@ -4,7 +4,8 @@ public class TopBookedCustomersResult
 {
     public IEnumerable<BookedCustomer> TopBooked {get; set;}
     public int TotalBooked {get; set;}
-
+    public int TotalParticipants {get; set;}
+    
     public class BookedCustomer 
     {
         public string FirstName {get; set;}

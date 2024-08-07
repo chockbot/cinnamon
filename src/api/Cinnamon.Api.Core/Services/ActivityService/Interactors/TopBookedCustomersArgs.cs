@@ -7,4 +7,5 @@ public class TopBookedCustomersArgs : IInteractor
     public int ActivityId {get; set;}
 
     public DateTime BookedDate {get; set;}
+    public int TotalParticipants {get; set;}
 }

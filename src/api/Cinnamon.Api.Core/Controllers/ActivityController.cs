@@ -3663,7 +3663,8 @@ public class ActivityController : ControllerBase
 
             var result = await topBookedCustomersHandler.ExecuteAsync(new Services.ActivityService.Interactors.TopBookedCustomersArgs {
                 ActivityId = args.ActivityId,
-                BookedDate = selectedDate
+                BookedDate = selectedDate,
+                TotalParticipants = args.TotalParticipants
             });
 
             if (!result.Succeeded || result.Result is null)
@@ -3681,7 +3682,8 @@ public class ActivityController : ControllerBase
                         LastName = b.LastName,
                         ProfileImage = b.ProfileImage
                     }),
-                    TotalBooked = result.Result.TotalBooked
+                    TotalBooked = result.Result.TotalBooked,
+                    TotalParticipants = result.Result.TotalParticipants
                 },
             });
         }

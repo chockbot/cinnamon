@@ -6,4 +6,5 @@ public class TopBookedCustomersDTO
 {
     public IEnumerable<BasicProfileDTO> TopBooked {get; set;}
     public int TotalBooked {get; set;}
+    public int TotalParticipants {get; set;}
 }

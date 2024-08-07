@@ -10,4 +10,5 @@ public class TopBookedCustomersArgs
     // date format must yyyyMMddHHmmss
     [Required]
     public string BookedDate {get; set;}
+    public int TotalParticipants {get; set;}
 }

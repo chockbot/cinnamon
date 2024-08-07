@@ -83,7 +83,8 @@ public class TopBookedCustomersHandler : ITopBookedCustomersHandler
                     LastName = b.LastName,
                     ProfileImage = b.ProfileImage
                 }),
-                TotalBooked = totalBooked
+                TotalBooked = totalBooked,
+                TotalParticipants = 9
             }, "Successfully get top booked customers.");
         }
         catch (Exception ex)
