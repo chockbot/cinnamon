@@ -720,16 +720,9 @@
     IJSObjectReference hoverEffectModule;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            
-        }
-        else
-        {
-            await Task.Delay(2000);
-            await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
-        }
-
+       
+        await Task.Delay(2000);
+        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         if (IsEditRegistration)
         {
             await JS.InvokeVoidAsync("MyLib.Utils.scrollToView", ".registration-section");
