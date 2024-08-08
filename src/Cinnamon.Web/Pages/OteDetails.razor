@@ -550,7 +550,7 @@
                     {
                         <Validation>
                             <Field class="mb-3">
-                                <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Name</FieldLabel>
                                 <FieldBody>
                                     <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" >
                                         <ValidationError />
@@ -576,7 +576,7 @@
                     {
                         <Validation>
                             <Field class="mb-3">
-                                <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Email</FieldLabel>
                                 <FieldBody>
                                     <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" >
                                         <ValidationError />
@@ -602,7 +602,7 @@
                     {
                         <Validation>
                             <Field class="mb-3">
-                                <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>Contact Number</FieldLabel>
                                 <FieldBody>
                                     <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" >
                                         <ValidationError />
@@ -629,7 +629,7 @@
                     {
                         <Validation>
                             <Field class="mb-3">
-                                <FieldLabel class="color-black-100 mb-0">@question.Question</FieldLabel>
+                                <FieldLabel class="color-black-100 mb-0"><span class="asterisk-symbol">&lowast;</span>@question.Question</FieldLabel>
                                 <FieldBody>
                                     <MemoEdit @bind-Text="question.Answer" Rows="3" Placeholder="Place your answer here.." >
                                         <ValidationError />
@@ -1895,14 +1895,14 @@
         public string EmailQuestion {get; set;} = "##Email";
         public string PhoneQuestion {get; set;} = "##Phone";
 
-        [Required(ErrorMessage = "Required your name")]
+        [Required(ErrorMessage = "This field is required")]
         public string NameAnswer {get; set;} = string.Empty;
 
-        [Required(ErrorMessage = "Required your email")]
+        [Required(ErrorMessage = "This field is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string EmailAnswer {get; set;} = string.Empty;
 
-        [Required(ErrorMessage = "Required your mobile number")]
+        [Required(ErrorMessage = "This field is required")]
         [RegularExpression(@"^(\+63|0)[0-9]{10}$", ErrorMessage = "Invalid mobile number")]
         public string PhoneAnswer {get; set;} = string.Empty;
 
