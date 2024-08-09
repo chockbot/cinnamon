@@ -40,10 +40,9 @@ public class GetExternalLoginDetailHandler : IGetExternalLoginDetailHandler
             }
 
             // check token and guid
-            var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
             var chkToken = await externalLoginTokenData.GetLoginToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.GetLoginTokenArgs {
                 Guid = args.Guid,
-                Token = decodedToken
+                Token = args.Token,
             });
             if(!chkToken.Succeeded || chkToken.Result == null)
             {
