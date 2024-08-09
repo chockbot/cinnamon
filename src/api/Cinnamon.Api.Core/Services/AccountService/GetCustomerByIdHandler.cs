@@ -57,7 +57,8 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
                 IsOfficial   = result.Result.Result.IsOfficial,
                 ProfileImg   = result.Result.Result.ProfileImg,
                 Id           = result.Result.Result.Id,
-                ConnectionId = result.Result.Result.ConnectionId
+                ConnectionId = result.Result.Result.ConnectionId,
+                Handler      = result.Result.Result.Handler
             }, "Successfully getting customer information");
         }
         catch (Exception ex)
