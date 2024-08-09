@@ -715,7 +715,7 @@
 </Modal>
 
 @code
-{
+    {
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     private OteActivity? activity;
@@ -736,6 +736,7 @@
     private TimeSpan Duration { get; set; }
     private IEnumerable<OtePricing> AvailablePriceList {get; set;} = Enumerable.Empty<OtePricing>();
     private DateTime selectedDate;
+    private bool IsExpiredEvent { get; set; } = false;
     public string ProfileHandler { get; set; }
     public int ProfileId { get; set; }
     public string ProfileName { get; set; }
@@ -908,7 +909,12 @@
             activity.CapacityCount    = act.OteSchedule.CapacityCount;
             int soldLimitedTickets    = activity.Pricings.Where(a => !a.IsUnlimited).Sum(a => a.TicketSold);
             activity.IsEventSoldOut   = activity.Pricings.Sum(a => a.MaxSlots) <= soldLimitedTickets ? true : false;
-            selectedDate              = SelectedDates.Where(a => a.Date >= DateTime.UtcNow).FirstOrDefault();
+            selectedDate = SelectedDates.Where(a => a >= DateTime.Now).FirstOrDefault();
+            IsExpiredEvent = selectedDate == DateTime.MinValue;
+            if (IsExpiredEvent)
+            {
+                selectedDate = SelectedDates.FirstOrDefault();
+            }
             ViewAvailableDates();
         }
         catch (System.Exception)

@@ -100,10 +100,10 @@ should have Available dates, Selected Dates, *@
             }
             else
             {
-                var currentDateTime = DateTime.UtcNow;
+                var currentDateTime = DateTime.Now;
                 var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
                 var selected = SelectedDates.Any(a => a.Date == date.Date);
-                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a.Date <= currentDateTime);
+                var pastDate = SelectedDates.Any(a => a.Date == date.Date && a <= currentDateTime);
                 calendarItems.Add(new CalendarItem {
                     Empty = false,
                     Date = date,
