@@ -29,6 +29,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IOtePendingNotificationHandler, Modules.NotificationDriver.EmailNotification.OtePendingNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteApprovedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteApprovedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IOteDeclinedNotificationHandler, Modules.NotificationDriver.EmailNotification.OteDeclinedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IMailchimpServices, Modules.NotificationDriver.MailChimp.MailchimpServices>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
