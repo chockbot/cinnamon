@@ -18,8 +18,6 @@
 @inject ILogger<Messages> logger
 @inject INotificationService NotificationService;
 
-@implements IDisposable
-
 <PageTitle>@Title | CinnamonPH</PageTitle>
 <SeoMeta Title="@Title" Subject="@Title" Url="/Messages" />
 
@@ -756,7 +754,6 @@
     private DotNetObjectReference<Cinnamon.Web.Pages.Messages> objectRef;
     private bool showLeaveGroup = false;
     private bool showLeaveGroupConfirmation = false;
-    private System.Threading.Timer? timer;
     private ChatMember maker = new ChatMember();
 
     private Modal? modalEditChatGroupName;
@@ -765,14 +762,19 @@
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var userToken = user.FindFirstValue("Token");
+        Token = user.FindFirstValue("Token");
 
-        if (userToken == null)
+        if (Token == null)
         {
             // don't have current user login
             NavigationManager.NavigateTo("explore/?auth=true&redirect=messages");
             return;
         }
+
+        hubConnection.Closed += async (error) =>
+        {
+            StartConnection();
+        };
 
         hubConnection.On<string>("ReceiveMessage", (payload) =>
         {
@@ -979,6 +981,11 @@
     {
         if (firstRender)
         {
+            if(!string.IsNullOrEmpty(Token))
+            {
+                StartConnection();
+            }
+            
             objectRef = DotNetObjectReference.Create(this);
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Message Page");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
@@ -989,32 +996,16 @@
 
     private async Task Send()
     {
-        var connectionIds = string.Empty;
-
-        foreach (var item in chatMembers)
+        if (hubConnection is null || string.IsNullOrEmpty(messageInput.Trim()) || !IsConnected)
         {
-            foreach (var connectionId in item.ConnectionIds)
-            {
-                connectionIds = connectionIds + "[~~~]" + connectionId;
-            }
+            return;
         }
 
-        if (hubConnection is not null && !string.IsNullOrEmpty(messageInput.Trim()))
-        {
-            if (IsConnected)
-            {
-                await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
-            }
-            else
-            {
-                await hubConnection.StartAsync();
+        var connectionIds = string.Join("[~~~]", chatMembers.SelectMany(item => item.ConnectionIds));
 
-                if (IsConnected)
-                {
-                    await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
-                }
-            }
-        }
+        var message = $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}";
+
+        await hubConnection.SendAsync("SendMessage", message);
 
         messageInput = string.Empty;
     }
@@ -1111,38 +1102,6 @@
                 currentUserFirstName    = args.FirstName;
                 currentUserLastName     = args.LastName;
                 currentUserProfilePath  = args.ProfileImg;
-
-                if (hubConnection.State == HubConnectionState.Disconnected)
-                {
-                    try
-                    {
-                        await hubConnection.StartAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        await Task.Delay(new Random().Next(0, 5) * 1000);
-
-                        while (true)
-                        {
-                            try
-                            {
-                                await hubConnection.StartAsync();
-
-                                logger.LogInformation($"successfully reconnected UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-                                break;
-                            }
-                            catch (ObjectDisposedException e)
-                            {
-                                await Task.Delay(new Random().Next(0, 5) * 1000);
-                            }
-                            catch
-                            {
-                                await Task.Delay(new Random().Next(0, 5) * 1000);
-                            }
-                        }
-                    }
-                }
 
                 await GetChatRoomsByUserId();
             }
@@ -1508,18 +1467,6 @@
         selectedChatRoomId = 0;
     }
 
-    void Stop()
-    {
-        hubConnection.StopAsync();
-    }
-
-    void IDisposable.Dispose()
-    {
-        // Unsubscribe from the event when our component is disposed
-        NavigationManager.LocationChanged -= LocationChanged;
-        timer?.DisposeAsync();
-    }
-
     [JSInvokable]
     public async Task SendMessageAsync(string message)
     {
@@ -1719,6 +1666,23 @@
         catch (Exception ex)
         {
             await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+
+    private async Task StartConnection()
+    {
+        try
+        {
+            if(hubConnection.State == HubConnectionState.Disconnected)
+            {
+                await hubConnection.StartAsync();
+                var status = hubConnection.State;
+            }
+        }
+        catch (System.Exception)
+        {
+            await Task.Delay(500);
+            StartConnection();
         }
     }
 }
