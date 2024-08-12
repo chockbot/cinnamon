@@ -7,6 +7,7 @@ public class OteCreateRequestPaymentResult
     public IEnumerable<RequestPaymentTicket> SelectedTickets {get; set;} = Enumerable.Empty<RequestPaymentTicket>();
     public string Guid {get; set;}
     public string Token {get; set;}
+    public bool Used {get; set;}
 
     public class RequestPaymentTicket 
     {

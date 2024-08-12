@@ -19,6 +19,7 @@
 @inject IMapper mapper;
 @inject IJSRuntime jsRuntime
 @inject INotificationService NotificationService;
+@implements IAsyncDisposable
 @attribute [Authorize]
 
 <PageTitle>Event Details | CinnamonPH</PageTitle>
@@ -29,30 +30,33 @@
     <div class="event-details-wrapper">
         <div class="header">
             <div class="col-12 d-flex justify-content-start">
-                <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.png"></button>
+                <button class="back-button" @onclick="@(() => NavigateToMyEvents())"><img src="images/dashboard-back.svg"></button>
                 <p class="back-text">@activity.EventName</p>
             </div>
         </div>
         <div class="ticket-options">
-            <div class="div-option-details" @onclick="NavigateToRegistration">
-                <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
+            <div class="div-option-details" id="hoverDiv" @onclick="NavigateToRegistration">
+                <img class="option-img" src="images/ote/registration.svg" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((activity.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
+                <div class="effect hover1"></div>
             </div>
-            <div class="div-option-details" @onclick="@(() => GenerateLinkShowModal())">
-                <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
+            <div class="div-option-details" id="hoverDiv" @onclick="@(() => GenerateLinkShowModal())">
+                <img class="option-img" src="images/ote/capacity.svg" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Share QR Scanner Link</p>
                 </div>
+                <div class="effect hover2"></div>
             </div>
-            <a class="verify-ticket" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
+            <a class="verify-ticket" id="hoverDiv" href="/maker/dashboard/events/@(activity.Handler)/verification/?date=@(dateId)">
                 <div class="div-option-details">
-                    <img class="option-img" src="images/ote/add.png" alt="cover-photo">
+                    <img class="option-img" src="images/ote/add.svg" alt="cover-photo">
                     <div class="option-name">
                         <p class="registration">Scan Tickets</p>
                     </div>
+                    <div class="effect hover3"></div>
                 </div>
             </a>
         </div>
@@ -172,6 +176,7 @@
 
     LoadingIndicator loadingIndicator;
     IJSObjectReference module;
+    IJSObjectReference hoverEffectModule;
     public List<OteTicket> oteCustomer = new List<OteTicket>();
     public List<OteTicket> FilteredCustomer = new();
     public List<OteSchedule> ticketList = new List<OteSchedule>();
@@ -255,6 +260,8 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+            await Task.Delay(2000);
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
@@ -602,6 +609,7 @@
         selectedTab = name;
         return Task.CompletedTask;
     }
+
     private void NavigateToTickets()
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{1}");
@@ -610,4 +618,12 @@
     {
         NavigationManager.NavigateTo($"/experiences/ote/{activity.Handler}/{5}");
     }
+    public async ValueTask DisposeAsync()
+    {
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
+    }
 }
+ 

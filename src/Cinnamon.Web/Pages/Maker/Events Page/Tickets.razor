@@ -1,9 +1,10 @@
-﻿@layout EmptyLayout;
+﻿@layout EmptyLayout
 @using Cinnamon.Web.Models.Ote
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
@@ -91,7 +92,7 @@
 
     <Row HorizontalGutter="10">
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" @onclick="NavigateToPending">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToPending">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Pending/Waitlist</p>
                 </div>
@@ -120,7 +121,7 @@
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave" @onclick="NavigateToAccepted">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToAccepted">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Going</p>
                 </div>
@@ -151,7 +152,7 @@
             </div>
         </Column>
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave" @onclick="NavigateToDeclined">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToDeclined">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Declined</p>
                 </div>
@@ -259,9 +260,8 @@
     </div>
 </div>
 
-
-
-@code {
+@code 
+{
     [Parameter]
     public OteActivity OteActivity { get; set; }
 
@@ -273,6 +273,7 @@
     public IEnumerable<OteSchedule> TicketList { get; set; }
 
     private List<CustomQuestion> providerQuestions = new List<CustomQuestion>();
+    IJSObjectReference hoverEffectModule;
 
     private int? activeMenuId;
     private string pendingBody = string.Empty;
@@ -337,6 +338,15 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
+        }
+    }
+
     private string ShowMenu(int ticketId)
     {
         return activeMenuId == ticketId ? "show" : "";
@@ -387,29 +397,11 @@
         public string Body { get; set; }
     }
 
-    private async Task PendingHoverMove(MouseEventArgs e)
-    { 
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#pendingDiv");
-    }
-    private async Task PendingHoverLeave(MouseEventArgs e)
+    public async ValueTask DisposeAsync()
     {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#pendingDiv");
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
     }
-    private async Task GoingHoverMove(MouseEventArgs e)
-    { 
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#goingDiv");
-    }
-    private async Task GoingHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#goingDiv");
-    }
-    private async Task DeclinedHoverMove(MouseEventArgs e)
-    { 
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#declinedDiv");
-    }
-    private async Task DeclinedHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#declinedDiv");
-    }
-
 }

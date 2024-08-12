@@ -62,4 +62,72 @@ public class ProviderCustomQuestionRepository : IProviderCustomQuestionRepositor
             return AppResult<IEnumerable<ProviderCustomQuestionDTO>>.CreateFailed(ex, "An error occured when getting custom questions.");
         }
     }
+
+    public async Task<AppResult<bool>> DeleteCustomQuestions(IEnumerable<int> ids)
+    {
+        try
+        {
+            Expression<Func<Entities.ProviderCustomQuestion, bool>> filter = p => ids.Contains(p.Id);
+
+            var questionsRes = await dataStore.ProviderCustomQuestion.FindAsync(filter);
+            if(!questionsRes.Succeeded || questionsRes.Result is null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(questionsRes.Message), questionsRes.Message);
+            }
+            
+            var result = await dataStore.ProviderCustomQuestion.RemoveRange(questionsRes.Result);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully delete custom questions.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when deleting custom questions.");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ProviderCustomQuestionDTO>>> UpdateCustomerQuestions(IEnumerable<ProviderCustomQuestionDTO> questionDTOs)
+    {
+        try
+        {
+            var ids = questionDTOs.Select(q => q.Id);
+            Expression<Func<Entities.ProviderCustomQuestion, bool>> filter = p => ids.Contains(p.Id);
+
+            var questionsRes = await dataStore.ProviderCustomQuestion.FindAsync(filter);
+            if(!questionsRes.Succeeded || questionsRes.Result is null)
+            {
+                return AppResult<IEnumerable<ProviderCustomQuestionDTO>>.CreateFailed(new ApplicationException(questionsRes.Message), questionsRes.Message);
+            }
+
+            var questions = questionsRes.Result;
+            foreach (var question in questions)
+            {
+                var questionDTO = questionDTOs.FirstOrDefault(q => q.Id == question.Id);
+                if(questionDTO is null)
+                {
+                    continue;
+                }
+
+                question.FieldLabel = questionDTO.FieldLabel;
+                question.ActivityId = questionDTO.ActivityId;
+                question.ProviderId = questionDTO.ProviderId;
+            }
+
+            var result = await dataStore.ProviderCustomQuestion.UpdateRange(questions);
+            if(!result.Succeeded || result.Result is null)
+            {
+                return AppResult<IEnumerable<ProviderCustomQuestionDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            var dto = mapper.Map<IEnumerable<ProviderCustomQuestionDTO>>(result.Result);
+            return AppResult<IEnumerable<ProviderCustomQuestionDTO>>.CreateSucceeded(dto, "Successfully update custom questions.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ProviderCustomQuestionDTO>>.CreateFailed(ex, "An error occured when updating custom questions.");
+        }
+    }
 }

@@ -1,4 +1,15 @@
-﻿#btn-search {
+﻿.section-1 .categories .schedule-swiper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.categories .swiper-wrapper {
+	width: auto;
+}
+
+#btn-search {
 	background-color: #ffa942;
 	border-radius: 50%;
 	box-shadow: none;
@@ -9,6 +20,9 @@
 }
 
 .categories .swiper-slide:hover img {
+	filter: brightness(0) invert(1);
+}
+.categories .swiper-slide:hover .card-title {
 	filter: brightness(0) invert(1);
 }
 
@@ -42,6 +56,10 @@ a {
 }
 a:hover {
 	color: #717171;
+}
+.img-icon{
+	height: 25px;
+	width: 25px;
 }
 .btn-load {
 	width: 20%;
@@ -121,6 +139,8 @@ button:focus {
 	font-size: 12px;
 	font-family: "Nunito";
 	text-decoration: none;
+	margin-top: 10px;
+	color: #717171;
 }
 
 .card {
@@ -183,6 +203,8 @@ button:focus {
 	margin-bottom: 1rem;
 	border-radius: 20px;
 	border: none;
+	overflow: hidden;
+	z-index: 1;
 }
 
 .schedule-swiper .swiper-wrapper {
@@ -202,6 +224,10 @@ button:focus {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
+	.section-1 .categories .schedule-swiper {
+		justify-content: left;
+	}
+	
 	.card-img.img-fluid {
 		width: 170px;
 		height: 223.39px;
@@ -279,6 +305,13 @@ button:focus {
 }
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+	.section-1 .categories .schedule-swiper {
+		width: 100%;
+		display: flex;
+		justify-content: left;
+		position: relative;
+	  }
+
 	.categories-container {
 		border: none;
 	}
@@ -384,6 +417,12 @@ button:focus {
 	}
 }
 
+@media (min-width: 1024px) and (max-width: 1400px) {
+	.section-1 .categories .schedule-swiper {
+		justify-content: left;
+	}
+}
+
 @media screen and (max-width: 767.98px) {
 	.input-group {
 		width: 100%;
@@ -405,6 +444,8 @@ button:focus {
 	}
 	.search-section {
 		display: block;
+		position: relative;
+		z-index: 1;
 	}
 	#explore-category-scrollbar {
 		display: block;
@@ -429,6 +470,10 @@ button:focus {
 	::deep .categories-container {
 		border: none;
 		justify-content: start;
+	}
+	.search-section {
+		position: relative;
+		z-index: 1;
 	}
 }
 

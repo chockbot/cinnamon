@@ -7,10 +7,10 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject NavigationManager NavigationManager;
 @inject IActivityApiHandler activityApiHandler
-@inject IJSRuntime JS;
 @implements IOteComponent;
 @inject INotificationService NotificationService
-@inject IJSRuntime JS
+@inject IJSRuntime jsRuntime
+@implements IAsyncDisposable    
 
 <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
     <section class="ote-publish-wrapper">
@@ -87,27 +87,24 @@
 
                 <Row VerticalGutter="20" HorizontalGutter="20">
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <div id="reminderDiv" @onmousemove="ReminderHoverMove" @onmouseleave="ReminderHoverLeave" @onclick="() => OnSelectedScheduledEmail(0)" 
-                            class="bg-white-100 p-2 border-radius-10 cursor-pointer email-box">
+                        <div id="hoverDiv" class="bg-white-100 p-2 border-radius-10 cursor-pointer email-box" @onclick="() => OnSelectedScheduledEmail(0)">
                             <div class="d-flex align-items-center mb-2 text-box">
                                 <img class="me-2" src="images/ote/red-bell.png" alt="bell">
-                                <span class="font-16 color-black-100">Add Reminder Email</span>
+                                <span class="font-16 color-black-100 text-box">Add Reminder Email</span>
                             </div>
                             <div class="line-effect div-line mb-2"></div>
                             <div class="line-effect div-line-75 mb-2"></div>
                             @if(ReminderEmailNotSet)
                             {
                                 <div class="d-flex align-items-center mb-2 text-box">
-                                    <div class="small-circle-red me-2">
-                                    </div>
+                                    <div class="small-circle-red me-2"></div>
                                     <p class="font-16 color-grey-100 mb-0">No message yet</p>
                                 </div>
                             }
                             else
                             {
                                 <div class="d-flex align-items-center mb-2 text-box">
-                                    <div class="small-circle-green me-2">
-                                    </div>
+                                    <div class="small-circle-green me-2"></div>
                                     <p class="font-16 color-grey-100 mb-0">Message already set</p>
                                 </div>
                             }
@@ -115,8 +112,8 @@
                         </div>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                        <div id="feedbackDiv" @onmousemove="FeedbackHoverMove" @onmouseleave="FeedbackHoverLeave" @onclick="() => OnSelectedScheduledEmail(1)" 
-                            class="bg-white-100 p-2 border-radius-10 cursor-pointer email-box">
+                        <div id="hoverDiv" @onclick="() => OnSelectedScheduledEmail(1)" 
+                            class="bg-white-100 p-2 border-radius-10 cursor-pointer email-box" >
                             <div class="d-flex align-items-center mb-2 text-box">
                                 <img class="me-2" src="images/ote/yellow-star.png" alt="bell">
                                 <span class="font-16 color-black-100">Add Feedback Email</span>
@@ -162,6 +159,7 @@
                                         Read more
                                     </Button>
                                 </div>
+                                <div class="effect hover1"></div>
                             </div>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
@@ -386,6 +384,7 @@
     private DateTime selectedDate;
     private bool displayCalendar { get; set; }
     public EventCallback<DateTime> OnSelectedDate { get; set; }
+    IJSObjectReference hoverEffectModule;
     private IList<DateTime> SelectedDates
     {
         get
@@ -398,6 +397,12 @@
             return dates;
         }
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Delay(5000);
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
+    }
+
     private async Task SelectedDate(DateTime date)
     {
         if (SelectedDates.Any(d => d.Date == date.Date))
@@ -578,32 +583,32 @@
     private Task SaveEmailReminder()
     {
         reminderNotificationOrig.Days = reminderNotification.Days;
-        reminderNotificationOrig.Body = reminderNotification.Body;
-        reminderNotificationOrig.Subject = reminderNotification.Subject;
+        reminderNotificationOrig.Body = reminderNotification.Body.Trim();
+        reminderNotificationOrig.Subject = reminderNotification.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task CancelEmailReminder()
     {
         reminderNotification.Days = reminderNotificationOrig.Days;
-        reminderNotification.Body = reminderNotificationOrig.Body;
-        reminderNotification.Subject = reminderNotificationOrig.Subject;
+        reminderNotification.Body = reminderNotificationOrig.Body.Trim();
+        reminderNotification.Subject = reminderNotificationOrig.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task SaveEmailFeedback()
     {
         feedbackNotificationOrig.Days = feedbackNotification.Days;
-        feedbackNotificationOrig.Body = feedbackNotification.Body;
-        feedbackNotificationOrig.Subject = feedbackNotification.Subject;
+        feedbackNotificationOrig.Body = feedbackNotification.Body.Trim();
+        feedbackNotificationOrig.Subject = feedbackNotification.Subject.Trim();
         return HideOffcanvas();
     }
 
     private Task CancelEmailFeedback()
     {
         feedbackNotification.Days = feedbackNotificationOrig.Days;
-        feedbackNotification.Body = feedbackNotificationOrig.Body;
-        feedbackNotification.Subject = feedbackNotificationOrig.Subject;
+        feedbackNotification.Body = feedbackNotificationOrig.Body.Trim();
+        feedbackNotification.Subject = feedbackNotificationOrig.Subject.Trim();
         return HideOffcanvas();
     }
 
@@ -673,7 +678,6 @@
         public string Subject { get; set; }
         public string Body { get; set; }
     }
-
     private IEnumerable<GenerateRecurrenceDate.DateItem> GeneratedDates
     {
         get
@@ -709,21 +713,11 @@
             return dates;
         }
     }
-
-    private async Task ReminderHoverMove(MouseEventArgs e)
+    public async ValueTask DisposeAsync()
     {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#reminderDiv");
-    }
-    private async Task ReminderHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#reminderDiv");
-    }
-    private async Task FeedbackHoverMove(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.moveEffect", e, "#feedbackDiv");
-    }
-    private async Task FeedbackHoverLeave(MouseEventArgs e)
-    {
-        await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.hideEffect", "#feedbackDiv");
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
     }
 }
