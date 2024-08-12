@@ -200,186 +200,40 @@
         </div>
     </div>
     <div class="center-messages chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
-        <div class="row" style="@SetPlaceholderStyle(isLoading)">
-            <div class="chat-profile-section">
-                <div class="row">
-                    <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                        <div class="row">
-                            <div class="col-lg-1 chatmate-profile-picture-section placeholder-glow">
-                                <span class="placeholder col-9 chatmate-profile-picture"></span>
-                            </div>
-                            <div class="col-lg-10 placeholder-glow">
-                                <div class="chat-profile-name">
-                                    <span class="placeholder col-9"></span>
-                                </div>
-                                <div class="last-seen">
-                                    <span class="placeholder col-9"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none placeholder-glow">
-                        <span class="placeholder col-1"></span>
-                    </div>
-                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none placeholder-glow" style="padding: 0px;">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="placeholder col-9"></span>
-                                    </td>
-                                    <td>
-                                        <span class="placeholder col-9"></span>
-                                    </td>
-                                    <td class="chat-profile-info-icon-section">
-                                        <span class="placeholder col-1"></span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="conversation-section">
-                <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
-                    <li class="d-flex flex-row justify-content-end">
-                        <div class="self-message-placeholder">
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex flex-row">
-                        <div class="sender-message-placeholder">
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div style="@SetMessagesStyle(isLoading)">
-            @if (chatRooms.Count > 0)
-            {
+        <LoadingIndicator @ref="loadingIndicator">
+            <div class="row" style="@SetPlaceholderStyle(isLoading)">
                 <div class="chat-profile-section">
                     <div class="row">
-                        <div class="col-lg-6 col-sm-5 col-5 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                            <div class="d-flex">
-                                @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                                {
-                                    <div class="chatmate-profile-picture-section me-3">
-                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
-                                        @if (!string.IsNullOrEmpty(chatMateConnectionId))
-                                        {
-                                            <span class="logged-in"></span>
-                                        }
+                        <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                            <div class="row">
+                                <div class="col-lg-1 chatmate-profile-picture-section placeholder-glow">
+                                    <span class="placeholder col-9 chatmate-profile-picture"></span>
+                                </div>
+                                <div class="col-lg-10 placeholder-glow">
+                                    <div class="chat-profile-name">
+                                        <span class="placeholder col-9"></span>
                                     </div>
-                                    <div class="">
-                                        <div class="chat-profile-name">
-                                            @chatMateFullName
-                                        </div>
-                                        <div class="last-seen">
-                                            @if (!string.IsNullOrEmpty(chatMateConnectionId))
-                                            {
-                                                <span>Active Now</span>
-                                            }
-                                            else
-                                            {
-                                                <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
-                                            }
-                                        </div>
+                                    <div class="last-seen">
+                                        <span class="placeholder col-9"></span>
                                     </div>
-                                }
-                                else
-                                {
-                                    <div class="chatmate-profile-picture-section">
-                                        <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
-                                        @if (!string.IsNullOrEmpty(chatMateGroupName))
-                                        {
-                                            <span class="logged-in"></span>
-                                        }
-                                    </div>
-                                    <div class="">
-                                        <div class="chat-profile-name">
-                                            @chatMateChatName
-                                        </div>
-                                        <div class="last-seen">
-                                            @if (!string.IsNullOrEmpty(chatMateGroupName))
-                                            {
-                                                <span>Active Now</span>
-                                            }
-                                            else
-                                            {
-                                                <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
-                                            }
-                                        </div>
-                                    </div>
-                                }
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-sm-7 col-7 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                            @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
-                            {
-                                var details = new ChatMember
-                                {
-                                    FromUserId = maker.FromUserId,
-                                    FromFirstName = maker.FromFirstName,
-                                    FromLastName = maker.FromLastName,
-                                    FromProfilePath = maker.FromProfilePath
-                                };
-
-                                <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
-                                    <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
-                                </span>
-                            }
-                            <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayInfo(profileSectionDisplayStyle))" />
+                        <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none placeholder-glow">
+                            <span class="placeholder col-1"></span>
                         </div>
-                        <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none" style="padding: 0px;">
+                        <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none placeholder-glow" style="padding: 0px;">
                             <table>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
-                                                <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
-                                            </button>
+                                            <span class="placeholder col-9"></span>
                                         </td>
                                         <td>
-                                            <div class="chat-profile-name text-center">
-                                                @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                                                {
-                                                    @chatMateFullName
-                                                }
-                                                else
-                                                {
-                                                    @chatMateChatName
-                                                }
-                                            </div>
+                                            <span class="placeholder col-9"></span>
                                         </td>
                                         <td class="chat-profile-info-icon-section">
-                                            @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
-                                            {
-                                                var details = new ChatMember
-                                                {
-                                                    FromUserId = maker.FromUserId,
-                                                    FromFirstName = maker.FromFirstName,
-                                                    FromLastName = maker.FromLastName,
-                                                    FromProfilePath = maker.FromProfilePath
-                                                };
-
-                                                <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
-                                                    <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
-                                                </span>
-                                            }
-                                            <img src="images/messages/chat-profile-info.svg" @onclick="DisplayChatProfile" />
+                                            <span class="placeholder col-1"></span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -387,165 +241,313 @@
                         </div>
                     </div>
                 </div>
-                if(chatHistories.Count > 0)
+                <div class="conversation-section">
+                    <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
+                        <li class="d-flex flex-row justify-content-end">
+                            <div class="self-message-placeholder">
+                                <div class="card-body">
+                                    <p class="card-text placeholder-glow">
+                                        <span class="placeholder col-12 placeholder-image"></span>
+                                        <span class="placeholder col-10"></span>
+                                        <span class="placeholder col-9"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="d-flex flex-row">
+                            <div class="sender-message-placeholder">
+                                <div class="card-body">
+                                    <p class="card-text placeholder-glow">
+                                        <span class="placeholder col-12 placeholder-image"></span>
+                                        <span class="placeholder col-10"></span>
+                                        <span class="placeholder col-9"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div style="@SetMessagesStyle(isLoading)">
+                @if (chatRooms.Count > 0)
                 {
-                    <div class="conversation-section">
-                        <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
-                            <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
-                                <div id="observerTarget"></div>
-                                @if (isLoading)
-                                {
-                                    <div class="loading-section d-flex flex-row justify-content-center">
-                                        <div class="spinner-border">
-                                        </div>
-                                    </div>
-                                }
-                                @foreach (var chat in chatHistories)
-                                {
-                                    if (chat.ChatHistoryType == ChatHistoryType.Message)
+                    <div class="chat-profile-section">
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-5 col-5 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                                <div class="d-flex">
+                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
                                     {
-                                        if (lastMessageDateCreated.HasValue)
-                                        {
-                                            TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
-
-                                            if (ts.Days > 1)
+                                        <div class="chatmate-profile-picture-section me-3">
+                                            <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
+                                            @if (!string.IsNullOrEmpty(chatMateConnectionId))
                                             {
-                                                <li class="d-flex flex-row justify-content-center list-item-days">
-                                                    <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                                    <div class="chat-date-time">
-                                                        @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
-                                                    </div>
-                                                </li>
+                                                <span class="logged-in"></span>
                                             }
-                                            else if (ts.Minutes > 2)
-                                            {
-                                                <li class="d-flex flex-row justify-content-center list-item-minutes">
-                                                    <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                                    <div class="chat-date-time">
-                                                        @chat.DateCreated.ToString("dddd, hh:mm tt")
-                                                    </div>
-                                                </li>
-                                            }
-
-                                            lastMessageDateCreated = chat.DateCreated;
-                                        }
-                                        else
-                                        {
-
-                                            lastMessageDateCreated = chat.DateCreated;
-
-                                            <li class="d-flex flex-row justify-content-center list-item-days">
-                                                <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                                <div class="chat-date-time">
-                                                    @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
-                                                </div>
-                                            </li>
-                                        }
-                                        @if (chat.FromUserId == currentUserId)
-                                        {
-                                            <li class="d-flex flex-row justify-content-end">
-                                                <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                                <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="left">
-                                                    <div class="self-message">
-                                                        @chat.Message
-                                                    </div>
-                                                </span>
-                                                <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                            </li>
-                                        }
-                                        else
-                                        {
-                                            <li class="d-flex flex-row">
-                                                <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                                <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                                <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="right">
-                                                    <div class="sender-name">
-                                                        @chat.FromFirstName
-                                                    </div>
-                                                    <div class="sender-message">
-                                                        @chat.Message
-                                                    </div>
-                                                </span>
-                                            </li>
-                                        }
+                                        </div>
+                                        <div class="">
+                                            <div class="chat-profile-name">
+                                                @chatMateFullName
+                                            </div>
+                                            <div class="last-seen">
+                                                @if (!string.IsNullOrEmpty(chatMateConnectionId))
+                                                {
+                                                    <span>Active Now</span>
+                                                }
+                                                else
+                                                {
+                                                    <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
+                                                }
+                                            </div>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <li class="d-flex flex-row justify-content-center list-item-minutes">
-                                            <div class="sender-name">
-                                                @chat.Message
+                                        <div class="chatmate-profile-picture-section">
+                                            <img src="@chatMateProfilePicture" class="chatmate-profile-picture me-3" />
+                                            @if (!string.IsNullOrEmpty(chatMateGroupName))
+                                            {
+                                                <span class="logged-in"></span>
+                                            }
+                                        </div>
+                                        <div class="">
+                                            <div class="chat-profile-name">
+                                                @chatMateChatName
                                             </div>
-                                        </li>
+                                            <div class="last-seen">
+                                                @if (!string.IsNullOrEmpty(chatMateGroupName))
+                                                {
+                                                    <span>Active Now</span>
+                                                }
+                                                else
+                                                {
+                                                    <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
+                                                }
+                                            </div>
+                                        </div>
                                     }
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-7 col-7 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                                @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
+                                {
+                                    var details = new ChatMember
+                                    {
+                                        FromUserId = maker.FromUserId,
+                                        FromFirstName = maker.FromFirstName,
+                                        FromLastName = maker.FromLastName,
+                                        FromProfilePath = maker.FromProfilePath
+                                    };
+
+                                    <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
+                                        <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
+                                    </span>
                                 }
-                            </ul>
+                                <img class="message-info" src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayInfo(profileSectionDisplayStyle))" />
+                            </div>
+                            <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none" style="padding: 0px;">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                                    <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <div class="chat-profile-name text-center">
+                                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                                    {
+                                                        @chatMateFullName
+                                                    }
+                                                    else
+                                                    {
+                                                        @chatMateChatName
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td class="chat-profile-info-icon-section">
+                                                @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
+                                                {
+                                                    var details = new ChatMember
+                                                    {
+                                                        FromUserId = maker.FromUserId,
+                                                        FromFirstName = maker.FromFirstName,
+                                                        FromLastName = maker.FromLastName,
+                                                        FromProfilePath = maker.FromProfilePath
+                                                    };
 
-                        </InfiniteScroll>
-                    </div>
-
-                }
-                <div class="typing-status-section">
-                    @if (chatRooms.Count > 0)
-                    {
-                        <label>
-                            @if (chatRooms.Any(c => c.ChatRoomId == selectedChatRoomId))
-                            {
-                                @chatRooms.FirstOrDefault(c => c.ChatRoomId == selectedChatRoomId).TypingStatus
-                            }
-                        </label>
-                    }
-                </div>
-            }
-        </div>
-
-        @if(chatRooms.Count == 0)
-        {
-            <div class="row justify-content-center no-message-section-yet text-center">
-                <div class="col-12 col-sm-12 col-md-6">
-                    <img src="images/messages/no-message.svg" />
-                    <div class="divider"></div>
-                    <label class="no-message-title">
-                        No Message Yet
-                    </label>
-                    <div class="divider"></div>
-                    <button id="btnFindFirstExperience" type="button" class="btn btn-primary border-0" @onclick=NavigateToExplore>Find your first experience</button>
-                </div>
-            </div>
-        }
-
-        @if (chatRooms.Count != 0 && chatHistories.Count == 0)
-        {
-            <div class="row justify-content-center no-message-section text-center">
-                <div class="col-12 col-md-6">
-                    <img src="images/messages/speech-bubble.svg" />
-                    <div class="divider"></div>
-                    <label class="no-conversation-title">
-                        No Conversation Yet
-                    </label>
-                    <label class="no-conversation-sub-title">
-                        You didn't make any conversation yet.
-                    </label>
-                </div>
-            </div>
-        }
-
-        <div class="send-message-section">
-            <table>
-                <tr>
-                    <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
-                    <td class="input-section">
-                        <div class="input-group border p-1 rounded-pill-section">
-                            <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
+                                                    <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
+                                                        <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
+                                                    </span>
+                                                }
+                                                <img src="images/messages/chat-profile-info.svg" @onclick="DisplayChatProfile" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                  
-                    </td>
-                    <td class="send-section">
-                        <img id="send-message" src="images/messages/send-message.svg" />
-                    </td>
-                </tr>
-            </table>
-        </div>
+                    </div>
+                    if(chatHistories.Count > 0)
+                    {
+                        <div class="conversation-section">
+                            <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
+                                <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
+                                    <div id="observerTarget"></div>
+                                    @if (isLoading)
+                                    {
+                                        <div class="loading-section d-flex flex-row justify-content-center">
+                                            <div class="spinner-border">
+                                            </div>
+                                        </div>
+                                    }
+                                    @foreach (var chat in chatHistories)
+                                    {
+                                        if (chat.ChatHistoryType == ChatHistoryType.Message)
+                                        {
+                                            if (lastMessageDateCreated.HasValue)
+                                            {
+                                                TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
+
+                                                if (ts.Days > 1)
+                                                {
+                                                    <li class="d-flex flex-row justify-content-center list-item-days">
+                                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                        <div class="chat-date-time">
+                                                            @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
+                                                        </div>
+                                                    </li>
+                                                }
+                                                else if (ts.Minutes > 2)
+                                                {
+                                                    <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                        <div class="chat-date-time">
+                                                            @chat.DateCreated.ToString("dddd, hh:mm tt")
+                                                        </div>
+                                                    </li>
+                                                }
+
+                                                lastMessageDateCreated = chat.DateCreated;
+                                            }
+                                            else
+                                            {
+
+                                                lastMessageDateCreated = chat.DateCreated;
+
+                                                <li class="d-flex flex-row justify-content-center list-item-days">
+                                                    <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                    <div class="chat-date-time">
+                                                        @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
+                                                    </div>
+                                                </li>
+                                            }
+                                            @if (chat.FromUserId == currentUserId)
+                                            {
+                                                <li class="d-flex flex-row justify-content-end">
+                                                    <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                    <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="left">
+                                                        <div class="self-message">
+                                                            @chat.Message
+                                                        </div>
+                                                    </span>
+                                                    <img src="@chat.FromProfilePath" class="chat-profile-picture">
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="d-flex flex-row">
+                                                    <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                    <img src="@chat.FromProfilePath" class="chat-profile-picture">
+                                                    <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="right">
+                                                        <div class="sender-name">
+                                                            @chat.FromFirstName
+                                                        </div>
+                                                        <div class="sender-message">
+                                                            @chat.Message
+                                                        </div>
+                                                    </span>
+                                                </li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                                <div class="sender-name">
+                                                    @chat.Message
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+
+                            </InfiniteScroll>
+                        </div>
+
+                    }
+                    <div class="typing-status-section">
+                        @if (chatRooms.Count > 0)
+                        {
+                            <label>
+                                @if (chatRooms.Any(c => c.ChatRoomId == selectedChatRoomId))
+                                {
+                                    @chatRooms.FirstOrDefault(c => c.ChatRoomId == selectedChatRoomId).TypingStatus
+                                }
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if(chatRooms.Count == 0)
+            {
+                <div class="row justify-content-center no-message-section-yet text-center">
+                    <div class="col-12 col-sm-12 col-md-6">
+                        <img src="images/messages/no-message.svg" />
+                        <div class="divider"></div>
+                        <label class="no-message-title">
+                            No Message Yet
+                        </label>
+                        <div class="divider"></div>
+                        <button id="btnFindFirstExperience" type="button" class="btn btn-primary border-0" @onclick=NavigateToExplore>Find your first experience</button>
+                    </div>
+                </div>
+            }
+
+            @if (chatRooms.Count != 0 && chatHistories.Count == 0)
+            {
+                <div class="row justify-content-center no-message-section text-center">
+                    <div class="col-12 col-md-6">
+                        <img src="images/messages/speech-bubble.svg" />
+                        <div class="divider"></div>
+                        <label class="no-conversation-title">
+                            No Conversation Yet
+                        </label>
+                        <label class="no-conversation-sub-title">
+                            You didn't make any conversation yet.
+                        </label>
+                    </div>
+                </div>
+            }
+
+            <div class="send-message-section">
+                <table>
+                    <tr>
+                        <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
+                        <td class="input-section">
+                            <div class="input-group border p-1 rounded-pill-section">
+                                <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
+                                </div>
+                            </div>
+                    
+                        </td>
+                        <td class="send-section">
+                            <img id="send-message" src="images/messages/send-message.svg" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </LoadingIndicator>
     </div>
     <div class="sidebar-messages profile-section messages-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
         <div class="row" style="@SetPlaceholderStyle(isLoading)">
@@ -758,6 +760,8 @@
 
     private Modal? modalEditChatGroupName;
     private string editedGroupChatName = string.Empty;
+
+    private LoadingIndicator? loadingIndicator;
 
     protected override async Task OnInitializedAsync()
     {
@@ -990,6 +994,11 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Message Page");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
+
+            await loadingIndicator?.Show();
+            int delay = 1000 * 30;
+            await Task.Delay(delay);
+            await loadingIndicator?.Hide();
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
     }
