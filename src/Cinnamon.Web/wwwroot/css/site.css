@@ -194,6 +194,7 @@ a,
   font-weight: 700;
   outline: none;
   border: none;
+  overflow: hidden;
 }
 
 .customer-profile-details .nav-tabs .nav-link.active {
@@ -204,11 +205,34 @@ a,
   outline: none;
   border: none;
 }
+
 .customer-profile-details .nav-tabs .nav-link:hover {
   outline: none;
   border: none;
   color: #343d4c;
 }
+
+.customer-profile-details .nav-tabs .nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #ffa942;
+  transform: scaleX(0);
+  transform-origin: left; 
+  transition: transform 0.3s ease-in-out;
+}
+
+.customer-profile-details .nav-tabs .nav-link.active::after {
+  content: none; /* Remove the pseudo-element */
+}
+
+.customer-profile-details .nav-tabs .nav-link:hover::after {
+  transform: scaleX(1);
+}
+
 .customer-profile-details .nav-tabs .nav-link:focus {
   outline: none;
   border: none;

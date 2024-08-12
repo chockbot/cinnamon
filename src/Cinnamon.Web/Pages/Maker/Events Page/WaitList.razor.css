@@ -104,19 +104,27 @@
     box-shadow: 0px 0px 48px 0px rgba(217, 217, 217, 0.60);
 }
 ::deep .ticket-decline {
+    background-color: #FFE5E7;
+    color: #D13636;
+    display: flex;
+    width: 195px;
+    height: 48px;
+    padding: 14.5px 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: ease-in-out 0.3s;
+}
+
+::deep .ticket-decline:hover {
     background-color: #D13636;
     color: white;
-    display: flex;
-    width: 195px;
-    height: 48px;
-    padding: 14.5px 40px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
 }
+
+
 ::deep .ticket-approve {
-    background-color: #34A853;
-    color: white;
+    background-color: #CFFFCE;
+    color: #34A853;
     display: flex;
     width: 195px;
     height: 48px;
@@ -124,7 +132,14 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    transition: ease-in-out 0.3s;
 }
+
+::deep .ticket-approve:hover {
+    background-color: #34A853;
+    color: #ffffff;
+}
+
 .reg-time {
     color: #343D4C;
     font-family: Nunito-extrabold;
@@ -304,6 +319,7 @@
     font-weight: 700;
     max-width: 100px;
 }
+
 .btn-action {
     border-radius: 8px;
     background: #F3F6FC;
@@ -317,7 +333,15 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
+    transition: ease-in-out 0.3s;
 }
+
+.btn-action:hover {
+    background: #343D4C;
+    color: #F3F6FC;
+}
+
+
 .btn-approved {
     border-radius: 8px;
     background: #34A853;
@@ -331,7 +355,10 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
+    transition: ease-in-out 0.3s;
 }
+
+
 .btn-declined {
     border-radius: 8px;
     background: #D13636;
