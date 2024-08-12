@@ -1133,21 +1133,35 @@
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
-        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
         if(havePaidAndFreeTicket)
         {
             return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
 
-        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
 
-        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+        if(freeWithApproval && isFreeWithoutApproval)
+        {
+            return NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            return NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+        }
 
         bool haveQuestions = activityQuestions.Count > 0;
 
         if(haveQuestions) return modalQuestions?.Show();
 
         if(isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
+
+        if(paidWithApproval) return ProceedToJoinWaitlist();
 
         return ProceedToPaymentOption();
     }
@@ -1515,6 +1529,7 @@
         public string Name {get; set;}
         public bool RequiredApproval {get; set;}
         public bool IsUnlimited { get; set; }
+        public bool IsFree => Price == 0;
     }
 
     private void ToggleAboutText()
@@ -1569,8 +1584,9 @@
                     Payload    = s.Payload,
                     Type       = s.Type
                 };
-            }).Where(a => a.Type == "Paid").ToList();
+            }).ToList();
         }
+
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
         var oteWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1633,15 +1649,34 @@
 
         //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         //Get Selected Ticket
-        var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
-        if (havePaidAndFreeTicket)
+        if (selectedTickets.Count <= 0)
+        {
+            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            return;
+        }
+
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
+        if(havePaidAndFreeTicket)
         {
             await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
             return;
         }
-        if (selectedTickets.Count <= 0)
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(freeWithApproval && isFreeWithoutApproval)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            await NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+            return; 
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            await NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
             return;
         }
 
@@ -1698,7 +1733,10 @@
         {
             //Add Email
             await NotificationService.Success("Successfully added to waitlist.", "Success");
-            await LoadWaitlist();
+            if (activity.IsCapacity)
+            {
+                await LoadWaitlist();
+            }
         }
 
         submitting = false;
@@ -1758,11 +1796,13 @@
 
         bool proceedToWaitList = activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
 
-        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
 
-        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
 
-        if(proceedToWaitList)
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+
+        if(proceedToWaitList || paidWithApproval)
         {
             await ProceedToJoinWaitlist();
             return;
