@@ -7,6 +7,7 @@
 @using Cinnamon.Framework.Enums
 @using Cinnamon.Framework.Helpers;
 @using System.ComponentModel.DataAnnotations;
+@using System.Text.RegularExpressions;
 @inject IJSRuntime JS;
 @inject INotificationService NotificationService;
 @inject NavigationManager NavigationManager
@@ -806,7 +807,7 @@
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
-        [EmailAddress(ErrorMessage = "Provide valid email")]
+        [EmailValidation]
         public string? Email {get; set;}
 
         [Required(ErrorMessage = "Gender is required")]
@@ -835,6 +836,31 @@
 
         public int PrevScheduleId {get; set;} = -1;
     }
+    public class EmailValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var student = (Student)validationContext.ObjectInstance;
+            if (string.IsNullOrEmpty(student.Email))
+            {
+                return ValidationResult.Success;
+            }
+            else
+            {
+                // Regular expression pattern for validating email addresses
+                var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                if (Regex.IsMatch(student.Email, emailPattern))
+                {
+                    return ValidationResult.Success;
+                }
+                else
+                {
+                    return new ValidationResult("Invalid email address format.");
+                }
+            }
+        }
+    }
+
 
     private Task OnModalClosing(ModalClosingEventArgs e)
     {
