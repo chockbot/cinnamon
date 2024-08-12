@@ -40,10 +40,9 @@ public class VerifyResetPasswordHandler : IVerifyResetPasswordHandler
         try
         {
             // check token if the same
-            var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
             var resetPaswordDetail = await resetPasswordData.GetResetPasswordByGuidToken(new Framework.ApiCommand.ApiData.ResetPassword.Request.GetResetPasswordArgs {
                 Guid = args.Guid,
-                Token = decodedToken,
+                Token = args.Token,
             });
             if(!resetPaswordDetail.Succeeded || resetPaswordDetail.Result == null || !resetPaswordDetail.Result.IsSuccess)
             {
