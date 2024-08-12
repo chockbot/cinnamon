@@ -90,14 +90,8 @@
     </p>
 
     <Row HorizontalGutter="10">
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToPending">
-                <img class="mb-2" src="images/ote/tiny-clock.svg" alt="clock">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Pending Approval / Waitlist</p>
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="pendingDiv" @onmousemove="PendingHoverMove" @onmouseleave="PendingHoverLeave" @onclick="NavigateToPending">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToPending">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Pending/Waitlist</p>
                 </div>
@@ -125,14 +119,8 @@
                 <div class="effect hover1"></div>
             </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToAccepted">
-                <img class="mb-2" src="images/ote/tiny-check.svg" alt="check">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Going</p>
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="goingDiv" @onmousemove="GoingHoverMove" @onmouseleave="GoingHoverLeave" @onclick="NavigateToAccepted">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToAccepted">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Going</p>
                 </div>
@@ -162,14 +150,8 @@
                 <div class="effect hover2"></div>
             </div>
         </Column>
-        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop.Is12.OnTablet">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" @onclick="NavigateToDeclined">
-                <img class="mb-2" src="images/ote/tiny-close.svg" alt="close">
-                <div class="div-line mb-1"></div>
-                <div class="div-line-75 mb-2"></div>
-                <p class="font-16 color-grey-100 mb-0">Declined</p>
         <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop" Margin="Margin.Is1.OnY">
-            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="declinedDiv" @onmousemove="DeclinedHoverMove" @onmouseleave="DeclinedHoverLeave" @onclick="NavigateToDeclined">
+            <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" @onclick="NavigateToDeclined">
                 <div class="d-flex align-items-center mb-2 text-box">
                     <p class="email-title">Declined</p>
                 </div>
