@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @implements IAsyncDisposable
+@implements IAsyncDisposable
 
 <div class="ticket-options">
     <div class="event-buttons d-flex">
@@ -396,6 +397,12 @@
         public string Body { get; set; }
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (hoverEffectModule != null)
+        {
+            await hoverEffectModule.DisposeAsync();
+        }
     public async ValueTask DisposeAsync()
     {
         if (hoverEffectModule != null)
