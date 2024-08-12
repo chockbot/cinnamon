@@ -48,7 +48,6 @@
                                     </div>
                                 }
                             </div>
-                             <div id="explore-category-scrollbar" class="swiper-scrollbar"></div>
                         </div>
                     </div>
                 </div>
@@ -136,7 +135,7 @@ else
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Materials Page");
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", "#explore-category-scrollbar");
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
         await InitializeSwiper();
     }
     private async Task InitializeSwiper()
