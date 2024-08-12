@@ -33,6 +33,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ISendInviteEventHandler sendInviteEventHandler;
     private readonly ICreateChatRoomHandler createChatRoomHandler;
     private readonly IHubContext<ChatHub> chathub;
+    private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
+    private readonly IOteCreateRequestPaymentHandler createRequestPaymentHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
@@ -40,7 +42,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
         IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler,
-        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub)
+        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub,
+        IGetOteRequestPaymentHandler getOteRequestPaymentHandler, IOteCreateRequestPaymentHandler createRequestPaymentHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -57,6 +60,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.sendInviteEventHandler = sendInviteEventHandler;
         this.createChatRoomHandler = createChatRoomHandler;
         this.chathub = chathub;
+        this.getOteRequestPaymentHandler = getOteRequestPaymentHandler;
+        this.createRequestPaymentHandler = createRequestPaymentHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -181,6 +186,39 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         ProviderId = waitlist.ProviderId,
                         ScheduleId = waitlist.ScheduleId,
                         Status = 4 // approved and purchased the waitlist
+                    });
+                }
+            }
+
+            // invalidate request payment token
+            if(!string.IsNullOrEmpty(deserializedPayload.PaymentRequestGuid) && !string.IsNullOrEmpty(deserializedPayload.PaymentRequestToken))
+            {
+                var getOteRequestPaymentRes = await getOteRequestPaymentHandler.ExecuteAsync(new OteGetRequestPaymentArgs {
+                    Guid = deserializedPayload.PaymentRequestGuid,
+                    Token = deserializedPayload.PaymentRequestToken
+                });
+                if(getOteRequestPaymentRes.Succeeded && getOteRequestPaymentRes.Result is not null)
+                {
+                    var oteRequestPayment = getOteRequestPaymentRes.Result;
+                    var createRequestPaymentRes = await createRequestPaymentHandler.ExecuteAsync(new OteCreateRequestPaymentArgs {
+                        ActivityId = oteRequestPayment.ActivityId,
+                        CustomerId = oteRequestPayment.CustomerId,
+                        SelectedDate = oteRequestPayment.SelectedDate,
+                        SelectedTickets = oteRequestPayment.SelectedTickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
+                            TicketCount = t.TicketCount,
+                            TicketId = t.TicketId
+                        }),
+                        ForceCreateTicket = oteRequestPayment.ForceCreateTicket,
+                        Waitlisted = oteRequestPayment.Waitlisted,
+                        WaitListId = oteRequestPayment.WaitListId,
+                        Used = true,
+                        Guid = oteRequestPayment.Guid,
+                        Token = oteRequestPayment.Token,
+                        Questions = oteRequestPayment.Questions?.Select(q => new OteCreateRequestPaymentArgs.ProviderQuestion {
+                            Answer = q.Answer,
+                            Id = q.Id,
+                            Question = q.Question
+                        })
                     });
                 }
             }
@@ -338,6 +376,9 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
 
         public bool Waitlisted {get; set;}
         public int WaitListId {get; set;}
+
+        public string PaymentRequestToken {get; set;}
+        public string PaymentRequestGuid {get; set;}
     }
 
     private class Ticket 

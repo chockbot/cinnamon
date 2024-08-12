@@ -9,6 +9,7 @@ public class PaymentRequestDTO
     public string Token {get; set;}
     public IEnumerable<ProviderQuestion>? Questions {get; set;}
     public bool ForceCreateTicket {get; set;}
+    public bool Used {get; set;}
 
     public class RequestPaymentTicket 
     {

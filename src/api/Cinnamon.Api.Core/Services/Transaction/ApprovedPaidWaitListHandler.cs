@@ -94,7 +94,8 @@ public class ApprovedPaidWaitListHandler : IApprovedPaidWaitListHandler
                 }),
                 ForceCreateTicket = true,
                 Waitlisted = true,
-                WaitListId = waitlist.Id
+                WaitListId = waitlist.Id,
+                Used = false
             });
             if(!createRequestPaymentRes.Succeeded || createRequestPaymentRes.Result is null)
             {
