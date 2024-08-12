@@ -120,7 +120,7 @@ namespace Cinnamon.Api.Core.Hubs
 
             if (!string.IsNullOrEmpty(groupName))
             {
-                if (toCustomerResult.Succeeded && toCustomerResult.Result != null)
+                if (toCustomerResult.Succeeded && toCustomerResult.Result != null && !string.IsNullOrEmpty(toCustomerResult.Result.ConnectionId))
                 {
                     await Groups.AddToGroupAsync(toCustomerResult.Result.ConnectionId, groupName);
                 }
