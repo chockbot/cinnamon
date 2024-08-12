@@ -188,6 +188,7 @@
             Email = r.Email,
             LastName = r.LastName,
             FirstName = r.FirstName,
+            DateJoined = r.DateJoined,
             FrontIdImagePath = r.FrontIdImagePath,
             BackIdImagePath = r.BackIdImagePath,
             IsVerified = r.IsVerified,
@@ -198,7 +199,16 @@
             IsOfficial = r.IsOfficial,
             IsOfficialDate = r.IsOfficialDate,
             IsAccountBan = r.IsAccountBan
-        }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
+        }).ToList();
+
+        if (hasVerificationRequest == true) 
+        {
+            customers = customers.OrderBy(r => r.IsChecked).ThenBy(r => r.IsVerifiedDate).ToList();
+        }
+        else
+        {
+            customers = customers.OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
+        }
 
         Pagination = result.Result.Pagination;
     }
