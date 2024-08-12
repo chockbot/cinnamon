@@ -2812,12 +2812,19 @@ public class ActivityController : ControllerBase
                     NewDate = s.NewDate,
                     Id = s.Id
                 }) : null,
-                Questions = args.Questions is not null ? args.Questions.Select(q => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
-                    FieldType = q.FieldType,
-                    Question = q.Question,
-                    Required = q.Required
+                NewQuestions = args.NewQuestions is not null ? args.NewQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required
                 }) : null,
-            });
+                UpdatedQuestions = args.UpdatedQuestions is not null ? args.UpdatedQuestions.Select(s => new Services.ActivityService.Interactors.OteUpdateArgs.CustomQuestion {
+                    FieldType = s.FieldType,
+                    Question = s.Question,
+                    Required = s.Required,
+                    Id = s.Id
+                }) : null,
+                DeletedQuestions = args.DeletedQuestions
+            }); 
 
             if (!result.Succeeded || result.Result == null)
             {

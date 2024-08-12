@@ -58,4 +58,46 @@ public class ProviderCustomQuestionData : IProviderCustomQuestionData
             return AppResult<GetCustomQuestionsResult>.CreateFailed(ex, "An error occured when posting get custom questions api");
         }
     }
+
+    public async Task<AppResult<DeleteCustomQuestionsResult>> DeleteCustomQuestions(DeleteCustomQuestionsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("ProviderCustomQuestions/Bulk/Delete")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteCustomQuestionsResult>();
+            return AppResult<DeleteCustomQuestionsResult>.CreateSucceeded(result, "Successfully posting delete custom question api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteCustomQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteCustomQuestionsResult>.CreateFailed(ex, "An error occured when posting delete custom question api");
+        }
+    }
+
+    public async Task<AppResult<UpdateCustomQuestionsResult>> UpdateCustomQuestions(UpdateCustomQuestionsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("ProviderCustomQuestions/Bulk/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateCustomQuestionsResult>();
+            return AppResult<UpdateCustomQuestionsResult>.CreateSucceeded(result, "Successfully posting update custom question api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateCustomQuestionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateCustomQuestionsResult>.CreateFailed(ex, "An error occured when posting update custom question api");
+        }
+    }
 }
