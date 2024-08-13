@@ -287,43 +287,45 @@
                                                         stringMaxTicket = $"You've already reached the maximum limit for ticket purchases.";
                                                     }
 
+                                                    }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                 stringMaxTicket = "";
-                                            }
-                                            <div class="ticket-details">
-                                                <p class="ticket-name">@item.Name</p>
-                                                <p class="align-items-center">
-                                                    <span class="ticket-name">
-                                                        @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
-                                                    </span>
-                                                </p>
-                                                <p class="align-items-center">
-                                                    @if (!item.IsUnlimited)
-                                                    {
-                                                        @if(activity.IsEventSoldOut)
+                                                else
+                                                {
+                                                    stringMaxTicket = "";
+                                                }
+                                                <div class="ticket-details">
+                                                    <Tooltip Text="@item.Name" Multiline>
+                                                        <p class="ticket-name">@item.Name</p>
+                                                    </Tooltip>
+                                                    <p class="align-items-center">
+                                                        <span class="ticket-name">
+                                                            @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
+                                                        </span>
+                                                    </p>
+                                                    <p class="align-items-center">
+                                                        @if (!item.IsUnlimited)
                                                         {
-                                                            @if (capacityLimit >= 1)
+                                                            @if (activity.IsEventSoldOut)
                                                             {
-                                                                <span class="ticket-waitlist-status">
-                                                                    waitlist
-                                                                </span>
+                                                                @if (capacityLimit >= 1)
+                                                                {
+                                                                    <span class="ticket-waitlist-status">
+                                                                        waitlist
+                                                                    </span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="ticket-sold-out">
+                                                                        sold out
+                                                                    </span>
+                                                                }
                                                             }
                                                             else
                                                             {
-                                                                <span class="ticket-sold-out">
-                                                                    sold out
+                                                                <span class="tickets-left">
+                                                                    Only @(item.MaxSlots - item.TicketSold) ticket/s left
                                                                 </span>
                                                             }
-                                                        }
-                                                        else
-                                                        {
-                                                             <span class="tickets-left">
-                                                                Only @(item.MaxSlots - item.TicketSold) ticket/s left
-                                                             </span>
-                                                        }
 
                                                     }
                                                     else
