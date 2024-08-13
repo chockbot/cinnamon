@@ -142,6 +142,13 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
 
             foreach(var item in deserializedPayload.Tickets)
             {
+                // if ticket is old, set count to 1
+                bool oldTicketPayload = item.Count == 0;
+                if(oldTicketPayload)
+                {
+                    item.Count = 1;
+                }
+
                 for(int i = 0; i < item.Count; i++)
                 {
                     var qrcode = CreateCode();
