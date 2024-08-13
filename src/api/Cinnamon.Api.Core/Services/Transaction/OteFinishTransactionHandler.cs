@@ -144,7 +144,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
             var oteDate = oteDateRes.Result.Result;
 
-            var ticketsToCreate = deserializedPayload.Tickets.Where(t => !t.RequiredApproval);
+            var ticketsToCreate = deserializedPayload.Tickets;
 
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
