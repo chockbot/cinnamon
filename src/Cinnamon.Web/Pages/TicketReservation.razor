@@ -1,8 +1,16 @@
 ﻿@layout EmptyLayout
-@page "/timerreload"
+@page "/reservation/{Handler}"
+@using AutoMapper
 @using System.Threading
+@using System.Globalization;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Ote
+@using Cinnamon.Web.Components;
+@inject IMapper mapper
 @inject IJSRuntime JSRuntime
-@inject NavigationManager NavigationManager;
+@inject NavigationManager NavigationManager
+@inject IActivityApiHandler activityHandler
+@inject INotificationService NotificationService
 
 
 <div class="top-row">
@@ -21,14 +29,71 @@
         </svg>
         <p class="secure-text">Secure Checkout</p>
     </div>
-    
 </div>
-
-
+@if (activity is not null)
+{
+    <div class="container reservation-page-section">
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+            @*Event & Ticket Details*@
+            <div class="event-details-section">
+                <p class="event-name">@activity.EventName</p>
+                <p class="selected-date">Date: @SelectedDate.ToString("MMMM dd, yyyy")</p>
+                <p class="time-start">Time Start: @SelectedDate.ToString("hh:mm tt") </p>
+                @if (activity.ExperienceTypeId == 1)
+                {
+                    string address = string.IsNullOrEmpty(activity.PinnedLocation) ? $"{activity.HouseNo + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName}" : activity.PinnedLocation;
+                    <p class="event-location">@address</p>
+                }
+                else
+                {
+                    <p class="event-location">Online</p>
+                }
+            </div>
+            @*Event Ticekts*@
+            <div class="ticket-event-section">
+                <p class="ticket-section">Select seat for your tickets</p>
+                <div class="ticket-box"></div>
+            </div>
+            @*Event Seat Plan*@
+            @if (!string.IsNullOrEmpty(SetPlanImage))
+            {
+                <div id="set-plan" class="mt-4 seat-plan-section">
+                    <p class="event-seat-plan">Seat Plan</p>
+                    <img class="img-seat-plan" src="@SetPlanImage" @onclick="() => imageViewer.ShowModal()" alt="seatplan">
+                </div>
+            }
+        </div>
+        @*Calculator*@
+        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+           
+        </div>
+    </div>
+    <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
+}
 @code {
+    [Parameter]
+    public string Handler { get; set; } = string.Empty;
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Date { get; set; }
+
+    [Parameter, SupplyParameterFromQuery]
+    public string Token { get; set; }
+
+    private DateTime SelectedDate { get; set; }
+
+    private OteActivity? activity;
+
+    private ImageViewer imageViewer;
+
+    private string format = "dd/MM/yyyy h:mm:ss tt";
+
     private int counter = 600; // 600 seconds = 10 minutes
+
     private string message = "00:10:00";
+
     private System.Timers.Timer? timer;
+
     private bool isLoading = false;
 
     protected override void OnInitialized()
@@ -36,6 +101,64 @@
         timer = new System.Timers.Timer(1000); // 1 second interval
         timer.Elapsed += OnTimerElapsed;
         timer.Start();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            await LoadOteDetails();
+            SelectedDate = DateTime.Parse(Date);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private async Task LoadOteDetails()
+    {
+        try
+        {
+            var result = await activityHandler.FindOteByHandler(new Framework.ApiCommand.ApiCore.Activity.Request.OteActivityArgs
+                {
+                    IncludeAddress = true,
+                    IncludeDescription = true,
+                    IncludePricing = true,
+                    IncludeSchedule = true,
+                    IncludeImages = true
+                }, Handler);
+            if (!result.Succeeded || result.Result is null || !result.Result.IsSuccess)
+            {
+                throw new ApplicationException(result.Message);
+            }
+            var act = result.Result.Result;
+            if (!act.IsPublished)
+            {
+                NavigationManager.NavigateTo("not-found");
+                return;
+            }
+            activity = mapper.Map<OteActivity>(act);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.Error("An error occured. Please try again later.", "Error");
+        }
+    }
+    private string SetPlanImage
+    {
+        get
+        {
+            string imageSrc = string.Empty;
+            if (activity is not null)
+            {
+                var image = activity.Images.FirstOrDefault(i => i.Order == 100);
+                if (image is not null)
+                {
+                    imageSrc = image.ImageSrc;
+                }
+            }
+
+            return imageSrc;
+        }
     }
 
     private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)

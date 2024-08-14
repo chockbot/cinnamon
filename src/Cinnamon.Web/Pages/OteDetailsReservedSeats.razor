@@ -1,4 +1,4 @@
-﻿@page "/explore/ote/reserved/{Handler}"
+﻿@page "/explore/ote/{Handler}"
 @using System.Security.Claims;
 @using Cinnamon.Web.Components.Pages;
 @using AutoMapper;
@@ -856,7 +856,7 @@
 
             return loginModal.Show();
         }
-        string paymentUrl = $"/timerreload";
+        string paymentUrl = $"/reservation/{Handler}/?date={selectedDate}&token={token}";
         NavigationManager.NavigateTo(paymentUrl);
         submitting = false;
         return Task.CompletedTask;
