@@ -13,6 +13,7 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
 using Microsoft.AspNetCore.SignalR;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -33,6 +34,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly ISendInviteEventHandler sendInviteEventHandler;
     private readonly ICreateChatRoomHandler createChatRoomHandler;
     private readonly IHubContext<ChatHub> chathub;
+    private readonly ICreateChatHistoryHandler createChatHistoryHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
@@ -40,7 +42,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
         IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler,
-        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub)
+        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub,
+        ICreateChatHistoryHandler createChatHistoryHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -57,6 +60,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.sendInviteEventHandler = sendInviteEventHandler;
         this.createChatRoomHandler = createChatRoomHandler;
         this.chathub = chathub;
+        this.createChatHistoryHandler = createChatHistoryHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -312,10 +316,36 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 GroupName = groupName,
                 ToUserId = activity.Owner?.Id ?? 0
             });
-            if(createChatRes.Succeeded && createChatRes.Result is not null)
+            if(!createChatRes.Succeeded || createChatRes.Result is null)
             {
-                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+                return AppResult<OteFinishTransactionResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
+
+            await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+
+            var createChatHistoryRes = await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+            {
+                ChatRoomId = createChatRes.Result.ChatRoomId,
+                FromConnectionId = string.Empty,
+                FromUserId = purchaseOrder.CustomerId,
+                ToConnectionId = string.Empty,
+                ToUserId = 0,
+                IsViewed = false,
+                Message = $"{customer.FirstName} {customer.LastName} has joined the group.",
+                ChatHistoryType = Framework.Enums.Enums.ChatHistoryType.Notification
+            });
+
+            if(!createChatHistoryRes.Succeeded || createChatHistoryRes.Result is null)
+            {
+                return AppResult<OteFinishTransactionResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            int chatRoomId = createChatRes.Result.ChatRoomId;
+
+            string joinedPayload = $"{chatRoomId}|{DateTime.Now}|{purchaseOrder.CustomerId}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{false}|{customer.FirstName} {customer.LastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}";
+            await chathub.Clients.Group(createChatRes.Result.GroupName).SendAsync("ReceiveGroupMessage", joinedPayload);
 
             return AppResult<OteFinishTransactionResult>.CreateSucceeded(new OteFinishTransactionResult {}, "Successfully finish transaction");
         }
