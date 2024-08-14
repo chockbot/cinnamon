@@ -209,12 +209,18 @@ a {
   border-bottom: 1px solid #d9d9d9;
 }
 .ticket-name {
-  color: #717171;
-  font-family: Nunito;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 18ch;
 }
 .ticket-price {
   color: #34a853;
