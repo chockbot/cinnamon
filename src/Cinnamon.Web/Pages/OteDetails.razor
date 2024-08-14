@@ -244,16 +244,9 @@
                                                     stringMaxTicket = "";
                                                 }
                                                 <div class="ticket-details">
-                                                    @if (item.Name.Length > 15)
-                                                    {
-                                                        <Tooltip Text="@item.Name" Multiline>
-                                                        <p class="ticket-name">@item.Name.Substring(0, 20)...</p>
-                                                    </Tooltip>
-                                                    }
-                                                    else
-                                                    {
+                                                    <Tooltip Text="@item.Name" Multiline>
                                                         <p class="ticket-name">@item.Name</p>
-                                                    }
+                                                    </Tooltip>
                                                     <p class="align-items-center">
                                                         <span class="ticket-name">
                                                             @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
