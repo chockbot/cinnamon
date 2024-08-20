@@ -19,13 +19,13 @@
                         </div>
                         <Divider class="m-0" />
                         <div class="px-0 px-md-4 py-3">
-                            <p class="mb-0 color-grey-100 font-16">Date: @purchaseOrder.PurchasedDate.ToString("MMMM, dd yyyy")</p>
+                            <p class="mb-0 color-grey-100 font-16">Date: @purchaseOrder.PurchasedDate.ToString("MMMM dd, yyyy")</p>
                         </div>
                         <Divider class="m-0" />
                         <div class="px-0 px-md-4 py-3">
                             <h4 class="mb-2 font-20 font-weight-700 color-black-100 text-capitalize">@purchaseOrder.EventName</h4>
                             <p class="mb-2 font-16 color-grey-100">@purchaseOrder.EventLocation</p>
-                            <p class="mb-0 font-16 color-grey-100">@purchaseOrder.EventDate.ToString("dd MMMM yyyy | hh:mm tt")</p>
+                            <p class="mb-0 font-16 color-grey-100">@purchaseOrder.EventDate.ToString("MMMM dd, yyyy | hh:mm tt")</p>
                         </div>
                         <Divider class="m-0" />
                         <div class="px-0 px-md-4 py-3">
@@ -51,7 +51,7 @@
                             @if(purchaseOrder.Discount.HasValue)
                             {
                                 <div class="mb-2 d-flex justify-content-between">
-                                    <p class="mb-0">Disscount:</p>
+                                    <p class="mb-0">Discount:</p>
                                     <p class="mb-0">P @purchaseOrder.Discount.Value.ToString("#,##0.00")</p>
                                 </div>
                             }
@@ -113,7 +113,7 @@
                     else
                     {
                         <div class="online-event text-center">
-                            <div class="header">Thankyou for choosing <span class="cinnamon-text">Cinnamon!</span></div>
+                            <div class="header">Thank you for choosing <span class="cinnamon-text">Cinnamon!</span></div>
                             <p class="checkout-text">Checkout your event now!</p>
                             <div class="text-center">
                                 <a class="view-link text-decoration-none" href="@purchaseOrder.TicketUrl" target="_blank" rel="noopener noreferrer">View Link/s</a>
