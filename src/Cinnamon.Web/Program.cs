@@ -36,6 +36,10 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
 });
 builder.Services.AddHttpContextAccessor();
 
+//Queue Reservation
+builder.Services.AddSingleton<QueueServices>();
+builder.Services.AddSingleton<TimerServices>();
+
 // blazorise
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
