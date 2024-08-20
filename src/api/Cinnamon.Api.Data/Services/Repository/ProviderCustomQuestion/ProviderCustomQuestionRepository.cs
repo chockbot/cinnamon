@@ -114,6 +114,7 @@ public class ProviderCustomQuestionRepository : IProviderCustomQuestionRepositor
                 question.FieldLabel = questionDTO.FieldLabel;
                 question.ActivityId = questionDTO.ActivityId;
                 question.ProviderId = questionDTO.ProviderId;
+                question.Required   = questionDTO.Required;
             }
 
             var result = await dataStore.ProviderCustomQuestion.UpdateRange(questions);
