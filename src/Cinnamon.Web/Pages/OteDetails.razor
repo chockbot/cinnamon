@@ -71,8 +71,8 @@
                     </div>
                     @if (provider.IsVerified == 2)
                     {
-                        <div class="verified-section">
-                            <img src="images/verified-badge.png" class="verified-icon">
+                        <div class="verified-section mt-2">
+                            <img src="images/verified-badge.svg" class="verified-icon">
                             <span class="details-text">Verified Profile</span>
                         </div>
                     }
@@ -244,16 +244,9 @@
                                                     stringMaxTicket = "";
                                                 }
                                                 <div class="ticket-details">
-                                                    @if (item.Name.Length > 15)
-                                                    {
-                                                        <Tooltip Text="@item.Name" Multiline>
-                                                        <p class="ticket-name">@item.Name.Substring(0, 20)...</p>
-                                                    </Tooltip>
-                                                    }
-                                                    else
-                                                    {
+                                                    <Tooltip Text="@item.Name" Multiline>
                                                         <p class="ticket-name">@item.Name</p>
-                                                    }
+                                                    </Tooltip>
                                                     <p class="align-items-center">
                                                         <span class="ticket-name">
                                                             @((item.Price == 0) ? "Free" : $"₱{item.Price:N0}")
@@ -809,7 +802,6 @@
             await LoadProfile();
             await LoadFavorite();
             await LoadActivityQuestions();
-
             await LoadTopBooked();
             if (activity.IsCapacity)
             {
@@ -1134,21 +1126,35 @@
             return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
-        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
         if(havePaidAndFreeTicket)
         {
             return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
 
-        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
 
-        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+        if(freeWithApproval && isFreeWithoutApproval)
+        {
+            return NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            return NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
+        }
 
         bool haveQuestions = activityQuestions.Count > 0;
 
         if(haveQuestions) return modalQuestions?.Show();
 
         if(isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
+
+        if(paidWithApproval) return ProceedToJoinWaitlist();
 
         return ProceedToPaymentOption();
     }
@@ -1320,7 +1326,21 @@
                 {
                     return Task.CompletedTask;
                 }
-                selectedTickets[pricing.Id].Count++;
+                if (pricing.IsUnlimited)
+                {
+                    if (selectedTickets.Sum(a => a.Value.Count) < 50)
+                    {
+                        selectedTickets[pricing.Id].Count++;
+                    }
+                    else
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+                else
+                {
+                    selectedTickets[pricing.Id].Count++;
+                }
             }
             else
             {
@@ -1502,6 +1522,7 @@
         public string Name {get; set;}
         public bool RequiredApproval {get; set;}
         public bool IsUnlimited { get; set; }
+        public bool IsFree => Price == 0;
     }
 
     private void ToggleAboutText()
@@ -1550,13 +1571,15 @@
             {
                 return new OteWaitlist
                 {
-                    Id = s.Id,
-                    Status = s.Status,
+                    Id         = s.Id,
+                    Status     = s.Status,
                     CustomerId = s.CustomerId,
-                    Payload = s.Payload
+                    Payload    = s.Payload,
+                    Type       = s.Type
                 };
             }).ToList();
         }
+
         //Pending Waitlist
         IsOnWaitlist = oteWaitlists.Any(a => a.CustomerId == ProfileId && a.Status == 1);
         var oteWaitlistDTOs = oteWaitlists.Where(a => a.CustomerId == ProfileId && a.Status == 1);
@@ -1619,15 +1642,34 @@
 
         //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         //Get Selected Ticket
-        var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
-        if (havePaidAndFreeTicket)
+        if (selectedTickets.Count <= 0)
+        {
+            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            return;
+        }
+
+        bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.IsFree) && selectedTickets.Any(t => !t.Value.IsFree);
+        if(havePaidAndFreeTicket)
         {
             await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
             return;
         }
-        if (selectedTickets.Count <= 0)
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(freeWithApproval && isFreeWithoutApproval)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
+            await NotificationService.Error("Combining free tickets with and without approval is not permitted.", "Invalid");
+            return; 
+        }
+
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+        bool isPaidWithoutApproval = selectedTickets.Any(t => !t.Value.IsFree && !t.Value.RequiredApproval);
+
+        if(paidWithApproval && isPaidWithoutApproval)
+        {
+            await NotificationService.Error("Combining paid tickets with and without approval is not permitted.", "Invalid");
             return;
         }
 
@@ -1657,8 +1699,8 @@
             }),
             Questions = questions.Select(q => new {
                 Id = q.Id,
-                Question = q.Question,
-                Answer = q.Answer
+                Question = string.Empty,
+                Answer = string.Empty
             })
         };
 
@@ -1676,6 +1718,7 @@
             CustomerName = ProfileName,
             ProviderId   = provider.Id,
             Status       = 1,
+            Type         = "Paid",
             Payload      = serializedPayload
         },token);
 
@@ -1683,7 +1726,10 @@
         {
             //Add Email
             await NotificationService.Success("Successfully added to waitlist.", "Success");
-            await LoadWaitlist();
+            if (activity.IsCapacity)
+            {
+                await LoadWaitlist();
+            }
         }
 
         submitting = false;
@@ -1743,11 +1789,13 @@
 
         bool proceedToWaitList = activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
 
-        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.IsFree && t.Value.RequiredApproval);
 
-        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.IsFree && !t.Value.RequiredApproval);
 
-        if(proceedToWaitList)
+        bool paidWithApproval = selectedTickets.Any(t => !t.Value.IsFree && t.Value.RequiredApproval);
+
+        if(proceedToWaitList || paidWithApproval)
         {
             await ProceedToJoinWaitlist();
             return;

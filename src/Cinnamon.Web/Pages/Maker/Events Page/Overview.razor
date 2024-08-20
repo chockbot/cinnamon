@@ -1,4 +1,5 @@
 ﻿@layout EmptyLayout;
+@inject NavigationManager NavigationManager
 @using Cinnamon.Web.Models.Ote
 
 <div class="overview-section">
@@ -9,15 +10,15 @@
                 <div class="event-details">
                     <p class="event-title">When & Where</p>
                     <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/calendar.png" />
+                        <img class="event-img" src="images/ote/calendar.svg" />
                         <p class="event-schedule">@Activity.ScheduleFrom.ToString("MMMM dd, yyyy") | @Activity.ScheduleFrom.DayOfWeek</p>
                     </div>
                     <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/event-clock.png" />
+                        <img class="event-img" src="images/ote/event-clock.svg" />
                         <p class="event-schedule">@Activity.ScheduleFrom.ToString("hh:mm tt")</p>
                     </div>
                     <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/event-location.png" />
+                        <img class="event-img" src="images/ote/event-location.svg" />
                         @if (Activity.ExperienceTypeId == 1)
                         {
                             @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
@@ -36,8 +37,8 @@
                         
                     </div>
                     <div class="event-buttons">
-                        <button class="btn-event">View Event Page</button>
-                        <button class="btn-event">Manage Event</button>
+                        <button class="btn-event" @onclick="NavigateToDetails">View Event Page</button>
+                        <button class="btn-event" @onclick="NavigateToEvents">Manage Event</button>
                     </div>
                 </div>
             </div>
@@ -68,5 +69,13 @@
         TotalSlots     = Tickets.Sum(a => a.OtePricing.MaxSlots);
         TotalSold      = Tickets.Sum(s => s.OtePricing.Sold);
         TotalAvailable = Tickets.Sum(v => v.OtePricing.Available);
+    }
+    private void NavigateToDetails()
+    {
+        NavigationManager.NavigateTo($"/explore/ote/{Activity.Handler}");
+    }
+    private void NavigateToEvents()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/events");
     }
 }

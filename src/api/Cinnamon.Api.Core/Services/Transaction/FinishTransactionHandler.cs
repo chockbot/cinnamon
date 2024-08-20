@@ -8,6 +8,9 @@ using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
+using Cinnamon.Api.Core.Services.ChatService.Handlers;
+using Microsoft.AspNetCore.SignalR;
+using Cinnamon.Api.Core.Hubs;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -21,11 +24,14 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     private readonly IPurchaseOrderData purchaseOrderData;
     private readonly ICustomerData customerData;
     private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
+    private readonly ICreateChatRoomHandler createChatRoomHandler;
+    private readonly IHubContext<ChatHub> chathub;
 
     public FinishTransactionHandler(ICreateOngoingActivityHandler createOngoingActivityHandler, ICustomerPayedNotificationHandler customerPayedNotificationHandler,
         IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler, IJsonSerializationProvider jsonSerializationProvider,
         IPurchaseOrderData purchaseOrderData, ICustomerData customerData, IGetActivityHandler getActivityHandler,
-        IUpdateCreditBalanceHandler updateCreditBalanceHandler)
+        IUpdateCreditBalanceHandler updateCreditBalanceHandler, ICreateChatRoomHandler createChatRoomHandler,
+        IHubContext<ChatHub> chathub)
     {
         this.createOngoingActivityHandler = createOngoingActivityHandler;
         this.customerPayedNotificationHandler = customerPayedNotificationHandler;
@@ -35,6 +41,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
         this.customerData = customerData;
         this.getActivityHandler = getActivityHandler;
         this.updateCreditBalanceHandler = updateCreditBalanceHandler;
+        this.createChatRoomHandler = createChatRoomHandler;
+        this.chathub = chathub;
     }
 
     public AppResult<FinishTransactionResult> Execute(FinishTransactionArgs args)
@@ -199,6 +207,20 @@ public class FinishTransactionHandler : IFinishTransactionHandler
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
                 return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            // add in group chat
+            var groupName = Guid.NewGuid().ToString();
+            var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
+                ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
+                ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                FromUserId = purchaseOrder.CustomerId,
+                GroupName = groupName,
+                ToUserId = activity.Owner?.Id ?? 0
+            });
+            if(createChatRes.Succeeded && createChatRes.Result is not null)
+            {
+                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
             }
 
             return AppResult<FinishTransactionResult>.CreateSucceeded(new FinishTransactionResult {}, "Successfully finish transaction");

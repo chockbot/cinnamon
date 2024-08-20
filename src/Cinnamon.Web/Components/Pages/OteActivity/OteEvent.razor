@@ -282,22 +282,22 @@
                 await Task.Delay(300);
                 // var minObj = new
                 // {
-                    // inputSelector = "#event-name-words-input",
-                    // labelSelector = "#event-name-words-count",
-                    // labelFormat = "Max of 15 words (###/15)",
-                    // count = 15,
-                    // isPrevent = true
+                // inputSelector = "#event-name-words-input",
+                // labelSelector = "#event-name-words-count",
+                // labelFormat = "Max of 15 words (###/15)",
+                // count = 15,
+                // isPrevent = true
                 // };
                 // await JS.InvokeVoidAsync("MyLib.Utils.countWords", minObj);
 
                 // var maxObj = new
                 // {
-                    // inputSelector = "#event-description-words-input",
-                    // labelSelector = "#event-description-words-count",
-                    // labelFormat = "Min of 10 words (###/10)",
-                    // count = 10,
-                    // isPrevent = false,
-                    // continueCount = true
+                // inputSelector = "#event-description-words-input",
+                // labelSelector = "#event-description-words-count",
+                // labelFormat = "Min of 10 words (###/10)",
+                // count = 10,
+                // isPrevent = false,
+                // continueCount = true
                 // };
                 // await JS.InvokeVoidAsync("MyLib.Utils.countWords", maxObj);
             }
@@ -326,7 +326,7 @@
         if (ModelState.SelectedType == 1)
         {
             bool validPinnedLocation = ModelState.SelectedType == 1 && !string.IsNullOrEmpty(ModelState.PinnedLocation);
-            
+
             if (!validPinnedLocation)
             {
                 message += "<li>Location is required.</li>";
@@ -647,7 +647,13 @@
             RegionName     = ModelState.Region.Name,
             ComingSoon     = ModelState.ComingSoon,
             IsPublish      = ModelState.Publish,
-
+            images = ModelState.imageItems.Select(a =>
+            {
+                return new ImageItem
+                {
+                    ImageSrc = a.ImageSrc,
+                };
+            }).ToList()
         };
         return data;
     }

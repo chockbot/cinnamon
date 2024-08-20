@@ -10,6 +10,7 @@ public class OteWaitlistDTO
     public int ScheduleId { get; set; }
     public string Payload { get; set; }
     public int Status { get; set; }
+    public string Type { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime ChangedOn { get; set; }
 }

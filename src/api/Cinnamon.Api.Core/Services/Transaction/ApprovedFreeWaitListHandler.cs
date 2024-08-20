@@ -1,6 +1,7 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Hubs;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.EmailDriver.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
@@ -29,13 +30,15 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
     private readonly ICreateChatRoomHandler createChatRoomHandler;
     private readonly IHubContext<ChatHub> chathub;
     private readonly ICustomerData customerData;
+    private readonly ISendInviteEventHandler sendInviteEventHandler;
 
     public ApprovedFreeWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IOteTicketData oteTicketData,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig,
         IPurchaseOrderData purchaseOrderData, ICreateChatRoomHandler createChatRoomHandler,
-        IHubContext<ChatHub> chathub, ICustomerData customerData)
+        IHubContext<ChatHub> chathub, ICustomerData customerData,
+        ISendInviteEventHandler sendInviteEventHandler)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -49,6 +52,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         this.createChatRoomHandler = createChatRoomHandler;
         this.chathub = chathub;
         this.customerData = customerData;
+        this.sendInviteEventHandler = sendInviteEventHandler;
     }
 
     public AppResult<ApprovedFreeWaitListResult> Execute(ApprovedFreeWaitListArgs args)
@@ -92,7 +96,8 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
             var oteActivityRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs {
                 Handler = activityRes.Result.Handler,
                 IncludePricing = true,
-                IncludeSchedule = true
+                IncludeSchedule = true,
+                IncludeAddress = true,
             });
             if(!oteActivityRes.Succeeded || oteActivityRes.Result is null)
             {
@@ -137,6 +142,13 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
 
             foreach(var item in deserializedPayload.Tickets)
             {
+                // if ticket is old, set count to 1
+                bool oldTicketPayload = item.Count == 0;
+                if(oldTicketPayload)
+                {
+                    item.Count = 1;
+                }
+
                 for(int i = 0; i < item.Count; i++)
                 {
                     var qrcode = CreateCode();
@@ -201,6 +213,36 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
             {
                 return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
                     new ApplicationException("An error occured when updating ticket sold."), "An error occured when updating ticket sold.");
+            }
+
+            var attendees = new List<Modules.EmailDriver.Interactors.SendInviteEventArgs.Attendee> 
+            {
+                new Modules.EmailDriver.Interactors.SendInviteEventArgs.Attendee {Email = customer.Email, Name = $"{customer.FirstName} {customer.LastName}"}
+            };
+
+            var firstTicket = deserializedPayload.Tickets.First();
+            var oteDate = oteActivity.OteDates.FirstOrDefault(d => d.Id == firstTicket.OteDateId);
+            if(oteDate is null)
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+
+            string Location = oteActivity.ExperienceTypeId == 2 ? "Online" : !string.IsNullOrEmpty(oteActivity.RegionName) ? $"{oteActivity.HouseNo} {oteActivity.BarangayName}, {oteActivity.CityName}, {oteActivity.RegionName}": oteActivity.PinnedLocation;
+
+            var sendInviteEventRes = await sendInviteEventHandler.ExecuteAsync(new Modules.EmailDriver.Interactors.SendInviteEventArgs
+            {
+                Attendees = attendees,
+                Content = "Cinnamon Experience Event",
+                DateEnd = oteDate.DateEnd,
+                DateStart = oteDate.DateStart,
+                Location = Location,
+                Subject = oteActivity.EventName
+            });
+            if(!sendInviteEventRes.Succeeded || sendInviteEventRes.Result is null)
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
             // add in group chat

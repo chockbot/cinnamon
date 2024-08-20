@@ -14,6 +14,7 @@
 @using Cinnamon.Web.Models.Account;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject INotificationService NotificationService;
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject ITransactionApiHandler transactionApiHandler
@@ -33,7 +34,7 @@
                             <p class="amount">&#8369;@overAllTotal</p>
                         </div>
                         <div class="col-4 d-flex justify-content-end">
-                            <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                            <img class="earning-icon" src="images/Dashboard/earnings-icon.svg" />
                         </div>
                     </div>
                     <div class="col-12 d-flex">
@@ -54,7 +55,7 @@
                             <p class="amount">@OTEActivities.Count()</p>
                         </div>
                         <div class="col-4 d-flex justify-content-end">
-                            <img class="earning-icon" src="images/Dashboard/activity.png" />
+                            <img class="earning-icon" src="images/Dashboard/activity.svg" />
                         </div>
                     </div>
                     <div class="col-12 d-flex">
@@ -75,7 +76,7 @@
                             <p class="amount">@registrationCount</p>
                         </div>
                         <div class="col-4 d-flex justify-content-end">
-                            <img class="earning-icon" src="images/Dashboard/students.png" />
+                            <img class="earning-icon" src="images/Dashboard/students.svg" />
                         </div>
                     </div>
                     <div class="col-12 d-flex">
@@ -124,7 +125,7 @@
                                         <p class="amount">&#8369;@overAllTotal</p>
                                     </div>
                                     <div class="col-4 d-flex justify-content-end">
-                                        <img class="earning-icon" src="images/Dashboard/earnings-icon.png" />
+                                        <img class="earning-icon" src="images/Dashboard/earnings-icon.svg" />
                                     </div>
                                 </div>
                                 <div class="col-12 d-flex">
@@ -147,7 +148,7 @@
                                         <p class="amount">@OTEActivities.Count()</p>
                                     </div>
                                     <div class="col-4 d-flex justify-content-end">
-                                        <img class="earning-icon" src="images/Dashboard/activity.png" />
+                                        <img class="earning-icon" src="images/Dashboard/activity.svg" />
                                     </div>
                                 </div>
                                 <div class="col-12 d-flex">
@@ -170,7 +171,7 @@
                                         <p class="amount">@registrationCount</p>
                                     </div>
                                     <div class="col-4 d-flex justify-content-end">
-                                        <img class="earning-icon" src="images/Dashboard/students.png" />
+                                        <img class="earning-icon" src="images/Dashboard/students.svg" />
                                     </div>
                                 </div>
                                 <div class="col-12 d-flex">
@@ -213,68 +214,35 @@
     {
         <div class="section-1">
             <div class="activity">
-                <div class="calendar-events">
-                    <div class="title">Event Calendar</div>
-                    <Divider />
-                    <div class="@WrapperClass">
-                        <div class="calendar-header d-flex align-items-center justify-content-between">
-                            <div class="text-center font-20 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
-                            <div class="button-calendar">
-                                <Button Clicked="PrevMonthClick">
-                                    <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
-                                </Button>
-                                <Button Clicked="NextMonthClick">
-                                    <img style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
-                                </Button>
-                            </div>
-                        </div>
-                        <div class="calendar-grid-container">
-                            <div class="grid-item header">sun</div>
-                            <div class="grid-item header">mon</div>
-                            <div class="grid-item header">tue</div>
-                            <div class="grid-item header">wed</div>
-                            <div class="grid-item header">thu</div>
-                            <div class="grid-item header">fri</div>
-                            <div class="grid-item header">sat</div>
-                            @foreach (var item in calendarItems)
-                            {
-                                <div class="grid-item" @key="item">
-                                    @if (!item.Empty)
-                                    {
-                                        <span class="@DayClass(item.Selected, item.Date)">
-                                            @NumberString(item.Date.Day)
-                                        </span>
-                                        @if (item.Selected)
-                                        {
-                                            @foreach (var name in item.Title)
-                                            {
-                                                <Tooltip Text="@name.EventName">
-                                                    <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
-                                                </Tooltip>
-                                            }
-                                        }
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
                 <div class="activities-section">
-                    <div class="title">Event List</div>
+                    <div class="event-title-header">Event List</div>
                     <Divider />
                     <div class="activity-header">
                         <p class="header">Title</p>
+                        <p class="header">Share</p>
                         <p class="header">Type</p>
-                        <p class="header">Status</p>
+                        <p class="header">Date</p>
                         <p class="header ms-3">Action</p>
                     </div>
                     <Divider />
                     <div class="activity-table">
-                        @foreach (var item in OTEActivities)
+                        @foreach (var item in OTEActivities.OrderBy(a => a.ScheduleFrom))
                         {
                             <div class="activity-details">
                                 <div class="activity-title">
                                     <p class="activity-text">@item.EventName</p>
+                                </div>
+                                @*Share*@
+                                <div class="activity-share">
+                                    <button class="share-link" @onclick="@(() => CopyToClipboard(item.Handler))">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M15 6.66666C16.3807 6.66666 17.5 5.54737 17.5 4.16666C17.5 2.78594 16.3807 1.66666 15 1.66666C13.6193 1.66666 12.5 2.78594 12.5 4.16666C12.5 5.54737 13.6193 6.66666 15 6.66666Z" stroke="#4285F4" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M5 12.5C6.38071 12.5 7.5 11.3807 7.5 10C7.5 8.61929 6.38071 7.5 5 7.5C3.61929 7.5 2.5 8.61929 2.5 10C2.5 11.3807 3.61929 12.5 5 12.5Z" stroke="#4285F4" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M15 18.3333C16.3807 18.3333 17.5 17.2141 17.5 15.8333C17.5 14.4526 16.3807 13.3333 15 13.3333C13.6193 13.3333 12.5 14.4526 12.5 15.8333C12.5 17.2141 13.6193 18.3333 15 18.3333Z" stroke="#4285F4" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M7.15845 11.2583L12.8501 14.575" stroke="#4285F4" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M12.8418 5.42499L7.15845 8.74165" stroke="#4285F4" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
                                 </div>
                                 @*Activity Type*@
                                 @if (!string.IsNullOrEmpty(item.PinnedLocation))
@@ -291,31 +259,36 @@
                                 }
                                 @*Schedule*@
                                 <div class="activity-title">
-                                    <p class="activity-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
+                                    <p class="activity-schedule-text">@item.ScheduleFrom.ToString("MMMM dd")-@item.ScheduleTo.ToString("MMMM dd, yyyy")</p>
                                 </div>
                                 @*Activity Status & Action*@
-                                <div class="details-action ms-5 pe-2">
-                                    <Tooltip Text="Edit">
-                                        <a button class="update-button me-2" href="/experiences/ote/@item.Handler">
-                                            <img class="action-btn" src="images/Dashboard/edit.png" />
+                                <div class="details-action">
+                                    <Tooltip Text="Edit Event">
+                                        <a button class="update-button" href="/experiences/ote/@item.Handler">
+                                            <img class="action-btn" src="images/Dashboard/edit.svg" />
                                         </a>
                                     </Tooltip>
                                     @if (!item.IsMultiple)
                                     {
-                                        <Tooltip Text="View">
+                                        <Tooltip Text="Manage Event">
                                             <a button class="update-button" href="/maker/dashboard/events/@item.Handler/?date=@item.OteDateId">
-                                                <img class="action-btn" src="images/Dashboard/details.png" />
+                                                <img class="action-btn" src="images/Dashboard/details.svg" />
                                             </a>
                                         </Tooltip>
                                     }
                                     else
                                     {
-                                        <Tooltip Text="View">
+                                        <Tooltip Text="Manage Event">
                                             <a button class="update-button" href="/maker/dashboard/events">
-                                                <img class="action-btn" src="images/Dashboard/details.png" />
+                                                <img class="action-btn" src="images/Dashboard/details.svg" />
                                             </a>
                                         </Tooltip>
                                     }
+                                    <Tooltip Text="Go to details page">
+                                        <a button class="update-button" href="/explore/ote/@item.Handler">
+                                            <img class="action-btn" src="images/Dashboard/view.png" />
+                                        </a>
+                                    </Tooltip>
                                 </div>
                             </div>
                             <Divider />
@@ -324,8 +297,10 @@
                 </div>
                 <div class="mobile-other-section mt-3">
                     <div class="profile-section">
-                        <p class="manual-title">Profile</p>
-                        <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
+                        <div class="profile-name">
+                            <p class="manual-title">Profile</p>
+                            <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="modalProfile.Show">Click Here</a></span></p>
+                        </div>
                         <div class="profile-pic">
                             <div class="d-flex justify-content-center">
                                 <CircularProgress Id='@($"progress-{profile.FirstName}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
@@ -339,6 +314,50 @@
                             <button class="view-profile" @onclick="NavigateToProfile"><span>View Profile</span></button>
                         </div>
                     </div>
+                    <div class="calendar-events">
+                        <div class="@WrapperClass">
+                            <div class="calendar-header d-flex align-items-center justify-content-between">
+                                <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
+                                <div class="button-calendar">
+                                    <Button Clicked="PrevMonthClick">
+                                        <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
+                                    </Button>
+                                    <Button Clicked="NextMonthClick">
+                                        <img style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
+                                    </Button>
+                                </div>
+                            </div>
+                            <div class="calendar-grid-container">
+                                <div class="grid-item header">sun</div>
+                                <div class="grid-item header">mon</div>
+                                <div class="grid-item header">tue</div>
+                                <div class="grid-item header">wed</div>
+                                <div class="grid-item header">thu</div>
+                                <div class="grid-item header">fri</div>
+                                <div class="grid-item header">sat</div>
+                                @foreach (var item in calendarItems)
+                                {
+                                    <div class="grid-item" @key="item">
+                                        @if (!item.Empty)
+                                        {
+                                            <span class="@DayClass(item.Selected, item.Date)">
+                                                @NumberString(item.Date.Day)
+                                            </span>
+                                            @if (item.Selected)
+                                            {
+                                                @foreach (var name in item.Title)
+                                                {
+                                                    <Tooltip Text="@name.EventName">
+                                                        <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
+                                                    </Tooltip>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -350,7 +369,7 @@
                     </div>
                 </div>
                 <div class="attendance-section">
-                    <p class="manual-title">Schedule</p>
+                    <p class="manual-title">Schedule - @selectedDate.ToString("MMMM dd, yyyy")</p>
                     <p class="manual-text">
                         @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                         {
@@ -403,9 +422,53 @@
                         }
                     </div>
                 </div>
+                <div class="calendar-events">
+                    <div class="@WrapperClass">
+                        <div class="calendar-header d-flex align-items-center justify-content-between">
+                            <div class="text-center font-18 font-weight-700 color-black-100 text-capitalize">@activeDate.ToString("MMMM yyyy")</div>
+                            <div class="button-calendar">
+                                <Button Clicked="PrevMonthClick">
+                                    <img class="img-navigation cursor-pointer" src="images/back-icon.png" alt="prev">
+                                </Button>
+                                <Button Clicked="NextMonthClick">
+                                    <img style="transform: rotate(180deg);" class="img-navigation cursor-pointer" src="images/back-icon.png" alt="next">
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid-container">
+                            <div class="grid-item header">sun</div>
+                            <div class="grid-item header">mon</div>
+                            <div class="grid-item header">tue</div>
+                            <div class="grid-item header">wed</div>
+                            <div class="grid-item header">thu</div>
+                            <div class="grid-item header">fri</div>
+                            <div class="grid-item header">sat</div>
+                            @foreach (var item in calendarItems)
+                            {
+                                <div class="grid-item" @key="item">
+                                    @if (!item.Empty)
+                                    {
+                                        <span class="@DayClass(item.Selected, item.Date)">
+                                            @NumberString(item.Date.Day)
+                                        </span>
+                                        @if (item.Selected)
+                                        {
+                                            @foreach (var name in item.Title)
+                                            {
+                                                <Tooltip Text="@name.EventName">
+                                                    <button class="event-title" @onclick="@(() => SelectSchedule(name))">@name.EventName</button>
+                                                </Tooltip>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
                 <div class="profile-section">
                     <p class="manual-title">Profile</p>
-                    <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="NavigateToGetVerified">Click Here</a></span></p>
+                    <p class="manual-text">@profilePercentage Completed - <span><a class="link-profile" @onclick="modalProfile.Show">Click Here</a></span></p>
                     <div class="profile-pic">
                         <div class="d-flex justify-content-center">
                             <CircularProgress Id='@($"progress-{profile.Id}")' Size="90" PieColor="@color" Percentage="GetSessionPercentage()">
@@ -435,7 +498,7 @@
                             </div>
                             <div class="swiper-slide">
                                 <div class="attendance-section">
-                                    <p class="manual-title">Schedule</p>
+                                    <p class="manual-title">Schedule - @selectedDate.ToString("MMMM dd, yyyy")</p>
                                     <p class="manual-text">
                                         @if (OTEActivities.Any(a => a.ScheduleTo.Date == DateTime.Now.Date))
                                         {
@@ -508,17 +571,63 @@ else
         </div>
     </div>
 }
+<Modal @ref="modalProfile">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Profile Completion</p>
+            </div>
+        </ModalHeader>
 
-@code {
+        <ModalBody class="px-4">
+            <p class="progress-header">
+                Your profile is nearly complete. Finish up to connect better and enjoy personalized recommendations. (@profilePercentage Complete)
+            </p>
+            <div class="profile-progress-section">
+                <div class="profile-prog">
+                    <img class="me-1" src='@(!string.IsNullOrEmpty(profile.ProfilePath) ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Upload profile photo. <span><a class="profile-link" href="/customer/profile">Upload photo</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(!string.IsNullOrEmpty(profile.About) ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Write a compelling bio highlighting what you offer. <span><a class="profile-link" href="/customer/profile">Update bio</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(profile.IsVerified == 2 ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Verify your identity to build trust with clients. <span><a class="profile-link" href="/customer/user-verification/?redirect=redirect_account">Verification setup</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(HasPayoutAccount ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Complete your payout information to receive earnings from the platform. <span><a class="profile-link" href="customer/profile/payout-account">Payout setup</a></span>.</p>
+                </div>
+            </div>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-end">
+            <Button class="bg-white-200 color-grey-100"
+                    Clicked="() => modalProfile.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+    @code {
     [Parameter]
     public string Token { get; set; }
 
     [Parameter]
     public string overAllTotal { get; set; }
 
+    private IJSObjectReference jsClipboard;
+
+    private Modal? modalProfile;
+
     public bool HasPayoutAccount { get; set; } = false;
 
     public List<OteActivity> OTEActivities = new List<OteActivity>();
+
+    public List<OteActivity> CalendarActivities = new List<OteActivity>();
 
     private CustomerProfile profile = new CustomerProfile();
 
@@ -551,6 +660,7 @@ else
     private IList<CalendarItem> calendarItems = new List<CalendarItem>();
 
     private DateTime activeDate;
+    private DateTime selectedDate;
 
     private Dictionary<DateTime, CalendarItem> clickedItems = new();
 
@@ -605,6 +715,7 @@ else
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiperMobile", ".schedule-swiper-mobile");
+        jsClipboard = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
     }
 
     private void NavigateToProfile()
@@ -670,9 +781,33 @@ else
             }).ToList();
             //Add To OTEActivities
             OTEActivities.AddRange(multipleHandlerActivities);
-            if (OTEActivities.Count != 0)
+
+            //Calendar Schedule Plot
+            CalendarActivities = resultOTE.Result.Result
+            .Where(a => !a.ForceDisable).Select(s =>
             {
-                await SelectSchedule(OTEActivities[0]);
+                return new OteActivity
+                {
+                        Id               = s.ActivityId,
+                        ExperienceTypeId = s.ExperienceTypeId,
+                        EventName        = s.Title,
+                        Description      = s.Description,
+                        Handler          = s.Handler,
+                        CityName         = s.CityName,
+                        RegionName       = s.RegionName,
+                        PinnedLocation   = s.PinnedLocation,
+                        EventImage       = s.EventImage,
+                        ScheduleFrom     = s.DateStart,
+                        ScheduleTo       = s.DateEnd,
+                        OteDateId        = s.DateId,
+                        ForceDisable     = s.ForceDisable
+                };
+            }).ToList();
+
+            if (CalendarActivities.Count != 0)
+            {
+                await SelectSchedule(CalendarActivities[0]);
+                selectedDate = CalendarActivities[0].ScheduleFrom;
             }
         }
     }
@@ -733,8 +868,8 @@ else
             {
                 var currentDateTime = DateTime.UtcNow;
                 var date = new DateTime(now.Year, now.Month, i - skipCount, now.TimeOfDay.Hours, now.TimeOfDay.Minutes, now.TimeOfDay.Seconds);
-                var selected = OTEActivities.Any(a => a.ScheduleFrom.Date == date.Date);
-                var titles = OTEActivities.Where(a => a.ScheduleFrom.Date == date.Date).ToList();
+                var selected = CalendarActivities.Any(a => a.ScheduleFrom.Date == date.Date);
+                var titles = CalendarActivities.Where(a => a.ScheduleFrom.Date == date.Date).ToList();
                 calendarItems.Add(new CalendarItem
                     {
                         Empty = false,
@@ -783,6 +918,7 @@ else
             }
         }
     }
+
     private string DayClass(bool selected, DateTime? date = null)
     {
         string result = "day prevent-select";
@@ -822,6 +958,7 @@ else
     public async Task SelectSchedule(OteActivity oteActivity)
     {
         selectedEvent = oteActivity;
+        selectedDate = oteActivity.ScheduleFrom;
         //Get Ticket Details
         var ticketResult = await dashboardApiHandler.GetTicketDetails(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetTicketDetailsArgs
             {
@@ -842,6 +979,7 @@ else
                 }).ToList();
         }
         registrationCount = ticketList.Sum(s => s.OtePricing.Sold);
+        
     }
     public void NavigateToScanTickets(string Handler, int OteDateId)
     {
@@ -850,5 +988,11 @@ else
     public void NavigateToEvents()
     {
         NavigationManager.NavigateTo("maker/dashboard/events");
+    }
+    private async Task CopyToClipboard(string Handler)
+    {
+        string url = $"{NavigationManager.BaseUri}explore/ote/{Handler}";
+        await jsClipboard.InvokeVoidAsync("copyToClipboard", url);
+        await NotificationService.Info("Copied to clipboard", "Copied!");
     }
 }

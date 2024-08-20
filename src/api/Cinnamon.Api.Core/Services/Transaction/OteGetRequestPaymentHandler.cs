@@ -93,6 +93,7 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
             }
 
             return AppResult<OteGetRequestPaymentResult>.CreateSucceeded(new OteGetRequestPaymentResult {
+                CustomerId = deserializedPayload.CustomerId,
                 ActivityId = deserializedPayload.ActivityId,
                 Guid = args.Guid,
                 SelectedDate = selectedOteDate.Date.Date,
@@ -108,7 +109,8 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
                 }),
                 ForceCreateTicket = deserializedPayload.ForceCreateTicket,
                 Waitlisted = deserializedPayload.Waitlisted,
-                WaitListId = deserializedPayload.WaitListId
+                WaitListId = deserializedPayload.WaitListId,
+                Used = deserializedPayload.Used
             }, "Successfully get payment request details.");
         }
         catch (Exception ex)
@@ -128,6 +130,8 @@ public class OteGetRequestPaymentHandler : IGetOteRequestPaymentHandler
 
         public bool Waitlisted {get; set;}
         public int WaitListId {get; set;}
+
+        public bool Used {get; set;}
     }
 
     private class Ticket

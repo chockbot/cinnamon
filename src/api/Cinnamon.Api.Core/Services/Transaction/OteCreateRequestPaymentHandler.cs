@@ -92,7 +92,8 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                 }),
                 ForceCreateTicket = args.ForceCreateTicket,
                 Waitlisted = args.Waitlisted,
-                WaitListId = args.WaitListId
+                WaitListId = args.WaitListId,
+                Used = args.Used
             };
 
             bool updateTokenPayload = !string.IsNullOrEmpty(args.Guid) && !string.IsNullOrEmpty(args.Token);
@@ -161,6 +162,7 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
                     TicketId = t.Id
                 }),
                 Token = args.Token,
+                Used = args.Used,
             }, "Successfully request payment");           
         }
         catch (Exception ex)
@@ -179,6 +181,7 @@ public class OteCreateRequestPaymentHandler : IOteCreateRequestPaymentHandler
         public bool ForceCreateTicket {get; set;}
         public bool Waitlisted {get; set;}
         public int WaitListId {get; set;}
+        public bool Used {get; set;}
     }
 
     private class Ticket

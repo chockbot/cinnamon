@@ -1,15 +1,18 @@
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Hubs;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.EmailDriver.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -28,13 +31,19 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
     private readonly IActivityData activityData;
     private readonly IOteDateData oteDateData;
     private readonly ISendInviteEventHandler sendInviteEventHandler;
+    private readonly ICreateChatRoomHandler createChatRoomHandler;
+    private readonly IHubContext<ChatHub> chathub;
+    private readonly IGetOteRequestPaymentHandler getOteRequestPaymentHandler;
+    private readonly IOteCreateRequestPaymentHandler createRequestPaymentHandler;
 
     public OteFinishTransactionHandler(IGetActivityHandler getActivityHandler, IOteFindByHandler oteFindByHandler,
         IJsonSerializationProvider jsonSerializationProvider, IPurchaseOrderData purchaseOrderData,
         ICustomerData customerData, IUpdateCreditBalanceHandler updateCreditBalanceHandler,
         IOteTicketData oteTicketData, IOteCustomerPayedNotificationHandler oteCustomerPayedNotificationHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig, IActivityData activityData,
-        IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler)
+        IOteDateData oteDateData, ISendInviteEventHandler sendInviteEventHandler,
+        ICreateChatRoomHandler createChatRoomHandler, IHubContext<ChatHub> chathub,
+        IGetOteRequestPaymentHandler getOteRequestPaymentHandler, IOteCreateRequestPaymentHandler createRequestPaymentHandler)
     {
         this.getActivityHandler = getActivityHandler;
         this.oteFindByHandler = oteFindByHandler;
@@ -49,6 +58,10 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
         this.activityData = activityData;
         this.oteDateData = oteDateData;
         this.sendInviteEventHandler = sendInviteEventHandler;
+        this.createChatRoomHandler = createChatRoomHandler;
+        this.chathub = chathub;
+        this.getOteRequestPaymentHandler = getOteRequestPaymentHandler;
+        this.createRequestPaymentHandler = createRequestPaymentHandler;
     }
     
     public AppResult<OteFinishTransactionResult> Execute(OteFinishTransactionArgs args)
@@ -82,7 +95,8 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             var customer = customerDetail.Result.Result;
 
             var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                ActivityId = purchaseOrder.ActivityId
+                ActivityId = purchaseOrder.ActivityId,
+                IncludeCustomer = true
             });
             if(!activityRes.Succeeded || activityRes.Result is null)
             {
@@ -130,7 +144,7 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
             }
             var oteDate = oteDateRes.Result.Result;
 
-            var ticketsToCreate = deserializedPayload.Tickets.Where(t => !t.RequiredApproval);
+            var ticketsToCreate = deserializedPayload.Tickets;
 
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
@@ -172,6 +186,39 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                         ProviderId = waitlist.ProviderId,
                         ScheduleId = waitlist.ScheduleId,
                         Status = 4 // approved and purchased the waitlist
+                    });
+                }
+            }
+
+            // invalidate request payment token
+            if(!string.IsNullOrEmpty(deserializedPayload.PaymentRequestGuid) && !string.IsNullOrEmpty(deserializedPayload.PaymentRequestToken))
+            {
+                var getOteRequestPaymentRes = await getOteRequestPaymentHandler.ExecuteAsync(new OteGetRequestPaymentArgs {
+                    Guid = deserializedPayload.PaymentRequestGuid,
+                    Token = deserializedPayload.PaymentRequestToken
+                });
+                if(getOteRequestPaymentRes.Succeeded && getOteRequestPaymentRes.Result is not null)
+                {
+                    var oteRequestPayment = getOteRequestPaymentRes.Result;
+                    var createRequestPaymentRes = await createRequestPaymentHandler.ExecuteAsync(new OteCreateRequestPaymentArgs {
+                        ActivityId = oteRequestPayment.ActivityId,
+                        CustomerId = oteRequestPayment.CustomerId,
+                        SelectedDate = oteRequestPayment.SelectedDate,
+                        SelectedTickets = oteRequestPayment.SelectedTickets.Select(t => new OteCreateRequestPaymentArgs.RequestPaymentTicket {
+                            TicketCount = t.TicketCount,
+                            TicketId = t.TicketId
+                        }),
+                        ForceCreateTicket = oteRequestPayment.ForceCreateTicket,
+                        Waitlisted = oteRequestPayment.Waitlisted,
+                        WaitListId = oteRequestPayment.WaitListId,
+                        Used = true,
+                        Guid = oteRequestPayment.Guid,
+                        Token = oteRequestPayment.Token,
+                        Questions = oteRequestPayment.Questions?.Select(q => new OteCreateRequestPaymentArgs.ProviderQuestion {
+                            Answer = q.Answer,
+                            Id = q.Id,
+                            Question = q.Question
+                        })
                     });
                 }
             }
@@ -294,6 +341,20 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
                 return AppResult<OteFinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
+            // add in group chat
+            var groupName = Guid.NewGuid().ToString();
+            var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
+                ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
+                ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                FromUserId = purchaseOrder.CustomerId,
+                GroupName = groupName,
+                ToUserId = activity.Owner?.Id ?? 0
+            });
+            if(createChatRes.Succeeded && createChatRes.Result is not null)
+            {
+                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
+            }
+
             return AppResult<OteFinishTransactionResult>.CreateSucceeded(new OteFinishTransactionResult {}, "Successfully finish transaction");
         }
         catch (Exception ex)
@@ -315,6 +376,9 @@ public class OteFinishTransactionHandler : IOteFinishTransactionHandler
 
         public bool Waitlisted {get; set;}
         public int WaitListId {get; set;}
+
+        public string PaymentRequestToken {get; set;}
+        public string PaymentRequestGuid {get; set;}
     }
 
     private class Ticket 

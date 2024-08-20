@@ -18,4 +18,6 @@ public class CreateOteWaitlistArgs
     public string Payload { get; set; }
     [Required]
     public int Status { get; set; }
+    [Required]
+    public string Type { get; set; }
 }

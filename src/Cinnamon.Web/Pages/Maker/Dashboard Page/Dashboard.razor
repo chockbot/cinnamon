@@ -35,7 +35,7 @@
             <div class="notif-section">
                 <div class="notif-items">
                     <button class="btn-notif" @onclick="NavigateToNotification">
-                        <img class="img-icon" src="images/Dashboard/email.png"/>
+                        <img class="img-icon" src="images/Dashboard/email.svg"/>
                         @if (newMessagesCount != 0)
                         {
                             <span class="new-message-count-badge">
@@ -44,7 +44,7 @@
                         }
                     </button>
                     <button class="btn-notif" @onclick="NavigateToMessage">
-                        <img class="img-icon-notif" src="images/Dashboard/notif.png" />
+                        <img class="img-icon-notif" src="images/Dashboard/notif.svg" />
                     </button>
                 </div>
             </div>
@@ -243,7 +243,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init");
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init");
+        }
     }
 
     private void NavigateToUserVerification()

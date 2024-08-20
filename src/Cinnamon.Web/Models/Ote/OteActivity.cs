@@ -39,6 +39,8 @@ public class OteActivity
     public bool IsMultiple { get; set; }
 
     public bool IsEventSoldOut { get; set; }
+    public int EmailFeedbackDays { get; set; }
+    public int EmailReminderDays { get; set; }
     public IEnumerable<OtePricing> Pricings {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<OteDate> OteDates {get; set;}

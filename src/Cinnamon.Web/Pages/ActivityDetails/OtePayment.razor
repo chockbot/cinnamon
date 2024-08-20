@@ -661,6 +661,12 @@
         }
         var tracker = trackerDetails.Result.Result;
 
+        if(tracker.Used)
+        {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+
         // invalid selected activity
         if(activity.Id != tracker.ActivityId)
         {

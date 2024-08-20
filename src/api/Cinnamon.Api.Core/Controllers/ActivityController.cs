@@ -3416,7 +3416,8 @@ public class ActivityController : ControllerBase
                 Payload      = args.Payload,
                 ProviderId   = args.ProviderId,
                 ScheduleId   = args.ScheduleId,
-                Status       = args.Status
+                Status       = args.Status,
+                Type         = args.Type
             });
             if (!result.Succeeded || result.Result is null)
             {

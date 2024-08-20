@@ -7,134 +7,143 @@
 
 @if (activity != null)
 {
-    <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
-    <div class="customer-list">
-        <div class="col-12 customer-filter">
-            <div class="search-box">
-                <Select TValue="int" class="dropdown-select-search" SelectedValue=@SearchBy SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
-                    <SelectItem Value="0">Search By</SelectItem>
-                    <SelectItem Value="1">Id</SelectItem>
-                    <SelectItem Value="2">Name</SelectItem>
-                    <SelectItem Value="3">Email</SelectItem>
-                </Select>
-                @if (IsDisplay)
-                {
-                    <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
-                }
-            </div>
-            <div class="excel-section">
-                <button class="btn-export" @onclick="ExportToExcel">
-                    Export to Excel
-                    <img class="excel-icon" src="images/xls-icon.png" />
-                </button>
-            </div>
+    if (FilteredCustomer == null || !FilteredCustomer.Any())
+    {
+        <div class="sub-text">
+            No guest list in this event!
         </div>
-        <div class="ticket-table">
-            <div class="table-list">
-                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHeaderCell class="th-id">
-                                Id
-                            </TableHeaderCell>
-                            <TableHeaderCell class="th-name">
-                                Name
-                            </TableHeaderCell>
-                            <TableHeaderCell class="th-email">
-                                Email
-                            </TableHeaderCell>
-                            <TableHeaderCell>
-                                Ticket
-                            </TableHeaderCell>
-                            <TableHeaderCell>
-                                Amount
-                            </TableHeaderCell>
-                            <TableHeaderCell class="th-status">
-                                Status
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        @foreach (var item in FilteredCustomer)
-                            {
-                                <TableRow @key="item">
-                                    <TableRowCell class="tr-name">
-                                        <span>@FormattedId(item.Id)</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-name">
-                                        <span>@item.Customer.FirstName @item.Customer.LastName</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-email">
-                                        <span>@item.Customer.Email</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-ticket">
-                                        <span>@item.Title</span>
-                                        <span>@item.Amount</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-amount">
-                                        <span>@item.Amount</span>
-                                    </TableRowCell>
-                                    <TableRowCell class="tr-button">
-                                        <div class="btn-status">
-                                            <button class="check-button" type="button" @onclick="() => UpdateTicketStatus(item)">
-                                                <img class="me-1" alt="check-icon"
-                                                src='@(item.Status == "VERIFIED" ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
-                                            </button>
-                                            <span>Verify</span>
-                                        </div>
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                    </TableBody>
-                </Table>
-                @if (oteCustomer.Count != 0)
-                {
-                    <div class="pagination-section">
-                        <div class="filter-content d-flex">
-                            <p class="filter-text">Show</p>
-                            <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                                <SelectItem Value="10">10</SelectItem>
-                                <SelectItem Value="25">25</SelectItem>
-                                <SelectItem Value="50">50</SelectItem>
-                                <SelectItem Value="100">100</SelectItem>
-                            </Select>
-                            <p class="filter-text">entries</p>
-                        </div>
-                        <Pagination Class="pagination-section" Style="margin-top: 20px;">
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                                <PaginationLink>
-                                    <span aria-hidden="true">«</span>
-                                </PaginationLink>
-                            </PaginationItem>
-
-                            @{
-                                int pagesToShow = 7;
-                                int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
-                                int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
-
-                                for (var i = startPage; i <= endPage; i++)
+    }
+    else
+    {
+        <LoadingIndicator @ref="loadingIndicator" FullScreen FadeIn>
+        <div class="customer-list">
+            <div class="col-12 customer-filter">
+                <div class="search-box">
+                    <Select TValue="int" class="dropdown-select-search" SelectedValue=@SearchBy SelectedValueChanged="@((value) => OnFilterByValueChange(value))">
+                        <SelectItem Value="0">Search By</SelectItem>
+                        <SelectItem Value="1">Id</SelectItem>
+                        <SelectItem Value="2">Name</SelectItem>
+                        <SelectItem Value="3">Email</SelectItem>
+                    </Select>
+                    @if (IsDisplay)
+                        {
+                            <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                        }
+                    </div>
+                    <div class="excel-section">
+                        <button class="btn-export" @onclick="ExportToExcel">
+                            Export to Excel
+                            <img class="excel-icon" src="images/xls-icon.svg" />
+                        </button>
+                    </div>
+                </div>
+                <div class="ticket-table">
+                    <div class="table-list">
+                        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell class="th-id">
+                                    Id
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-name">
+                                    Name
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-email">
+                                    Email
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Ticket
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    Amount
+                                </TableHeaderCell>
+                                <TableHeaderCell class="th-status">
+                                    Status
+                                </TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var item in FilteredCustomer)
                                 {
-                                    var pageNumberAsString = i.ToString();
-                                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                            @pageNumberAsString
+                                    <TableRow @key="item">
+                                        <TableRowCell class="tr-name">
+                                            <span>@FormattedId(item.Id)</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-name">
+                                            <span>@item.Customer.FirstName @item.Customer.LastName</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-email">
+                                            <span>@item.Customer.Email</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-ticket">
+                                            <span>@item.Title</span>
+                                            <span>@(item.Amount == 0 ? "Free" : item.Amount)</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-amount">
+                                            <span>@(item.Amount == 0 ? "Free" : item.Amount)</span>
+                                        </TableRowCell>
+                                        <TableRowCell class="tr-button">
+                                            <div class="btn-status">
+                                                <button class="check-button" type="button" @onclick="() => UpdateTicketStatus(item)">
+                                                    <img class="me-1" alt="check-icon"
+                                                         src='@(item.Status == "VERIFIED" ? "images/Dashboard/rounded-check.svg" : "images/Dashboard/rounded-uncheck.svg")'>
+                                                </button>
+                                                <span>Verify</span>
+                                            </div>
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                        @if (oteCustomer.Count != 0)
+                        {
+                            <div class="pagination-section">
+                                <div class="filter-content d-flex">
+                                    <p class="filter-text">Show</p>
+                                    <Select TValue="int" class="dropdown-select" SelectedValue="selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                                        <SelectItem Value="10">10</SelectItem>
+                                        <SelectItem Value="25">25</SelectItem>
+                                        <SelectItem Value="50">50</SelectItem>
+                                        <SelectItem Value="100">100</SelectItem>
+                                    </Select>
+                                    <p class="filter-text">entries</p>
+                                </div>
+                                <Pagination Class="pagination-section" Style="margin-top: 20px;">
+                                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                                        <PaginationLink>
+                                            <span aria-hidden="true">«</span>
                                         </PaginationLink>
                                     </PaginationItem>
-                                }
-                            }
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                                <PaginationLink>
-                                    <span aria-hidden="true">»</span>
-                                </PaginationLink>
-                            </PaginationItem>
-                        </Pagination>
+
+                                    @{
+                                        int pagesToShow = 7;
+                                        int startPage = Math.Max(1, (byte)Pagination.PageIndex - (pagesToShow / 2));
+                                        int endPage = Math.Min((byte)Pagination.TotalPages, startPage + pagesToShow - 1);
+
+                                        for (var i = startPage; i <= endPage; i++)
+                                        {
+                                            var pageNumberAsString = i.ToString();
+                                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                                    @pageNumberAsString
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        }
+                                    }
+                                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                                        <PaginationLink>
+                                            <span aria-hidden="true">»</span>
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                </Pagination>
+                            </div>
+
+                        }
                     </div>
-                    
-                }
+                </div>
             </div>
-        </div>
-    </div>
-</LoadingIndicator>
+        </LoadingIndicator>
+    }
 }
 @code {
     [Parameter]

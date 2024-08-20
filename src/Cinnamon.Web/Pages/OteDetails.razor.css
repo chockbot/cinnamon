@@ -118,13 +118,16 @@ a {
   gap: 40px;
   padding: 24px;
 }
+    .schedule-location .event-schedule-place {
+        grid-column: span 2;
+    }
 .schedule-header-title {
-  color: #fff;
-  font-family: Nunito;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
+    color: #fff;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
 }
 ::deep .check-availability-button {
   width: 210px;
@@ -206,12 +209,18 @@ a {
   border-bottom: 1px solid #d9d9d9;
 }
 .ticket-name {
-  color: #717171;
-  font-family: Nunito;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+    color: #717171;
+    font-family: Nunito;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 18ch;
 }
 .ticket-price {
   color: #34a853;
@@ -244,6 +253,7 @@ a {
   font-weight: 700;
   vertical-align: central;
   text-transform: uppercase;
+  cursor: default;
 }
 .ticket-sold-out {
   border-radius: 4px;
@@ -795,6 +805,7 @@ svg {
     width: 100% !important;
   }
 }
+
 @media (min-width: 0px) and (max-width: 767px) {
   ::deep .cover-photo-img {
     width: 100%;
@@ -819,8 +830,11 @@ svg {
     padding-top: 20px;
     padding-bottom: 20px;
     padding-left: 16px;
-    padding-right: 0;
+    padding-right: 5px;
   }
+    .schedule-location .event-schedule-place {
+        grid-column: span 1;
+    }
 }
 @media (min-width: 768px) and (max-width: 991px) {
   .schedule-location {
@@ -832,6 +846,9 @@ svg {
     padding-left: 16px;
     padding-right: 0;
   }
+    .schedule-location .event-schedule-place {
+        grid-column: span 1;
+    }
   ::deep .cover-photo-img {
     width: 100%;
     height: auto;
@@ -872,6 +889,7 @@ svg {
     line-height: 25px;
   }
 }
+
 @media (min-width: 992px) and (max-width: 1200px) {
   ::deep .cover-photo-img {
     width: 100%;
