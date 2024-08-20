@@ -46,6 +46,7 @@ public class OtePurchaseVerification
                         font-size: 16px;
                         margin-top: 0;
                         margin-bottom: 10px;
+                        margin-bottom: 10px;
                     '
                     >
                     Discount: PHP {args.Discount.Value.ToString("#,##0.00")}
@@ -158,7 +159,7 @@ public class OtePurchaseVerification
                         margin-bottom: 10px;
                     '
                     >
-                    {args.EventDate.ToString("dd MMMM yyyy")} | {args.EventDate.ToString("hh:mm tt")}
+                    {args.EventDate.ToString("MMMM dd, yyyy")} | {args.EventDate.ToString("hh:mm tt")}
                     </p>
                 </div>
                 <div style='padding: 1.5rem; padding-bottom: 0.5rem' class='ticket-details'>

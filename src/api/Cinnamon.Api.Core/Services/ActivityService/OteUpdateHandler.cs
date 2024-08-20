@@ -210,7 +210,7 @@ public class OteUpdateHandler : IOteUpdateHandler
             }
 
             var oteByHandlerRes = await oteFindByHandler.ExecuteAsync(new OteFindByHandlerArgs {
-                Handler = handler,
+                Handler = activityToUpdate.Handler,
                 IncludeSchedule = true
             });
             if(!oteByHandlerRes.Succeeded || oteByHandlerRes.Result is null)
