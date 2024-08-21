@@ -24,7 +24,7 @@ public class SeatPlanController : ControllerBase
         this.mapper = mapper;
     }
 
-    [HttpGet("template")]
+    [HttpGet("templates")]
     [ProducesResponseType(typeof(GetSeatPlanTemplateResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeatPlanTemplateAsync([FromQuery] GetSeatPlanTemplateArgs args)
     {
@@ -46,7 +46,7 @@ public class SeatPlanController : ControllerBase
         }
     }
 
-    [HttpGet("template/{id}")]
+    [HttpGet("templates/{id}")]
     [ProducesResponseType(typeof(GetSeatPlanTemplateByIdResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeatPlanTemplateByIdAsync(int id)
     {
@@ -66,7 +66,7 @@ public class SeatPlanController : ControllerBase
         }
     }
 
-    [HttpPost("template")]
+    [HttpPost("templates")]
     [ProducesResponseType(typeof(CreateSeatPlanTemplateResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateSeatPlanTemplateAsync(CreateSeatPlanTemplateArgs args)
     {
@@ -87,13 +87,15 @@ public class SeatPlanController : ControllerBase
         }
     }
 
-    [HttpPut("template")]
+    [HttpPut("templates/{id}")]
     [ProducesResponseType(typeof(UpdateSeatPlanTemplateResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateSeatPlanTemplateAsync(UpdateSeatPlanTemplateArgs args)
+    public async Task<IActionResult> UpdateSeatPlanTemplateAsync(UpdateSeatPlanTemplateArgs args, int id)
     {
         try
         {
             var dto = mapper.Map<SeatPlanTemplateDTO>(args);
+            dto.Id = id;
+            
             var result = await seatPlanTemplateRepository.UpdateSeatPlanTemplateAsync(dto);
             if(!result.Succeeded || result.Result is null)
             {
@@ -108,7 +110,7 @@ public class SeatPlanController : ControllerBase
         }
     }
 
-    [HttpGet("formatter")]
+    [HttpGet("formatters")]
     [ProducesResponseType(typeof(GetSeatPlanFormatterResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeatPlanFormatterAsync()
     {

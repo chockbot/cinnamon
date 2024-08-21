@@ -28,7 +28,7 @@ public class SeatPlanFormatterRepository : ISeatPlanFormatterRepository
                     new ApplicationException(seatPlanFormatter.Message), seatPlanFormatter.Message);
             }
 
-            var seatPlanFormatterDTO = mapper.Map<IEnumerable<SeatPlanFormatterDTO>>(seatPlanFormatter);
+            var seatPlanFormatterDTO = mapper.Map<IEnumerable<SeatPlanFormatterDTO>>(seatPlanFormatter.Result);
             return AppResult<IEnumerable<SeatPlanFormatterDTO>>.CreateSucceeded(seatPlanFormatterDTO, "Seat plan formatter retrieved successfully");   
         }
         catch (System.Exception ex)

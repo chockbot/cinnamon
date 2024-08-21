@@ -3,11 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Cinnamon.Framework.ApiCommand.ApiData.SeatPlan.Request;
 
 public class UpdateSeatPlanTemplateArgs
-{
-
-    [Required]
-    public int Id { get; set; }
-    
+{   
     public int? SeatPlanFormatterId { get; set; }
 
     public string? Name { get; set; }
