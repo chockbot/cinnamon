@@ -89,6 +89,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IOteWaitlistRepository, Services.Repository.OteWaitlist.OteWaitlistRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOteReminderRepository, Services.Repository.OteReminderFlag.OteReminderFlagRepository>();
         services.AddTransient<Services.Repository.Interfaces.IProviderCustomQuestionRepository, Services.Repository.ProviderCustomQuestion.ProviderCustomQuestionRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ISeatPlanFormatterRepository, Services.Repository.SeatPlan.SeatPlanFormatterRepository>();
 
         return services;
     }

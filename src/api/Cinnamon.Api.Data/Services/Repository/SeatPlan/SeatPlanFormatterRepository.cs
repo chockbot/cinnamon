@@ -1,11 +1,12 @@
 using AutoMapper;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.SeatPlan;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.SeatPlan;
 
-public class SeatPlanFormatterRepository 
+public class SeatPlanFormatterRepository : ISeatPlanFormatterRepository
 {
     private readonly IDataStore dataStore;
     private readonly IMapper mapper;
