@@ -161,5 +161,8 @@ public class MappingProfile : Profile
 
         CreateMap<SeatPlanFormatter, SeatPlanAlias.SeatPlanFormatterDTO>();
         CreateMap<SeatPlanAlias.SeatPlanFormatterDTO, SeatPlanFormatter>();
+
+        CreateMap<SeatPlanTemplate, SeatPlanAlias.SeatPlanTemplateDTO>();
+        CreateMap<SeatPlanAlias.SeatPlanTemplateDTO, SeatPlanTemplate>();
     }
 }
