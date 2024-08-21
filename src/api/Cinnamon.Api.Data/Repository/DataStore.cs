@@ -139,6 +139,10 @@ public class DataStore : IDataStore
 
     public IProviderCustomQuestion ProviderCustomQuestion => new ProviderCustomQuestionEntity(applicationContext);
 
+    public ISeatPlanFormatter SeatPlanFormatter => new SeatPlanFormatterEntity(applicationContext);
+
+    public ISeatPlanTemplate SeatPlanTemplate => new SeatPlanTemplateEntity(applicationContext);
+
 
     public async Task EnsureMigrate()
     {

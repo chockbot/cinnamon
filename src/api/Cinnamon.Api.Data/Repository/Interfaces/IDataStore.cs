@@ -69,6 +69,8 @@ public interface IDataStore
     IDynamicEmailTemplate DynamicEmailTemplate {get;}
     IOteWaitlist OteWaitlist { get;}
     IProviderCustomQuestion ProviderCustomQuestion {get;}
+    ISeatPlanFormatter SeatPlanFormatter {get;}
+    ISeatPlanTemplate SeatPlanTemplate {get;}
     
     Task EnsureMigrate();
 
