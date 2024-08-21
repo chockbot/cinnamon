@@ -116,6 +116,10 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<OteWaitlist> OteWaitList { get; set; }
 
+    public DbSet<SeatPlanFormatter> SeatPlanFormatters { get; set; }
+
+    public DbSet<SeatPlanTemplate> SeatPlanTemplates { get; set; }
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -452,6 +456,10 @@ public class ApplicationContext : IdentityDbContext
         // for provider custom questions
         modelBuilder.Entity<ProviderCustomQuestion>()
             .HasIndex("ActivityId", "ProviderId");
+
+        // for seatplan template
+        modelBuilder.Entity<SeatPlanTemplate>()
+            .HasIndex(s => s.SeatPlanFormatterId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
