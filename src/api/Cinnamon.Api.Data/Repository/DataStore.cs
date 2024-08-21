@@ -151,6 +151,13 @@ public class DataStore : IDataStore
 
     public async Task SeedData()
     {
+        var seatPlanFormatter = await applicationContext.SeatPlanFormatters.FirstOrDefaultAsync();
+        if (seatPlanFormatter == null)
+        {
+            applicationContext.SeatPlanFormatters
+                .Add(new Entities.SeatPlanFormatter { Id = 1, Name = "Pretix", Handler = "IPretixFormatter", Enabled = true });
+        }
+
         var experienceTypes = await applicationContext.ExperienceTypes.FirstOrDefaultAsync();
         if (experienceTypes == null)
         {
