@@ -319,6 +319,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DirectStudentService.Handlers.IUpdateStudentAttendanceHandler, Services.DirectStudentService.UpdateStudentAttendanceHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IStudentSessionHandler, Services.DirectStudentService.StudentSessionHandler>();
 
+        // seat plan service
+        services.AddTransient<Services.SeatPlanService.Handler.ISeatPlanFormatterHandler, Services.SeatPlanService.PretixFormatterHandler>();
+
         return services;
     }
 }

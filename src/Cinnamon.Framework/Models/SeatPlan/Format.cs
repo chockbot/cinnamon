@@ -15,8 +15,8 @@ public class Category
 
 public class Row 
 {
+    public string Category { get; set; }
     public string RowNumber { get; set; }
-    public string Uuid { get; set; }
     public IList<Seat> Seats { get; set; }
 }
 
