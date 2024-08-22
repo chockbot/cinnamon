@@ -15,6 +15,7 @@ public class Category
 
 public class Row 
 {
+    public string Color { get; set; }
     public string Category { get; set; }
     public string RowNumber { get; set; }
     public IList<Seat> Seats { get; set; }

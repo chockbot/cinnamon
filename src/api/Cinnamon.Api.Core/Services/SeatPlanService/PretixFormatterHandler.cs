@@ -78,8 +78,12 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
 
                     if (!categoryRowMap.ContainsKey(categoryRowKey))
                     {
+                        var cat = pretixFormat.categories.FirstOrDefault(c => c.name == seat.category);
+                        string color = cat?.color ?? string.Empty;
+
                         SeatPlan.Row categoryRow = new()
                         {
+                            Color = color,
                             Category = seat.category,
                             RowNumber = rowNumber,
                             Seats = new List<SeatPlan.Seat>()
@@ -117,6 +121,7 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
             {
                 SeatPlan.Category seatCategory = new()
                 {
+                    Color = categoryRow.Value.Color,
                     Name = category,
                     Rows = new List<SeatPlan.Row>()
                 };

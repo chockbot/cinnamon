@@ -19,10 +19,11 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
     private readonly IGetAdminUserByEmailHandler getAdminUserByEmailHandler;
     private readonly IUploadAzureBlob uploadAzureBlob;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IContainerProvider containerProvider;
 
     public CreateSeatPlanTemplateHandler(ISeatPlanData seatPlanData, IGetProfileHandler getProfileHandler,
         IGetAdminUserByEmailHandler getAdminUserByEmailHandler, IUploadAzureBlob uploadAzureBlob,
-        IJsonSerializationProvider jsonSerializationProvider)
+        IJsonSerializationProvider jsonSerializationProvider, IContainerProvider containerProvider)
     {
         this.seatPlanData = seatPlanData;
         this.formatterResolver = new FormatterResolver();
@@ -30,6 +31,7 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
         this.getAdminUserByEmailHandler = getAdminUserByEmailHandler;
         this.uploadAzureBlob = uploadAzureBlob;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.containerProvider = containerProvider;
     }
     
     public AppResult<CreateSeatPlanTemplateResult> Execute(CreateSeatPlanTemplateArgs args)
@@ -69,10 +71,12 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
                     new ApplicationException("Unable to find selected formatter"), "Unable to find selected formatter");
             }
 
-            var resolveFormatter = (ISeatPlanFormatterHandler)formatterResolver.ResolveFormatter("ISeatPlanFormatterHandler",formatter.Handler);
+            var handler = formatterResolver.ResolveFormatter("ISeatPlanFormatterHandler",formatter.Handler);
+            var objType = containerProvider.Resolve(handler);
+            var resolveFormatter = (ISeatPlanFormatterHandler)objType;
 
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(args.ImageFile.FileName);
-            var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "Images");
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(args.JsonFile.FileName);
+            var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "json");
             var filePath = Path.Combine(directoryPath, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))

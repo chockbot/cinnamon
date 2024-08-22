@@ -4,8 +4,8 @@ public class FormatterResolver
 {
     public Type ResolveFormatter(string interactorHandler, string driverClassName)
     {
-        var interactorHandlerInterface = Type.GetType($"Cinnamon.Api.Core.Services.SeatPlanService.Handlers.{interactorHandler}");
-        var driverClassInterface = Type.GetType($"Cinnamon.Api.Core.Services.SeatPlanService.Handlers.{driverClassName}");
+        var interactorHandlerInterface = Type.GetType($"Cinnamon.Api.Core.Services.SeatPlanService.Handler.{interactorHandler}");
+        var driverClassInterface = Type.GetType($"Cinnamon.Api.Core.Services.SeatPlanService.Handler.{driverClassName}");
 
         if(interactorHandlerInterface == null || driverClassInterface == null)
         {
