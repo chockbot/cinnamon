@@ -75,6 +75,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IDirectStudentData, Modules.DataAccess.DirectStudent.DirectStudentData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOteRemindersData, Modules.DataAccess.OteReminders.OteRemindersData>();
         services.AddTransient<Modules.DataAccess.Handlers.IProviderCustomQuestionData, Modules.DataAccess.ProviderCustomQuestion.ProviderCustomQuestionData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ISeatPlanData, Modules.DataAccess.SeatPlan.SeatPlanData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -319,6 +320,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DirectStudentService.Handlers.ICreateDirectStudentAttendanceHandler, Services.DirectStudentService.CreateDirectStudentAttendanceHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IUpdateStudentAttendanceHandler, Services.DirectStudentService.UpdateStudentAttendanceHandler>();
         services.AddTransient<Services.DirectStudentService.Handlers.IStudentSessionHandler, Services.DirectStudentService.StudentSessionHandler>();
+
+        // seat plan service
+        services.AddTransient<Services.SeatPlanService.PretixFormatterHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.ICreateSeatPlanTemplateHandler, Services.SeatPlanService.CreateSeatPlanTemplateHandler>();
 
         return services;
     }

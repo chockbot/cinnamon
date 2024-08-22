@@ -33,7 +33,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
                     new ApplicationException(seatPlanTemplate.Message), seatPlanTemplate.Message);
             }
 
-            var seatPlanTemplateDTO = mapper.Map<IEnumerable<SeatPlanTemplateDTO>>(seatPlanTemplate);
+            var seatPlanTemplateDTO = mapper.Map<IEnumerable<SeatPlanTemplateDTO>>(seatPlanTemplate.Result);
             return AppResult<IEnumerable<SeatPlanTemplateDTO>>.CreateSucceeded(seatPlanTemplateDTO, "Seat plan template retrieved successfully");   
         }
         catch (System.Exception ex)
@@ -53,7 +53,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
                     new ApplicationException(seatPlanTemplate.Message), seatPlanTemplate.Message);
             }
 
-            var seatPlanTemplateDTO = mapper.Map<SeatPlanTemplateDTO>(seatPlanTemplate);
+            var seatPlanTemplateDTO = mapper.Map<SeatPlanTemplateDTO>(seatPlanTemplate.Result);
             return AppResult<SeatPlanTemplateDTO>.CreateSucceeded(seatPlanTemplateDTO, "Seat plan template retrieved successfully");   
         }
         catch (System.Exception ex)
@@ -74,7 +74,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
                     new ApplicationException(result.Message), result.Message);
             }
 
-            var dto = mapper.Map<SeatPlanTemplateDTO>(result);
+            var dto = mapper.Map<SeatPlanTemplateDTO>(result.Result);
             return AppResult<SeatPlanTemplateDTO>.CreateSucceeded(dto, "Seat plan template created successfully");   
         }
         catch (System.Exception ex)
@@ -99,6 +99,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
             seatPlan.Address = seatPlanTemplateDTO.Address ?? seatPlan.Address;
             seatPlan.ImageSrc = seatPlanTemplateDTO.ImageSrc ?? seatPlan.ImageSrc;
             seatPlan.Payload = seatPlanTemplateDTO.Payload ?? seatPlan.Payload;
+            seatPlan.Enabled = seatPlanTemplateDTO.Enabled;
 
             var result = await dataStore.SeatPlanTemplate.Update(seatPlan);
             if(!result.Succeeded || result.Result is null)
@@ -107,7 +108,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
                     new ApplicationException(result.Message), result.Message);
             }
 
-            var dto = mapper.Map<SeatPlanTemplateDTO>(result);
+            var dto = mapper.Map<SeatPlanTemplateDTO>(result.Result);
             return AppResult<SeatPlanTemplateDTO>.CreateSucceeded(dto, "Seat plan template updated successfully");   
         }
         catch (System.Exception ex)
