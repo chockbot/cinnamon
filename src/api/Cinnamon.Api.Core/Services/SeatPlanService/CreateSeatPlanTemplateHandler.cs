@@ -75,7 +75,7 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
             var objType = containerProvider.Resolve(handler);
             var resolveFormatter = (ISeatPlanFormatterHandler)objType;
 
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(args.JsonFile.FileName);
+            var fileName = Guid.NewGuid().ToString() + "-seatplan-image" + Path.GetExtension(args.JsonFile.FileName);
             var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "json");
             var filePath = Path.Combine(directoryPath, fileName);
 
@@ -95,12 +95,13 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
             var format = generateFormat.Result.SeatPlanFormat;
             var serializedFormat = jsonSerializationProvider.Serialize(format);
 
+            var imageFilename = Guid.NewGuid().ToString() + "-seatplan-image" + Path.GetExtension(args.ImageFile.FileName);
             var uploadResult = await uploadAzureBlob.ExecuteAsync(new Modules.UploadDriver.Interactors.AzureUploadArgs {
-                Container = "seat-plan-templates",
+                Container = "upload-container",
                 Images = new List<Modules.UploadDriver.Interactors.AzureUploadArgs.Image> {
                     new Modules.UploadDriver.Interactors.AzureUploadArgs.Image {
                         File = args.ImageFile,
-                        ImageName = fileName
+                        ImageName = imageFilename
                     }
                 }
             });
@@ -122,7 +123,7 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
                 UploadedDate = DateTime.Now
             });
 
-            if(!createTemplate.Succeeded || createTemplate.Result is null)
+            if(!createTemplate.Succeeded || createTemplate.Result is null || !createTemplate.Result.IsSuccess)
             {
                 return AppResult<CreateSeatPlanTemplateResult>.CreateFailed(
                     new ApplicationException("Unable to create seat plan template"), "Unable to create seat plan template");
