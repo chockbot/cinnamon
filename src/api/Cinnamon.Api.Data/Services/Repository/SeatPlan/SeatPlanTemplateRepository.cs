@@ -5,6 +5,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.SeatPlan;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.SeatPlan;
 
@@ -67,6 +68,8 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
         try
         {
             var seatPlanTemplate = mapper.Map<Entities.SeatPlanTemplate>(seatPlanTemplateDTO);
+            seatPlanTemplate.UploadedDate = seatPlanTemplate.UploadedDate.SetKindUtc();
+            
             var result = await dataStore.SeatPlanTemplate.Add(seatPlanTemplate);
             if(!result.Succeeded || result.Result is null)
             {
