@@ -213,7 +213,7 @@ a,
 }
 
 .customer-profile-details .nav-tabs .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   bottom: 0;
@@ -221,7 +221,7 @@ a,
   height: 3px;
   background-color: #ffa942;
   transform: scaleX(0);
-  transform-origin: left; 
+  transform-origin: left;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -3188,6 +3188,335 @@ input::-ms-clear {
   .ote-details-page-wrapper .schedule-event-time {
     width: 100% !important;
     margin-top: 1rem;
+  }
+}
+
+/* for seat plan template styles */
+.admin-seatplan-wrapper .section-content .table-list .b-table.table {
+  border: 2px solid #343d4c !important;
+  border-radius: 5px !important;
+}
+
+.admin-seatplan-wrapper .section-content .table-list table thead {
+  background-color: #343d4c;
+  color: #fff;
+}
+
+.admin-seatplan-wrapper .section-content .table-list table thead th {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.admin-seatplan-wrapper .section-content .table-list table tbody td {
+  vertical-align: middle;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-size: 16px;
+  color: #343d4c;
+}
+
+.admin-seatplan-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:first-child
+  > div {
+  display: none;
+}
+
+.admin-seatplan-wrapper .form-check-input:checked {
+  background-color: #ffa942;
+  border-color: #ffa942;
+}
+
+.admin-seatplan-wrapper .radio-discount-type > div {
+  display: flex;
+  justify-content: center;
+}
+
+.admin-seatplan-wrapper .radio-discount-type > div .custom-radio:nth-child(1) {
+  margin-right: 15px;
+}
+
+.admin-seatplan-wrapper .radio-discount-type > div .custom-radio:nth-child(2) {
+  margin-left: 15px;
+}
+
+.admin-seatplan-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(2)
+  span:last-child {
+  display: none;
+}
+
+.admin-seatplan-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(4)
+  span:last-child {
+  display: none;
+}
+
+.admin-seatplan-wrapper .search-coupon {
+  width: 250px;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .admin-seatplan-wrapper .section-content .table-list .b-table.table {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list table thead {
+    display: none;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list table tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    border: 1px solid;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list table tbody tr td {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    > span {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    span::before {
+    content: "Description: ";
+    font-weight: bold;
+    width: 70%;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2) {
+    display: flex;
+    padding: 0;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+
+    border-right: 1px solid #000;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child::before {
+    content: "Code: ";
+    font-weight: bold;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:last-child::before {
+    content: "Discount: ";
+    font-weight: bold;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4) {
+    display: flex;
+    padding: 0;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+    border-right: 1px solid #000;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child::before {
+    content: "From: ";
+    font-weight: bold;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:last-child:before {
+    content: "To: ";
+    font-weight: bold;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5) {
+    display: none;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(6)::before {
+    content: "Activity: ";
+    font-weight: bold;
+  }
+
+  .admin-seatplan-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:last-child {
+    border: 0 !important;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list .btn-status {
+    justify-content: flex-start;
+    padding: 0;
+    max-width: 80px;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list .btn-primary {
+    font-size: 12px !important;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list .check-button {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .admin-seatplan-wrapper .section-content .table-list .check-button img {
+    width: 20px;
+    height: auto;
+  }
+
+  .admin-seatplan-wrapper .search-coupon {
+    width: 100%;
   }
 }
 

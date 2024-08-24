@@ -1,0 +1,205 @@
+@layout AdminLayout
+@page "/admin/seat-plan"
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@using Cinnamon.Web.Components.Pages;
+@inject IActivityApiHandler activityApiHandler;
+@inject IAdminApiHandler adminApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@attribute [Authorize]
+
+<PageTitle>Seat Plan | CinnamonPH</PageTitle>
+<SeoMeta Title="Seat Plan" Subject="Dashboard" Url="/admin/seat-plan" />
+
+<section class="admin-seatplan-wrapper admin-dashboard-seatplan-wrapper mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between custom-flex">
+         <div class="mt-0 mt-md-0">
+            <Button Clicked="() => modalRef.Show()" class="bg-orange-100 color-white-100 m-font-14">
+                Create New Template
+            </Button>
+        </div>
+        <div class="searchbar-holder ml-md-auto mt-3 mt-md-0">
+            <div class="searchBar">
+                <input type="search" id="searchBar" class="form-control search-input" placeholder="Search">
+            </div>
+        </div>
+    </div>
+
+    <div class="section-content">
+        <div class="table-list">
+            <Table Shadow="Shadow.Default">
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Formatter
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Name
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Address
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Image URL
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Uploaded Date
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Action
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>
+                            <span class="font-weight-700">Formatter</span>
+                        </TableRowCell>
+                        <TableRowCell>
+                            <span>Name</span>
+                        </TableRowCell>
+                        <TableRowCell>
+                            <span>Address</span>
+                        </TableRowCell>
+                        <TableRowCell>
+                            <span>Image</span>
+                        </TableRowCell>
+                        <TableRowCell>
+                            <span>Uploaded date</span>
+                        </TableRowCell>
+                        <TableRowCell>
+                            <Button class="btn-primary font-16 m-width-100" Border="Border.Is0">
+                                View Seat Plan
+                            </Button>
+                        </TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </div>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Create Template</p>
+                <Button Type="ButtonType.Button" style="top: 22px; right: 20px;" class="btn-close position-absolute" 
+                    Clicked="() => modalRef.Close(CloseReason.UserClosing)" />
+            </ModalHeader>
+            <ModalBody class="pt-5">
+                <Validations Mode="ValidationMode.Manual" @ref="FormValidation">
+                    <Field class="mb-4">
+                        <FieldLabel class="font-16">Select Formatter</FieldLabel>
+                        <FieldBody>
+                            <Select Size="Size.Small" class="form-control" TValue="string">
+                                <SelectItem Value="0" >Prettix</SelectItem>
+                            </Select>
+                            <div class="invalid-feedback">Select formmater to generate</div>
+                        </FieldBody>
+                    </Field>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Placeholder="Template name" Size="Size.Small" Role="TextRole.Text">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Address</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Placeholder="Template address" Size="Size.Small" Role="TextRole.Text">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Field class="mb-3">
+                        <FieldLabel class="font-16">Image Seat Plan</FieldLabel>
+                        <FieldBody>
+                            <InputFile
+                                AdditionalAttributes='new Dictionary<string, object> { { "accept", "image/png, image/jpeg" }, {"class", "form-control"} }' />
+                        </FieldBody>
+                    </Field>
+                    <Field class="mb-3">
+                        <FieldLabel class="font-16">Json File</FieldLabel>
+                        <FieldBody>
+                            <InputFile
+                                AdditionalAttributes='new Dictionary<string, object> { { "accept", "application/json" }, {"class", "form-control"} }' />
+                        </FieldBody>
+                    </Field>
+                </Validations>
+
+                <div class="d-flex justify-content-end">
+                    <Button Clicked="() => modalRef.Close(CloseReason.UserClosing)" 
+                        Border="Border.Is0" class="btn-secondary font-16 m-width-100 me-2">
+                        Cancel
+                    </Button>
+                    <Button Clicked="() => modalRef.Close(CloseReason.UserClosing)" 
+                        Border="Border.Is0" class="bg-orange-100 color-white-100 font-16 m-width-100">
+                        Save
+                    </Button>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+</section>
+
+@code
+{
+    private Modal modalRef;
+    private Validations FormValidation {get; set;}
+    private string Token = string.Empty;
+
+    enum ActionType {
+        Create = 0,
+        Update = 1
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token= user.FindFirstValue("Token");
+            if (Token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+}

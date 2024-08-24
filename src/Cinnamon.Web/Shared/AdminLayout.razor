@@ -70,6 +70,11 @@
                             <img class="icon-home" src="images/Dashboard Icon/dynamic-policies-admin-new.svg"> <span class="ms-1 d-sm-inline nav-text">Dynamic Policies</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToSeatPlan">
+                            <img class="icon-home" src="images/Dashboard Icon/dynamic-policies-admin-new.svg"> <span class="ms-1 d-sm-inline nav-text">Seat Plan</span>
+                        </a>
+                    </li>
                 </ul>
             }
         </LayoutSiderContent>
@@ -157,5 +162,10 @@
     private void NavigateToDynamicContents()
     {
         navigationManager.NavigateTo("/admin/dynamic-contents");
+    }
+
+    private void NavigateToSeatPlan()
+    {
+        navigationManager.NavigateTo("/admin/seat-plan");
     }
 }
