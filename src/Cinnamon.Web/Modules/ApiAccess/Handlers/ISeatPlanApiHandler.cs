@@ -7,4 +7,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface ISeatPlanApiHandler 
 {
     Task<AppResult<CreateSeatPlanTemplateResult>> CreateSeatPlanTemplate(CreateSeatPlanTemplateArgs args, string token);
+
+    Task<AppResult<GetTemplatesResult>> GetTemplates(GetTemplatesArgs args, string token);
 } 

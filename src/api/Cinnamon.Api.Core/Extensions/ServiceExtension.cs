@@ -324,6 +324,7 @@ public static class ServiceExtenstion
         // seat plan service
         services.AddTransient<Services.SeatPlanService.PretixFormatterHandler>();
         services.AddTransient<Services.SeatPlanService.Handler.ICreateSeatPlanTemplateHandler, Services.SeatPlanService.CreateSeatPlanTemplateHandler>();
+        services.AddTransient<Services.SeatPlanService.Handler.IGetTemplatesHandler, Services.SeatPlanService.GetTemplatesHandler>();
 
         return services;
     }

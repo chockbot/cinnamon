@@ -16,6 +16,28 @@ public class SeatPlanApiHandler : ISeatPlanApiHandler
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
 
+    public async Task<AppResult<GetTemplatesResult>> GetTemplates(GetTemplatesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("SeatPlan")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetTemplatesResult>();
+
+            return AppResult<GetTemplatesResult>.CreateSucceeded(result, "Successfully retrieved templates");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetTemplatesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetTemplatesResult>.CreateFailed(ex, "An error occurred while retrieving templates");
+        }
+    }
+
     public async Task<AppResult<CreateSeatPlanTemplateResult>> CreateSeatPlanTemplate(CreateSeatPlanTemplateArgs args, string token)
     {
         try

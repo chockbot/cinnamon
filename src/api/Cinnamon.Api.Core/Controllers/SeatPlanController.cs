@@ -1,5 +1,7 @@
+using AutoMapper;
 using Cinnamon.Api.Core.Services.SeatPlanService.Handler;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan;
 using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.SeatPlan.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +15,41 @@ namespace Cinnamon.Api.Core.Controllers;
 public class SeatPlanController : ControllerBase 
 {
     private readonly ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler;
+    private readonly IGetTemplatesHandler getTemplatesHandler;
+    private readonly IMapper mapper;
 
-    public SeatPlanController(ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler)
+    public SeatPlanController(ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler,
+        IGetTemplatesHandler getTemplatesHandler, IMapper mapper)
     {
         this.createSeatPlanTemplateHandler = createSeatPlanTemplateHandler;
+        this.getTemplatesHandler = getTemplatesHandler;
+        this.mapper = mapper;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GetTemplatesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTemplates([FromQuery] GetTemplatesArgs args)
+    {
+        try
+        {
+            var result = await getTemplatesHandler.ExecuteAsync(new Services.SeatPlanService.Interactors.GetTemplatesArgs {
+                Name = args.Name,
+                Page = args.PageIndex,
+                Limit = args.CountPerPage,
+            });
+            if(!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetTemplatesResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            var templates = mapper.Map<IEnumerable<SeatPlanTemplateDTO>>(result.Result.Templates);
+
+            return new JsonResult(new GetTemplatesResult {Result = templates, IsSuccess = true});
+        }
+        catch (System.Exception ex)
+        {
+            return new JsonResult(new GetTemplatesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
     }
 
     [HttpPost]
