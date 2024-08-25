@@ -6,6 +6,7 @@
 @using Cinnamon.Framework.ValidationAttributes;
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models;
+@using CoreSeatPlan = Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager;
 @inject ISeatPlanApiHandler seatPlanApiHandler;
@@ -74,28 +75,33 @@
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow>
-                        <TableRowCell>
-                            <span class="font-weight-700">Formatter</span>
-                        </TableRowCell>
-                        <TableRowCell>
-                            <span>Name</span>
-                        </TableRowCell>
-                        <TableRowCell>
-                            <span>Address</span>
-                        </TableRowCell>
-                        <TableRowCell>
-                            <span>Image</span>
-                        </TableRowCell>
-                        <TableRowCell>
-                            <span>Uploaded date</span>
-                        </TableRowCell>
-                        <TableRowCell>
-                            <Button class="btn-primary font-16 m-width-100" Border="Border.Is0">
-                                View Seat Plan
-                            </Button>
-                        </TableRowCell>
-                    </TableRow>
+                    @foreach (var item in seatPlanTemplates)
+                    {
+                        <TableRow>
+                            <TableRowCell>
+                                <span class="font-weight-700">@GetFormatterName(item.SeatPlanFormatterId)</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.Name</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.Address</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>
+                                    <a href="@item.ImageSrc" target="_blank">View Image</a>
+                                </span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <span>@item.UploadedDate.ToString("MMMM dd, yyyy")</span>
+                            </TableRowCell>
+                            <TableRowCell>
+                                <Button class="btn-primary font-16 m-width-100" Border="Border.Is0">
+                                    View Seat Plan
+                                </Button>
+                            </TableRowCell>
+                        </TableRow>
+                    }
                 </TableBody>
             </Table>
         </div>
@@ -190,6 +196,7 @@
     private FormModel formModel = new FormModel();
     private bool isLoading = false;
     private bool formValidated = false;
+    private IList<CoreSeatPlan.SeatPlanTemplateDTO> seatPlanTemplates = new List<CoreSeatPlan.SeatPlanTemplateDTO>();
 
     enum ActionType {
         Create = 0,
@@ -209,11 +216,27 @@
                 return;
             }
 
+            await LoadTemplates();
         }
         catch (Exception ex)
         {
             throw ex;
         }
+    }
+
+    private async Task LoadTemplates()
+    {
+        var response = await seatPlanApiHandler.GetTemplates(new Framework.ApiCommand.ApiCore.SeatPlan.Request.GetTemplatesArgs(
+
+        ), Token);
+
+        if(!response.Succeeded || response.Result is null || !response.Result.IsSuccess)
+        {
+            await notificationService.Error("Failed to load seat plan templates", "Error");
+            return;
+        }
+
+        seatPlanTemplates = response.Result.Result.ToList();
     }
 
     private async Task CreateTemplate()
@@ -310,6 +333,21 @@
     {
         formModel.JsonFile = e.File;
         return Task.CompletedTask;
+    }
+
+    private string GetFormatterName(int formatterId)
+    {
+        string result;
+        switch (formatterId)
+        {
+            case 1:
+                result = "Pretix";
+                break;
+            default:
+                result = "Unknown";
+                break;
+        }   
+        return result;
     }
 
     private class FormModel 
