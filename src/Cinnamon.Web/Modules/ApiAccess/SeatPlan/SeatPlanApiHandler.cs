@@ -23,7 +23,13 @@ public class SeatPlanApiHandler : ISeatPlanApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request("SeatPlan")
-                .PostJsonAsync(args)
+                .PostMultipartAsync(mp => {
+                    mp.AddString("Name", args.Name);
+                    mp.AddString("Address", args.Address);
+                    mp.AddString("FormatterId", args.FormatterId.ToString());
+                    mp.AddFile("ImageFile", args.ImageFile.OpenReadStream(), args.ImageFile.FileName, args.ImageFile.ContentType);
+                    mp.AddFile("JsonFile", args.JsonFile.OpenReadStream(), args.JsonFile.FileName, args.JsonFile.ContentType);
+                })
                 .ReceiveJson<CreateSeatPlanTemplateResult>();
 
             return AppResult<CreateSeatPlanTemplateResult>.CreateSucceeded(result, "Seat plan template created successfully");
