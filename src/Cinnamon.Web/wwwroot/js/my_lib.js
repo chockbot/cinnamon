@@ -263,6 +263,28 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "./src/Pages/admin/createTemplate.js":
+/*!*******************************************!*\
+  !*** ./src/Pages/admin/createTemplate.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ createTemplate)\n/* harmony export */ });\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/axios/lib/axios.js\");\n\nasync function createTemplate({\n  items,\n  imgId,\n  jsonId\n}) {\n  try {\n    const formData = new FormData();\n    Object.entries(items).forEach(([key, value]) => {\n      formData.append(key, value);\n    });\n    const imgEl = document.getElementById(imgId);\n    const jsonEl = document.getElementById(jsonId);\n    formData.append(\"ImageFile\", imgEl.files[0]);\n    formData.append(\"JsonFile\", jsonEl.files[0]);\n    const result = await axios__WEBPACK_IMPORTED_MODULE_0__[\"default\"].postForm(\"api/activity/SeatPlan\", formData);\n    return {\n      success: result.data.success,\n      message: result.data.message\n    };\n  } catch (error) {\n    return {\n      success: false,\n      message: \"An error occurred. Please try again later.\"\n    };\n  }\n}\n\n//# sourceURL=webpack://MyLib/./src/Pages/admin/createTemplate.js?");
+
+/***/ }),
+
+/***/ "./src/Pages/admin/index.js":
+/*!**********************************!*\
+  !*** ./src/Pages/admin/index.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _createTemplate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createTemplate */ \"./src/Pages/admin/createTemplate.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  createTemplate: _createTemplate__WEBPACK_IMPORTED_MODULE_0__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/admin/index.js?");
+
+/***/ }),
+
 /***/ "./src/Pages/customer/externalRegister.js":
 /*!************************************************!*\
   !*** ./src/Pages/customer/externalRegister.js ***!
@@ -347,7 +369,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _customer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./customer */ \"./src/Pages/customer/index.js\");\n/* harmony import */ var _activity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./activity */ \"./src/Pages/activity/index.js\");\n/* harmony import */ var _maker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maker */ \"./src/Pages/maker/index.js\");\n/* harmony import */ var _landing__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./landing */ \"./src/Pages/landing/index.js\");\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  customer: _customer__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  activity: _activity__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  maker: _maker__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  landing: _landing__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _customer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./customer */ \"./src/Pages/customer/index.js\");\n/* harmony import */ var _activity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./activity */ \"./src/Pages/activity/index.js\");\n/* harmony import */ var _maker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./maker */ \"./src/Pages/maker/index.js\");\n/* harmony import */ var _landing__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./landing */ \"./src/Pages/landing/index.js\");\n/* harmony import */ var _admin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./admin */ \"./src/Pages/admin/index.js\");\n\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  customer: _customer__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  activity: _activity__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  maker: _maker__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  landing: _landing__WEBPACK_IMPORTED_MODULE_3__[\"default\"],\n  admin: _admin__WEBPACK_IMPORTED_MODULE_4__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/index.js?");
 
 /***/ }),
 

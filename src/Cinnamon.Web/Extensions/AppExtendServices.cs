@@ -15,6 +15,7 @@ public static class ExtensionService
         services.AddTransient<Modules.ApiAccess.Handlers.IAdminApiHandler, Modules.ApiAccess.Admin.AdminApiHandler>();
         services.AddTransient<Modules.ApiAccess.Handlers.IChatApiHandler, Modules.ApiAccess.Chat.ChatApiHandler>();
         services.AddTransient<Modules.ApiAccess.Handlers.IDirectStudentApiHandler, Modules.ApiAccess.DirectStudent.DirectStudentApiHandler>();
+        services.AddTransient<Modules.ApiAccess.Handlers.ISeatPlanApiHandler, Modules.ApiAccess.SeatPlan.SeatPlanApiHandler>();
 
         services.AddHttpContextAccessor();
         services.AddScoped(sp => sp.GetService<IHttpContextAccessor>().HttpContext?.User);

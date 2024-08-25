@@ -5,10 +5,12 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Framework.ValidationAttributes;
 @using Cinnamon.Web.Components.Pages;
-@inject IActivityApiHandler activityApiHandler;
-@inject IAdminApiHandler adminApiHandler;
+@using Cinnamon.Web.Models;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager;
+@inject ISeatPlanApiHandler seatPlanApiHandler;
+@inject INotificationService notificationService;
+@inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 
 <PageTitle>Seat Plan | CinnamonPH</PageTitle>
@@ -107,12 +109,12 @@
                     Clicked="() => modalRef.Close(CloseReason.UserClosing)" />
             </ModalHeader>
             <ModalBody class="pt-5">
-                <Validations Mode="ValidationMode.Manual" @ref="FormValidation">
+                <Validations Mode="ValidationMode.Manual" @ref="FormValidation" Model="formModel">
                     <Field class="mb-4">
                         <FieldLabel class="font-16">Select Formatter</FieldLabel>
                         <FieldBody>
-                            <Select Size="Size.Small" class="form-control" TValue="string">
-                                <SelectItem Value="0" >Prettix</SelectItem>
+                            <Select Size="Size.Small" class="form-control" TValue="int" @bind-SelectedValue="formModel.FormmaterId">
+                                <SelectItem Value="1" >Prettix</SelectItem>
                             </Select>
                             <div class="invalid-feedback">Select formmater to generate</div>
                         </FieldBody>
@@ -121,7 +123,8 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Name</FieldLabel>
                             <FieldBody>
-                                <TextEdit Placeholder="Template name" Size="Size.Small" Role="TextRole.Text">
+                                <TextEdit Placeholder="Template name" Size="Size.Small" Role="TextRole.Text"
+                                    @bind-Text="formModel.Name">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -133,7 +136,8 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Address</FieldLabel>
                             <FieldBody>
-                                <TextEdit Placeholder="Template address" Size="Size.Small" Role="TextRole.Text">
+                                <TextEdit Placeholder="Template address" Size="Size.Small" Role="TextRole.Text"
+                                    @bind-Text="formModel.Address">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -144,15 +148,15 @@
                     <Field class="mb-3">
                         <FieldLabel class="font-16">Image Seat Plan</FieldLabel>
                         <FieldBody>
-                            <InputFile
-                                AdditionalAttributes='new Dictionary<string, object> { { "accept", "image/png, image/jpeg" }, {"class", "form-control"} }' />
+                            <InputFile AdditionalAttributes='@ImageAttributes' OnChange="ImageSeatPlanChanged" />
+                            <div class="invalid-feedback">Image seat plan required</div>
                         </FieldBody>
                     </Field>
                     <Field class="mb-3">
                         <FieldLabel class="font-16">Json File</FieldLabel>
                         <FieldBody>
-                            <InputFile
-                                AdditionalAttributes='new Dictionary<string, object> { { "accept", "application/json" }, {"class", "form-control"} }' />
+                            <InputFile AdditionalAttributes='@JsonAttributes' OnChange="JsonFileChanged" />
+                            <div class="invalid-feedback">Json file required</div>
                         </FieldBody>
                     </Field>
                 </Validations>
@@ -162,9 +166,15 @@
                         Border="Border.Is0" class="btn-secondary font-16 m-width-100 me-2">
                         Cancel
                     </Button>
-                    <Button Clicked="() => modalRef.Close(CloseReason.UserClosing)" 
+                    <Button Clicked="CreateTemplate" Disabled="isLoading" Loading="isLoading"
                         Border="Border.Is0" class="bg-orange-100 color-white-100 font-16 m-width-100">
-                        Save
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Creating Template
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Create Template
+                        </ChildContent>
                     </Button>
                 </div>
             </ModalBody>
@@ -177,6 +187,9 @@
     private Modal modalRef;
     private Validations FormValidation {get; set;}
     private string Token = string.Empty;
+    private FormModel formModel = new FormModel();
+    private bool isLoading = false;
+    private bool formValidated = false;
 
     enum ActionType {
         Create = 0,
@@ -188,7 +201,7 @@
         try
         {
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-            Token= user.FindFirstValue("Token");
+            Token = user.FindFirstValue("Token");
             if (Token == null)
             {
                 // don't have current user login
@@ -201,5 +214,117 @@
         {
             throw ex;
         }
+    }
+
+    private async Task CreateTemplate()
+    {
+        formValidated = true;
+
+        var formValid = await FormValidation.ValidateAll();
+        if(!formValid) return;
+
+        if(formModel.JsonFile is null || formModel.ImageSeatPlan is null) return;
+
+        isLoading = true;
+
+        Dictionary<string, string> formData = new Dictionary<string, string> {
+            { "Name", formModel.Name },
+            { "Address", formModel.Address },
+            { "FormatterId", formModel.FormmaterId.ToString() }
+        };
+
+        var jsonSrc = "MyLib.Pages.admin.createTemplate";
+        var obj = new {
+            items = formData,
+            imgId = "image-seat-plan",
+            jsonId = "json-seat-plan"
+        };
+        var jsResponse = await JSRuntime.InvokeAsync<JsResultModel>(jsonSrc, obj);
+
+        isLoading = false;
+
+        if(!jsResponse.Success)
+        {
+            await notificationService.Error(jsResponse.Message, "Error");
+            return;
+        }
+
+        await modalRef.Close(CloseReason.UserClosing);
+
+        await notificationService.Success("Seat plan template created successfully", "Success");
+    }
+
+    private IDictionary<string, object> ImageAttributes
+    {
+        get 
+        {
+            IDictionary<string, object> attributes = new Dictionary<string, object> {
+                { "accept", "image/png, image/jpeg" },
+                { "id", "image-seat-plan" },
+                { "name", "image-seat-plan" }
+            };
+
+            if (formValidated && formModel.ImageSeatPlan is null)
+            {
+                attributes.Add("class", "form-control is-invalid");
+            }
+            else
+            {
+                attributes.Add("class", "form-control");
+            }
+
+            return attributes;
+        }    
+    }
+
+    private IDictionary<string, object> JsonAttributes
+    {
+        get 
+        {
+            IDictionary<string, object> attributes = new Dictionary<string, object> {
+                { "accept", "application/json" },
+                { "id", "json-seat-plan" },
+                { "name", "json-seat-plan" }
+            };
+
+            if (formValidated && formModel.JsonFile is null)
+            {
+                attributes.Add("class", "form-control is-invalid");
+            }
+            else
+            {
+                attributes.Add("class", "form-control");
+            }
+
+            return attributes;
+        }    
+    }
+
+    private Task ImageSeatPlanChanged(InputFileChangeEventArgs e)
+    {
+        formModel.ImageSeatPlan = e.File;
+        return Task.CompletedTask;
+    }
+
+    private Task JsonFileChanged(InputFileChangeEventArgs e)
+    {
+        formModel.JsonFile = e.File;
+        return Task.CompletedTask;
+    }
+
+    private class FormModel 
+    {
+        [Required(ErrorMessage = "Select formmater to generate")]
+        public int FormmaterId { get; set; } = 1;
+
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Address is required")]
+        public string Address { get; set; }
+
+        public IBrowserFile ImageSeatPlan { get; set; }
+
+        public IBrowserFile JsonFile { get; set; }
     }
 }
