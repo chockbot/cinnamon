@@ -5,10 +5,12 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Framework.ValidationAttributes;
 @using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager;
 @inject ISeatPlanApiHandler seatPlanApiHandler;
 @inject INotificationService notificationService;
+@inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 
 <PageTitle>Seat Plan | CinnamonPH</PageTitle>
@@ -223,27 +225,31 @@
 
         if(formModel.JsonFile is null || formModel.ImageSeatPlan is null) return;
 
-        await modalRef.Close(CloseReason.UserClosing);
-
         isLoading = true;
 
-        int maxAllowedSize = 1024 * 1024 * 5; // 5MB
+        Dictionary<string, string> formData = new Dictionary<string, string> {
+            { "Name", formModel.Name },
+            { "Address", formModel.Address },
+            { "FormatterId", formModel.FormmaterId.ToString() }
+        };
 
-        var response = await seatPlanApiHandler.CreateSeatPlanTemplate(new Framework.ApiCommand.ApiCore.SeatPlan.Request.CreateSeatPlanTemplateArgs {
-            FormatterId = formModel.FormmaterId,
-            Name = formModel.Name,
-            Address = formModel.Address,
-            ImageFile = new FormFile(formModel.ImageSeatPlan.OpenReadStream(maxAllowedSize), 0, formModel.ImageSeatPlan.Size, "ImageFile", formModel.ImageSeatPlan.Name),
-            JsonFile = new FormFile(formModel.JsonFile.OpenReadStream(maxAllowedSize), 0, formModel.JsonFile.Size, "JsonFile", formModel.JsonFile.Name),
-        }, Token);
+        var jsonSrc = "MyLib.Pages.admin.createTemplate";
+        var obj = new {
+            items = formData,
+            imgId = "image-seat-plan",
+            jsonId = "json-seat-plan"
+        };
+        var jsResponse = await JSRuntime.InvokeAsync<JsResultModel>(jsonSrc, obj);
 
         isLoading = false;
 
-        if(!response.Succeeded || response.Result is null || !response.Result.IsSuccess)
+        if(!jsResponse.Success)
         {
-            await notificationService.Error("Failed to create seat plan template", "Error");
+            await notificationService.Error(jsResponse.Message, "Error");
             return;
         }
+
+        await modalRef.Close(CloseReason.UserClosing);
 
         await notificationService.Success("Seat plan template created successfully", "Success");
     }
