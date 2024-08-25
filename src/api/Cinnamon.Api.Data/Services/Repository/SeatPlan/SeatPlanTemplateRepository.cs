@@ -27,7 +27,7 @@ public class SeatPlanTemplateRepository : ISeatPlanTemplateRepository
             Expression<Func<Entities.SeatPlanTemplate, bool>> filter = 
                 t => (!string.IsNullOrEmpty(templateName) ? t.Name.Contains(templateName.Trim()) : true );
 
-            var seatPlanTemplate = await dataStore.SeatPlanTemplate.FindAsync(filter, page, limit);
+            var seatPlanTemplate = await dataStore.SeatPlanTemplate.SeatPlanWithoutPayload(filter, page, limit);
             if(!seatPlanTemplate.Succeeded || seatPlanTemplate.Result is null)
             {
                 return AppResult<IEnumerable<SeatPlanTemplateDTO>>.CreateFailed(
