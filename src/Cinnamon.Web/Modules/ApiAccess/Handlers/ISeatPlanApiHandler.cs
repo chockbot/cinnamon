@@ -9,4 +9,6 @@ public interface ISeatPlanApiHandler
     Task<AppResult<CreateSeatPlanTemplateResult>> CreateSeatPlanTemplate(CreateSeatPlanTemplateArgs args, string token);
 
     Task<AppResult<GetTemplatesResult>> GetTemplates(GetTemplatesArgs args, string token);
+
+    Task<AppResult<GetTemplateResult>> GetTemplate(int templateId, string token);
 } 
