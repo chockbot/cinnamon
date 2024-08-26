@@ -16,14 +16,16 @@ public class SeatPlanController : ControllerBase
 {
     private readonly ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler;
     private readonly IGetTemplatesHandler getTemplatesHandler;
+    private readonly IGetTemplateHandler getTemplateHandler;
     private readonly IMapper mapper;
 
     public SeatPlanController(ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler,
-        IGetTemplatesHandler getTemplatesHandler, IMapper mapper)
+        IGetTemplatesHandler getTemplatesHandler, IMapper mapper, IGetTemplateHandler getTemplateHandler)
     {
         this.createSeatPlanTemplateHandler = createSeatPlanTemplateHandler;
         this.getTemplatesHandler = getTemplatesHandler;
         this.mapper = mapper;
+        this.getTemplateHandler = getTemplateHandler;
     }
 
     [HttpGet]
@@ -75,6 +77,30 @@ public class SeatPlanController : ControllerBase
         catch (System.Exception ex)
         {
             return new JsonResult(new CreateSeatPlanTemplateResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(GetTemplateResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTemplate(int id)
+    {
+        try
+        {
+            var result = await getTemplateHandler.ExecuteAsync(new Services.SeatPlanService.Interactors.GetTemplateArgs {
+                Id = id,
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new GetTemplateResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var template = mapper.Map<SeatPlanTemplateDTO>(result.Result);
+
+            return new JsonResult(new GetTemplateResult { Result = template, IsSuccess = true });
+        }
+        catch (System.Exception ex)
+        {
+            return new JsonResult(new GetTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

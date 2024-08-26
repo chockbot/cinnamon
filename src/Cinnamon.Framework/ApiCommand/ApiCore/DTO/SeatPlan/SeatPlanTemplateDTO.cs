@@ -2,7 +2,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan;
 
 public class SeatPlanTemplateDTO
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
     public int SeatPlanFormatterId { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }

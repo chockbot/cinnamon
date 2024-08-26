@@ -65,4 +65,25 @@ public class SeatPlanApiHandler : ISeatPlanApiHandler
             return AppResult<CreateSeatPlanTemplateResult>.CreateFailed(ex, "An error occurred while creating seat plan template");
         }
     }
+
+    public async Task<AppResult<GetTemplateResult>> GetTemplate(int templateId, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"SeatPlan/{templateId}")
+                .GetJsonAsync<GetTemplateResult>();
+
+            return AppResult<GetTemplateResult>.CreateSucceeded(result, "Successfully retrieved seat plan template");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetTemplateResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetTemplateResult>.CreateFailed(ex, "An error occurred while retrieving seat plan template");
+        }
+    }
 }

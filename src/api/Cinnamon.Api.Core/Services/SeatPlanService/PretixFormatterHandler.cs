@@ -43,12 +43,12 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
 
             SeatPlan.Format format = new SeatPlan.Format{
                 Name = pretixFormat.name,
-                Categories = new List<SeatPlan.Category>()
+                Categories = new Dictionary<string, SeatPlan.Category>()
             };
 
             foreach (var category in categories)
             {
-                format.Categories.Add(category.Value);
+                format.Categories.Add(category.Value.Uuid, category.Value);
             }
 
             return AppResult<SeatPlanFormatterResult>.CreateSucceeded(new SeatPlanFormatterResult {SeatPlanFormat = format}, "Seat Plan formatted successfully");
@@ -80,25 +80,26 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
                     {
                         var cat = pretixFormat.categories.FirstOrDefault(c => c.name == seat.category);
                         string color = cat?.color ?? string.Empty;
+                        string uuid = Guid.NewGuid().ToString();
 
                         SeatPlan.Row categoryRow = new()
                         {
+                            Uuid = uuid,
                             Color = color,
                             Category = seat.category,
                             RowNumber = rowNumber,
-                            Seats = new List<SeatPlan.Seat>()
+                            Seats = new Dictionary<string, SeatPlan.Seat>()
                         };
-                        categoryRow.Seats.Add(new SeatPlan.Seat
+                        categoryRow.Seats.Add(seat.uuid, new SeatPlan.Seat
                         {
                             SeatNumber = seat.seat_number,
                             Uuid = seat.uuid
                         });
-
                         categoryRowMap.Add(categoryRowKey, categoryRow);
                     }
                     else
                     {
-                        categoryRowMap[categoryRowKey].Seats.Add(new SeatPlan.Seat
+                        categoryRowMap[categoryRowKey].Seats.Add(seat.uuid, new SeatPlan.Seat
                         {
                             SeatNumber = seat.seat_number,
                             Uuid = seat.uuid
@@ -117,16 +118,21 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
         foreach (var categoryRow in categoryRowMap)
         {
             var category = categoryRow.Value.Category;
+            string rowUuid = Guid.NewGuid().ToString();
+
             if (!seatMap.ContainsKey(category))
             {
+                string categoryUuid = Guid.NewGuid().ToString();
                 SeatPlan.Category seatCategory = new()
                 {
+                    Uuid = categoryUuid,
                     Color = categoryRow.Value.Color,
                     Name = category,
-                    Rows = new List<SeatPlan.Row>()
+                    Rows = new Dictionary<string, SeatPlan.Row>()
                 };
-                seatCategory.Rows.Add(new SeatPlan.Row
+                seatCategory.Rows.Add(rowUuid, new SeatPlan.Row
                 {
+                    Uuid = rowUuid,
                     RowNumber = categoryRow.Value.RowNumber,
                     Seats = categoryRow.Value.Seats
                 });
@@ -135,11 +141,22 @@ public class PretixFormatterHandler : ISeatPlanFormatterHandler, IPretixFormatte
             }
             else
             {
-                seatMap[category].Rows.Add(new SeatPlan.Row
+                if(seatMap[category].Rows.ContainsKey(rowUuid))
                 {
-                    RowNumber = categoryRow.Value.RowNumber,
-                    Seats = categoryRow.Value.Seats
-                });
+                    foreach (var seat in categoryRow.Value.Seats)
+                    {
+                        seatMap[category].Rows[rowUuid].Seats.Add(seat.Key, seat.Value);
+                    }
+                }
+                else 
+                {
+                    seatMap[category].Rows.Add(rowUuid, new SeatPlan.Row
+                    {
+                        Uuid = rowUuid,
+                        RowNumber = categoryRow.Value.RowNumber,
+                        Seats = categoryRow.Value.Seats
+                    });
+                }
             }
         }
         return seatMap;

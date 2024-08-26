@@ -1,0 +1,24 @@
+@namespace Cinnamon.Web.Components.Common.SeatPlan
+@using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
+
+<div class="seat-plan-category">
+    <label>@SeatCategory.Name</label>
+    <div class="category-row d-flex flex-wrap justify-content-center">
+        @foreach (var row in SeatCategory.Rows)
+        {
+            @foreach (var seat in row.Value.Seats)
+            {
+                <Seat RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" CategoryColor="@SeatCategory.Color" />   
+            }
+            @* <div class="mb-3">
+                <Cinnamon.Web.Components.Common.SeatPlan.Row RowCategory="row.Value" CategoryColor="@SeatCategory.Color" />
+            </div> *@
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public SeatPlanModels.Category SeatCategory { get; set; }
+}
