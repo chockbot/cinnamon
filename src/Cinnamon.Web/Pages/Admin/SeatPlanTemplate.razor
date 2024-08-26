@@ -275,6 +275,8 @@
         await modalRef.Close(CloseReason.UserClosing);
 
         await notificationService.Success("Seat plan template created successfully", "Success");
+
+        await LoadTemplates();
     }
 
     private IDictionary<string, object> ImageAttributes
