@@ -1,0 +1,17 @@
+@namespace Cinnamon.Web.Components.Common.SeatPlan
+@using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
+
+<div class="seat-plan-seat">
+    <Button>
+        @RowNumber - @RowSeat.SeatNumber
+    </Button>
+</div>
+
+@code 
+{
+    [Parameter]
+    public SeatPlanModels.Seat RowSeat { get; set; }
+
+    [Parameter]
+    public string RowNumber {get; set;}
+}
