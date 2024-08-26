@@ -48,14 +48,14 @@
                             @*Schedule*@
                             <div>
                                 <p class="event-details">
-                                    @if (Summary.ScheduleData.Recurrences != "do-not-repeat")
+                                    @if (SelectedDates.Count() > 1)
                                     {
-                                        string eventSchedule = $"{Summary.ScheduleData.DurationStart?.ToString("MMM dd")} - {Summary.ScheduleData.DurationEnd?.ToString("MMM dd, yyyy")}";
+                                        string eventSchedule = $"{SelectedDates.FirstOrDefault().ToString("MMM dd")} - {SelectedDates.LastOrDefault().ToString("MMM dd, yyyy")}";
                                         @eventSchedule
                                     }
                                     else if (Summary.ScheduleData != null)
                                     {
-                                        @Summary.ScheduleData.DateFrom.ToString("MMM dd, yyyy")
+                                        @SelectedDates.FirstOrDefault().ToString("MMM dd, yyyy")
                                     }
                                 </p>
                                 <p class="event-details text-uppercase">
@@ -205,16 +205,16 @@
             </div>
             <Modal @ref="modalCalendar">
                 <ModalContent Centered>
-                <ModalHeader class="py-2 px-4 border-1-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
-                    <p class="font-16 m-0 font-weight-700">View Calendar</p>
-                    <button type="button" style="top: 13px; right: 20px;" class="btn-close position-absolute" @onclick="() => HideCalendar()" />
-                </ModalHeader>
-                <ModalBody>
-                    <Calendar ViewOnly StrikeOutNotSelected
-                              SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="SelectedDates.FirstOrDefault()" />
-                        </ModalBody>
-                        </ModalContent>
-                        </Modal>
+                    <ModalHeader class="py-2 px-4 border-1-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                        <p class="font-16 m-0 font-weight-700">View Calendar</p>
+                        <button type="button" style="top: 13px; right: 20px;" class="btn-close position-absolute" @onclick="() => HideCalendar()" />
+                    </ModalHeader>
+                    <ModalBody>
+                        <Calendar ViewOnly StrikeOutNotSelected
+                                  SelectedDates="SelectedDates" OnSelectedDate="SelectedDate" CurrentDate="SelectedDates.FirstOrDefault()"/>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         }
     </section>
 </LoadingIndicator>
@@ -661,15 +661,15 @@
         [Required]
         public DateTime NewDate { get; set; }
     }
-    private async Task ViewCalendar()
+    private Task ViewCalendar()
     {
-        await modalCalendar?.Show();
-        StateHasChanged();
+        modalCalendar?.Show();
+        return Task.CompletedTask;
     }
-    private async Task HideCalendar()
+    private Task HideCalendar()
     {
-        await modalCalendar?.Hide();
-        StateHasChanged();
+        modalCalendar?.Hide();
+        return Task.CompletedTask;
     }
 
     public class ScheduleNotification
@@ -683,34 +683,44 @@
         get
         {
             IEnumerable<GenerateRecurrenceDate.DateItem> dates = Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
-
-            if (Summary is not null && Summary.ScheduleData is not null)
+            if (Summary?.ScheduleData is null)
             {
-                var every = Summary.ScheduleData.DurationEvery ?? 0;
-                var dateStart = Summary.ScheduleData.DurationStart ?? DateTime.Now;
-                var dateEnd = Summary.ScheduleData.DurationEnd ?? DateTime.Now; ;
-
-                var timeStart = dateStart.TimeOfDay;
-                var timeDuration = Summary.ScheduleData.DateTo - Summary.ScheduleData.DateFrom;
-                string weekString = Summary.ScheduleData.WeekString ?? string.Empty;
-
-                var monthSelection = Summary.ScheduleData.MonthSelection ?? 0;
-                var onDayDate = Summary.ScheduleData.OnDayDate ?? 0;
-                var monthRepeat = Summary.ScheduleData.MonthRepeat ?? string.Empty;
-                var monthDay = Summary.ScheduleData.MonthDay ?? string.Empty;
-
-                dates = Summary.ScheduleData.Recurrences switch
-                {
-                    "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
-                    "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
-                    "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
-                    "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection,
-                        onDayDate, monthRepeat, monthDay),
-                    _ => recurrenceHelper.GenerateNoRepeat(Summary.ScheduleData.DateFrom, Summary.ScheduleData.DateTo)
-                };
+                return Enumerable.Empty<GenerateRecurrenceDate.DateItem>();
             }
+            if (Summary.ScheduleData.BookedDates is not null && Summary.ScheduleData.BookedDates.Any())
+            {
+                return Summary.ScheduleData.BookedDates
+                .Select(bookedDate => new GenerateRecurrenceDate.DateItem
+                    {
+                        Date = bookedDate.NewDate,
+                        DateStart = bookedDate.NewDate
+                    });
+            }
+            var every = Summary.ScheduleData.DurationEvery ?? 0;
+            var dateStart = Summary.ScheduleData.DurationStart ?? DateTime.Now;
+            var dateEnd = Summary.ScheduleData.DurationEnd ?? DateTime.Now; ;
+
+            var timeStart = dateStart.TimeOfDay;
+            var timeDuration = Summary.ScheduleData.DateTo - Summary.ScheduleData.DateFrom;
+            string weekString = Summary.ScheduleData.WeekString ?? string.Empty;
+
+            var monthSelection = Summary.ScheduleData.MonthSelection ?? 0;
+            var onDayDate = Summary.ScheduleData.OnDayDate ?? 0;
+            var monthRepeat = Summary.ScheduleData.MonthRepeat ?? string.Empty;
+            var monthDay = Summary.ScheduleData.MonthDay ?? string.Empty;
+
+            dates = Summary.ScheduleData.Recurrences switch
+            {
+                "every-weekday" => recurrenceHelper.GenerateWeekday(every, dateStart, dateEnd, timeDuration, timeStart),
+                "daily" => recurrenceHelper.GenerateDaily(every, dateStart, dateEnd, timeDuration, timeStart),
+                "weekly" => recurrenceHelper.GenerateWeekly(every, dateStart, dateEnd, timeDuration, timeStart, weekString),
+                "monthly" => recurrenceHelper.GenerateMonthly(every, dateStart, dateEnd, timeDuration, timeStart, monthSelection,
+                    onDayDate, monthRepeat, monthDay),
+                _ => recurrenceHelper.GenerateNoRepeat(Summary.ScheduleData.DateFrom, Summary.ScheduleData.DateTo)
+            };
 
             return dates;
+            
         }
     }
     public async ValueTask DisposeAsync()
