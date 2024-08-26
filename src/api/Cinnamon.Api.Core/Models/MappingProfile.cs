@@ -137,5 +137,6 @@ public class MappingProfile : Profile
         CreateMap<DataDto.SeatPlan.SeatPlanTemplateDTO, SeatPlanResult.GetTemplatesResult.Template>();
         CreateMap<SeatPlanResult.GetTemplatesResult.Template, CoreDto.SeatPlan.SeatPlanTemplateDTO>();
         CreateMap<DataDto.SeatPlan.SeatPlanTemplateDTO, SeatPlanResult.GetTemplateResult>();
+        CreateMap<SeatPlanResult.GetTemplateResult, CoreDto.SeatPlan.SeatPlanTemplateDTO>();
     }
 }
