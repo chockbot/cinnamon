@@ -1,9 +1,11 @@
 @namespace Cinnamon.Web.Components.Common.SeatPlan
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
-<div class="seat-plan-seat">
-    <Button>
-        @RowNumber - @RowSeat.SeatNumber
+<div class="seat-plan-seat m-1">
+    <Button Style="@GetSeatStyle" class="p-1">
+        <span class="color-white-100 font-10">
+            @RowNumber - @RowSeat.SeatNumber
+        </span>
     </Button>
 </div>
 
@@ -14,4 +16,15 @@
 
     [Parameter]
     public string RowNumber {get; set;}
+
+    [Parameter]
+    public string CategoryColor {get; set;}
+
+    private string GetSeatStyle 
+    {
+        get
+        {
+            return $"background-color: {CategoryColor}; line-height: .6;";
+        }
+    }
 }
