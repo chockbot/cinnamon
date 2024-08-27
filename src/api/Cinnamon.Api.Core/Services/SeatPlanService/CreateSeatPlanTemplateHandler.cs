@@ -130,7 +130,7 @@ public class CreateSeatPlanTemplateHandler : ICreateSeatPlanTemplateHandler
             }
 
             // Delete the JSON file
-            File.Delete(filePath);
+            //File.Delete(filePath); // temporary commented out because will cause error when deploy. I think its because it's inside docker container
 
             return AppResult<CreateSeatPlanTemplateResult>.CreateSucceeded(new CreateSeatPlanTemplateResult {
                 Payload = serializedFormat
