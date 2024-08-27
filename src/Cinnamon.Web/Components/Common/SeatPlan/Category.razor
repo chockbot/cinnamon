@@ -8,11 +8,9 @@
         {
             @foreach (var seat in row.Value.Seats)
             {
-                <Seat RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" CategoryColor="@SeatCategory.Color" />   
+                <Seat @key="seat" RowSeat="seat.Value" RowNumber="@row.Value.RowNumber" 
+                    CategoryColor="@SeatCategory.Color" OnSeatSelected="(seat) => OnSeatSelectedHandler(seat, row.Value)" />
             }
-            @* <div class="mb-3">
-                <Cinnamon.Web.Components.Common.SeatPlan.Row RowCategory="row.Value" CategoryColor="@SeatCategory.Color" />
-            </div> *@
         }
     </div>
 </div>
@@ -21,4 +19,29 @@
 {
     [Parameter]
     public SeatPlanModels.Category SeatCategory { get; set; }
+
+    [Parameter]
+    public EventCallback<SelectedSeat> OnSeatSelected { get; set; }
+
+    private async Task OnSeatSelectedHandler(SeatPlanModels.Seat seat, SeatPlanModels.Row row)
+    {
+        if(OnSeatSelected.HasDelegate)
+        {
+            await OnSeatSelected.InvokeAsync(new SelectedSeat
+            {
+                CategoryUUID = SeatCategory.Uuid,
+                RowUUID = row.Uuid,
+                Seat = seat
+            });
+        }
+    }
+
+    public class SelectedSeat 
+    {
+        public string CategoryUUID { get; set; }
+
+        public string RowUUID { get; set; }
+
+        public SeatPlanModels.Seat Seat { get; set; }
+    }
 }
