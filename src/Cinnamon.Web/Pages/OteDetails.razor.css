@@ -450,6 +450,44 @@ svg {
 .read-less:hover {
   color: #343d4c; /* You can customize the hover color */
 }
+
+::deep .buy-ticket-btn {
+  position: relative;
+  cursor: pointer;  
+  transition: all 0.3s ease-in-out;
+}
+
+::deep .buy-ticket-btn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+::deep .buy-ticket-btn span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+::deep .buy-ticket-btn:hover span {
+  padding-right: 20px;
+}
+
+::deep .buy-ticket-btn:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+::deep .buy-ticket-btn:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+
 ::deep .message-me-button {
   width: 156px;
   height: 48px;
@@ -482,6 +520,7 @@ svg {
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+
 .details-text {
   font-family: Nunito;
   font-size: 16px;
