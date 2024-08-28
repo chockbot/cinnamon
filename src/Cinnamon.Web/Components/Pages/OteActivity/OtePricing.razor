@@ -59,7 +59,7 @@
         <p class="sub-text">Note: If tickets have already been purchased, users cannot delete or update other ticket details. You can only update the ticket name and total ticket quantity.</p>
         <div class="ticket-options">
             <div class="div-option-details email-box" id="hoverDiv" @onclick="() => registrationModal.Show()">
-                <img class="option-img image-holder" src="images/ote/registration.png" alt="cover-photo">
+                <img class="option-img image-holder" src="images/ote/registration.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
@@ -67,7 +67,7 @@
                 <div class="effect hover1"></div>
             </div>
             <div class="div-option-details email-box" id="hoverDiv" @onclick="() => capacityModal.Show()">
-                <img class="option-img image-holder" src="images/ote/capacity.png" alt="cover-photo">
+                <img class="option-img image-holder" src="images/ote/capacity.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Waitlist Capacity</p>
                     <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
@@ -75,7 +75,7 @@
                 <div class="effect hover2"></div>
             </div>
             <div class="div-option-details email-box" id="hoverDiv" @onclick="() => ticketModal.Show()">
-                <img class="option-img image-holder" src="images/ote/add.png" alt="cover-photo">
+                <img class="option-img image-holder" src="images/ote/add-ticket.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Add Tickets</p>
                     <p class="reg-status">@modelPricingList.Pricings.Count() tickets available</p>
@@ -139,7 +139,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv" 
                     @onclick="OnPendingEmailTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
-                        <img class="me-2 image-holder" src="images/ote/tiny-clock.png" alt="clock">
+                        <img class="me-2 image-holder" src="images/ote/clock.svg" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
@@ -167,7 +167,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv"
                     @onclick="OnAcceptedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
-                        <img class="me-2" src="images/ote/tiny-check.png" alt="check">
+                        <img class="me-2" src="images/ote/confirmed.svg" alt="check">
                         <p class="font-16 color-grey-100 mb-0">Going</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
@@ -195,7 +195,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer email-box" id="hoverDiv"
                     @onclick="OnDeclinedTemplateClick">
                     <div class="d-flex align-items-center mb-2 text-box">
-                        <img class="me-2" src="images/ote/tiny-close.png" alt="close">
+                        <img class="me-2" src="images/ote/declined.svg" alt="close">
                         <p class="font-16 color-grey-100 mb-0">Declined</p>
                     </div>
                     <div class="line-effect div-line mb-1"></div>
@@ -237,7 +237,7 @@
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
                     <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
-                        <DropdownToggle Size="Size.Small">
+                        <DropdownToggle Size="Size.Small" class="w-100">
                             @nameQuestion
                         </DropdownToggle>
                         <DropdownMenu class="border-radius-10 mt-1">
@@ -258,7 +258,7 @@
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
                     <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
-                        <DropdownToggle Size="Size.Small">
+                        <DropdownToggle Size="Size.Small" class="w-100">
                             @emailQuestion
                         </DropdownToggle>
                         <DropdownMenu class="border-radius-10 mt-1">
@@ -279,7 +279,7 @@
             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                 <div>
                     <Dropdown Background="Background.White" Border="Border.RoundedPill" TextAlignment="TextAlignment.Center">
-                        <DropdownToggle Size="Size.Small">
+                        <DropdownToggle Size="Size.Small" class="w-100">
                             @phoneQuestion
                         </DropdownToggle>
                         <DropdownMenu class="border-radius-10 mt-1">
@@ -392,15 +392,15 @@
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if (selectedEmailTemplate == 0)
             {
-                <img src="images/ote/tiny-clock.png" alt="clock">
+                <img src="images/ote/clock.svg" alt="clock">
             }
             @if (selectedEmailTemplate == 1)
             {
-                <img src="images/ote/tiny-check.png" alt="check">
+                <img src="images/ote/confirmed.svg" alt="check">
             }
             @if (selectedEmailTemplate == 2)
             {
-                <img src="images/ote/tiny-close.png" alt="close">
+                <img src="images/ote/declined.svg" alt="close">
             }
             <button class="btn-close" style="right: 0;" @onclick="CloseOffCanvas" />
         </div>
