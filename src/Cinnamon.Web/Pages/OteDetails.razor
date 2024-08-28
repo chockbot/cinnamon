@@ -91,11 +91,11 @@
                 <div class="d-flex">
                     <div class="me-4 prevent-select" @onclick="OnFavoriteClick">
                         <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Add to Favorites</label>
-                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.png" : "images/ote/heart-default.png")' alt="favorite">
+                        <img style="width: 25px;" class="cursor-pointer h-auto" src='@(isActivityFavorite ?  "images/ote/favorite.svg" : "images/ote/heart-default.png")' alt="favorite">
                     </div>
                     <div class="cursor-pointer prevent-select" @onclick="CopyToClipboard">
                         <label class="m-d-none cursor-pointer me-1 font-20 color-grey-100 font-weight-400 text-decoration-underline">Share this Activity</label>
-                        <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.png" alt="share">
+                        <img style="width: 20px;" class="cursor-pointer h-auto" src="images/ote/copy-link.svg" alt="share">
                     </div>
                 </div>
 
@@ -1305,6 +1305,13 @@
 
     private Task AddSelectedTicket(OtePricing pricing, int limitTicket)
     {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return Task.CompletedTask;
+        }
         if (pricing.IsUnlimited || activity.IsEventSoldOut)
         {
             if (activity.IsEventSoldOut && !pricing.IsUnlimited)

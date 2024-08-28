@@ -312,12 +312,14 @@
     }
 
     ::deep .ticket-limit-group .form-control {
-        width: 15%;
+        width: 20%;
     }
-
+.label-no-limit {
+    padding-right: 0.75rem;
+}
 .label-set-limit {
     padding-right: 0.75rem;
-    padding-left: 0.75rem;
+    padding-left: 0rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     text-transform: capitalize;
@@ -394,10 +396,15 @@
     .date-right {
         width: 40%;
     }
-
+    ::deep .ticket-limit-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
     ::deep .ticket-limit-group .form-control {
         width: 50%;
         margin-top: 12%;
+
     }
 
     .specific-text {
@@ -468,6 +475,19 @@
 
     ::deep .registration-section {
         background-color: #f3f6fc;
+    }
+    ::deep .ticket-limit-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .label-set-limit {
+        padding-right: 0;
+        padding-left: 0;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        text-transform: capitalize;
+        cursor: pointer;
+        user-select: none;
     }
 }
 
