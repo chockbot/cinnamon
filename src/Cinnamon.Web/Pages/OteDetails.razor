@@ -21,6 +21,7 @@
 @inject IJSRuntime JS;
 @inject IChatApiHandler chatApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorage localStorage;
 
 <PageTitle>@(activity?.EventName ?? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH") | CinnamonPH</PageTitle>
 <SeoMeta Title="@(activity?.EventName ?? string.Empty)"
@@ -422,9 +423,16 @@
                                         if (activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited)
                                         {
                                             <div class="schedule-footer">
-                                                <button class="btn-join-waitlist" @onclick="() => JoinWaitlist()">
-                                                    <span>Join Waitlist</span>
-                                                </button>
+                                                <Button Disabled="submitting" Loading="submitting" style="width: 90%;" 
+                                                    class="border-radius-10 bg-blue-100 color-white-100 font-20 font-weight-700" 
+                                                    Clicked="JoinWaitlist">
+                                                    <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Join Waitlist
+                                                    </ChildContent>
+                                                </Button>
                                             </div>
                                         }
                                         else
@@ -530,25 +538,92 @@
     <ModalContent Centered class="border-radius-15">
         <ModalHeader class="justify-content-center pb-0">
             <div>
-                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Waitlist Registration</p>
-                <p class="font-16 color-grey-100 mt-1 text-center">Please Fill up some questions to complete your registration</p>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Registration</p>
+                <p class="font-16 color-grey-100 mt-1 text-center">Please fill up some questions to complete your registration</p>
             </div>
         </ModalHeader>
         <ModalBody class="px-4">
-            <Validations @ref="phoneValidation" Mode="ValidationMode.Manual" Model="personalForm">
-                <Validation>
-                    <Field class="mb-3">
-                        <FieldLabel class="color-black-100 mb-0">Phone Number</FieldLabel>
-                        <FieldBody>
-                            <TextEdit @bind-Text="personalForm.Phone">
-                                <ValidationError />
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
+            <Validations @ref="predefinedQuestionValidation" Mode="ValidationMode.Manual" Model="predefinedQuestion">
+                @if(predefinedQuestion.HaveNameQuestion)
+                {
+                    @if(predefinedQuestion.RequiredNameQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Name</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.NameAnswer" Placeholder="Your Name" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HaveEmailQuestion)
+                {
+                    @if(predefinedQuestion.RequiredEmailQuestion)
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Email</FieldLabel>
+                            <FieldBody>
+                                <TextEdit Role="TextRole.Email" @bind-Text="predefinedQuestion.EmailAnswer" Placeholder="Your Email" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
+
+                @if(predefinedQuestion.HavePhoneQuestion)
+                {
+                    @if(predefinedQuestion.RequiredPhoneQuestion || string.IsNullOrEmpty(predefinedQuestion.PhoneAnswer))
+                    {
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" >
+                                        <ValidationError />
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    }
+                    else 
+                    {
+                        <Field class="mb-3">
+                            <FieldLabel class="color-black-100 mb-0">Contact Number</FieldLabel>
+                            <FieldBody>
+                                <TextEdit @bind-Text="predefinedQuestion.PhoneAnswer" Placeholder="Your Contact Number" />
+                            </FieldBody>
+                        </Field>
+                    }
+                }
             </Validations>
-            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="activityQuestions">
-                @foreach (var question in activityQuestions)
+            <Validations @ref="questionValidation" Mode="ValidationMode.Manual" Model="filteredQuestions">
+                @foreach (var question in filteredQuestions)
                 {
                     if(question.Required)
                     {
@@ -640,7 +715,7 @@
 </Modal>
 
 @code
-    {
+{
     [Parameter]
     public string Handler {get; set;} = string.Empty;
     private OteActivity? activity;
@@ -684,11 +759,17 @@
     private Modal? modalQuestions;
     private Validations? questionValidation;
     private Validations? phoneValidation;
-    private PersonalValidation personalForm = new();
+    
     private CoreDto.Activity.TopBookedCustomersDTO topBookedCustomers = new ();
     private Modal? modalPurchaseWithConfirmation;
     private Modal? modalPurchaseWithoutConfirmation;
     bool submitting = false;
+
+    private const string TRACKER_ID = "checkout";
+
+    private PredefinedQuestion predefinedQuestion = new();
+    private Validations? predefinedQuestionValidation;
+    private List<ActivityQuestion> filteredQuestions = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -1014,55 +1095,98 @@
         }
     }
 
-    private async Task ProceedToPayment()
+    private Task ProceedToPayment()
     {
+        if(currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            signInReturnUrl = oteDetailsUrl;
+            
+            return loginModal.Show();
+        }
+
         if(selectedTickets.Count <= 0)
         {
-            await NotificationService.Error("Select a ticket to proceed.", "Oops!");
-            return;
+            return NotificationService.Error("Select a ticket to proceed.", "Oops!");
         }
 
         bool havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
         if(havePaidAndFreeTicket)
         {
-            await NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
-            return;
+            return NotificationService.Error("Combining free and paid tickets is not permitted.", "Invalid");
         }
 
-        bool haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
 
         bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
 
-        if(haveApprovalTicket)
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions) return modalQuestions?.Show();
+
+        if(isFreeWithoutApproval || freeWithApproval) return ProceedToFreePurchase();
+
+        return ProceedToPaymentOption();
+    }
+
+    private async Task<PaymentTracker> CreatePaymentTracker(string guid = "", string webToken = "")
+    {
+        var question = GetQuestions();
+
+        var requestPaymentRes = await transactionApiHandler.PaymentRequest(new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs {
+            ActivityId = activity.Id,
+            Guid = guid,
+            Token = webToken,
+            SelectedDate = selectedDate,
+            SelectedTickets = selectedTickets.Select(t => new Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.RequestPaymentTicket {
+                TicketCount = t.Value.Count,
+                TicketId = t.Value.Id
+            }),
+            Questions = question.Select(q => new  Framework.ApiCommand.ApiCore.Transaction.Request.PaymentRequestArgs.ProviderQuestion {
+                Answer = q.Answer,
+                Question = q.Question,
+                Id = q.Id
+            })
+        }, token);
+        if(!requestPaymentRes.Succeeded || requestPaymentRes.Result is null || !requestPaymentRes.Result.IsSuccess)
         {
-            await modalQuestions?.Show();
+            return null;
         }
-        else if(isFreeWithoutApproval)
-        {
-            await ProceedToFreePurchase();
-        }
-        else 
-        {
-            await ProceedToPaymentOption();
-        }
+        var requestedToken = requestPaymentRes.Result.Result;
+
+        return new PaymentTracker {
+            Guid = requestedToken.Guid,
+            Token = requestedToken.Token
+        };
     }
 
     private async Task ProceedToPaymentOption()
     {
-        string queryValue = string.Empty;
-        foreach(var item in selectedTickets)
+        submitting = true;
+        StateHasChanged();
+
+        string guid = string.Empty, webToken = string.Empty;
+
+        var getTracker = await localStorage.GetItem<PaymentTracker>(TRACKER_ID);
+        if(getTracker is not null)
         {
-            queryValue += $"{item.Value.Id}-{item.Value.Count}-{selectedDate.ToString("dd MMMM yyyy")}-{selectedDate.ToString("hh:mm tt").ToUpper()}-{ticketCount},";
+            guid = getTracker.Guid;
+            webToken = getTracker.Token;
         }
 
-        string paymentUrl = $"/payment/ote/{Handler}/?ticket={queryValue}";
-        if(currentLogin is null)
+        var createTracker = await CreatePaymentTracker(guid, webToken);
+        if(createTracker is null)
         {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
-            signInReturnUrl = oteDetailsUrl;
+            await NotificationService.Error("An error occured. Please contact support.", "Error");
             return;
         }
+
+        await TrackPaymentRequest(createTracker);
+
+        submitting = false;
+        StateHasChanged();
+
+        string paymentUrl = $"/payment/ote/{Handler}/?guid={createTracker.Guid}&token={createTracker.Token}";
 
         NavigationManager.NavigateTo(paymentUrl);
     }
@@ -1071,16 +1195,17 @@
     {
         try
         {
-            if (currentLogin is null)
+            submitting = true;
+            StateHasChanged();
+
+            var createTracker = await CreatePaymentTracker();
+            if(createTracker is null)
             {
-                string oteDetailsUrl = $"/explore/ote/{Handler}";
-                await loginModal.Show();
-                signInReturnUrl = oteDetailsUrl;
+                await NotificationService.Error("An error occured. Please contact support.", "Error");
                 return;
             }
 
-            submitting = true;
-            StateHasChanged();
+            var questions = GetQuestions();
 
             var submitFreePurchase = await transactionApiHandler.SubmitOtePurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs {
                 ActivityId = activity.Id,
@@ -1093,11 +1218,13 @@
                     Count = t.Value.Count,
                     Id = t.Value.Id
                 }),
-                Questions = activityQuestions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
+                Questions = questions.Select(q => new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitOtePurchaseOrderArgs.ActivityQuestion {
                     Answer = q.Answer,
                     Id = q.Id,
                     Question = q.Question
-                })
+                }),
+                Guid = createTracker.Guid,
+                Token = createTracker.Token
             }, token);
 
             submitting = false;
@@ -1137,6 +1264,10 @@
 
     private Task ClearAnswers()
     {
+        predefinedQuestion.NameAnswer = string.Empty;
+        predefinedQuestion.EmailAnswer = string.Empty;
+        predefinedQuestion.PhoneAnswer = string.Empty;
+        
         foreach (var item in activityQuestions)
         {
             item.Answer = string.Empty;
@@ -1454,6 +1585,14 @@
 
     private async Task JoinWaitlist()
     {
+        if (currentLogin is null)
+        {
+            string oteDetailsUrl = $"/explore/ote/{Handler}";
+            await loginModal.Show();
+            signInReturnUrl = oteDetailsUrl;
+            return;
+        }
+
         //0 NO STATUS 1 PENDING 2 APPROVED 3 DECLINED
         //Get Selected Ticket
         var havePaidAndFreeTicket = selectedTickets.Any(t => t.Value.Price == 0) && selectedTickets.Any(t => t.Value.Price != 0);
@@ -1467,28 +1606,21 @@
             await NotificationService.Error("Select a ticket to proceed.", "Oops!");
             return;
         }
-        
-        var haveApprovalTicket = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
-        
-        if(haveApprovalTicket)
+
+        bool haveQuestions = activityQuestions.Count > 0;
+
+        if(haveQuestions)
         {
             await modalQuestions?.Show();
+            return;
         }
-        else
-        {
-            await ProceedToJoinWaitlist();
-        }    
+
+        await ProceedToJoinWaitlist(); 
     }
 
     private async Task ProceedToJoinWaitlist()
     {
-        if (currentLogin is null)
-        {
-            string oteDetailsUrl = $"/explore/ote/{Handler}";
-            await loginModal.Show();
-            signInReturnUrl = oteDetailsUrl;
-            return;
-        }
+        var questions = GetQuestions();
 
         var payload = new 
         {
@@ -1499,7 +1631,7 @@
                 Price = t.Value.Price,
                 Name = t.Value.Name,
             }),
-            Questions = activityQuestions.Select(q => new {
+            Questions = questions.Select(q => new {
                 Id = q.Id,
                 Question = q.Question,
                 Answer = q.Answer
@@ -1507,6 +1639,9 @@
         };
 
         var serializedPayload = JsonConvert.SerializeObject(payload);
+
+        submitting = true;
+        StateHasChanged();
 
         //Add to Waitlist
         var waitlist = await activityHandler.CreateOteWaitlist(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOteWaitlistArgs
@@ -1526,6 +1661,9 @@
             await NotificationService.Success("Successfully added to waitlist.", "Success");
             await LoadWaitlist();
         }
+
+        submitting = false;
+        StateHasChanged();
     }
 
     private async Task ConfirmDeleteChanged(bool value)
@@ -1557,23 +1695,47 @@
             Question = q.FieldLabel,
             Required = q.Required
         }));
+
+        var filtered = activityQuestions
+            .Where(q => q.Question != predefinedQuestion.NameQuestion && 
+                q.Question != predefinedQuestion.EmailQuestion && 
+                q.Question != predefinedQuestion.PhoneQuestion);
+
+        filteredQuestions.AddRange(filtered); 
+
+        await LoadPredefinedQuestions();
     }
 
     private async Task SubmitAnswerQuestions()
     {
-        var validForms = await questionValidation.ValidateAll();
-        if(!validForms) return;
+        var validForms = await questionValidation?.ValidateAll();
+        var validPredefined = await predefinedQuestionValidation?.ValidateAll();
+        if(!validForms || !validPredefined) return;
+
+        await questionValidation.ClearAll();
+        await predefinedQuestionValidation.ClearAll();
 
         await modalQuestions?.Close(CloseReason.UserClosing);
 
-        if ((activity.IsCapacity) && (activity.CapacityCount <= activity.Sold))
+        bool proceedToWaitList = activity.IsCapacity && activity.IsEventSoldOut && selectedTickets.Count <= capacityLimit && !selectedTickets.First().Value.IsUnlimited;
+
+        bool freeWithApproval = selectedTickets.Any(t => t.Value.Price == 0 && t.Value.RequiredApproval);
+
+        bool isFreeWithoutApproval = selectedTickets.Any(t => t.Value.Price == 0 && !t.Value.RequiredApproval);
+
+        if(proceedToWaitList)
         {
-             await ProceedToJoinWaitlist();
+            await ProceedToJoinWaitlist();
+            return;
         }
-        else 
+
+        if(isFreeWithoutApproval || freeWithApproval)
         {
             await ProceedToFreePurchase();
+            return;
         }
+
+        await ProceedToPaymentOption();
     }
 
     private async Task LoadTopBooked()
@@ -1608,6 +1770,83 @@
         return String.Join(" ", result);
     }
 
+    private async Task TrackPaymentRequest(PaymentTracker track)
+    {
+        await localStorage.SetItem(TRACKER_ID, track);
+    }
+
+    private class PaymentTracker 
+    {
+        public string Guid {get; set;}
+        public string Token {get; set;}
+    }
+
+    private bool HavePredefinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null;
+    }
+
+    private bool RequiredPredeinedQuestion(string question)
+    {
+        var predefinedQuestion = activityQuestions.FirstOrDefault(q => q.Question == question);
+        return predefinedQuestion is not null && predefinedQuestion.Required;
+    }
+
+    private Task LoadPredefinedQuestions()
+    {
+        predefinedQuestion.HaveNameQuestion = HavePredefinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.HaveEmailQuestion = HavePredefinedQuestion(predefinedQuestion.EmailQuestion);    
+        predefinedQuestion.HavePhoneQuestion = HavePredefinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        predefinedQuestion.RequiredNameQuestion = RequiredPredeinedQuestion(predefinedQuestion.NameQuestion);
+        predefinedQuestion.RequiredEmailQuestion = RequiredPredeinedQuestion(predefinedQuestion.EmailQuestion);
+        predefinedQuestion.RequiredPhoneQuestion = RequiredPredeinedQuestion(predefinedQuestion.PhoneQuestion);
+
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<ActivityQuestion> GetQuestions()
+    {
+        var questions = new List<ActivityQuestion>();
+
+        if(predefinedQuestion.HaveNameQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.NameAnswer,
+                Question = "Name",
+            });
+        }
+
+        if(predefinedQuestion.HaveEmailQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.EmailAnswer,
+                Question = "Email",
+            });
+        }
+
+        if(predefinedQuestion.HavePhoneQuestion)
+        {
+            questions.Add(new ActivityQuestion {
+                Id = 0,
+                Answer = predefinedQuestion.PhoneAnswer,
+                Question = "Phone",
+            });
+        }
+
+        questions.AddRange(filteredQuestions.Select(q => new ActivityQuestion {
+            Id = q.Id,
+            Answer = q.Answer,
+            Question = q.Question,
+            Required = q.Required
+        }));
+
+        return questions;
+    }
+
     private class TicketItem
     {
         public int PurchaseOrderId { get; set; }
@@ -1634,24 +1873,6 @@
         public string Phone {get; set;}
     }
 
-    private class StorageData 
-    {
-        public int ActivityId {get; set;}
-        public IEnumerable<StorageQuestion> Questions {get; set;} 
-    }
-
-    private class StorageQuestion 
-    {
-        public int Id {get; set;}
-        public string Question {get; set;}
-        public string Answer {get; set;}
-    }
-    public class Payload
-    {
-        public IEnumerable<TicketDetails> Tickets { get; set; }
-        public IEnumerable<QuestionDetails> Questions { get; set; }
-    }
-
     public class TicketDetails
     {
         public int Id { get; set; }
@@ -1666,5 +1887,31 @@
     {
         public string Question { get; set; }
         public string Answer { get; set; }
+    }
+
+    private class PredefinedQuestion 
+    {
+        public string NameQuestion {get; set;} = "##Name";
+        public string EmailQuestion {get; set;} = "##Email";
+        public string PhoneQuestion {get; set;} = "##Phone";
+
+        [Required(ErrorMessage = "Required your name")]
+        public string NameAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your email")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string EmailAnswer {get; set;} = string.Empty;
+
+        [Required(ErrorMessage = "Required your mobile number")]
+        [RegularExpression(@"^(\+63|0)[0-9]{10}$", ErrorMessage = "Invalid mobile number")]
+        public string PhoneAnswer {get; set;} = string.Empty;
+
+        public bool HaveNameQuestion {get; set;}
+        public bool HaveEmailQuestion {get; set;}
+        public bool HavePhoneQuestion {get; set;}
+
+        public bool RequiredNameQuestion {get; set;}
+        public bool RequiredEmailQuestion {get; set;}
+        public bool RequiredPhoneQuestion {get; set;}
     }
 }

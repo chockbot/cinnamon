@@ -1,15 +1,16 @@
-using System.Text;
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Hubs;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Flurl;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.SignalR;
 using QRCoder;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
@@ -25,12 +26,16 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
     private readonly ITokenGeneratedData tokenGeneratedData;
     private readonly ApplicationConfig applicationConfig;
     private readonly IPurchaseOrderData purchaseOrderData;
+    private readonly ICreateChatRoomHandler createChatRoomHandler;
+    private readonly IHubContext<ChatHub> chathub;
+    private readonly ICustomerData customerData;
 
     public ApprovedFreeWaitListHandler(IActivityData activityData, IGetProfileHandler getProfileHandler,
         IJsonSerializationProvider jsonSerializationProvider, IOteTicketData oteTicketData,
         IOteFindByHandler oteFindByHandler, IGetActivityHandler getActivityHandler,
         ITokenGeneratedData tokenGeneratedData, ApplicationConfig applicationConfig,
-        IPurchaseOrderData purchaseOrderData)
+        IPurchaseOrderData purchaseOrderData, ICreateChatRoomHandler createChatRoomHandler,
+        IHubContext<ChatHub> chathub, ICustomerData customerData)
     {
         this.activityData = activityData;
         this.getProfileHandler = getProfileHandler;
@@ -41,6 +46,9 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         this.tokenGeneratedData = tokenGeneratedData;
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
+        this.createChatRoomHandler = createChatRoomHandler;
+        this.chathub = chathub;
+        this.customerData = customerData;
     }
 
     public AppResult<ApprovedFreeWaitListResult> Execute(ApprovedFreeWaitListArgs args)
@@ -79,6 +87,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                 return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
                     new ApplicationException("Invalid selected activity. Invalid request."), "Invalid selected activity. Invalid request.");
             }
+            var activity = activityRes.Result;
 
             var oteActivityRes = await oteFindByHandler.ExecuteAsync(new ActivityService.Interactors.OteFindByHandlerArgs {
                 Handler = activityRes.Result.Handler,
@@ -107,6 +116,14 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
             }
             var purchaseOrder = purchaseOrderRes.Result.Result;
 
+            var customerDetail = await customerData.GetCustomerById(purchaseOrder.CustomerId);
+            if(!customerDetail.Succeeded || customerDetail.Result is null || !customerDetail.Result.IsSuccess)
+            {
+                return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
+                    new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+            }
+            var customer = customerDetail.Result.Result;
+
             var purchaseOrderPayload = jsonSerializationProvider.Deserialize<PurchaseOrderPayload>(purchaseOrder.Payload);
             if(purchaseOrderPayload is null || string.IsNullOrEmpty(purchaseOrderPayload.Guid) || string.IsNullOrEmpty(purchaseOrderPayload.Token))
             {
@@ -114,31 +131,34 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                     new ApplicationException("Invalid transaction payload."), "Invalid transaction payload.");
             }
 
+            int oteScheduleId = oteActivity.OteDates.First().OteScheduleId;
+
+            List<Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs> ticketsToCreate = new();
+
             foreach(var item in deserializedPayload.Tickets)
             {
-                var qrcode = CreateCode();
-
-                item.ImageData = GenerateQRCode(qrcode);
-                item.QRCode = qrcode;
+                for(int i = 0; i < item.Count; i++)
+                {
+                    var qrcode = CreateCode();
+                    ticketsToCreate.Add(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
+                        ActivityId = waitlist.ActivityId,
+                        Amount = 0,
+                        CustomerId = waitlist.CustomerId,
+                        OteDateId = item.OteDateId,
+                        OteScheduleId = oteScheduleId,
+                        OteSchedulePricingId = item.Id,
+                        PurchaseOrderId = deserializedPayload.TransactionId,
+                        QRCode = qrcode,
+                        QRImageData = GenerateQRCode(qrcode),
+                        Status = "UNVERIFIED",
+                        Title = item.Name
+                    });
+                }
             }
-
-            int oteScheduleId = oteActivity.OteDates.First().OteScheduleId;
 
             var createTicketRes = await oteTicketData.CreateTickets(new Framework.ApiCommand.ApiData.OteTicket.Request.CreateManyOteTicketsArgs {
                 IncludeImageAsResult = false,
-                Tickets = deserializedPayload.Tickets.Select(t => new Framework.ApiCommand.ApiData.OteTicket.Request.CreateOteTicketArgs {
-                    ActivityId = waitlist.ActivityId,
-                    Amount = 0,
-                    CustomerId = waitlist.CustomerId,
-                    OteDateId = t.OteDateId,
-                    OteScheduleId = oteScheduleId,
-                    OteSchedulePricingId = t.Id,
-                    PurchaseOrderId = deserializedPayload.TransactionId,
-                    QRCode = t.QRCode,
-                    QRImageData = t.ImageData,
-                    Status = "UNVERIFIED",
-                    Title = t.Name
-                })
+                Tickets = ticketsToCreate
             });
             if(!createTicketRes.Succeeded || createTicketRes.Result is null || !createTicketRes.Result.IsSuccess)
             {
@@ -170,31 +190,31 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
                 .AppendPathSegment(purchaseOrderPayload.Guid)
                 .AppendPathSegment(purchaseOrderPayload.Token);
 
-            IDictionary<int, int> ticketSolds = new Dictionary<int, int>();
-
-            foreach (var ticket in deserializedPayload.Tickets)
-            {
-                if(!ticketSolds.ContainsKey(ticket.Id))
-                {
-                    ticketSolds.Add(ticket.Id, 1);
-                }
-                else 
-                {
-                    ticketSolds[ticket.Id] += 1;
-                }
-            }
-
             // update tickets sold
             var addTicketSoldRes = await activityData.AddTicketSolds(new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs {
-                TicketSolds = ticketSolds.Select(t => new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs.AddTicketSold {
-                    Id = t.Key,
-                    TicketSold = t.Value
+                TicketSolds = deserializedPayload.Tickets.Select(t => new Framework.ApiCommand.ApiData.Activity.Request.AddTicketSoldArgs.AddTicketSold {
+                    Id = t.Id,
+                    TicketSold = t.Count
                 })
             });
             if(!addTicketSoldRes.Succeeded || addTicketSoldRes.Result is null || !addTicketSoldRes.Result.IsSuccess)
             {
                 return AppResult<ApprovedFreeWaitListResult>.CreateFailed(
                     new ApplicationException("An error occured when updating ticket sold."), "An error occured when updating ticket sold.");
+            }
+
+            // add in group chat
+            var groupName = Guid.NewGuid().ToString();
+            var createChatRes = await createChatRoomHandler.ExecuteAsync(new ChatService.Interactors.CreateChatRoomArgs {
+                ChatName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group",
+                ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                FromUserId = purchaseOrder.CustomerId,
+                GroupName = groupName,
+                ToUserId = activity.Owner?.Id ?? 0
+            });
+            if(createChatRes.Succeeded && createChatRes.Result is not null)
+            {
+                await chathub.Clients.All.SendAsync("AddToGroupAfterPayment", $"{createChatRes.Result.GroupName}|{createChatRes.Result.ChatRoomId}|{customer.Id}|{customer.FirstName}|{customer.LastName}|{customer.ProfileImg}|{activity.Owner?.FirstName} {activity.Owner?.LastName}'s Chat Group");
             }
 
             return AppResult<ApprovedFreeWaitListResult>.CreateSucceeded(new ApprovedFreeWaitListResult {
@@ -234,10 +254,7 @@ public class ApprovedFreeWaitListHandler : IApprovedFreeWaitListHandler
         public int Id {get; set;}
         public string Name {get; set;}
         public int OteDateId {get; set;}
-
-        // extra options
-        public string ImageData {get; set;}
-        public string QRCode {get; set;}
+        public int Count {get; set;}
     }
 
     private class PayloadData 
