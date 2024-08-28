@@ -1510,51 +1510,6 @@
         return modalCustomQuestion?.Show();
     }
 
-    private void CheckboxChanged(ChangeEventArgs e)
-    {
-        modelPricing.IsFree = !(bool)e.Value;
-        if (modelPricing.IsFree)
-        {
-            modelPricing.Price = 0;
-        }
-        else
-        {
-            modelPricing.RequiredApproval = false;
-        }
-    }
-
-    private void IsUnlimitedChanged(ChangeEventArgs e)
-    {
-        modelPricing.IsUnlimited = (bool)e.Value;
-        modelPricing.MaxSlots = modelPricing.IsUnlimited == true ? 0 : modelPricing.MaxSlots;
-        MaxSlotsChanged(e);
-    }
-
-    private void PriceChanged(object value)
-    {
-        ValidatePricing();
-    }
-
-    private void MaxSlotsChanged(object value)
-    {
-        ValidatePricing();
-    }
-
-    private async Task ValidatePricing()
-    {
-        var validationContext = new ValidationContext(modelPricing);
-        Validator.TryValidateObject(modelPricing, validationContext, null, true);
-        await pricingFormValidation.ValidateAll();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (hoverEffectModule != null)
-        {
-            await hoverEffectModule.DisposeAsync();
-        }
-    }
-
     private IEnumerable<CustomQuestion> FilteredQuestions 
     {
         get {
