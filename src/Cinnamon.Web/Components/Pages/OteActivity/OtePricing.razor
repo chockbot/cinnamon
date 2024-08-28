@@ -58,21 +58,21 @@
         <p class="sub-text">Note: If tickets have already been purchased, users cannot delete ticket details. You can only edit the ticket description, price, and maximum slots. The ticket name is fixed, and the section cannot be deleted.</p>
         <div class="ticket-options">
             <div class="div-option-details" @onclick="() => registrationModal.Show()">
-                <img class="option-img" src="images/ote/registration.png" alt="cover-photo">
+                <img class="option-img" src="images/ote/registration.svg" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Registration</p>
                     <p class="reg-status">@((ModelState.IsOpen == true) ? "Open" : "Closed")</p>
                 </div>
             </div>
             <div class="div-option-details" @onclick="() => capacityModal.Show()">
-                <img class="option-img" src="images/ote/capacity.png" alt="cover-photo">
+                <img class="option-img" src="images/ote/capacity.svg" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Waitlist Capacity</p>
                     <p class="reg-status">@((ModelState.IsCapacity == true) ? $"{ModelState.CapacityCount}" : "Off") &#x2022; Waitlist</p>
                 </div>
             </div>
             <div class="div-option-details" @onclick="() => ticketModal.Show()">
-                <img class="option-img" src="images/ote/add.png" alt="cover-photo">
+                <img class="option-img" src="images/ote/add-ticket.svg" alt="cover-photo">
                 <div class="option-name">
                     <p class="registration">Add Tickets</p>
                     <p class="reg-status">@modelPricingList.Pricings.Count() tickets available</p>
@@ -152,7 +152,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnPendingEmailTemplateClick">
                     <div class="d-flex align-items-center mb-2">
-                        <img class="me-2" src="images/ote/tiny-clock.png" alt="clock">
+                        <img class="me-2" src="images/ote/clock.svg" alt="clock">
                         <p class="font-16 color-grey-100 mb-0">Pending Approval</p>
                     </div>
                     <div class="div-line mb-1"></div>
@@ -179,7 +179,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnAcceptedTemplateClick">
                     <div class="d-flex align-items-center mb-2">
-                        <img class="me-2" src="images/ote/tiny-check.png" alt="check">
+                        <img class="me-2" src="images/ote/confirmed.svg" alt="check">
                         <p class="font-16 color-grey-100 mb-0">Going</p>
                     </div>
                     <div class="div-line mb-1"></div>
@@ -206,7 +206,7 @@
                 <div class="bg-white-100 border-radius-10 p-2 cursor-pointer"
                     @onclick="OnDeclinedTemplateClick">
                     <div class="d-flex align-items-center mb-2">
-                        <img class="me-2" src="images/ote/tiny-close.png" alt="close">
+                        <img class="me-2" src="images/ote/declined.svg" alt="close">
                         <p class="font-16 color-grey-100 mb-0">Declined</p>
                     </div>
                     <div class="div-line mb-1"></div>
@@ -378,15 +378,15 @@
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if(selectedEmailTemplate == 0)
             {
-                <img src="images/ote/tiny-clock.png" alt="clock">
+                <img src="images/ote/clock.svg" alt="clock">
             }
             @if(selectedEmailTemplate == 1)
             {
-                <img src="images/ote/tiny-check.png" alt="check">
+                <img src="images/ote/confirmed.svg" alt="check">
             }
             @if(selectedEmailTemplate == 2)
             {
-                <img src="images/ote/tiny-close.png" alt="close">
+                <img src="images/ote/declined.svg" alt="close">
             }
             <button class="btn-close" style="right: 0;" @onclick="CloseOffCanvas" />
         </div>

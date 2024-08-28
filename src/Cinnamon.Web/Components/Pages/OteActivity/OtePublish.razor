@@ -83,7 +83,7 @@
                         <div @onclick="() => OnSelectedScheduledEmail(0)" 
                             class="bg-white-100 p-2 border-radius-10 cursor-pointer">
                             <div class="d-flex align-items-center mb-2">
-                                <img class="me-2" src="images/ote/red-bell.png" alt="bell">
+                                <img class="me-2" src="images/ote/bell.svg" alt="bell">
                                 <span class="font-16 color-black-100">Add Reminder Email</span>
                             </div>
                             <div class="div-line mb-2"></div>
@@ -110,7 +110,7 @@
                         <div @onclick="() => OnSelectedScheduledEmail(1)" 
                             class="bg-white-100 p-2 border-radius-10 cursor-pointer">
                             <div class="d-flex align-items-center mb-2">
-                                <img class="me-2" src="images/ote/yellow-star.png" alt="bell">
+                                <img class="me-2" src="images/ote/star.svg" alt="bell">
                                 <span class="font-16 color-black-100">Add Feedback Email</span>
                             </div>
                             <div class="div-line mb-2"></div>
@@ -225,11 +225,11 @@
         <div class="px-3 d-flex justify-content-between position-relative w-100">
             @if(selectedEmailSchedule == 0)
             {
-                <img src="images/ote/small-red-bell.png" alt="bell">
+                <img src="images/ote/bell-no-circle.svg" alt="bell">
             }
             @if(selectedEmailSchedule == 1)
             {
-                <img src="images/ote/small-yello-star.png" alt="bell">
+                <img src="images/ote/star-no-circle.svg" alt="bell">
             }
             <button class="btn-close" style="right: 0;" @onclick="OnOffCanvasCancelled" />
         </div>
