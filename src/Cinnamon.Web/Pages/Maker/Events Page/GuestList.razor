@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Models.Ote
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IJSRuntime jsRuntime
 
 @if (activity != null)
 {
@@ -172,6 +173,13 @@
     {
         //Get Customer List
         await GetCustomerList(1);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/exportToExcel.js");
+        }
     }
     private async Task GetCustomerList(int pageIndex)
     {
