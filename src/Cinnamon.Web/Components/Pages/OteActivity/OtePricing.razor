@@ -777,7 +777,7 @@
     IJSObjectReference hoverEffectModule;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
+
         await Task.Delay(2000);
         await JS.InvokeVoidAsync("MyLib.Utils.hoverEffect.addHoverEffect", "#hoverDiv");
         if (IsEditRegistration)
@@ -1310,7 +1310,7 @@
     {
         if(pricing.TicketSold > 0)
         {
-             await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
+            await NotificationService.Info("This ticket has already been purchased; other details cannot be edited. You can only edit the ticket name and quantity.", "Information");
         }
         await OnEditTicket(pricing);
     }
@@ -1619,6 +1619,7 @@
         {
             modelPricing.RequiredApproval = false;
         }
+        ValidatePricing();
     }
     private void IsUnlimitedChanged(ChangeEventArgs e)
     {
