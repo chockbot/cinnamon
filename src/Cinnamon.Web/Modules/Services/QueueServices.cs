@@ -1,116 +1,109 @@
-﻿using RabbitMQ.Client;
+﻿using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+using System;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cinnamon.Web.Modules.Services
 {
     public class QueueServices
     {
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
-        public QueueServices()
+        private readonly IConfiguration _configuration;
+        private readonly QueueServiceClient _queueServiceClient;
+        private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(1);
+
+        public QueueServices(IConfiguration configuration)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" , UserName ="user", Password="password", VirtualHost ="my_vhost"};
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            // Initialize a default queue if needed
-            _channel.QueueDeclare(queue: "cinnamon-queue",
-                                durable: false,
-                                exclusive: false,
-                                autoDelete: false,
-                                arguments: null);
+            _configuration = configuration;
+            var connectionString = _configuration["AppConfig:Authentication:AzureQueue:ConnectionString"];
+            _queueServiceClient = new QueueServiceClient(connectionString);
         }
-        public void EnqueueUser(string handler, string userId)
+
+        public async Task EnqueueUserAsync(string handler, string userId)
         {
             string activeQueueName = $"{handler}-active-queue";
             string reservedQueueName = $"{handler}-reserved-queue";
 
-            //Create queue based on the event handler add checking if existing or not
             // Ensure queues exist
-            EnsureQueueExists(activeQueueName);
-            EnsureQueueExists(reservedQueueName);
+            await EnsureQueueExistsAsync(activeQueueName);
+            await EnsureQueueExistsAsync(reservedQueueName);
 
-            if (GetQueueLength(activeQueueName) >= 2)
+            if (await GetQueueLengthAsync(activeQueueName) >= 2)
             {
                 // Move to reserved queue if active queue is full
-                var body = Encoding.UTF8.GetBytes(userId);
-                _channel.BasicPublish(exchange: "",
-                                     routingKey: reservedQueueName,
-                                     basicProperties: null,
-                                     body: body);
+                var queueClient = _queueServiceClient.GetQueueClient(reservedQueueName);
+                await queueClient.SendMessageAsync(Convert.ToBase64String(Encoding.UTF8.GetBytes(userId)));
             }
             else
             {
-                StartUserTimer(userId, activeQueueName);
-                var body = Encoding.UTF8.GetBytes(userId);
-                _channel.BasicPublish(exchange: "",
-                                     routingKey: activeQueueName,
-                                     basicProperties: null,
-                                     body: body);
+                await StartUserTimerAsync(userId, activeQueueName);
+                var queueClient = _queueServiceClient.GetQueueClient(activeQueueName);
+                await queueClient.SendMessageAsync(Convert.ToBase64String(Encoding.UTF8.GetBytes(userId)));
             }
         }
 
-        private void EnsureQueueExists(string queueName)
+        private async Task EnsureQueueExistsAsync(string queueName)
         {
-            // Declare queue with default parameters
-            _channel.QueueDeclare(queue: queueName,
-                                  durable: true,
-                                  exclusive: false,
-                                  autoDelete: false,
-                                  arguments: null);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            await queueClient.CreateIfNotExistsAsync();
         }
 
-
-        public string DequeueUser(string queueName)
+        public async Task<string> DequeueUserAsync(string queueName)
         {
-            var result = _channel.BasicGet(queueName, true);
-            if (result != null)
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            QueueMessage[] retrievedMessage = await queueClient.ReceiveMessagesAsync(1);
+
+            if (retrievedMessage != null && retrievedMessage.Length > 0)
             {
-                var userId = Encoding.UTF8.GetString(result.Body.ToArray());
+                string userId = Encoding.UTF8.GetString(Convert.FromBase64String(retrievedMessage[0].MessageText));
+                await queueClient.DeleteMessageAsync(retrievedMessage[0].MessageId, retrievedMessage[0].PopReceipt);
                 return userId;
             }
             return null;
         }
 
-        public int GetQueueLength(string queueName)
+        public async Task<int> GetQueueLengthAsync(string queueName)
         {
-            var result = _channel.QueueDeclarePassive(queueName);
-            return (int)result.MessageCount;
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            var properties = await queueClient.GetPropertiesAsync();
+            return properties.Value.ApproximateMessagesCount;
         }
 
-        private void StartUserTimer(string userId, string activeQueueName)
+        private async Task StartUserTimerAsync(string userId, string activeQueueName)
         {
-            Timer timer = new Timer((state) =>
-            {
-                RemoveUserFromActiveQueue(userId, activeQueueName);
-            }, null, TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
+            await Task.Delay(ProcessingTime);
+            await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
         }
 
-        private void RemoveUserFromActiveQueue(string userId, string activeQueueName)
+        private async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
         {
             // Dequeue from the active queue
-            DequeueUser(activeQueueName);
+            await DequeueUserAsync(activeQueueName);
+
             // Move next user from reserved queue to active queue
             string reservedQueueName = $"{activeQueueName.Replace("-active-queue", "-reserved-queue")}";
+
             // Check if there are users in the reserved queue
-            if (GetQueueLength(reservedQueueName) > 0)
+            if (await GetQueueLengthAsync(reservedQueueName) > 0)
             {
-                var nextUser = DequeueUser(reservedQueueName);
+                var nextUser = await DequeueUserAsync(reservedQueueName);
                 if (nextUser != null)
                 {
-                    EnqueueUser(activeQueueName, nextUser);
+                    await EnqueueUserAsync(activeQueueName, nextUser);
                 }
             }
         }
 
-        public (int numberAhead, TimeSpan estimatedWaitingTime, DateTime lastStatusUpdate) GetReservedQueueUserInfo(string reservedQueueName, string activeQueueName, string userId)
+        public async Task<(int numberAhead, TimeSpan estimatedWaitingTime, DateTime lastStatusUpdate)> GetReservedQueueUserInfoAsync(string reservedQueueName, string activeQueueName, string userId)
         {
-            var queueLength = GetQueueLength(reservedQueueName);
-            var numberAhead = GetPositionInQueue(reservedQueueName, userId);
+            var queueLength = await GetQueueLengthAsync(reservedQueueName);
+            var numberAhead = await GetPositionInQueueAsync(reservedQueueName, userId);
 
             TimeSpan estimatedWaitingTime;
             if (numberAhead >= 0)
             {
-                var usersAheadInActiveQueue = Math.Max(0, GetQueueLength(activeQueueName) - 2);
+                var usersAheadInActiveQueue = Math.Max(0, await GetQueueLengthAsync(activeQueueName) - 2);
                 var totalUsersAhead = usersAheadInActiveQueue + numberAhead;
                 estimatedWaitingTime = TimeSpan.FromMinutes(totalUsersAhead * 10);
             }
@@ -124,14 +117,23 @@ namespace Cinnamon.Web.Modules.Services
             return (numberAhead, estimatedWaitingTime, lastStatusUpdate);
         }
 
-        private int GetPositionInQueue(string queueName, string userId)
+        private async Task<int> GetPositionInQueueAsync(string queueName, string userId)
         {
-            // Since RabbitMQ does not support direct querying of the position in a queue,
-            // you may need to maintain a separate list or database to track the position.
-            // This is a placeholder to illustrate the need for such a mechanism.
+            int position = -1;
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
 
-            // Placeholder logic: always return -1 (unknown position)
-            return -1;
+            var messages = await queueClient.PeekMessagesAsync(maxMessages: 100); // Adjust maxMessages as needed
+
+            for (int i = 0; i < messages.Value.Length; i++)
+            {
+                if (Encoding.UTF8.GetString(Convert.FromBase64String(messages.Value[i].MessageText)) == userId)
+                {
+                    position = i;
+                    break;
+                }
+            }
+
+            return position;
         }
     }
 }
