@@ -2,55 +2,54 @@
 @using Cinnamon.Web.Models.Ote
 
 <div class="overview-section">
-            <div class="overview-details">
-                <div class="event-image-section">
-                    <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
-                </div>
-                <div class="event-details">
-                    <p class="event-title">When & Where</p>
-                    <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/calendar.png" />
-                        <p class="event-schedule">@Activity.ScheduleFrom.ToString("MMMM dd, yyyy") | @Activity.ScheduleFrom.DayOfWeek</p>
-                    </div>
-                    <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/event-clock.png" />
-                        <p class="event-schedule">@Activity.ScheduleFrom.ToString("hh:mm tt")</p>
-                    </div>
-                    <div class="event-schedule-details">
-                        <img class="event-img" src="images/ote/event-location.png" />
-                        @if (Activity.ExperienceTypeId == 1)
-                        {
-                            @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
-                            {
-                                <p class="event-location">@Activity.PinnedLocation</p>
-                            }
-                            else
-                            {
-                                <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
-                            }
-                        }
-                        else
-                        {
-                            <p class="event-location">Online</p>
-                        }
-                        
-                    </div>
-                    <div class="event-buttons">
-                        <button class="btn-event">View Event Page</button>
-                        <button class="btn-event">Manage Event</button>
-                    </div>
-                </div>
+    <div class="overview-details">
+        <div class="event-image-section">
+            <img class="event-image" src="@(Activity.Images.Count() > 0 ? Activity.Images.ElementAt(0).ImageSrc : string.Empty)" />
+        </div>
+        <div class="event-details">
+            <p class="event-title">When & Where</p>
+            <div class="event-schedule-details">
+                <img class="event-img" src="images/ote/calendar.png" />
+                <p class="event-schedule">@Activity.ScheduleFrom.ToString("MMMM dd, yyyy") | @Activity.ScheduleFrom.DayOfWeek</p>
             </div>
-            <div class="ticket-details m-margin-top-30">
-                <p class="event-title">Tickets</p>
-                <p class="event-schedule">Total Ticket Slots: @TotalSlots</p>
-                <p class="event-schedule">Available: @TotalAvailable</p>
-                <p class="event-schedule">Sold: @TotalSold</p>
+            <div class="event-schedule-details">
+                <img class="event-img" src="images/ote/event-clock.png" />
+                <p class="event-schedule">@Activity.ScheduleFrom.ToString("hh:mm tt")</p>
             </div>
+            <div class="event-schedule-details">
+                <img class="event-img" src="images/ote/event-location.png" />
+                @if (Activity.ExperienceTypeId == 1)
+                {
+                    @if (!string.IsNullOrEmpty(Activity.PinnedLocation))
+                    {
+                        <p class="event-location">@Activity.PinnedLocation</p>
+                    }
+                    else
+                    {
+                        <p class="event-location">@Activity.CityName, @Activity.RegionName </p>
+                    }
+                }
+                else
+                {
+                    <p class="event-location">Online</p>
+                }
+            </div>
+            <div class="event-buttons">
+                <button class="btn-event">View Event Page</button>
+                <button class="btn-event">Manage Event</button>
+            </div>
+        </div>
+    </div>
+    <div class="ticket-details m-margin-top-30">
+        <p class="event-title">Tickets</p>
+        <p class="event-schedule">Total Ticket Slots: @TotalSlots</p>
+        <p class="event-schedule">Available: @TotalAvailable</p>
+        <p class="event-schedule">Sold: @TotalSold</p>
+    </div>
 </div>
 
-
-@code {
+@code 
+{
     [Parameter]
     public OteActivity Activity { get; set; }
 
@@ -63,10 +62,11 @@
 
     public int TotalAvailable = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         TotalSlots     = Tickets.Sum(a => a.OtePricing.MaxSlots);
         TotalSold      = Tickets.Sum(s => s.OtePricing.Sold);
         TotalAvailable = Tickets.Sum(v => v.OtePricing.Available);
+        Activity.Images = Activity.Images.OrderBy(i => i.Order);
     }
 }
