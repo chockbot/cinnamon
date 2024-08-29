@@ -17,15 +17,18 @@ public class SeatPlanController : ControllerBase
     private readonly ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler;
     private readonly IGetTemplatesHandler getTemplatesHandler;
     private readonly IGetTemplateHandler getTemplateHandler;
+    private readonly IChangeSeatPlanStatusHandler changeSeatPlanStatusHandler;
     private readonly IMapper mapper;
 
     public SeatPlanController(ICreateSeatPlanTemplateHandler createSeatPlanTemplateHandler,
-        IGetTemplatesHandler getTemplatesHandler, IMapper mapper, IGetTemplateHandler getTemplateHandler)
+        IGetTemplatesHandler getTemplatesHandler, IMapper mapper, IGetTemplateHandler getTemplateHandler,
+        IChangeSeatPlanStatusHandler changeSeatPlanStatusHandler)
     {
         this.createSeatPlanTemplateHandler = createSeatPlanTemplateHandler;
         this.getTemplatesHandler = getTemplatesHandler;
         this.mapper = mapper;
         this.getTemplateHandler = getTemplateHandler;
+        this.changeSeatPlanStatusHandler = changeSeatPlanStatusHandler;
     }
 
     [HttpGet]
@@ -101,6 +104,30 @@ public class SeatPlanController : ControllerBase
         catch (System.Exception ex)
         {
             return new JsonResult(new GetTemplateResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [HttpPut("{id}/status")]
+    [ProducesResponseType(typeof(ChangeSeatPlanStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ChangeSeatPlanStatus(int id, [FromBody] ChangeSeatPlanStatusArgs args)
+    {
+        try
+        {
+            var result = await changeSeatPlanStatusHandler.ExecuteAsync(new Services.SeatPlanService.Interactors.ChangeSeatPlanStatusArgs
+            {
+                Id = id,
+                Enabled = args.Enabled
+            });
+            if (!result.Succeeded || result.Result is null)
+            {
+                return new JsonResult(new ChangeSeatPlanStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ChangeSeatPlanStatusResult { Result = result.Result.Disable, IsSuccess = true });
+        }
+        catch (System.Exception ex)
+        {
+            return new JsonResult(new ChangeSeatPlanStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

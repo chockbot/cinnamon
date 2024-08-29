@@ -2,7 +2,7 @@
 @using SeatPlanModels = Cinnamon.Framework.Models.SeatPlan;
 
 <div class="seat-plan-seat m-1">
-    <Button Style="@GetSeatStyle" class="p-1">
+    <Button Style="@GetSeatStyle" class="p-1" Clicked="OnClick">
         <span class="color-white-100 font-10">
             @RowNumber - @RowSeat.SeatNumber
         </span>
@@ -20,11 +20,22 @@
     [Parameter]
     public string CategoryColor {get; set;}
 
+    [Parameter]
+    public EventCallback<SeatPlanModels.Seat> OnSeatSelected { get; set; }
+
     private string GetSeatStyle 
     {
         get
         {
             return $"background-color: {CategoryColor}; line-height: .6;";
+        }
+    }
+
+    private async Task OnClick()
+    {
+        if(OnSeatSelected.HasDelegate)
+        {
+            await OnSeatSelected.InvokeAsync(RowSeat);
         }
     }
 }

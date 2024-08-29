@@ -86,4 +86,26 @@ public class SeatPlanApiHandler : ISeatPlanApiHandler
             return AppResult<GetTemplateResult>.CreateFailed(ex, "An error occurred while retrieving seat plan template");
         }
     }
+
+    public async Task<AppResult<ChangeSeatPlanStatusResult>> ChangeSeatPlanStatus(int id, ChangeSeatPlanStatusArgs status, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"SeatPlan/{id}/Status")
+                .PutJsonAsync(status)
+                .ReceiveJson<ChangeSeatPlanStatusResult>();
+
+            return AppResult<ChangeSeatPlanStatusResult>.CreateSucceeded(result, "Seat plan status changed successfully");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ChangeSeatPlanStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ChangeSeatPlanStatusResult>.CreateFailed(ex, "An error occurred while changing seat plan status");
+        }
+    }
 }
