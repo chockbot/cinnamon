@@ -56,7 +56,7 @@ public class ChangeSeatPlanStatusHandler : IChangeSeatPlanStatusHandler
             var seatPlan = seatPlanRes.Result.Result;
 
             var updateSeatPlanRes = await seatPlanData.UpdateSeatPlanTemplateAsync(new Framework.ApiCommand.ApiData.SeatPlan.Request.UpdateSeatPlanTemplateArgs {
-                Enabled = args.Disable,
+                Enabled = args.Enabled,
             }, seatPlan.Id);
             if(!updateSeatPlanRes.Succeeded || updateSeatPlanRes.Result is null || !updateSeatPlanRes.Result.IsSuccess)
             {
@@ -65,7 +65,7 @@ public class ChangeSeatPlanStatusHandler : IChangeSeatPlanStatusHandler
             }
 
             return AppResult<ChangeSeatPlanStatusResult>.CreateSucceeded(
-                new ChangeSeatPlanStatusResult {Disable = args.Disable}, "Seat plan status changed successfully");
+                new ChangeSeatPlanStatusResult {Disable = args.Enabled}, "Seat plan status changed successfully");
         }
         catch (System.Exception ex)
         {
