@@ -72,8 +72,10 @@ namespace Cinnamon.Web.Modules.Services
 
         private async Task StartUserTimerAsync(string userId, string activeQueueName)
         {
-            await Task.Delay(ProcessingTime);
-            await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
+            Timer timer = new Timer((state) =>
+            {
+                RemoveUserFromActiveQueueAsync(userId, activeQueueName);
+            }, null, TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
         }
 
         private async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
