@@ -61,6 +61,7 @@ public class ActivityDTO
     public bool IsDeactivated { get; set; }
     public double AverageRating { get; set; }
     public int NumberOfReviews { get; set; }
+    public OteSchedule? Schedule { get; set; }
 
     public class ActivitySchedule 
     {
@@ -150,6 +151,12 @@ public class ActivityDTO
         public string UnitPrice { get; set; }
         public string Description { get; set; }
         public int Order { get; set; }
+    }
+
+    public class OteSchedule 
+    {
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
     }
 
 }

@@ -21,7 +21,8 @@ public interface IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, 
-        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false, bool? forceDisable = false);
+        bool includeStudents = false, bool includeReviews = false, bool includeTickets = false, 
+        bool? forceDisable = false, bool? includeOteSchedule = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,

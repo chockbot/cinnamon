@@ -24,13 +24,13 @@
                     <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
                     <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
                         <SelectItem selected Disabled>Select Payout Account</SelectItem>
-                       @if(PaymentChannels != null)
-                       {
-                         @foreach (var item in PaymentChannels)
+                        @if(PaymentChannels != null)
+                        {
+                            @foreach (var item in PaymentChannels)
                             {
                                 <SelectItem Value="item.Code">@item.Name</SelectItem>
                             }
-                       }
+                        }
                     </Select>
                 </Field>
                 <Validation>
@@ -53,9 +53,17 @@
                         </TextEdit>
                     </Field>
                 </Validation>
+
+                <div class="mt-3">
+                    <label>
+                        <input type="checkbox" @bind="IsTermsAccepted" />
+                        <span class="font-16 color-grey-100"> I agree to the <a href="/terms" target="_blank">terms and conditions</a></span>
+                    </label>
+                </div>
+
                 <div class="mt-3">
                     <Button Clicked="SubmitPayoutAccount"
-                        Loading="IsSubmitting" Disabled="IsSubmitting"
+                        Loading="IsSubmitting" Disabled="IsSubmitting || !IsTermsAccepted"
                         class="btn-primary width-150 border-radius-5" Border="Border.Is0">
                         <LoadingTemplate>
                             <i class="fa fa-spinner fa-spin"></i> Please Wait
@@ -75,11 +83,13 @@
     </div>
 </section>
 
+
 @code 
 {
     private FormModel Model {get; set;} = new();
     private Validations FormValidation {get; set;}
     private string Message {get; set;}
+    private bool IsTermsAccepted { get; set; } = false;
     private bool IsSubmitting {get; set;}
     private bool IsShowErrorMessage {get; set;}
     private bool IsShowSuccessMessage {get; set;}

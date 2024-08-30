@@ -15,7 +15,7 @@
 
 <article class="personal-info-wrapper p-3">
     <div class="personal-info-section">
-        <div class="col-lg-5 col-md-6 col-sm-12 col-12">
+        <div class="col-lg-5 col-md-6 col-sm-12 col-12 order-md-1 order-1">
             <div id="alertContainer" class="alertContainer">
                 <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
             </div>
@@ -24,29 +24,33 @@
                     <Column class="profile-column-card" ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnTablet.Is12.OnMobile">
                         <Card class="customer-profile-card">
                                 <CardBody Class="profile-card-body">
-                                    @if (Model.CustomerProfile.IsMaker == true)
-                                    {
-                                        <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                            <img src="images/copytoclipboard.png">
-                                        </button>
-                                    }
-                                    <Figure class="profile-pic">
-                                        <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                                    </Figure>
-                                    <div class="edit-icon">
-                                        <Button @onclick="() => upload.ShowModal()">
-                                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
-                                        </Button>
+                                    <div class="card-profile-title">
+                                        <div class="profile-text-upload-container">
+                                            <p class="profile-title">Profile</p>
+                                            @if (Model.CustomerProfile.IsMaker == true)
+                                            {
+                                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                                    <img src="images/upload-profile-icon.svg">
+                                                </button>
+                                            }
+                                        </div>
+                                        <p class="profile-progress">@profilePercentage Completed - <span><a class="link-profile" @onclick="modalProfile.Show">Click Here</a></span></p>
                                     </div>
+                                    <div class="profile-pic">
+                                        <CircularProgress Id='@($"progress-{@Model.CustomerProfile.FirstName}")' Size="150" PieColor="@color" Percentage="GetSessionPercentage()">
+                                            <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" @onclick="() => upload.ShowModal()" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                        </CircularProgress>
+                                    </div>                          
                                     @switch (Model.CustomerProfile.IsVerified)
                                     {
                                         case 0:
                                             <CardTitle TextAlignment="TextAlignment.Center">
-                                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                                <p class="text-capitalize fw-bold m-0 mb-1 font-30 text-user-name">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                                <p class="text-user-email">@Model.CustomerProfile.Email</p>
                                                 <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
                                                 <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
-                                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
-                                                Get Verified
+                                                class="font-18 claim-badge-btn">
+                                                Get the Badge
                                                 </Button>
                                                 </CardTitle>
                                             break;
@@ -94,7 +98,7 @@
                 </Row>
             </section>
         </div>
-        <div class="col-lg-7 col-md-6 col-sm-12 col-12">
+        <div class="col-lg-7 col-md-12 col-sm-12 col-12 order-md-2 order-2 custom-col">
             <div class="p-section name-section">
                 <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                     <div>
@@ -410,6 +414,47 @@
     </div>
 </article>
 <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
+<Modal @ref="modalProfile">
+    <ModalContent Centered class="border-radius-15">
+        <ModalHeader class="justify-content-center">
+            <div>
+                <p class="font-20 font-weight-700 color-black-100 mb-0 text-center">Profile Completion</p>
+            </div>
+        </ModalHeader>
+
+        <ModalBody class="px-4">
+            <p class="progress-header">
+                Your profile is nearly complete. Finish up to connect better and enjoy personalized recommendations. (@profilePercentage Complete)
+            </p>
+            <div class="profile-progress-section">
+                <div class="profile-prog">
+                    <img class="me-1" src='@(!string.IsNullOrEmpty(Model.CustomerProfile.ProfilePath) ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Upload profile photo. <span><a class="profile-link" href="/customer/profile">Upload photo</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(!string.IsNullOrEmpty(Model.CustomerProfile.About) ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Write a compelling bio highlighting what you offer. <span><a class="profile-link" href="/customer/profile">Update bio</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(Model.CustomerProfile.IsVerified == 2 ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Verify your identity to build trust with clients. <span><a class="profile-link" href="/customer/user-verification/?redirect=redirect_account">Verification setup</a></span>.</p>
+                </div>
+                <div class="profile-prog">
+                    <img class="me-1" src='@(HasPayoutAccount ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    <p class="progress-details">Complete your payout information to receive earnings from the platform. <span><a class="profile-link" href="customer/profile/payout-account">Payout setup</a></span>.</p>
+                </div>
+            </div>
+        </ModalBody>
+
+        <ModalFooter class="justify-content-end">
+            <Button class="bg-white-200 color-grey-100"
+                    Clicked="() => modalProfile.Close(CloseReason.UserClosing)">
+                Close
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 @code
 {
     [Parameter]
@@ -422,7 +467,7 @@
     public EventCallback OnEditIdClick { get; set; }
 
     IJSObjectReference module;
-
+    private Modal? modalProfile;
     private bool isEditLegalName = false;
 
     private string firstNameLocalState = string.Empty;
@@ -430,6 +475,8 @@
     private string lastNameLocalState = string.Empty;
 
     private bool isEditFamilyMember = false;
+
+    private string color = "#FFA942";
 
     private bool isEditBirthDate = false;
 
@@ -479,9 +526,15 @@
 
     public List<Favorite> favorites = new List<Favorite>();
 
+    private CustomerProfile profile = new CustomerProfile();
+
     public string displayText = "d-flex";
 
     private string Token { get; set; }
+
+    public bool HasPayoutAccount { get; set; } = false;
+
+    private string profilePercentage { get; set; } = "0%";
 
     protected override async Task OnInitializedAsync()
     {
@@ -497,13 +550,13 @@
                     Id = payoutAccount.Id
                 };
         }
+        HasPayoutAccount = PayoutAccount is not null ? true : false;
         ImageSource = Model.CustomerProfile.ProfilePath;
 
         //Get Ongoing and completed enrollees
         MakerOngoingStudent = Model.OwnedActivities.Sum(x => x.OngoingStudents);
         MakerCompletedStudent = Model.OwnedActivities.Sum(x => x.CompletedStudents);
     }
-
     private void EditLegalNameClick()
     {
         isEditLegalName = !isEditLegalName;
@@ -539,6 +592,31 @@
             }
         }
         isEditLegalName = false;
+    }
+
+    private int GetSessionPercentage()
+    {
+        double checkItem = 0;
+        double denominator = 4;
+        if (Model.CustomerProfile.IsVerified == 2)
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(Model.CustomerProfile.About))
+        {
+            checkItem += 1;
+        }
+        if (!string.IsNullOrEmpty(Model.CustomerProfile.ProfilePath))
+        {
+            checkItem += 1;
+        }
+        if (HasPayoutAccount)
+        {
+            checkItem += 1;
+        }
+        //Get Payout Details
+        profilePercentage = $"{(int)((checkItem / denominator) * 100)}%";
+        return (int)((checkItem / denominator) * 100);
     }
 
     private void AddFamilyMember()

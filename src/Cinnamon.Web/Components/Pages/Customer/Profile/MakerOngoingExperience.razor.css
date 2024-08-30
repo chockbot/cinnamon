@@ -1,8 +1,8 @@
-
 .maker-wrapper {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 30PX;
+    justify-items: center;
 }
 
 
@@ -51,13 +51,17 @@
     }
 
 
-
+@media screen and (min-width: 1200px) {
+    .maker-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) 
 {
     .maker-wrapper {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 30PX;
     }
 }

@@ -49,6 +49,7 @@ public class GetOwnedActivitiesResult
         public IEnumerable<ActivityImage> Images {get; set;}
         public CustomerOwner? Owner {get; set;}
         public bool ForceDisable {get; set;}
+        public OteSchedule? Schedule {get; set;}
         
 
         public class ActivitySchedule 
@@ -82,6 +83,12 @@ public class GetOwnedActivitiesResult
             public int Id {get; set;}
             public string Handler {get; set;}
             public int IsVerified { get; set; }
+        }
+
+        public class OteSchedule
+        {
+            public DateTime From {get; set;}
+            public DateTime To {get; set;}
         }
     }
 }

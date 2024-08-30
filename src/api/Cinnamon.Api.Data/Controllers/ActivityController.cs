@@ -119,7 +119,8 @@ public class ActivityController : ControllerBase
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, 
-                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false, args.IncludeTickets ?? false, args.ForceDisable) :
+                            args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false,
+                            args.IncludeTickets ?? false, args.ForceDisable, args.IncludeOteSchedule ?? false) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)

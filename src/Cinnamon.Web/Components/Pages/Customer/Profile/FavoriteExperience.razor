@@ -243,7 +243,11 @@
                                 ImageSrc = i.ImageSrc,
                                 Name = i.Name
                             };
-                        }).ToList()
+                        }).ToList(),
+                        Schedule = result.Schedule is not null ? new Activity.OteSchedule {
+                        From = result.Schedule.From,
+                        To = result.Schedule.To,
+                    } : null
                     };
             }
             activities.Add(Activity);

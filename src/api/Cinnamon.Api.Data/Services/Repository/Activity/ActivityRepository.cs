@@ -391,7 +391,7 @@ public class ActivityRepository : IActivityRepository
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
         bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false, bool includeTickets = false,
-        bool? forceDisable = false)
+        bool? forceDisable = false, bool? includeOteSchedule = false)
     {
         try
         {
@@ -408,6 +408,7 @@ public class ActivityRepository : IActivityRepository
             if (includeStudents) includes.Add(a => a.Students);
             if (includeReviews) includes.Add(a => a.Reviews);
             if (includeTickets) includes.Add(a => a.Tickets);
+            if (includeOteSchedule.HasValue && includeOteSchedule.Value) includes.Add(a => a.OteSchedule);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -425,7 +426,9 @@ public class ActivityRepository : IActivityRepository
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
             }
 
-            var activities = result.Result.Select(a =>
+            var list = result.Result.ToList();
+
+            var activities = list.Select(a =>
             {
                 var activityDTO = new ActivityDTO
                 {
@@ -587,7 +590,15 @@ public class ActivityRepository : IActivityRepository
                 if (includeTickets && a.Tickets != null)
                 {
                     var tickets = a.Tickets;
-                    activityDTO.NumberOfTickets = tickets.Count;
+                    activityDTO.NumberOfTickets = tickets.Count; 
+                }
+
+                if (includeOteSchedule.HasValue && includeOteSchedule.Value)
+                {
+                    activityDTO.OteSchedule = a.OteSchedule is not null ?  new OteActivityDTO {
+                        ScheduleFrom = a.OteSchedule.From,
+                        ScheduleTo = a.OteSchedule.To
+                    } : null;
                 }
                 return activityDTO;
             });
