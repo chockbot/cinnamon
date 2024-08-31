@@ -1,9 +1,8 @@
-﻿using Azure.Storage.Queues;
+﻿using Azure;
+using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
-using System;
+using Cinnamon.Web.Pages.ReservedSeats;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Cinnamon.Web.Modules.Services
 {
@@ -11,7 +10,7 @@ namespace Cinnamon.Web.Modules.Services
     {
         private readonly IConfiguration _configuration;
         private readonly QueueServiceClient _queueServiceClient;
-        private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan ProcessingTime = TimeSpan.FromMinutes(2);
 
         public QueueServices(IConfiguration configuration)
         {
@@ -28,8 +27,8 @@ namespace Cinnamon.Web.Modules.Services
             // Ensure queues exist
             await EnsureQueueExistsAsync(activeQueueName);
             await EnsureQueueExistsAsync(reservedQueueName);
-
-            if (await GetQueueLengthAsync(activeQueueName) >= 2)
+            var activeQueueLength = await GetQueueLengthAsync(activeQueueName);
+            if (activeQueueLength >= 2)
             {
                 // Move to reserved queue if active queue is full
                 var queueClient = _queueServiceClient.GetQueueClient(reservedQueueName);
@@ -42,11 +41,34 @@ namespace Cinnamon.Web.Modules.Services
                 await queueClient.SendMessageAsync(Convert.ToBase64String(Encoding.UTF8.GetBytes(userId)));
             }
         }
+        public async Task<bool> IsUserInQueueAsync(string queueName, string userId)
+        {
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
 
+            foreach (var message in messages.Value)
+            {
+                if (Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText)) == userId)
+                {
+                    return true; // User is already in the queue
+                }
+            }
+
+            return false; // User is not in the queue
+        }
         private async Task EnsureQueueExistsAsync(string queueName)
         {
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
-            await queueClient.CreateIfNotExistsAsync();
+            try
+            {
+                var properties = await queueClient.GetPropertiesAsync();
+                // Queue exists
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "QueueNotFound")
+            {
+                // Queue does not exist, create it
+                await queueClient.CreateAsync();
+            }
         }
 
         public async Task<string> DequeueUserAsync(string queueName)
@@ -72,10 +94,10 @@ namespace Cinnamon.Web.Modules.Services
 
         private async Task StartUserTimerAsync(string userId, string activeQueueName)
         {
-            Timer timer = new Timer((state) =>
+            Timer timer = new Timer(async (state) =>
             {
-                RemoveUserFromActiveQueueAsync(userId, activeQueueName);
-            }, null, TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
+                await RemoveUserFromActiveQueueAsync(userId, activeQueueName);
+            }, null, TimeSpan.FromMinutes(2), Timeout.InfiniteTimeSpan);
         }
 
         private async Task RemoveUserFromActiveQueueAsync(string userId, string activeQueueName)
@@ -85,6 +107,7 @@ namespace Cinnamon.Web.Modules.Services
 
             // Move next user from reserved queue to active queue
             string reservedQueueName = $"{activeQueueName.Replace("-active-queue", "-reserved-queue")}";
+            string activeQueueHandler = reservedQueueName.Replace("-reserved-queue", "");
 
             // Check if there are users in the reserved queue
             if (await GetQueueLengthAsync(reservedQueueName) > 0)
@@ -92,50 +115,94 @@ namespace Cinnamon.Web.Modules.Services
                 var nextUser = await DequeueUserAsync(reservedQueueName);
                 if (nextUser != null)
                 {
-                    await EnqueueUserAsync(activeQueueName, nextUser);
+                    await EnqueueUserAsync(activeQueueHandler, nextUser);
                 }
             }
         }
-
-        public async Task<(int numberAhead, TimeSpan estimatedWaitingTime, DateTime lastStatusUpdate)> GetReservedQueueUserInfoAsync(string reservedQueueName, string activeQueueName, string userId)
+        public async Task<(DateTime insertionTime, TimeSpan remainingTime)?> GetUserInActiveQueueAsync(string queueName, string userId)
         {
-            var queueLength = await GetQueueLengthAsync(reservedQueueName);
-            var numberAhead = await GetPositionInQueueAsync(reservedQueueName, userId);
+            var queueClient = _queueServiceClient.GetQueueClient(queueName);
+            var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
+
+            foreach (var message in messages.Value)
+            {
+                if (Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText)) == userId)
+                {
+                    var insertionTime = message.InsertedOn.GetValueOrDefault().LocalDateTime;
+                    var processingTimeElapsed = DateTime.Now - insertionTime;
+                    // Remove milliseconds
+                    processingTimeElapsed = TimeSpan.FromSeconds(Math.Floor(processingTimeElapsed.TotalSeconds));
+                    TimeSpan remainingTime = ProcessingTime - processingTimeElapsed;
+
+                    return (insertionTime, remainingTime);
+                }
+            }
+
+            return null; // User not found in the active queue
+        }
+
+        public async Task<ReservedQueuingInfo> GetReservedQueueUserInfoAsync(string reservedQueueName, string activeQueueName, string userId)
+        {
+            var queueLength = await GetQueueLengthAsync(activeQueueName);
+            var message = await GetPositionInQueueAsync(reservedQueueName, userId);
 
             TimeSpan estimatedWaitingTime;
-            if (numberAhead >= 0)
+            DateTime expectedTimeOfArrival;
+            if (message.numberAhead >= 0)
             {
-                var usersAheadInActiveQueue = Math.Max(0, await GetQueueLengthAsync(activeQueueName) - 2);
-                var totalUsersAhead = usersAheadInActiveQueue + numberAhead;
-                estimatedWaitingTime = TimeSpan.FromMinutes(totalUsersAhead * 10);
+                var totalUsersAhead = queueLength + message.numberAhead;
+                estimatedWaitingTime = TimeSpan.FromMinutes(totalUsersAhead * 2) - TimeSpan.FromSeconds(5);
+                // Calculate expected time of arrival
+                expectedTimeOfArrival = DateTime.Now.Add(estimatedWaitingTime);
             }
             else
             {
                 estimatedWaitingTime = TimeSpan.Zero;
+                expectedTimeOfArrival = DateTime.Now;
             }
 
-            var lastStatusUpdate = DateTime.UtcNow;
+            var lastStatusUpdate = DateTime.Now;
 
-            return (numberAhead, estimatedWaitingTime, lastStatusUpdate);
+            return new ReservedQueuingInfo
+            {
+                QueueId               = message.QueueId,
+                numberAhead           = message.numberAhead,
+                estimatedWaitingTime  = estimatedWaitingTime,
+                lastStatusUpdate      = lastStatusUpdate,
+                expectedTimeOfArrival = expectedTimeOfArrival
+            };
         }
 
-        private async Task<int> GetPositionInQueueAsync(string queueName, string userId)
+        private async Task<ReservedQueuingInfo> GetPositionInQueueAsync(string queueName, string userId)
         {
             int position = -1;
+            string queueId = string.Empty;
             var queueClient = _queueServiceClient.GetQueueClient(queueName);
 
-            var messages = await queueClient.PeekMessagesAsync(maxMessages: 100); // Adjust maxMessages as needed
+            var messages = await queueClient.PeekMessagesAsync(maxMessages: 32); // Adjust maxMessages as needed
 
             for (int i = 0; i < messages.Value.Length; i++)
             {
                 if (Encoding.UTF8.GetString(Convert.FromBase64String(messages.Value[i].MessageText)) == userId)
                 {
                     position = i;
+                    queueId = messages.Value[i].MessageId;
                     break;
                 }
             }
-
-            return position;
+            return new ReservedQueuingInfo
+            {
+                numberAhead = position,
+                QueueId = queueId,
+            };
+        }
+        public class ReservedQueuingInfo
+        {
+            public string QueueId { get; set; }
+            public int numberAhead { get; set; }
+            public TimeSpan estimatedWaitingTime { get; set; }
+            public DateTime lastStatusUpdate { get; set; }
+            public DateTime expectedTimeOfArrival { get; set; }
         }
     }
 }

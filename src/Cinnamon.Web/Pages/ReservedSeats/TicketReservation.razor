@@ -22,26 +22,25 @@
 
 @if (activity is not null)
 {
-    <div class="top-row">
-        <!--App Name-->
-        <div class="app-name">
-            <a href="/explore" class="app-name">@Resources.App.appName</a>
-        </div>
-        <!--Timer-->
-        <div class="timer-section">
-            <p class="ticket-text">Tickets Reserved in Cart for</p>
-            <p class="timer-value">@RemainingTime</p>
-        </div>
-        <div class="secured-section">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
-                <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
-            </svg>
-            <p class="secure-text">Secure Checkout</p>
-        </div>
-    </div>
-
     @if (_isProcessing)
     {
+        <div class="top-row">
+            <!--App Name-->
+            <div class="app-name">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <!--Timer-->
+            <div class="timer-section">
+                <p class="ticket-text">Tickets Reserved in Cart for</p>
+                <p class="timer-value">@RemainingTime</p>
+            </div>
+            <div class="secured-section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none">
+                    <path d="M15.0055 8.53979C14.7668 8.30113 14.4772 8.18189 14.1361 8.18189H13.7273V5.72721C13.7273 4.15905 13.1649 2.81258 12.0399 1.68758C10.9149 0.562525 9.56857 0 8.00019 0C6.43185 0 5.08525 0.562525 3.96038 1.68753C2.83533 2.81258 2.27298 4.15901 2.27298 5.72721V8.18189H1.86395C1.52316 8.18189 1.23332 8.30113 0.994661 8.53979C0.756003 8.77827 0.636719 9.0681 0.636719 9.40921V16.7728C0.636719 17.1136 0.756048 17.4035 0.994661 17.6422C1.23332 17.8806 1.52316 18 1.86395 18H14.1364C14.4775 18 14.7671 17.8808 15.0059 17.6422C15.2443 17.4035 15.3638 17.1136 15.3638 16.7728V9.40908C15.364 9.06824 15.2443 8.77845 15.0055 8.53979ZM11.2728 8.18189H4.72753V5.72721C4.72753 4.82384 5.04719 4.05248 5.68637 3.41339C6.32564 2.77421 7.09687 2.45468 8.00032 2.45468C8.90386 2.45468 9.67491 2.77416 10.3142 3.41339C10.9532 4.05244 11.2728 4.82384 11.2728 5.72721V8.18189Z" fill="#343D4C" />
+                </svg>
+                <p class="secure-text">Secure Checkout</p>
+            </div>
+        </div>
         <div class="container reservation-page-section">
             <div class="row">
                 <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12 ticket-column">
@@ -185,11 +184,40 @@
     }
     else
     {
-        <p>You are in the queue. Estimated waiting time: @reservedQueueInfo.EstimatedWaitingTime minutes</p>
-        <p>Number of users ahead of you: @reservedQueueInfo.UsersAhead</p>
-        <p>Last updated: @reservedQueueInfo.LastUpdated</p>
+        <div class="container queuing-page-section">
+            <div class="modal-queue">
+                    <div class="header-queue">
+                        <img class="img-queue-logo" src="/images/ote/cinnamon-logo.svg" alt="img-queue-logo" />
+                        <img class="img-queue" src="images/ote/queue.svg" alt="img-queue" />
+                    </div>
+                    <div class="note-text">
+                        <p class="user-overloaded">Unfortunately, our system is currently overloaded with requests, preventing us from adding you to the queue at this time.</p>
+                        <br />
+                        <p class="user-overloaded">Queue Id: @queueInfo.QueueId</p>
+                        <br />
+                        <p class="user-overloaded">You can close this page without losing your place in line.</p>
+                    </div>
+                    <div class="queuing-info">
+                        <div class="info-box">
+                            <p class="user-overloaded">Expected time of arrival for tickets sales:</p>
+                            <p class="queing-value">@queueInfo.ExpectedTimeArrival.ToString("hh:mm tt")</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Estimated wait time is:</p>
+                            <p class="queing-value">@queueInfo.EstimatedWaitingTime minutes</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Number of users in line ahead of you:</p>
+                            <p class="queing-value">@queueInfo.UsersAhead</p>
+                        </div>
+                        <div class="info-box">
+                            <p class="user-overloaded">Status last updated:</p>
+                            <p class="queing-value">@queueInfo.LastUpdated.ToString("hh:mm:ss tt")</p>
+                        </div> 
+                    </div>
+                </div>
+        </div>
     }
-
     <Footer></Footer>
     <div class='mobile-calculator-wrapper'>
         <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
@@ -260,11 +288,15 @@
 
     private bool _isProcessing;
 
+    private bool _isInActive;
+
+    private bool _isInReserved;
+
     private Timer _countdownTimer;
 
     public TimeSpan RemainingTime { get; set; }
 
-    private ReservedQueueInfo reservedQueueInfo = new ReservedQueueInfo();
+    private QueueInfo queueInfo = new QueueInfo();
 
     protected override async Task OnInitializedAsync()
     {
@@ -293,9 +325,56 @@
             var url = $"/reservation/{Handler}/?date={Date}&token={Token}";
             // Queue the user
             if (currentLogin is not null)
-            {
-                await QueueServices.EnqueueUserAsync(Handler, currentLogin.Handler);
-                await MonitorQueue(currentLogin.Handler);
+            {         
+                string activeQueueName = $"{Handler}-active-queue";
+                string reservedQueueName = $"{Handler}-reserved-queue";
+
+                //Check user if is in the reserved-queue
+                if (await QueueServices.IsUserInQueueAsync(reservedQueueName, currentLogin.Handler))
+                {
+                    _isProcessing = false;
+                    _isInReserved = true;
+                    // Fetch the user's reserved queue info
+                    var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
+                        $"{Handler}-reserved-queue",
+                        $"{Handler}-active-queue",
+                        currentLogin.Handler
+                    );
+                    queueInfo.QueueId              = reservedQueueInfo.QueueId;
+                    queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
+                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead;
+                    queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
+                    queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
+                    StateHasChanged();
+                }
+                //Check user if is in the active-queue
+                var activeQueueUserInfo = await QueueServices.GetUserInActiveQueueAsync(activeQueueName, currentLogin.Handler);
+                if (activeQueueUserInfo.HasValue)
+                {
+                    _isInActive = true;
+                    var (insertionTime, remainingTime) = activeQueueUserInfo.Value;
+                    if (remainingTime >= TimeSpan.Zero)
+                    {
+                        // Return the remaining processing time to the user
+                        // Processing time has finished, display timeout page
+                        _isProcessing = true;
+                        RemainingTime = remainingTime;
+                        await MonitorQueue(currentLogin.Handler, RemainingTime);
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        OnTimeout();
+                    }
+                }
+                if (!_isInActive && !_isInReserved)
+                {
+                    //Enqueue user
+                    TimeSpan processTime = TimeSpan.FromMinutes(2);
+                    await QueueServices.EnqueueUserAsync(Handler, currentLogin.Handler);
+                    await MonitorQueue(currentLogin.Handler, processTime);
+                }
+
             }
             else
             {
@@ -308,7 +387,7 @@
             await NotificationService.Error("An error occured. Please try again later.", "Error");
         }
     }
-    private async Task MonitorQueue(string userId)
+    private async Task MonitorQueue(string userId, TimeSpan time)
     {
         try
         {
@@ -320,13 +399,24 @@
                     $"{Handler}-active-queue",
                     userId
                 );
-                // Check if the user is in the reserved queue
-                if (reservedQueueInfo.numberAhead >= 0)
+
+                // Check if the user is in the active queue
+                if (reservedQueueInfo.numberAhead == -1) // Assume -1 indicates the user is in the active queue
                 {
                     _isProcessing = true;
-                    StartCountdownTimer();
+                    StartCountdownTimer(time);
                     StateHasChanged();
-                    break;
+                    break; // Exit the loop once the user is in the active queue
+                }
+                else
+                {
+                    _isProcessing                  = false;
+                    queueInfo.QueueId              = reservedQueueInfo.QueueId;
+                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead + 2;
+                    queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
+                    queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
+                    queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
+                    StateHasChanged();
                 }
 
                 // Wait for 5 seconds before checking again
@@ -335,15 +425,16 @@
         }
         catch (Exception ex)
         {
+            // Log the exception for debugging (if needed) and show an error notification
+            Console.WriteLine($"Error in MonitorQueue: {ex.Message}");
             await NotificationService.Error("An error occurred while monitoring the queue. Please try again later.", "Error");
         }
     }
 
-
-    private void StartCountdownTimer()
+    private void StartCountdownTimer(TimeSpan span)
     {
         // Set the countdown timer to 10 minutes
-         RemainingTime = TimeSpan.FromMinutes(1);
+        RemainingTime = span;
         _countdownTimer = new Timer(TimerCallback, null, 0, 1000); // Update every second
     }
 
@@ -362,12 +453,10 @@
         }
     }
 
-    private async Task OnTimeout()
+    public void OnTimeout()
     {
         // Handle user timeout logic
         _isProcessing = false;
-        await QueueServices.DequeueUserAsync($"{Handler}-active-queue"); // Remove the user from the queue
-
         // Redirect to a timeout page or show a timeout message
         NavigationManager.NavigateTo("/timeout");
     }
@@ -651,6 +740,11 @@
             return true;
         }
     }
+    public TimeSpan SetRemainingTime(TimeSpan time)
+    {
+        RemainingTime = time;
+        return RemainingTime;
+    }
     private class CouponDetails
     {
         public string CouponCode { get; set; }
@@ -672,11 +766,13 @@
         public decimal Price { get; set; }
         public bool RequiredApproval { get; set; }
     }
-    private class ReservedQueueInfo
+    private class QueueInfo
     {
-        public int EstimatedWaitingTime { get; set; }
+        public string QueueId { get; set; }
+        public TimeSpan EstimatedWaitingTime { get; set; }
         public int UsersAhead { get; set; }
         public DateTime LastUpdated { get; set; }
+        public DateTime ExpectedTimeArrival { get; set; }
     }
     public class Queues
     {
