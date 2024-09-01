@@ -32,7 +32,8 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, args.IncludeStudents ?? false, args.IncludeTickets ?? false, args.IncludeAddOns ?? false);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer, 
+                args.IncludeStudents ?? false, args.IncludeTickets ?? false, args.IncludeAddOns ?? false, args.IncludeOteSchedule ?? false);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

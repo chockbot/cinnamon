@@ -16,4 +16,5 @@ public class GetActivityArgs : IInteractor
     public bool? IncludeStudents { get; set; }
     public bool? IncludeTickets { get; set; }
     public bool? IncludeAddOns { get; set; }
+    public bool? IncludeOteSchedule { get; set; }
 }

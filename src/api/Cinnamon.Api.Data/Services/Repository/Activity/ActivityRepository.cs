@@ -653,7 +653,9 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, bool includeStudents = false,bool includeTickets = false, bool? includeAddOns = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false, 
+        bool includeStudents = false,bool includeTickets = false, 
+        bool? includeAddOns = false, bool? includeOteSchedule = false)
     {
         try
         {
@@ -667,6 +669,7 @@ public class ActivityRepository : IActivityRepository
             if(includeStudents) includes.Add(a => a.Students);
             if(includeTickets) includes.Add(a => a.Tickets);
             if(includeAddOns.HasValue && includeAddOns.Value) includes.Add(a => a.AddOns);
+            if (includeOteSchedule.HasValue && includeOteSchedule.Value) includes.Add(a => a.OteSchedule);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -868,6 +871,14 @@ public class ActivityRepository : IActivityRepository
                         Order       = s.Order
                     };
                 }).ToList();
+            }
+
+            if (includeOteSchedule.HasValue && includeOteSchedule.Value)
+            {
+                activityDTO.OteSchedule = activity.OteSchedule is not null ?  new OteActivityDTO {
+                    ScheduleFrom = activity.OteSchedule.From,
+                    ScheduleTo = activity.OteSchedule.To
+                } : null;
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");

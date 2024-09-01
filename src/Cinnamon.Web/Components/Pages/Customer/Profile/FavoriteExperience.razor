@@ -19,9 +19,7 @@
                     {
                         <div class="maker-swiper-slide">
                             <Div ElementId="#b-animate">
-                                <Animate Anchor="#b-animate"    
-
-
+                                <Animate Anchor="#b-animate"
                                 Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                     <div class="card">
                                     <a class="button" href="@DetailsUrl(ActivityData.Handler, (int)ActivityData.ExperienceCreationType)" style="text-decoration:none;">
@@ -106,7 +104,7 @@
                             @{
                                string formattedDate = @Activity.Schedule?.From.ToString("MMM dd, yyyy ● h:mm tt");
                             }
-                                @if ((int)Activity.ExperienceCreationType == 3)
+                                @if ((int)ActivityData.ExperienceCreationType == 3)
                                 {
                                     <div class="address-holder">
                                         <img src="images/explore-page-images/date-explore.svg" class="location-icon" />

@@ -1412,6 +1412,10 @@ public class ActivityController : ControllerBase
                         Email = activity.Owner.Email,
                         PhoneNumber = activity.Owner.PhoneNumber
                     } : null,
+                    Schedule = activity.Schedule is not null ? new ActivityDTO.OteSchedule {
+                            From = activity.Schedule.From,
+                            To = activity.Schedule.To,
+                    } : null,
                     AddOns = activity.AddOns.Select(s =>
                     {
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.AddOn

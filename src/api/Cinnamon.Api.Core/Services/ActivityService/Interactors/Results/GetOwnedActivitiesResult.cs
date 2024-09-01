@@ -4,7 +4,6 @@ namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 public class GetOwnedActivitiesResult 
 {
     public IEnumerable<Activity> Activities {get; set;}
-
     public class Activity 
     {
         public int Id {get; set;}
