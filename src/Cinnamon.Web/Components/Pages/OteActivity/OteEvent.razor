@@ -213,6 +213,31 @@
                 </div>
             </Column>
         </Row>
+
+        <Row class="mt-3">
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                <div class="mt-2">
+                    <label class="d-flex align-items-center mb-2">
+                        <p class="font-16 color-black-100 mb-0 text-capitalize">Select Template</p>
+                    </label>
+                    <label class="cursor-pointer w-100" @onclick="() => OnSelectTemplateClicked()">
+                        <div class='@(string.IsNullOrEmpty(ModelState.TemplateSelected.Payload) ? "" : "d-none")'>
+                            <div class='empty-image-container bg-white-100'>
+                                <div class="text-center">
+                                    <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                    <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                            <div class='@(!string.IsNullOrEmpty(ModelState.TemplateSelected.Payload) ? "col-12 mb-4 text-center" : "d-none")'>
+                                <img class="w-100 border-1-dashed border-color-black-100" src="@ModelState.TemplateSelected.ImageSrc" alt="seatplan image">
+                            </div>
+                        </Row>
+                    </label>
+                </div>
+            </Column>
+        </Row>
         <Divider />
     </div>
     <ImageCropper @ref="imageCropper" />
@@ -229,6 +254,9 @@
 
     [Parameter]
     public EventCallback OnCoverPhotoDisplayChanged {get; set;} 
+
+    [Parameter]
+    public EventCallback OnSelectTemplateClick {get; set;}
 
     public Validations? formValidation;
     public Validation? eventNameValidation;
@@ -811,6 +839,8 @@
         public bool IsPrivate { get; set; } = false;
         public bool IsComingSoon { get; set; } = false;
 
+        // for seatplan
+        public SelectedTemplate TemplateSelected { get; set; } = new ();
     }
 
     public class CategoryItem 
@@ -1009,5 +1039,21 @@
             ClearLocationFields();
             await formValidation.ClearAll();
         }
+    }
+
+    private async Task OnSelectTemplateClicked()
+    {
+        if (OnSelectTemplateClick.HasDelegate)
+        {
+            await OnSelectTemplateClick.InvokeAsync();
+        }
+    }
+
+    public class SelectedTemplate
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string ImageSrc { get; set; }
+        public string Payload { get; set; }
     }
 }

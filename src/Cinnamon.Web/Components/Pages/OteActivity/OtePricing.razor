@@ -9,6 +9,7 @@
 @inject INotificationService NotificationService
 @inject IActivityApiHandler activityApiHandler
 @inject IJSRuntime JS
+@inject Cinnamon.Framework.Providers.IJsonSerializationProvider jsonSerializationProvider
 @implements IOteComponent
 @implements IAsyncDisposable
 
@@ -74,7 +75,7 @@
                 </div>
                 <div class="effect hover2"></div>
             </div>
-            <div class="div-option-details email-box" id="hoverDiv" @onclick="() => ticketModal.Show()">
+            <div class="div-option-details email-box" id="hoverDiv" @onclick="ShowAddTicketModal">
                 <img class="option-img image-holder" src="images/ote/add-ticket.svg" alt="cover-photo">
                 <div class="option-name text-box">
                     <p class="registration">Add Tickets</p>
@@ -591,7 +592,7 @@
                                     Total Ticket Qty.
                                 </FieldLabel>
                                 <FieldBody>
-                                    <NumericPicker Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
+                                    <NumericPicker ReadOnly="isReservedSeats" Placeholder="0" Decimals="0" ShowStepButtons="false" TValue="int?" Size="Size.Medium" Disabled=@(modelPricing.IsUnlimited)
                                                    class="font-16 border-radius-10 m-border-radius-5 m-font-16" @bind-Value="modelPricing.MaxSlots" @onkeyup="MaxSlotsChanged">
                                         <Feedback>
                                             <ValidationError />
@@ -600,7 +601,7 @@
                                     <div class="unli-flag d-flex">
                                         <p class="font-16 text-capitalize color-black-100 mb-1 m-font-16">Unlimited Ticket</p>
                                         <div class="form-check form-switch">
-                                            <Switch TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
+                                            <Switch ReadOnly="isReservedSeats" TValue="bool" @bind-Checked="modelPricing.IsUnlimited" @onchange="((e) => IsUnlimitedChanged(e))" class=" form-check-input" />
                                         </div>
                                     </div>
                                 </FieldBody>
@@ -719,7 +720,7 @@
     </ConfirmDialog>
 
 @code
-    {
+{
     [Parameter]
     public EventCallback OnNextClick { get; set; }
 
@@ -790,6 +791,9 @@
     private string phoneQuestion = "Off";
 
     IJSObjectReference hoverEffectModule;
+
+    private bool isReservedSeats = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
        
@@ -1650,5 +1654,52 @@
         public bool Required {get; set;}
         public string FieldType {get; set;} = Cinnamon.Framework.Enums.FieldType.TextArea.ToString();
         public bool IsNew {get; set;} = false;
+    }
+
+    public class SeatPlan
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Payload { get; set; }
+    }
+
+    public Task CreateDefaultTickets(string payload)
+    {
+        modelPricingList.Pricings.Clear();
+        var tickets = jsonSerializationProvider.Deserialize<Cinnamon.Framework.Models.SeatPlan.Format>(payload);
+        foreach(var ticket in tickets.Categories)
+        {
+            int maxId = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.TempId) + 1;
+            int order = modelPricingList.Pricings.Count == 0 ? 1 : modelPricingList.Pricings.Max(s => s.Order) + 1;
+
+            var cat = ticket.Value;
+            modelPricingList.Pricings.Add(new Pricing {
+                Name = cat.Name,
+                Price = 0,
+                MaxSlots = cat.Rows.Sum(r => r.Value.Seats.Count),
+                AbsorbFees = false,
+                IsFree = true,
+                RequiredApproval = false,
+                IsUnlimited = false,
+                TempId = maxId,
+                Order = order,
+            });
+        }
+
+        isReservedSeats = true;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task ShowAddTicketModal()
+    {
+        if(isReservedSeats)
+        {
+            return NotificationService.Info("You have already added reserved seats. You will not be able to add another ticket.", "Information");
+        }
+
+        return ticketModal.Show();
     }
 }
