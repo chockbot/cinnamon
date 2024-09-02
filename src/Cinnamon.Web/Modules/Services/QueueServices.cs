@@ -143,17 +143,23 @@ namespace Cinnamon.Web.Modules.Services
 
         public async Task<ReservedQueuingInfo> GetReservedQueueUserInfoAsync(string reservedQueueName, string activeQueueName, string userId)
         {
+            //Get Active user estimated time
+            TimeSpan processingTimeElapsed;
+            TimeSpan estimatedWaitingTime;
+            DateTime expectedTimeOfArrival;
+
             var queueLength = await GetQueueLengthAsync(activeQueueName);
             var message = await GetPositionInQueueAsync(reservedQueueName, userId);
 
-            TimeSpan estimatedWaitingTime;
-            DateTime expectedTimeOfArrival;
             if (message.numberAhead >= 0)
             {
-                var totalUsersAhead = queueLength + message.numberAhead;
-                estimatedWaitingTime = TimeSpan.FromMinutes(totalUsersAhead * 2) - TimeSpan.FromSeconds(5);
-                // Calculate expected time of arrival
-                expectedTimeOfArrival = DateTime.Now.Add(estimatedWaitingTime);
+                var totalUsersAhead    = message.numberAhead;
+                var firstUserRemaining = await GetFirstActiveUserInsertionTimeAsync(activeQueueName);
+                processingTimeElapsed  = firstUserRemaining.Value + TimeSpan.FromMinutes(2) - DateTime.Now;
+                processingTimeElapsed  = TimeSpan.FromSeconds(Math.Floor(processingTimeElapsed.TotalSeconds));
+
+                estimatedWaitingTime   = TimeSpan.FromMinutes(totalUsersAhead * 2) + processingTimeElapsed;
+                expectedTimeOfArrival  = DateTime.Now.Add(estimatedWaitingTime);
             }
             else
             {
@@ -171,6 +177,24 @@ namespace Cinnamon.Web.Modules.Services
                 lastStatusUpdate      = lastStatusUpdate,
                 expectedTimeOfArrival = expectedTimeOfArrival
             };
+        }
+        public async Task<DateTime?> GetFirstActiveUserInsertionTimeAsync(string activeQueueName)
+        {
+            var queueClient = _queueServiceClient.GetQueueClient(activeQueueName);
+
+            // Peek at the first message in the queue
+            var response = await queueClient.PeekMessagesAsync(1);
+
+            if (response.Value == null || response.Value.Length == 0)
+            {
+                return null;
+            }
+
+            // Extract the message and its insertion time
+            var firstMessage = response.Value[0];
+            var insertionTime = firstMessage.InsertedOn.GetValueOrDefault().LocalDateTime;
+
+            return insertionTime;
         }
 
         private async Task<ReservedQueuingInfo> GetPositionInQueueAsync(string queueName, string userId)

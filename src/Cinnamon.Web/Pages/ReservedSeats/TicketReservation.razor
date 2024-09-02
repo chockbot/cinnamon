@@ -181,6 +181,31 @@
                 </div>
             </div>
         </div>
+        <Footer></Footer>
+        <div class='mobile-calculator-wrapper'>
+            <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
+                position-fixed left-0 right-0 bg-white-100">
+                <div>
+                    <div class="p-3 d-flex justify-content-between align-items-center">
+                        <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="DisableProceed || submitting" Loading="submitting"
+                                class="btn-primary font-14 border-radius-10 px-4"
+                        Border="Border.Is0">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Confirm seats
+                            </ChildContent>
+                        </Button>
+                        <div class="d-flex align-items-center">
+                            <div class="prevent-select text-end" style="width: 160px;">
+                                <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {
@@ -190,6 +215,9 @@
                         <img class="img-queue-logo" src="/images/ote/cinnamon-logo.svg" alt="img-queue-logo" />
                         <img class="img-queue" src="images/ote/queue.svg" alt="img-queue" />
                     </div>
+                    <Progress Style="margin-top:32px">
+                        <ProgressBar Color="Color.Success" Value="CalculateProgress()" Max="100" />
+                    </Progress>
                     <div class="note-text">
                         <p class="user-overloaded">Unfortunately, our system is currently overloaded with requests, preventing us from adding you to the queue at this time.</p>
                         <br />
@@ -218,31 +246,38 @@
                 </div>
         </div>
     }
-    <Footer></Footer>
-    <div class='mobile-calculator-wrapper'>
-        <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
-                position-fixed left-0 right-0 bg-white-100">
-            <div>
-                <div class="p-3 d-flex justify-content-between align-items-center">
-                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment" Disabled="DisableProceed || submitting" Loading="submitting"
-                            class="btn-primary font-14 border-radius-10 px-4"
-                        Border="Border.Is0">
-                        <LoadingTemplate>
-                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please wait
-                        </LoadingTemplate>
-                        <ChildContent>
-                            Confirm seats
-                        </ChildContent>
-                    </Button>
-                    <div class="d-flex align-items-center">
-                        <div class="prevent-select text-end" style="width: 160px;">
-                            <span class="font-20 font-weight-700 color-black-100 total-price" tabindex="-1">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
-                        </div>
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalBody>
+                <div class="queue-up d-flex">
+                    <img class="img-logo" src="images/ote/ticket-queue.svg" />
+                    <div class="queue-up-text">
+                        <p class="logo">Cinnamon.ph</p>
+                        <p>You're up! It's your turn to buy tickets. </p>
+                    </div
+                </div>
+                <Progress>
+                    <ProgressBar Color="Color.Success" Value="100" />
+                </Progress>
+                <p class="congratulations-text">Congratulations! You're almost there. Please proceed to the next step to finalize your order and secure your tickets.</p>
+                <button class="btn-continue" @onclick="HideModal">Continue</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+    <Modal @ref="modaltime">
+        <ModalContent Centered>
+            <ModalBody>
+                <div class="queue-up d-flex">
+                    <img class="img-logo" src="images/ote/timeout.svg" />
+                    <div class="queue-up-text">
+                        <p class="expired-text">Your reservation has expired!</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <p class="congratulations-text">Unfortunately, you've lost your chance to purchase tickets. Please start a new reservation.</p>
+                <button class="btn-try" @onclick="NavigateToOteReserved">Try Again</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
     <ImageViewer @ref="imageViewer" Image="@SetPlanImage" />
     <ModalLogin @ref="loginModal" ReturnUrl="@signInReturnUrl" />
 }
@@ -257,6 +292,10 @@
     public string Token { get; set; }
 
     private ModalLogin? loginModal;
+
+    private Modal modalRef {get; set;}
+
+    private Modal modaltime {get; set;}
 
     private CustomerProfile? currentLogin { get; set; }
 
@@ -292,11 +331,16 @@
 
     private bool _isInReserved;
 
+    private bool _isTimeOut = false;
+
     private Timer _countdownTimer;
 
     public TimeSpan RemainingTime { get; set; }
 
     private QueueInfo queueInfo = new QueueInfo();
+
+    private double progressPercentage;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -334,17 +378,7 @@
                 {
                     _isProcessing = false;
                     _isInReserved = true;
-                    // Fetch the user's reserved queue info
-                    var reservedQueueInfo = await QueueServices.GetReservedQueueUserInfoAsync(
-                        $"{Handler}-reserved-queue",
-                        $"{Handler}-active-queue",
-                        currentLogin.Handler
-                    );
-                    queueInfo.QueueId              = reservedQueueInfo.QueueId;
-                    queueInfo.ExpectedTimeArrival  = reservedQueueInfo.expectedTimeOfArrival;
-                    queueInfo.UsersAhead           = reservedQueueInfo.numberAhead;
-                    queueInfo.LastUpdated          = reservedQueueInfo.lastStatusUpdate;
-                    queueInfo.EstimatedWaitingTime = reservedQueueInfo.estimatedWaitingTime;
+                    await MonitorQueue(currentLogin.Handler, RemainingTime);
                     StateHasChanged();
                 }
                 //Check user if is in the active-queue
@@ -356,7 +390,6 @@
                     if (remainingTime >= TimeSpan.Zero)
                     {
                         // Return the remaining processing time to the user
-                        // Processing time has finished, display timeout page
                         _isProcessing = true;
                         RemainingTime = remainingTime;
                         await MonitorQueue(currentLogin.Handler, RemainingTime);
@@ -364,6 +397,7 @@
                     }
                     else
                     {
+                        // Processing time has finished, display timeout page
                         OnTimeout();
                     }
                 }
@@ -419,7 +453,7 @@
                     StateHasChanged();
                 }
 
-                // Wait for 5 seconds before checking again
+                // Wait for 10 seconds before checking again
                 await Task.Delay(5000);
             }
         }
@@ -431,6 +465,26 @@
         }
     }
 
+    private int CalculateProgress()
+    {
+        if (queueInfo.UsersAhead <= 0 || queueInfo.EstimatedWaitingTime.TotalSeconds == 0)
+        {
+            return 100;
+        }
+
+        // Calculate percentage based on users ahead and the estimated waiting time.
+        double totalUsers = queueInfo.UsersAhead + 2; // Adding 2 to include users in the active queue
+        double progress = (totalUsers - queueInfo.UsersAhead) / totalUsers * 100;
+        return (int)progress;
+    }
+    private double CalculateProgress(TimeSpan totalWaitingTime, TimeSpan remainingTime)
+    {
+        if (totalWaitingTime.TotalSeconds == 0)
+            return 100; // Full progress if there's no waiting time
+
+        var progress = (totalWaitingTime - remainingTime).TotalSeconds / totalWaitingTime.TotalSeconds * 100;
+        return Math.Clamp(progress, 0, 100);
+    }
     private void StartCountdownTimer(TimeSpan span)
     {
         // Set the countdown timer to 10 minutes
@@ -453,12 +507,11 @@
         }
     }
 
-    public void OnTimeout()
+    public async void OnTimeout()
     {
         // Handle user timeout logic
         _isProcessing = false;
-        // Redirect to a timeout page or show a timeout message
-        NavigationManager.NavigateTo("/timeout");
+        await modaltime.Show();
     }
     private async Task LoadProfile()
     {
@@ -470,6 +523,19 @@
                 currentLogin = mapper.Map<Models.Entities.CustomerProfile>(profileResult.Result.Result);
             }
         }
+    }
+    private Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    private Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private void NavigateToOteReserved()
+    {
+        NavigationManager.NavigateTo($"/explore/ote/{Handler}/1");
     }
     private async Task LoadOteDetails()
     {
