@@ -136,6 +136,7 @@
     box-shadow: 0px 4px 10px 0px #00000040;
 }
 ::deep .card-image-full {
+  cursor: pointer;
   height: 150px;
   aspect-ratio: auto 150 / 150;
   width: 150px;
@@ -317,6 +318,7 @@
   width: 25px;
   height: 25px;
 }
+
 .ongoing-students {
   display: flex;
   justify-content: space-between;
@@ -328,6 +330,106 @@
     width: 75px;
     height: auto;
     margin-right: 10px;
+}
+
+::deep .claim-badge-btn {
+  border-radius: 8px !important;
+  background-color: #EDFFED !important;
+  color: #34A853 !important;
+  transition: ease-in-out 0.3s;
+}
+
+::deep .claim-badge-btn:hover {
+  background-color: #34A853 !important;
+  color: #EDFFED !important;
+}
+
+.text-user-email {
+  color: #717171;
+  font-family: Nunito;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 20px !important;
+}
+
+.text-user-name {
+  margin-bottom: 0 !important;
+}
+
+.profile-text-upload-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-title {
+  color: #343D4C;
+  font-family: Nunito;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
+}
+
+.profile-progress {
+  color: #717171;
+  font-family: Nunito;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.link-profile {
+  cursor: pointer;
+  color: #717171;
+  font-family: Nunito;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration: underline;
+}
+
+.card-profile-title {
+  margin-bottom: 30px;
+}
+
+.profile-pic {
+  display: flex;
+  justify-content: center;
+}
+
+.progress-header {
+  color: #717171;
+  font-family: Nunito;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 44px;
+}
+
+.progress-details {
+  color: #343D4C;
+  font-family: Nunito;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.profile-prog{
+  display: flex;
+  gap:5px;
+  margin-bottom: 20px;
+}
+
+.me-1 {
+  width: 30px;
+  height: 30px;
 }
 @media screen and (max-width: 767px) {
   .profile-content {
@@ -400,7 +502,18 @@
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1023px) {
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+
+  .custom-col {
+    width: 100% !important;
+  }
+  .personal-info-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
     ::deep .card {
         width: 320px;
         height: auto;

@@ -10,11 +10,8 @@ public class Activity
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
-
     private string _title;
-
     public bool IsFavorite { get; set; }
-
     public string Title
     {
         get
@@ -34,7 +31,6 @@ public class Activity
         set { _title = value; }
     }
     private string _description;
-
     public string Description
     {
         get {
@@ -149,9 +145,7 @@ public class Activity
         }
         set { _customerBringWithThem = value; }
     }
-
     private string _classPolicies;
-
     public string ClassPolicies
     {
         get
@@ -233,6 +227,14 @@ public class Activity
             PriceType = (int)Framework.Enums.Enums.PriceType.ReserveOnly
         }
     };
+
+    public OteSchedule? Schedule { get; set; }
+
+    public class OteSchedule 
+    {
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+    }
 }
 
 public class PriceTypeModel

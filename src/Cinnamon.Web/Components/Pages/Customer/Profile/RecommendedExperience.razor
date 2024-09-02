@@ -9,12 +9,12 @@
         @if(Activities != null)
         {
             <Row VerticalGutter="10">
+                <div class="recommended-experience-wrapper-cards">
                 @foreach(var activity in Activities)
                 {
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-6">
                         <MakerOngoingExperienceItem Activity="activity" />
-                    </div>
                 }
+                </div>
             </Row>
         }
     </Div>
@@ -74,6 +74,11 @@
                                     UnitPrice  = i.UnitPrice
                                 };
                             }).ToList(),
+                            Schedule = a.Schedule is not null ? new Activity.OteSchedule {
+                            From = a.Schedule.From,
+                            To = a.Schedule.To,
+                    } : null
+                            
                         };
                 }).ToList();
             }

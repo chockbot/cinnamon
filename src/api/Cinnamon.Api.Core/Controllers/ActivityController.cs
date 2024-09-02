@@ -748,7 +748,7 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents ?? false
+                IncludeStudents = args.IncludeStudents ?? false,
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -829,6 +829,10 @@ public class ActivityController : ControllerBase
                             Id  = a.Owner.Id,
                             IsVerified = a.Owner.IsVerified,
                         } : null,
+                        Schedule = a.Schedule is not null ? new ActivityDTO.OteSchedule {
+                            From = a.Schedule.From,
+                            To = a.Schedule.To,
+                        } : null
                         
                     };
                 })
@@ -1407,6 +1411,10 @@ public class ActivityController : ControllerBase
                         IsOfficial = activity.Owner.IsOfficial,
                         Email = activity.Owner.Email,
                         PhoneNumber = activity.Owner.PhoneNumber
+                    } : null,
+                    Schedule = activity.Schedule is not null ? new ActivityDTO.OteSchedule {
+                            From = activity.Schedule.From,
+                            To = activity.Schedule.To,
                     } : null,
                     AddOns = activity.AddOns.Select(s =>
                     {

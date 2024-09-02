@@ -2,7 +2,6 @@ using Cinnamon.Framework.Enums;
 using System;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
-
 public class GetActivityResult 
 {
     public int Id {get; set;}
@@ -54,8 +53,7 @@ public class GetActivityResult
     public IEnumerable<ActivityImage> Images {get; set;}
     public IEnumerable<AddOn> AddOns { get; set; }
     public CustomerOwner? Owner {get; set;}
-
-
+    public OteSchedule? Schedule {get; set;}
     public class ActivitySchedule 
     {
         public int Id {get; set;}
@@ -120,5 +118,10 @@ public class GetActivityResult
         public string UnitPrice { get; set; }
         public string Description { get; set; }
         public int Order { get; set; }
+    }
+    public class OteSchedule
+    {
+        public DateTime From {get; set;}
+        public DateTime To {get; set;}
     }
 }

@@ -17,7 +17,15 @@
 @inject IDashboardApiHandler dashboardApiHandler
 
 <PageTitle>Your Profile | CinnamonPH</PageTitle>
-<SeoMeta Title="Your Profile" Subject="Profile" Url="/customer/profile" />
+<SeoMeta Title="Your Profile" Subject="Profile" Url="/customer/profile">
+    <ExtraMeta>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    </ExtraMeta>
+</SeoMeta>
 
 @if (isLoading == true)
 {
@@ -427,6 +435,10 @@ else
                             UnitPrice = e.UnitPrice
                         };
                     }).ToList(),
+                    Schedule = a.Schedule is not null ? new Activity.OteSchedule {
+                        From = a.Schedule.From,
+                        To = a.Schedule.To,
+                    } : null
                 };
             }).ToList();
         }

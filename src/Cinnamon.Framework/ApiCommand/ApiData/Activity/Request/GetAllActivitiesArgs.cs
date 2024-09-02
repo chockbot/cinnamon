@@ -26,4 +26,5 @@ public class GetAllActivities
     public Enums.Enums.ActivityStatus? Status { get; set; }
     public bool? IsAdmin { get; set; }
     public bool? ForceDisable {get; set;}
+    public bool? IncludeOteSchedule { get; set;}
 }
