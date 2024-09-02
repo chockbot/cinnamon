@@ -112,6 +112,10 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                                 StartDate = s.StartDate,
                             };
                         }) : Enumerable.Empty<RecommendedActivityResult.Activity.ActivitySchedule>(),
+                        Schedule = a.OteSchedule is not null ? new RecommendedActivityResult.Activity.OteSchedule {
+                        From = a.OteSchedule.ScheduleFrom,
+                        To = a.OteSchedule.ScheduleTo
+                        } : null,
                     };
                 })
             }, "Successfully get recommended activities");

@@ -1641,7 +1641,7 @@ public class ActivityRepository : IActivityRepository
         return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully removed activity");
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count, bool? includeOteSchedule = true)
     {
         try
         {
@@ -1704,6 +1704,10 @@ public class ActivityRepository : IActivityRepository
                         HasExpiration    = i.HasExpiration,
                         StartDate        = i.StartDate,
                     }).ToList(),
+                    OteSchedule = s.OteSchedule is not null ?  new OteActivityDTO {
+                    ScheduleFrom = s.OteSchedule.From,
+                    ScheduleTo = s.OteSchedule.To
+                    } : null,
                 };
             }), "Successfully get recommended activities");
         }

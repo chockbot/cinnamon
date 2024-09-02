@@ -42,6 +42,7 @@ public class GetEnrolledActivitiesResult
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
         public IEnumerable<ActivityImage> Images {get; set;}
         public CustomerOwner? Owner {get; set;}
+        public OteSchedule? Schedule { get; set; }
     }
 
     public class ActivitySchedule 
@@ -82,5 +83,11 @@ public class GetEnrolledActivitiesResult
         public int IsVerified { get; set; }
         public bool IsOG { get; set; }
         public bool IsOfficial { get; set; }
+    }
+
+    public class OteSchedule
+    {
+        public DateTime To { get; set; }
+        public DateTime From { get; set; }
     }
 }

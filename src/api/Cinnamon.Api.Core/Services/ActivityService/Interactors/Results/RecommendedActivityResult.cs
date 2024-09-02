@@ -21,8 +21,8 @@ public class RecommendedActivityResult
         public string RegionName { get; set; }
         public string Barangay { get; set; }
         public int ExperienceTypeId { get; set; }
+        public OteSchedule? Schedule { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
-
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public class ActivityImage
         {
@@ -48,6 +48,10 @@ public class RecommendedActivityResult
             public string SessionName { get; set; }
             public int HasExpiration { get; set; }
             public DateTime? StartDate { get; set; }
+        }
+        public class OteSchedule {
+            public DateTime From { get; set; }
+            public DateTime To { get; set; }
         }
     }
 }
