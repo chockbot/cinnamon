@@ -34,20 +34,6 @@ public class GetTemplatesHandler : IGetTemplatesHandler
     {
         try
         {
-            var currentLogin = await getProfileHandler.ExecuteAsync(new AccountService.Interactors.GetProfileArgs {});
-            if(!currentLogin.Succeeded || currentLogin.Result is null)
-            {
-                return AppResult<GetTemplatesResult>.CreateFailed(new ApplicationException(currentLogin.Message), currentLogin.Message);
-            }
-            var profile = currentLogin.Result;
-
-            var adminResult = await getAdminUserByEmailHandler.ExecuteAsync(new AdminService.Interactors.GetAdminUserByEmailArgs { Email = profile.Email });
-            if(!adminResult.Succeeded || adminResult.Result is null)
-            {
-                return AppResult<GetTemplatesResult>.CreateFailed(
-                    new ApplicationException("Account is not admin. Invalid request."), "Account is not admin. Invalid request.");
-            }
-
             var templatesRes = await seatPlanData.GetSeatPlanTemplateAsync(new Framework.ApiCommand.ApiData.SeatPlan.Request.GetSeatPlanTemplateArgs {
                 CountPerPage = args.Limit,
                 PageIndex = args.Page,
