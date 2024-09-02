@@ -24,113 +24,164 @@
 
 <LoadingIndicator @ref="updateLoadingIndicator" FullScreen>
     <div class="xp-ote-page-wrapper">
-        <Container>
-            <div class="progress-bar-section mt-4">
-                <p class="progress-details">
-                    IN PROGRESS: Step @(currentIndex + 1) of @numberOfPage <span id="loader"></span>
-                </p>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </Container>
-        <div class="mobile-navigation bg-white-200 py-2 my-4 m-d-block">
+        @if(!isSelectSeatPlan)
+        {
             <Container>
-                <Row class="align-items-center">
-                    <Column ColumnSize="ColumnSize.Is2" class="text-start">
+                <div class="progress-bar-section mt-4">
+                    <p class="progress-details">
+                        IN PROGRESS: Step @(currentIndex + 1) of @numberOfPage <span id="loader"></span>
+                    </p>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </Container>
+
+            <div class="mobile-navigation bg-white-200 py-2 my-4 m-d-block">
+                <Container>
+                    <Row class="align-items-center">
+                        <Column ColumnSize="ColumnSize.Is2" class="text-start">
+                            <div>
+                                <img @onclick="MovePrev" class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
+                            </div>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is8" class="text-center">
+                            <label class="font-24 color-black-100 text-capitalize">@sidebarItems[currentIndex].Label</label>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is2" class="text-end">
+                            <div>
+                                <img @onclick="MoveNext" src="images/experience-creation/play-mobile.png" alt="">
+                            </div>
+                        </Column>
+                    </Row>
+                </Container>
+            </div>
+
+            <Container class="pb-5">
+                <div class="d-flex justify-content-start mt-5 mb-5 m-d-none">
+                    <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
+                </div>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex == 0 && oteEvent is not null ? "d-block h-50" : "d-none")' Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
+                    
+                            <label class="w-100">
+                                @*<InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none"/>*@
+                                <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
+                                    <div class='empty-image-container bg-white-100'>
+                                        <LoadingIndicator @ref="loadingIndicator">
+                                        <div class="text-center">
+                                            <img src="images/ote/gallery-icon.png" alt="gallery-icon">
+                                            <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
+                                        </div>
+                                        </LoadingIndicator>
+                                    <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
+                                    </div>
+                                    <div class="delete-section d-flex justify-content-between">
+                                        <p class="delete-text">Upload Cover Photo</p>
+                                    </div>
+                                </div>
+                                <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
+                                    <div class='@(oteEvent.coverPhoto.Display ? "col-12 text-center" : "d-none")' id="@oteEvent.coverPhoto.ContainerId">
+                                        <div class="image-section">
+                                            <LoadingIndicator @ref="loadingIndicator">
+                                                <input type="hidden" id="@oteEvent.coverPhoto.InputDataId" name="@oteEvent.coverPhoto.InputDataId" class="generated-input-data" />
+                                                <a @onclick="() => ShowModal()">
+                                                    <img id="@oteEvent.coverPhoto.ImageSrcId" class="cover-image" src="@oteEvent.coverPhoto.ImageSrc" alt="cover-photo">
+                                                </a>
+                                            </LoadingIndicator>
+                                            <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns=" http: //www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
+                                        </div>
+                                        <div class="delete-section d-flex justify-content-between">
+                                            <p class="delete-text">Upload Cover Photo</p>
+                                            <img class="mt-2 cursor-pointer delete-icon" @onclick="oteEvent.DeleteCoverPhoto" src="images/ote/trashcan-icon-white.png" alt="delete">
+                                        </div>
+                                    </div>
+                                </Row>
+                            </label>
+                        
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex != 0 && oteEvent is not null ? "d-block col-left m-d-none" : "d-none col-left m-d-none")'>
+                        <OteSidebarNavigation SidebarItems="sidebarItems" />
+                        @*<Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
                         <div>
-                            <img @onclick="MovePrev" class="image-rotate" src="images/experience-creation/play-mobile.png" alt="">
+                        @if (sidebarImages.Count > currentIndex)
+                        {
+                        <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
+                        <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
+                        }
+                        </div>*@
+                    </Column>
+
+                    <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
+                        <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
+                            <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged" />
                         </div>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is8" class="text-center">
-                        <label class="font-24 color-black-100 text-capitalize">@sidebarItems[currentIndex].Label</label>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is2" class="text-end">
-                        <div>
-                            <img @onclick="MoveNext" src="images/experience-creation/play-mobile.png" alt="">
+
+                        <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                            <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token"
+                                        OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="pricingModel" />
+                        </div>
+                        <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                            <OteSchedule @ref="oteSchedule" OnNextClick="NextClick" Token="@token"
+                                        OnPrevClick="MovePrev" ModelState="scheduleModel" />
+                        </div>
+                        <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
+                            <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
+                        </div>
+
+                        <div class='@(DisplayPublishSection ? "d-block" : "d-none")'>
+                            <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="summary" Token="@token" />
                         </div>
                     </Column>
                 </Row>
             </Container>
-        </div>
-        <Container class="pb-5">
-            <div class="d-flex justify-content-start mt-5 mb-5 m-d-none">
-                <h3 class="text-uppercase font-32 color-black-100 font-weight-700">let's create your event!</h3>
-            </div>
-            <Row>
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex == 0 && oteEvent is not null ? "d-block h-50" : "d-none")' Flex="Flex.AlignContent.Center.OnMobile.OnTablet.AlignContent.Center">
-                   
-                        <label class="w-100">
-                            @*<InputFile id="@oteEvent.coverPhoto.FileId" accept=".png,.jpg,.jpeg" name="photo-upload" class="d-none"/>*@
-                            <div class='@(oteEvent.coverPhoto.Display ? "d-none" : "")'>
-                                <div class='empty-image-container bg-white-100'>
-                                    <LoadingIndicator @ref="loadingIndicator">
-                                    <div class="text-center">
-                                        <img src="images/ote/gallery-icon.png" alt="gallery-icon">
-                                        <p class="mb-0 mt-1 font-16 color-grey-100 prevent-select">JPEG or PNG only</p>
-                                    </div>
-                                    </LoadingIndicator>
-                                <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
+        }
+
+        @if(isSelectSeatPlan)
+        {
+            <Row class="creation-seatplan-wrapper">
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop">
+                    <Container>
+                        <h1>Seat Plan</h1>
+                    </Container>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3.OnDesktop">
+                    <div class="seat-plan-sidebar">
+                        <div class="position-relative h-100">
+                            <div class="p-3">
+                                <h4 class="text-center font-18 color-black-100 font-weight-700 mb-0">Select Template</h4>
+                            </div>
+                            <ListGroup style="border-radius: 0px;" Mode="ListGroupMode.Selectable">
+                                <ListGroupItem Name="template1" class="p-3">Template 1</ListGroupItem>
+                                <ListGroupItem Name="template2" class="p-3">Template 2</ListGroupItem>
+                                <ListGroupItem Name="template3" class="p-3">Template 3</ListGroupItem>
+                            </ListGroup>
+
+                            <div class="seat-plan-footer">
+                                <div class="p-3">
+                                    <p class="m-0">
+                                        <span class="color-black-100">Your place isn’t in the list?</span>
+                                        <br>
+                                        <a href="mailto:admin@cinnamon.ph">Contact us</a> 
+                                        <span class="color-grey-100">for support in creating a customize template for your event place.</span>
+                                    </p>
                                 </div>
-                                <div class="delete-section d-flex justify-content-between">
-                                    <p class="delete-text">Upload Cover Photo</p>
+                                <Divider />
+                                <div class="p-3">
+                                    <Button class="bg-orange-100 color-white-100" Border="Border.Is0">
+                                        Save
+                                    </Button>
+                                    <Button class="bg-grey-300 color-grey-100" Border="Border.Is0">
+                                        Cancel
+                                    </Button>
                                 </div>
                             </div>
-                            <Row class="cover-photo-image-container justify-content-center" HorizontalGutter="30">
-                                <div class='@(oteEvent.coverPhoto.Display ? "col-12 text-center" : "d-none")' id="@oteEvent.coverPhoto.ContainerId">
-                                    <div class="image-section">
-                                        <LoadingIndicator @ref="loadingIndicator">
-                                            <input type="hidden" id="@oteEvent.coverPhoto.InputDataId" name="@oteEvent.coverPhoto.InputDataId" class="generated-input-data" />
-                                            <a @onclick="() => ShowModal()">
-                                                <img id="@oteEvent.coverPhoto.ImageSrcId" class="cover-image" src="@oteEvent.coverPhoto.ImageSrc" alt="cover-photo">
-                                            </a>
-                                        </LoadingIndicator>
-                                        <button class="btn-upload" @onclick="() => ShowModal()"><svg xmlns=" http: //www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 .25h-.042c-1.369 0-2.454 0-3.32.088-.888.09-1.629.28-2.277.713a4.8 4.8 0 0 0-1.31 1.31c-.434.648-.623 1.39-.713 2.277C.25 5.504.25 6.589.25 7.958v.084c0 1.369 0 2.454.088 3.32.09.888.28 1.629.713 2.277.346.519.791.964 1.31 1.31.648.434 1.39.623 2.277.713.866.088 1.951.088 3.32.088h.084c1.369 0 2.454 0 3.32-.088.888-.09 1.629-.28 2.277-.712a4.8 4.8 0 0 0 1.31-1.311c.434-.648.623-1.39.713-2.277.088-.866.088-1.951.088-3.32v-.084c0-1.369 0-2.454-.088-3.32-.09-.888-.28-1.629-.712-2.277a4.8 4.8 0 0 0-1.311-1.31c-.648-.434-1.39-.623-2.277-.713C10.496.25 9.411.25 8.042.25zm2.32 8.535c.156-.21.735-.868 1.486-.4.478.295.88.694 1.31 1.12.164.164.28.35.359.549.234.6.112 1.323-.138 1.918a2.59 2.59 0 0 1-1.583 1.479c-.318.104-.652.149-.984.149h-5.9c-.587 0-1.106-.14-1.532-.403-.267-.165-.314-.545-.116-.791q.494-.617.986-1.242c.628-.797 1.051-1.029 1.522-.826.19.084.382.21.579.343.525.357 1.255.847 2.216.315.658-.369 1.04-1 1.372-1.551l.006-.01.07-.115a7 7 0 0 1 .347-.535M3.8 5.55c0-.965.784-1.75 1.75-1.75.964 0 1.748.785 1.748 1.75S6.514 7.3 5.55 7.3 3.8 6.515 3.8 5.55"></path></svg></button>
-                                    </div>
-                                    <div class="delete-section d-flex justify-content-between">
-                                        <p class="delete-text">Upload Cover Photo</p>
-                                        <img class="mt-2 cursor-pointer delete-icon" @onclick="oteEvent.DeleteCoverPhoto" src="images/ote/trashcan-icon-white.png" alt="delete">
-                                    </div>
-                                </div>
-                            </Row>
-                        </label>
-                    
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is4.OnDesktop" class='@(currentIndex != 0 && oteEvent is not null ? "d-block col-left m-d-none" : "d-none col-left m-d-none")'>
-                    <OteSidebarNavigation SidebarItems="sidebarItems" />
-                    @*<Divider style="background-color: initial; border: 1px dashed;" class="my-5" />
-                    <div>
-                    @if (sidebarImages.Count > currentIndex)
-                    {
-                    <h3 class="text-center font-24 color-black-300 font-weight-700">How it will looks like</h3>
-                    <img class="mx-auto d-block width-70-p mt-3 h-auto" src="@sidebarImages[currentIndex]" alt="preview">
-                    }
-                    </div>*@
-                </Column>
-
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
-                    <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
-                        <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged" />
-                    </div>
-
-                    <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
-                        <OtePricing @ref="otePricing" OnNextClick="NextClick" Token="@token"
-                                    OnPrevClick="MovePrev" Summary="onlineEventSummary" ModelState="pricingModel" />
-                    </div>
-                    <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
-                        <OteSchedule @ref="oteSchedule" OnNextClick="NextClick" Token="@token"
-                                     OnPrevClick="MovePrev" ModelState="scheduleModel" />
-                    </div>
-                    <div class='@(DisplayOnlineEventSection ? "d-block" : "d-none")'>
-                        <OteOnlineEvent @ref="oteOnline" OnNextClick="NextClick" StateModel="onlineModel" OnPrevClick="MovePrev" Token="@token" />
-                    </div>
-
-                    <div class='@(DisplayPublishSection ? "d-block" : "d-none")'>
-                        <OtePublish @ref="otePublish" OnNextClick="NextClick" OnPrevClick="MovePrev" Summary="summary" Token="@token" />
+                        </div>
                     </div>
                 </Column>
             </Row>
-        </Container>
+        }
+        
     </div>
 </LoadingIndicator>
 
@@ -271,6 +322,8 @@
     private OtePricing.Pricing pricingModel = new();
     private OteSchedule.Schedule scheduleModel = new();
     private OteOnlineEvent.ModelState onlineModel = new();
+    
+    private bool isSelectSeatPlan = true;
 
     protected override void OnInitialized()
     {
