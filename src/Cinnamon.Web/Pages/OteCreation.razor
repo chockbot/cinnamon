@@ -15,6 +15,7 @@
 @inject IPageProgressService ProgressService;
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
+@inject ISeatPlanApiHandler seatPlanApiHandler;
 @inject IJSRuntime JS;
 @inject GoogleDriveService googleDriveService
 @attribute [Authorize]
@@ -24,8 +25,7 @@
 
 <LoadingIndicator @ref="updateLoadingIndicator" FullScreen>
     <div class="xp-ote-page-wrapper">
-        @if(!isSelectSeatPlan)
-        {
+        <div id="t-wrapper" class='@(!isSelectSeatPlan ? "d-block" : "d-none")'>
             <Container>
                 <div class="progress-bar-section mt-4">
                     <p class="progress-details">
@@ -114,7 +114,9 @@
 
                     <Column ColumnSize="ColumnSize.Is12.OnTablet.Is8.OnDesktop" class="component-section-wrapper col-right">
                         <div class='@(currentIndex == 0 ? "d-block" : "d-none")'>
-                            <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged" />
+                            <OteEvent @ref="oteEvent" OnNextClick="NextClick" ModelState="eventModel" 
+                                OnCoverPhotoDisplayChanged="OnCoverPhotoDisplayChanged"
+                                OnSelectTemplateClick="OnSelectTemplateClick" />
                         </div>
 
                         <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
@@ -135,26 +137,39 @@
                     </Column>
                 </Row>
             </Container>
-        }
-
+        </div>
+        
         @if(isSelectSeatPlan)
         {
             <Row class="creation-seatplan-wrapper">
                 <Column ColumnSize="ColumnSize.Is9.OnDesktop">
                     <Container>
-                        <h1>Seat Plan</h1>
+                        <div class="seat-plan-content pt-3">
+                            @if(!string.IsNullOrEmpty(seatPlanPayload))
+                            {
+                                <Cinnamon.Web.Components.Common.SeatPlan.Container Payload="@seatPlanPayload" />
+                            }
+                            else
+                            {
+                                <div class="seat-plan">
+                                    <p>Seat plan not available</p>
+                                </div>
+                            }
+                        </div>
                     </Container>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3.OnDesktop">
                     <div class="seat-plan-sidebar">
                         <div class="position-relative h-100">
-                            <div class="p-3">
-                                <h4 class="text-center font-18 color-black-100 font-weight-700 mb-0">Select Template</h4>
+                            <div class="p-3 text-center">
+                                <h4 class="m-0 color-black-100 font-18 font-weight-700">Select Template</h4>        
                             </div>
-                            <ListGroup style="border-radius: 0px;" Mode="ListGroupMode.Selectable">
-                                <ListGroupItem Name="template1" class="p-3">Template 1</ListGroupItem>
-                                <ListGroupItem Name="template2" class="p-3">Template 2</ListGroupItem>
-                                <ListGroupItem Name="template3" class="p-3">Template 3</ListGroupItem>
+
+                            <ListGroup style="border-radius: 0px;" Mode="ListGroupMode.Selectable" SelectedItemChanged="SelectedItemChanged">
+                                @foreach (var template in templates)
+                                {
+                                    <ListGroupItem Name="@template.Id.ToString()" class="p-3">@template.Name</ListGroupItem>
+                                }
                             </ListGroup>
 
                             <div class="seat-plan-footer">
@@ -168,10 +183,17 @@
                                 </div>
                                 <Divider />
                                 <div class="p-3">
-                                    <Button class="bg-orange-100 color-white-100" Border="Border.Is0">
-                                        Save
+                                    <Button Clicked="SaveSelectedTemplate" Loading="savingSelectedTemplate" Disabled="savingSelectedTemplate"
+                                        class="bg-orange-100 color-white-100" Border="Border.Is0">
+                                        <ChildContent>
+                                            Save
+                                        </ChildContent>
+                                        <LoadingTemplate>
+                                            <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                        </LoadingTemplate>
                                     </Button>
-                                    <Button class="bg-grey-300 color-grey-100" Border="Border.Is0">
+                                    <Button Clicked="CancelSelectedTemplate" Disabled="savingSelectedTemplate"
+                                        class="bg-grey-300 color-grey-100" Border="Border.Is0">
                                         Cancel
                                     </Button>
                                 </div>
@@ -323,7 +345,11 @@
     private OteSchedule.Schedule scheduleModel = new();
     private OteOnlineEvent.ModelState onlineModel = new();
     
-    private bool isSelectSeatPlan = true;
+    private bool isSelectSeatPlan = false;
+    private List<Cinnamon.Framework.ApiCommand.ApiCore.DTO.SeatPlan.SeatPlanTemplateDTO> templates = new();
+    private string seatPlanPayload = string.Empty;
+    private int selectedTemplateId = 0;
+    private bool savingSelectedTemplate = false;
 
     protected override void OnInitialized()
     {
@@ -434,6 +460,8 @@
                 }
                 await updateLoadingIndicator.Hide();
             }
+
+            await LoadSeatPlanTemplates();
 
             await LoadCategories();
 
@@ -1475,5 +1503,81 @@
         {
             // handler error when trying to invoke the client srcript but the page was redirected to another
         }
+    }
+
+    private async Task LoadSeatPlanTemplates()
+    {
+        var templatesRes = await seatPlanApiHandler.GetTemplates(new Framework.ApiCommand.ApiCore.SeatPlan.Request.GetTemplatesArgs {
+
+        }, token);
+
+        if(templatesRes.Succeeded && templatesRes.Result is not null && templatesRes.Result.IsSuccess)
+        {
+            templates = templatesRes.Result.Result.ToList();
+        }
+    }
+
+    private async Task SelectedItemChanged(string value)
+    {
+        seatPlanPayload = string.Empty;
+        StateHasChanged();
+
+        if (int.TryParse(value, out int templateId))
+        {
+            selectedTemplateId = templateId;
+            await LoadSeatPlanTemplate(templateId);
+        }
+    }
+
+    private async Task LoadSeatPlanTemplate(int templateId)
+    {
+        var templateRes = await seatPlanApiHandler.GetTemplate(templateId, token);
+        if(templateRes.Succeeded && templateRes.Result is not null && templateRes.Result.IsSuccess)
+        {
+            var template = templateRes.Result.Result;
+            seatPlanPayload = template.Payload;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveSelectedTemplate()
+    {
+        if (string.IsNullOrEmpty(seatPlanPayload))
+        {
+            return;
+        }
+
+        savingSelectedTemplate = true;
+        StateHasChanged();
+
+        eventModel.TemplateSelected.Id = selectedTemplateId;
+        eventModel.TemplateSelected.Payload = seatPlanPayload;
+        eventModel.TemplateSelected.ImageSrc = templates.FirstOrDefault(t => t.Id == selectedTemplateId)?.ImageSrc;
+
+        isSelectSeatPlan = false;
+
+        await otePricing.CreateDefaultTickets(seatPlanPayload);
+
+        savingSelectedTemplate = false;
+
+        StateHasChanged();
+    }
+
+    private Task CancelSelectedTemplate()
+    {
+        seatPlanPayload = string.Empty;
+        selectedTemplateId = 0;
+
+        isSelectSeatPlan = false;
+
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task OnSelectTemplateClick()
+    {
+        isSelectSeatPlan = !isSelectSeatPlan;
+        return Task.CompletedTask;
     }
 }
